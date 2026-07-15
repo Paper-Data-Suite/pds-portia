@@ -275,7 +275,7 @@ This mirrors Concord’s existing rule that sibling-module records remain author
 
 ## Portia
 
-Portia currently consists of foundational research and one proposed ADR. Its README describes it only as behavior management and tracking for Paper Data Suite.
+Portia is currently in its initial research and architecture phase. The repository contains the Issue #1 research, ADR 0001 separating observations from later interpretations and determinations, ADR 0002 defining Portia’s module boundaries, and ADR 0003 adopting a teacher-local initial deployment.
 
 The research gives it a much more precise role:
 
@@ -664,7 +664,7 @@ Those are not simply new Portia menu items. They imply a different operational p
 
 ## The necessary scope decision
 
-Before implementation, Portia needs a formal decision between two initial product models.
+This analysis identified two possible initial product models. ADR 0003 subsequently resolved the choice for the first Portia implementation.
 
 ### Model A: Teacher-local Portia
 
@@ -714,7 +714,7 @@ That would require significant new shared infrastructure, likely extending beyon
 
 That infrastructure belongs either in an expanded Core/platform layer or in a separately defined PDS service layer—not duplicated privately inside Portia.
 
-My recommendation is to define **Teacher-local Portia as the first implementation boundary**, while retaining the institutional requirements as the long-range architecture. Otherwise Portia risks forcing a wholesale platform rewrite before its foundational behavior model has been tested.
+ADR 0003 accepts **Teacher-local Portia as the first implementation boundary**. The institutional model remains a long-term platform direction requiring shared identity, authorization, audit, storage, and governance infrastructure beyond the initial Portia module.
 
 ---
 
@@ -814,7 +814,7 @@ The module relationships should be:
 
 Portia’s records may illuminate the conditions in which learning occurs, but they should never silently become academic scores, portfolio content, planning judgments, or permanent student labels.
 
-The most appropriate next foundational issue is not yet the complete Portia data model. It is a **scope and deployment decision** establishing whether the first Portia release is teacher-local/classroom-focused or institution-wide. That decision determines identity, storage, permissions, reporting, and nearly every subsequent architecture choice.
+With the initial deployment boundary resolved by ADR 0003, the next foundational issue should define Portia’s identity, ownership scope, and workspace storage. That work must determine how class-scoped, cross-class, multi-student, schoolwide, and cross-year records can be represented without fabricated classes or duplicate student identities.
 
 ## Recommended Follow-Up Issues
 
