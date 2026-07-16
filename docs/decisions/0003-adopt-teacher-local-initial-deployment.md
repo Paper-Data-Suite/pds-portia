@@ -7,6 +7,8 @@
 * **Related research:** [`docs/research/student-behavior-tracking-best-practices.md`](../research/student-behavior-tracking-best-practices.md)
 * **Related design:** [`docs/design/portia-role-within-paper-data-suite.md`](../design/portia-role-within-paper-data-suite.md)
 * **Related decision:** [`0002-define-portia-module-boundaries.md`](0002-define-portia-module-boundaries.md)
+* **Superseded in part by:** [`0004-define-portia-identity-ownership-and-storage.md`](0004-define-portia-identity-ownership-and-storage.md)
+
 
 ## Context
 
@@ -697,6 +699,36 @@ Separate ADRs or specifications should address:
 * the future institutional platform boundary;
 * migration from teacher-local to institutional Portia;
 * and Portia archival integration with Sunset.
+
+## Subsequent Identity and Storage Decision
+
+ADR 0004 resolves the identity and storage questions that this ADR deliberately deferred.
+
+Specifically, ADR 0004 establishes that:
+
+* every Event and Support Process has one owning class and one canonical class-scoped work root;
+* Event ownership normally follows temporal and instructional context;
+* Events may explicitly link students from several classes taught by the same teacher;
+* cross-class participants use complete `class_id + student_id` references;
+* cross-class Events and relationships do not duplicate canonical work;
+* recurring non-roster collaborators may use a limited workspace-scoped Portia Actor Directory;
+* incidental or unidentified people may remain descriptive;
+* cross-year Support continuity uses linked successor work;
+* and no blocking `pds-core` identity or storage expansion is required for Portia v1.
+
+ADR 0004 therefore supersedes this ADR’s statements that cross-class identity, cross-class storage, support processes spanning classes, and canonical Portia storage remain unresolved.
+
+ADR 0003 remains authoritative for Portia’s teacher-local deployment boundary.
+
+ADR 0004 does not expand Portia into:
+
+* a schoolwide discipline system;
+* a cross-teacher case-management platform;
+* an institutional identity service;
+* or a multi-user administrative application.
+
+Schoolwide, district-wide, cross-teacher, and institutionally governed workflows remain deferred.
+
 
 ## Notes
 

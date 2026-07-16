@@ -11,10 +11,10 @@ Portia is in its initial research and architecture phase.
 The repository currently contains:
 
 * evidence-based research on responsible K–12 behavior documentation and management;
-* a design analysis defining Portia’s role within Paper Data Suite;
-* foundational Architecture Decision Records establishing Portia’s record distinctions, module boundaries, and initial deployment scope.
+* design analyses defining Portia’s role, identity model, ownership rules, and canonical storage;
+* foundational Architecture Decision Records establishing Portia’s record distinctions, module boundaries, deployment scope, identity model, and storage architecture.
 
-Portia does not yet contain an executable application or a finalized data model.
+Portia does not yet contain an executable application or a finalized domain model.
 
 ## Product Position
 
@@ -46,7 +46,9 @@ The first Portia implementation will be:
 * teacher-controlled;
 * classroom-focused;
 * built on the existing Paper Data Suite workspace;
-* integrated with shared classes and rosters from `pds-core`.
+* integrated with shared classes and rosters from `pds-core`;
+* capable of explicitly linking students from several classes taught by the same teacher;
+* and limited to records that can be represented honestly within a teacher-local workspace.
 
 The initial release will not claim to be:
 
@@ -75,6 +77,7 @@ pds-portia -> pds-core
 Portia owns behavior-support concepts and workflows such as:
 
 * Events;
+* Event Participants;
 * Accounts and Observations;
 * Positive Observations;
 * Concerns and Referrals;
@@ -87,7 +90,10 @@ Portia owns behavior-support concepts and workflows such as:
 * Follow-Ups and Outcomes;
 * Reentry and Repair;
 * student and family statements;
+* communications;
 * amendments and statements of disagreement;
+* explicit relationships among Portia work items;
+* a limited teacher-local Actor Directory for recurring non-roster collaborators;
 * Portia-specific terminology, privacy classification, and reporting.
 
 ### Core Owns
@@ -95,8 +101,9 @@ Portia owns behavior-support concepts and workflows such as:
 `pds-core` owns shared suite infrastructure such as:
 
 * workspace resolution;
-* classes and rosters;
-* shared student identifiers;
+* classes and class metadata;
+* rosters;
+* student identifiers within their source rosters;
 * identifier validation;
 * active school-year state;
 * standards libraries and profiles;
@@ -106,7 +113,7 @@ Portia owns behavior-support concepts and workflows such as:
 * shared navigation;
 * and safe local path handling.
 
-Core does not own Portia’s behavior categories, support plans, interventions, determinations, reports, or retention semantics.
+Core does not own Portia’s behavior categories, support plans, interventions, determinations, reports, Actor records, or retention semantics.
 
 ### Sibling Modules
 
@@ -129,6 +136,206 @@ Portia records must not automatically:
 * enter a student portfolio;
 * change instructional plans;
 * or trigger archival or destruction in another module.
+
+## Identity and Storage Model
+
+Portia uses a class-owned workflow model with explicit cross-class references and one limited workspace-scoped Actor Directory.
+
+### Student Identity
+
+A durable Portia student reference consists of:
+
+```text
+class_id + student_id
+```
+
+The `class_id` identifies the authoritative source roster.
+
+Portia does not assume that:
+
+* a `student_id` is globally unique across the workspace;
+* matching IDs in different rosters identify the same student;
+* or matching names establish identity.
+
+Historical student references may retain nonauthoritative display snapshots for readability, but names do not function as identifiers.
+
+### Portia Work Identity
+
+One Portia `work_id` identifies one independently managed, explicitly typed top-level workflow object.
+
+The initial work kinds are:
+
+```text
+event
+support_process
+```
+
+Recommended identifier forms are:
+
+```text
+evt_<opaque-id>
+sup_<opaque-id>
+```
+
+Child records such as Event Participants, Accounts, Responses, Follow-Ups, Outcomes, Communications, and work relationships receive their own durable identifiers.
+
+A Portia `work_id` does not represent:
+
+* one student;
+* one student dossier;
+* one class year;
+* one behavior category;
+* one printed page;
+* or one generated report.
+
+### Canonical Work Storage
+
+Events and Support Processes are stored beneath the Core class-qualified work root:
+
+```text
+classes/<class_id>/modules/portia/work/<work_id>/
+```
+
+A representative work root is:
+
+```text
+classes/<class_id>/modules/portia/work/<work_id>/
+  work.json
+  records/
+  attachments/
+  pages/
+  routes/
+  history/
+  derived/
+  exports/
+```
+
+Each canonical record has one authoritative location.
+
+Canonical records are not duplicated into other classes, student folders, histories, dashboards, indexes, or exports merely to support navigation.
+
+### Event Ownership
+
+Every Event has exactly one owning class.
+
+Ownership normally follows the Event’s temporal and instructional context.
+
+When an Event occurs during a scheduled class period, the class being taught at that time is the presumptive owner.
+
+The owning class establishes:
+
+* canonical storage;
+* the Core work reference;
+* the PDS2 routing context;
+* and the primary instructional context.
+
+An Event may nevertheless include students from other valid rosters in the same teacher’s workspace.
+
+Cross-class participants do not transfer or divide ownership.
+
+### Cross-Class Participants
+
+Students from another class taught by the same teacher may be linked explicitly through complete roster-qualified references.
+
+For example:
+
+```text
+Owning class:
+english10_p2
+
+Participants:
+english10_p2 + 1001
+english10_p2 + 1014
+english10_p5 + 2047
+```
+
+The Event remains stored only beneath the owning class.
+
+Portia must not:
+
+* duplicate the Event beneath another class;
+* create synthetic roster entries;
+* select an arbitrary primary student;
+* or merge students automatically across rosters.
+
+### Recurring Non-Roster Actors
+
+Recurring non-roster people may receive opaque Portia Actor identifiers.
+
+Examples include:
+
+* parents and guardians;
+* counselors;
+* administrators;
+* case managers;
+* paraprofessionals;
+* psychologists;
+* social workers;
+* nurses;
+* coaches;
+* and other recurring collaborators.
+
+Actor records are stored in a limited workspace-scoped directory:
+
+```text
+<PDS workspace>/
+  portia/
+    actors/
+      <actor_id>.json
+```
+
+The Actor Directory is local to one teacher’s workspace.
+
+It is not a school directory, district directory, student-information system, authenticated user directory, or institutionally authoritative identity service.
+
+Roster students continue to use Core roster-qualified references and are not duplicated as Actor records.
+
+Incidental, unidentified, or one-time people may remain descriptive without receiving Actor IDs.
+
+### Relationships and Derived Views
+
+Each Portia relationship has one canonical record.
+
+Reverse links, student histories, timelines, dashboards, work queues, reports, and indexes are derived views.
+
+Portia does not maintain an authoritative student dossier.
+
+Derived data must be:
+
+* nonauthoritative;
+* rebuildable;
+* and replaceable from canonical records.
+
+A missing or corrupt derived index must not invalidate otherwise valid Portia work.
+
+### Cross-Year Continuity
+
+Events retain their original class, occurrence time, and school-year context.
+
+A Support Process continuing into a new school year should normally receive a successor work item under the new legitimate owning class.
+
+The predecessor and successor are linked explicitly.
+
+Portia represents longitudinal continuity through linked records rather than one indefinitely mutable student dossier.
+
+### Core Impact
+
+No blocking `pds-core` change is required for Portia v1.
+
+Portia will use existing Core class, roster, work-path, and routing contracts while implementing its own:
+
+* Event and Support Process identifiers;
+* child-record identifiers;
+* Actor identifiers;
+* canonical schemas;
+* cross-class participant lookup;
+* work relationships;
+* Actor Directory paths;
+* append-oriented history;
+* derived indexes;
+* and recovery diagnostics.
+
+A broader Core workspace-module path should be considered only if several Paper Data Suite modules independently require one.
 
 ## Design Principles
 
@@ -190,6 +397,10 @@ Portia should use Core infrastructure and public cross-module contracts rather t
 
   Analysis of the current Paper Data Suite modules, their workflows, Portia’s suite role, future-module relationships, deployment implications, and unresolved architectural questions.
 
+* [Portia Identity, Ownership, and Storage](docs/design/portia-identity-and-storage.md)
+
+  Defines Portia’s required identity layers, work identity, canonical workspace layout, Event ownership, cross-class participants, recurring non-roster Actors, relationship ownership, derived views, representable cases, and Core implications.
+
 ### Architecture Decisions
 
 * [ADR 0001: Separate Observations, Interpretations, Classifications, and Determinations](docs/decisions/0001-separate-observations-interpretations-and-determinations.md)
@@ -203,6 +414,10 @@ Portia should use Core infrastructure and public cross-module contracts rather t
 * [ADR 0003: Adopt a Teacher-Local Initial Deployment for Portia](docs/decisions/0003-adopt-teacher-local-initial-deployment.md)
 
   Establishes a local-first, teacher-controlled, classroom-focused initial implementation while deferring institution-wide platform requirements.
+
+* [ADR 0004: Define Portia Identity, Ownership, and Storage](docs/decisions/0004-define-portia-identity-ownership-and-storage.md)
+
+  Establishes roster-qualified student identity, typed Event and Support Process work items, temporal and instructional class ownership, cross-class participants, the workspace-scoped Actor Directory, canonical relationship ownership, derived indexes, cross-year continuity, and the absence of blocking Core changes.
 
 ## Explicit Product Prohibitions
 
@@ -220,6 +435,14 @@ Portia must not provide:
 * social-media scraping;
 * or indefinite retention by default.
 
+Portia must also not:
+
+* fabricate students or classes;
+* merge students automatically across rosters;
+* duplicate canonical Events across classes;
+* present local Actor records as an institutional directory;
+* or represent teacher-local records as schoolwide disciplinary authority.
+
 ## Student Data
 
 Real student data must not be committed to this repository.
@@ -232,6 +455,7 @@ Development examples, fixtures, screenshots, exports, and tests should use synth
 * Accounts;
 * interventions;
 * family communications;
+* Actors;
 * and outcomes.
 
 Local-first storage does not make student records inherently non-sensitive. Portia workspace data, exports, synchronized folders, and backups must be handled according to applicable school, district, state, and federal requirements.
@@ -240,14 +464,22 @@ Local-first storage does not make student records inherently non-sensitive. Port
 
 Likely next work includes:
 
-* defining class-scoped, cross-class, and organization-scoped identity;
-* selecting the canonical Portia storage model;
-* defining the initial Portia domain model;
-* specifying typed cross-module references;
+* defining the initial Event and Event Participant schemas;
+* defining the initial Support Process schema;
+* defining Account, Observation, Classification, Response, Follow-Up, Outcome, and Communication schemas;
+* defining the Actor Directory schema and Actor lifecycle;
+* specifying controlled relationship vocabularies;
+* defining local author attribution and record-change history;
+* specifying amendment, correction, invalidation, and supersession behavior;
+* defining staged-write, atomic-replacement, validation, and recovery behavior;
+* defining how teacher schedules assist Event ownership selection;
 * defining the minimum viable teacher workflow;
-* establishing local privacy, change-history, export, and redaction behavior;
-* defining Portia archival integration with Sunset;
-* and determining whether Portia’s initial release needs any paper-generation or PDS2 routing workflow.
+* establishing privacy projections and redaction for multi-student Events;
+* defining deliberate student-specific exports;
+* specifying PDS2 page and route contracts;
+* specifying typed cross-module references;
+* defining cross-year Support successor workflows;
+* and defining Portia archival integration with Sunset.
 
 ## License
 
