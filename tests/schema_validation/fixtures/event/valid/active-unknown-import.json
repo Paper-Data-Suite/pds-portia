@@ -1,0 +1,30 @@
+{
+  "schema_version": "1",
+  "record_type": "portia_work",
+  "work_kind": "event",
+  "module_id": "portia",
+  "class_id": "english10_p2",
+  "work_id": "evt_active_unknown",
+  "school_year": "2026-2027",
+  "status": "active",
+  "creation_source": {
+    "type": "import",
+    "source_label": "Legacy teacher note",
+    "external_reference": "legacy-batch-001"
+  },
+  "created_at": "2026-09-18T09:00:00-04:00",
+  "created_by": {
+    "type": "local_operator",
+    "display_label": "Sample Teacher"
+  },
+  "updated_at": "2026-09-18T09:00:00-04:00",
+  "updated_by": {
+    "type": "local_operator",
+    "display_label": "Sample Teacher"
+  },
+  "occurrence": {
+    "precision": "unknown",
+    "reason": "legacy_import"
+  },
+  "summary": "Imported note describes a reported classroom interaction."
+}

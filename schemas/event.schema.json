@@ -1,0 +1,566 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/event.schema.json",
+  "title": "Portia Event",
+  "description": "Canonical Portia Event root record stored at classes/<class_id>/modules/portia/work/<work_id>/work.json.",
+  "$comment": "Application validation remains responsible for path/identity agreement, Core reference existence, school-year semantics, timestamp ordering, Event lifecycle transitions, creation-provenance immutability, paper review, participant-count activation requirements, chronological ordering within occurrence ranges, and incoming supersession relationships.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "record_type",
+    "work_kind",
+    "module_id",
+    "class_id",
+    "work_id",
+    "school_year",
+    "status",
+    "creation_source",
+    "created_at",
+    "created_by",
+    "updated_at",
+    "updated_by"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1"
+    },
+    "record_type": {
+      "const": "portia_work"
+    },
+    "work_kind": {
+      "const": "event"
+    },
+    "module_id": {
+      "const": "portia"
+    },
+    "class_id": {
+      "$ref": "#/$defs/safeId"
+    },
+    "work_id": {
+      "$ref": "#/$defs/eventId"
+    },
+    "school_year": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{4}$",
+      "description": "Owning class academic year. Application validation confirms year semantics."
+    },
+    "status": {
+      "enum": [
+        "draft",
+        "active",
+        "closed",
+        "cancelled",
+        "invalidated",
+        "superseded"
+      ]
+    },
+    "occurrence": {
+      "$ref": "#/$defs/occurrence"
+    },
+    "summary": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "\\S",
+      "description": "Concise neutral teacher-facing Event summary."
+    },
+    "location": {
+      "$ref": "#/$defs/location"
+    },
+    "instructional_context": {
+      "$ref": "#/$defs/instructionalContext"
+    },
+    "supersedes": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/eventRef"
+      },
+      "description": "Canonical forward references from this replacement Event to prior Events."
+    },
+    "creation_source": {
+      "$ref": "#/$defs/creationSource"
+    },
+    "created_at": {
+      "$ref": "#/$defs/timestamp"
+    },
+    "created_by": {
+      "$ref": "#/$defs/attributionAgent"
+    },
+    "updated_at": {
+      "$ref": "#/$defs/timestamp"
+    },
+    "updated_by": {
+      "$ref": "#/$defs/attributionAgent"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "enum": [
+              "active",
+              "closed",
+              "invalidated",
+              "superseded"
+            ]
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "then": {
+        "required": [
+          "occurrence",
+          "summary"
+        ]
+      }
+    }
+  ],
+  "$defs": {
+    "nonEmptyText": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "\\S"
+    },
+    "safeId": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+      "description": "Conservative structural safety pattern; Core remains authoritative for identifier validation."
+    },
+    "eventId": {
+      "type": "string",
+      "pattern": "^evt_[A-Za-z0-9][A-Za-z0-9._-]*$"
+    },
+    "routeId": {
+      "type": "string",
+      "pattern": "^rt_[A-Za-z0-9][A-Za-z0-9._-]*$"
+    },
+    "pageRecordId": {
+      "type": "string",
+      "pattern": "^pg_[A-Za-z0-9][A-Za-z0-9._-]*$"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "RFC 3339 timestamp with an explicit UTC offset or Z.",
+      "pattern": "(?:Z|[+-][0-9]{2}:[0-9]{2})$"
+    },
+    "occurrence": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/exactOccurrence"
+        },
+        {
+          "$ref": "#/$defs/approximateOccurrence"
+        },
+        {
+          "$ref": "#/$defs/dateOnlyOccurrence"
+        },
+        {
+          "$ref": "#/$defs/rangeOccurrence"
+        },
+        {
+          "$ref": "#/$defs/unknownOccurrence"
+        }
+      ]
+    },
+    "exactOccurrence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "precision",
+        "started_at"
+      ],
+      "properties": {
+        "precision": {
+          "const": "exact"
+        },
+        "started_at": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "ended_at": {
+          "$ref": "#/$defs/timestamp"
+        }
+      }
+    },
+    "approximateOccurrence": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "precision",
+            "started_at",
+            "approximation"
+          ],
+          "properties": {
+            "precision": {
+              "const": "approximate"
+            },
+            "started_at": {
+              "$ref": "#/$defs/timestamp"
+            },
+            "approximation": {
+              "enum": [
+                "about",
+                "before",
+                "after"
+              ]
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "precision",
+            "started_at",
+            "ended_at",
+            "approximation"
+          ],
+          "properties": {
+            "precision": {
+              "const": "approximate"
+            },
+            "started_at": {
+              "$ref": "#/$defs/timestamp"
+            },
+            "ended_at": {
+              "$ref": "#/$defs/timestamp"
+            },
+            "approximation": {
+              "const": "within_range"
+            }
+          }
+        }
+      ]
+    },
+    "dateOnlyOccurrence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "precision",
+        "date"
+      ],
+      "properties": {
+        "precision": {
+          "const": "date_only"
+        },
+        "date": {
+          "type": "string",
+          "format": "date"
+        }
+      }
+    },
+    "rangeOccurrence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "precision",
+        "started_at",
+        "ended_at"
+      ],
+      "properties": {
+        "precision": {
+          "const": "range"
+        },
+        "started_at": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "ended_at": {
+          "$ref": "#/$defs/timestamp"
+        }
+      }
+    },
+    "unknownOccurrence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "precision",
+        "reason"
+      ],
+      "properties": {
+        "precision": {
+          "const": "unknown"
+        },
+        "reason": {
+          "enum": [
+            "not_known",
+            "not_reported",
+            "withheld",
+            "source_uncertain",
+            "legacy_import"
+          ]
+        }
+      }
+    },
+    "location": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "type": {
+          "enum": [
+            "classroom",
+            "hallway",
+            "cafeteria",
+            "transportation",
+            "online",
+            "field_trip",
+            "assembly",
+            "extracurricular",
+            "before_school",
+            "after_school",
+            "other",
+            "unknown",
+            "withheld"
+          ]
+        },
+        "detail": {
+          "$ref": "#/$defs/nonEmptyText"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "other"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "detail"
+            ]
+          }
+        }
+      ]
+    },
+    "instructionalContext": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "type": {
+          "enum": [
+            "direct_instruction",
+            "independent_work",
+            "group_work",
+            "class_discussion",
+            "assessment",
+            "transition",
+            "laboratory",
+            "rehearsal",
+            "conference",
+            "unstructured_time",
+            "online_activity",
+            "other",
+            "unknown",
+            "not_applicable"
+          ]
+        },
+        "detail": {
+          "$ref": "#/$defs/nonEmptyText"
+        },
+        "external_refs": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/externalRecordRef"
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "other"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "detail"
+            ]
+          }
+        }
+      ]
+    },
+    "externalRecordRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "module_id",
+        "class_id",
+        "work_id",
+        "record_kind",
+        "record_id"
+      ],
+      "properties": {
+        "module_id": {
+          "$ref": "#/$defs/safeId"
+        },
+        "class_id": {
+          "$ref": "#/$defs/safeId"
+        },
+        "work_id": {
+          "$ref": "#/$defs/safeId"
+        },
+        "record_kind": {
+          "$ref": "#/$defs/safeId"
+        },
+        "record_id": {
+          "$ref": "#/$defs/safeId"
+        }
+      },
+      "description": "Initial module-qualified instructional reference shape; originating module remains authoritative."
+    },
+    "eventRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "class_id",
+        "work_id"
+      ],
+      "properties": {
+        "class_id": {
+          "$ref": "#/$defs/safeId"
+        },
+        "work_id": {
+          "$ref": "#/$defs/eventId"
+        }
+      }
+    },
+    "creationSource": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/digitalEntrySource"
+        },
+        {
+          "$ref": "#/$defs/paperCaptureSource"
+        },
+        {
+          "$ref": "#/$defs/importSource"
+        }
+      ]
+    },
+    "digitalEntrySource": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "type": {
+          "const": "digital_entry"
+        }
+      }
+    },
+    "paperCaptureSource": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "stage",
+        "route_id",
+        "page_record_id"
+      ],
+      "properties": {
+        "type": {
+          "const": "paper_capture"
+        },
+        "stage": {
+          "enum": [
+            "preallocated",
+            "ingested"
+          ]
+        },
+        "route_id": {
+          "$ref": "#/$defs/routeId"
+        },
+        "page_record_id": {
+          "$ref": "#/$defs/pageRecordId"
+        }
+      }
+    },
+    "importSource": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "source_label"
+      ],
+      "properties": {
+        "type": {
+          "const": "import"
+        },
+        "source_label": {
+          "$ref": "#/$defs/nonEmptyText"
+        },
+        "external_reference": {
+          "$ref": "#/$defs/nonEmptyText"
+        }
+      }
+    },
+    "attributionAgent": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/localOperator"
+        },
+        {
+          "$ref": "#/$defs/systemProcess"
+        }
+      ]
+    },
+    "localOperator": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "display_label"
+      ],
+      "properties": {
+        "type": {
+          "const": "local_operator"
+        },
+        "display_label": {
+          "$ref": "#/$defs/nonEmptyText"
+        }
+      }
+    },
+    "systemProcess": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "process_id"
+      ],
+      "properties": {
+        "type": {
+          "const": "system_process"
+        },
+        "process_id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*$"
+        }
+      }
+    }
+  }
+}

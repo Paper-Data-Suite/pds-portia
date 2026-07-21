@@ -1,0 +1,29 @@
+{
+  "schema_version": "1",
+  "record_type": "portia_work",
+  "work_kind": "event",
+  "module_id": "portia",
+  "class_id": "english10_p2",
+  "work_id": "evt_embedded_participants",
+  "school_year": "2026-2027",
+  "status": "active",
+  "creation_source": {
+    "type": "digital_entry"
+  },
+  "created_at": "2026-09-18T09:00:00-04:00",
+  "created_by": {
+    "type": "local_operator",
+    "display_label": "Sample Teacher"
+  },
+  "updated_at": "2026-09-18T09:00:00-04:00",
+  "updated_by": {
+    "type": "local_operator",
+    "display_label": "Sample Teacher"
+  },
+  "occurrence": {
+    "precision": "date_only",
+    "date": "2026-09-18"
+  },
+  "summary": "Participant data is incorrectly embedded in the Event root.",
+  "participants": []
+}
