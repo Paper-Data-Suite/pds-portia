@@ -1,0 +1,28 @@
+{
+  "schema_version": "1",
+  "record_type": "event_participant",
+  "module_id": "portia",
+  "class_id": "english10_p2",
+  "work_id": "evt_participant_examples",
+  "participant_id": "ep_bad_paper_source",
+  "status": "proposed",
+  "subject": {
+    "kind": "unknown_person",
+    "reason": "ambiguous_paper_mark"
+  },
+  "creation_source": {
+    "type": "paper_capture",
+    "stage": "ingested",
+    "route_id": "rt_paper_001"
+  },
+  "created_at": "2026-09-18T09:05:00-04:00",
+  "created_by": {
+    "type": "system_process",
+    "process_id": "paper_capture_ingest"
+  },
+  "updated_at": "2026-09-18T09:05:00-04:00",
+  "updated_by": {
+    "type": "system_process",
+    "process_id": "paper_capture_ingest"
+  }
+}

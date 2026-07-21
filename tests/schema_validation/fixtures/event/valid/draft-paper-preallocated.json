@@ -1,0 +1,26 @@
+{
+  "schema_version": "1",
+  "record_type": "portia_work",
+  "work_kind": "event",
+  "module_id": "portia",
+  "class_id": "english10_p2",
+  "work_id": "evt_paper_preallocated",
+  "school_year": "2026-2027",
+  "status": "draft",
+  "creation_source": {
+    "type": "paper_capture",
+    "stage": "preallocated",
+    "route_id": "rt_paper_001",
+    "page_record_id": "pg_paper_001"
+  },
+  "created_at": "2026-09-18T09:00:00-04:00",
+  "created_by": {
+    "type": "local_operator",
+    "display_label": "Sample Teacher"
+  },
+  "updated_at": "2026-09-18T09:00:00-04:00",
+  "updated_by": {
+    "type": "local_operator",
+    "display_label": "Sample Teacher"
+  }
+}
