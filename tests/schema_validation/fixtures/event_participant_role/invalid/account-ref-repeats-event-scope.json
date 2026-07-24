@@ -1,0 +1,32 @@
+{
+  "schema_version": "1",
+  "record_type": "event_participant_role",
+  "module_id": "portia",
+  "class_id": "english10_p2",
+  "work_id": "evt_role_examples",
+  "role_id": "epr_bad_account_scope_fields_001",
+  "participant_id": "ep_role_subject_001",
+  "status": "active",
+  "role_type": "reported_involved",
+  "creation_source": {
+    "type": "digital_entry"
+  },
+  "created_at": "2026-09-18T09:24:00-04:00",
+  "created_by": {
+    "type": "local_operator",
+    "display_label": "Sample Teacher"
+  },
+  "updated_at": "2026-09-18T09:24:00-04:00",
+  "updated_by": {
+    "type": "local_operator",
+    "display_label": "Sample Teacher"
+  },
+  "basis": [
+    {
+      "kind": "account_ref",
+      "record_id": "acct_scope_001",
+      "class_id": "english10_p2",
+      "work_id": "evt_role_examples"
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "schema_version": "1",
+  "record_type": "event_participant_role",
+  "module_id": "portia",
+  "class_id": "english10_p2",
+  "work_id": "evt_role_examples",
+  "role_id": "epr_reported_import_active_001",
+  "participant_id": "ep_morgan_001",
+  "status": "active",
+  "role_type": "reported_involved",
+  "creation_source": {
+    "type": "import",
+    "source_label": "Legacy teacher record",
+    "external_reference": "import-batch-2026-09-01"
+  },
+  "created_at": "2026-09-18T09:24:00-04:00",
+  "created_by": {
+    "type": "system_process",
+    "process_id": "import"
+  },
+  "updated_at": "2026-09-18T09:35:00-04:00",
+  "updated_by": {
+    "type": "local_operator",
+    "display_label": "Sample Teacher"
+  },
+  "basis": [
+    {
+      "kind": "import_source",
+      "source_label": "Legacy teacher record",
+      "source_record_id": "row-184"
+    },
+    {
+      "kind": "account_ref",
+      "record_id": "acct_imported_report_001"
+    }
+  ]
+}

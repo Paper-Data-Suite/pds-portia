@@ -11,12 +11,13 @@ Portia is in its initial research and architecture phase.
 The repository currently contains:
 
 * evidence-based research on responsible K–12 behavior documentation and management;
-* design analyses defining Portia’s role, identity model, ownership rules, canonical storage, and initial Event and Event Participant domain model;
-* foundational Architecture Decision Records establishing Portia’s record distinctions, module boundaries, deployment scope, identity model, storage architecture, and initial Event and Event Participant contracts;
-* Draft 2020-12 JSON Schemas for Event and Event Participant records;
-* and validated synthetic examples covering digital capture, paper capture, cross-class participation, uncertainty, identity resolution, and supersession.
+* design analyses defining Portia’s role, identity model, ownership rules, canonical storage, and initial Event, Event Participant, and Event Participant Role domain model;
+* foundational Architecture Decision Records establishing Portia’s record distinctions, module boundaries, deployment scope, identity model, storage architecture, and initial Event, Event Participant, and Event Participant Role contracts;
+* Draft 2020-12 JSON Schemas for Event, Event Participant, and Event Participant Role records;
+* validated synthetic examples covering digital capture, paper capture, import, cross-class participation, uncertainty, identity resolution, Role basis, correction, and supersession;
+* and automated schema-validation fixtures and tests for all three initial record types.
 
-Portia does not yet contain an executable application. The initial Event and Event Participant domain model is defined, while later records and workflows remain architectural work.
+Portia does not yet contain an executable application. The initial Event, Event Participant, and Event Participant Role domain model is defined, while later records and executable workflows remain architectural work.
 
 ## Product Position
 
@@ -80,6 +81,7 @@ Portia owns behavior-support concepts and workflows such as:
 
 * Events;
 * Event Participants;
+* Event Participant Roles;
 * Accounts and Observations;
 * Positive Observations;
 * Concerns and Referrals;
@@ -179,7 +181,7 @@ evt_<opaque-id>
 sup_<opaque-id>
 ```
 
-Child records such as Event Participants, Accounts, Responses, Follow-Ups, Outcomes, Communications, and work relationships receive their own durable identifiers.
+Child records such as Event Participants, Event Participant Roles, Accounts, Responses, Follow-Ups, Outcomes, Communications, and work relationships receive their own durable identifiers.
 
 A Portia `work_id` does not represent:
 
@@ -339,9 +341,9 @@ Portia will use existing Core class, roster, work-path, and routing contracts wh
 
 A broader Core workspace-module path should be considered only if several Paper Data Suite modules independently require one.
 
-## Initial Event and Event Participant Model
+## Initial Event, Event Participant, and Role Model
 
-Portia now defines an initial canonical model for Events and Event Participants.
+Portia now defines an initial canonical model for Events, Event Participants, and Event Participant Roles.
 
 ### Event Meaning
 
@@ -429,7 +431,57 @@ class_id + student_id
 
 An Event Participant’s identity remains separate from the person’s Event-level role.
 
-Participant roles will be separate canonical records rather than embedded role fields.
+Event Participant Roles are separate canonical records rather than embedded role fields.
+
+### Event Participant Roles
+
+Event Participant Roles are stored beneath the owning Event at:
+
+```text
+classes/<class_id>/modules/portia/work/<event_id>/
+  records/event_participant_role/<role_id>.json
+```
+
+One Role record represents one Event-local assertion that one Event Participant has one role type.
+
+The initial neutral role vocabulary is:
+
+```text
+directly_involved
+present
+reported_involved
+contextual
+```
+
+Role assignment remains optional. One Event Participant may have no Role, one Role, or several compatible Roles.
+
+The initial compatible active combinations are:
+
+```text
+present + directly_involved
+present + reported_involved
+present + contextual
+```
+
+The application must reject duplicate active Role types and incompatible active combinations.
+
+A Role does not itself establish blame, guilt, fault, intent, credibility, severity, policy violation, institutional responsibility, or a formal Determination.
+
+Every active `reported_involved` Role must reference a same-Event attributed Account.
+
+Top-level Role `detail` is permitted only for `contextual`. An active or superseded contextual Role must retain concise, neutral, nonempty detail.
+
+Each Role has its own:
+
+* durable `role_id`;
+* lifecycle;
+* creation source;
+* local creation and update attribution;
+* optional or conditionally required structured basis;
+* correction history;
+* and forward supersession relationships.
+
+Persisted `participant_id` is immutable. Material correction creates a successor Role rather than retargeting the existing record.
 
 ### Lifecycle
 
@@ -453,13 +505,33 @@ invalidated
 superseded
 ```
 
+Event Participant Role statuses are:
+
+```text
+proposed
+active
+invalidated
+superseded
+```
+
 Corrections preserve history.
 
 A proposed participant may become active in place when the teacher confirms the same identity.
 
 A material identity correction creates a replacement participant that canonically supersedes the prior record.
 
-Cancelled, invalidated, and superseded records remain preserved rather than being silently deleted or rewritten.
+A Role may be created directly as active when an explicit digital assignment has already been reviewed. Otherwise, paper interpretation, imports, automation, ambiguity, and incomplete entry ordinarily begin as proposed.
+
+Role activation requires:
+
+```text
+Event Participant status = active
+Event status = draft or active
+```
+
+Invalidated and superseded Roles are terminal under ordinary workflows. Material Role correction creates a successor whose activation is coordinated with supersession of the prior Role.
+
+Cancelled, invalidated, and superseded canonical records remain preserved rather than being silently deleted or rewritten. Canonical Role files are not hard-deleted through ordinary workflows.
 
 ### Paper and Digital Capture
 
@@ -480,7 +552,16 @@ ingested
 
 A preallocated paper Event begins as a draft before printing.
 
-Returned-page interpretation may create proposed participants or other proposed records, but scanning or automated recognition never constitutes teacher confirmation.
+Returned-page interpretation may create proposed participants, proposed Roles, or other proposed records, but scanning or automated recognition never constitutes teacher confirmation.
+
+Event Participant Roles never use paper stage `preallocated`. A paper-derived Role exists only after returned-page processing creates a specific assertion and therefore uses:
+
+```text
+creation_source.type = paper_capture
+creation_source.stage = ingested
+```
+
+Every paper-derived Role retains a matching paper basis entry. A paper-derived `reported_involved` Role may remain proposed with paper basis alone, but activation additionally requires a same-Event attributed Account reference.
 
 Routine teacher-facing actions should remain concise, such as:
 
@@ -496,7 +577,7 @@ Internal lifecycle, provenance, and supersession operations should be generated 
 
 ### Validation Boundary
 
-The Event and Event Participant schemas use JSON Schema Draft 2020-12.
+The Event, Event Participant, and Event Participant Role schemas use JSON Schema Draft 2020-12.
 
 JSON Schema validates local record shape, including discriminated unions, constants, enums, identifier formats, timestamp syntax, and rejection of unknown properties.
 
@@ -506,12 +587,21 @@ Application validation remains responsible for cross-record and contextual invar
 * owning-class and school-year validity;
 * roster and Actor reference validity;
 * route and page-record existence;
+* exact matching paper provenance and basis references;
+* Account and Observation existence, Event scope, and lifecycle eligibility;
+* Account attribution for active `reported_involved`;
 * timestamp chronology;
 * lifecycle-transition legality;
 * Event activation requiring an active participant;
-* duplicate participant detection;
+* Role activation requiring an active participant and eligible Event state;
+* duplicate participant and duplicate active Role detection;
+* active-role compatibility;
+* immutable persisted Role `participant_id`;
 * replacement ordering;
-* and supersession consistency.
+* Account and participant dependency resolution;
+* coordinated successor activation and supersession;
+* canonical no-hard-delete rules;
+* and atomic or recoverable multi-record writes.
 
 ## Design Principles
 
@@ -577,9 +667,9 @@ Portia should use Core infrastructure and public cross-module contracts rather t
 
   Defines Portia’s required identity layers, work identity, canonical workspace layout, Event ownership, cross-class participants, recurring non-roster Actors, relationship ownership, derived views, representable cases, and Core implications.
 
-* [Portia Event and Event Participant Domain Model](docs/design/portia-event-and-participant-domain-model.md)
+* [Portia Event, Event Participant, and Event Participant Role Domain Model](docs/design/portia-event-and-participant-domain-model.md)
 
-  Defines Event meaning and boundaries, Event root fields, occurrence precision, location and instructional context, participant identity variants, participant roles, lifecycle transitions, correction and supersession, creation source, local provenance, paper capture, validation boundaries, and teacher-workflow constraints.
+  Defines Event meaning and boundaries, Event root fields, occurrence precision, location and instructional context, participant identity variants, separate Event Participant Roles, neutral Role vocabulary, Role compatibility, basis, creation source, lifecycle transitions, dependency resolution, correction and supersession, paper capture, validation boundaries, and teacher-workflow constraints.
 
 ### Schemas
 
@@ -591,11 +681,25 @@ Portia should use Core infrastructure and public cross-module contracts rather t
 
   Draft 2020-12 JSON Schema for canonical Event Participant records.
 
+* [Event Participant Role Schema](schemas/event-participant-role.schema.json)
+
+  Draft 2020-12 JSON Schema for canonical Event Participant Role records.
+
 ### Examples
 
 * [Portia Event and Event Participant Examples](docs/examples/portia-event-and-participant-examples.md)
 
   Validated synthetic examples covering digital entry, paper preallocation and confirmation, cross-class participation, unresolved identity, participant identity resolution, and Event supersession.
+
+* [Portia Event Participant Role Examples](docs/examples/portia-event-participant-role-examples.md)
+
+  Validated synthetic examples covering direct digital Role creation, compatible Role assignments, contextual detail, paper-derived and imported reported involvement, attributed Account requirements, basis correction, Role refinement, and duplicate consolidation.
+
+### Validation
+
+* [Issue #8 Validation: Event Participant Role Domain Model](docs/validation/issue-8-event-participant-role-validation.md)
+
+  Records Draft 2020-12 schema meta-validation, 12 accepted valid Role fixtures, 18 rejected invalid Role fixtures, seven passing automated tests, and the boundary between schema-enforced and application-level invariants.
 
 ### Architecture Decisions
 
@@ -618,6 +722,10 @@ Portia should use Core infrastructure and public cross-module contracts rather t
 * [ADR 0005: Define the Initial Event and Event Participant Domain Model](docs/decisions/0005-define-event-and-participant-domain-model.md)
 
   Establishes bounded Events, separate Event Participant records, explicit occurrence precision, participant subject variants, separate participant roles, Event and participant lifecycles, provenance, paper capture, correction and supersession, validation boundaries, and the requirement that internal rigor not become routine teacher workload.
+
+* [ADR 0006: Define the Initial Event Participant Role Domain Model](docs/decisions/0006-define-event-participant-role-domain-model.md)
+
+  Establishes separate canonical Event Participant Role records, neutral Role vocabulary, compatible active Role combinations, structured basis, independent creation provenance, attributed Account requirements for reported involvement, Role lifecycle, replacement-based correction, dependency resolution, no-hard-delete retention, and schema/application validation boundaries.
 
 ## Explicit Product Prohibitions
 
@@ -652,6 +760,8 @@ Development examples, fixtures, screenshots, exports, and tests should use synth
 * students;
 * classes;
 * Events;
+* Event Participants;
+* Event Participant Roles;
 * Accounts;
 * interventions;
 * family communications;
@@ -664,8 +774,7 @@ Local-first storage does not make student records inherently non-sensitive. Port
 
 Likely next work includes:
 
-* defining the Event Participant Role schema and lifecycle;
-* defining Event and Event Participant lifecycle-transition schemas;
+* defining Event, Event Participant, and Event Participant Role lifecycle-transition schemas;
 * defining the initial Support Process schema;
 * defining Account, Observation, Classification, Hypothesis, Determination, Response, Follow-Up, Outcome, and Communication schemas;
 * defining the Actor Directory schema and Actor lifecycle;
