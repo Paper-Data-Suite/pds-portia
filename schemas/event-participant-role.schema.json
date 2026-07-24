@@ -1,0 +1,552 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/event-participant-role.schema.json",
+  "title": "Portia Event Participant Role",
+  "description": "Canonical Portia Event Participant Role record stored at classes/<class_id>/modules/portia/work/<work_id>/records/event_participant_role/<role_id>.json.",
+  "$comment": "Application validation remains responsible for path/identity agreement; parent Event and Event Participant existence; active-parent and Event-state requirements; same-Event Account and Observation scope; attributed Account validity; exact equality between paper creation-source and matching paper-basis route/page references; lifecycle transition legality; terminal-state handling; immutable persisted participant_id and creation provenance; duplicate and compatibility checks over the intended post-operation active-role set; supersession existence, same-Event scope, reason consistency, cycle prevention, and coordinated activation; Account and participant dependency resolution; timestamp ordering; no hard deletion of canonical Role records; and atomic or recoverable multi-record operations.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "record_type",
+    "module_id",
+    "class_id",
+    "work_id",
+    "role_id",
+    "participant_id",
+    "status",
+    "role_type",
+    "creation_source",
+    "created_at",
+    "created_by",
+    "updated_at",
+    "updated_by"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1"
+    },
+    "record_type": {
+      "const": "event_participant_role"
+    },
+    "module_id": {
+      "const": "portia"
+    },
+    "class_id": {
+      "$ref": "#/$defs/safeId"
+    },
+    "work_id": {
+      "$ref": "#/$defs/eventId"
+    },
+    "role_id": {
+      "$ref": "#/$defs/eventParticipantRoleId"
+    },
+    "participant_id": {
+      "$ref": "#/$defs/eventParticipantId"
+    },
+    "status": {
+      "enum": [
+        "proposed",
+        "active",
+        "invalidated",
+        "superseded"
+      ]
+    },
+    "role_type": {
+      "enum": [
+        "directly_involved",
+        "present",
+        "reported_involved",
+        "contextual"
+      ]
+    },
+    "basis": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/basisEntry"
+      },
+      "description": "Unordered structured sources or artifacts supporting this one Role assertion."
+    },
+    "detail": {
+      "$ref": "#/$defs/nonEmptyText",
+      "description": "Concise neutral Event-context explanation; permitted only for contextual Roles."
+    },
+    "supersedes": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/roleSupersessionRef"
+      },
+      "description": "Canonical forward replacement relationships to prior Role records within the same Event."
+    },
+    "creation_source": {
+      "$ref": "#/$defs/creationSource"
+    },
+    "created_at": {
+      "$ref": "#/$defs/timestamp"
+    },
+    "created_by": {
+      "$ref": "#/$defs/attributionAgent"
+    },
+    "updated_at": {
+      "$ref": "#/$defs/timestamp"
+    },
+    "updated_by": {
+      "$ref": "#/$defs/attributionAgent"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "role_type": {
+            "const": "contextual"
+          }
+        },
+        "required": [
+          "role_type"
+        ]
+      },
+      "then": {
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "status": {
+                  "enum": [
+                    "active",
+                    "superseded"
+                  ]
+                }
+              },
+              "required": [
+                "status"
+              ]
+            },
+            "then": {
+              "required": [
+                "detail"
+              ]
+            }
+          }
+        ]
+      },
+      "else": {
+        "not": {
+          "required": [
+            "detail"
+          ]
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "role_type": {
+            "const": "reported_involved"
+          }
+        },
+        "required": [
+          "role_type"
+        ]
+      },
+      "then": {
+        "required": [
+          "basis"
+        ],
+        "properties": {
+          "basis": {
+            "contains": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/accountRefBasis"
+                },
+                {
+                  "$ref": "#/$defs/paperCaptureBasis"
+                },
+                {
+                  "$ref": "#/$defs/importSourceBasis"
+                }
+              ]
+            },
+            "minContains": 1
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "allOf": [
+          {
+            "properties": {
+              "role_type": {
+                "const": "reported_involved"
+              }
+            },
+            "required": [
+              "role_type"
+            ]
+          },
+          {
+            "properties": {
+              "status": {
+                "enum": [
+                  "active",
+                  "superseded"
+                ]
+              }
+            },
+            "required": [
+              "status"
+            ]
+          }
+        ]
+      },
+      "then": {
+        "required": [
+          "basis"
+        ],
+        "properties": {
+          "basis": {
+            "contains": {
+              "$ref": "#/$defs/accountRefBasis"
+            },
+            "minContains": 1
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "creation_source": {
+            "properties": {
+              "type": {
+                "const": "paper_capture"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          }
+        },
+        "required": [
+          "creation_source"
+        ]
+      },
+      "then": {
+        "required": [
+          "basis"
+        ],
+        "properties": {
+          "basis": {
+            "contains": {
+              "$ref": "#/$defs/paperCaptureBasis"
+            },
+            "minContains": 1
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "nonEmptyText": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "\\S"
+    },
+    "safeId": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+      "description": "Conservative structural safety pattern; Core remains authoritative for identifier validation."
+    },
+    "eventId": {
+      "type": "string",
+      "pattern": "^evt_[A-Za-z0-9][A-Za-z0-9._-]*$"
+    },
+    "eventParticipantId": {
+      "type": "string",
+      "pattern": "^ep_[A-Za-z0-9][A-Za-z0-9._-]*$"
+    },
+    "eventParticipantRoleId": {
+      "type": "string",
+      "pattern": "^epr_[A-Za-z0-9][A-Za-z0-9._-]*$"
+    },
+    "accountId": {
+      "type": "string",
+      "pattern": "^acct_[A-Za-z0-9][A-Za-z0-9._-]*$"
+    },
+    "observationId": {
+      "type": "string",
+      "pattern": "^obs_[A-Za-z0-9][A-Za-z0-9._-]*$"
+    },
+    "routeId": {
+      "type": "string",
+      "pattern": "^rt_[A-Za-z0-9][A-Za-z0-9._-]*$"
+    },
+    "pageRecordId": {
+      "type": "string",
+      "pattern": "^pg_[A-Za-z0-9][A-Za-z0-9._-]*$"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "RFC 3339 timestamp with an explicit UTC offset or Z.",
+      "pattern": "(?:Z|[+-][0-9]{2}:[0-9]{2})$"
+    },
+    "basisEntry": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/accountRefBasis"
+        },
+        {
+          "$ref": "#/$defs/observationRefBasis"
+        },
+        {
+          "$ref": "#/$defs/paperCaptureBasis"
+        },
+        {
+          "$ref": "#/$defs/importSourceBasis"
+        }
+      ]
+    },
+    "accountRefBasis": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "record_id"
+      ],
+      "properties": {
+        "kind": {
+          "const": "account_ref"
+        },
+        "record_id": {
+          "$ref": "#/$defs/accountId"
+        }
+      },
+      "description": "Same-Event reference to a canonical attributed Account."
+    },
+    "observationRefBasis": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "record_id"
+      ],
+      "properties": {
+        "kind": {
+          "const": "observation_ref"
+        },
+        "record_id": {
+          "$ref": "#/$defs/observationId"
+        }
+      },
+      "description": "Same-Event reference to a canonical Observation."
+    },
+    "paperCaptureBasis": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "route_id",
+        "page_record_id"
+      ],
+      "properties": {
+        "kind": {
+          "const": "paper_capture"
+        },
+        "route_id": {
+          "$ref": "#/$defs/routeId"
+        },
+        "page_record_id": {
+          "$ref": "#/$defs/pageRecordId"
+        }
+      },
+      "description": "Returned paper artifact supporting the Role assertion."
+    },
+    "importSourceBasis": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "source_label"
+      ],
+      "properties": {
+        "kind": {
+          "const": "import_source"
+        },
+        "source_label": {
+          "$ref": "#/$defs/nonEmptyText"
+        },
+        "source_record_id": {
+          "$ref": "#/$defs/nonEmptyText"
+        }
+      },
+      "description": "External imported source supporting or proposing the Role assertion."
+    },
+    "roleSupersessionRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "role_id",
+        "reason"
+      ],
+      "properties": {
+        "role_id": {
+          "$ref": "#/$defs/eventParticipantRoleId"
+        },
+        "reason": {
+          "enum": [
+            "participant_corrected",
+            "role_type_corrected",
+            "basis_corrected",
+            "detail_corrected",
+            "duplicate_consolidated",
+            "role_relationship_corrected",
+            "other"
+          ]
+        },
+        "detail": {
+          "$ref": "#/$defs/nonEmptyText"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "reason": {
+                "const": "other"
+              }
+            },
+            "required": [
+              "reason"
+            ]
+          },
+          "then": {
+            "required": [
+              "detail"
+            ]
+          }
+        }
+      ],
+      "description": "Forward replacement relationship to a prior Role in the same Event. Application validation confirms existence, same-Event scope, lifecycle eligibility, and reason consistency."
+    },
+    "creationSource": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/digitalEntrySource"
+        },
+        {
+          "$ref": "#/$defs/paperCaptureSource"
+        },
+        {
+          "$ref": "#/$defs/importSource"
+        }
+      ]
+    },
+    "digitalEntrySource": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "type": {
+          "const": "digital_entry"
+        }
+      }
+    },
+    "paperCaptureSource": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "stage",
+        "route_id",
+        "page_record_id"
+      ],
+      "properties": {
+        "type": {
+          "const": "paper_capture"
+        },
+        "stage": {
+          "const": "ingested"
+        },
+        "route_id": {
+          "$ref": "#/$defs/routeId"
+        },
+        "page_record_id": {
+          "$ref": "#/$defs/pageRecordId"
+        }
+      },
+      "description": "Role created from returned-page interpretation; preallocated is not valid for Role records."
+    },
+    "importSource": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "source_label"
+      ],
+      "properties": {
+        "type": {
+          "const": "import"
+        },
+        "source_label": {
+          "$ref": "#/$defs/nonEmptyText"
+        },
+        "external_reference": {
+          "$ref": "#/$defs/nonEmptyText"
+        }
+      }
+    },
+    "attributionAgent": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/localOperator"
+        },
+        {
+          "$ref": "#/$defs/systemProcess"
+        }
+      ]
+    },
+    "localOperator": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "display_label"
+      ],
+      "properties": {
+        "type": {
+          "const": "local_operator"
+        },
+        "display_label": {
+          "$ref": "#/$defs/nonEmptyText"
+        }
+      }
+    },
+    "systemProcess": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "process_id"
+      ],
+      "properties": {
+        "type": {
+          "const": "system_process"
+        },
+        "process_id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*$"
+        }
+      }
+    }
+  }
+}

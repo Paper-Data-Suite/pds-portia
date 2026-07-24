@@ -16,6 +16,9 @@ SCHEMA_CASES = {
     "event_participant": REPO_ROOT
     / "schemas"
     / "event-participant.schema.json",
+    "event_participant_role": REPO_ROOT
+    / "schemas"
+    / "event-participant-role.schema.json",
 }
 
 
@@ -86,6 +89,12 @@ class FixtureValidationTests(unittest.TestCase):
 
     def test_invalid_event_participant_fixtures(self) -> None:
         self.assert_invalid_fixture_set("event_participant")
+
+    def test_valid_event_participant_role_fixtures(self) -> None:
+        self.assert_valid_fixture_set("event_participant_role")
+
+    def test_invalid_event_participant_role_fixtures(self) -> None:
+        self.assert_invalid_fixture_set("event_participant_role")
 
 
 if __name__ == "__main__":

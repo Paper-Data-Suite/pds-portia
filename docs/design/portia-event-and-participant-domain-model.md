@@ -4242,13 +4242,22 @@ Separating the records permits each role assignment to have independent:
 
 * identity;
 * lifecycle;
-* provenance;
 * creation source;
+* creation and update attribution;
 * evidentiary or documentary basis;
 * correction history;
 * and supersession relationships.
 
-Adding, correcting, or invalidating a role must not require rewriting the participant’s canonical subject identity.
+A Role’s creation source belongs to that Role record.
+
+It must not be inherited implicitly from:
+
+* the Event;
+* the Event Participant;
+* another Role;
+* or the source record named in `basis`.
+
+Adding, correcting, confirming, invalidating, or superseding a Role must not require rewriting the participant’s canonical subject identity or creation provenance.
 
 ---
 
@@ -4374,7 +4383,7 @@ Use:
 reported_involved
 ```
 
-when one or more sources describe the person as involved, but Portia is not presenting that relationship as independently established.
+when one or more attributed sources describe the person as involved, but Portia is not presenting that relationship as independently established.
 
 This role preserves the distinction between:
 
@@ -4386,20 +4395,6 @@ and:
 
 ```text
 a relationship accepted as directly established
-```
-
-A `reported_involved` assignment should ordinarily identify the Account, imported source, or other record providing the basis for the claim.
-
-For example:
-
-```json
-{
-  "role_type": "reported_involved",
-  "basis": {
-    "kind": "account_ref",
-    "record_id": "acct_01j9..."
-  }
-}
 ```
 
 The role must remain visibly qualified as reported.
@@ -4415,6 +4410,146 @@ when the canonical assignment is:
 ```text
 Reported involved
 ```
+
+### Proposal Requirement
+
+A proposed `reported_involved` Role must contain at least one source-oriented basis entry.
+
+The initial source-oriented proposal basis kinds are:
+
+```text
+account_ref
+paper_capture
+import_source
+```
+
+For example, a paper-derived Role may initially contain only its required matching paper basis:
+
+```json
+{
+  "status": "proposed",
+  "role_type": "reported_involved",
+  "creation_source": {
+    "type": "paper_capture",
+    "stage": "ingested",
+    "route_id": "rt_0123456789abcdef0123456789abcdef",
+    "page_record_id": "pg_01j9..."
+  },
+  "basis": [
+    {
+      "kind": "paper_capture",
+      "route_id": "rt_0123456789abcdef0123456789abcdef",
+      "page_record_id": "pg_01j9..."
+    }
+  ]
+}
+```
+
+Likewise, an imported proposal may preserve an `import_source` basis while attribution is being reviewed and converted into the canonical Account model.
+
+A source-oriented paper or import basis preserves the proposed assertion’s origin and review context.
+
+It does not, by itself, satisfy the attribution requirement for an active Role.
+
+### Activation Requirement
+
+Before any `reported_involved` Role may become active, its basis must contain at least one:
+
+```text
+account_ref
+```
+
+that resolves to a same-Event attributed Account.
+
+This requirement applies regardless of whether the Role originated through:
+
+```text
+digital_entry
+paper_capture
+import
+```
+
+For example:
+
+```json
+{
+  "status": "active",
+  "role_type": "reported_involved",
+  "creation_source": {
+    "type": "digital_entry"
+  },
+  "basis": [
+    {
+      "kind": "account_ref",
+      "record_id": "acct_01j9..."
+    }
+  ]
+}
+```
+
+A paper-derived active Role additionally retains its matching paper basis:
+
+```json
+{
+  "status": "active",
+  "role_type": "reported_involved",
+  "creation_source": {
+    "type": "paper_capture",
+    "stage": "ingested",
+    "route_id": "rt_0123456789abcdef0123456789abcdef",
+    "page_record_id": "pg_01j9..."
+  },
+  "basis": [
+    {
+      "kind": "paper_capture",
+      "route_id": "rt_0123456789abcdef0123456789abcdef",
+      "page_record_id": "pg_01j9..."
+    },
+    {
+      "kind": "account_ref",
+      "record_id": "acct_01j9..."
+    }
+  ]
+}
+```
+
+The Account preserves:
+
+* who supplied the report;
+* what was reported;
+* and the attribution required to make the qualified relationship meaningful.
+
+A paper artifact, import-source entry, free-text note, or teacher confirmation does not substitute for the canonical attributed Account.
+
+### Lifecycle Treatment
+
+A proposed `reported_involved` Role may remain proposed with a valid source-oriented basis but no Account reference.
+
+Activation must fail until a valid same-Event attributed Account is referenced.
+
+A superseded `reported_involved` Role must retain the Account basis that made activation valid.
+
+An invalidated proposal may legitimately lack an Account when it was rejected before activation.
+
+If a `reported_involved` Role had previously been active, later invalidation must preserve its historical Account reference.
+
+Removing or replacing the Account basis of an active `reported_involved` Role is a material correction and requires the accepted successor-and-supersession workflow.
+
+### Account Creation During Review
+
+Digital-entry, paper-review, and import-review workflows may create or select an attributed Account without requiring the teacher to enter the same information twice.
+
+For captured or imported source material, Portia may prefill the Account for teacher review.
+
+The Account must still be:
+
+* a separate canonical record;
+* stored beneath the same Event;
+* attributed under the Account domain contract;
+* reviewed as required by its own lifecycle;
+* and referenced from the Role through `account_ref`.
+
+The Role must not copy the Account’s narrative, attribution, or credibility information into top-level fields.
 
 ---
 
@@ -4437,67 +4572,296 @@ Examples may include:
 
 `contextual` should be used sparingly.
 
-A contextual assignment should include a concise neutral explanation.
+### Detail Requirement
+
+A proposed `contextual` Role may temporarily omit `detail` while captured information is incomplete or awaiting teacher review.
 
 For example:
 
 ```json
 {
+  "status": "proposed",
+  "role_type": "contextual"
+}
+```
+
+Before a `contextual` Role may become active, it must contain a concise, neutral, nonempty explanation.
+
+For example:
+
+```json
+{
+  "status": "active",
   "role_type": "contextual",
   "detail": "Participated in the immediate class-related conference."
 }
 ```
+
+The explanation exists because `contextual` is less specific than the other initial role types. An active unexplained `contextual` Role would function as an ambiguous catch-all rather than a meaningful Event-local relationship.
+
+The required detail should answer:
+
+> What legitimate Event-context relationship makes this person a participant?
+
+It should remain concise.
 
 The detail must not become:
 
 * an Account;
 * an allegation;
 * a finding;
+* a credibility judgment;
+* a responsibility label;
 * or a narrative of the Event.
 
----
-
-## 7.8 Cardinality
-
-One Event Participant may have several role assignments.
-
-For example:
+Top-level Role `detail` is reserved exclusively for:
 
 ```text
-present
-directly_involved
+role_type = contextual
 ```
 
-may both apply when the participant was present throughout the context and also acted directly within it.
-
-Similarly:
+The following role types must not contain top-level `detail`:
 
 ```text
+directly_involved
+present
 reported_involved
 ```
 
-may later be followed by:
+Clarifying facts for those roles belong in the canonical record type designed to preserve them, such as:
+
+* an Account;
+* an Observation;
+* the Event summary;
+* or a structured basis reference.
+
+Nested:
 
 ```text
-directly_involved
+supersedes[].detail
 ```
 
-when additional reviewed information supports a more direct relationship.
+is a separate replacement-explanation field and is not governed by the top-level contextual-detail restriction.
 
-Portia must preserve the history of those assignments rather than silently rewriting the earlier role.
+### Lifecycle Treatment
 
-No role is required when:
+A proposed `contextual` Role with missing detail must remain proposed.
 
-* the participant’s relationship is not yet clear;
-* paper capture identified a person but not a role;
-* imported data lacks reliable role information;
-* or assigning a role would require unsupported inference.
+Activation validation must fail until valid detail is supplied.
+
+A `contextual` Role created directly as active through reviewed digital entry must contain valid detail at creation.
+
+A superseded `contextual` Role must retain the activation-complete detail that made the earlier Role understandable while active.
+
+An invalidated proposed `contextual` Role may lack detail when it was rejected or abandoned before activation.
+
+If a `contextual` Role had previously been active, later invalidation must not erase its historical detail.
+
+Removing or substantively replacing detail on an active `contextual` Role is a material correction and requires the accepted successor-and-supersession workflow.
+
+---
+
+## 7.8 Semantic Unit and Cardinality
+
+One Event Participant Role record represents one Event-local assertion that one existing Event Participant holds one role type within one Event.
+
+Each Role record therefore references exactly:
+
+```text
+one Event through work_id
+one Event Participant through participant_id
+one role type through role_type
+```
+
+A Role record does not represent:
+
+* every role held by one participant;
+* one role shared by several participants;
+* participant identity;
+* a participant group;
+* an Event narrative;
+* or a formal finding, Determination, or disciplinary conclusion.
+
+A participant with several applicable roles receives one separate canonical Role record for each role assignment.
+
+For example, a participant who was both present and directly involved is represented through two records:
+
+```text
+epr_<present-role-id>.json
+epr_<direct-involvement-role-id>.json
+```
+
+Conceptually:
+
+```text
+one Event
+  → zero or more Event Participants
+    → zero or more Event Participant Role records
+```
+
+No Role record is required for:
+
+* Event activation;
+* Event closure;
+* Event Participant activation;
+* or preservation of an Event Participant relationship.
+
+Portia must preserve an honestly identified participant with no assigned role when the participant’s connection is unclear, paper capture identified a person but not a role, imported data lacks reliable role information, or assigning a role would require unsupported inference.
+
+### Independent Role Assertions
+
+Each role assignment has its own:
+
+* `role_id`;
+* status;
+* role type;
+* required structured `creation_source`;
+* a conditionally required collection of basis entries;
+* creation and update attribution;
+* correction history;
+* invalidation history;
+* and supersession relationships.
+
+`basis` is optional for many digitally entered or imported Roles.
+
+It is required when:
+
+* `role_type = reported_involved`; or
+* `creation_source.type = paper_capture`.
+
+A paper-derived Role must include a matching paper basis even when another basis entry also supports the assertion.
+
+One role may therefore be proposed, confirmed, corrected, invalidated, or superseded without changing another role held by the same participant.
+
+For example, an active `present` role may remain unchanged while a proposed `reported_involved` role is invalidated.
+
+Similarly, a later `directly_involved` role does not silently overwrite an earlier `reported_involved` role. Portia must preserve the lifecycle and history of both assertions.
+
+### Prohibited Aggregate Shapes
+
+A Role record must not contain an authoritative collection of role types:
+
+```json
+{
+  "participant_id": "ep_example",
+  "roles": [
+    "present",
+    "directly_involved"
+  ]
+}
+```
+
+A Role record must not assign one role to several participants:
+
+```json
+{
+  "role_type": "present",
+  "participant_ids": [
+    "ep_example_1",
+    "ep_example_2"
+  ]
+}
+```
+
+A Role record must not embed participant identity through fields such as:
+
+```text
+subject
+student_ref
+student_id
+actor_id
+display_snapshot
+descriptive_person
+unknown_person
+```
+
+It must not embed the Event or its participant collection through fields such as:
+
+```text
+event
+participants
+event_participants
+```
+
+Participant identity remains canonical in the referenced Event Participant record. Event context remains canonical in the Event root and its other child records.
+
+### Duplicate and Compatible Active Roles
+
+Within one Event, Portia must prevent more than one active Role record with the same role type for the same participant.
+
+The effective active-role uniqueness key is:
+
+```text
+work_id + participant_id + role_type
+```
+
+Distinct role types may coexist only when the accepted compatibility matrix permits the combination.
+
+The initial compatible active combinations are:
+
+```text
+present + directly_involved
+present + reported_involved
+present + contextual
+```
+
+The initial incompatible active combinations are:
+
+```text
+directly_involved + reported_involved
+directly_involved + contextual
+reported_involved + contextual
+```
+
+`present` may accompany one other initial role because presence is a separate neutral assertion about the person’s physical or contextual presence during the Event.
+
+The other three roles are mutually exclusive as current descriptions of how the person is connected to the occurrence:
+
+* `directly_involved` states direct participation;
+* `reported_involved` preserves a qualified reported relationship;
+* `contextual` applies when neither involvement role adequately describes the connection.
+
+A participant’s valid current active-role set is therefore limited to:
+
+```text
+no active roles
+one active role
+present plus one other active role
+```
+
+Application validation must detect both duplicate and incompatible active Role records.
+
+JSON Schema cannot enforce either rule across separate files.
+
+Proposed, invalidated, and superseded records may repeat or conflict with current active roles when necessary for review, correction, and preserved history. They do not become current until activation validation succeeds.
+
+### Cardinality Invariants
+
+1. Each Role record belongs to exactly one Event.
+2. Each Role record references exactly one Event Participant.
+3. The referenced participant must belong to the same Event.
+4. Each Role record assigns exactly one role type.
+5. Multiple roles require multiple Role records.
+6. One Role record must not assign a role to several participants.
+7. No role is required for Event or Event Participant validity.
+8. Participant identity must not be duplicated in the Role record.
+9. One active participant-role combination must not have duplicate active Role records.
+10. Distinct active roles must satisfy the accepted compatibility matrix.
+11. `present` may coexist with one of the other initial role types.
+12. `directly_involved`, `reported_involved`, and `contextual` are mutually exclusive as current active roles.
+13. Proposed and historical records may preserve otherwise incompatible assertions without making them current.
+14. Correcting one role must not rewrite unrelated Role records.
+15. Role assignments do not constitute formal findings or Determinations.
 
 ---
 
 ## 7.9 Recommended Role Record Envelope
 
-A future canonical Event Participant Role record should contain:
+A future canonical Event Participant Role record should contain its own record-level provenance.
+
+The Role must not inherit provenance from its parent Event or Event Participant.
+
+The required envelope is:
 
 ```text
 schema_version
@@ -4516,14 +4880,39 @@ updated_at
 updated_by
 ```
 
-Depending on the role, it may also contain:
+Depending on the Role and lifecycle state, it may also contain:
 
 ```text
 basis
 detail
-superseded_by
-replacement_reason
+supersedes
 ```
+
+Top-level `detail` is permitted only when:
+
+```text
+role_type = contextual
+```
+
+A proposed `contextual` Role may omit `detail`. An active or superseded `contextual` Role requires nonempty `detail`.
+
+An invalidated proposed `contextual` Role may omit `detail`; an invalidated Role that was previously active must retain its historical detail.
+
+Top-level `detail` is prohibited for:
+
+```text
+directly_involved
+present
+reported_involved
+```
+
+Nested `supersedes[].detail` remains permitted under the supersession contract and is distinct from top-level contextual detail.
+
+`supersedes` is stored only on a successor Role as the canonical forward replacement relationship.
+
+A canonical `superseded_by` field is prohibited. Reverse successor views are derived from Role records that point forward through `supersedes`.
+
+Replacement reasons belong inside each structured `supersedes` entry rather than in one top-level `replacement_reason` field.
 
 Conceptually:
 
@@ -4553,6 +4942,26 @@ Conceptually:
   }
 }
 ```
+
+This example represents an explicit, reviewed digital assignment created directly as `active`.
+
+Its:
+
+```text
+creation_source.type = digital_entry
+```
+
+describes how this Role record entered Portia.
+
+It does not claim that the Event or Event Participant was created digitally.
+
+Direct active creation is permitted only under the reviewed-entry rules in Section 7.19. The presence of:
+
+```text
+creation_source.type = digital_entry
+```
+
+does not by itself authorize active status.
 
 The exact JSON Schema for this record is not part of the currently required:
 
@@ -4628,9 +5037,9 @@ It points to the Event Participant record that already preserves the appropriate
 
 ---
 
-## 7.12 Role Status
+## 7.12 Role Status and Lifecycle
 
-The initial role-assignment lifecycle should support:
+The initial role-assignment lifecycle supports:
 
 ```text
 proposed
@@ -4639,185 +5048,1399 @@ invalidated
 superseded
 ```
 
+Status records the Role’s review and lifecycle state.
+
+Status is not determined solely by:
+
+```text
+creation_source
+```
+
+The same creation-source type may produce either a proposed or active Role depending on whether the complete assertion has been explicitly reviewed and accepted.
+
+### Initial Status Decision
+
+A Role may be created directly as:
+
+```text
+active
+```
+
+when the teacher explicitly selects, reviews, and saves one unambiguous Role assertion through a digital interface.
+
+Direct active creation requires that:
+
+* the referenced Event Participant exists and is active;
+* the owning Event is `draft` or `active`;
+* the teacher deliberately selected or confirmed the role type;
+* all conditionally required fields are complete;
+* an active `contextual` Role contains concise nonempty `detail`;
+* any supplied basis entries validate;
+* an active `reported_involved` Role contains a same-Event attributed Account reference;
+* no duplicate active participant-role assignment exists;
+* the participant’s resulting active-role set satisfies Section 7.15;
+* the Role is not merely an automated, imported, or paper-derived suggestion awaiting review;
+* and creation provenance records the actual entry path and local operator.
+
+A proposed Event Participant cannot own an active Role.
+
+The Role may instead begin as:
+
+```text
+proposed
+```
+
+when review is incomplete, ambiguity remains, the referenced participant is not yet active, or the Role originated as a suggestion requiring confirmation.
+
+Creation source and initial status answer different questions:
+
+```text
+creation_source:
+How did this canonical Role record enter Portia?
+
+status:
+Has this Role assertion been accepted?
+```
+
+### Parent-State Requirements
+
+Role activation depends directly on the accepted Event Participant relationship.
+
+At the moment a Role becomes active:
+
+```text
+Event Participant status = active
+Event status = draft or active
+```
+
+The Event does not need to be active yet.
+
+This permits a teacher to review and finalize participants and Roles while assembling a draft Event.
+
+An active Role beneath a draft Event is accepted relative to that draft Event, but it appears only in draft-review and preparation views.
+
+It does not appear in ordinary current Event histories until the Event becomes active.
+
+Event activation does not require any Role assignment.
+
+After Role activation:
+
+* Event closure does not change Role status;
+* Event reopening does not change Role status;
+* Event cancellation, invalidation, or supersession does not cascade-rewrite child Role statuses;
+* but Roles beneath a cancelled, invalidated, or superseded Event are excluded from ordinary current views.
+
+An active Role continuously requires an active Event Participant.
+
+Participant invalidation or supersession must therefore resolve every dependent active Role through the coordinated rules in Section 7.16.
+
 ### `proposed`
 
-The role has been suggested but not confirmed.
+The Role has been suggested or entered but has not yet been accepted as a current canonical Event-level relationship.
 
-Typical sources include:
+Roles ordinarily begin as proposed when they arise from:
 
 * paper interpretation;
-* imported data;
 * automated extraction;
-* or incomplete teacher review.
+* imported data awaiting review;
+* ambiguous participant or role matching;
+* a participant relationship that is not yet active;
+* incomplete digital entry;
+* a `contextual` assignment whose required detail is not yet available;
+* a `reported_involved` assignment whose attributed Account is not yet linked;
+* or a material correction awaiting confirmation.
+
+A creation source does not force proposed status forever.
+
+After explicit teacher review, a valid proposed Role may transition:
+
+```text
+proposed → active
+```
+
+A proposed successor may contain structured `supersedes` references identifying the prior Role or Roles it is intended to replace.
+
+Those references are prospective while the successor remains proposed.
+
+They do not:
+
+* transition a prior Role to `superseded`;
+* remove a prior active Role from current views;
+* make the proposed successor current;
+* or establish that replacement has occurred.
+
+A proposed successor that is abandoned or rejected becomes `invalidated`. Its intended prior Roles remain unchanged.
 
 ### `active`
 
-The role is currently accepted as a valid neutral relationship.
+The Role is currently accepted as a valid neutral Event-level relationship.
+
+An active `contextual` Role must contain concise nonempty `detail`.
+
+An active `reported_involved` Role must contain at least one same-Event attributed `account_ref`.
+
+A Role may reach active status through either:
+
+```text
+direct reviewed creation as active
+```
+
+or:
+
+```text
+proposed → active
+```
+
+Direct active creation does not require a synthetic proposed state when the teacher has already explicitly reviewed and accepted the complete assertion before persistence.
+
+For a Role created directly as active:
+
+```text
+created_at
+```
+
+records when the accepted canonical Role was created.
+
+The Role’s own creation provenance and initial active status preserve that it entered Portia as an explicitly reviewed assignment.
+
+Those facts do not depend on the Event or Event Participant creation source.
+
+A fabricated lifecycle transition from a nonexistent proposed state must not be created.
+
+An active Role may receive an additional corroborating basis entry in place only when the addition satisfies Section 7.13 and does not change:
+
+* the participant;
+* the role type;
+* the Role’s substantive meaning;
+* or the interpretation of any existing basis entry.
+
+The addition must preserve append-only amendment history. It must not be presented as though the added basis existed when the Role was originally activated.
+
+When a proposed successor containing `supersedes` references becomes active, the replacement becomes effective through one coordinated operation.
+
+That operation must:
+
+1. validate the successor;
+2. validate every referenced prior Role;
+3. validate the active Event Participant and eligible Event state;
+4. transition the successor to `active`;
+5. transition every effectively replaced prior Role to `superseded`;
+6. append the required lifecycle and correction history;
+7. and persist the resulting direct-load states atomically or through a recoverable staged-write process.
+
+Portia must not expose a durable completed state in which the successor is active but an effectively replaced prior Role remains active.
+
+A directly reviewed digital correction may create and activate a successor within one coordinated operation. The prior Role still becomes `superseded` only when the successor becomes active.
 
 ### `invalidated`
 
-The role assignment was incorrect, unsupported, duplicated, or otherwise should not be treated as valid.
+The Role assignment was incorrect, unsupported, duplicated, abandoned during review, or otherwise must not be treated as valid.
+
+Invalidating a proposed successor before activation does not affect the status of any Role named in its prospective `supersedes` references.
+
+Invalidating a Role that previously became active is a later lifecycle event. It does not rewrite the period during which the Role was accepted.
+
+`invalidated` is terminal under ordinary workflows.
 
 ### `superseded`
 
-A later role assignment replaces or refines the earlier assignment.
+A later Role became active and replaced or materially refined this Role through a completed supersession operation.
 
-Only active role records should appear as current Event-level participant roles.
+A prior Role must not become `superseded` merely because:
 
-No role status affects whether the participant identity itself remains valid.
+* a successor file was created;
+* a proposed successor named it;
+* teacher review began;
+* or replacement validation was attempted.
+
+The prior Role remains active until the successor activation operation completes successfully.
+
+If activation fails before the coordinated operation commits, the durable recoverable state must remain:
+
+```text
+successor = proposed
+prior Role or Roles = active
+```
+
+After successful completion, the durable state is:
+
+```text
+successor = active
+prior Role or Roles = superseded
+```
+
+`superseded` is terminal under ordinary workflows.
+
+### Allowed Transitions
+
+The initial allowed transitions are:
+
+| From | To | Meaning |
+| --- | --- | --- |
+| `proposed` | `active` | Reviewed and accepted |
+| `proposed` | `invalidated` | Rejected without replacement |
+| `proposed` | `superseded` | An active successor replaced the proposal |
+| `active` | `invalidated` | Later rejected without replacement |
+| `active` | `superseded` | An active successor replaced it |
+
+Direct reviewed creation as `active` remains valid and does not imply a prior transition.
+
+Every transition requires append-only lifecycle history containing at least:
+
+```text
+role_id
+from_status
+to_status
+reason
+changed_at
+changed_by
+```
+
+The exact lifecycle-transition schema may be defined with the implementation deliverables.
+
+### Prohibited Transitions and Terminal States
+
+The following ordinary transitions are prohibited:
+
+```text
+active → proposed
+
+invalidated → proposed
+invalidated → active
+invalidated → superseded
+
+superseded → proposed
+superseded → active
+superseded → invalidated
+```
+
+A Role that entered accepted history must not return to an unreviewed state.
+
+Invalidated and superseded Roles must not be silently restored or repurposed.
+
+A mistaken terminal transition requires:
+
+* an explicit append-only amendment;
+* or a new Role record representing the corrected canonical assertion.
+
+It must not use reactivation.
+
+Role lifecycle changes never mutate the Event Participant’s canonical subject identity.
 
 ---
 
 ## 7.13 Basis
 
-A role assignment may contain a structured `basis` describing why the role was assigned.
+### Decision
 
-The initial basis kinds should include:
+A Role record may contain an optional `basis` array describing the separate sources, artifacts, or canonical records that support the one participant-role assertion.
+
+When present, `basis` must contain one or more structured basis entries:
+
+```json
+{
+  "basis": [
+    {
+      "kind": "account_ref",
+      "record_id": "acct_01j9..."
+    },
+    {
+      "kind": "account_ref",
+      "record_id": "acct_01k0..."
+    }
+  ]
+}
+```
+
+The array permits one Role assertion to preserve several supporting sources without creating duplicate active Role records for the same:
 
 ```text
-teacher_entry
-account_ref
-observation_ref
-returned_paper
-import_source
+work_id + participant_id + role_type
 ```
 
-### Teacher Entry
+Array order has no semantic meaning.
 
-```json
-{
-  "basis": {
-    "kind": "teacher_entry"
-  }
-}
+The first basis entry is not automatically:
+
+* primary;
+* earlier;
+* more credible;
+* more authoritative;
+* or more important than another entry.
+
+Portia must not infer source agreement, evidentiary weight, or credibility from:
+
+* array order;
+* the number of basis entries;
+* repeated reports;
+* or the presence of several source kinds.
+
+### Optionality
+
+`basis` is optional for:
+
+```text
+directly_involved
+present
+contextual
 ```
 
-The teacher assigned the neutral relationship directly during review or entry.
+A teacher may assign those neutral Event-level relationships directly during reviewed entry without creating a synthetic basis entry.
 
-### Account Reference
+In that case, the Role record’s:
 
-```json
-{
-  "basis": {
-    "kind": "account_ref",
-    "record_id": "acct_01j9..."
-  }
-}
+```text
+creation_source
+created_by
+updated_by
+lifecycle history
 ```
 
-An attributed Account supports the role assignment.
+preserve how and by whom the canonical assignment was created or confirmed.
 
-This basis is ordinarily expected for:
+Those provenance fields do not themselves become assertion basis.
+
+When `basis` is present, an empty array is invalid.
+
+For:
 
 ```text
 reported_involved
 ```
 
-### Observation Reference
+the Role record must contain at least one source-oriented basis entry even while proposed.
+
+The initial source-oriented proposal basis kinds are:
+
+```text
+account_ref
+paper_capture
+import_source
+```
+
+Before any `reported_involved` Role becomes active, it must contain at least one same-Event attributed `account_ref`.
+
+This activation rule is independent from `creation_source.type`.
+
+A paper or import basis may preserve a proposal, but neither substitutes for the activation-required Account.
+
+### Initial Basis Kinds
+
+The initial basis-entry kinds are:
+
+```text
+account_ref
+observation_ref
+paper_capture
+import_source
+```
+
+Each entry must validate as exactly one discriminated basis variant.
+
+### Event Scope of Canonical Record References
+
+`account_ref` and `observation_ref` basis entries are always Event-local.
+
+They resolve within the Role record’s own:
+
+```text
+class_id + work_id
+```
+
+The persisted basis entry therefore contains only:
+
+```text
+kind
+record_id
+```
+
+For example:
 
 ```json
 {
-  "basis": {
-    "kind": "observation_ref",
-    "record_id": "obs_01j9..."
+  "kind": "account_ref",
+  "record_id": "acct_01j9..."
+}
+```
+
+must resolve to an Account stored beneath the same Event work root as the Role record.
+
+Likewise:
+
+```json
+{
+  "kind": "observation_ref",
+  "record_id": "obs_01j9..."
+}
+```
+
+must resolve to an Observation stored beneath that same Event.
+
+An `account_ref` or `observation_ref` basis entry must not repeat or override Event scope through fields such as:
+
+```text
+class_id
+work_id
+module_id
+event_id
+```
+
+Those fields would duplicate parent identity and could create conflicting authority about which Event owns the referenced record.
+
+The initial Role model does not permit an Account or Observation from another Event to support an Event Participant Role directly.
+
+Information from another occurrence must instead be represented through the appropriate cross-Event, pattern, Support Process, or later analytic relationship. It must not be imported into the current Event’s role basis in a way that blurs Event boundaries.
+
+JSON Schema validates the compact reference shape.
+
+Application validation must confirm that:
+
+* the referenced record exists;
+* the referenced record has the expected record type;
+* the referenced record belongs to the Role’s owning Event;
+* and the referenced record remains valid under its own lifecycle contract.
+
+#### Account Reference
+
+```json
+{
+  "kind": "account_ref",
+  "record_id": "acct_01j9..."
+}
+```
+
+An attributed Account belonging to the same Event supports the Role assertion.
+
+For every `reported_involved` Role, at least one such Account reference is required before activation.
+
+The referenced Account must contain valid attribution under the Account domain contract. An unattributed note, free-text summary, paper artifact, or import-source entry is not an Account substitute.
+
+The Account remains the canonical source record. The Role record does not copy its content, attribution, credibility assessment, or Event ownership.
+
+One Role may reference several same-Event Account records through several basis entries.
+
+#### Observation Reference
+
+```json
+{
+  "kind": "observation_ref",
+  "record_id": "obs_01j9..."
+}
+```
+
+An Observation belonging to the same Event supports the Role assertion.
+
+The Observation remains canonical evidence. The Role record does not copy its content, observer attribution, or Event ownership.
+
+An Observation reference may support `present` or `directly_involved`. It does not automatically make a Role a formal finding.
+
+#### Paper Capture
+
+```json
+{
+  "kind": "paper_capture",
+  "route_id": "rt_0123456789abcdef0123456789abcdef",
+  "page_record_id": "pg_01j9..."
+}
+```
+
+A returned Portia paper artifact supplied or proposed the Role information.
+
+For every Role whose creation source is:
+
+```text
+creation_source.type = paper_capture
+```
+
+the `basis` array is required and must contain at least one `paper_capture` entry whose:
+
+```text
+route_id
+page_record_id
+```
+
+exactly match the corresponding fields in the Role’s `creation_source`.
+
+For example:
+
+```json
+{
+  "creation_source": {
+    "type": "paper_capture",
+    "stage": "ingested",
+    "route_id": "rt_0123456789abcdef0123456789abcdef",
+    "page_record_id": "pg_01j9..."
+  },
+  "basis": [
+    {
+      "kind": "paper_capture",
+      "route_id": "rt_0123456789abcdef0123456789abcdef",
+      "page_record_id": "pg_01j9..."
+    }
+  ]
+}
+```
+
+The duplication is intentional.
+
+The two fields answer different questions:
+
+```text
+creation_source:
+How did this Role record enter Portia?
+
+matching paper basis:
+Which returned artifact directly supports the Role assertion?
+```
+
+The matching requirement applies regardless of Role status.
+
+A paper-derived Role that is:
+
+```text
+proposed
+active
+invalidated
+superseded
+```
+
+must retain the matching basis entry.
+
+Invalidating a mistaken paper interpretation does not erase which artifact produced and supported that interpretation.
+
+A paper-derived Role may contain additional valid basis entries.
+
+For example, it may later gain:
+
+* an Account reference;
+* an Observation reference;
+* another supporting paper artifact;
+* or an import-source reference where legitimately applicable.
+
+Additional entries do not replace the required matching entry.
+
+A second paper basis may reference another artifact only when that artifact independently supports the same Role assertion.
+
+Structural and semantic duplicate rules still apply.
+
+The matching paper basis does not indicate that:
+
+* handwriting recognition was correct;
+* mark interpretation was correct;
+* the teacher confirmed the Role;
+* an attributed Account exists;
+* or the Role is active.
+
+For a paper-derived `reported_involved` Role, the matching paper basis is sufficient for proposal but insufficient for activation.
+
+As with every active `reported_involved` Role, activation additionally requires a same-Event attributed `account_ref`.
+
+Those questions remain governed by status, lifecycle history, canonical Account records, and teacher review.
+
+#### Import Source
+
+```json
+{
+  "kind": "import_source",
+  "source_label": "Legacy teacher record",
+  "source_record_id": "row-184"
+}
+```
+
+An imported source supplied the Role information.
+
+`source_record_id` should be included when the imported source provides a stable row, object, or record reference.
+
+The imported source remains external provenance. Portia does not treat it as verified merely because it was imported.
+
+### Mixed Basis Kinds
+
+One Role may contain several different basis kinds when they all support the same participant-role assertion.
+
+For example:
+
+```json
+{
+  "role_type": "reported_involved",
+  "basis": [
+    {
+      "kind": "account_ref",
+      "record_id": "acct_01j9..."
+    },
+    {
+      "kind": "paper_capture",
+      "route_id": "rt_0123456789abcdef0123456789abcdef",
+      "page_record_id": "pg_01j9..."
+    }
+  ]
+}
+```
+
+The Role remains one assertion.
+
+The basis array does not create:
+
+* several Role assignments;
+* a source hierarchy;
+* a vote among sources;
+* a credibility score;
+* or a Determination.
+
+### Direct Teacher Assignment Without Basis
+
+A Role assigned directly by the teacher may omit `basis` when no other conditional basis rule applies.
+
+This omission rule does not apply to a paper-derived Role or to `reported_involved`.
+
+For example:
+
+```json
+{
+  "role_type": "present",
+  "creation_source": {
+    "type": "digital_entry"
   }
 }
 ```
 
-An Observation supports the role assignment.
+The omitted basis does not mean that the Role lacks provenance.
 
-The Observation remains canonical evidence. The role record does not copy its contents.
+It means only that no separate supporting source, artifact, or canonical record was attached to the assertion.
 
-### Returned Paper
+Portia must not manufacture a basis entry merely to distinguish direct teacher assignment from missing data.
+
+Teacher-facing interfaces may communicate that the Role was directly assigned by using creation, update, and lifecycle provenance rather than a `teacher_entry` basis kind.
+
+### Duplicate Basis Entries
+
+A Role record must not contain structurally duplicate basis entries.
+
+The JSON Schema should use:
+
+```text
+uniqueItems = true
+```
+
+where structurally identical array entries can be detected.
+
+Application validation must additionally prevent semantic duplicates that use different but equivalent representations.
+
+For example, Portia should not preserve two `account_ref` entries pointing to the same Account merely because their object-property order differed before serialization.
+
+### Basis Corrections
+
+Basis mutability depends on the Role lifecycle state.
+
+#### Proposed Roles
+
+A `proposed` Role may have its basis edited in place during review.
+
+For a paper-derived Role, editing must preserve at least one paper basis entry that exactly matches the Role creation source.
+
+The matching entry may not be removed while the record remains a paper-derived Role.
+
+Any proposed `reported_involved` Role may gain an attributed same-Event Account during review.
+
+It must not transition to active until that Account is referenced through `account_ref`.
+
+The teacher may:
+
+* add a basis entry;
+* remove a basis entry;
+* replace a basis entry;
+* correct a referenced record;
+* or omit `basis` when no separate supporting source should be attached.
+
+Each change must update:
+
+```text
+updated_at
+updated_by
+```
+
+Proposed-state editing is permitted because the Role has not yet been accepted as a current canonical relationship.
+
+The Role’s immutable creation provenance must still be preserved.
+
+#### Additive Support for Active Roles
+
+An additional basis entry may be appended to an active Role in place only when all of the following are true:
+
+1. the participant remains unchanged;
+2. the role type remains unchanged;
+3. the Role’s substantive meaning remains unchanged;
+4. every existing basis entry remains valid and unchanged;
+5. the new entry is genuinely additive rather than a replacement;
+6. the new entry does not resolve, contradict, or recharacterize the earlier support;
+7. the addition does not convert a reported relationship into a directly established relationship;
+8. the resulting basis array contains no structural or semantic duplicate;
+9. the current Role still satisfies every conditional basis requirement;
+10. and append-only amendment history records when, why, and by whom the basis was added.
+
+For example, a second same-Event Account may be added to an unchanged active `reported_involved` Role when it independently supplies another report of the same neutral relationship.
+
+The current Role record may then contain both Account references.
+
+Portia must preserve history showing that the second Account was attached later.
+
+The added source must not be displayed as though it supported the Role at initial activation.
+
+#### Changes Requiring Replacement
+
+An active Role requires a successor Role and supersession when a basis change:
+
+* removes an existing basis entry;
+* replaces an existing basis entry;
+* changes a referenced record;
+* corrects a basis kind;
+* recharacterizes what supports the Role;
+* changes the Role’s substantive meaning;
+* resolves a reported relationship into a different role type;
+* introduces a contradiction requiring reinterpretation;
+* or would make the prior Role’s stored support misleading.
+
+The replacement pattern is:
+
+```text
+preserve prior active Role
+→ create proposed successor with corrected basis and intended supersedes references
+→ review and validate successor
+→ activate successor and supersede prior Role or Roles in one coordinated operation
+```
+
+Creating the proposed successor does not alter the prior Role’s active status.
+
+If the successor is invalidated or abandoned before activation, every prior Role remains unchanged.
+
+The successor must receive a new `role_id` and own the canonical forward `supersedes` relationship through one or more structured prior-Role references.
+
+The reason for replacing each prior Role is stored on that individual reference.
+
+The prior Role’s basis remains unchanged as historical evidence of what supported that Role during its active period.
+
+#### Basis Retraction
+
+A source retraction does not authorize deletion of the corresponding basis entry from an active Role.
+
+The matching paper basis of a paper-derived Role is also historical provenance of the assertion’s support path. It remains attached after invalidation or supersession.
+
+For any `reported_involved` Role that was active, the activation-required Account reference remains historical after invalidation or supersession.
+
+Portia must instead determine whether the Role should be:
+
+* superseded by a corrected Role using the remaining valid basis;
+* invalidated because the assertion is no longer supported;
+* or replaced by a Role with a different type or meaning.
+
+A `reported_involved` successor must still contain at least one source-oriented basis entry before it may become active.
+
+#### Invalidated and Superseded Roles
+
+The basis of an invalidated or superseded Role is historical and must not be edited through an ordinary workflow.
+
+A later correction must create additional history rather than rewriting the terminal record.
+
+#### Amendment-History Requirement
+
+An in-place additive basis change to an active Role requires append-only amendment history capable of preserving at least:
+
+```text
+role_id
+change_kind = basis_added
+added_basis
+changed_at
+changed_by
+reason
+```
+
+The exact shared amendment-record schema may be defined in a later issue.
+
+Until Portia can preserve this history reliably, the safer implementation is to create a successor Role rather than perform an in-place active basis addition.
+
+Portia must never silently rewrite an active Role’s basis in a way that makes later support appear to have existed at creation.
+
+### Basis Invariants
+
+1. `basis` is an optional array except where a conditional requirement applies.
+2. When present, `basis` contains one or more entries.
+3. Array order has no semantic meaning.
+4. Each entry validates as exactly one supported basis kind.
+5. One Role may have several basis entries.
+6. Several basis entries do not create several Role assignments.
+7. The number or order of entries does not establish credibility or evidentiary weight.
+8. Every proposed `reported_involved` Role requires at least one source-oriented basis entry.
+9. A paper-derived proposal may satisfy that proposal requirement with its matching paper basis.
+10. An imported proposal may satisfy that proposal requirement with an import-source basis.
+11. Every active `reported_involved` Role requires at least one same-Event attributed Account reference.
+12. Paper and import basis entries do not substitute for the activation-required Account.
+13. Teacher confirmation does not substitute for the activation-required Account.
+14. Every paper-derived Role requires a `paper_capture` basis entry matching its creation-source route and page.
+15. The matching requirement applies to proposed, active, invalidated, and superseded paper-derived Roles.
+16. Additional basis entries do not replace the required matching paper entry.
+17. Direct teacher assignment may omit `basis` only when no conditional basis requirement applies.
+18. Creation, update, and lifecycle provenance do not become assertion basis.
+19. No `teacher_entry` basis kind is defined.
+20. Creation source and basis remain distinct even when they reference the same paper artifact.
+21. `account_ref` and `observation_ref` resolve only within the Role’s owning Event.
+22. Event-local record references contain `kind` and `record_id` without repeated Event identity.
+23. Cross-Event Account and Observation basis references are prohibited.
+24. Referenced Accounts and Observations remain canonical in their own records.
+25. An Account used to activate `reported_involved` must be attributed under the Account contract.
+26. Paper and import basis entries do not become authoritative merely through capture or import.
+27. Structurally and semantically duplicate basis entries are prohibited.
+28. Proposed Roles may have basis entries added, removed, or replaced during review, subject to conditional requirements.
+29. A paper-derived Role must not lose its matching paper basis during review.
+30. A proposed `reported_involved` Role may gain its activation-required Account during review.
+31. Active Roles may receive only genuinely additive, non-meaning-changing basis entries in place.
+32. Every in-place active basis addition requires append-only amendment history.
+33. Removing or replacing an active Role’s basis requires a successor Role and supersession.
+34. The matching paper basis of a paper-derived Role remains historical after invalidation or supersession.
+35. The Account basis of every formerly active `reported_involved` Role remains historical after invalidation or supersession.
+36. An invalidated never-active `reported_involved` proposal may lack an Account.
+37. A source retraction does not delete history from an active or terminal Role.
+38. Invalidated and superseded Role bases are not edited through ordinary workflows.
+39. Basis corrections preserve provenance and correction history.
+40. When amendment history cannot be preserved, active basis additions use successor Roles.
+
+---
+
+## 7.14 Independent Role Creation Source
+
+### Decision
+
+Every Event Participant Role requires its own structured:
+
+```text
+creation_source
+```
+
+The object records how that specific canonical Role assertion originally entered Portia.
+
+It is independent from the creation source of:
+
+* the parent Event;
+* the referenced Event Participant;
+* any sibling Role;
+* any Account or Observation named in `basis`;
+* and any prior Role named in `supersedes`.
+
+Portia must not infer or copy a Role’s creation source merely from its parent records.
+
+### Initial Creation-Source Types
+
+The initial Role creation-source types are:
+
+```text
+digital_entry
+paper_capture
+import
+```
+
+The Role source uses the same shared discriminated creation-source vocabulary as other Portia canonical records.
+
+#### Digital Entry
 
 ```json
 {
-  "basis": {
-    "kind": "returned_paper",
+  "creation_source": {
+    "type": "digital_entry"
+  }
+}
+```
+
+Use `digital_entry` when the Role is created through Portia’s digital interface.
+
+This remains true when:
+
+* the Event was created through paper capture;
+* the Event Participant was imported;
+* or the Role is a digitally created successor to a paper- or import-derived Role.
+
+For example:
+
+```text
+Event:
+paper_capture / preallocated
+
+Event Participant:
+paper_capture / ingested
+
+Role added later:
+digital_entry
+```
+
+#### Paper Capture
+
+```json
+{
+  "creation_source": {
+    "type": "paper_capture",
+    "stage": "ingested",
     "route_id": "rt_0123456789abcdef0123456789abcdef",
     "page_record_id": "pg_01j9..."
   }
 }
 ```
 
-A paper capture proposed the relationship.
+Use `paper_capture` when the Role originates through interpretation of a returned Portia-generated paper artifact.
 
-Such an assignment should ordinarily begin as `proposed`.
+For an Event Participant Role:
 
-### Import Source
+```text
+creation_source.type = paper_capture
+→ creation_source.stage = ingested
+```
+
+A Role must never use:
+
+```text
+stage = preallocated
+```
+
+No canonical Role assertion exists merely because:
+
+* an Event was preallocated;
+* a capture page was rendered;
+* the page included blank role marks;
+* or a participant placeholder existed before return.
+
+The Role comes into existence only after returned-page processing produces a specific proposed or reviewed participant-role assertion.
+
+The source preserves the route and page-record references associated with that returned artifact.
+
+The Role must also contain a `paper_capture` basis entry with the same:
+
+```text
+route_id
+page_record_id
+```
+
+This is not accidental duplication. Creation source records origin; basis records assertion support.
+
+Teacher confirmation does not change:
+
+```text
+creation_source.type = paper_capture
+creation_source.stage = ingested
+```
+
+A paper-derived proposed Role that later becomes active remains paper-ingested and retains the matching paper basis.
+
+Invalidation or supersession also preserves that matching basis as historical support provenance.
+
+A workflow that needs pre-render configuration for role marks must store that configuration in the page template, page record, or another appropriate generated-paper record. It must not create blank preallocated Role records.
+
+#### Import
 
 ```json
 {
-  "basis": {
-    "kind": "import_source",
-    "source_label": "Legacy teacher record"
+  "creation_source": {
+    "type": "import",
+    "source_label": "Legacy teacher record",
+    "external_reference": "import-batch-2026-09-01"
   }
 }
 ```
 
-An imported source supplied the relationship.
+Use `import` when the Role originates outside the ordinary Portia digital or generated-paper workflows.
 
-A basis records provenance for the role claim.
+`source_label` is required.
 
-It does not establish that the underlying source is correct or authoritative.
+`external_reference` is optional when the import provides a meaningful external batch or source reference.
 
----
+A teacher’s later digital review does not rewrite the Role as:
 
-## 7.14 Creation Source and Basis Are Distinct
+```text
+digital_entry
+```
 
-`creation_source` describes how the role record entered Portia.
+The imported origin remains historical provenance.
 
-`basis` describes what supports the role relationship.
+### Parent and Child Sources May Differ
+
+One Event context may legitimately contain records with several creation sources.
 
 For example:
 
 ```text
-creation source:
-digital entry
+Event:
+digital_entry
 
-basis:
-student Account
+Event Participant:
+digital_entry
+
+present Role:
+paper_capture / ingested
+
+directly_involved successor:
+digital_entry
 ```
-
-means the teacher created the role digitally after reviewing a student Account.
 
 Likewise:
 
 ```text
-creation source:
-returned paper
+Event:
+import
 
-basis:
-returned paper capture
+Event Participant:
+import
+
+contextual Role added later:
+digital_entry
 ```
 
-means the role was proposed through a scanned quick-capture page.
+These differences are expected.
 
-Portia must not collapse these concepts into one field.
+They preserve how each canonical record actually entered Portia.
+
+### Successor Roles Have Their Own Sources
+
+A successor Role receives its own `creation_source`.
+
+It does not inherit the source of the Role it replaces.
+
+For example:
+
+```text
+prior Role:
+paper_capture / ingested
+
+corrected successor:
+digital_entry
+```
+
+The `supersedes` relationship preserves the correction lineage.
+
+The successor’s creation source preserves how the corrected canonical assertion entered Portia.
+
+The two facts must not be collapsed.
+
+### Creation Source, Attribution, Status, and Basis Are Distinct
+
+These fields answer different questions:
+
+```text
+creation_source:
+How did this Role record originally enter Portia?
+
+created_by:
+Which local operator or system process created the canonical record?
+
+updated_by:
+Which local operator or system process most recently changed it?
+
+status:
+Is the Role proposed, active, invalidated, or superseded?
+
+basis:
+Which separate sources, artifacts, or canonical records support the assertion?
+```
+
+For example:
+
+```json
+{
+  "status": "proposed",
+  "creation_source": {
+    "type": "paper_capture",
+    "stage": "ingested",
+    "route_id": "rt_0123456789abcdef0123456789abcdef",
+    "page_record_id": "pg_01j9..."
+  },
+  "basis": [
+    {
+      "kind": "paper_capture",
+      "route_id": "rt_0123456789abcdef0123456789abcdef",
+      "page_record_id": "pg_01j9..."
+    }
+  ],
+  "created_by": {
+    "type": "system_process",
+    "process_id": "paper_capture_ingest"
+  }
+}
+```
+
+means:
+
+* the Role entered Portia through paper ingestion;
+* the paper artifact also supports the assertion;
+* and a system process created the proposed canonical Role.
+
+The same artifact appears in both `creation_source` and `basis` for every paper-derived Role because the fields represent different relationships.
+
+For that required entry, the route and page references must match exactly.
+
+A digitally entered Role may also be based on a paper artifact, but matching is not automatically required merely because a paper basis is present.
+
+A paper-derived Role may later gain an Account basis.
+
+A directly teacher-assigned Role may omit `basis` while retaining complete creation and operator provenance, provided it is neither paper-derived nor otherwise subject to a conditional basis requirement.
+
+### Immutability
+
+The following Role creation facts are ordinarily immutable:
+
+```text
+creation_source
+created_at
+created_by
+```
+
+Review, confirmation, correction, basis addition, invalidation, and supersession must not rewrite the Role’s original creation source.
+
+For example:
+
+```text
+before confirmation:
+status = proposed
+creation_source = paper_capture / ingested
+created_by = system_process
+
+after confirmation:
+status = active
+creation_source = paper_capture / ingested
+updated_by = local_operator
+```
+
+If creation provenance itself was recorded incorrectly, the correction must use the accepted amendment or provenance-preserving correction mechanism rather than an ordinary silent edit.
+
+### No Inherited or Derived Source
+
+Portia must not determine a Role source through rules such as:
+
+```text
+Role source = Event source
+Role source = Event Participant source
+Role source = first basis kind
+Role source = current editor
+Role source = source of superseded Role
+```
+
+The workflow that creates the Role supplies the source explicitly and automatically.
+
+Teachers must not be required to enter technical source fields manually.
+
+### Creation-Source Invariants
+
+1. Every Role records its own structured creation source.
+2. Role creation source is independent from Event and Event Participant creation source.
+3. Role creation source is independent from assertion basis.
+4. Role creation source is independent from lifecycle status.
+5. Role creation source is independent from later update attribution.
+6. A successor Role receives its own creation source.
+7. A paper-derived Role uses `stage = ingested`.
+8. A Role must never use `stage = preallocated`.
+9. Blank pre-render role marks do not create canonical Role records.
+10. Every paper-derived Role contains a matching paper basis entry.
+11. The creation-source and matching-basis route and page references are identical.
+12. A matching paper basis permits a proposed paper-derived `reported_involved` Role but does not authorize activation.
+13. Every active `reported_involved` Role requires a same-Event attributed Account regardless of creation source.
+14. Paper-derived Roles remain paper-ingested after teacher confirmation.
+15. Confirmation, invalidation, and supersession preserve the matching paper basis.
+16. Every formerly active `reported_involved` Role preserves its Account basis.
+17. Imported Roles remain imported after teacher review.
+18. Parent and child records may legitimately have different creation sources.
+19. Creation source is ordinarily immutable.
+20. Technical source metadata is populated by the workflow rather than manually by the teacher.
 
 ---
 
-## 7.15 Duplicate Role Assignments
+## 7.15 Active-Role Compatibility
 
-Within one Event Participant, Portia should permit no more than one active role assignment with the same:
+### Decision
+
+Portia uses a strict compatibility matrix for active Event Participant Roles.
+
+The matrix applies to all active Role records for one:
 
 ```text
-role_type
+class_id + work_id + participant_id
 ```
 
-For example, two active:
+It does not prohibit proposed, invalidated, or superseded records from preserving earlier, competing, or not-yet-reviewed assertions.
+
+### Compatibility Matrix
+
+| Existing active role | Candidate active role | Result |
+| --- | --- | --- |
+| `present` | `directly_involved` | Allowed |
+| `present` | `reported_involved` | Allowed |
+| `present` | `contextual` | Allowed |
+| `directly_involved` | `reported_involved` | Prohibited |
+| `directly_involved` | `contextual` | Prohibited |
+| `reported_involved` | `contextual` | Prohibited |
+| Any role | Same role | Duplicate; prohibited |
+
+The matrix is symmetric.
+
+For example, the result for:
+
+```text
+directly_involved + reported_involved
+```
+
+is the same regardless of which Role was created first.
+
+### Meaning of `present`
+
+`present` is compatible with one other initial role because it asserts presence without by itself asserting the nature of involvement.
+
+For example:
+
+```text
+present + directly_involved
+```
+
+may accurately record that the person was present throughout the Event context and also participated directly.
+
+Likewise:
+
+```text
+present + reported_involved
+```
+
+may preserve that the person was present while direct involvement remains reported rather than established.
+
+And:
+
+```text
+present + contextual
+```
+
+may preserve presence together with another legitimate contextual connection.
+
+`present` must not be duplicated merely to represent several periods or perspectives within the same Event. Additional temporal or observational detail belongs in the appropriate Observation, Account, or Event-context record.
+
+### Mutually Exclusive Current Roles
+
+The following role types are mutually exclusive as current active assertions:
+
+```text
+directly_involved
+reported_involved
+contextual
+```
+
+#### `directly_involved` and `reported_involved`
+
+These roles express alternative current levels of assertion.
+
+When reviewed information changes the current relationship from:
+
+```text
+reported_involved
+```
+
+to:
+
+```text
+directly_involved
+```
+
+Portia must create or activate a successor and supersede the earlier Role rather than leave both active.
+
+The earlier `reported_involved` Role remains preserved historically.
+
+#### `directly_involved` and `contextual`
+
+`contextual` is intended for a legitimate Event connection not adequately described by the more specific initial involvement roles.
+
+Once `directly_involved` accurately describes the current relationship, a simultaneous active `contextual` Role would be redundant or contradictory.
+
+#### `reported_involved` and `contextual`
+
+When a source specifically reports involvement, the qualified `reported_involved` Role is the more precise current representation.
+
+A simultaneous active `contextual` Role would blur the distinction between a reported involvement assertion and a nonspecific contextual relationship.
+
+### Maximum Initial Active-Role Set
+
+Under the initial vocabulary, one participant may have at most two active Role records:
 
 ```text
 present
++
+one of:
+  directly_involved
+  reported_involved
+  contextual
 ```
 
-records for the same participant are duplicates.
+A participant may also have:
 
-Portia may preserve earlier invalidated or superseded assignments for history.
+```text
+zero active roles
+```
 
-Different active role types may coexist when they are meaningfully applicable.
+or:
 
-Duplicate validation must use:
+```text
+one active role
+```
+
+Portia must not require a second Role merely because one Role is present.
+
+### Activation-Time Validation
+
+Compatibility is evaluated whenever a Role is:
+
+* created directly as active;
+* transitioned from proposed to active;
+* activated as a successor;
+* or restored through any future lifecycle operation that would make it current.
+
+The application must compute the participant’s intended post-operation active-role set.
+
+For an ordinary activation, that set consists of:
+
+```text
+all currently active Roles
++
+the candidate Role
+```
+
+For a coordinated successor activation, that set consists of:
+
+```text
+currently active Roles
+− every prior Role that will become superseded in the same operation
++ the successor Role
+```
+
+This post-operation calculation permits a valid correction such as:
+
+```text
+reported_involved
+→ directly_involved
+```
+
+without treating the prior Role as a permanent compatibility conflict.
+
+The coordinated operation must still fail when another incompatible active Role would remain after the planned supersession transitions.
+
+For example, activating `directly_involved` while an unrelated active `contextual` Role remains current is invalid unless that contextual Role is also legitimately replaced in the same coordinated operation.
+
+### Proposed Roles
+
+A proposed Role may temporarily conflict with an active Role while correction or review is underway.
+
+For example:
+
+```text
+active reported_involved
+proposed directly_involved successor
+```
+
+is valid during review.
+
+The proposed Role does not appear in current-role views and does not alter the active Role.
+
+Activation must fail unless the final coordinated state satisfies the compatibility matrix.
+
+### Duplicate Detection
+
+Portia must prevent more than one active Role with the same:
 
 ```text
 participant_id + role_type
@@ -4825,11 +6448,46 @@ participant_id + role_type
 
 within the Event.
 
+A successor may have the same role type as a prior Role when it corrects basis, detail, or another material property.
+
+That successor becomes active only as the prior Role becomes superseded in the same coordinated operation.
+
+Duplicate validation must therefore also use the intended post-operation active-role set.
+
+### No Warning-Only Override
+
+The initial model does not permit the teacher to override an incompatible active-role combination after a warning.
+
+Portia should explain the conflict and offer an appropriate correction workflow, such as:
+
+```text
+replace the earlier Role
+leave the candidate proposed
+invalidate the unsupported Role
+cancel the new assignment
+```
+
+It must not save a canonically incompatible current state merely because the teacher acknowledges a warning.
+
+### Compatibility Changes
+
+Changing the controlled role vocabulary or compatibility matrix is a domain-model change.
+
+It requires:
+
+* explicit design review;
+* schema and validation review where applicable;
+* migration consideration for existing records;
+* updated fixtures and tests;
+* and an ADR or amendment to the governing decision.
+
+The application must not infer new compatible combinations dynamically from observed teacher usage.
+
 ---
 
-## 7.16 Corrections and Refinement
+## 7.16 Corrections, Refinement, and Supersession
 
-A role may be corrected or refined without changing participant identity.
+A Role may be corrected or refined without changing participant identity.
 
 Examples include:
 
@@ -4848,29 +6506,604 @@ contextual
 → directly_involved
 ```
 
+### Proposed-State Corrections
+
+A proposed Role may be corrected in place while the teacher is reviewing:
+
+* `role_type`;
+* `basis`;
+* top-level `detail` when the Role is `contextual`;
+* and other reviewable proposed values that do not change canonical participant identity.
+
+Once a canonical Role record has been persisted:
+
+```text
+participant_id
+```
+
+is immutable.
+
+A proposed Role associated with the wrong Event Participant must be invalidated or superseded by a new Role referencing the correct participant.
+
+Uncommitted interface state may be corrected before canonical persistence.
+
+A proposed non-contextual Role must not acquire top-level `detail` during review.
+
+The record retains its original creation provenance and updates its current update provenance.
+
+Confirmation without material change may transition:
+
+```text
+proposed → active
+```
+
+in place.
+
+### Active-State Additions
+
+An active Role may receive an additional basis entry in place only under the additive-support rules in Section 7.13.
+
+An additive basis change must not alter:
+
+* participant identity;
+* role type;
+* substantive meaning;
+* prior basis entries;
+* or the historical interpretation of the Role.
+
+It requires append-only amendment history.
+
+### Material Corrections
+
+A material correction to an active Role creates a successor Role.
+
+Material corrections include changing:
+
+* `participant_id`;
+* `role_type`;
+* removing required top-level `contextual` detail;
+* the substantive meaning of top-level `contextual` detail;
+* an existing basis entry;
+* the interpretation of the Role’s support;
+* or another value that changes the canonical assertion.
+
+Removing or replacing any existing active basis entry is always material.
+
 The expected correction pattern is:
 
 ```text
-preserve original role record
-→ create replacement role record when needed
-→ activate replacement
-→ invalidate or supersede original
+preserve original active Role
+→ create proposed successor with structured supersedes references
+→ review and validate successor
+→ activate successor and transition every replaced prior Role to superseded
+   in one coordinated operation
 ```
+
+The prior Role remains active throughout successor review.
+
+A proposed successor that is invalidated or abandoned does not change the prior Role.
+
+Before committing activation, Portia must validate the participant’s intended post-operation active-role set after removing every Role that will become superseded and adding the successor.
+
+The correction operation must fail when that final set contains:
+
+* duplicate active role types;
+* an incompatible pair under Section 7.15;
+* or more than the permitted initial active-role set.
+
+The successor Role must:
+
+1. receive a new `role_id`;
+2. contain the corrected canonical assertion;
+3. identify each prior Role through a structured `supersedes` entry;
+4. record one controlled reason on each prior-Role reference;
+5. require nonempty `detail` when a reference uses `other`;
+6. preserve creation and update provenance;
+7. and become `proposed` or `active` as appropriate.
+
+The original Role remains unchanged except for its lifecycle transition to `superseded`.
+
+### Structured Supersession References
+
+A successor Role represents each replacement relationship through an array of structured references:
+
+```json
+{
+  "supersedes": [
+    {
+      "role_id": "epr_prior",
+      "reason": "basis_corrected"
+    }
+  ]
+}
+```
+
+The array:
+
+* must contain one or more entries when present;
+* must contain structurally unique entries;
+* may reference one prior Role for an ordinary correction;
+* may reference several prior Roles for legitimate consolidation;
+* and has no semantic ordering.
+
+Each entry requires:
+
+```text
+role_id
+reason
+```
+
+Each entry may also contain nested:
+
+```text
+detail
+```
+
+This nested field explains the replacement relationship. It is distinct from top-level Role `detail`, which is reserved for `contextual`.
+
+The initial replacement reasons are:
+
+```text
+participant_corrected
+role_type_corrected
+basis_corrected
+detail_corrected
+duplicate_consolidated
+role_relationship_corrected
+other
+```
+
+#### `participant_corrected`
+
+Use when the prior Role referenced the wrong Event Participant and the successor records the corrected participant relationship.
+
+The prior and successor Roles must still belong to the same Event.
+
+#### `role_type_corrected`
+
+Use when the prior Role’s `role_type` was incorrect or when reviewed information supports a materially different Event-level role.
+
+For example:
+
+```text
+reported_involved
+→ directly_involved
+```
+
+#### `basis_corrected`
+
+Use when an existing basis entry was removed, replaced, corrected, or materially reinterpreted.
+
+A purely additive basis entry that satisfies the accepted in-place amendment rules does not use supersession.
+
+#### `detail_corrected`
+
+Use when correcting `detail` changes the substantive meaning of the Role rather than merely fixing punctuation, spelling, or formatting.
+
+#### `duplicate_consolidated`
+
+Use when one successor Role replaces two or more duplicate or overlapping prior Role records.
+
+For example:
+
+```json
+{
+  "supersedes": [
+    {
+      "role_id": "epr_duplicate_1",
+      "reason": "duplicate_consolidated"
+    },
+    {
+      "role_id": "epr_duplicate_2",
+      "reason": "duplicate_consolidated"
+    }
+  ]
+}
+```
+
+A consolidation must not erase differences among the prior Role records. Each remains historically inspectable.
+
+#### `role_relationship_corrected`
+
+Use for another material correction to the participant-to-Event role relationship that is not described more precisely by the other controlled reasons.
+
+It must not become a substitute for an unsupported or vague correction rationale.
+
+#### `other`
+
+Use only when no controlled reason accurately describes the replacement.
+
+When:
+
+```text
+reason = other
+```
+
+the reference requires nonempty `detail`.
+
+For example:
+
+```json
+{
+  "supersedes": [
+    {
+      "role_id": "epr_prior",
+      "reason": "other",
+      "detail": "Corrected a migrated relationship whose legacy mapping was incomplete."
+    }
+  ]
+}
+```
+
+### Replacement Effect and Activation Boundary
+
+A `supersedes` array may appear on a proposed successor so Portia can preserve and review the intended correction before activation.
+
+While the successor remains proposed, its references describe replacement intent only.
+
+The replacement becomes effective when the successor reaches:
+
+```text
+status = active
+```
+
+The successor activation and prior-Role supersession transitions form one logical transaction.
+
+Conceptually:
+
+```text
+validate successor and all prior references
+→ prepare successor active transition
+→ prepare each prior superseded transition
+→ append lifecycle and correction history
+→ commit all resulting canonical states
+```
+
+The implementation must use either:
+
+* an atomic multi-record transaction;
+* or a recoverable staged-write protocol that prevents a partial operation from being accepted as complete.
+
+A completed operation must not leave:
+
+```text
+successor = active
+prior = active
+```
+
+for a prior Role that the successor effectively replaces.
+
+It also must not leave:
+
+```text
+successor = proposed
+prior = superseded
+```
+
+A recoverable implementation should converge to one of two valid durable outcomes:
+
+```text
+not committed:
+successor = proposed
+prior Role or Roles = active
+```
+
+```text
+committed:
+successor = active
+prior Role or Roles = superseded
+```
+
+When one successor consolidates several prior Roles, all applicable prior transitions belong to the same coordinated operation.
+
+Failure to transition any required prior Role prevents the replacement operation from being considered complete.
+
+### Abandoned or Invalidated Successors
+
+A proposed successor may be invalidated before activation.
+
+In that case:
+
+* its `supersedes` references remain historical evidence of the attempted correction;
+* none of the referenced prior Roles becomes superseded;
+* current-role views continue to use the unchanged active prior Role or Roles;
+* and lifecycle history records that the proposed successor was invalidated.
+
+Reverse supersession views must distinguish:
+
+* prospective references that never became effective;
+* and effective replacement relationships completed through successor activation.
+
+An effective historical replacement remains part of lifecycle history even if the successor is later invalidated through a separate lifecycle event.
+
+### Supersession Scope and Validation
+
+Before successor activation, every referenced prior Role must:
+
+* exist;
+* belong to the same Event as the successor;
+* have a different `role_id` from the successor;
+* remain eligible for replacement under the lifecycle rules;
+* ordinarily remain active until the coordinated operation commits;
+* and correspond to the reason recorded on that reference.
+
+A proposed successor may preserve its intended references even when later review determines that activation should not occur. Such references remain prospective and do not by themselves establish effective supersession.
+
+A successor may reference a prior Role associated with a different `participant_id` only when the reason legitimately corrects the participant relationship, such as:
+
+```text
+participant_corrected
+role_relationship_corrected
+duplicate_consolidated
+```
+
+Application validation must prevent:
+
+* self-supersession;
+* duplicate references to the same prior Role;
+* references to Roles in another Event;
+* unsupported replacement reasons;
+* reason-and-change mismatches;
+* circular supersession chains;
+* and conflicting successor relationships that violate the accepted correction model.
+
+The initial model stores no canonical top-level:
+
+```text
+replacement_reason
+superseded_by
+```
+
+Reverse `superseded_by` views are derived from structured successor references together with lifecycle history showing that the successor reached `active` and the replacement operation became effective.
+
+A proposed or pre-activation-invalidated successor must not appear as an effective `superseded_by` relationship merely because it contains a prospective reference.
+
+### Invalidation Without Replacement
+
+A Role should become `invalidated` rather than `superseded` when the assertion should no longer be treated as valid and no corrected Role replaces it.
+
+Examples include:
+
+* a false paper interpretation;
+* a duplicate active Role;
+* a Role created in error;
+* unsupported involvement;
+* or a retracted source that leaves the assertion without sufficient support.
+
+### Role-Type Refinement
+
+A later `directly_involved` Role does not mutate an earlier `reported_involved` Role.
+
+When reviewed information supports the new relationship:
+
+```text
+create directly_involved successor
+→ link successor to prior reported_involved Role
+→ activate successor
+→ supersede prior Role
+```
+
+This preserves that the earlier canonical assertion was qualified as reported.
+
+### Supporting Account Dependency Resolution
+
+An Account referenced by a Role remains a separate canonical record with its own lifecycle.
+
+Portia must never silently retarget:
+
+```text
+account_ref
+```
+
+when the referenced Account is corrected, superseded, or invalidated.
+
+#### Proposed Roles
+
+A proposed Role may have its Account basis corrected in place during review, subject to the other proposed-state rules.
+
+For example, Portia may replace an incorrect proposed `account_ref` before the Role becomes active.
+
+The change must preserve ordinary update provenance.
+
+#### Active Roles
+
+Replacing or removing an Account basis from an active Role is material.
+
+When a corrected Account replaces the original Account:
+
+```text
+preserve prior Account
+→ create or activate corrected Account
+→ create successor Role referencing corrected Account
+→ activate successor Role
+→ supersede prior Role
+→ complete Account transition
+```
+
+The prior Role continues to reference the Account that actually supported it during its active period.
+
+When an Account is invalidated without replacement, every dependent active `reported_involved` Role must be resolved through one of these paths:
+
+```text
+invalidate the dependent Role
+```
+
+or:
+
+```text
+create a successor Role supported by another qualifying attributed Account
+→ activate successor
+→ supersede prior Role
+```
+
+If several active Roles depend on the Account, the Account and Role transitions form one coordinated, atomic or recoverable operation.
+
+An Account transition must not commit a durable state in which an active `reported_involved` Role lacks a qualifying same-Event attributed Account.
+
+If dependency resolution fails, the Account transition must remain uncommitted or recover to its prior valid state.
+
+#### Historical Preservation
+
+The original Account and every dependent prior Role remain historically inspectable.
+
+Account correction does not rewrite the Role basis that existed earlier.
+
+Role correction does not rewrite the Account’s earlier canonical content or lifecycle history.
+
+### Event Participant Dependency Resolution
+
+An active Role continuously requires:
+
+```text
+referenced Event Participant status = active
+```
+
+Portia must resolve dependent Roles before an active participant becomes invalidated or superseded.
+
+#### Participant Invalidation Without Replacement
+
+When an active Event Participant is invalidated without replacement:
+
+```text
+identify every dependent active Role
+→ invalidate each dependent active Role
+→ append Role lifecycle history
+→ invalidate the participant
+→ commit as one coordinated operation
+```
+
+A dependent Role must not remain active while pointing to an invalidated participant.
+
+#### Participant Supersession
+
+When an active Event Participant is superseded, each dependent active Role must be handled explicitly.
+
+For a Role that should carry forward:
+
+```text
+create successor Role
+→ reference the replacement participant_id
+→ preserve the appropriate role type and valid basis
+→ link successor to prior Role
+→ activate successor
+→ supersede prior Role
+```
+
+For a Role that should not carry forward:
+
+```text
+invalidate prior Role
+```
+
+The participant replacement and all required Role transitions must be atomic or recoverable.
+
+The operation must not durably leave:
+
+```text
+prior participant = superseded
+dependent Role = active
+```
+
+Existing Role records are never retargeted to a different `participant_id`.
+
+The replacement relationship is represented through new participant and Role records.
+
+#### Proposed Dependent Roles
+
+A proposed Role referencing a participant that becomes invalidated or superseded cannot later become active unchanged.
+
+It must be:
+
+* invalidated;
+* or replaced by a new proposed or active Role referencing the valid participant.
+
+### Event Lifecycle Effects
+
+Role status is not cascade-rewritten merely because the owning Event changes lifecycle state.
+
+#### Event Closure
+
+Closing an Event leaves child Role statuses unchanged.
+
+Accepted Roles remain historically meaningful relationships within the closed Event.
+
+New Role activation requires reopening the Event to `active`.
+
+#### Event Reopening
+
+Reopening a closed Event does not reactivate, invalidate, or otherwise rewrite child Roles.
+
+Their existing statuses remain authoritative.
+
+#### Event Cancellation, Invalidation, or Supersession
+
+Cancelling, invalidating, or superseding an Event excludes its Roles from ordinary current Event views.
+
+Portia does not cascade every Role to `invalidated` or `superseded`.
+
+The child records remain available in explicit audit and correction views.
+
+A replacement Event receives new Event Participant and Role records where appropriate. Roles are not moved or retargeted across Event roots.
+
+### Canonical Retention and No Hard Delete
+
+After a Role record has been canonically persisted, Portia must not hard-delete its file through an ordinary workflow.
+
+This applies to:
+
+```text
+proposed
+active
+invalidated
+superseded
+```
+
+Roles created in error use lifecycle invalidation rather than deletion.
+
+Replaced Roles use supersession rather than deletion.
+
+Abandoned proposed Roles use invalidation rather than deletion.
+
+The following are not canonical Role records and may be cleaned up:
+
+* failed writes that never committed;
+* temporary upload or parsing artifacts;
+* transaction staging files;
+* and other explicitly noncanonical implementation debris.
+
+Canonical Role retention preserves:
+
+* provenance;
+* review history;
+* correction lineage;
+* participant dependency history;
+* Account dependency history;
+* and auditability.
+
+A mistaken terminal transition is corrected through append-only amendment or a new Role record, not deletion or reactivation.
+
+### Correction History
 
 Portia must preserve:
 
-* the original role assignment;
-* the later assignment;
-* the relationship between them;
-* the correction timestamp;
+* the original Role assignment;
+* every successor Role;
+* every structured forward supersession reference;
+* whether and when each intended replacement became effective;
+* the reason associated with each replaced prior Role;
+* successor activation and prior supersession lifecycle transitions;
+* additive-basis amendments;
+* correction timestamps;
 * local operator attribution;
-* and the reason for correction or refinement.
+* and controlled correction or replacement reasons.
 
-A role correction does not ordinarily require:
+A Role correction does not ordinarily require:
 
 * a new Event;
 * a new Event Participant;
 * or mutation of the participant’s subject identity.
+
+Reverse `superseded_by` views are derived rather than stored canonically.
 
 ---
 
@@ -4941,9 +7174,156 @@ This prevents role assignments from becoming an inconsistent parallel relationsh
 
 ---
 
-## 7.19 Paper Quick Capture
+## 7.19 Role Creation and Review Workflows
 
-A Portia quick-capture page may include optional neutral role marks such as:
+### Decision
+
+Initial Role status is determined by review state, not automatically by creation source.
+
+Every workflow must also assign the Role’s own creation source from the workflow that creates that Role.
+
+Portia supports:
+
+```text
+direct reviewed creation as active
+unreviewed or ambiguous creation as proposed
+reviewed proposed-to-active confirmation
+reviewed successor activation
+```
+
+The teacher-facing workflow should avoid a redundant confirmation step when the teacher has already made an explicit, unambiguous digital selection.
+
+It must still prevent machine-interpreted, imported, ambiguous, or incomplete suggestions from appearing as current Roles without review.
+
+### Explicit Reviewed Digital Entry
+
+A teacher may create a Role directly as `active` when the teacher:
+
+1. selects an active Event Participant;
+2. works within an Event whose status is `draft` or `active`;
+3. deliberately selects one supported neutral role type;
+4. reviews any required basis or detail;
+5. saves the complete Role assertion;
+6. and all schema and application validation succeeds.
+
+For example:
+
+```json
+{
+  "status": "active",
+  "role_type": "present",
+  "creation_source": {
+    "type": "digital_entry"
+  }
+}
+```
+
+may be created directly when the teacher explicitly selected and saved `present`.
+
+The Role remains `digital_entry` even when its Event or Event Participant originated through paper capture or import.
+
+The interface must not require:
+
+```text
+save proposed
+→ reopen
+→ confirm active
+```
+
+for that ordinary reviewed workflow.
+
+A direct digital Role may omit `basis` when the accepted basis rules permit omission.
+
+A directly entered:
+
+```text
+directly_involved
+present
+reported_involved
+```
+
+Role must not contain top-level `detail`.
+
+### Directly Entered `reported_involved`
+
+A digitally entered `reported_involved` Role may begin as active only when:
+
+* the teacher explicitly selects or confirms `reported_involved`;
+* at least one same-Event attributed Account exists;
+* the Role basis contains an `account_ref` to that Account;
+* every referenced source validates;
+* the reported qualification remains visible;
+* and no unresolved ambiguity remains.
+
+The Account requirement is the same for digital, paper, and import workflows.
+
+For example:
+
+```json
+{
+  "status": "active",
+  "role_type": "reported_involved",
+  "basis": [
+    {
+      "kind": "account_ref",
+      "record_id": "acct_01j9..."
+    }
+  ],
+  "creation_source": {
+    "type": "digital_entry"
+  }
+}
+```
+
+A bare digital selection of `reported_involved` without a valid same-Event attributed `account_ref` must not become active.
+
+### Directly Entered `contextual`
+
+A digitally entered `contextual` Role may begin as active only when:
+
+* the teacher explicitly selects or confirms `contextual`;
+* no more specific compatible role accurately describes the current relationship;
+* concise nonempty `detail` explains the legitimate Event-context connection;
+* the detail remains neutral and non-narrative;
+* the resulting active-role set satisfies Section 7.15;
+* and no unresolved ambiguity remains.
+
+For example:
+
+```json
+{
+  "status": "active",
+  "role_type": "contextual",
+  "detail": "Participated in the immediate class-related conference.",
+  "creation_source": {
+    "type": "digital_entry"
+  }
+}
+```
+
+A digital `contextual` assignment without valid detail must remain proposed or be rejected.
+
+### Reviewed Digital Successors
+
+A teacher may review a material correction digitally and create the successor directly as active within the coordinated replacement operation.
+
+The operation must:
+
+```text
+validate the successor and intended post-operation active-role set
+→ create or transition successor as active
+→ transition every effectively replaced prior Role to superseded
+→ append lifecycle and correction history
+→ commit atomically or through recoverable staged writes
+```
+
+The workflow must not manufacture a separate proposed-state persistence step when the successor has already been fully reviewed before the transaction begins.
+
+When correction review is incomplete, the successor begins as proposed and the prior Role remains active.
+
+### Paper Capture
+
+A Portia paper-capture page may include optional neutral role marks such as:
 
 ```text
 Directly involved
@@ -4954,30 +7334,185 @@ Other context
 
 The printed page does not need to require a role selection.
 
+Before scanning, printed role marks are only capture affordances.
+
+They do not create:
+
+* blank Role records;
+* proposed Role records;
+* preallocated Role IDs;
+* or Role creation provenance.
+
 After scanning:
 
-* recognized role marks become proposed role assignments;
+* recognized role marks may create proposed Role assignments;
+* every paper-created Role uses `creation_source.stage = ingested`;
+* every paper-created Role receives a matching `paper_capture` basis entry;
+* the matching basis repeats the creation-source `route_id` and `page_record_id` exactly;
+* a recognized `reported_involved` mark may create a proposed Role with only that matching paper basis;
+* a recognized contextual or “other context” mark may create a proposed `contextual` Role without `detail`;
 * ambiguous marks remain unresolved review items;
-* an unmarked role area creates no role assignment;
-* and no paper-derived role becomes active automatically.
+* an unmarked role area creates no Role assignment;
+* and no paper-interpreted Role becomes active automatically.
 
 The teacher must be able to:
 
-* confirm the proposed role;
+* inspect the originating paper artifact through the matching basis;
+* create, review, or select the attributed Account required before activating paper-derived `reported_involved`;
+* confirm the proposed Role;
+* supply the required detail before activating `contextual`;
 * choose another neutral role;
-* add more than one applicable role;
-* leave the participant without a role;
+* add more than one compatible Role;
+* leave the participant without a Role;
 * or discard the interpretation.
 
+After explicit review, a valid paper-derived proposed Role may transition to active.
+
+A paper-derived `reported_involved` Role is not valid for activation until its basis also contains at least one same-Event attributed `account_ref`.
+
+The review interface may create the Account from captured page content and link it automatically, but the Account remains a separate canonical record governed by its own schema and lifecycle.
+
+Its `creation_source` remains:
+
+```text
+paper_capture / ingested
+```
+
+A Role cannot transition from:
+
+```text
+paper_capture / preallocated
+```
+
+because that Role source shape is invalid.
+
+Confirmation changes status and update attribution, not historical origin or the required matching basis.
+
+Paper-derived explanatory text may populate top-level `detail` only for a reviewed `contextual` Role.
+
+For `directly_involved`, `present`, or `reported_involved`, explanatory text must be routed to the appropriate Account, Observation, Event summary, or other canonical record rather than stored as Role `detail`.
+
+A paper workflow could create a Role directly as active only when teacher review occurs before canonical Role creation and the complete assertion is explicitly accepted.
+
+For `reported_involved`, that complete assertion must already include the same-Event attributed Account reference.
+
+The paper source alone never authorizes active status.
+
 Paper capture must not offer prohibited judgment labels merely for convenience.
+
+### Imports
+
+Imported Role data awaiting teacher review ordinarily begins as proposed.
+
+An import does not become active merely because:
+
+* parsing succeeded;
+* identifiers matched;
+* the source system marked the record complete;
+* or the import operation was initiated by the teacher.
+
+After explicit review, Portia may:
+
+* transition a proposed imported Role to active;
+* or create the reviewed imported Role directly as active when review occurs before canonical Role creation.
+
+An imported `contextual` Role must acquire valid nonempty top-level `detail` before either activation path succeeds.
+
+An imported `reported_involved` proposal may initially preserve an `import_source` basis.
+
+Before activation, Portia must create or select a same-Event attributed Account representing the imported report and add an `account_ref` to the Role basis.
+
+The import basis remains useful provenance and proposal support, but it does not replace the canonical Account.
+
+Imported top-level `detail` must be rejected or remapped when the Role type is:
+
+```text
+directly_involved
+present
+reported_involved
+```
+
+In either case:
+
+```text
+creation_source.type = import
+```
+
+remains accurate.
+
+Review changes status and update attribution.
+
+It does not rewrite the Role source as `digital_entry`, and it does not copy the Event or Event Participant source.
+
+### Automated Extraction and Suggestions
+
+A Role produced or suggested through:
+
+* handwriting recognition;
+* checkbox interpretation;
+* automated text extraction;
+* heuristic matching;
+* or another system-generated inference
+
+must begin as proposed unless the teacher explicitly reviews the complete assertion before canonical creation.
+
+A system process must not activate its own suggestion merely because it meets structural validation.
+
+### Ambiguity
+
+A Role must begin or remain proposed when ambiguity exists concerning:
+
+* participant identity;
+* role type;
+* the required meaning of a `contextual` relationship;
+* source linkage;
+* paper-mark interpretation;
+* imported-field mapping;
+* duplicate resolution;
+* or material correction intent.
+
+Portia must not resolve ambiguity by selecting the most likely active Role automatically.
+
+### Creation Source Does Not Determine Status or Inherit from Parents
+
+The following rules are prohibited:
+
+```text
+digital_entry always means active
+paper_capture always means proposed forever
+import always means proposed forever
+Role source equals Event source
+Role source equals Event Participant source
+```
+
+Instead:
+
+* explicit completed teacher review may permit active status;
+* incomplete or machine-dependent review requires proposed status;
+* each Role source is assigned from the workflow that created that Role;
+* creation source remains immutable provenance;
+* parent and child sources may differ;
+* and status records whether the Role is currently accepted.
+
+The application must evaluate the complete workflow state rather than infer review status from `creation_source.type` alone.
 
 ---
 
 ## 7.20 Derived Views
 
-Current participant-role views must use active canonical role records.
+Role views must evaluate the Role together with its parent records.
 
-Portia may derive views such as:
+### Ordinary Current Event Views
+
+A Role appears in an ordinary current Event view only when:
+
+```text
+Role status = active
+Event Participant status = active
+Event status = active
+```
+
+Portia may derive current views such as:
 
 ```text
 participants directly involved
@@ -4996,7 +7531,37 @@ unknown involvement
 
 unless Portia explicitly records that meaning elsewhere.
 
-Historical views may display invalidated or superseded role assignments when the teacher requests an audit or correction history.
+### Draft-Review Views
+
+An active Role beneath a draft Event may appear in:
+
+* draft Event assembly;
+* teacher review;
+* validation;
+* and activation-preparation views.
+
+It must be visibly scoped to the draft Event and must not appear in ordinary accepted Event histories.
+
+### Closed-Event History
+
+A Role that remains active when its Event closes may appear as an accepted historical relationship within that closed Event.
+
+Closing does not require a Role status transition.
+
+### Terminal or Noncurrent Parents
+
+Roles beneath a cancelled, invalidated, or superseded Event are excluded from ordinary current views regardless of their stored Role status.
+
+Roles referencing an invalidated or superseded Event Participant are also excluded.
+
+Such records remain available in explicit:
+
+* lifecycle audit views;
+* correction-history views;
+* supersession views;
+* and provenance inspection.
+
+Derived views must distinguish stored Role status from effective current visibility.
 
 ---
 
@@ -5016,20 +7581,144 @@ A future Event Participant Role schema should enforce:
 * constant `record_type`;
 * supported role types;
 * supported statuses;
+* the structural fields required for Role lifecycle history references where included;
+* required record-level `creation_source`;
 * valid creation-source variants;
-* valid basis variants;
+* `stage = ingested` whenever Role `creation_source.type = paper_capture`;
+* rejection of Role `creation_source.stage = preallocated`;
+* a conditional nonempty `basis` requirement when `creation_source.type = paper_capture`;
+* at least one `paper_capture` basis variant for every paper-derived Role;
+* no schema-level inheritance from Event or Event Participant provenance;
+* no schema-level implication that one creation source uniquely determines status;
+* top-level `detail` permitted only when `role_type` is `contextual`;
+* optional top-level `detail` for proposed `contextual` Roles;
+* nonempty top-level `detail` for active and superseded `contextual` Roles;
+* rejection of top-level `detail` for `directly_involved`, `present`, and `reported_involved`;
+* rejection of empty or whitespace-only required contextual detail;
+* independent nested `supersedes[].detail` rules;
+* `basis` as an optional nonempty array except where conditionally required;
+* mutually exclusive structured basis-entry variants;
+* `contains` validation for a paper basis when the Role source is paper capture;
+* compact `account_ref` and `observation_ref` shapes containing only `kind` and `record_id`;
+* rejection of repeated Event-scope fields inside Event-local record references;
+* structurally unique basis entries;
+* a source-oriented basis requirement for proposed `reported_involved`;
+* an `account_ref` requirement for every active and superseded `reported_involved`;
+* `supersedes` as a nonempty array of structured prior-Role references;
+* `role_id` and controlled `reason` on every supersession entry;
+* nonempty `detail` when a supersession reason is `other`;
+* structurally unique supersession entries;
+* rejection of top-level canonical `replacement_reason` and `superseded_by`;
 * identifier patterns;
 * timestamp formats;
 * and rejection of unknown properties.
 
+JSON Schema can require that a paper-derived Role contain at least one `paper_capture` basis entry.
+
+It can also conditionally require at least one `account_ref` when:
+
+```text
+role_type = reported_involved
+status = active or superseded
+```
+
+This rule is independent from creation source.
+
+Standard JSON Schema cannot determine whether an invalidated Role was rejected while proposed or invalidated after having been active. Lifecycle validation must preserve the Account reference for the latter case.
+
+Standard JSON Schema also cannot, by itself, compare the `route_id` and `page_record_id` values in the paper basis entry against sibling values inside `creation_source`.
+
+Exact cross-field equality is therefore an application invariant.
+
+JSON Schema may permit `supersedes` on a proposed successor because the field can preserve reviewed replacement intent.
+
+JSON Schema cannot determine whether those references have become effective. Effectiveness depends on lifecycle history and the coordinated activation operation.
+
+JSON Schema can conditionally require `detail` from `role_type` and current `status`.
+
+It cannot determine from one invalidated record whether that Role was rejected while proposed or invalidated after having been active. Application lifecycle validation must therefore prevent deletion of historical detail from a formerly active `contextual` Role.
+
+JSON Schema also cannot enforce duplicate or compatibility rules across the participant’s separate Role files. Those rules depend on the complete intended active-role set.
+
 Application validation must additionally confirm:
 
+* that Role activation references an active Event Participant;
+* that Role activation occurs only while the Event is `draft` or `active`;
+* that an active Role beneath a draft Event is excluded from ordinary current Event histories;
+* that current-view eligibility is derived from Role, participant, and Event state;
+* that every Role has its own creation source;
+* that the Role source matches the workflow that created the Role;
+* that every paper-derived Role was created only after returned-page interpretation and uses `stage = ingested`;
+* that every paper-derived Role contains a matching `paper_capture` basis entry;
+* that the matching basis `route_id` and `page_record_id` equal the creation-source values exactly;
+* that additional basis entries do not substitute for the matching paper entry;
+* that paper or import basis alone leaves `reported_involved` proposed;
+* that every active `reported_involved` contains at least one same-Event attributed `account_ref`;
+* that the referenced Account satisfies the Account attribution contract;
+* that every superseded or formerly active invalidated `reported_involved` Role preserves its Account reference;
+* that an invalidated never-active proposal may lack an Account;
+* that the matching entry remains present through confirmation, invalidation, and supersession;
+* that no blank or pre-render Role record was created merely from page generation;
+* that Role `stage = preallocated` is rejected;
+* that no Role source was inferred merely from the Event, Event Participant, basis, prior Role, or current editor;
+* that successor Roles preserve their own source independently from superseded Roles;
+* that immutable Role creation provenance is not rewritten through ordinary review or lifecycle transitions;
+* whether initial active status was produced through explicit completed teacher review;
+* whether proposed status is required because review, identity, role, source, or correction intent remains ambiguous;
+* that creation source is preserved independently from review status;
+* that machine-generated or unreviewed suggestions do not become active automatically;
+* that every directly active `reported_involved` Role has the required same-Event attributed Account reference and explicit confirmation;
+* that every active `contextual` Role contains concise neutral nonempty top-level detail;
+* that a proposed `contextual` Role may remain incomplete without becoming current;
+* that top-level detail is absent from every non-contextual Role;
+* that imported, paper-derived, or digitally entered explanatory text is routed appropriately rather than copied into prohibited Role detail;
+* that nested `supersedes[].detail` is validated independently from top-level contextual detail;
+* that a superseded `contextual` Role preserves activation-complete detail;
+* that an invalidated formerly active `contextual` Role does not lose historical detail;
+* that removing or substantively replacing active contextual detail uses material correction and supersession;
+* that a reviewed direct-active successor participates in the complete coordinated replacement operation;
 * parent Event existence;
 * parent participant existence;
 * matching Event ownership;
 * valid referenced Account or Observation records;
-* no duplicate active role type for one participant;
+* same-Event ownership for every Account and Observation basis reference;
+* rejection of cross-Event Account and Observation basis relationships;
+* valid referenced paper routes and page records;
+* import-source traceability;
+* semantic duplicate-basis detection;
+* duplicate active-role detection using the intended post-operation state;
+* compatibility-matrix validation using the intended post-operation state;
+* enforcement of the maximum initial active-role set;
+* rejection of warning-only overrides for incompatible active-role combinations;
+* classification of active basis changes as additive or material;
+* append-only amendment history for in-place active basis additions;
+* rejection of in-place active basis removal or replacement;
+* the complete allowed Role-transition matrix;
+* rejection of prohibited transitions and ordinary reactivation of terminal Roles;
+* append-only lifecycle history for every Role transition;
+* no hard deletion of canonical Role records;
+* immutability of persisted `participant_id`;
 * correct lifecycle transitions;
+* prospective-versus-effective supersession interpretation;
+* successor activation as the exact replacement boundary;
+* coordinated successor activation and prior-Role supersession;
+* atomic or recoverable staged-write behavior;
+* rollback or recovery to a valid durable state after partial failure;
+* preservation of prior active Roles when a successor is abandoned or invalidated before activation;
+* existence and same-Event scope of every referenced prior Role;
+* activation-time eligibility of every referenced prior Role;
+* reason-and-correction consistency for every supersession reference;
+* participant-change eligibility for cross-participant replacement;
+* self-reference, duplicate-reference, cycle, and conflicting-successor prevention;
+* forward supersession consistency;
+* Account correction, supersession, and invalidation dependency resolution;
+* prevention of silent `account_ref` retargeting;
+* prevention of active `reported_involved` Roles without a qualifying Account after an Account transition;
+* active-participant dependency enforcement;
+* coordinated participant invalidation or supersession with dependent Role transitions;
+* prevention of persisted Role retargeting to another participant;
+* Event closure, reopening, cancellation, invalidation, and supersession visibility effects;
+* source-retraction handling;
 * and provenance-preserving correction links.
 
 ---
@@ -5038,30 +7727,140 @@ Application validation must additionally confirm:
 
 1. Participant identity and Event-level role are separate canonical records.
 2. Event Participant records contain no authoritative embedded role or roles array.
-3. One participant may have zero, one, or several role assignments.
-4. No role assignment is required for Event activation.
-5. A participant without a role remains a valid participant.
-6. Role assignments use independent opaque identities.
-7. Every role assignment references one Event Participant.
-8. Role assignments do not point directly to students, Actors, or descriptive subjects.
-9. Initial Event-level roles use neutral language.
-10. `directly_involved` does not indicate responsibility or fault.
-11. `present` does not assert observation or direct involvement.
-12. `reported_involved` remains visibly qualified as reported.
-13. `contextual` should include concise clarification and be used sparingly.
-14. One participant may hold several compatible role types.
-15. Only active role assignments appear as current roles.
-16. Paper- or import-derived roles may begin as proposed.
-17. Paper-derived roles require teacher confirmation.
-18. An unmarked paper role area creates no assignment.
-19. Creation source and documentary basis remain distinct.
-20. Account, Observation, Response, Support, Follow-Up, and Determination relationships remain canonical in their own record types.
-21. Responsibility and judgment labels are prohibited from the neutral role vocabulary.
-22. Duplicate active role types for one participant are prohibited.
-23. Corrections preserve prior role records and provenance.
-24. Role changes do not mutate participant identity.
-25. Event activation does not depend on role assignment.
-26. The current Event Participant JSON Schema must remain compatible with separate future role records.
+3. One Role record assigns one role type to one Event Participant within one Event.
+4. Multiple roles require multiple Role records.
+5. One participant may have zero, one, or several historical or proposed role assignments.
+6. No role assignment is required for Event activation.
+7. A participant without a role remains a valid participant.
+8. Role assignments use independent opaque identities.
+9. Every Role assignment references exactly one Event Participant.
+10. A persisted Role’s `participant_id` is immutable.
+11. A wrong-participant proposed Role is invalidated or superseded by a new Role rather than retargeted.
+12. Role activation requires an active Event Participant.
+13. Role activation is permitted only while the Event is `draft` or `active`.
+14. A proposed Event Participant cannot own an active Role.
+15. An active Role beneath a draft Event is accepted for draft assembly but excluded from ordinary current Event histories.
+16. Ordinary current Role visibility requires an active Role, active Event Participant, and active Event.
+17. Event closure does not alter child Role status.
+18. Event reopening does not alter child Role status.
+19. Event cancellation, invalidation, or supersession excludes child Roles from ordinary current views without cascade-rewriting their statuses.
+20. An active Role continuously requires an active Event Participant.
+21. Participant invalidation without replacement requires coordinated invalidation of dependent active Roles.
+22. Participant supersession requires successor Roles for relationships that carry forward or invalidation of Roles that do not.
+23. Participant and dependent-Role transitions are atomic or recoverable.
+24. Role assignments do not point directly to students, Actors, or descriptive subjects.
+25. Initial Event-level roles use neutral language.
+26. `directly_involved` does not indicate responsibility or fault.
+27. `present` does not assert observation or direct involvement.
+28. `reported_involved` remains visibly qualified as reported.
+29. `reported_involved` requires at least one source-oriented basis entry.
+30. `contextual` is used sparingly when no more specific initial role adequately describes the relationship.
+31. A proposed `contextual` Role may omit `detail`.
+32. An active `contextual` Role requires concise neutral nonempty `detail`.
+33. A superseded `contextual` Role preserves its activation-complete detail.
+34. An invalidated proposed `contextual` Role may lack detail.
+35. An invalidated formerly active `contextual` Role retains its historical detail.
+36. Removing or substantively replacing active contextual detail is a material correction.
+37. Top-level Role `detail` is permitted only for `contextual`.
+38. Top-level `detail` is prohibited for `directly_involved`, `present`, and `reported_involved`.
+39. Nested `supersedes[].detail` is distinct from top-level contextual detail.
+40. Clarifying facts for non-contextual Roles remain in Accounts, Observations, Event context, or basis records.
+41. Stored active status is necessary but not sufficient for ordinary current-view visibility.
+42. One participant may have at most two active Roles under the initial vocabulary.
+43. `present` may coexist with `directly_involved`, `reported_involved`, or `contextual`.
+44. `directly_involved`, `reported_involved`, and `contextual` are mutually exclusive as current active roles.
+45. Duplicate active role types for one participant are prohibited.
+46. Compatibility and duplicate validation use the intended post-operation active-role set.
+47. Proposed and historical Roles may preserve incompatible assertions without making them current.
+48. Incompatible active-role combinations cannot be saved through a warning-only override.
+49. `basis` is an optional unordered array of one or more structured entries.
+50. Direct teacher assignment may omit `basis`.
+51. No `teacher_entry` basis kind is defined.
+52. The number or order of basis entries does not establish credibility, agreement, or evidentiary weight.
+53. Several basis entries support one Role assertion rather than creating several Role assignments.
+54. Structurally and semantically duplicate basis entries are prohibited.
+55. Creation source, operator provenance, lifecycle history, and assertion basis remain distinct.
+56. Every Role has its own required structured creation source.
+57. A Role source is independent from Event and Event Participant sources.
+58. A Role source is not inferred from its basis, current editor, or superseded Role.
+59. A successor Role records its own creation source.
+60. Paper-derived Roles remain paper-derived after confirmation.
+61. Every paper-derived Role uses `creation_source.stage = ingested`.
+62. Event Participant Roles must never use `creation_source.stage = preallocated`.
+63. Page generation and blank printed role marks do not create canonical Role records.
+64. Every paper-derived Role contains at least one matching `paper_capture` basis entry.
+65. The matching basis route and page references equal the Role creation-source references exactly.
+66. Additional basis entries do not replace the required matching paper basis.
+67. The matching paper basis remains attached after confirmation, invalidation, or supersession.
+68. Paper or import basis may support a proposed `reported_involved` Role.
+69. No `reported_involved` Role may become active without a same-Event attributed Account reference.
+70. The active Account requirement is independent from Role creation source.
+71. Account correction, supersession, or invalidation never silently retargets an active Role’s `account_ref`.
+72. A proposed Role may correct its Account basis in place during review.
+73. Replacing or removing an Account basis from an active Role requires Role supersession or invalidation.
+74. An Account lifecycle operation must not leave an active `reported_involved` Role without a qualifying attributed Account.
+75. Account and dependent-Role transitions are coordinated, atomic, or recoverable.
+76. Prior Accounts and prior Roles remain historically inspectable.
+77. Teacher confirmation does not substitute for the activation-required Account.
+78. Every superseded or formerly active invalidated `reported_involved` Role preserves its Account reference.
+79. An invalidated never-active `reported_involved` proposal may lack an Account.
+80. Imported Roles remain imported after review.
+81. Ordinary lifecycle changes do not rewrite Role creation provenance.
+82. Account and Observation basis references resolve only within the Role’s owning Event.
+83. Event-local Account and Observation references contain only `kind` and `record_id`.
+84. Cross-Event Account and Observation basis references are prohibited.
+85. Proposed Role bases may be edited during review.
+86. Active Role bases may receive only genuinely additive, non-meaning-changing entries in place.
+87. In-place active basis additions require append-only amendment history.
+88. Removing or replacing an active basis entry requires a successor Role and supersession.
+89. Material Role corrections receive new Role identities.
+90. Successor Roles own canonical forward `supersedes` arrays.
+91. A proposed successor may contain prospective `supersedes` references.
+92. Prospective references do not alter prior Role status.
+93. Every `supersedes` entry identifies one prior `role_id` and one controlled reason.
+94. The `other` supersession reason requires nonempty `detail`.
+95. One successor may consolidate several prior Roles through several structured references.
+96. Supersession-array order has no semantic meaning.
+97. Every referenced prior Role belongs to the same Event as the successor.
+98. A prior Role becomes `superseded` only when the successor becomes `active`.
+99. Successor activation and every required prior-Role supersession form one logical transaction.
+100. The transaction is atomic or uses recoverable staged writes.
+101. A failed or abandoned successor activation leaves the successor proposed or invalidated and the prior Role or Roles active.
+102. A completed replacement must not durably leave both the successor and an effectively replaced prior Role active.
+103. The completed replacement must leave a compatibility-valid post-operation active-role set.
+104. Self-supersession, duplicate prior references, and circular supersession are prohibited.
+105. Canonical top-level `replacement_reason` and `superseded_by` fields are prohibited.
+106. Effective reverse `superseded_by` views require completed activation and lifecycle history.
+107. Invalidated and superseded Role bases remain historical and are not edited ordinarily.
+108. Source retraction is handled through invalidation or replacement rather than deletion of history.
+109. Status records review and lifecycle state rather than creation source.
+110. Explicit, unambiguous, reviewed digital entry may create a Role directly as active.
+111. Direct active creation does not require a fabricated proposed-state transition.
+112. A directly active `reported_involved` Role requires a same-Event attributed Account reference and explicit teacher confirmation.
+113. A directly active `contextual` Role requires valid detail and explicit teacher confirmation.
+114. Every direct-active creation must satisfy duplicate and compatibility validation.
+115. Paper interpretation, automated extraction, unreviewed imports, ambiguous matching, incomplete contextual detail, and incomplete corrections ordinarily begin as proposed.
+116. No paper-interpreted or machine-generated Role becomes active automatically.
+117. A reviewed import may become active without changing its creation source to `digital_entry`.
+118. A reviewed digital successor may be created and activated within the coordinated replacement operation.
+119. Creation source alone neither authorizes nor permanently prohibits active status.
+120. Paper-derived Roles require teacher confirmation.
+121. An unmarked paper role area creates no assignment.
+122. Account, Observation, Response, Support, Follow-Up, and Determination relationships remain canonical in their own record types.
+123. Responsibility and judgment labels are prohibited from the neutral role vocabulary.
+124. Allowed Role transitions are `proposed → active`, `proposed → invalidated`, `proposed → superseded`, `active → invalidated`, and `active → superseded`.
+125. Direct reviewed creation as active remains permitted.
+126. Invalidated and superseded Roles are terminal under ordinary workflows.
+127. Active Roles do not return to proposed.
+128. Terminal Roles are not reactivated or repurposed.
+129. Every Role transition creates append-only lifecycle history.
+130. Canonical Role records are never hard-deleted through ordinary workflows.
+131. Failed or uncommitted temporary artifacts may be cleaned up because they are not canonical Role records.
+132. Mistaken terminal transitions use append-only amendment or a new Role rather than deletion or reactivation.
+133. Corrections preserve prior Role records and provenance.
+134. Role changes do not mutate or retarget canonical participant identity.
+135. Event activation does not depend on Role assignment.
+136. The Event Participant JSON Schema remains compatible with separate canonical Role records.
 
 ## 8. Event Lifecycle and Status Transitions
 
@@ -5293,6 +8092,12 @@ Closed Events ordinarily appear in:
 
 Closing an Event is an operational completion decision, not a behavioral judgment.
 
+Closing does not cascade Role status changes.
+
+Active child Roles remain accepted historical relationships within the closed Event.
+
+A new Role must not be activated beneath a closed Event until the Event is reopened to `active`.
+
 ---
 
 ## 8.5 Reopening a Closed Event
@@ -5333,6 +8138,8 @@ Reopening must not be used to absorb:
 * or later monitoring that belongs in Follow-Up.
 
 When the new information concerns a separate occurrence, Portia must create a new Event instead.
+
+Reopening does not reactivate, invalidate, or otherwise rewrite existing child Roles.
 
 ---
 
@@ -5382,6 +8189,10 @@ It may remain visible in:
 * and explicit historical inspection.
 
 An Event that has ever been active must not become cancelled.
+
+Cancelling a draft Event does not cascade every child Role to another status.
+
+Any persisted Roles remain available in audit views but are excluded from ordinary current histories because their Event is cancelled.
 
 ---
 
@@ -5437,6 +8248,10 @@ An invalidated Event remains preserved for history and audit.
 
 It must not appear as a valid current Event in ordinary student, Actor, or class histories unless the view explicitly includes invalidated records.
 
+Invalidating an Event does not cascade-rewrite every child Role.
+
+Child Roles remain historically inspectable but are excluded from ordinary current views because the owning Event is invalidated.
+
 ---
 
 ## 8.8 Superseded
@@ -5468,6 +8283,12 @@ closed → superseded
 A superseded Event remains preserved.
 
 It must not continue to appear as the current canonical Event in ordinary views.
+
+Superseding an Event does not move or retarget its child Roles to the replacement Event.
+
+The replacement Event receives new Event Participant and Role records where appropriate.
+
+Roles beneath the superseded Event remain available in historical and audit views but are excluded from ordinary current views.
 
 ---
 
@@ -5952,34 +8773,38 @@ The root may later contain nonauthoritative derived lifecycle information, but c
 
 1. Every Event root declares one current lifecycle status.
 2. The initial statuses are `draft`, `active`, `closed`, `cancelled`, `invalidated`, and `superseded`.
-3. Status describes record lifecycle rather than behavior severity or responsibility.
-4. Draft Events may be incomplete.
-5. Draft Events do not appear as accepted Events in ordinary histories.
-6. Activation requires successful application-level validation.
-7. Active Events require at least one active Event Participant.
-8. Event Participant Roles are not required for activation.
-9. Active status does not mean the classroom situation remains ongoing.
-10. Closed Events remain valid historical Events.
-11. Closure does not establish a finding or Outcome.
-12. Closed Events may be reopened with an explicit reason.
-13. Reopening must not absorb a later bounded occurrence.
-14. Cancellation applies only to Events that were never active.
-15. Unused paper drafts should be cancelled rather than closed.
-16. Invalidation means the Event itself is no longer treated as valid.
-17. Correctable field or participant errors do not automatically require Event invalidation.
-18. Supersession replaces an Event with one or more canonical Events.
-19. Replacement Events own canonical `supersedes` relationships to prior Events.
-20. Reverse `superseded_by` views are derived.
-21. Cancelled, invalidated, and superseded Events are terminal under ordinary workflows.
-22. Active or closed Events never return to draft.
-23. Previously active Events never become cancelled.
-24. Every transition preserves a reason and local provenance.
-25. Every transition creates an append-only lifecycle-history record.
-26. Root `status` and lifecycle history must remain consistent.
-27. `updated_at` and `updated_by` do not replace lifecycle history.
-28. Paper return or scan interpretation cannot activate an Event automatically.
-29. Schema validation enforces the status vocabulary.
-30. Application validation enforces transition legality and cross-record requirements.
+3. Event closure does not alter child Role statuses.
+4. Event reopening does not alter child Role statuses.
+5. Event cancellation, invalidation, or supersession excludes child Roles from ordinary current views without cascade-rewriting them.
+6. Event supersession does not move or retarget Roles across Event roots.
+7. Status describes record lifecycle rather than behavior severity or responsibility.
+8. Draft Events may be incomplete.
+9. Draft Events do not appear as accepted Events in ordinary histories.
+10. Activation requires successful application-level validation.
+11. Active Events require at least one active Event Participant.
+12. Event Participant Roles are not required for activation.
+13. Active status does not mean the classroom situation remains ongoing.
+14. Closed Events remain valid historical Events.
+15. Closure does not establish a finding or Outcome.
+16. Closed Events may be reopened with an explicit reason.
+17. Reopening must not absorb a later bounded occurrence.
+18. Cancellation applies only to Events that were never active.
+19. Unused paper drafts should be cancelled rather than closed.
+20. Invalidation means the Event itself is no longer treated as valid.
+21. Correctable field or participant errors do not automatically require Event invalidation.
+22. Supersession replaces an Event with one or more canonical Events.
+23. Replacement Events own canonical `supersedes` relationships to prior Events.
+24. Reverse `superseded_by` views are derived.
+25. Cancelled, invalidated, and superseded Events are terminal under ordinary workflows.
+26. Active or closed Events never return to draft.
+27. Previously active Events never become cancelled.
+28. Every transition preserves a reason and local provenance.
+29. Every transition creates an append-only lifecycle-history record.
+30. Root `status` and lifecycle history must remain consistent.
+31. `updated_at` and `updated_by` do not replace lifecycle history.
+32. Paper return or scan interpretation cannot activate an Event automatically.
+33. Schema validation enforces the status vocabulary.
+34. Application validation enforces transition legality and cross-record requirements.
 
 ## 9. Event Participant Lifecycle and Identity Resolution
 
@@ -6111,8 +8936,10 @@ An active participant:
 
 * satisfies the Event’s minimum-participant requirement;
 * appears in appropriate current and historical views;
-* may receive Event Participant Role assignments;
+* may receive active Event Participant Role assignments;
 * and may be referenced by Accounts, Observations, Responses, or later Portia records.
+
+Only an active participant may own an active Role.
 
 Active status indicates only that the participant relationship is accepted.
 
@@ -6160,6 +8987,10 @@ An invalidated participant remains preserved for provenance and audit.
 
 It does not appear as a current Event participant.
 
+Before an active participant is invalidated without replacement, every dependent active Role must be invalidated through the same coordinated, atomic or recoverable operation.
+
+A dependent active Role must not remain active while pointing to the invalidated participant.
+
 ---
 
 ## 9.5 Superseded
@@ -6187,6 +9018,13 @@ duplicate records → one canonical participant
 A superseded participant remains historically inspectable.
 
 It no longer appears as the current canonical participant relationship.
+
+Before supersession commits, each dependent active Role must either:
+
+* be replaced by a successor Role referencing the replacement participant;
+* or be invalidated when the relationship should not carry forward.
+
+Existing Role records are never retargeted to another participant.
 
 ---
 
@@ -6292,13 +9130,22 @@ The expected sequence is:
 create corrected participant
 → validate corrected participant
 → activate corrected participant
+→ resolve every dependent Role
+→ activate successor Roles or invalidate noncarried Roles
 → link corrected participant to prior participant
 → supersede prior participant
+→ commit all related transitions
 ```
+
+The participant and Role changes form one logical transaction.
+
+The operation must be atomic or use recoverable staged writes.
 
 When replacing the final active participant of an active Event, Portia must activate the correction before superseding the prior participant.
 
 This prevents the Event from temporarily having no active participant.
+
+It must also prevent any dependent Role from remaining active against the superseded participant.
 
 ---
 
@@ -6720,6 +9567,14 @@ except in diagnostic or developer views.
 
 Where several automatic operations are required, Portia should perform them as one coordinated user action.
 
+Participant invalidation and supersession validation must identify dependent Roles before committing the participant transition.
+
+The interface should explain whether each Role will be:
+
+* invalidated;
+* replaced for the corrected participant;
+* or left as a proposed review item that cannot become active unchanged.
+
 Strong validation and low-friction interaction are complementary requirements rather than competing goals.
 
 ---
@@ -6729,35 +9584,40 @@ Strong validation and low-friction interaction are complementary requirements ra
 1. Participant statuses are `proposed`, `active`, `invalidated`, and `superseded`.
 2. Proposed participants do not satisfy Event activation.
 3. Active participants satisfy the participant requirement.
-4. Proposed participants may be confirmed as active in place when identity is unchanged.
-5. Material identity changes require replacement participant records.
-6. Replacement participants own canonical `supersedes` links to prior participants.
-7. Reverse `superseded_by` views are derived.
-8. Invalidated and superseded participants are terminal under ordinary workflows.
-9. Active participants do not return to proposed status.
-10. Unknown participants may remain active without forced resolution.
-11. Resolving unknown or descriptive participants preserves the original record.
-12. Descriptive people are not automatically promoted to Actors.
-13. Duplicate durable identities are detected through canonical references.
-14. Descriptive and unknown participants are not consolidated automatically through text similarity.
-15. Every transition preserves lifecycle history and local provenance.
-16. Paper interpretations ordinarily begin as proposed.
-17. Paper review supports direct Confirm, Correct, and Dismiss actions.
-18. Digital entry does not require unnecessary proposed-state review after explicit teacher selection.
-19. Internal lifecycle complexity must remain largely invisible during routine use.
-20. Teachers do not manually manage opaque IDs, files, provenance records, or canonical relationship direction.
-21. Routine capture requires only the information needed for useful documentation.
-22. Optional detail is progressively disclosed rather than demanded initially.
-23. Batch review and contextual defaults should reduce repetitive work.
-24. Validation messages must describe the corrective teacher action.
-25. Portia must not collect data merely because the schema can represent it.
-26. Workflow burden must remain proportionate to the instructional or support value produced.
+4. Only active participants may own active Roles.
+5. Participant invalidation without replacement requires coordinated invalidation of dependent active Roles.
+6. Participant supersession requires successor Roles for carried relationships or invalidation of Roles that do not carry forward.
+7. Existing Role records are never retargeted to a replacement participant.
+8. Participant and dependent-Role transitions are atomic or recoverable.
+9. Proposed participants may be confirmed as active in place when identity is unchanged.
+10. Material identity changes require replacement participant records.
+11. Replacement participants own canonical `supersedes` links to prior participants.
+12. Reverse `superseded_by` views are derived.
+13. Invalidated and superseded participants are terminal under ordinary workflows.
+14. Active participants do not return to proposed status.
+15. Unknown participants may remain active without forced resolution.
+16. Resolving unknown or descriptive participants preserves the original record.
+17. Descriptive people are not automatically promoted to Actors.
+18. Duplicate durable identities are detected through canonical references.
+19. Descriptive and unknown participants are not consolidated automatically through text similarity.
+20. Every transition preserves lifecycle history and local provenance.
+21. Paper interpretations ordinarily begin as proposed.
+22. Paper review supports direct Confirm, Correct, and Dismiss actions.
+23. Digital entry does not require unnecessary proposed-state review after explicit teacher selection.
+24. Internal lifecycle complexity must remain largely invisible during routine use.
+25. Teachers do not manually manage opaque IDs, files, provenance records, or canonical relationship direction.
+26. Routine capture requires only the information needed for useful documentation.
+27. Optional detail is progressively disclosed rather than demanded initially.
+28. Batch review and contextual defaults should reduce repetitive work.
+29. Validation messages must describe the corrective teacher action.
+30. Portia must not collect data merely because the schema can represent it.
+31. Workflow burden must remain proportionate to the instructional or support value produced.
 
 ## 10. Creation Source and Local Provenance
 
 ### Decision
 
-Event and Event Participant records preserve provenance through:
+Event, Event Participant, and Event Participant Role records preserve provenance through:
 
 ```text
 creation_source
@@ -6831,7 +9691,7 @@ This provides one consistent source vocabulary for both:
 
 ## 10.2 Creation-Source Object
 
-Every Event and Event Participant requires a structured:
+Every Event, Event Participant, and Event Participant Role requires a structured:
 
 ```text
 creation_source
@@ -6924,7 +9784,12 @@ paper_capture / preallocated
 
 participant added later:
 digital_entry
+
+Role added after that:
+digital_entry
 ```
+
+A Role added digitally to a paper-derived participant is also `digital_entry`.
 
 Creation source belongs to each canonical record independently.
 
@@ -6949,11 +9814,22 @@ route_id
 page_record_id
 ```
 
-The supported stages are:
+The shared paper-source vocabulary contains:
 
 ```text
 preallocated
 ingested
+```
+
+Not every canonical record type permits both stages.
+
+Record-specific schemas must restrict the stage according to when that record can legitimately come into existence.
+
+For Event Participant Role records:
+
+```text
+paper_capture
+→ stage must equal ingested
 ```
 
 ---
@@ -6968,7 +9844,11 @@ stage = preallocated
 
 when the canonical record is created before the capture page is rendered.
 
-This stage ordinarily applies to a draft Event root.
+This stage ordinarily applies to a draft Event root created before page rendering.
+
+It must not be used for an Event Participant Role.
+
+A blank role area or anticipated role selection on a generated page is page-template information, not a canonical Role assertion.
 
 ```json
 {
@@ -7003,6 +9883,8 @@ It does not indicate:
 
 An unused preallocated Event remains a draft until it is cancelled through the accepted lifecycle workflow.
 
+No equivalent preallocated Role exists in the initial model.
+
 ---
 
 ## 10.6 Ingested Paper Capture
@@ -7015,11 +9897,13 @@ stage = ingested
 
 when a canonical record is created from information returned through the paper workflow.
 
-This stage ordinarily applies to records such as:
+This stage applies to records created from returned-page processing, such as:
 
 * proposed Event Participants;
 * proposed Event Participant Roles;
 * or other child records extracted after scanning.
+
+For Event Participant Roles, `ingested` is the only valid paper-capture stage.
 
 ```json
 {
@@ -7047,6 +9931,8 @@ Ingestion does not establish that the interpreted value is correct.
 
 The scan, mark interpretation, or handwriting extraction remains proposed until teacher confirmation.
 
+The absence of a recognized or confirmed role mark creates no Role record.
+
 ---
 
 ## 10.7 Paper Route and Page References
@@ -7065,11 +9951,16 @@ page_record_id
 
 identifies the Portia page record associated with the generated capture page.
 
-Both fields are required for:
+Both fields are required whenever the selected record-specific paper stage is valid.
+
+For example:
 
 ```text
-stage = preallocated
-stage = ingested
+Event draft:
+stage may be preallocated
+
+Event Participant Role:
+stage must be ingested
 ```
 
 Portia must validate that:
@@ -7158,7 +10049,7 @@ Import metadata should ordinarily be supplied once for an import operation and a
 
 ## 10.9 Attribution-Agent Object
 
-Every Event and Event Participant requires:
+Every Event, Event Participant, and Event Participant Role requires:
 
 ```text
 created_by
@@ -7314,7 +10205,7 @@ This records that Portia created the proposal and the teacher later reviewed it.
 
 ## 10.12 Creation and Update Timestamps
 
-Every Event and Event Participant requires:
+Every Event, Event Participant, and Event Participant Role requires:
 
 ```text
 created_at
@@ -7382,7 +10273,7 @@ created_by
 
 They describe how, when, and through which local agent or process the record originally entered Portia.
 
-For example, a paper-ingested participant remains paper-ingested even after the teacher corrects or confirms it digitally.
+For example, a paper-ingested participant or Role remains paper-ingested even after the teacher corrects or confirms it digitally.
 
 ```text
 creation_source:
@@ -7429,7 +10320,7 @@ They do not replace:
 
 ## 10.15 No Duplicate Review Fields
 
-The Event and Event Participant roots should not add:
+Event, Event Participant, and Event Participant Role records should not add:
 
 ```text
 reviewed_at
@@ -7445,10 +10336,10 @@ Teacher review and confirmation are already represented through:
 * `updated_at`;
 * and `updated_by`.
 
-For example, confirming a paper-derived participant produces:
+For example, confirming a paper-derived participant or Role produces:
 
 ```text
-participant status:
+record status:
 active
 
 lifecycle transition:
@@ -7471,7 +10362,7 @@ Specialized review records may later exist when they represent a distinct workfl
 
 Creation source is recorded independently for every canonical record.
 
-It must not be inherited implicitly from the parent Event.
+It must not be inherited implicitly from the parent Event, referenced Event Participant, source record, or superseded record.
 
 For example:
 
@@ -7484,6 +10375,15 @@ paper_capture / ingested
 
 second participant added later:
 digital_entry
+
+Role proposed from the returned page:
+paper_capture / ingested
+
+pre-render Role:
+not created
+
+Role added later by the teacher:
+digital_entry
 ```
 
 Similarly:
@@ -7492,11 +10392,30 @@ Similarly:
 imported Event:
 import
 
-teacher-added participant:
+imported participant:
+import
+
+teacher-added contextual Role:
 digital_entry
 ```
 
-This preserves the actual origin of each record.
+A successor Role also records its own source:
+
+```text
+prior Role:
+paper_capture / ingested
+
+digitally created successor:
+digital_entry
+```
+
+The `supersedes` relationship preserves lineage.
+
+The successor’s `creation_source` preserves its own origin.
+
+This record-level independence preserves how each canonical record actually entered Portia.
+
+It does not authorize a paper stage that is semantically impossible for a particular record type.
 
 ---
 
@@ -7526,7 +10445,15 @@ Before class, Portia creates a draft Event:
 }
 ```
 
-After scanning, Portia proposes a participant:
+Before scanning, the draft Event exists, but no Role record exists merely because the page contains blank role marks.
+
+After scanning, Portia proposes a participant and may propose one or more Role records from the same returned page.
+
+The participant and each proposed Role receive their own paper-ingested creation source.
+
+No Role in this workflow uses `stage = preallocated`.
+
+Participant example:
 
 ```json
 {
@@ -7550,7 +10477,54 @@ After scanning, Portia proposes a participant:
 }
 ```
 
-After teacher confirmation:
+A proposed Role created from the same page would independently contain both its paper creation source and its matching paper basis:
+
+```json
+{
+  "status": "proposed",
+  "role_type": "present",
+  "creation_source": {
+    "type": "paper_capture",
+    "stage": "ingested",
+    "route_id": "rt_0123456789abcdef0123456789abcdef",
+    "page_record_id": "pg_01j9..."
+  },
+  "basis": [
+    {
+      "kind": "paper_capture",
+      "route_id": "rt_0123456789abcdef0123456789abcdef",
+      "page_record_id": "pg_01j9..."
+    }
+  ],
+  "created_at": "2026-09-18T10:05:00-04:00",
+  "created_by": {
+    "type": "system_process",
+    "process_id": "paper_capture_ingest"
+  },
+  "updated_at": "2026-09-18T10:05:00-04:00",
+  "updated_by": {
+    "type": "system_process",
+    "process_id": "paper_capture_ingest"
+  }
+}
+```
+
+A proposed paper-derived `reported_involved` Role may initially contain only its matching paper basis.
+
+Before activation, the review workflow must create or select a same-Event attributed Account and append:
+
+```json
+{
+  "kind": "account_ref",
+  "record_id": "acct_01j9..."
+}
+```
+
+to the Role’s basis.
+
+The Account remains the canonical attributed report. The Role does not copy the Account content.
+
+After teacher confirmation, the participant or Role may become active:
 
 ```json
 {
@@ -7570,7 +10544,11 @@ After teacher confirmation:
 
 The original creation provenance remains unchanged.
 
-The participant lifecycle transition separately records the teacher confirmation.
+The participant or Role lifecycle transition separately records the teacher confirmation.
+
+Each confirmed record retains its own paper-ingested creation source.
+
+A confirmed Role also retains the matching paper basis. The status change does not remove or rewrite either relationship.
 
 ---
 
@@ -7642,7 +10620,7 @@ The teacher experiences one action rather than five administrative steps.
 
 ## 10.20 Schema Requirements
 
-Both required JSON Schemas should define equivalent reusable structures for:
+The current Event and Event Participant schemas, and the future Event Participant Role schema, should define equivalent reusable structures for:
 
 ```text
 creation_source
@@ -7650,12 +10628,15 @@ created_by
 updated_by
 ```
 
-Unless a shared schema file is introduced later, the structures may initially be duplicated consistently in:
+Unless a shared schema file is introduced later, the structures may be duplicated consistently in:
 
 ```text
 schemas/event.schema.json
 schemas/event-participant.schema.json
+schemas/event-participant-role.schema.json
 ```
+
+The Role schema must require its own creation source rather than relying on a parent record.
 
 ### Creation Source
 
@@ -7667,7 +10648,7 @@ paper_capture
 import
 ```
 
-The `paper_capture` branch must require:
+The shared `paper_capture` branch requires:
 
 ```text
 stage
@@ -7675,11 +10656,59 @@ route_id
 page_record_id
 ```
 
-and constrain `stage` to:
+The common stage vocabulary is:
 
 ```text
 preallocated
 ingested
+```
+
+Each record schema must narrow that vocabulary according to the record’s lifecycle semantics.
+
+The Event Participant Role schema must constrain:
+
+```text
+creation_source.type = paper_capture
+→ creation_source.stage = ingested
+```
+
+and reject:
+
+```text
+creation_source.stage = preallocated
+```
+
+It must also conditionally require:
+
+```text
+creation_source.type = paper_capture
+→ basis contains at least one paper_capture entry
+```
+
+For reported involvement, it must additionally require:
+
+```text
+role_type = reported_involved
+AND status = active or superseded
+→ basis contains at least one account_ref
+```
+
+This rule applies to digital, paper, and import creation sources.
+
+The schema can enforce the presence and shape of those entries.
+
+Application validation must enforce exact equality between:
+
+```text
+creation_source.route_id
+basis[matching paper entry].route_id
+```
+
+and:
+
+```text
+creation_source.page_record_id
+basis[matching paper entry].page_record_id
 ```
 
 The `import` branch must require:
@@ -7733,37 +10762,61 @@ Application validation must enforce:
 * `updated_at` does not precede `created_at`;
 * immutable creation facts are not changed through ordinary editing;
 * referenced paper routes and pages exist;
+* record-specific paper-stage eligibility;
+* a matching paper basis for every paper-derived Event Participant Role;
+* exact route and page equality between Role creation source and matching basis;
+* an attributed same-Event Account before any `reported_involved` activation;
+* preservation of that Account reference after effective activation;
+* persistence of the matching basis through later lifecycle states;
+* no pre-render or blank Event Participant Role creation;
 * and system-process IDs are recognized where required.
 
 ---
 
 ## 10.21 Creation-Source and Provenance Invariants
 
-1. Every Event and Event Participant records its own creation source.
+1. Every Event, Event Participant, and Event Participant Role records its own creation source.
 2. Creation source is a discriminated object.
 3. Initial source types are `digital_entry`, `paper_capture`, and `import`.
 4. `paper_capture` replaces earlier inconsistent paper-source terminology.
 5. Paper capture distinguishes `preallocated` from `ingested`.
-6. Preallocated paper records exist before page rendering.
-7. Ingested paper records originate from returned-page processing.
-8. Both paper stages require route and page-record references.
-9. Paper ingestion does not establish teacher confirmation.
-10. Imported records preserve a meaningful source label.
-11. Every Event and Event Participant records creation and update attribution.
-12. Attribution distinguishes local operators from system processes.
-13. Local-operator labels are historical snapshots rather than institutional identity.
-14. System-process IDs describe automated canonical operations.
-15. Creation timestamps and attribution are immutable.
-16. Creation source is ordinarily immutable.
-17. Update timestamps and attribution change through canonical mutations.
-18. At creation, update provenance equals creation provenance.
-19. Occurrence time remains separate from provenance timestamps.
-20. Lifecycle history remains separate from update provenance.
-21. No duplicate root-level review or confirmation fields are required.
-22. Parent and child records may have different creation sources.
-23. Paper-derived records remain paper-derived after digital confirmation.
-24. Provenance fields are populated automatically.
-25. Teachers do not manage route IDs, process IDs, timestamps, or technical source stages manually.
-26. Schema validation enforces discriminated object shapes.
-27. Application validation enforces reference existence, chronology, and immutability.
-28. Internal provenance rigor must not create additional routine teacher steps.
+6. Paper-stage eligibility is record-type-specific.
+7. Event Participant Roles permit only `paper_capture / ingested`.
+8. Event Participant Roles prohibit `paper_capture / preallocated`.
+9. Blank generated role marks do not create canonical Role records.
+10. Every paper-derived Event Participant Role contains a matching paper basis.
+11. The matching basis route and page references equal the Role creation-source references.
+12. Creation source and matching basis remain semantically distinct despite referencing the same artifact.
+13. Lifecycle review does not remove the matching paper basis.
+14. Paper or import basis may preserve a proposed `reported_involved` assertion.
+15. Every active `reported_involved` Role requires an attributed same-Event Account.
+16. The active Account requirement is independent from digital, paper, or import origin.
+17. The Account remains a separate canonical record from the Role.
+18. Lifecycle history preserves the Account reference after effective activation.
+19. Preallocated paper records exist before page rendering.
+20. Ingested paper records originate from returned-page processing.
+21. Both paper stages require route and page-record references.
+22. Paper ingestion does not establish teacher confirmation.
+23. Imported records preserve a meaningful source label.
+24. Every Event, Event Participant, and Event Participant Role records creation and update attribution.
+25. Attribution distinguishes local operators from system processes.
+26. Local-operator labels are historical snapshots rather than institutional identity.
+27. System-process IDs describe automated canonical operations.
+28. Creation timestamps and attribution are immutable.
+29. Creation source is ordinarily immutable.
+30. Update timestamps and attribution change through canonical mutations.
+31. At creation, update provenance equals creation provenance.
+32. Occurrence time remains separate from provenance timestamps.
+33. Lifecycle history remains separate from update provenance.
+34. No duplicate root-level review or confirmation fields are required.
+35. Parent and child records may have different creation sources.
+36. A Role source is not inherited from its Event or Event Participant.
+37. A successor Role records its own source rather than inheriting the prior Role source.
+38. Creation source remains distinct from assertion basis.
+39. Paper-derived records remain paper-derived after digital confirmation.
+40. Imported records remain imported after digital review.
+41. Provenance fields are populated automatically.
+42. Teachers do not manage route IDs, process IDs, timestamps, or technical source stages manually.
+43. Schema validation enforces discriminated object shapes.
+44. Application validation enforces reference existence, chronology, source-workflow consistency, and immutability.
+45. Internal provenance rigor must not create additional routine teacher steps.
