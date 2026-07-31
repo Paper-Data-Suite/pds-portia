@@ -1,0 +1,23 @@
+{
+  "catalog_version": "1",
+  "contracts": {
+    "event": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/event.schema.json",
+        "path": "schemas/event.schema.json"
+      }
+    },
+    "event_participant": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/event-participant.schema.json",
+        "path": "schemas/event-participant.schema.json"
+      }
+    },
+    "event_participant_role": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/event-participant-role.schema.json",
+        "path": "schemas/event-participant-role.schema.json"
+      }
+    }
+  }
+}
