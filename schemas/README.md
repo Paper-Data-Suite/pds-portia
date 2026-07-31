@@ -64,6 +64,39 @@ structural and path-safety check for an identifier owned by Core or another
 module. Passing it does not establish registration, existence, uniqueness,
 ownership, lifecycle, contract support, or authorization.
 
+## Primitive shared reference contracts
+
+The first independently reusable reference contracts are stored beneath:
+
+    schemas/v1/references/
+
+They are:
+
+- `roster-student-ref.schema.json`
+- `actor-ref.schema.json`
+- `local-record-ref.schema.json`
+- `portia-work-ref.schema.json`
+
+`roster_student_ref` preserves Core roster identity as the exact
+`class_id + student_id` pair. Its structural schema does not prove that either
+identifier resolves in the current workspace.
+
+`actor_ref` identifies one Portia Actor Directory record and contains no
+display snapshot or work-specific role information.
+
+`local_record_ref` identifies a typed record within exactly one work scope
+supplied by its consuming schema. Its required `contract_version` property may
+contain a version string or explicit `null`; omission is not equivalent to
+`null`.
+
+`portia_work_ref` identifies one Portia Event or Support Process. It requires
+`module_id = "portia"` and enforces agreement between `work_kind` and the
+Portia-owned `work_id` prefix.
+
+These schemas validate local structure only. Target existence, authoritative
+resolution, lifecycle eligibility, contract support, authorization, and
+consumer-specific use remain application-validation responsibilities.
+
 ## Offline resolution
 
 Schema tests build a local `referencing.Registry` from checked-in schema

@@ -60,6 +60,30 @@
         "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json",
         "path": "schemas/v1/identifiers/structurally-safe-external-id.schema.json"
       }
+    },
+    "roster_student_ref": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/roster-student-ref.schema.json",
+        "path": "schemas/v1/references/roster-student-ref.schema.json"
+      }
+    },
+    "actor_ref": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/actor-ref.schema.json",
+        "path": "schemas/v1/references/actor-ref.schema.json"
+      }
+    },
+    "local_record_ref": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/local-record-ref.schema.json",
+        "path": "schemas/v1/references/local-record-ref.schema.json"
+      }
+    },
+    "portia_work_ref": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/portia-work-ref.schema.json",
+        "path": "schemas/v1/references/portia-work-ref.schema.json"
+      }
     }
   }
 }

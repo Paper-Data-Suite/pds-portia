@@ -1,0 +1,64 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/portia-work-ref.schema.json",
+  "title": "Portia Work Reference",
+  "description": "Complete identity and target-contract expectation for one Portia Event or Support Process. Canonical work identity is module_id, class_id, and work_id. work_kind and contract_version state the expected target contract and do not create a second identity.",
+  "type": "object",
+  "required": [
+    "module_id",
+    "class_id",
+    "work_id",
+    "work_kind",
+    "contract_version"
+  ],
+  "properties": {
+    "module_id": {
+      "const": "portia"
+    },
+    "class_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+    },
+    "work_id": {
+      "type": "string"
+    },
+    "work_kind": {
+      "enum": [
+        "event",
+        "support_process"
+      ]
+    },
+    "contract_version": {
+      "oneOf": [
+        {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "oneOf": [
+    {
+      "properties": {
+        "work_kind": {
+          "const": "event"
+        },
+        "work_id": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-event-id.schema.json"
+        }
+      }
+    },
+    {
+      "properties": {
+        "work_kind": {
+          "const": "support_process"
+        },
+        "work_id": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-support-process-id.schema.json"
+        }
+      }
+    }
+  ],
+  "additionalProperties": false
+}

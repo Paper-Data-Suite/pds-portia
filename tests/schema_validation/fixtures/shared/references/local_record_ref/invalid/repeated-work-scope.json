@@ -1,0 +1,6 @@
+{
+  "record_kind": "event_participant",
+  "record_id": "ep_example",
+  "contract_version": "2",
+  "work_id": "evt_example"
+}
