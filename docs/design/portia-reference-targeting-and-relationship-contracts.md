@@ -11595,27 +11595,33 @@ Their initial patterns are:
 
 ```
 portia_event_id:
-  ^evt_[A-Za-z0-9][A-Za-z0-9._-]*$
+  ^evt_[A-Za-z0-9][A-Za-z0-9_-]*$
 
 portia_support_process_id:
-  ^sup_[A-Za-z0-9][A-Za-z0-9._-]*$
+  ^sup_[A-Za-z0-9][A-Za-z0-9_-]*$
 
 portia_actor_id:
-  ^actr_[A-Za-z0-9][A-Za-z0-9._-]*$
+  ^actr_[A-Za-z0-9][A-Za-z0-9_-]*$
 
 portia_event_participant_id:
-  ^ep_[A-Za-z0-9][A-Za-z0-9._-]*$
+  ^ep_[A-Za-z0-9][A-Za-z0-9_-]*$
 
 portia_event_participant_role_id:
-  ^epr_[A-Za-z0-9][A-Za-z0-9._-]*$
+  ^epr_[A-Za-z0-9][A-Za-z0-9_-]*$
 
 portia_work_relationship_id:
-  ^rel_[A-Za-z0-9][A-Za-z0-9._-]*$
+  ^rel_[A-Za-z0-9][A-Za-z0-9_-]*$
 ```
 
 The prefix is part of the accepted identifier contract.
 
 It is not merely a display convention.
+
+The complete Portia-owned identifier alphabet is limited to ASCII letters, digits, underscores, and hyphens.
+
+Periods are not permitted in Portia-owned identifiers.
+
+Event and Support Process identifiers must remain valid when used as Core `ModuleWorkRef.work_id` values.
 
 A Portia schema must reject a Portia-owned identifier with the wrong prefix even when the remaining characters would be structurally safe.
 
@@ -11996,21 +12002,23 @@ A generic local `safeId` must not continue to obscure whether Portia or another 
 1. Identifier validation follows contract ownership.
 2. Portia-owned identifiers use exact prefix-specific schemas.
 3. The initial Portia-owned prefixes are `evt_`, `sup_`, `actr_`, `ep_`, `epr_`, and `rel_`.
-4. Portia-owned identifiers initially use `maxLength = 128`.
-5. Every identifier remains a JSON string.
-6. Leading zeros and case are preserved.
-7. Equality uses exact serialized-string equality.
-8. Portia does not silently normalize identifiers.
-9. Core remains authoritative for Core-owned identifier syntax.
-10. Portia reuses authoritative Core schemas where independently available.
-11. Sibling-module identifiers remain opaque to Portia.
-12. Structural fallback validation does not claim domain authority.
-13. Prefixes do not replace explicit kind or type properties.
-14. Path-safety validation is separate from registration and existence.
-15. Passing schema validation does not establish target existence or authorization.
-16. Import and migration mappings are explicit rather than silent repairs.
-17. Opaque identifiers must not encode sensitive domain content.
-18. Exact schema dependency organization remains governed by Decision 19.
+4. Portia-owned identifiers permit only ASCII letters, digits, underscores, and hyphens after their accepted prefix.
+5. Periods are prohibited in Portia-owned identifiers.
+6. Portia-owned identifiers initially use `maxLength = 128`.
+7. Every identifier remains a JSON string.
+8. Leading zeros and case are preserved.
+9. Equality uses exact serialized-string equality.
+10. Portia does not silently normalize identifiers.
+11. Core remains authoritative for Core-owned identifier syntax.
+12. Portia reuses authoritative Core schemas where independently available.
+13. Sibling-module identifiers remain opaque to Portia.
+14. Structural fallback validation does not claim domain authority.
+15. Prefixes do not replace explicit kind or type properties.
+16. Path-safety validation is separate from registration and existence.
+17. Passing schema validation does not establish target existence or authorization.
+18. Import and migration mappings are explicit rather than silent repairs.
+19. Opaque identifiers must not encode sensitive domain content.
+20. Exact schema dependency organization remains governed by Decision 19.
 
 ### 20.7 Shared-schema organization, versioned addressing, and external compatibility
 
@@ -13064,6 +13072,8 @@ Tests must distinguish:
 * leading-zero strings;
 * case-distinct values;
 * and structurally valid external identifiers that remain application-invalid.
+
+Tests must prove that a period-containing value is rejected by every Portia-owned identifier schema even when the prefix and all remaining characters are otherwise valid.
 
 ### Schema identity, dependency, and compatibility validation
 
@@ -15351,6 +15361,12 @@ Event Participant Role:
 Work Relationship:
   rel_
 ```
+
+Every Portia-owned identifier uses only ASCII letters, digits, underscores, and hyphens.
+
+Periods are prohibited.
+
+Event and Support Process identifiers therefore remain compatible with Core's `ModuleWorkRef.work_id` identifier alphabet.
 
 Portia-owned identifiers use prefix-specific reusable schemas and an initial maximum length of 128 characters.
 

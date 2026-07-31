@@ -43,8 +43,21 @@ The initial prefixes are:
 - Event Participant Role: `epr_`
 - Work Relationship: `rel_`
 
-These identifiers are strings, preserve case and leading zeros, and have a
-maximum length of 128 characters.
+Portia-owned identifiers:
+
+- are JSON strings;
+- preserve case and leading zeros;
+- permit only ASCII letters, digits, underscores, and hyphens;
+- reject periods, whitespace, path separators, control characters, and non-ASCII characters;
+- and have a maximum length of 128 characters.
+
+Event and Support Process identifiers are also used as Core
+`ModuleWorkRef.work_id` values. Their alphabet therefore remains compatible
+with Core's shared identifier contract.
+
+The retained Event-family version-1 schemas are historical contracts and are
+not rewritten by this identifier correction. New reconciled record schemas
+must compose the versioned Portia identifier contracts.
 
 `structurally-safe-external-id.schema.json` provides only a conservative
 structural and path-safety check for an identifier owned by Core or another
