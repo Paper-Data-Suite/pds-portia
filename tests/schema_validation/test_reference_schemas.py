@@ -32,6 +32,9 @@ REFERENCE_CASES = {
     "portia_work_ref": (
         "portia-work-ref.schema.json"
     ),
+    "portia_work_record_ref": (
+        "portia-work-record-ref.schema.json"
+    ),
 }
 
 REFERENCE_FIXTURE_ROOT = (
@@ -167,6 +170,10 @@ class ReferenceSchemaTests(unittest.TestCase):
                 "work_kind",
                 "contract_version",
             },
+            "portia_work_record_ref": {
+                "work_ref",
+                "record_ref",
+            },
         }
 
         for contract_name, property_names in (
@@ -240,6 +247,33 @@ class ReferenceSchemaTests(unittest.TestCase):
         self.assertEqual(
             branch_kinds,
             {"event", "support_process"},
+        )
+
+
+    def test_portia_work_record_ref_composes_public_refs(
+        self,
+    ) -> None:
+        schema_id = schema_id_for(
+            "portia_work_record_ref",
+            "1",
+            self.catalog,
+        )
+        schema = self.store.schema_for_id(schema_id)
+        self.assertEqual(
+            schema["properties"]["work_ref"]["$ref"],
+            (
+                "https://paper-data-suite.github.io/"
+                "pds-portia/schemas/v1/references/"
+                "portia-work-ref.schema.json"
+            ),
+        )
+        self.assertEqual(
+            schema["properties"]["record_ref"]["$ref"],
+            (
+                "https://paper-data-suite.github.io/"
+                "pds-portia/schemas/v1/references/"
+                "local-record-ref.schema.json"
+            ),
         )
 
 

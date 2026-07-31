@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/portia-work-record-ref.schema.json",
+  "title": "Portia Work Record Reference",
+  "description": "Complete reference to one canonical child record in one explicitly identified Portia work. work_ref supplies the sole work scope for record_ref. Structural validation does not establish target existence, lifecycle eligibility, authorization, or consumer-specific use eligibility.",
+  "type": "object",
+  "required": [
+    "work_ref",
+    "record_ref"
+  ],
+  "properties": {
+    "work_ref": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/portia-work-ref.schema.json"
+    },
+    "record_ref": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/local-record-ref.schema.json"
+    }
+  },
+  "additionalProperties": false
+}

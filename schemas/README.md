@@ -76,6 +76,7 @@ They are:
 - `actor-ref.schema.json`
 - `local-record-ref.schema.json`
 - `portia-work-ref.schema.json`
+- `portia-work-record-ref.schema.json`
 
 `roster_student_ref` preserves Core roster identity as the exact
 `class_id + student_id` pair. Its structural schema does not prove that either
@@ -92,6 +93,15 @@ contain a version string or explicit `null`; omission is not equivalent to
 `portia_work_ref` identifies one Portia Event or Support Process. It requires
 `module_id = "portia"` and enforces agreement between `work_kind` and the
 Portia-owned `work_id` prefix.
+
+`portia_work_record_ref` identifies one child record in another explicitly
+identified Portia work. It contains exactly `work_ref` and `record_ref`; the
+sibling `work_ref` is the sole work-scope provider for the nested local record
+reference.
+
+Use `local_record_ref` when the consuming schema already supplies one
+unambiguous Portia work scope. Use `portia_work_record_ref` when the target
+Portia work must be stated explicitly.
 
 These schemas validate local structure only. Target existence, authoritative
 resolution, lifecycle eligibility, contract support, authorization, and

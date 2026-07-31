@@ -84,6 +84,12 @@
         "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/portia-work-ref.schema.json",
         "path": "schemas/v1/references/portia-work-ref.schema.json"
       }
+    },
+    "portia_work_record_ref": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/portia-work-record-ref.schema.json",
+        "path": "schemas/v1/references/portia-work-record-ref.schema.json"
+      }
     }
   }
 }

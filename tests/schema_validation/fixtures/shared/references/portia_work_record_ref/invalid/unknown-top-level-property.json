@@ -1,0 +1,17 @@
+{
+  "work_ref": {
+    "module_id": "portia",
+    "class_id": "eng10_p2_2026",
+    "work_id": "evt_example",
+    "work_kind": "event",
+    "contract_version": "2"
+  },
+  "record_ref": {
+    "record_kind": "event_participant",
+    "record_id": "ep_001",
+    "contract_version": "2"
+  },
+  "display_snapshot": {
+    "display_name": "Jordan Lee"
+  }
+}
