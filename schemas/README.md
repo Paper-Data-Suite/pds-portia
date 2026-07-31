@@ -15,7 +15,7 @@ policy and remain at their existing locations:
 - `schemas/event-participant.schema.json`
 - `schemas/event-participant-role.schema.json`
 
-New public schemas will use matching versioned paths and `$id` values beneath
+New public schemas use matching versioned paths and `$id` values beneath
 directories such as `schemas/v1/` and `schemas/v2/`.
 
 Canonical schemas do not use mutable `latest` or `current` identities.
@@ -23,50 +23,48 @@ Canonical schemas do not use mutable `latest` or `current` identities.
 ## Schema catalog
 
 `schemas/schema-catalog.json` is a noncanonical tooling catalog. It maps a
-conceptual contract name and schema version to:
+conceptual contract name and schema version to the canonical schema `$id` and
+the repository-relative source path.
 
-- the canonical schema `$id`; and
-- the repository-relative source path.
+The catalog currently contains the retained version-1 Event-family contracts
+and the version-1 identifier contracts.
 
-The catalog supports validator setup and explicit version dispatch. It does
-not override a schema's `$id`, become part of canonical Portia data, or serve
-as a Paper Data Suite Core registry.
+## Identifier contracts
 
-The initial catalog contains only the retained version-1 Event, Event
-Participant, and Event Participant Role contracts. Later Issue #11
-implementation slices will add shared references, targets, snapshots, Work
-Relationship, compatibility adapters, and reconciled version-2 contracts.
+Portia-owned identifiers are independently addressable beneath
+`schemas/v1/identifiers/`.
+
+The initial prefixes are:
+
+- Event: `evt_`
+- Support Process: `sup_`
+- Actor: `actr_`
+- Event Participant: `ep_`
+- Event Participant Role: `epr_`
+- Work Relationship: `rel_`
+
+These identifiers are strings, preserve case and leading zeros, and have a
+maximum length of 128 characters.
+
+`structurally-safe-external-id.schema.json` provides only a conservative
+structural and path-safety check for an identifier owned by Core or another
+module. Passing it does not establish registration, existence, uniqueness,
+ownership, lifecycle, contract support, or authorization.
 
 ## Offline resolution
 
 Schema tests build a local `referencing.Registry` from checked-in schema
-resources. Canonical HTTPS `$id` and `$ref` values identify public contracts,
-while the local registry resolves them without network access.
-
-An unresolved `$ref`, duplicate canonical `$id`, or disagreement between a
-catalog entry and its source schema is a test failure.
-
-## Public contracts and private helpers
-
-An independently reusable persisted contract receives its own schema file and
-canonical `$id`.
-
-A schema may retain private, nonreusable helpers in local `$defs`. Public
-contracts must not remain available only as private definitions inside another
-schema.
+resources. An unresolved `$ref`, duplicate canonical `$id`, or disagreement
+between a catalog entry and its source schema is a test failure.
 
 ## Validation boundary
 
 JSON Schema establishes local structure. It does not establish target
 existence, authoritative identity resolution, lifecycle eligibility,
-authorization, duplicate state across files, or other cross-record
-invariants. Those remain application-validation responsibilities.
+authorization, duplicate state across files, or other cross-record invariants.
 
 ## Running the schema tests
 
 From the repository root, run:
 
     python -m unittest discover -s tests/schema_validation -p "test_*.py"
-
-The test environment requires a current `jsonschema` release that supports
-Draft 2020-12 validators and the `referencing` registry API.

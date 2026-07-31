@@ -1,0 +1,10 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-support-process-id.schema.json",
+  "title": "Portia Support Process Identifier",
+  "description": "Opaque canonical identifier for one Portia Support Process work item. The sup_ prefix is part of the public identifier contract.",
+  "type": "string",
+  "minLength": 1,
+  "maxLength": 128,
+  "pattern": "^sup_[A-Za-z0-9][A-Za-z0-9._-]*$"
+}

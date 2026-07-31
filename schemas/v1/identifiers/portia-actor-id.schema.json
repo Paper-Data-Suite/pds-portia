@@ -1,0 +1,10 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-actor-id.schema.json",
+  "title": "Portia Actor Identifier",
+  "description": "Opaque canonical identifier for one record in Portia's teacher-workspace Actor Directory. The actr_ prefix is part of the public identifier contract.",
+  "type": "string",
+  "minLength": 1,
+  "maxLength": 128,
+  "pattern": "^actr_[A-Za-z0-9][A-Za-z0-9._-]*$"
+}

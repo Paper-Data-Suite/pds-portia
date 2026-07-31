@@ -28,50 +28,38 @@ EXPECTED_LEGACY_SCHEMA_IDS = {
     ),
     "event_participant": (
         "https://paper-data-suite.github.io/"
-        "pds-portia/schemas/"
-        "event-participant.schema.json"
+        "pds-portia/schemas/event-participant.schema.json"
     ),
     "event_participant_role": (
         "https://paper-data-suite.github.io/"
-        "pds-portia/schemas/"
-        "event-participant-role.schema.json"
+        "pds-portia/schemas/event-participant-role.schema.json"
     ),
 }
 
 
-def write_json(
-    path: Path,
-    value: object,
-) -> None:
+def write_json(path: Path, value: object) -> None:
     path.write_text(
         json.dumps(value, indent=2) + "\n",
         encoding="utf-8",
     )
 
 
-class SchemaCatalogIntegrityTests(
-    unittest.TestCase
-):
+class SchemaCatalogIntegrityTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls.catalog, cls.store = (
             load_validated_catalog_and_store()
         )
 
-    def test_expected_legacy_contracts_are_cataloged(
-        self,
-    ) -> None:
-        self.assertEqual(
-            set(self.catalog["contracts"]),
-            set(EXPECTED_LEGACY_SCHEMA_IDS),
+    def test_expected_legacy_contracts_are_cataloged(self) -> None:
+        self.assertTrue(
+            set(EXPECTED_LEGACY_SCHEMA_IDS)
+            <= set(self.catalog["contracts"])
         )
-
         for contract_name, expected_id in (
             EXPECTED_LEGACY_SCHEMA_IDS.items()
         ):
-            with self.subTest(
-                contract=contract_name
-            ):
+            with self.subTest(contract=contract_name):
                 self.assertEqual(
                     schema_id_for(
                         contract_name,
@@ -81,14 +69,10 @@ class SchemaCatalogIntegrityTests(
                     expected_id,
                 )
 
-    def test_initial_catalog_covers_all_schemas(
-        self,
-    ) -> None:
+    def test_catalog_covers_all_schemas(self) -> None:
         cataloged_ids = {
             entry["schema_id"]
-            for versions in self.catalog[
-                "contracts"
-            ].values()
+            for versions in self.catalog["contracts"].values()
             for entry in versions.values()
         }
         self.assertEqual(
@@ -96,57 +80,35 @@ class SchemaCatalogIntegrityTests(
             set(self.store.schemas_by_id),
         )
 
-    def test_catalog_paths_match_loaded_resources(
-        self,
-    ) -> None:
+    def test_catalog_paths_match_loaded_resources(self) -> None:
         for contract_name, versions in (
             self.catalog["contracts"].items()
         ):
-            for version, entry in (
-                versions.items()
-            ):
+            for version, entry in versions.items():
                 with self.subTest(
                     contract=contract_name,
                     version=version,
                 ):
-                    schema_id = entry[
-                        "schema_id"
-                    ]
                     self.assertIn(
-                        schema_id,
+                        entry["schema_id"],
                         self.store.paths_by_id,
                     )
 
-    def test_unknown_contract_version_is_rejected(
-        self,
-    ) -> None:
+    def test_unknown_contract_version_is_rejected(self) -> None:
         with self.assertRaisesRegex(
             SchemaCatalogError,
             "Unknown schema contract/version",
         ):
-            schema_id_for(
-                "event",
-                "999",
-                self.catalog,
-            )
+            schema_id_for("event", "999", self.catalog)
 
 
-class SchemaResourceFailureTests(
-    unittest.TestCase
-):
-    def test_duplicate_canonical_ids_are_rejected(
-        self,
-    ) -> None:
-        with tempfile.TemporaryDirectory() as (
-            temp_dir
-        ):
+class SchemaResourceFailureTests(unittest.TestCase):
+    def test_duplicate_canonical_ids_are_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
             root = Path(temp_dir)
-            schema_id = (
-                "https://example.test/duplicate"
-            )
+            schema_id = "https://example.test/duplicate"
             first = root / "first.schema.json"
             second = root / "second.schema.json"
-
             for path in (first, second):
                 write_json(
                     path,
@@ -159,25 +121,15 @@ class SchemaResourceFailureTests(
                         "type": "object",
                     },
                 )
-
             with self.assertRaisesRegex(
                 SchemaCatalogError,
                 "Duplicate canonical schema ID",
             ):
-                build_schema_store(
-                    [first, second]
-                )
+                build_schema_store([first, second])
 
-    def test_unresolved_reference_is_rejected_offline(
-        self,
-    ) -> None:
-        with tempfile.TemporaryDirectory() as (
-            temp_dir
-        ):
-            root = Path(temp_dir)
-            schema_path = (
-                root / "broken.schema.json"
-            )
+    def test_unresolved_reference_is_rejected_offline(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            schema_path = Path(temp_dir) / "broken.schema.json"
             write_json(
                 schema_path,
                 {
@@ -185,10 +137,7 @@ class SchemaResourceFailureTests(
                         "https://json-schema.org/"
                         "draft/2020-12/schema"
                     ),
-                    "$id": (
-                        "https://example.test/"
-                        "broken.schema.json"
-                    ),
+                    "$id": "https://example.test/broken.schema.json",
                     "type": "object",
                     "properties": {
                         "value": {
@@ -200,25 +149,15 @@ class SchemaResourceFailureTests(
                     },
                 },
             )
-
             with self.assertRaisesRegex(
                 SchemaCatalogError,
                 r"Unresolved \$ref",
             ):
-                build_schema_store(
-                    [schema_path]
-                )
+                build_schema_store([schema_path])
 
-    def test_missing_schema_id_is_rejected(
-        self,
-    ) -> None:
-        with tempfile.TemporaryDirectory() as (
-            temp_dir
-        ):
-            schema_path = (
-                Path(temp_dir)
-                / "missing-id.schema.json"
-            )
+    def test_missing_schema_id_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            schema_path = Path(temp_dir) / "missing-id.schema.json"
             write_json(
                 schema_path,
                 {
@@ -229,14 +168,11 @@ class SchemaResourceFailureTests(
                     "type": "object",
                 },
             )
-
             with self.assertRaisesRegex(
                 SchemaCatalogError,
                 r"missing a nonempty string \$id",
             ):
-                build_schema_store(
-                    [schema_path]
-                )
+                build_schema_store([schema_path])
 
 
 if __name__ == "__main__":

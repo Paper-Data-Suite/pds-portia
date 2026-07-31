@@ -18,6 +18,48 @@
         "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/event-participant-role.schema.json",
         "path": "schemas/event-participant-role.schema.json"
       }
+    },
+    "portia_event_id": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-event-id.schema.json",
+        "path": "schemas/v1/identifiers/portia-event-id.schema.json"
+      }
+    },
+    "portia_support_process_id": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-support-process-id.schema.json",
+        "path": "schemas/v1/identifiers/portia-support-process-id.schema.json"
+      }
+    },
+    "portia_actor_id": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-actor-id.schema.json",
+        "path": "schemas/v1/identifiers/portia-actor-id.schema.json"
+      }
+    },
+    "portia_event_participant_id": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-event-participant-id.schema.json",
+        "path": "schemas/v1/identifiers/portia-event-participant-id.schema.json"
+      }
+    },
+    "portia_event_participant_role_id": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-event-participant-role-id.schema.json",
+        "path": "schemas/v1/identifiers/portia-event-participant-role-id.schema.json"
+      }
+    },
+    "portia_work_relationship_id": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-work-relationship-id.schema.json",
+        "path": "schemas/v1/identifiers/portia-work-relationship-id.schema.json"
+      }
+    },
+    "structurally_safe_external_id": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json",
+        "path": "schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+      }
     }
   }
 }

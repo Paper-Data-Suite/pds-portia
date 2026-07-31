@@ -1,0 +1,10 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-event-participant-role-id.schema.json",
+  "title": "Portia Event Participant Role Identifier",
+  "description": "Opaque canonical identifier for one Event Participant Role record. The epr_ prefix is part of the public identifier contract.",
+  "type": "string",
+  "minLength": 1,
+  "maxLength": 128,
+  "pattern": "^epr_[A-Za-z0-9][A-Za-z0-9._-]*$"
+}
