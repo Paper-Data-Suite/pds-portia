@@ -1,0 +1,9 @@
+{
+  "kind": "support_process_participant",
+  "record_ref": {
+    "record_kind": "support_process_participant",
+    "record_id": "spp_001",
+    "contract_version": null
+  },
+  "provider": true
+}

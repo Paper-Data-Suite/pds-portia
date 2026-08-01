@@ -1,0 +1,8 @@
+{
+  "kind": "event_participant",
+  "record_ref": {
+    "record_kind": "account",
+    "record_id": "ep_001",
+    "contract_version": "2"
+  }
+}

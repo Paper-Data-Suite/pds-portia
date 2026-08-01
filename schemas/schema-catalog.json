@@ -90,6 +90,24 @@
         "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/portia-work-record-ref.schema.json",
         "path": "schemas/v1/references/portia-work-record-ref.schema.json"
       }
+    },
+    "person_display_snapshot": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/snapshots/person-display-snapshot.schema.json",
+        "path": "schemas/v1/snapshots/person-display-snapshot.schema.json"
+      }
+    },
+    "portia_target_ref": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/targets/portia-target-ref.schema.json",
+        "path": "schemas/v1/targets/portia-target-ref.schema.json"
+      }
+    },
+    "support_process_target_ref": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/targets/support-process-target-ref.schema.json",
+        "path": "schemas/v1/targets/support-process-target-ref.schema.json"
+      }
     }
   }
 }

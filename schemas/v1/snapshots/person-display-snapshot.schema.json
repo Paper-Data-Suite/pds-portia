@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/snapshots/person-display-snapshot.schema.json",
+  "title": "Person Display Snapshot",
+  "description": "Bounded nonauthoritative historical display aid for a person identified by an adjacent roster_student_ref or actor_ref. The snapshot is not identity, a lookup key, authorization data, or a repair mechanism.",
+  "type": "object",
+  "required": [
+    "display_name"
+  ],
+  "properties": {
+    "display_name": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "\\S",
+      "description": "Concise human-readable name recorded with the containing canonical record. At least one non-whitespace character is required."
+    }
+  },
+  "additionalProperties": false
+}

@@ -107,6 +107,45 @@ These schemas validate local structure only. Target existence, authoritative
 resolution, lifecycle eligibility, contract support, authorization, and
 consumer-specific use remain application-validation responsibilities.
 
+## Shared snapshots and target contracts
+
+The initial reusable historical snapshot is:
+
+    schemas/v1/snapshots/person-display-snapshot.schema.json
+
+`person_display_snapshot` contains only a required non-whitespace
+`display_name`. It is nonauthoritative historical presentation data and does
+not participate in identity, equality, resolution, duplicate detection,
+authorization, or lifecycle. Consuming schemas place it as a sibling of an
+eligible person reference; it is never nested inside `roster_student_ref` or
+`actor_ref`.
+
+Event-local and Support Process-local target families are stored beneath:
+
+    schemas/v1/targets/
+
+`portia_target_ref` supports exactly the containing Event, one Event
+Participant, or a selected set of at least two Event Participants.
+
+`support_process_target_ref` supports exactly the containing Support Process,
+one Support Process Participant, or a selected set of at least two Support
+Process Participants.
+
+A singular participant target contains a constrained `local_record_ref`.
+Plural branches contain only singular participant targets. Exact duplicate
+array items are rejected structurally.
+
+Canonical duplicate identity is stricter than JSON object equality. A plural
+target containing the same participant `record_kind + record_id` more than
+once is application-invalid even when the references carry different
+`contract_version` values. Participant-set order has no domain meaning, and
+deterministic canonical serialization remains an application responsibility.
+
+These target contracts establish application scope only. They do not establish
+participant roles, source, basis, evidence, attribution, provenance,
+relationship direction, target existence, lifecycle eligibility, or
+authorization.
+
 ## Offline resolution
 
 Schema tests build a local `referencing.Registry` from checked-in schema
