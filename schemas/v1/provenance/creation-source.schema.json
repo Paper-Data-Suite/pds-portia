@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/provenance/creation-source.schema.json",
+  "title": "Portia Creation Source",
+  "description": "Structured provenance describing how a Portia canonical record was initially created. The value is immutable after initial persistence unless the consuming record contract explicitly says otherwise.",
+  "oneOf": [
+    {
+      "$ref": "#/$defs/digitalEntrySource"
+    },
+    {
+      "$ref": "#/$defs/paperCaptureSource"
+    },
+    {
+      "$ref": "#/$defs/importSource"
+    }
+  ],
+  "$defs": {
+    "digitalEntrySource": {
+      "type": "object",
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "type": {
+          "const": "digital_entry"
+        }
+      },
+      "additionalProperties": false
+    },
+    "paperCaptureSource": {
+      "type": "object",
+      "required": [
+        "type",
+        "stage",
+        "route_id",
+        "page_record_id"
+      ],
+      "properties": {
+        "type": {
+          "const": "paper_capture"
+        },
+        "stage": {
+          "enum": [
+            "preallocated",
+            "ingested"
+          ]
+        },
+        "route_id": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+        },
+        "page_record_id": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+        }
+      },
+      "additionalProperties": false,
+      "description": "PDS2 paper provenance. The originating paper contract remains authoritative for route and page-record identity."
+    },
+    "importSource": {
+      "type": "object",
+      "required": [
+        "type",
+        "source_label"
+      ],
+      "properties": {
+        "type": {
+          "const": "import"
+        },
+        "source_label": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+        },
+        "external_reference": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

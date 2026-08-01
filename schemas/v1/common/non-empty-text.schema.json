@@ -1,0 +1,9 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json",
+  "title": "Non-Empty Text",
+  "description": "Reusable text value containing at least one non-whitespace character. The contract does not silently trim or normalize text.",
+  "type": "string",
+  "minLength": 1,
+  "pattern": "\\S"
+}

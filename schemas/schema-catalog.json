@@ -108,6 +108,30 @@
         "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/targets/support-process-target-ref.schema.json",
         "path": "schemas/v1/targets/support-process-target-ref.schema.json"
       }
+    },
+    "non_empty_text": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json",
+        "path": "schemas/v1/common/non-empty-text.schema.json"
+      }
+    },
+    "explicit_offset_timestamp": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json",
+        "path": "schemas/v1/common/explicit-offset-timestamp.schema.json"
+      }
+    },
+    "creation_source": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/provenance/creation-source.schema.json",
+        "path": "schemas/v1/provenance/creation-source.schema.json"
+      }
+    },
+    "attribution_agent": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/attribution/attribution-agent.schema.json",
+        "path": "schemas/v1/attribution/attribution-agent.schema.json"
+      }
     }
   }
 }

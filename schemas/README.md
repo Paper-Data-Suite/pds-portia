@@ -26,8 +26,8 @@ Canonical schemas do not use mutable `latest` or `current` identities.
 conceptual contract name and schema version to the canonical schema `$id` and
 the repository-relative source path.
 
-The catalog currently contains the retained version-1 Event-family contracts
-and the version-1 identifier contracts.
+The catalog contains the retained Event-family contracts and the versioned
+shared contracts implemented by Portia.
 
 ## Identifier contracts
 
@@ -145,6 +145,39 @@ These target contracts establish application scope only. They do not establish
 participant roles, source, basis, evidence, attribution, provenance,
 relationship direction, target existence, lifecycle eligibility, or
 authorization.
+
+## Shared envelope primitives
+
+Reusable envelope-oriented contracts are independently addressable beneath:
+
+    schemas/v1/common/
+    schemas/v1/provenance/
+    schemas/v1/attribution/
+
+`non_empty_text` requires a string containing at least one non-whitespace
+character. It does not silently trim, normalize, or impose an unrelated
+maximum length.
+
+`explicit_offset_timestamp` requires an RFC 3339 date-time carrying either an
+explicit numeric UTC offset or uppercase `Z`. Timestamp ordering, creation-time
+equality, and monotonic updates remain application-validation concerns.
+
+`creation_source` preserves structured creation provenance through exactly
+three initial branches: `digital_entry`, `paper_capture`, and `import`.
+Paper-capture route and page-record identifiers use a nonauthoritative
+structural fallback until the originating PDS2 contract is independently
+addressable. A consuming record may impose stricter workflow eligibility; for
+example, a Work Relationship created from paper must use an ingested page.
+
+`attribution_agent` distinguishes a `local_operator` display label from a
+`system_process` identifier. It records local persistence-operation
+attribution and is not interchangeable with `actor_ref` or institutional
+identity and authorization.
+
+The retained Event-family version-1 schemas keep their private historical
+`$defs` unchanged. New record contracts compose these public shared schemas so
+that provenance, attribution, text, and timestamp behavior do not drift across
+record families.
 
 ## Offline resolution
 

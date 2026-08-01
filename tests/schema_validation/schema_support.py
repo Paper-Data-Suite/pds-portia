@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+import calendar
 import json
+import re
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Iterable, Mapping
@@ -17,6 +19,94 @@ REPO_ROOT = TEST_DIR.parents[1]
 SCHEMA_ROOT = REPO_ROOT / "schemas"
 SCHEMA_CATALOG_PATH = SCHEMA_ROOT / "schema-catalog.json"
 FIXTURE_ROOT = TEST_DIR / "fixtures"
+
+
+PORTIA_FORMAT_CHECKER = FormatChecker()
+
+_RFC3339_DATE_TIME_RE = re.compile(
+    r"""
+    ^
+    (\d{4})
+    -
+    (0[1-9]|1[0-2])
+    -
+    (\d{2})
+    T
+    (?:[01]\d|2[0-3])
+    :
+    (?:[0-5]\d)
+    :
+    (?:[0-5]\d)
+    (?:\.\d+)?
+    (?:
+        Z
+        |
+        [+-](?:[01]\d|2[0-3]):[0-5]\d
+    )
+    $
+    """,
+    re.ASCII | re.VERBOSE,
+)
+
+_RFC3339_DATE_RE = re.compile(
+    r"^(\d{4})-(0[1-9]|1[0-2])-(\d{2})$",
+    re.ASCII,
+)
+
+
+def _is_valid_calendar_date(
+    year_text: str,
+    month_text: str,
+    day_text: str,
+) -> bool:
+    year = int(year_text)
+    month = int(month_text)
+    day = int(day_text)
+
+    if year == 0:
+        return False
+
+    _weekday, maximum_day = calendar.monthrange(
+        year,
+        month,
+    )
+    return 1 <= day <= maximum_day
+
+
+@PORTIA_FORMAT_CHECKER.checks("date-time")
+def _is_rfc3339_date_time(value: object) -> bool:
+    """Validate RFC 3339 date-time without optional packages."""
+
+    if not isinstance(value, str):
+        return True
+
+    match = _RFC3339_DATE_TIME_RE.fullmatch(value)
+    if match is None:
+        return False
+
+    return _is_valid_calendar_date(
+        match.group(1),
+        match.group(2),
+        match.group(3),
+    )
+
+
+@PORTIA_FORMAT_CHECKER.checks("date")
+def _is_rfc3339_full_date(value: object) -> bool:
+    """Validate RFC 3339 full-date without optional packages."""
+
+    if not isinstance(value, str):
+        return True
+
+    match = _RFC3339_DATE_RE.fullmatch(value)
+    if match is None:
+        return False
+
+    return _is_valid_calendar_date(
+        match.group(1),
+        match.group(2),
+        match.group(3),
+    )
 
 
 class SchemaCatalogError(ValueError):
@@ -49,7 +139,7 @@ class SchemaStore:
         return Draft202012Validator(
             self.schema_for_id(schema_id),
             registry=self.registry,
-            format_checker=FormatChecker(),
+            format_checker=PORTIA_FORMAT_CHECKER,
         )
 
 
