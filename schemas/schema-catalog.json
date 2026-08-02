@@ -21,6 +21,10 @@
       "1": {
         "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/event-participant-role.schema.json",
         "path": "schemas/event-participant-role.schema.json"
+      },
+      "2": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v2/event-participant-role.schema.json",
+        "path": "schemas/v2/event-participant-role.schema.json"
       }
     },
     "portia_event_id": {

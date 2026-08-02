@@ -260,6 +260,53 @@ Migration fixtures beneath
 document explicit version-1 to version-2 transformations. Reading a historical
 version-1 record does not silently mutate it or change its canonical identity.
 
+## Event Participant Role version 2
+
+The current implementation-target Event Participant Role schema is:
+
+    schemas/v2/event-participant-role.schema.json
+
+The retained unversioned-path Role schema remains the historical version-1
+contract. Version 2 preserves the accepted Role types, lifecycle vocabulary,
+reported-involvement basis rules, contextual-detail rules, paper-ingestion
+boundary, and correction semantics while reconciling its reference shapes.
+
+Version 2 replaces the direct `participant_id` property with a required
+singular `target` using the Event Participant branch of `portia_target_ref`.
+The target must identify `record_kind = "event_participant"`, an `ep_` record
+identifier, and contract version `"1"` or `"2"`. Event-level and
+multi-participant Role targets are structurally rejected.
+
+Account and Observation basis entries retain their specialized outer kinds but
+now contain a nested `record_ref`. Because their public contracts are deferred,
+current fixtures use explicit `contract_version: null`; omission is invalid and
+`null` is not a wildcard. Exact target existence, supported versions, and
+same-Event eligibility remain application-validation responsibilities.
+
+Role supersession entries likewise use a nested `record_ref` constrained to
+`record_kind = "event_participant_role"`, an `epr_` record identifier, and
+contract version `"1"` or `"2"`.
+
+The record composes public Portia target, local-record reference, identifier,
+provenance, attribution, timestamp, and text contracts. Paper-derived Roles
+must use ingested creation provenance and must include a paper basis. Exact
+route and page equality between provenance and basis remains an application
+invariant.
+
+JSON Schema establishes the closed envelope, singular target shape, Role and
+status vocabularies, basis variants, contextual-detail rules,
+reported-involvement Account requirements, paper-ingestion gate, shared
+contract composition, and predecessor-reference structure. Application
+validation remains responsible for parent and target resolution, same-Event
+scope, lifecycle eligibility, chronology, paper identity equality, duplicate
+active Role compatibility, self-supersession, predecessor identity uniqueness,
+supersession cycles, and coordinated state changes.
+
+Migration fixtures beneath
+`tests/schema_validation/fixtures/migrations/event_participant_role_v1_to_v2/`
+document explicit version-1 to version-2 transformations. Reading a historical
+version-1 Role does not silently mutate it or change its canonical identity.
+
 ## Offline resolution
 
 Schema tests build a local `referencing.Registry` from checked-in schema
