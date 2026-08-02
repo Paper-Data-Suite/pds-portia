@@ -1,0 +1,56 @@
+{
+  "source_v1": {
+    "schema_version": "1",
+    "record_type": "event_participant",
+    "module_id": "portia",
+    "class_id": "eng10_p2_2026",
+    "work_id": "evt_example",
+    "participant_id": "ep_migrate_unknown",
+    "status": "active",
+    "subject": {
+      "kind": "unknown_person",
+      "reason": "identity_not_reported",
+      "description": "A student was mentioned without a name."
+    },
+    "creation_source": {
+      "type": "digital_entry"
+    },
+    "created_at": "2026-08-02T17:00:00-04:00",
+    "created_by": {
+      "type": "local_operator",
+      "display_label": "S. Severino"
+    },
+    "updated_at": "2026-08-02T17:00:00-04:00",
+    "updated_by": {
+      "type": "local_operator",
+      "display_label": "S. Severino"
+    }
+  },
+  "target_v2": {
+    "schema_version": "2",
+    "record_type": "event_participant",
+    "module_id": "portia",
+    "class_id": "eng10_p2_2026",
+    "work_id": "evt_example",
+    "participant_id": "ep_migrate_unknown",
+    "status": "active",
+    "subject": {
+      "kind": "unknown_person",
+      "reason": "identity_not_reported",
+      "description": "A student was mentioned without a name."
+    },
+    "creation_source": {
+      "type": "digital_entry"
+    },
+    "created_at": "2026-08-02T17:00:00-04:00",
+    "created_by": {
+      "type": "local_operator",
+      "display_label": "S. Severino"
+    },
+    "updated_at": "2026-08-02T17:00:00-04:00",
+    "updated_by": {
+      "type": "local_operator",
+      "display_label": "S. Severino"
+    }
+  }
+}

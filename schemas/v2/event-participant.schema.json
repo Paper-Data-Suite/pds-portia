@@ -1,0 +1,268 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v2/event-participant.schema.json",
+  "title": "Portia Event Participant v2",
+  "description": "Canonical Portia Event Participant version-2 record stored beneath one Event work root. Version 2 composes public reference, snapshot, provenance, attribution, identifier, text, and timestamp contracts.",
+  "$comment": "Application validation remains responsible for canonical storage path and envelope agreement, parent Event existence and lifecycle, Core roster and Actor resolution, duplicate active durable subjects, timestamp chronology, creation-workflow restrictions, lifecycle transitions, self-supersession, duplicate predecessor canonical identity, supersession cycles, and coordinated predecessor/successor state changes.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "record_type",
+    "module_id",
+    "class_id",
+    "work_id",
+    "participant_id",
+    "status",
+    "subject",
+    "creation_source",
+    "created_at",
+    "created_by",
+    "updated_at",
+    "updated_by"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "2"
+    },
+    "record_type": {
+      "const": "event_participant"
+    },
+    "module_id": {
+      "const": "portia"
+    },
+    "class_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+    },
+    "work_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-event-id.schema.json"
+    },
+    "participant_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-event-participant-id.schema.json"
+    },
+    "status": {
+      "enum": [
+        "proposed",
+        "active",
+        "invalidated",
+        "superseded"
+      ]
+    },
+    "subject": {
+      "$ref": "#/$defs/subject"
+    },
+    "supersedes": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/participantSupersessionRef"
+      },
+      "description": "Canonical forward replacement links to prior Event Participant records in the same Event work scope."
+    },
+    "creation_source": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/provenance/creation-source.schema.json"
+    },
+    "created_at": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+    },
+    "created_by": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/attribution/attribution-agent.schema.json"
+    },
+    "updated_at": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+    },
+    "updated_by": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/attribution/attribution-agent.schema.json"
+    }
+  },
+  "$defs": {
+    "subject": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/rosterStudentSubject"
+        },
+        {
+          "$ref": "#/$defs/actorSubject"
+        },
+        {
+          "$ref": "#/$defs/descriptivePersonSubject"
+        },
+        {
+          "$ref": "#/$defs/unknownPersonSubject"
+        }
+      ]
+    },
+    "rosterStudentSubject": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "roster_student_ref",
+        "display_snapshot"
+      ],
+      "properties": {
+        "kind": {
+          "const": "roster_student"
+        },
+        "roster_student_ref": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/roster-student-ref.schema.json"
+        },
+        "display_snapshot": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/snapshots/person-display-snapshot.schema.json"
+        }
+      }
+    },
+    "actorSubject": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "actor_ref",
+        "display_snapshot"
+      ],
+      "properties": {
+        "kind": {
+          "const": "actor"
+        },
+        "actor_ref": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/actor-ref.schema.json"
+        },
+        "display_snapshot": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/snapshots/person-display-snapshot.schema.json"
+        }
+      }
+    },
+    "descriptivePersonSubject": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "description_type",
+        "display_label"
+      ],
+      "properties": {
+        "kind": {
+          "const": "descriptive_person"
+        },
+        "description_type": {
+          "enum": [
+            "outside_student",
+            "family_member",
+            "school_staff",
+            "visitor",
+            "community_member",
+            "other"
+          ]
+        },
+        "display_label": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+        },
+        "detail": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+        }
+      },
+      "$comment": "Application validation should require adequate clarification when description_type is other; display_label may itself provide that clarification."
+    },
+    "unknownPersonSubject": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "reason"
+      ],
+      "properties": {
+        "kind": {
+          "const": "unknown_person"
+        },
+        "reason": {
+          "enum": [
+            "identity_not_known",
+            "identity_not_reported",
+            "identity_withheld",
+            "ambiguous_source",
+            "ambiguous_paper_mark",
+            "legacy_import"
+          ]
+        },
+        "description": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+        }
+      }
+    },
+    "participantRecordRef": {
+      "allOf": [
+        {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/local-record-ref.schema.json"
+        },
+        {
+          "properties": {
+            "record_kind": {
+              "const": "event_participant"
+            },
+            "record_id": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-event-participant-id.schema.json"
+            },
+            "contract_version": {
+              "enum": [
+                "1",
+                "2"
+              ]
+            }
+          },
+          "required": [
+            "record_kind",
+            "record_id",
+            "contract_version"
+          ]
+        }
+      ]
+    },
+    "participantSupersessionRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "record_ref",
+        "reason"
+      ],
+      "properties": {
+        "record_ref": {
+          "$ref": "#/$defs/participantRecordRef"
+        },
+        "reason": {
+          "enum": [
+            "identity_resolved",
+            "identity_corrected",
+            "duplicate_consolidated",
+            "subject_variant_changed",
+            "participant_relationship_corrected",
+            "other"
+          ]
+        },
+        "detail": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "reason": {
+                "const": "other"
+              }
+            },
+            "required": [
+              "reason"
+            ]
+          },
+          "then": {
+            "required": [
+              "detail"
+            ]
+          }
+        }
+      ],
+      "description": "Forward replacement reference to a prior Event Participant within the containing Event. Contract version 1 or 2 is required explicitly."
+    }
+  }
+}

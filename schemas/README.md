@@ -217,6 +217,49 @@ eligibility, active edge uniqueness, inverse duplicates, timestamp chronology,
 lifecycle transitions, self-supersession, predecessor identity uniqueness,
 supersession cycles, and coordinated successor activation.
 
+## Event Participant version 2
+
+The current implementation-target Event Participant schema is:
+
+    schemas/v2/event-participant.schema.json
+
+The retained unversioned-path Event Participant schema remains the historical
+version-1 contract. Version 2 does not rewrite or alias that schema.
+
+Version 2 preserves the four subject variants while replacing embedded or flat
+identity fields with the public shared contracts:
+
+- roster subjects use `roster_student_ref`;
+- Actor subjects use `actor_ref`;
+- durable roster and Actor subjects retain a sibling
+  `person_display_snapshot`;
+- descriptive and unknown subjects retain their version-1 vocabularies;
+- supersession links use a constrained `local_record_ref` rather than a flat
+  `participant_id`.
+
+A version-2 supersession reference must identify `record_kind =
+"event_participant"`, use an `ep_` record identifier, and state contract
+version `"1"` or `"2"`. Contract version is never omitted or treated as a
+wildcard.
+
+The record composes public Portia identifier, reference, snapshot, provenance,
+attribution, timestamp, and text contracts. Version-1 property names such as
+`student_ref` and a bare `actor_id` are rejected by the closed version-2
+subject branches.
+
+JSON Schema establishes the closed envelope, subject branch, shared-contract
+composition, identifier syntax, lifecycle vocabulary, provenance and
+attribution shapes, timestamp syntax, and predecessor-reference structure.
+Application validation remains responsible for parent Event resolution,
+storage-path agreement, durable-subject uniqueness, chronology, lifecycle and
+creation-workflow rules, self-supersession, predecessor identity uniqueness,
+supersession cycles, and coordinated state changes.
+
+Migration fixtures beneath
+`tests/schema_validation/fixtures/migrations/event_participant_v1_to_v2/`
+document explicit version-1 to version-2 transformations. Reading a historical
+version-1 record does not silently mutate it or change its canonical identity.
+
 ## Offline resolution
 
 Schema tests build a local `referencing.Registry` from checked-in schema
