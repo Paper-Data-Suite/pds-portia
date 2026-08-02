@@ -132,6 +132,12 @@
         "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/attribution/attribution-agent.schema.json",
         "path": "schemas/v1/attribution/attribution-agent.schema.json"
       }
+    },
+    "work_relationship": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/work-relationship.schema.json",
+        "path": "schemas/v1/work-relationship.schema.json"
+      }
     }
   }
 }

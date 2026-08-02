@@ -179,6 +179,44 @@ The retained Event-family version-1 schemas keep their private historical
 that provenance, attribution, text, and timestamp behavior do not drift across
 record families.
 
+## Work Relationship contract
+
+The initial canonical Work Relationship schema is:
+
+    schemas/v1/work-relationship.schema.json
+
+A Work Relationship is stored beneath its semantic source Portia work. The
+containing work identity and the required direct `source` endpoint must agree.
+The target does not store a canonical reverse copy; reverse navigation and
+target-side wording are derived from the source-owned record.
+
+The initial controlled vocabulary contains exactly:
+
+    draws_context_from
+
+Its source may be an Event or Support Process. Its target is always an Event.
+The relationship is contextual and does not assert causation, proof, blame,
+responsibility, credibility, diagnosis, service authorization, or
+institutional approval.
+
+The record composes the public Portia work-reference, relationship-identifier,
+creation-source, attribution-agent, explicit-offset timestamp, and nonempty
+text contracts. Paper-derived relationships require
+`creation_source.stage = "ingested"` even though the broader shared provenance
+contract also supports preallocation for other record families.
+
+Optional `supersedes` entries use complete `portia_work_record_ref` values
+constrained to `record_kind = "work_relationship"` and
+`contract_version = "1"`.
+
+JSON Schema establishes the closed envelope, endpoint shape, controlled
+vocabularies, identifier syntax, timestamp syntax, paper-ingestion gate, and
+predecessor-reference shape. Application validation remains responsible for
+storage/source agreement, self-reference, exact resolution, endpoint
+eligibility, active edge uniqueness, inverse duplicates, timestamp chronology,
+lifecycle transitions, self-supersession, predecessor identity uniqueness,
+supersession cycles, and coordinated successor activation.
+
 ## Offline resolution
 
 Schema tests build a local `referencing.Registry` from checked-in schema
