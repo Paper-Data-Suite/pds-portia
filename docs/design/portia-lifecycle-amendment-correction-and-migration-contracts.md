@@ -1,6 +1,6 @@
 # Portia Lifecycle, Amendment, Correction, and Migration Contracts
 
-**Status:** Working design — approved through Decision 9  
+**Status:** Working design — approved through Decision 10  
 **Project:** Paper Data Suite  
 **Module:** `pds-portia`  
 **Issue:** `#12 — Define shared lifecycle, amendment, correction, and migration contracts`  
@@ -3052,7 +3052,484 @@ Rejected because dependencies require record-specific treatment rather than univ
 
 ---
 
-# 13. Consequences
+
+# 13. Approved Decision 10: Supersession Reconciliation
+
+## 13.1 Decision
+
+Portia uses split authority with mandatory reconciliation.
+
+The successor's `supersedes` field is authoritative for:
+
+- replacement-edge identity;
+- predecessor identity and contract version;
+- edge-specific replacement reason;
+- and any permitted edge detail.
+
+The predecessor's selected lifecycle transition is authoritative for:
+
+- the predecessor's current lifecycle status;
+- when supersession became effective;
+- who recorded the status change;
+- and the lifecycle reason for the transition.
+
+A supersession relationship is valid only when both canonical sides reconcile.
+
+Neither side silently wins when they disagree.
+
+## 13.2 Declared and effective supersession
+
+A successor-side `supersedes` entry creates a:
+
+```text
+declared supersession edge
+```
+
+That edge becomes an:
+
+```text
+effective supersession edge
+```
+
+only when all of the following are true:
+
+1. the successor is canonically accepted in a replacement-eligible state;
+2. the predecessor's selected lifecycle history ends in `superseded`;
+3. the selected transition to `superseded` is semantically compatible with the successor entry;
+4. predecessor and successor belong to the same semantic record family;
+5. the replacement topology is permitted;
+6. and the coordinated operation is complete or recoverable.
+
+A draft or proposed successor may therefore declare replacement intent without prematurely superseding its predecessor.
+
+## 13.3 Replacement-eligible successor states
+
+A successor is replacement-eligible when it is no longer merely preparatory and is not itself initially `superseded`.
+
+The current record families use these replacement-eligible states:
+
+| Record family | Replacement-eligible states |
+|---|---|
+| Event | `active`, `closed`, `cancelled`, `invalidated` |
+| Event Participant | `active`, `invalidated` |
+| Event Participant Role | `active`, `invalidated` |
+| Work Relationship | `active`, `invalidated` |
+| Statement of Disagreement | `active`, `withdrawn`, `invalidated` |
+
+This permits correction of historical terminal records.
+
+For example, an invalidated predecessor may be replaced by a corrected successor that remains invalidated.
+
+`draft` and `proposed` successors may declare replacement intent, but their edges are not effective.
+
+## 13.4 Reconciliation states
+
+### Pending declaration
+
+A successor is `draft` or `proposed`, contains `supersedes`, and the predecessor has not transitioned to `superseded`.
+
+This is valid preparation.
+
+It does not affect:
+
+- predecessor use eligibility;
+- reverse current-successor discovery;
+- or replacement-frontier calculation.
+
+If the proposed replacement is abandoned, its declaration never becomes effective.
+
+### Effective replacement
+
+The successor is replacement-eligible and the predecessor's selected lifecycle head is the matching transition to `superseded`.
+
+The edge participates in the canonical replacement graph.
+
+### Broken replacement
+
+A broken replacement exists when canonical sides disagree or the intended topology is incomplete.
+
+Representative examples include:
+
+- a replacement-eligible successor claims an unsuperseded predecessor;
+- a predecessor is `superseded` but has no effective incoming successor edge;
+- transition and edge reasons conflict;
+- successor and predecessor belong to different record families;
+- an unauthorized second successor claims the predecessor;
+- or only part of a consolidation or split operation was persisted.
+
+A broken replacement is an integrity failure.
+
+Portia does not:
+
+- ignore the successor edge;
+- automatically change predecessor status;
+- choose whichever file is newer;
+- infer the intended replacement graph;
+- or silently redirect a reference.
+
+Lifecycle-dependent writes involving affected records are blocked pending repair.
+
+Issue #13 defines partial-write recovery mechanics.
+
+## 13.5 Same-family requirement
+
+A replacement edge connects records from the same semantic family.
+
+Permitted examples include:
+
+```text
+Event v2 -> Event v1
+Event Participant v2 -> Event Participant v1
+Statement of Disagreement v1 -> Statement of Disagreement v1
+```
+
+Prohibited examples include:
+
+```text
+Event -> Event Participant
+Event Participant -> Event Participant Role
+Statement of Disagreement -> Account
+Work Relationship -> Event
+```
+
+Contract-version migration may cross schema versions while preserving the semantic family.
+
+## 13.6 Ordinary one-to-one replacement
+
+The default topology is:
+
+```text
+one predecessor -> one direct successor
+```
+
+This covers ordinary material correction.
+
+The successor identifies the predecessor through `supersedes`.
+
+The predecessor receives one selected lifecycle transition to `superseded`.
+
+## 13.7 Consolidation topology
+
+The replacement graph permits:
+
+```text
+many predecessors -> one successor
+```
+
+for explicit consolidation.
+
+Each predecessor:
+
+- remains independently resolvable;
+- receives its own lifecycle transition to `superseded`;
+- and has its own successor-side edge and edge reason where the record contract supports per-edge reasons.
+
+The successor becomes effective only when every predecessor in the intended consolidation set reconciles.
+
+A partial consolidation is an integrity failure.
+
+Portia does not accept a successful subset.
+
+The criteria for determining that records are duplicates remain part of the later duplicate-consolidation decision.
+
+Until that policy is accepted, the graph supports consolidation topology, but approval of a new consolidation remains blocked.
+
+## 13.8 Split replacement topology
+
+The general replacement graph supports:
+
+```text
+one predecessor -> several direct successors
+```
+
+only when the record family explicitly authorizes split replacement.
+
+A split means one predecessor conflated material that must now be represented through several independent successors.
+
+### Initial split policy
+
+Event is the only current record family eligible for split replacement.
+
+Representative case:
+
+> One Event incorrectly combined two distinct occurrences and must be replaced by two Events.
+
+Requirements are:
+
+- every successor is an Event;
+- every successor directly lists the same predecessor;
+- every successor is replacement-eligible;
+- all successors become effective in one coordinated operation;
+- the predecessor has one transition to `superseded`;
+- that transition uses:
+
+```text
+reason.category = correction
+reason.code = event_split
+```
+
+- and the Issue #13 operation journal identifies the complete split set.
+
+A later successor cannot be added to the direct split after the coordinated operation completes.
+
+Event Participant, Event Participant Role, Work Relationship, and Statement of Disagreement do not initially permit split replacement.
+
+Their predecessors may have at most one direct effective successor.
+
+## 13.9 No many-to-many replacement set
+
+Version 1 does not permit one coordinated operation with:
+
+```text
+several predecessors -> several successors
+```
+
+Such repartitioning makes lineage, reason attribution, completion, and recovery unnecessarily ambiguous.
+
+A future contract may introduce an explicit replacement-set record when a concrete use case justifies it.
+
+## 13.10 Successor-side authority
+
+The successor's `supersedes` entry is canonical for:
+
+- exact predecessor identity;
+- predecessor contract version;
+- edge-specific reason where the record family supplies one;
+- and permitted edge detail.
+
+Reverse relationships are derived.
+
+The predecessor does not persist:
+
+```text
+superseded_by
+successor_ids
+replacement_set
+```
+
+fields.
+
+## 13.11 Predecessor-side authority
+
+The selected lifecycle transition is canonical for:
+
+- when the predecessor became `superseded`;
+- who recorded that state change;
+- the transition's lifecycle reason;
+- and the predecessor's current status.
+
+The transition does not identify successor records.
+
+Successor identity is resolved from incoming canonical forward edges.
+
+## 13.12 Reason reconciliation
+
+Where the successor edge contains a specialized reason, the predecessor transition reason must be semantically equivalent.
+
+Representative mappings are:
+
+| Successor edge reason | Predecessor transition reason |
+|---|---|
+| `identity_corrected` | `correction / identity_corrected` |
+| `role_type_corrected` | `correction / role_type_corrected` |
+| `basis_corrected` | `correction / basis_corrected` |
+| `duplicate_consolidated` | `consolidation / duplicate_consolidated` |
+| `target_corrected` | `correction / target_corrected` |
+| `source_corrected` | `correction / source_corrected` |
+| `statement_corrected` | `correction / statement_corrected` |
+
+When an Event successor stores predecessor references without per-edge reasons, the predecessor lifecycle transition remains canonical for semantic reason.
+
+Record-specific matrices define exact accepted mappings.
+
+The later migration decision may extend mappings for migration-specific replacement.
+
+## 13.13 Timing reconciliation
+
+For an effective edge:
+
+1. the successor must become replacement-eligible no later than the predecessor transition's `effective_at`;
+2. the predecessor transition's `effective_at` marks when replacement became effective;
+3. the transition cannot predate canonical successor acceptance;
+4. all predecessors in one consolidation use a mutually consistent effective time;
+5. all successors in one Event split are replacement-eligible by the split transition's effective time.
+
+A draft successor's creation timestamp does not make replacement effective.
+
+Its activation or accepted terminal state does.
+
+## 13.14 Immutability after effectiveness
+
+Once a supersession edge becomes effective:
+
+- the successor's predecessor set is immutable;
+- edge reasons are immutable;
+- predecessor transitions remain append-only;
+- and effective edges are never deleted.
+
+A nonmaterial amendment cannot change `supersedes`.
+
+## 13.15 Later lifecycle changes to a successor
+
+An effective replacement edge remains historically valid even when the successor later becomes:
+
+- closed;
+- withdrawn;
+- invalidated;
+- or superseded.
+
+The predecessor does not reactivate.
+
+Example:
+
+```text
+A -> B
+B later invalidated
+```
+
+`A` remains superseded.
+
+There is temporarily no usable current replacement.
+
+Example:
+
+```text
+A -> B
+B -> C
+```
+
+`A` and `B` remain superseded.
+
+`C` is the current replacement frontier.
+
+A new correction should ordinarily supersede `B`, not create another ordinary direct edge from a later record back to `A`.
+
+## 13.16 Replacement frontier
+
+Successor discovery is derived separately from exact record resolution.
+
+Given a record, Portia may derive:
+
+```text
+direct_effective_successors
+replacement_frontier
+```
+
+The replacement frontier is found by following effective successor edges until reaching records that are not superseded.
+
+It may contain:
+
+- one record after ordinary replacement;
+- several records after an authorized Event split;
+- a historical-only terminal record;
+- or no usable record when the latest successor was invalidated without replacement.
+
+The resolver must still return the exact originally referenced record.
+
+It must not silently substitute the replacement frontier.
+
+## 13.17 Graph constraints
+
+Application validation must reject:
+
+- self-supersession;
+- replacement cycles;
+- duplicate predecessor entries;
+- incompatible semantic record families;
+- unsupported split topology;
+- many-to-many replacement operations;
+- late additions to a completed split;
+- conflicting successor reasons;
+- and a successor that indirectly supersedes itself.
+
+The effective replacement graph is a directed acyclic graph.
+
+## 13.18 Correcting an erroneous supersession edge
+
+An effective supersession edge is never edited or deleted.
+
+When a supersession relationship was accepted in error, correction may require:
+
+- a corrected successor record;
+- lifecycle-history correction for an incorrectly superseded predecessor;
+- invalidation or supersession of the erroneous successor;
+- and Issue #13 coordinated-recovery records.
+
+The corrected graph must remain explicit.
+
+Portia does not hide an erroneous effective edge during ordinary resolution.
+
+A declared but never-effective edge on a draft or proposed record may be abandoned by cancelling or invalidating that proposed successor and creating a corrected replacement proposal.
+
+## 13.19 Derived indexes
+
+Reverse and frontier indexes are rebuildable projections.
+
+They may cache:
+
+```text
+predecessor -> declared successors
+predecessor -> effective successors
+record -> replacement frontier
+```
+
+They are never canonical authority.
+
+Rebuilding them from successor records, selected lifecycle histories, and accepted operation state must produce the same graph.
+
+## 13.20 Structural validation
+
+JSON Schema validates each successor-side `supersedes` field and each lifecycle-transition record independently.
+
+Schema validation cannot establish cross-record effectiveness or topology.
+
+## 13.21 Application validation
+
+Application validation must confirm:
+
+- exact predecessor and successor resolution;
+- same-family compatibility;
+- replacement-eligible successor state;
+- predecessor selected status of `superseded`;
+- transition-and-edge reason compatibility;
+- timing compatibility;
+- supported graph topology;
+- complete consolidation and split sets;
+- no self-reference or cycle;
+- immutable effective predecessor sets;
+- exact historical resolution;
+- rebuildable reverse indexes;
+- and atomic or recoverable coordinated persistence.
+
+## 13.22 Rejected alternatives
+
+### Predecessor transition as sole replacement authority
+
+Rejected because a transition to `superseded` does not identify the replacement record.
+
+### Successor field as sole replacement authority
+
+Rejected because the predecessor could remain active while a successor claimed to replace it.
+
+### Canonical reverse successor fields
+
+Rejected because duplicated forward and reverse edges could disagree.
+
+### Silent reconciliation
+
+Rejected because neither canonical side may overwrite or reinterpret the other.
+
+### Unrestricted split replacement
+
+Rejected because most record families require one clear corrected successor.
+
+### Many-to-many replacement sets
+
+Rejected because lineage and completion semantics are too ambiguous without a dedicated future contract.
+
+---
+
+# 14. Consequences
 
 ## Positive
 
@@ -3101,28 +3578,27 @@ Rejected because a transition is evidence of another record's state change, not 
 
 ---
 
-# 14. Unresolved Decisions
+# 15. Unresolved Decisions
 
 The following remain unresolved and must not be treated as accepted architecture:
 
-1. supersession reconciliation;
-2. dependency handling;
-3. duplicate consolidation;
-4. migration-record semantics;
-5. migration identity preservation;
-6. incorrect Event ownership or work-root correction;
-7. exceptional removal boundaries;
-8. integrity-finding vocabulary;
-9. final public schema organization.
+1. dependency handling;
+2. duplicate consolidation;
+3. migration-record semantics;
+4. migration identity preservation;
+5. incorrect Event ownership or work-root correction;
+6. exceptional removal boundaries;
+7. integrity-finding vocabulary;
+8. final public schema organization.
 
 No schemas should be created for unresolved items until their architectural decisions are approved.
 
-## 15. Next Decision
+## 16. Next Decision
 
-The next decision should define supersession reconciliation, including:
+The next decision should define dependency handling, including:
 
-- which record is authoritative for predecessor-to-successor replacement links;
-- how predecessor transitions and successor supersession entries must agree;
-- whether one predecessor may have several successors and whether one successor may consolidate several predecessors;
-- how partial or conflicting supersession graphs are treated;
-- and how successor discovery remains derived without silently retargeting references.
+- how required and advisory dependencies are represented;
+- whether dependencies are declared on the dependent record or through separate edges;
+- how dependency lifecycle changes affect current-use eligibility;
+- when dependency loss requires review, invalidation, or successor replacement;
+- and how dependency repair avoids automatic cascades or silent retargeting.
