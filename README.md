@@ -11,19 +11,20 @@ Portia is in its initial research and architecture phase.
 The repository currently contains:
 
 * evidence-based research on responsible K–12 behavior documentation and management;
-* design analyses defining Portia’s role, identity model, ownership rules, canonical storage, and initial Event, Event Participant, and Event Participant Role domain model;
-* foundational Architecture Decision Records establishing Portia’s record distinctions, module boundaries, deployment scope, identity model, storage architecture, and initial Event, Event Participant, and Event Participant Role contracts;
-* Draft 2020-12 JSON Schemas for Event, Event Participant, and Event Participant Role records;
-* validated synthetic examples covering digital capture, paper capture, import, cross-class participation, uncertainty, identity resolution, Role basis, correction, and supersession;
-* and automated schema-validation fixtures and tests for all three initial record types.
+* accepted design analyses defining Portia’s role, identity model, ownership rules, canonical storage, shared references, targets, relationships, and initial Event family;
+* Architecture Decision Records through ADR 0007;
+* independently versioned Draft 2020-12 shared identifier, reference, target, snapshot, provenance, attribution, and Work Relationship schemas;
+* retained historical Event-family version-1 schemas and current implementation-target Event-family version-2 schemas;
+* validated synthetic examples and explicit v1-to-v2 migration fixtures;
+* and automated offline schema-validation and documentation-consistency tests.
 
-Portia does not yet contain an executable application. The initial Event, Event Participant, and Event Participant Role domain model is defined, while later records and executable workflows remain architectural work.
+Portia does not yet contain an executable application. The current Event, Event Participant, and Event Participant Role v2 contracts are defined; Support Process and later record families remain architectural work.
 
 ## Product Position
 
 Portia is designed as:
 
-> **Paper Data Suite’s contextual behavior-support and response module. It records what was observed, who provided each account, what an authorized person or institution determined, what response or support was provided, and what happened afterward.**
+> **Paper Data Suite’s contextual behavior-support and response module. It records what was observed, who said what, what the institution decided, what support was provided, and what happened afterward. It may reference instructional and assessment context from other modules, but it neither evaluates academic work nor calculates grades.**
 
 Portia should function as a student-support and decision-documentation system, not as a digital punishment ledger.
 
@@ -341,6 +342,33 @@ Portia will use existing Core class, roster, work-path, and routing contracts wh
 
 A broader Core workspace-module path should be considered only if several Paper Data Suite modules independently require one.
 
+## Accepted Shared Reference and Relationship Contracts
+
+ADR 0007 defines a small family of scope-specific public contracts rather than one universal reference object.
+
+The initial families are:
+
+```text
+roster_student_ref
+actor_ref
+local_record_ref
+portia_work_ref
+portia_work_record_ref
+module_work_record_ref
+person_display_snapshot
+portia_target_ref
+support_process_target_ref
+work_relationship
+```
+
+References resolve exactly. Portia does not repair references through name matching, search other work roots for bare IDs, infer the newest contract version, or silently follow supersession.
+
+Cross-module references compose Core work and record identity while leaving the originating module authoritative. Historical display snapshots remain outside identity.
+
+Work Relationships have one canonical source-owned direction. Reverse views are derived. The initial type `draws_context_from` is contextual and noncausal.
+
+Historical Event-family version-1 schemas remain readable. The version-2 Event family is the current implementation target.
+
 ## Initial Event, Event Participant, and Role Model
 
 Portia now defines an initial canonical model for Events, Event Participants, and Event Participant Roles.
@@ -481,7 +509,7 @@ Each Role has its own:
 * correction history;
 * and forward supersession relationships.
 
-Persisted `participant_id` is immutable. Material correction creates a successor Role rather than retargeting the existing record.
+A persisted Role v2 `target` is immutable. Material participant correction creates a successor Role rather than retargeting the existing record.
 
 ### Lifecycle
 
@@ -596,7 +624,7 @@ Application validation remains responsible for cross-record and contextual invar
 * Role activation requiring an active participant and eligible Event state;
 * duplicate participant and duplicate active Role detection;
 * active-role compatibility;
-* immutable persisted Role `participant_id`;
+* immutable persisted Role v2 `target`;
 * replacement ordering;
 * Account and participant dependency resolution;
 * coordinated successor activation and supersession;
@@ -671,29 +699,49 @@ Portia should use Core infrastructure and public cross-module contracts rather t
 
   Defines Event meaning and boundaries, Event root fields, occurrence precision, location and instructional context, participant identity variants, separate Event Participant Roles, neutral Role vocabulary, Role compatibility, basis, creation source, lifecycle transitions, dependency resolution, correction and supersession, paper capture, validation boundaries, and teacher-workflow constraints.
 
+* [Portia Reference, Targeting, and Relationship Contracts](docs/design/portia-reference-targeting-and-relationship-contracts.md)
+
+  Defines scope-specific identity and record references, target families, bounded display snapshots, exact resolution, schema versioning, Work Relationship ownership and lifecycle, and Event-family v2 reconciliation.
+
 ### Schemas
 
-* [Event Schema](schemas/event.schema.json)
+* [Schema Guide and Catalog](schemas/README.md)
 
-  Draft 2020-12 JSON Schema for canonical Event `work.json` records.
+  Documents canonical schema identity, offline resolution, public shared contracts, Work Relationship, and Event-family v2.
 
-* [Event Participant Schema](schemas/event-participant.schema.json)
+* [Event v2 Schema](schemas/v2/event.schema.json)
 
-  Draft 2020-12 JSON Schema for canonical Event Participant records.
+  Current implementation-target Event `work.json` contract.
 
-* [Event Participant Role Schema](schemas/event-participant-role.schema.json)
+* [Event Participant v2 Schema](schemas/v2/event-participant.schema.json)
 
-  Draft 2020-12 JSON Schema for canonical Event Participant Role records.
+  Current implementation-target Event Participant contract using shared person references and snapshots.
+
+* [Event Participant Role v2 Schema](schemas/v2/event-participant-role.schema.json)
+
+  Current implementation-target Role contract using singular participant targets and nested local-record basis references.
+
+* [Work Relationship v1 Schema](schemas/v1/work-relationship.schema.json)
+
+  Source-owned canonical relationship contract with the initial directional type `draws_context_from`.
+
+* [Historical Event-family v1 Schemas](schemas/event.schema.json)
+
+  The unversioned-path Event, Event Participant, and Event Participant Role schemas remain historical version-1 contracts and are not the current implementation target.
 
 ### Examples
 
+* [Portia Reference, Targeting, and Relationship Examples](docs/examples/portia-reference-targeting-and-relationship-examples.md)
+
+  Accepted synthetic examples for every shared reference and target family, Event-family v2 reconciliation, Work Relationship, layered resolution, and explicit migration.
+
 * [Portia Event and Event Participant Examples](docs/examples/portia-event-and-participant-examples.md)
 
-  Validated synthetic examples covering digital entry, paper preallocation and confirmation, cross-class participation, unresolved identity, participant identity resolution, and Event supersession.
+  Historical validated examples covering digital entry, paper preallocation and confirmation, cross-class participation, unresolved identity, identity resolution, and Event supersession.
 
 * [Portia Event Participant Role Examples](docs/examples/portia-event-participant-role-examples.md)
 
-  Validated synthetic examples covering direct digital Role creation, compatible Role assignments, contextual detail, paper-derived and imported reported involvement, attributed Account requirements, basis correction, Role refinement, and duplicate consolidation.
+  Historical validated examples covering direct digital Role creation, compatible Role assignments, contextual detail, paper-derived and imported reported involvement, basis correction, and supersession.
 
 ### Validation
 
@@ -726,6 +774,10 @@ Portia should use Core infrastructure and public cross-module contracts rather t
 * [ADR 0006: Define the Initial Event Participant Role Domain Model](docs/decisions/0006-define-event-participant-role-domain-model.md)
 
   Establishes separate canonical Event Participant Role records, neutral Role vocabulary, compatible active Role combinations, structured basis, independent creation provenance, attributed Account requirements for reported involvement, Role lifecycle, replacement-based correction, dependency resolution, no-hard-delete retention, and schema/application validation boundaries.
+
+* [ADR 0007: Define Shared Reference, Targeting, and Relationship Contracts](docs/decisions/0007-define-shared-reference-targeting-and-relationship-contracts.md)
+
+  Establishes the public reference and target families, bounded historical snapshots, exact layered resolution, Work Relationship ownership and lifecycle, stable schema identity, and current Event-family v2 implementation target.
 
 ## Explicit Product Prohibitions
 
@@ -775,10 +827,9 @@ Local-first storage does not make student records inherently non-sensitive. Port
 Likely next work includes:
 
 * defining Event, Event Participant, and Event Participant Role lifecycle-transition schemas;
-* defining the initial Support Process schema;
+* defining the minimal Support Process root and status contract, followed by the broader Support, Intervention, implementation, and fidelity model;
 * defining Account, Observation, Classification, Hypothesis, Determination, Response, Follow-Up, Outcome, and Communication schemas;
 * defining the Actor Directory schema and Actor lifecycle;
-* defining participant-targeting contracts for later records;
 * specifying general amendment, correction, and owning-class migration behavior;
 * defining staged-write, atomic-replacement, rollback, validation, and recovery behavior;
 * defining how teacher schedules assist Event ownership selection;
@@ -787,7 +838,7 @@ Likely next work includes:
 * defining deliberate student-specific exports;
 * specifying PDS2 page-record and route schemas;
 * evaluating a capture-batch routing contract for multi-entry paper sheets;
-* specifying typed cross-module references;
+* defining the Portia intervention producer profile, immutable manifest contract, privacy projection, and Core v0.6 fixture;
 * defining cross-year Support successor workflows;
 * and defining Portia archival integration with Sunset.
 
