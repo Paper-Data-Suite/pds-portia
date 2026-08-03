@@ -1,11 +1,11 @@
 # Portia Lifecycle, Amendment, Correction, and Migration Contracts
 
-**Status:** Working design — approved through Decision 2  
+**Status:** Working design — approved through Decision 3  
 **Project:** Paper Data Suite  
 **Module:** `pds-portia`  
 **Issue:** `#12 — Define shared lifecycle, amendment, correction, and migration contracts`  
 **Umbrella:** `#10 — Complete the Portia foundations milestone`  
-**Date:** 2026-08-02  
+**Date:** 2026-08-03  
 **Branch:** `12-shared-lifecycle-amendment-correction-migration-contracts`
 
 ## 1. Purpose
@@ -310,7 +310,245 @@ Application validation must confirm:
 
 ---
 
-# 6. Consequences
+
+# 6. Approved Decision 3: Lifecycle-Transition Envelope
+
+## 6.1 Required fields
+
+A lifecycle-transition version-1 record contains exactly:
+
+```text
+schema_version
+record_type
+module_id
+class_id
+work_id
+transition_id
+target
+previous_transition
+from_status
+to_status
+reason
+effective_at
+creation_source
+created_at
+created_by
+```
+
+The initial envelope does not contain:
+
+```text
+status
+updated_at
+updated_by
+recorded_at
+authorized_by
+operation_id
+```
+
+The exact `reason` object remains unresolved and will be defined by the next decision. The field itself is required.
+
+## 6.2 Constants and identity
+
+The envelope uses:
+
+```text
+schema_version = "1"
+record_type = "lifecycle_transition"
+module_id = "portia"
+```
+
+`transition_id` uses the `lct_` identifier contract accepted in Decision 2.
+
+The top-level `class_id` and `work_id` identify the containing work scope and must agree with the canonical storage path.
+
+## 6.3 Explicit predecessor chain
+
+`previous_transition` is required.
+
+It is either:
+
+- `null` for the first transition after the target's creation baseline; or
+- a same-work `local_record_ref` constrained to a lifecycle-transition version-1 record.
+
+First transition:
+
+```json
+{
+  "previous_transition": null
+}
+```
+
+Later transition:
+
+```json
+{
+  "previous_transition": {
+    "record_kind": "lifecycle_transition",
+    "record_id": "lct_prior",
+    "contract_version": "1"
+  }
+}
+```
+
+The predecessor chain, rather than timestamp sorting, establishes lifecycle-transition sequence.
+
+This permits application validation to diagnose:
+
+- missing predecessors;
+- branches;
+- cycles;
+- contradictory prior states;
+- and multiple competing transition heads.
+
+Application validation requires a non-null predecessor to:
+
+- exist beneath the same work root;
+- target the same canonical work or child record;
+- have `to_status` equal to the new transition's `from_status`;
+- and be the unique current transition head for that target when the new transition is accepted.
+
+Two transitions that cite the same predecessor for the same target form a conflicting branch. Portia must not order them automatically by timestamp, filename, or file modification time.
+
+## 6.4 Status-token structure
+
+`from_status` and `to_status` use lowercase status tokens matching:
+
+```text
+^[a-z][a-z0-9_]*$
+```
+
+The shared lifecycle-transition schema validates lexical form only.
+
+The target's record-specific contract and application validator determine:
+
+- whether each status is supported;
+- whether the transition between them is legal;
+- whether the target satisfies activation or closure prerequisites;
+- and whether dependent records require coordinated treatment.
+
+`from_status` and `to_status` must differ.
+
+## 6.5 Time model
+
+Both `effective_at` and `created_at` are required and compose the accepted explicit-offset timestamp contract.
+
+`effective_at` means:
+
+> The time at which the lifecycle change became effective for the target.
+
+`created_at` means:
+
+> The time at which the immutable lifecycle-transition record was first canonically persisted in Portia.
+
+There is no separate `recorded_at` field because `created_at` already represents canonical recording time.
+
+Application validation requires:
+
+- `effective_at` must not precede the target's `created_at`;
+- `effective_at` must not be later than the transition's `created_at`;
+- future-effective lifecycle transitions are not supported in version 1;
+- `effective_at` must be nondecreasing along the predecessor chain;
+- `created_at` must be nondecreasing along the predecessor chain;
+- and equal timestamps are permitted because `previous_transition` establishes sequence.
+
+A planned future status change is not a lifecycle transition until it actually becomes effective.
+
+## 6.6 Attribution
+
+`created_by` composes the accepted `attribution_agent` contract.
+
+Its meaning is:
+
+> The local operator or deterministic system process responsible for canonically recording the transition in Portia.
+
+`created_by` does not establish:
+
+- institutional identity;
+- legal authorship;
+- employment status;
+- decision-making authority;
+- or authorization to perform the lifecycle change.
+
+When a domain transition requires authority, that authority belongs in the applicable domain record, Determination, or later authorization contract rather than in the generic lifecycle-transition envelope.
+
+The generic envelope therefore does not contain `authorized_by`.
+
+## 6.7 Creation provenance
+
+`creation_source` composes the accepted shared creation-source contract but lifecycle-transition version 1 permits only:
+
+```text
+digital_entry
+import
+```
+
+Paper capture does not directly create a canonical lifecycle transition.
+
+A returned page or interpreted paper artifact may initiate review, but an accepted status change arising from that review is recorded as `digital_entry`. The underlying page and route provenance remain attached to the affected domain records or later supporting-reference contracts.
+
+The `import` branch is permitted only when Portia imports an explicit external lifecycle change.
+
+Importing a record that already has a current status but lacks complete transition history establishes an initial lifecycle baseline under Decision 1 rather than fabricating imported transitions.
+
+## 6.8 No operation-correlation field
+
+Lifecycle-transition version 1 does not contain:
+
+```text
+operation_id
+operation_ref
+journal_id
+transaction_id
+```
+
+Issue #13 may define a coordinated-operation or recovery journal that references every affected target and transition.
+
+Canonical lifecycle history must not depend on transaction machinery, and Issue #12 must not create a premature reference to a contract that does not yet exist.
+
+## 6.9 Immutability
+
+Because lifecycle-transition records have no lifecycle status, they also have no `updated_at` or `updated_by`.
+
+After canonical acceptance, the envelope is immutable.
+
+An erroneous transition must be addressed through the history-correction architecture accepted later in Issue #12. It must not be edited, replaced in place, or silently removed.
+
+## 6.10 Structural and application validation
+
+JSON Schema will validate:
+
+- the exact 15-field envelope;
+- constants;
+- `lct_` identifier syntax;
+- the compact target union;
+- nullable predecessor shape;
+- lowercase status-token syntax;
+- distinct `from_status` and `to_status`;
+- required timestamps with explicit offsets;
+- permitted creation-source branches;
+- and attribution-agent structure.
+
+Application validation remains responsible for:
+
+- canonical path agreement;
+- target resolution;
+- predecessor resolution;
+- same-target predecessor identity;
+- branch and cycle detection;
+- transition-head uniqueness;
+- prior-state agreement;
+- record-specific transition legality;
+- target prerequisites;
+- timestamp chronology across records;
+- current-status and transition-history reconciliation;
+- authorization;
+- dependency handling;
+- and coordinated persistence or recovery.
+
+---
+
+# 7. Consequences
 
 ## Positive
 
@@ -359,39 +597,34 @@ Rejected because a transition is evidence of another record's state change, not 
 
 ---
 
-# 7. Unresolved Decisions
+# 8. Unresolved Decisions
 
 The following remain unresolved and must not be treated as accepted architecture:
 
-1. exact lifecycle-transition envelope fields;
-2. lexical constraints for `from_status` and `to_status`;
-3. transition reason architecture;
-4. `effective_at` versus `recorded_at`;
-5. transition ordering and equal timestamps;
-6. operation correlation;
-7. correction of an erroneous transition;
-8. amendment semantics and wire shape;
-9. nonmaterial-versus-material decision test;
-10. statement-of-disagreement semantics;
-11. invalidation and terminal-state rules;
-12. supersession reconciliation;
-13. dependency handling;
-14. duplicate consolidation;
-15. migration-record semantics;
-16. migration identity preservation;
-17. incorrect Event ownership or work-root correction;
-18. exceptional removal boundaries;
-19. integrity-finding vocabulary;
-20. final public schema organization.
+1. transition reason architecture;
+2. correction of an erroneous transition;
+3. amendment semantics and wire shape;
+4. nonmaterial-versus-material decision test;
+5. statement-of-disagreement semantics;
+6. invalidation and terminal-state rules;
+7. supersession reconciliation;
+8. dependency handling;
+9. duplicate consolidation;
+10. migration-record semantics;
+11. migration identity preservation;
+12. incorrect Event ownership or work-root correction;
+13. exceptional removal boundaries;
+14. integrity-finding vocabulary;
+15. final public schema organization.
 
 No schemas should be created for unresolved items until their architectural decisions are approved.
 
-## 8. Next Decision
+## 9. Next Decision
 
-The next decision should define the lifecycle-transition envelope, including:
+The next decision should define the lifecycle-transition reason architecture, including:
 
-- required top-level fields;
-- whether both `effective_at` and `recorded_at` are required;
-- how `created_at` relates to `recorded_at`;
-- which attribution identifies the recorder;
-- and whether operation correlation belongs directly on the transition or remains deferred to Issue #13.
+- whether reasons use one shared vocabulary or shared categories plus record-specific values;
+- whether `reason` is a string or a closed object;
+- when explanatory detail is required or prohibited;
+- how `other` is represented;
+- and which reason semantics belong to the shared lifecycle contract rather than individual record families.
