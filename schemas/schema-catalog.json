@@ -5,6 +5,10 @@
       "1": {
         "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/event.schema.json",
         "path": "schemas/event.schema.json"
+      },
+      "2": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v2/event.schema.json",
+        "path": "schemas/v2/event.schema.json"
       }
     },
     "event_participant": {

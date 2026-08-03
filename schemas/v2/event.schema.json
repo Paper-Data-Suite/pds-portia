@@ -1,0 +1,410 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v2/event.schema.json",
+  "title": "Portia Event v2",
+  "description": "Canonical version-2 Portia Event root record stored beneath one Core class-owned Portia work root. Version 2 preserves the version-1 Event domain model while replacing provisional instructional and supersession references with the accepted shared contracts.",
+  "$comment": "Application validation remains responsible for canonical storage-path and envelope agreement, Core class and instructional-reference resolution, school-year semantics, timestamp and occurrence chronology, Event lifecycle transitions, creation-provenance immutability, paper and import review gates, participant-state activation requirements, nested module-ID equality, self-supersession, predecessor canonical-identity uniqueness, supersession cycles, coordinated predecessor/successor state changes, authorization, and incoming derived supersession views.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "record_type",
+    "work_kind",
+    "module_id",
+    "class_id",
+    "work_id",
+    "school_year",
+    "status",
+    "creation_source",
+    "created_at",
+    "created_by",
+    "updated_at",
+    "updated_by"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "2"
+    },
+    "record_type": {
+      "const": "portia_work"
+    },
+    "work_kind": {
+      "const": "event"
+    },
+    "module_id": {
+      "const": "portia"
+    },
+    "class_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+    },
+    "work_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-event-id.schema.json"
+    },
+    "school_year": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{4}$",
+      "description": "Owning class academic year. Application validation confirms that the range is meaningful and agrees with the Core class."
+    },
+    "status": {
+      "enum": [
+        "draft",
+        "active",
+        "closed",
+        "cancelled",
+        "invalidated",
+        "superseded"
+      ]
+    },
+    "occurrence": {
+      "$ref": "#/$defs/occurrence"
+    },
+    "summary": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json",
+      "description": "Concise neutral teacher-facing Event summary."
+    },
+    "location": {
+      "$ref": "#/$defs/location"
+    },
+    "instructional_context": {
+      "$ref": "#/$defs/instructionalContext"
+    },
+    "supersedes": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/eventWorkRef"
+      },
+      "description": "Canonical forward references from this replacement Event to prior Events. Each predecessor states an exact Event contract version of 1 or 2."
+    },
+    "creation_source": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/provenance/creation-source.schema.json"
+    },
+    "created_at": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+    },
+    "created_by": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/attribution/attribution-agent.schema.json"
+    },
+    "updated_at": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+    },
+    "updated_by": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/attribution/attribution-agent.schema.json"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "enum": [
+              "active",
+              "closed",
+              "invalidated",
+              "superseded"
+            ]
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "then": {
+        "required": [
+          "occurrence",
+          "summary"
+        ]
+      }
+    }
+  ],
+  "$defs": {
+    "occurrence": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/exactOccurrence"
+        },
+        {
+          "$ref": "#/$defs/approximateOccurrence"
+        },
+        {
+          "$ref": "#/$defs/dateOnlyOccurrence"
+        },
+        {
+          "$ref": "#/$defs/rangeOccurrence"
+        },
+        {
+          "$ref": "#/$defs/unknownOccurrence"
+        }
+      ]
+    },
+    "exactOccurrence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "precision",
+        "started_at"
+      ],
+      "properties": {
+        "precision": {
+          "const": "exact"
+        },
+        "started_at": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+        },
+        "ended_at": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+        }
+      }
+    },
+    "approximateOccurrence": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "precision",
+            "started_at",
+            "approximation"
+          ],
+          "properties": {
+            "precision": {
+              "const": "approximate"
+            },
+            "started_at": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+            },
+            "approximation": {
+              "enum": [
+                "about",
+                "before",
+                "after"
+              ]
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "precision",
+            "started_at",
+            "ended_at",
+            "approximation"
+          ],
+          "properties": {
+            "precision": {
+              "const": "approximate"
+            },
+            "started_at": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+            },
+            "ended_at": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+            },
+            "approximation": {
+              "const": "within_range"
+            }
+          }
+        }
+      ]
+    },
+    "dateOnlyOccurrence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "precision",
+        "date"
+      ],
+      "properties": {
+        "precision": {
+          "const": "date_only"
+        },
+        "date": {
+          "type": "string",
+          "format": "date"
+        }
+      }
+    },
+    "rangeOccurrence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "precision",
+        "started_at",
+        "ended_at"
+      ],
+      "properties": {
+        "precision": {
+          "const": "range"
+        },
+        "started_at": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+        },
+        "ended_at": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+        }
+      }
+    },
+    "unknownOccurrence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "precision",
+        "reason"
+      ],
+      "properties": {
+        "precision": {
+          "const": "unknown"
+        },
+        "reason": {
+          "enum": [
+            "not_known",
+            "not_reported",
+            "withheld",
+            "source_uncertain",
+            "legacy_import"
+          ]
+        }
+      }
+    },
+    "location": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "type": {
+          "enum": [
+            "classroom",
+            "hallway",
+            "cafeteria",
+            "transportation",
+            "online",
+            "field_trip",
+            "assembly",
+            "extracurricular",
+            "before_school",
+            "after_school",
+            "other",
+            "unknown",
+            "withheld"
+          ]
+        },
+        "detail": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "other"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "detail"
+            ]
+          }
+        }
+      ]
+    },
+    "instructionalContext": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "type": {
+          "enum": [
+            "direct_instruction",
+            "independent_work",
+            "group_work",
+            "class_discussion",
+            "assessment",
+            "transition",
+            "laboratory",
+            "rehearsal",
+            "conference",
+            "unstructured_time",
+            "online_activity",
+            "other",
+            "unknown",
+            "not_applicable"
+          ]
+        },
+        "detail": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+        },
+        "external_refs": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/module-work-record-ref.schema.json"
+          },
+          "description": "Instructional records from Portia or sibling modules. Each entry states both the module work and record identity without transferring authority to Portia."
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "other"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "detail"
+            ]
+          }
+        }
+      ]
+    },
+    "eventWorkRef": {
+      "allOf": [
+        {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/portia-work-ref.schema.json"
+        },
+        {
+          "properties": {
+            "module_id": {
+              "const": "portia"
+            },
+            "work_kind": {
+              "const": "event"
+            },
+            "work_id": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-event-id.schema.json"
+            },
+            "contract_version": {
+              "enum": [
+                "1",
+                "2"
+              ]
+            }
+          },
+          "required": [
+            "module_id",
+            "class_id",
+            "work_id",
+            "work_kind",
+            "contract_version"
+          ]
+        }
+      ]
+    }
+  }
+}

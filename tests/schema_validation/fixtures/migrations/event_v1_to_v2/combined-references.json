@@ -1,0 +1,103 @@
+{
+  "source_v1": {
+    "schema_version": "1",
+    "record_type": "portia_work",
+    "work_kind": "event",
+    "module_id": "portia",
+    "class_id": "eng10_p2_2026",
+    "work_id": "evt_migrate_combined",
+    "school_year": "2026-2027",
+    "status": "closed",
+    "creation_source": {
+      "type": "digital_entry"
+    },
+    "created_at": "2026-08-02T18:00:00-04:00",
+    "created_by": {
+      "type": "local_operator",
+      "display_label": "S. Severino"
+    },
+    "updated_at": "2026-08-02T18:00:00-04:00",
+    "updated_by": {
+      "type": "local_operator",
+      "display_label": "S. Severino"
+    },
+    "occurrence": {
+      "precision": "exact",
+      "started_at": "2026-08-02T10:15:00-04:00"
+    },
+    "summary": "Brief neutral Event summary.",
+    "instructional_context": {
+      "type": "group_work",
+      "external_refs": [
+        {
+          "module_id": "scoreform",
+          "class_id": "eng10_p2_2026",
+          "work_id": "quiz_02",
+          "record_kind": "attempt",
+          "record_id": "attempt_1001"
+        }
+      ]
+    },
+    "supersedes": [
+      {
+        "class_id": "eng10_p2_2026",
+        "work_id": "evt_prior_combined"
+      }
+    ]
+  },
+  "target_v2": {
+    "schema_version": "2",
+    "record_type": "portia_work",
+    "work_kind": "event",
+    "module_id": "portia",
+    "class_id": "eng10_p2_2026",
+    "work_id": "evt_migrate_combined",
+    "school_year": "2026-2027",
+    "status": "closed",
+    "creation_source": {
+      "type": "digital_entry"
+    },
+    "created_at": "2026-08-02T18:00:00-04:00",
+    "created_by": {
+      "type": "local_operator",
+      "display_label": "S. Severino"
+    },
+    "updated_at": "2026-08-02T18:00:00-04:00",
+    "updated_by": {
+      "type": "local_operator",
+      "display_label": "S. Severino"
+    },
+    "occurrence": {
+      "precision": "exact",
+      "started_at": "2026-08-02T10:15:00-04:00"
+    },
+    "summary": "Brief neutral Event summary.",
+    "instructional_context": {
+      "type": "group_work",
+      "external_refs": [
+        {
+          "work_ref": {
+            "module_id": "scoreform",
+            "class_id": "eng10_p2_2026",
+            "work_id": "quiz_02"
+          },
+          "record_ref": {
+            "module_id": "scoreform",
+            "record_kind": "attempt",
+            "record_id": "attempt_1001",
+            "contract_version": null
+          }
+        }
+      ]
+    },
+    "supersedes": [
+      {
+        "module_id": "portia",
+        "class_id": "eng10_p2_2026",
+        "work_id": "evt_prior_combined",
+        "work_kind": "event",
+        "contract_version": "1"
+      }
+    ]
+  }
+}

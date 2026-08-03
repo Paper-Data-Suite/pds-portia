@@ -236,6 +236,51 @@ eligibility, active edge uniqueness, inverse duplicates, timestamp chronology,
 lifecycle transitions, self-supersession, predecessor identity uniqueness,
 supersession cycles, and coordinated successor activation.
 
+## Event version 2
+
+The current implementation-target Event root schema is:
+
+    schemas/v2/event.schema.json
+
+The retained unversioned-path Event schema remains the historical version-1
+contract. Version 2 does not rewrite, alias, or silently migrate that schema.
+
+Version 2 preserves the Event status, occurrence, location, instructional
+context, school-year, summary, provenance, attribution, and activation
+semantics established by version 1. It reconciles two provisional reference
+shapes:
+
+- `instructional_context.external_refs` now contains complete
+  `module_work_record_ref` values;
+- `supersedes` now contains direct `portia_work_ref` values constrained to
+  Event works and explicit Event contract version `"1"` or `"2"`.
+
+A module work-record reference repeats `module_id` inside its `work_ref` and
+`record_ref` because both Core wire values are independently self-describing.
+Application validation must require those module IDs to match. Structural
+validity alone does not establish target existence, contract support, lifecycle
+eligibility, authorization, or consumer-specific use.
+
+Event supersession remains a specialized successor-owned correction
+relationship. Predecessor identity is the target Event's
+`module_id + class_id + work_id`; `work_kind` and `contract_version` express the
+expected Portia contract but do not create a second Event identity. Application
+validation prevents self-supersession, duplicate canonical predecessor identity
+across versions, cycles, silent retargeting, and uncoordinated lifecycle changes.
+
+JSON Schema establishes the closed Event envelope, public shared-contract
+composition, identifier and timestamp syntax, occurrence and vocabulary
+branches, activation-time required fields, instructional-reference structure,
+and Event-only predecessor-reference shape. Application validation remains
+responsible for storage agreement, Core resolution, chronology, lifecycle,
+review gates, participant-state requirements, nested module equality,
+supersession graph invariants, and authorization.
+
+Migration fixtures beneath
+`tests/schema_validation/fixtures/migrations/event_v1_to_v2/` document explicit
+version-1 to version-2 transformations. Historical version-1 Event files remain
+readable and unchanged.
+
 ## Event Participant version 2
 
 The current implementation-target Event Participant schema is:
