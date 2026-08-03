@@ -1,6 +1,6 @@
 # Portia Lifecycle, Amendment, Correction, and Migration Contracts
 
-**Status:** Working design — approved through Decision 6  
+**Status:** Working design — approved through Decision 7  
 **Project:** Paper Data Suite  
 **Module:** `pds-portia`  
 **Issue:** `#12 — Define shared lifecycle, amendment, correction, and migration contracts`  
@@ -1634,7 +1634,424 @@ Rejected because amendment meaning should not depend on array ordering.
 
 ---
 
-# 10. Consequences
+
+# 10. Approved Decision 7: Nonmaterial-versus-Material Change Test
+
+## 10.1 Decision
+
+Portia uses a shared semantic-equivalence test together with record-specific path classifications.
+
+A change is nonmaterial only when the record before and after the change remains:
+
+> The same canonical assertion for every legitimate downstream use.
+
+The corrected record must identify the same:
+
+```text
+subject
+target
+source
+occurrence
+scope
+relationship
+basis
+authority
+substantive proposition
+```
+
+as before.
+
+The size of the textual or structural edit does not determine materiality.
+
+Several punctuation changes may remain nonmaterial. Replacing one word may materially reverse an assertion.
+
+## 10.2 Categorical materiality gates
+
+A proposed change is categorically material when it changes any of the following dimensions.
+
+### Canonical identity or ownership
+
+This includes:
+
+- `module_id`;
+- `class_id`;
+- `work_id`;
+- record ID;
+- record kind;
+- work kind;
+- owning class;
+- owning academic year where ownership depends on it;
+- or canonical storage scope.
+
+These changes cannot use amendment.
+
+They require successor replacement, migration when representation alone changes, or the later ownership-correction process.
+
+### Subject or target identity
+
+This includes:
+
+- roster-student reference;
+- Actor reference;
+- descriptive or unknown subject variant;
+- Event Participant target;
+- provider;
+- recipient;
+- source;
+- observer;
+- or another person or record that the assertion concerns.
+
+Changing who or what a record concerns always requires replacement.
+
+### Assertion type or substantive proposition
+
+A change is material when it alters what the record asserts.
+
+Examples include:
+
+- Event-summary meaning;
+- Role type;
+- relationship type or direction;
+- whether an occurrence happened;
+- what was reportedly said;
+- what was observed;
+- what was determined;
+- or what response, support, implementation, follow-up, or outcome occurred.
+
+Changing:
+
+```text
+The student submitted the assignment.
+```
+
+to:
+
+```text
+The student did not submit the assignment.
+```
+
+is material despite changing only one word.
+
+### Temporal, spatial, or contextual meaning
+
+A change is material when it alters context that could affect identification or interpretation.
+
+This includes:
+
+- Event occurrence date, time, range, or precision;
+- Event location type;
+- instructional-context type;
+- school year;
+- or another context distinguishing the documented occurrence.
+
+A spelling correction inside an existing location detail may be nonmaterial.
+
+Changing:
+
+```text
+classroom
+```
+
+to:
+
+```text
+hallway
+```
+
+is material.
+
+### Evidentiary basis or provenance
+
+A change is material when it changes:
+
+- which Account, Observation, paper artifact, or import source supports a record;
+- whether a source was firsthand or secondhand;
+- source attribution;
+- creation provenance;
+- or another evidentiary relationship.
+
+Adding, removing, or replacing an Event Participant Role basis entry requires successor replacement rather than amendment.
+
+### Authority, privacy, or disclosure scope
+
+A change is material when it alters:
+
+- who made or authorized a decision;
+- the authority under which it was made;
+- the intended recipient;
+- confidentiality or privacy scope;
+- disclosure eligibility;
+- or whether the record represents a teacher-local or institutional action.
+
+Later record contracts must classify these fields as replacement-only unless the field is explicitly nonauthoritative display metadata.
+
+### Lifecycle or dependency significance
+
+A change is material when it would alter:
+
+- lifecycle status;
+- activation eligibility;
+- closure prerequisites;
+- required dependencies;
+- current-use eligibility;
+- supersession relationships;
+- or another consumer's lifecycle treatment.
+
+Lifecycle status changes use lifecycle transitions, not amendments.
+
+A field correction that would mean an active record no longer satisfied its activation prerequisites requires replacement, invalidation, or coordinated dependency handling.
+
+## 10.3 Counterfactual downstream-use test
+
+When no categorical gate appears obvious, amendment is permitted only when the answer to every following question is **no**.
+
+Would the corrected value have changed:
+
+- whether a consumer selected the record;
+- how a consumer interpreted the assertion;
+- whether the record satisfied a validation rule;
+- whether another record could depend on it;
+- which person or occurrence appeared in a projection;
+- whether a decision maker might reach a different conclusion;
+- or what an authorized reader would understand happened?
+
+Any `yes` answer makes the change material.
+
+## 10.4 Record-specific path classes
+
+Every record-specific contract must classify mutable content paths into three groups.
+
+### Protected
+
+Protected paths are never amendable.
+
+Representative categories include:
+
+```text
+identity
+ownership
+status
+target
+subject
+source
+basis
+creation provenance
+supersedes
+```
+
+### Conditionally amendable
+
+Conditionally amendable paths may be changed only after the shared semantic-equivalence test passes.
+
+Representative examples include:
+
+```text
+Event summary
+Event location detail
+instructional-context detail
+contextual Role detail
+display snapshots
+human-facing labels
+```
+
+These paths may contain either clerical errors or substantive meaning. The path alone cannot determine materiality.
+
+### Nonsemantic metadata
+
+Nonsemantic metadata is normally amendable only when the exact record contract confirms that the field has no identity, assertion, lifecycle, authority, privacy, or evidentiary role.
+
+Potential examples include:
+
+- display-only formatting;
+- generated presentation labels;
+- nonauthoritative spelling in a display snapshot;
+- or administrative metadata explicitly defined as nonsemantic.
+
+A field is not nonsemantic merely because it is named:
+
+```text
+detail
+description
+label
+summary
+```
+
+## 10.5 Additive information
+
+Adding information is nonmaterial only when it repairs presentation without adding a factual proposition.
+
+Potentially nonmaterial examples include:
+
+- adding missing punctuation;
+- restoring an accidentally omitted character in a display snapshot when the authoritative person reference is unchanged;
+- adding formatting needed to display an already-present value correctly.
+
+Material examples include:
+
+- adding another action to an Event summary;
+- adding a room number not previously documented;
+- adding a new Account or Observation as Role basis;
+- adding a rationale;
+- adding an instructional reference;
+- or adding detail that narrows, expands, qualifies, or changes the assertion.
+
+Additive clarification is presumed material unless semantic equivalence is demonstrated.
+
+## 10.6 Combined changes
+
+Materiality is evaluated:
+
+1. for each individual change;
+2. for the resulting record as a whole.
+
+An amendment is prohibited when individually small changes collectively alter meaning.
+
+For example, replacing names with pronouns, changing punctuation, and removing a contextual phrase may each appear editorial alone but collectively make the subject or action ambiguous.
+
+The combined result must remain semantically equivalent.
+
+## 10.7 Uncertainty
+
+When materiality is uncertain:
+
+1. Portia does not apply an amendment automatically.
+2. The proposed operation becomes `review_required` at the application-workflow level.
+3. A human reviews the complete before-and-after record.
+4. When uncertainty remains and correction must proceed, Portia uses successor replacement rather than amendment.
+
+This is a conservative identity-preservation rule.
+
+It does not assert that the predecessor was false.
+
+Uncertainty does not automatically require invalidation.
+
+Invalidation is appropriate only when the predecessor should no longer remain a valid current assertion and no replacement adequately expresses the correction.
+
+## 10.8 Routing outcomes
+
+### Amendment
+
+Use amendment when:
+
+- canonical identity is unchanged;
+- all categorical materiality gates are false;
+- the record remains semantically equivalent;
+- the path is conditionally amendable or nonsemantic;
+- and exact before-and-after values are preserved.
+
+### Successor replacement
+
+Use successor replacement when:
+
+- the intended assertion remains recognizable as a corrected replacement;
+- but identity, target, source, basis, substantive content, context, authority, or another material dimension changes.
+
+The predecessor transitions to `superseded` through a coordinated operation.
+
+### Invalidation
+
+Use invalidation when:
+
+- the predecessor should no longer be treated as a valid current assertion;
+- and no corrected successor should replace it.
+
+Examples include a record entered in error or a source retraction where the historical record should remain preserved but no replacement assertion is appropriate.
+
+### Migration
+
+Use migration only when:
+
+- representation or contract version changes;
+- identity, scope, provenance, and intended meaning remain unchanged;
+- and semantic correction is not being concealed.
+
+### Record-specific decision
+
+Use a record-specific decision when the shared test does not produce a categorical result and the record family has specialized semantics requiring its own policy.
+
+The operation remains blocked until that policy is defined.
+
+## 10.9 Initial Event-family classification
+
+| Proposed change | Required treatment |
+|---|---|
+| Correct spelling or punctuation in Event summary without changing meaning | Amendment |
+| Add, remove, qualify, or reverse a factual statement in Event summary | Successor Event |
+| Change Event occurrence value or precision | Successor Event |
+| Correct punctuation in location detail without changing location | Amendment |
+| Change Event location type | Successor Event |
+| Correct formatting in instructional-context detail | Amendment |
+| Change instructional-context type or external references | Successor Event |
+| Change Event class, work ID, or ownership-defining school year | Ownership-correction process |
+| Correct roster or Actor display snapshot while retaining the same authoritative reference | Amendment |
+| Change Participant roster reference, Actor reference, or subject variant | Successor Participant |
+| Change a descriptive-person label functioning as the only subject identification | Successor Participant |
+| Change Role target | Successor Role |
+| Change Role type | Successor Role |
+| Add, remove, or replace Role basis | Successor Role |
+| Correct spelling in contextual Role detail without changing meaning | Amendment |
+| Change the substantive meaning of contextual Role detail | Successor Role |
+| Change Work Relationship source, target, or relationship type | Successor Work Relationship |
+| Correct spelling in nonmaterial Work Relationship detail | Amendment |
+| Materially change Work Relationship detail | Successor Work Relationship |
+| Change only schema representation while preserving meaning | Migration |
+| Remove a record entered in error without replacement | Invalidation, not deletion |
+
+## 10.10 Reason codes do not determine materiality
+
+An operator-selected reason code cannot override the semantic test.
+
+Selecting:
+
+```text
+spelling_corrected
+```
+
+does not make a substantive change nonmaterial.
+
+Application validation determines materiality from the actual before-and-after record states and the record-specific path policy.
+
+## 10.11 Structural validation
+
+JSON Schema cannot prove semantic equivalence.
+
+Schema validation remains responsible only for the local structure of the chosen operation record.
+
+The materiality test is an application-level contract.
+
+## 10.12 Application validation
+
+Application validation must confirm:
+
+- every changed path's classification;
+- every categorical materiality gate;
+- semantic equivalence for an amendment;
+- individual and combined materiality;
+- consistency with target-specific correction and supersession rules;
+- correct routing to amendment, replacement, invalidation, migration, or review;
+- and that the selected operation and reason do not misrepresent the actual change.
+
+## 10.13 Rejected alternatives
+
+### Path-only materiality
+
+Rejected because the same field may receive either a clerical correction or a substantive rewrite.
+
+### Operator-selected materiality
+
+Rejected because a convenient interface choice must not determine historical semantics.
+
+### Character-count or diff-size thresholds
+
+Rejected because edit size does not establish semantic significance.
+
+### Automatic amendment when no protected path changes
+
+Rejected because conditionally amendable content can still change the assertion's meaning.
+
+---
+
+# 11. Consequences
 
 ## Positive
 
@@ -1683,31 +2100,30 @@ Rejected because a transition is evidence of another record's state change, not 
 
 ---
 
-# 11. Unresolved Decisions
+# 12. Unresolved Decisions
 
 The following remain unresolved and must not be treated as accepted architecture:
 
-1. nonmaterial-versus-material decision test;
-2. statement-of-disagreement semantics;
-3. invalidation and terminal-state rules;
-4. supersession reconciliation;
-5. dependency handling;
-6. duplicate consolidation;
-7. migration-record semantics;
-8. migration identity preservation;
-9. incorrect Event ownership or work-root correction;
-10. exceptional removal boundaries;
-11. integrity-finding vocabulary;
-12. final public schema organization.
+1. statement-of-disagreement semantics;
+2. invalidation and terminal-state rules;
+3. supersession reconciliation;
+4. dependency handling;
+5. duplicate consolidation;
+6. migration-record semantics;
+7. migration identity preservation;
+8. incorrect Event ownership or work-root correction;
+9. exceptional removal boundaries;
+10. integrity-finding vocabulary;
+11. final public schema organization.
 
 No schemas should be created for unresolved items until their architectural decisions are approved.
 
-## 12. Next Decision
+## 13. Next Decision
 
-The next decision should define the shared nonmaterial-versus-material change test, including:
+The next decision should define statement-of-disagreement semantics and wire shape, including:
 
-- which semantic dimensions make a change categorically material;
-- whether additive detail can ever be amended in place;
-- how combined small changes are evaluated;
-- how uncertainty is handled;
-- and which representative Event-family changes require amendment, successor replacement, invalidation, migration, or a record-specific decision.
+- who or what may be represented as the disagreeing source;
+- which Portia records may be targeted;
+- whether one statement may target several records;
+- how disagreement differs from correction, retraction, invalidation, or reply;
+- and how disagreement remains visible after the target is superseded or invalidated.
