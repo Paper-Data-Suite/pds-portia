@@ -1,6 +1,6 @@
 # Portia Lifecycle, Amendment, Correction, and Migration Contracts
 
-**Status:** Working design — approved through Decision 7  
+**Status:** Working design — approved through Decision 8  
 **Project:** Paper Data Suite  
 **Module:** `pds-portia`  
 **Issue:** `#12 — Define shared lifecycle, amendment, correction, and migration contracts`  
@@ -2051,7 +2051,529 @@ Rejected because conditionally amendable content can still change the assertion'
 
 ---
 
-# 11. Consequences
+
+# 11. Approved Decision 8: Statement-of-Disagreement Contract
+
+## 11.1 Decision
+
+Portia represents disagreement through an independent substantive attributed record:
+
+```text
+statement_of_disagreement
+```
+
+A statement of disagreement preserves one identified human source's position concerning one canonical Portia domain record.
+
+It does not:
+
+- rewrite the disputed record;
+- establish that the target is false;
+- establish that the disagreement is correct;
+- automatically invalidate or supersede the target;
+- change the target's lifecycle status;
+- or remove the target from authorized historical views.
+
+## 11.2 Identity and storage
+
+Statement-of-disagreement identifiers use:
+
+```text
+sod_<opaque-id>
+```
+
+The identifier follows the accepted Portia-owned identifier alphabet and length rules.
+
+Canonical storage is:
+
+```text
+classes/<class_id>/modules/portia/work/<work_id>/
+  records/
+    statement_of_disagreement/
+      <disagreement_id>.json
+```
+
+The record is stored beneath the work containing the disputed target.
+
+## 11.3 Semantic unit
+
+One statement-of-disagreement record means:
+
+> One identified human source expresses one attributed position disputing, qualifying, or objecting to one canonical Portia domain record.
+
+A statement of disagreement is not a correction, retraction, invalidation, determination, or reply.
+
+## 11.4 One target per record
+
+A statement of disagreement targets exactly one:
+
+- containing work; or
+- same-work canonical domain record.
+
+The target uses the accepted compact same-work target shape:
+
+```text
+work
+local_record
+```
+
+Plural targets and target arrays are prohibited.
+
+When one source statement concerns several records, Portia creates one disagreement record per disputed target.
+
+Each record receives independent:
+
+- lifecycle treatment;
+- privacy treatment;
+- correction treatment;
+- supersession treatment;
+- and projection treatment.
+
+## 11.5 Permitted targets
+
+Initial permitted targets include:
+
+- Event;
+- Event Participant;
+- Event Participant Role;
+- Work Relationship;
+- and later human-meaningful Portia domain records such as Accounts, Observations, Determinations, Responses, Communications, Supports, Follow-Ups, and Outcomes.
+
+A statement of disagreement cannot target:
+
+- another statement of disagreement;
+- a lifecycle transition;
+- a lifecycle-history correction;
+- an amendment;
+- a migration record;
+- an operation journal;
+- a derived view;
+- or an external-module record.
+
+Errors in infrastructure and audit records use integrity or correction contracts rather than disagreement.
+
+## 11.6 Required envelope
+
+A statement-of-disagreement version-1 record contains:
+
+```text
+schema_version
+record_type
+module_id
+class_id
+work_id
+disagreement_id
+status
+target
+source
+positions
+statement
+supersedes, optional
+creation_source
+created_at
+created_by
+updated_at
+updated_by
+```
+
+Constants are:
+
+```text
+schema_version = "1"
+record_type = "statement_of_disagreement"
+module_id = "portia"
+```
+
+Unlike lifecycle transitions, lifecycle-history corrections, and amendments, a statement of disagreement is a substantive attributed assertion.
+
+It therefore has lifecycle status and ordinary update attribution.
+
+## 11.7 Lifecycle statuses
+
+The initial status vocabulary is:
+
+```text
+proposed
+active
+withdrawn
+invalidated
+superseded
+```
+
+Meanings are:
+
+### `proposed`
+
+Captured but not yet accepted as an active attributed disagreement.
+
+### `active`
+
+Currently preserved as the represented source's attributed disagreement.
+
+### `withdrawn`
+
+The represented source later withdrew the disagreement.
+
+### `invalidated`
+
+The disagreement should no longer be treated as a valid current assertion, without representing source withdrawal.
+
+### `superseded`
+
+A materially corrected successor disagreement replaces it.
+
+The exact legal transitions and terminal-state treatment are governed by the next lifecycle decision.
+
+## 11.8 Source and recorder are distinct
+
+`source` identifies the human whose position is represented.
+
+`created_by` identifies the local operator or deterministic system process that recorded it in Portia.
+
+For example:
+
+```text
+source = roster student
+created_by = teacher-local operator
+```
+
+These fields must not be conflated.
+
+## 11.9 Source branches
+
+### Roster student
+
+```json
+{
+  "kind": "roster_student",
+  "roster_student_ref": {
+    "class_id": "eng10_p2_2026",
+    "student_id": "stu_1001"
+  },
+  "display_snapshot": {
+    "display_name": "Jordan Lee"
+  }
+}
+```
+
+### Actor
+
+```json
+{
+  "kind": "actor",
+  "actor_ref": {
+    "actor_id": "actr_parent_001"
+  },
+  "display_snapshot": {
+    "display_name": "Morgan Lee"
+  }
+}
+```
+
+### Local operator
+
+```json
+{
+  "kind": "local_operator",
+  "display_label": "Stephen Severino"
+}
+```
+
+This is teacher-local attribution, not institutional identity authority.
+
+### Descriptive person
+
+```json
+{
+  "kind": "descriptive_person",
+  "description_type": "family_member",
+  "display_label": "Student's parent"
+}
+```
+
+This branch is reserved for a source who should not or cannot yet be represented through the Actor Directory.
+
+## 11.10 No unknown or system source
+
+A canonical statement of disagreement requires enough information to attribute the position.
+
+The initial contract does not permit:
+
+- `unknown_person`;
+- anonymous source;
+- or `system_process`
+
+as the represented disagreeing source.
+
+A system process may import or record the statement, but it cannot itself hold a human disagreement.
+
+## 11.11 Positions
+
+`positions` is a nonempty unique array containing one or more of:
+
+```text
+disputes_accuracy
+disputes_completeness
+disputes_attribution
+disputes_interpretation
+disputes_context
+disputes_authority
+qualifies_record
+objects_to_recording
+objects_to_disclosure
+other
+```
+
+These values describe the represented source's expressed relationship to the target.
+
+They do not adjudicate the dispute.
+
+When `other` is present, the statement text must make the position adequately understandable.
+
+## 11.12 Statement representation
+
+`statement` is a closed object containing:
+
+```text
+representation
+text
+```
+
+Permitted representation values are:
+
+```text
+verbatim_quote
+recorded_summary
+```
+
+Example:
+
+```json
+{
+  "representation": "verbatim_quote",
+  "text": "I was in the room, but I was not part of that conversation."
+}
+```
+
+Example:
+
+```json
+{
+  "representation": "recorded_summary",
+  "text": "The student disputes being characterized as directly involved."
+}
+```
+
+The distinction is authoritative:
+
+- `verbatim_quote` claims the text preserves the source's words;
+- `recorded_summary` identifies the text as the recorder's attributed summary.
+
+The statement text composes `non_empty_text`.
+
+It must not include unrelated third-party information merely because the field permits free text.
+
+## 11.13 Relationship to Account
+
+A statement of disagreement is a specialized attributed statement with an explicit disputed target.
+
+A later Account contract must not require duplicate canonical storage of the same statement merely to make the disagreement valid.
+
+A broader Account may exist when the represented source supplied additional context beyond the disagreement.
+
+Later contracts may define references between the two record families, but neither record silently substitutes for the other.
+
+## 11.14 Creation provenance and review gates
+
+Permitted creation sources are:
+
+```text
+digital_entry
+paper_capture, ingested only
+import
+```
+
+Paper-capture `preallocated` creation is prohibited.
+
+Application rules are:
+
+- paper-captured disagreements begin as `proposed`;
+- imported disagreements begin as `proposed` unless a later reviewed-import workflow explicitly permits otherwise;
+- automated interpretation cannot activate a disagreement;
+- a human must confirm source attribution, target, positions, and statement representation before activation.
+
+## 11.15 Supersession
+
+A materially corrected disagreement creates a successor.
+
+The successor may reference predecessors through complete `portia_work_record_ref` values.
+
+This permits correction of the disputed target to move the successor to another work root without silently relocating the predecessor.
+
+Each supersession entry contains:
+
+```text
+work_record_ref
+reason
+detail, optional
+```
+
+Initial reasons are:
+
+```text
+source_corrected
+target_corrected
+positions_corrected
+statement_corrected
+duplicate_consolidated
+other
+```
+
+`detail` is required for `other`.
+
+Examples requiring successor replacement include:
+
+- changing the represented source;
+- changing the disputed target;
+- changing `verbatim_quote` to a substantively different statement;
+- adding or removing a material position;
+- or correcting a summary in a way that changes meaning.
+
+A nonmaterial spelling or punctuation correction may use an amendment when statement meaning and representation remain unchanged.
+
+## 11.16 Withdrawal is not correction
+
+When the represented source later states that they no longer maintain the disagreement:
+
+- the original disagreement is not amended away;
+- the record transitions to `withdrawn`;
+- the withdrawal transition preserves reason and attribution;
+- and the original statement remains historically visible to authorized readers.
+
+A recorder must not infer withdrawal merely because the disputed target was corrected, superseded, invalidated, or otherwise changed.
+
+## 11.17 Target lifecycle independence
+
+A disagreement remains attached to the exact target it originally disputed.
+
+When the target becomes:
+
+- closed;
+- withdrawn;
+- invalidated;
+- or superseded,
+
+the disagreement is not automatically:
+
+- retargeted;
+- invalidated;
+- withdrawn;
+- superseded;
+- or deleted.
+
+Authorized views may show:
+
+- the original target;
+- its lifecycle state;
+- its known successor;
+- and the disagreement attached to the original target.
+
+The disagreement does not automatically apply to the successor.
+
+A source who also disputes the successor requires a separate disagreement record targeting that successor.
+
+## 11.18 No reply-thread model in version 1
+
+Statement-of-disagreement version 1 does not implement:
+
+- replies;
+- nested comments;
+- debate threads;
+- endorsements;
+- votes;
+- or automated conflict resolution.
+
+A response may later be represented through an Account, Communication, Determination, amendment, successor record, or another appropriate domain record.
+
+A disagreement cannot target another disagreement merely to simulate a reply.
+
+## 11.19 Current-use implications
+
+An active disagreement may trigger:
+
+- a derived review indicator;
+- a teacher-facing attention queue;
+- or a record-specific review requirement.
+
+It does not automatically make the target:
+
+- invalid;
+- unusable;
+- unverified;
+- or ineligible for all downstream use.
+
+Later domain contracts may require specialized treatment for disputed Determinations or other high-impact records.
+
+## 11.20 Structural validation
+
+JSON Schema will validate:
+
+- the exact envelope;
+- constants;
+- `sod_` identifier syntax;
+- status vocabulary;
+- compact singular target;
+- closed source branches;
+- nonempty unique positions;
+- quote-versus-summary representation;
+- optional supersession entries;
+- creation provenance;
+- timestamps;
+- and attribution.
+
+## 11.21 Application validation
+
+Application validation must confirm:
+
+- canonical path and scope agreement;
+- exact target resolution;
+- target eligibility for disagreement;
+- source resolution and snapshot consistency;
+- source and recorder remain distinct concepts;
+- active uniqueness rules, if later required;
+- paper and import review gates;
+- statement representation is honest;
+- supersession references and reasons are valid;
+- no self-supersession, duplicate predecessors, or cycles exist;
+- no silent retargeting occurs;
+- target lifecycle changes do not automatically alter the disagreement;
+- lifecycle transitions are legal;
+- and authorization and privacy rules are satisfied.
+
+## 11.22 Rejected alternatives
+
+### Disagreement text embedded in the target
+
+Rejected because it mutates the disputed assertion and turns the target body into an unbounded discussion container.
+
+### Account-only representation
+
+Rejected because disagreement requires an explicit durable relationship to one disputed target and independent lifecycle treatment.
+
+### Anonymous or system disagreement source
+
+Rejected because canonical disagreement requires human attribution.
+
+### Plural-target disagreement
+
+Rejected because each target requires independent lifecycle, privacy, correction, and projection treatment.
+
+### Reply threads
+
+Rejected from version 1 because Portia is not a discussion-forum model.
+
+---
+
+# 12. Consequences
 
 ## Positive
 
@@ -2100,30 +2622,29 @@ Rejected because a transition is evidence of another record's state change, not 
 
 ---
 
-# 12. Unresolved Decisions
+# 13. Unresolved Decisions
 
 The following remain unresolved and must not be treated as accepted architecture:
 
-1. statement-of-disagreement semantics;
-2. invalidation and terminal-state rules;
-3. supersession reconciliation;
-4. dependency handling;
-5. duplicate consolidation;
-6. migration-record semantics;
-7. migration identity preservation;
-8. incorrect Event ownership or work-root correction;
-9. exceptional removal boundaries;
-10. integrity-finding vocabulary;
-11. final public schema organization.
+1. invalidation and terminal-state rules;
+2. supersession reconciliation;
+3. dependency handling;
+4. duplicate consolidation;
+5. migration-record semantics;
+6. migration identity preservation;
+7. incorrect Event ownership or work-root correction;
+8. exceptional removal boundaries;
+9. integrity-finding vocabulary;
+10. final public schema organization.
 
 No schemas should be created for unresolved items until their architectural decisions are approved.
 
-## 13. Next Decision
+## 14. Next Decision
 
-The next decision should define statement-of-disagreement semantics and wire shape, including:
+The next decision should define invalidation and terminal-state rules, including:
 
-- who or what may be represented as the disagreeing source;
-- which Portia records may be targeted;
-- whether one statement may target several records;
-- how disagreement differs from correction, retraction, invalidation, or reply;
-- and how disagreement remains visible after the target is superseded or invalidated.
+- which statuses are terminal for each current record family;
+- whether withdrawn, invalidated, superseded, closed, and cancelled may ever transition again;
+- how correction of terminal records is represented;
+- whether lifecycle-history correction may reopen an apparently terminal branch;
+- and which records remain usable, historical-only, or review-required after terminal transitions.
