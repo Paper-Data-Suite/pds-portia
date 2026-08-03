@@ -1,0 +1,16 @@
+{
+  "work_ref": {
+    "module_id": "quillan",
+    "class_id": "eng10_p2_2026",
+    "work_id": "essay_01"
+  },
+  "record_ref": {
+    "module_id": "quillan",
+    "record_kind": "review",
+    "record_id": "review_01",
+    "contract_version": "2"
+  },
+  "display_snapshot": {
+    "display_name": "Essay review"
+  }
+}

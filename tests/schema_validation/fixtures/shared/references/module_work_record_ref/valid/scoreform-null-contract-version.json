@@ -1,0 +1,13 @@
+{
+  "work_ref": {
+    "module_id": "scoreform",
+    "class_id": "eng10_p2_2026",
+    "work_id": "quiz_01"
+  },
+  "record_ref": {
+    "module_id": "scoreform",
+    "record_kind": "attempt",
+    "record_id": "attempt_0001",
+    "contract_version": null
+  }
+}

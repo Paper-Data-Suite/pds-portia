@@ -99,6 +99,12 @@
         "path": "schemas/v1/references/portia-work-record-ref.schema.json"
       }
     },
+    "module_work_record_ref": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/module-work-record-ref.schema.json",
+        "path": "schemas/v1/references/module-work-record-ref.schema.json"
+      }
+    },
     "person_display_snapshot": {
       "1": {
         "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/snapshots/person-display-snapshot.schema.json",

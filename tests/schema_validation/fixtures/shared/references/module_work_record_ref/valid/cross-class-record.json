@@ -1,0 +1,13 @@
+{
+  "work_ref": {
+    "module_id": "concord",
+    "class_id": "science10_p4_2026",
+    "work_id": "lab_02"
+  },
+  "record_ref": {
+    "module_id": "concord",
+    "record_kind": "score_record",
+    "record_id": "score_17",
+    "contract_version": "1"
+  }
+}

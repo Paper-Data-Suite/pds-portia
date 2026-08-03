@@ -77,6 +77,7 @@ They are:
 - `local-record-ref.schema.json`
 - `portia-work-ref.schema.json`
 - `portia-work-record-ref.schema.json`
+- `module-work-record-ref.schema.json`
 
 `roster_student_ref` preserves Core roster identity as the exact
 `class_id + student_id` pair. Its structural schema does not prove that either
@@ -99,9 +100,27 @@ identified Portia work. It contains exactly `work_ref` and `record_ref`; the
 sibling `work_ref` is the sole work-scope provider for the nested local record
 reference.
 
+`module_work_record_ref` identifies one record owned by one explicitly named
+module work. It contains exactly `work_ref` and `record_ref`, using the exact
+Core `ModuleWorkRef` and `ModuleRecordRef` wire shapes. Both nested values
+retain `module_id`; application validation must require those module IDs to
+match. The record contract version is always present as a supported string or
+deliberate `null`.
+
+This schema is a Portia-owned structural composition, not a Core v0.5 adapter
+and not a competing identity authority. It does not pin a Core package
+version, register a module, resolve a work or record, or establish lifecycle,
+authorization, or consumer eligibility. Core runtime validation remains
+authoritative.
+
 Use `local_record_ref` when the consuming schema already supplies one
 unambiguous Portia work scope. Use `portia_work_record_ref` when the target
 Portia work must be stated explicitly.
+
+Use `module_work_record_ref` for a record owned by a sibling module when both
+the module work and module record identities must be explicit. A consuming
+schema may impose a narrower module, record-kind, contract-version, or
+cardinality policy.
 
 These schemas validate local structure only. Target existence, authoritative
 resolution, lifecycle eligibility, contract support, authorization, and
