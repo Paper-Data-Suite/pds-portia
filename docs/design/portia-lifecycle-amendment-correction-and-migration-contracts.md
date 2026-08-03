@@ -1,6 +1,6 @@
 # Portia Lifecycle, Amendment, Correction, and Migration Contracts
 
-**Status:** Working design — approved through Decision 8  
+**Status:** Working design — approved through Decision 9  
 **Project:** Paper Data Suite  
 **Module:** `pds-portia`  
 **Issue:** `#12 — Define shared lifecycle, amendment, correction, and migration contracts`  
@@ -2573,7 +2573,486 @@ Rejected from version 1 because Portia is not a discussion-forum model.
 
 ---
 
-# 12. Consequences
+
+# 12. Approved Decision 9: Invalidation and Terminal-State Rules
+
+## 12.1 Decision
+
+Portia uses tiered lifecycle finality.
+
+The shared model distinguishes:
+
+1. reopenable completion;
+2. replaceable terminal states;
+3. an absolute terminal state.
+
+The status token alone does not determine all use eligibility, but each terminal state has a precise lifecycle meaning.
+
+## 12.2 Reopenable completion: `closed`
+
+For Event, `closed` means ordinary active work is complete while the Event remains a valid canonical record.
+
+A closed Event may:
+
+- remain closed indefinitely;
+- remain usable by authorized consumers;
+- receive a nonmaterial amendment;
+- transition back to `active` when additional work is genuinely required;
+- transition to `invalidated`;
+- or transition to `superseded`.
+
+Reopening uses an ordinary lifecycle transition:
+
+```text
+closed -> active
+```
+
+with:
+
+```text
+reason.category = workflow
+reason.code = reopened_for_review
+```
+
+Reopening does not create a successor because it does not change Event identity or intended meaning.
+
+## 12.3 Replaceable terminal states
+
+The following statuses are terminal for ordinary domain progression:
+
+```text
+cancelled
+withdrawn
+invalidated
+```
+
+A record in one of these states cannot return through an ordinary lifecycle transition to:
+
+```text
+draft
+proposed
+active
+closed
+```
+
+It may transition only to:
+
+```text
+superseded
+```
+
+when a materially corrected successor is created.
+
+Permitted replacement transitions include:
+
+```text
+cancelled -> superseded
+withdrawn -> superseded
+invalidated -> superseded
+```
+
+This preserves both facts:
+
+1. the predecessor genuinely reached its earlier terminal state;
+2. a later successor replaced it as the canonical corrected representation.
+
+## 12.4 Absolute terminal state: `superseded`
+
+`superseded` has no legal outgoing lifecycle transition.
+
+A superseded record:
+
+- remains exactly resolvable;
+- remains historically visible to authorized readers;
+- retains its lifecycle and amendment history;
+- cannot become active again;
+- cannot later become invalidated, withdrawn, cancelled, or closed;
+- and is never silently redirected to its successor.
+
+A further material correction creates another successor in the replacement graph.
+
+It does not reactivate the superseded predecessor.
+
+## 12.5 Status meanings
+
+### `cancelled`
+
+`cancelled` means the record's draft or proposal workflow was intentionally abandoned before it became an accepted active assertion.
+
+For Event:
+
+```text
+draft -> cancelled
+```
+
+is permitted.
+
+These are not permitted:
+
+```text
+active -> cancelled
+closed -> cancelled
+```
+
+After activation, loss of current validity uses `invalidated`, while material replacement uses `superseded`.
+
+Cancellation does not claim that a proposition was false. It means the unfinished workflow was abandoned.
+
+### `withdrawn`
+
+`withdrawn` applies only where the represented human source can withdraw their own attributed assertion.
+
+The initial use is Statement of Disagreement.
+
+Withdrawal requires a lifecycle transition representing actual source withdrawal.
+
+A recorder must not infer withdrawal merely because:
+
+- the target was corrected;
+- the target was superseded;
+- another source disagreed;
+- the recorder believes the statement is inaccurate;
+- or the disagreement is inconvenient.
+
+Withdrawal does not erase the original statement.
+
+### `invalidated`
+
+`invalidated` means:
+
+> The record must no longer be treated as a valid current canonical assertion, and no corrected successor presently replaces it.
+
+Invalidation does not inherently mean:
+
+- false;
+- fabricated;
+- blameworthy;
+- discredited;
+- malicious;
+- or legally void.
+
+Representative grounds include:
+
+- entered in error;
+- source retraction where withdrawal is not the appropriate record-specific state;
+- inadequate identity;
+- unsupported assertion;
+- or loss of a mandatory dependency.
+
+Invalidation is not used when a corrected successor exists.
+
+That case uses `superseded`.
+
+### `superseded`
+
+`superseded` means:
+
+> One or more accepted successor records now provide the canonical replacement representation.
+
+Supersession does not delete the predecessor and does not rewrite references that identify it.
+
+## 12.6 Event transition matrix
+
+| From | Permitted destinations |
+|---|---|
+| `draft` | `active`, `cancelled`, `invalidated`, `superseded` |
+| `active` | `closed`, `invalidated`, `superseded` |
+| `closed` | `active`, `invalidated`, `superseded` |
+| `cancelled` | `superseded` only |
+| `invalidated` | `superseded` only |
+| `superseded` | none |
+
+The following transitions are prohibited:
+
+```text
+active -> draft
+closed -> draft
+active -> cancelled
+closed -> cancelled
+cancelled -> active
+invalidated -> active
+superseded -> any status
+```
+
+## 12.7 Event Participant, Event Participant Role, and Work Relationship matrix
+
+| From | Permitted destinations |
+|---|---|
+| `proposed` | `active`, `invalidated`, `superseded` |
+| `active` | `invalidated`, `superseded` |
+| `invalidated` | `superseded` only |
+| `superseded` | none |
+
+## 12.8 Statement-of-Disagreement matrix
+
+| From | Permitted destinations |
+|---|---|
+| `proposed` | `active`, `withdrawn`, `invalidated`, `superseded` |
+| `active` | `withdrawn`, `invalidated`, `superseded` |
+| `withdrawn` | `superseded` only |
+| `invalidated` | `superseded` only |
+| `superseded` | none |
+
+`proposed -> withdrawn` is permitted when the represented source withdraws the captured statement before activation.
+
+## 12.9 Transition-reason constraints
+
+### Activation
+
+Transitions to `active` use:
+
+```text
+category = workflow
+```
+
+Representative code:
+
+```text
+review_confirmed
+```
+
+### Closure and reopening
+
+Transitions to `closed` or from `closed` to `active` use:
+
+```text
+category = workflow
+```
+
+Representative codes:
+
+```text
+work_completed
+reopened_for_review
+```
+
+### Cancellation
+
+Transitions to `cancelled` use:
+
+```text
+category = workflow
+```
+
+Representative code:
+
+```text
+teacher_cancelled
+```
+
+### Withdrawal
+
+Transitions to `withdrawn` use:
+
+```text
+category = workflow
+```
+
+Representative code:
+
+```text
+source_withdrew
+```
+
+### Invalidation
+
+Transitions to `invalidated` ordinarily use:
+
+```text
+record_validity
+dependency
+other
+```
+
+`other` requires detail.
+
+A transition to `invalidated` must not use `correction` when a corrected successor exists.
+
+That situation is supersession.
+
+### Supersession
+
+Transitions to `superseded` ordinarily use:
+
+```text
+correction
+consolidation
+migration
+other
+```
+
+The lifecycle-transition reason must agree with the successor's specialized supersession reason.
+
+## 12.10 Nonmaterial correction of terminal records
+
+A terminal domain record may receive an amendment when:
+
+- its record family permits amendment;
+- every changed path is amendable;
+- the semantic-equivalence test passes;
+- lifecycle status remains unchanged;
+- and supersession consistency remains intact.
+
+For example, punctuation in a withdrawn disagreement's recorded summary may be corrected without reopening it.
+
+The amendment does not change terminal status.
+
+## 12.11 Material correction of terminal records
+
+A materially incorrect terminal domain record receives a successor.
+
+The predecessor:
+
+- remains in its current terminal state until the coordinated replacement operation;
+- transitions to `superseded`;
+- and retains the earlier terminal transition in lifecycle history.
+
+The successor begins with the status appropriate to its own canonical state.
+
+For example, a corrected successor to a withdrawn disagreement may itself begin as `withdrawn` when the represented source's withdrawal still applies.
+
+Detailed predecessor-and-successor reconciliation belongs to the next decision.
+
+## 12.12 Erroneous terminal transition
+
+When the terminal transition itself should never have been canonically accepted, Portia uses `lifecycle_history_correction`.
+
+For example, an:
+
+```text
+active -> invalidated
+```
+
+transition recorded against the wrong target may be removed from the selected lifecycle branch through history correction.
+
+The corrected selected branch may restore validated current state to `active`.
+
+This is not an ordinary:
+
+```text
+invalidated -> active
+```
+
+transition.
+
+It means the prior invalidation transition was historically erroneous.
+
+## 12.13 Genuine later reversal
+
+A later change of mind or new information does not make an earlier terminal transition erroneous.
+
+Examples include:
+
+- a source genuinely withdrew a disagreement and later expresses another disagreement;
+- a draft Event was genuinely cancelled and later a similar Event must be recorded;
+- a record was genuinely invalidated and later new evidence supports another assertion.
+
+These cases create new canonical records.
+
+They do not use lifecycle-history correction to rewrite what genuinely occurred.
+
+## 12.14 Default use dispositions
+
+Lifecycle status and use disposition remain distinct concepts.
+
+The default mappings are:
+
+| Current lifecycle state | Default use disposition |
+|---|---|
+| `draft` | `review_required` |
+| `proposed` | `review_required` |
+| `active` | `usable` |
+| Event `closed` | `usable` |
+| `cancelled` | `historical_only` |
+| `withdrawn` | `historical_only` |
+| `invalidated` | `historical_only` |
+| `superseded` | `historical_only` |
+
+These are defaults, not authorization decisions.
+
+A consumer may impose stricter treatment because of:
+
+- unresolved dependencies;
+- unsupported contract versions;
+- privacy;
+- authorization;
+- active disagreement;
+- or record-family-specific rules.
+
+A lifecycle-history mismatch yields:
+
+```text
+review_required
+```
+
+until repaired.
+
+## 12.15 Historical resolution
+
+Terminal records remain exactly resolvable.
+
+Resolution does not silently return a successor.
+
+A resolver may additionally provide derived information such as:
+
+```text
+lifecycle_status = superseded
+use_disposition = historical_only
+known_successors = [...]
+```
+
+but the original reference continues to identify the original record.
+
+## 12.16 Dependencies and attached records
+
+A terminal record may continue to have historically attached:
+
+- statements of disagreement;
+- lifecycle transitions;
+- amendments;
+- supersession relationships;
+- and other authorized historical context.
+
+A terminal transition does not automatically cascade status changes to attached records.
+
+Whether an active dependent record must itself change state is governed by the later dependency decision.
+
+## 12.17 Application validation
+
+Application validation must confirm:
+
+- the exact record-family transition matrix;
+- terminal-state restrictions;
+- reason-category and reason-code compatibility;
+- existence of a successor before transition to `superseded`;
+- source authority for withdrawal;
+- lifecycle-history reconciliation;
+- current target status agreement;
+- correct default use disposition;
+- no ordinary transition out of an absolute terminal state;
+- and no misuse of history correction to rewrite a genuine later change.
+
+## 12.18 Rejected alternatives
+
+### Every end-state absolutely terminal
+
+Rejected because Event closure is legitimate reopenable completion and terminal records may later require corrected successors.
+
+### Every end-state reversible
+
+Rejected because it weakens invalidation, withdrawal, cancellation, and supersession semantics.
+
+### `invalidated -> active` ordinary transition
+
+Rejected because reactivation would erase the distinction between a genuine later assertion and an erroneous historical transition.
+
+### Automatic cascading from terminal records
+
+Rejected because dependencies require record-specific treatment rather than universal status propagation.
+
+---
+
+# 13. Consequences
 
 ## Positive
 
@@ -2622,29 +3101,28 @@ Rejected because a transition is evidence of another record's state change, not 
 
 ---
 
-# 13. Unresolved Decisions
+# 14. Unresolved Decisions
 
 The following remain unresolved and must not be treated as accepted architecture:
 
-1. invalidation and terminal-state rules;
-2. supersession reconciliation;
-3. dependency handling;
-4. duplicate consolidation;
-5. migration-record semantics;
-6. migration identity preservation;
-7. incorrect Event ownership or work-root correction;
-8. exceptional removal boundaries;
-9. integrity-finding vocabulary;
-10. final public schema organization.
+1. supersession reconciliation;
+2. dependency handling;
+3. duplicate consolidation;
+4. migration-record semantics;
+5. migration identity preservation;
+6. incorrect Event ownership or work-root correction;
+7. exceptional removal boundaries;
+8. integrity-finding vocabulary;
+9. final public schema organization.
 
 No schemas should be created for unresolved items until their architectural decisions are approved.
 
-## 14. Next Decision
+## 15. Next Decision
 
-The next decision should define invalidation and terminal-state rules, including:
+The next decision should define supersession reconciliation, including:
 
-- which statuses are terminal for each current record family;
-- whether withdrawn, invalidated, superseded, closed, and cancelled may ever transition again;
-- how correction of terminal records is represented;
-- whether lifecycle-history correction may reopen an apparently terminal branch;
-- and which records remain usable, historical-only, or review-required after terminal transitions.
+- which record is authoritative for predecessor-to-successor replacement links;
+- how predecessor transitions and successor supersession entries must agree;
+- whether one predecessor may have several successors and whether one successor may consolidate several predecessors;
+- how partial or conflicting supersession graphs are treated;
+- and how successor discovery remains derived without silently retargeting references.
