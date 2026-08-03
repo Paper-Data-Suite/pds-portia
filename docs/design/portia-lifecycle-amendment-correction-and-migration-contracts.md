@@ -1,6 +1,6 @@
 # Portia Lifecycle, Amendment, Correction, and Migration Contracts
 
-**Status:** Working design — approved through Decision 5  
+**Status:** Working design — approved through Decision 6  
 **Project:** Paper Data Suite  
 **Module:** `pds-portia`  
 **Issue:** `#12 — Define shared lifecycle, amendment, correction, and migration contracts`  
@@ -1205,7 +1205,436 @@ Rejected because the explicit predecessor chains already define the segments and
 
 ---
 
-# 9. Consequences
+
+# 9. Approved Decision 6: Amendment Semantics and Wire Shape
+
+## 9.1 Decision
+
+Portia represents one atomic nonmaterial in-place update through a separate immutable:
+
+```text
+amendment
+```
+
+record.
+
+The canonical target is updated in place, while the amendment preserves the exact prior and resulting states of every changed field.
+
+Portia does not use:
+
+- complete before-and-after target snapshots;
+- unrestricted JSON Patch;
+- silent in-place editing without append-only history;
+- or replacement-based correction for every spelling, punctuation, formatting, or other genuinely nonmaterial change.
+
+## 9.2 Identity and storage
+
+Amendment identifiers use:
+
+```text
+amd_<opaque-id>
+```
+
+The identifier follows the accepted Portia-owned identifier alphabet and length rules.
+
+Canonical storage is:
+
+```text
+classes/<class_id>/modules/portia/work/<work_id>/
+  records/
+    amendment/
+      <amendment_id>.json
+```
+
+An amendment is stored beneath the work containing its target.
+
+## 9.3 Semantic unit
+
+One amendment means:
+
+> One atomic, nonmaterial in-place update to one canonical Portia domain record.
+
+An amendment may contain several field changes only when:
+
+- they form one teacher-facing correction;
+- every individual change is nonmaterial;
+- and their combined effect remains nonmaterial.
+
+Several small edits must not be bundled to conceal a material correction.
+
+## 9.4 Required envelope
+
+An amendment version-1 record contains exactly:
+
+```text
+schema_version
+record_type
+module_id
+class_id
+work_id
+amendment_id
+target
+previous_amendment
+target_updated_at_before
+changes
+reason
+creation_source
+created_at
+created_by
+```
+
+It does not contain:
+
+```text
+status
+effective_at
+updated_at
+updated_by
+operation_id
+```
+
+Constants are:
+
+```text
+schema_version = "1"
+record_type = "amendment"
+module_id = "portia"
+```
+
+The amendment record is immutable after canonical acceptance.
+
+## 9.5 Target
+
+`target` uses the compact same-work target contract:
+
+```text
+work
+local_record
+```
+
+Application validation requires the target to:
+
+- be a canonical Portia domain record;
+- support in-place amendment;
+- and persist `updated_at` and `updated_by`.
+
+The following are not amendment targets:
+
+- lifecycle-transition records;
+- lifecycle-history-correction records;
+- amendment records;
+- other immutable audit records;
+- derived views;
+- or external-module records.
+
+## 9.6 Amendment predecessor chain
+
+`previous_amendment` is required and is either:
+
+- `null` for the first amendment to the target; or
+- a same-work `local_record_ref` constrained to an amendment version-1 record.
+
+This creates one append-only amendment sequence per target and permits diagnosis of:
+
+- amendment branches;
+- competing amendment heads;
+- missing predecessors;
+- and cycles.
+
+The amendment chain orders amendments to the same target. It does not replace lifecycle-transition history.
+
+## 9.7 Update precondition
+
+`target_updated_at_before` records the target's exact `updated_at` immediately before the amendment operation.
+
+Application validation requires:
+
+1. the target's current `updated_at` equals `target_updated_at_before` before mutation;
+2. the amendment's `created_at` is later than `target_updated_at_before`;
+3. after mutation, the target's `updated_at` equals the amendment's `created_at`;
+4. after mutation, the target's `updated_by` equals the amendment's `created_by`.
+
+A conflicting target `updated_at` blocks the amendment rather than causing an automatic merge.
+
+This is an explicit revision precondition, not a substitute for Issue #13 coordinated-persistence and recovery contracts.
+
+## 9.8 Change representation
+
+`changes` is a nonempty array of closed change objects.
+
+Example:
+
+```json
+{
+  "path": "/summary",
+  "operation": "replace",
+  "before": {
+    "present": true,
+    "value": "Student recieveed the handout."
+  },
+  "after": {
+    "present": true,
+    "value": "Student received the handout."
+  }
+}
+```
+
+Each change contains exactly:
+
+```text
+path
+operation
+before
+after
+```
+
+## 9.9 Path rules
+
+`path` is a nonempty JSON Pointer identifying one property or nested property.
+
+The empty root pointer is prohibited.
+
+Application validation must reject:
+
+- duplicate paths;
+- ancestor-and-descendant paths in the same amendment;
+- paths into arrays by numeric index;
+- paths not approved as amendable by the target's record-specific contract;
+- and paths that would alter identity, lifecycle, provenance, or material meaning.
+
+An array may be replaced as one complete field value when the complete replacement is nonmaterial.
+
+Individual array-index operations are not supported.
+
+## 9.10 Operations
+
+The initial operation vocabulary is:
+
+```text
+add
+replace
+remove
+```
+
+Required state combinations are:
+
+| Operation | Before | After |
+|---|---|---|
+| `add` | absent | present |
+| `replace` | present | present and unequal |
+| `remove` | present | absent |
+
+Portia does not support:
+
+```text
+move
+copy
+test
+```
+
+operations.
+
+## 9.11 Explicit presence and value
+
+`before` and `after` use closed state wrappers.
+
+Present property:
+
+```json
+{
+  "present": true,
+  "value": null
+}
+```
+
+Absent property:
+
+```json
+{
+  "present": false
+}
+```
+
+When `present` is `true`, `value` is required and may contain any valid JSON value.
+
+When `present` is `false`, `value` is prohibited.
+
+This distinguishes an absent property from a property whose JSON value is `null`.
+
+## 9.12 Simultaneous application
+
+The `changes` array is semantically unordered.
+
+All `before` states are evaluated against the same pre-amendment target.
+
+All `after` states describe the same resulting target.
+
+Portia must not rely on change-array order to make one operation create, remove, or replace a path needed by another operation.
+
+Overlapping ancestor-and-descendant paths are therefore prohibited.
+
+## 9.13 Protected fields
+
+The following categories cannot be amended in place:
+
+- schema version or record type;
+- module, class, work, or record identity;
+- canonical target identity;
+- lifecycle status;
+- creation provenance;
+- creation attribution or timestamp;
+- supersession relationships;
+- material source, subject, participant, provider, recipient, or relationship identity;
+- or another field whose change alters the assertion's meaning, scope, authority, or lifecycle significance.
+
+`updated_at` and `updated_by` change as part of the amendment operation but are not listed in `changes`. Their resulting values are fixed by the envelope rules.
+
+The exact record-specific amendable-path matrix is governed by the materiality decision and later domain contracts.
+
+## 9.14 Amendment reason
+
+`reason` is a closed object containing:
+
+```text
+code
+detail, optional
+```
+
+Initial reason codes are:
+
+```text
+spelling_corrected
+punctuation_corrected
+formatting_corrected
+transcription_corrected
+display_value_corrected
+nonsemantic_metadata_corrected
+other
+```
+
+`code` uses the accepted lowercase token syntax.
+
+`detail` composes `non_empty_text`.
+
+Rules:
+
+- `detail` is required for `other`;
+- recognized codes may include concise neutral detail;
+- the reason must not contain substantive evidence or a replacement assertion;
+- and unsupported or misleading reason codes are application-invalid.
+
+`clarification` is not a shared amendment reason in version 1 because clarification can alter meaning. A proposed clarification must first satisfy the materiality rules accepted later.
+
+## 9.15 Creation provenance
+
+Amendment version 1 permits:
+
+```text
+digital_entry
+import
+```
+
+Paper interpretation may propose a correction, but canonical application requires review and is recorded as `digital_entry`.
+
+Migration does not use amendment records merely because representation changed. Migration receives its own contract later in Issue #12.
+
+## 9.16 Target reconciliation
+
+After applying an amendment:
+
+- every `before` state must match the target immediately before mutation;
+- every `after` state must match the target immediately after mutation;
+- target identity and lifecycle status must remain unchanged;
+- target `updated_at` must equal the amendment's `created_at`;
+- target `updated_by` must equal the amendment's `created_by`;
+- and unchanged fields must remain unchanged.
+
+The complete amendment chain preserves prior values without complete record snapshots.
+
+## 9.17 Correcting an amendment
+
+An accepted amendment is immutable.
+
+A later genuinely nonmaterial correction to the target may be represented by another amendment with accurate before-and-after states.
+
+Portia must not edit the earlier amendment.
+
+A discovered error involving:
+
+- the wrong target;
+- a fabricated prior state;
+- a material semantic change;
+- or an amendment that should never have been accepted
+
+is an integrity problem rather than an ordinary amendment.
+
+Its complete treatment will be reconciled with the material-correction and integrity-finding decisions later in Issue #12.
+
+## 9.18 Structural validation
+
+JSON Schema will validate:
+
+- the exact immutable envelope;
+- constants;
+- `amd_` identifier syntax;
+- compact target shape;
+- nullable amendment predecessor;
+- explicit-offset timestamps;
+- a nonempty `changes` array;
+- closed change objects;
+- JSON Pointer syntax;
+- the `add`, `replace`, and `remove` operations;
+- before-and-after presence wrappers;
+- operation-compatible presence states;
+- amendment-reason structure;
+- permitted creation provenance;
+- and attribution.
+
+## 9.19 Application validation
+
+Application validation must confirm:
+
+- canonical storage path and scope;
+- exact target resolution;
+- target eligibility for amendment;
+- exact predecessor resolution and unique amendment head;
+- target revision precondition;
+- exact before-and-after value agreement;
+- unique and nonoverlapping paths;
+- prohibition of array-index traversal;
+- record-specific amendable paths;
+- individual and combined nonmateriality;
+- unchanged target identity and lifecycle status;
+- target update attribution;
+- reason compatibility;
+- authority and privacy;
+- and atomic or recoverable persistence.
+
+## 9.20 Rejected alternatives
+
+### Complete before-and-after target snapshots
+
+Rejected because they duplicate unchanged and potentially sensitive information.
+
+### Unrestricted JSON Patch
+
+Rejected because it permits overly general operations and does not independently preserve exact prior values.
+
+### Replacement for every correction
+
+Rejected because it creates new canonical identities for genuinely nonmaterial changes.
+
+### Silent in-place editing
+
+Rejected because it destroys append-only correction history.
+
+### Ordered change execution
+
+Rejected because amendment meaning should not depend on array ordering.
+
+---
+
+# 10. Consequences
 
 ## Positive
 
@@ -1254,32 +1683,31 @@ Rejected because a transition is evidence of another record's state change, not 
 
 ---
 
-# 10. Unresolved Decisions
+# 11. Unresolved Decisions
 
 The following remain unresolved and must not be treated as accepted architecture:
 
-1. amendment semantics and wire shape;
-2. nonmaterial-versus-material decision test;
-3. statement-of-disagreement semantics;
-4. invalidation and terminal-state rules;
-5. supersession reconciliation;
-6. dependency handling;
-7. duplicate consolidation;
-8. migration-record semantics;
-9. migration identity preservation;
-10. incorrect Event ownership or work-root correction;
-11. exceptional removal boundaries;
-12. integrity-finding vocabulary;
-13. final public schema organization.
+1. nonmaterial-versus-material decision test;
+2. statement-of-disagreement semantics;
+3. invalidation and terminal-state rules;
+4. supersession reconciliation;
+5. dependency handling;
+6. duplicate consolidation;
+7. migration-record semantics;
+8. migration identity preservation;
+9. incorrect Event ownership or work-root correction;
+10. exceptional removal boundaries;
+11. integrity-finding vocabulary;
+12. final public schema organization.
 
 No schemas should be created for unresolved items until their architectural decisions are approved.
 
-## 11. Next Decision
+## 12. Next Decision
 
-The next decision should define the amendment record's semantics and wire shape, including:
+The next decision should define the shared nonmaterial-versus-material change test, including:
 
-- which nonmaterial changes may be applied in place;
-- whether one amendment may affect several fields;
-- how prior and resulting values are preserved;
-- whether amendments use typed field changes, snapshots, or a constrained patch;
-- and how the canonical target's `updated_at` and `updated_by` reconcile with append-only amendment history.
+- which semantic dimensions make a change categorically material;
+- whether additive detail can ever be amended in place;
+- how combined small changes are evaluated;
+- how uncertainty is handled;
+- and which representative Event-family changes require amendment, successor replacement, invalidation, migration, or a record-specific decision.
