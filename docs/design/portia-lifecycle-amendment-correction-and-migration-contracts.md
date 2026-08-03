@@ -1,6 +1,6 @@
 # Portia Lifecycle, Amendment, Correction, and Migration Contracts
 
-**Status:** Working design — approved through Decision 4  
+**Status:** Working design — approved through Decision 5  
 **Project:** Paper Data Suite  
 **Module:** `pds-portia`  
 **Issue:** `#12 — Define shared lifecycle, amendment, correction, and migration contracts`  
@@ -831,7 +831,381 @@ Rejected because `reason` should explain the transition's primary semantic cause
 
 ---
 
-# 8. Consequences
+
+# 8. Approved Decision 5: Correcting an Erroneous Immutable Transition
+
+## 8.1 Decision
+
+Portia corrects an erroneous accepted lifecycle transition through a separate immutable:
+
+```text
+lifecycle_history_correction
+```
+
+record.
+
+The original transition remains preserved. Portia does not:
+
+- edit it in place;
+- delete it through an ordinary correction workflow;
+- append a compensating transition that falsely asserts another real lifecycle change;
+- or virtually reinterpret persisted predecessor references.
+
+A lifecycle-history correction selects an explicitly rebuilt replacement branch.
+
+## 8.2 Identity and storage
+
+Lifecycle-history-correction identifiers use:
+
+```text
+lhc_<opaque-id>
+```
+
+The identifier follows the accepted Portia-owned identifier alphabet and length rules.
+
+Canonical storage is:
+
+```text
+classes/<class_id>/modules/portia/work/<work_id>/
+  records/
+    lifecycle_history_correction/
+      <correction_id>.json
+```
+
+The correction is stored beneath the work containing its lifecycle target.
+
+## 8.3 Semantic unit
+
+One lifecycle-history-correction record means:
+
+> For one lifecycle target, replace the previously selected lifecycle-transition-history head with another explicitly persisted head.
+
+It does not mutate any transition and does not itself represent a domain lifecycle change.
+
+## 8.4 Required envelope
+
+A lifecycle-history-correction version-1 record contains exactly:
+
+```text
+schema_version
+record_type
+module_id
+class_id
+work_id
+correction_id
+target
+previous_correction
+replaced_head
+replacement_head
+reason
+creation_source
+created_at
+created_by
+```
+
+It does not contain:
+
+```text
+status
+updated_at
+updated_by
+effective_at
+operation_id
+```
+
+Constants are:
+
+```text
+schema_version = "1"
+record_type = "lifecycle_history_correction"
+module_id = "portia"
+```
+
+The record is immutable after canonical acceptance.
+
+## 8.5 Target
+
+`target` uses the same compact same-work target contract as lifecycle-transition records:
+
+```text
+work
+local_record
+```
+
+The correction must apply to one lifecycle target only.
+
+Cross-target or plural corrections are not permitted.
+
+## 8.6 Correction predecessor chain
+
+`previous_correction` is required and is either:
+
+- `null` for the first lifecycle-history correction for the target; or
+- a same-work `local_record_ref` constrained to a lifecycle-history-correction version-1 record.
+
+This creates an append-only correction series and permits diagnosis of:
+
+- correction branches;
+- competing correction heads;
+- missing predecessors;
+- and cycles.
+
+Application validation requires a non-null predecessor correction to target the same canonical work or child record.
+
+## 8.7 Replaced and replacement heads
+
+`replaced_head` is required and identifies the lifecycle-transition version-1 record that was the selected transition head immediately before correction.
+
+`replacement_head` is required but nullable.
+
+It is either:
+
+- a same-work lifecycle-transition version-1 reference selecting the corrected branch; or
+- `null` when correction removes all transitions and restores the target's creation baseline.
+
+Example:
+
+```json
+{
+  "replaced_head": {
+    "record_kind": "lifecycle_transition",
+    "record_id": "lct_wrong",
+    "contract_version": "1"
+  },
+  "replacement_head": {
+    "record_kind": "lifecycle_transition",
+    "record_id": "lct_corrected",
+    "contract_version": "1"
+  }
+}
+```
+
+Reverting to the creation baseline:
+
+```json
+{
+  "replaced_head": {
+    "record_kind": "lifecycle_transition",
+    "record_id": "lct_accidental",
+    "contract_version": "1"
+  },
+  "replacement_head": null
+}
+```
+
+`replacement_head` must not equal `replaced_head`.
+
+## 8.8 Explicit branch rebuilding
+
+The replacement branch is persisted explicitly.
+
+Suppose the selected history is:
+
+```text
+creation baseline
+  -> T1
+  -> T2 erroneous
+  -> T3
+  -> T4 selected head
+```
+
+Correcting `T2` requires:
+
+```text
+creation baseline
+  -> T1
+  -> T2'
+  -> T3'
+  -> T4' replacement head
+```
+
+The lifecycle-history correction then records:
+
+```text
+replaced_head = T4
+replacement_head = T4'
+```
+
+The original `T2`, `T3`, and `T4` remain preserved but are no longer part of the validated selected lifecycle history.
+
+Existing transitions are never interpreted as though their persisted `previous_transition` references had changed.
+
+## 8.9 Derived replaced and replacement segments
+
+The correction record does not enumerate every transition in either segment.
+
+Application validation traces backward from:
+
+- `replaced_head`;
+- and `replacement_head`, when non-null.
+
+The most recent shared predecessor—or the creation baseline—is the correction anchor.
+
+The replaced and replacement segments are derived from the explicit predecessor chains.
+
+This avoids storing redundant transition arrays that could disagree with the canonical graph.
+
+## 8.10 Selection rules
+
+For one lifecycle target:
+
+1. With no correction records, the ordinary valid transition head is selected.
+2. The first correction's `replaced_head` must equal that selected head.
+3. Each later correction's `previous_correction` must identify the unique current correction head.
+4. Each correction's `replaced_head` must equal the currently selected transition head immediately before correction.
+5. `replacement_head` establishes the corrected selected branch.
+6. Ordinary later transitions may extend only the selected replacement branch.
+7. A transition extending an excluded branch is application-invalid.
+
+Portia does not select correction or transition branches by:
+
+- timestamp;
+- filename;
+- creation order;
+- filesystem order;
+- or file modification time.
+
+A competing correction head is an integrity failure.
+
+## 8.11 Wrong-target correction
+
+A transition recorded against target A but intended for target B is not silently retargeted.
+
+Correction requires:
+
+- a lifecycle-history correction for target A removing the erroneous branch;
+- normal lifecycle-transition records for target B;
+- and target-status repairs where required.
+
+Each record remains under its own canonical work root.
+
+Cross-work coordination belongs to Issue #13.
+
+## 8.12 Target-status repair
+
+A lifecycle-history correction is not a lifecycle transition.
+
+After the corrected history is selected, the target's persisted status must equal:
+
+- the selected replacement head's `to_status`; or
+- the creation-baseline status when `replacement_head` is `null`.
+
+When that differs from the target's current persisted status, the correction operation repairs the target's status and ordinary update attribution.
+
+It does not create a compensating transition merely to repair the current-state projection.
+
+If the corrected history ends in the same status, the target body need not change.
+
+## 8.13 Correction reason
+
+`reason` is a closed correction-specific object with:
+
+```text
+code
+detail, optional
+```
+
+Initial codes are:
+
+```text
+wrong_target
+wrong_predecessor
+wrong_from_status
+wrong_to_status
+wrong_reason
+wrong_effective_at
+wrong_attribution
+duplicate_transition
+transition_should_not_exist
+multiple_fields_corrected
+other
+```
+
+`code` uses the accepted lowercase token syntax.
+
+`detail` composes `non_empty_text`.
+
+Rules:
+
+- `detail` is required for `other`;
+- recognized codes may include concise neutral detail;
+- `multiple_fields_corrected` is used only when no single error code adequately describes the correction;
+- and the reason must not become the only canonical location of substantive domain evidence.
+
+This reason vocabulary is distinct from lifecycle-transition reasons because it explains why historical transition evidence was corrected, not why a domain target changed status.
+
+## 8.14 Canonically accepted versus never accepted
+
+This mechanism applies to a structurally valid, canonically accepted transition later found to be semantically or historically wrong.
+
+It does not legitimize:
+
+- malformed JSON;
+- a file whose envelope disagrees with its path;
+- duplicate bytes produced by a failed write;
+- an incomplete temporary file;
+- or a record that was never validly accepted as canonical.
+
+Those cases belong to integrity repair, exceptional-removal boundaries, and Issue #13 recovery.
+
+## 8.15 Structural validation
+
+JSON Schema will validate:
+
+- the exact immutable envelope;
+- constants;
+- `lhc_` identifier syntax;
+- the compact target;
+- nullable correction predecessor;
+- lifecycle-transition references for replaced and replacement heads;
+- nullable `replacement_head`;
+- distinct replaced and replacement heads;
+- the correction-reason object;
+- creation provenance;
+- explicit-offset `created_at`;
+- and attribution structure.
+
+## 8.16 Application validation
+
+Application validation must confirm:
+
+- canonical path and scope agreement;
+- exact target resolution;
+- same-target identity across replaced and replacement branches;
+- exact correction-predecessor resolution;
+- unique current correction head;
+- `replaced_head` was the selected head before correction;
+- replacement transitions form a complete explicit branch;
+- replacement transitions satisfy normal status, reason, and chronology rules;
+- the branches have an inferable shared ancestor or creation baseline;
+- no transition or correction cycles exist;
+- excluded branches are not later extended;
+- the correction reason matches the identified error;
+- target status agrees with the corrected selected history;
+- authority and privacy requirements are satisfied;
+- and the coordinated operation is atomic or recoverable.
+
+## 8.17 Rejected alternatives
+
+### Editing or deleting the transition
+
+Rejected because it destroys canonical historical evidence and may break descendant references.
+
+### Compensating lifecycle transition
+
+Rejected as the general correction mechanism because it falsely claims that both lifecycle changes actually occurred and cannot correct a wrong target, predecessor, reason, attribution, or effective time.
+
+### Exclusion marker with virtual predecessor substitution
+
+Rejected because it makes persisted transition references misleading and silently rewrites history during resolution.
+
+### Enumerating every replaced transition
+
+Rejected because the explicit predecessor chains already define the segments and a stored list could contradict them.
+
+---
+
+# 9. Consequences
 
 ## Positive
 
@@ -880,33 +1254,32 @@ Rejected because a transition is evidence of another record's state change, not 
 
 ---
 
-# 9. Unresolved Decisions
+# 10. Unresolved Decisions
 
 The following remain unresolved and must not be treated as accepted architecture:
 
-1. correction of an erroneous transition;
-2. amendment semantics and wire shape;
-3. nonmaterial-versus-material decision test;
-4. statement-of-disagreement semantics;
-5. invalidation and terminal-state rules;
-6. supersession reconciliation;
-7. dependency handling;
-8. duplicate consolidation;
-9. migration-record semantics;
-10. migration identity preservation;
-11. incorrect Event ownership or work-root correction;
-12. exceptional removal boundaries;
-13. integrity-finding vocabulary;
-14. final public schema organization.
+1. amendment semantics and wire shape;
+2. nonmaterial-versus-material decision test;
+3. statement-of-disagreement semantics;
+4. invalidation and terminal-state rules;
+5. supersession reconciliation;
+6. dependency handling;
+7. duplicate consolidation;
+8. migration-record semantics;
+9. migration identity preservation;
+10. incorrect Event ownership or work-root correction;
+11. exceptional removal boundaries;
+12. integrity-finding vocabulary;
+13. final public schema organization.
 
 No schemas should be created for unresolved items until their architectural decisions are approved.
 
-## 10. Next Decision
+## 11. Next Decision
 
-The next decision should define how Portia corrects an erroneous immutable lifecycle-transition record, including:
+The next decision should define the amendment record's semantics and wire shape, including:
 
-- whether an accepted transition may ever be amended in place;
-- whether correction uses a separate history-correction record;
-- how the original transition remains visible but excluded from validated history;
-- how corrected predecessor chains are represented;
-- and how target status is repaired without silently rewriting historical evidence.
+- which nonmaterial changes may be applied in place;
+- whether one amendment may affect several fields;
+- how prior and resulting values are preserved;
+- whether amendments use typed field changes, snapshots, or a constrained patch;
+- and how the canonical target's `updated_at` and `updated_by` reconcile with append-only amendment history.
