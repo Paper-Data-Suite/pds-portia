@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/roster-student-ref.schema.json",
+  "title": "Roster Student Reference",
+  "description": "Identity-only reference to one student in one Core roster. Identity is the exact class_id and student_id pair. Passing this schema does not establish that the class or roster entry exists; Core remains authoritative for roster identity and resolution.",
+  "type": "object",
+  "required": [
+    "class_id",
+    "student_id"
+  ],
+  "properties": {
+    "class_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+    },
+    "student_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+    }
+  },
+  "additionalProperties": false
+}

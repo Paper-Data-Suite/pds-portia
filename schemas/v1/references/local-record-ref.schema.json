@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/local-record-ref.schema.json",
+  "title": "Portia Local Record Reference",
+  "description": "Typed, version-aware reference to one canonical record inside exactly one unambiguous Portia work scope supplied by the containing schema. Structural validation does not prove that the record kind exists, that the record ID belongs to that kind, or that the target is resolvable or eligible for the consuming use.",
+  "type": "object",
+  "required": [
+    "record_kind",
+    "record_id",
+    "contract_version"
+  ],
+  "properties": {
+    "record_kind": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+    },
+    "record_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+    },
+    "contract_version": {
+      "oneOf": [
+        {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "additionalProperties": false
+}

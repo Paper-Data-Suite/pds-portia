@@ -1,0 +1,85 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/targets/portia-target-ref.schema.json",
+  "title": "Portia Event Target Reference",
+  "description": "Closed Event-local target family for a containing Event, one Event Participant, or a selected set of Event Participants. A target identifies application scope and does not identify a source, basis, person identity, attribution, provenance, or relationship endpoint.",
+  "oneOf": [
+    {
+      "$ref": "#/$defs/eventTarget"
+    },
+    {
+      "$ref": "#/$defs/eventParticipantTarget"
+    },
+    {
+      "$ref": "#/$defs/eventParticipantsTarget"
+    }
+  ],
+  "$defs": {
+    "eventTarget": {
+      "type": "object",
+      "required": [
+        "kind"
+      ],
+      "properties": {
+        "kind": {
+          "const": "event"
+        }
+      },
+      "additionalProperties": false
+    },
+    "eventParticipantRecordRef": {
+      "allOf": [
+        {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/local-record-ref.schema.json"
+        },
+        {
+          "properties": {
+            "record_kind": {
+              "const": "event_participant"
+            },
+            "record_id": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-event-participant-id.schema.json"
+            }
+          }
+        }
+      ]
+    },
+    "eventParticipantTarget": {
+      "type": "object",
+      "required": [
+        "kind",
+        "record_ref"
+      ],
+      "properties": {
+        "kind": {
+          "const": "event_participant"
+        },
+        "record_ref": {
+          "$ref": "#/$defs/eventParticipantRecordRef"
+        }
+      },
+      "additionalProperties": false
+    },
+    "eventParticipantsTarget": {
+      "type": "object",
+      "required": [
+        "kind",
+        "targets"
+      ],
+      "properties": {
+        "kind": {
+          "const": "event_participants"
+        },
+        "targets": {
+          "type": "array",
+          "minItems": 2,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/eventParticipantTarget"
+          }
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

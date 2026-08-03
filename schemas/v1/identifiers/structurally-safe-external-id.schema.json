@@ -1,0 +1,11 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json",
+  "title": "Structurally Safe External Identifier",
+  "description": "Conservative structural and path-safety check for an identifier owned by Core or another module when no independently addressable authoritative schema is available. Passing this schema does not establish registration, existence, uniqueness, ownership, record kind, work kind, lifecycle, contract support, or authorization.",
+  "type": "string",
+  "minLength": 1,
+  "maxLength": 128,
+  "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+  "$comment": "This is a nonauthoritative fallback. The owning contract or runtime validator remains authoritative for semantic validity."
+}

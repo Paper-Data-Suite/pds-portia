@@ -1,0 +1,96 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/module-work-record-ref.schema.json",
+  "title": "Module Work Record Reference",
+  "description": "Complete structural reference to one record owned by one explicitly identified module work. The value composes the exact Core ModuleWorkRef and ModuleRecordRef wire shapes while remaining module-neutral. Structural validation does not establish authoritative Core resolution, contract support, lifecycle eligibility, authorization, or consumer-specific use.",
+  "$comment": "Both nested Core values repeat module_id because each is independently self-describing. Standard JSON Schema cannot compare sibling property values, so application validation must require work_ref.module_id == record_ref.module_id. The structurally-safe external identifier remains a nonauthoritative fallback until Core publishes independently addressable JSON Schemas for these values.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "work_ref",
+    "record_ref"
+  ],
+  "properties": {
+    "work_ref": {
+      "$ref": "#/$defs/moduleWorkRef"
+    },
+    "record_ref": {
+      "$ref": "#/$defs/moduleRecordRef"
+    }
+  },
+  "$defs": {
+    "moduleId": {
+      "allOf": [
+        {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+        },
+        {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9._-]*$"
+        }
+      ],
+      "description": "Lowercase structural module identifier. Core remains authoritative for registered module identity."
+    },
+    "moduleWorkRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "module_id",
+        "class_id",
+        "work_id"
+      ],
+      "properties": {
+        "module_id": {
+          "$ref": "#/$defs/moduleId"
+        },
+        "class_id": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+        },
+        "work_id": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+        }
+      },
+      "description": "Exact Core ModuleWorkRef wire shape."
+    },
+    "moduleRecordRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "module_id",
+        "record_kind",
+        "record_id",
+        "contract_version"
+      ],
+      "properties": {
+        "module_id": {
+          "$ref": "#/$defs/moduleId"
+        },
+        "record_kind": {
+          "allOf": [
+            {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+            },
+            {
+              "type": "string",
+              "pattern": "^[a-z0-9][a-z0-9._-]*$"
+            }
+          ]
+        },
+        "record_id": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+        },
+        "contract_version": {
+          "oneOf": [
+            {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "description": "Exact Core ModuleRecordRef wire shape."
+    }
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "schema_version": "2",
+  "record_type": "event_participant",
+  "module_id": "portia",
+  "class_id": "eng10_p2_2026",
+  "work_id": "evt_example",
+  "participant_id": "ep_actor",
+  "status": "active",
+  "subject": {
+    "kind": "actor",
+    "actor_ref": {
+      "actor_id": "actr_counselor_001"
+    },
+    "display_snapshot": {
+      "display_name": "Morgan Ellis"
+    }
+  },
+  "creation_source": {
+    "type": "digital_entry"
+  },
+  "created_at": "2026-08-02T17:00:00-04:00",
+  "created_by": {
+    "type": "local_operator",
+    "display_label": "S. Severino"
+  },
+  "updated_at": "2026-08-02T17:00:00-04:00",
+  "updated_by": {
+    "type": "local_operator",
+    "display_label": "S. Severino"
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/attribution/attribution-agent.schema.json",
+  "title": "Portia Attribution Agent",
+  "description": "Local operation attribution for a human-facing local operator label or a deterministic system process. It does not establish institutional identity, authorization, employment status, decision authority, or legal authorship.",
+  "oneOf": [
+    {
+      "$ref": "#/$defs/localOperator"
+    },
+    {
+      "$ref": "#/$defs/systemProcess"
+    }
+  ],
+  "$defs": {
+    "localOperator": {
+      "type": "object",
+      "required": [
+        "type",
+        "display_label"
+      ],
+      "properties": {
+        "type": {
+          "const": "local_operator"
+        },
+        "display_label": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+        }
+      },
+      "additionalProperties": false
+    },
+    "systemProcess": {
+      "type": "object",
+      "required": [
+        "type",
+        "process_id"
+      ],
+      "properties": {
+        "type": {
+          "const": "system_process"
+        },
+        "process_id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*$"
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "kind": "event_participant",
+  "record_ref": {
+    "record_kind": "event_participant",
+    "record_id": "ep_legacy_001",
+    "contract_version": "1"
+  }
+}

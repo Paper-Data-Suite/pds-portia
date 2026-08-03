@@ -1,0 +1,10 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-work-relationship-id.schema.json",
+  "title": "Portia Work Relationship Identifier",
+  "description": "Opaque canonical identifier for one Portia Work Relationship record. The rel_ prefix is part of the public identifier contract.",
+  "type": "string",
+  "minLength": 1,
+  "maxLength": 128,
+  "pattern": "^rel_[A-Za-z0-9][A-Za-z0-9_-]*$"
+}

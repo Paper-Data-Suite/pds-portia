@@ -1,0 +1,13 @@
+{
+  "work_ref": {
+    "module_id": "external.module",
+    "class_id": "class.2026",
+    "work_id": "work.001"
+  },
+  "record_ref": {
+    "module_id": "external.module",
+    "record_kind": "result.item",
+    "record_id": "record.0007",
+    "contract_version": "v1.2"
+  }
+}

@@ -1,0 +1,534 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v2/event-participant-role.schema.json",
+  "title": "Portia Event Participant Role v2",
+  "description": "Canonical version-2 Event Participant Role record stored beneath one Event work root. Version 2 preserves the version-1 Role semantics while replacing direct participant and basis identifiers with the accepted shared target and local-record reference contracts.",
+  "$comment": "Application validation remains responsible for canonical storage-path and envelope agreement; parent Event and targeted Event Participant existence, same-Event scope, and lifecycle eligibility; same-Event Account and Observation resolution; attributed Account validity; exact paper creation-source and paper-basis route/page agreement; timestamp chronology; lifecycle transition legality; terminal-state handling; immutable target and creation provenance after persistence; duplicate and compatibility checks over the intended post-operation active-role set; self-supersession, predecessor identity uniqueness, supersession cycles, and coordinated activation; no hard deletion; and atomic or recoverable multi-record operations.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "record_type",
+    "module_id",
+    "class_id",
+    "work_id",
+    "role_id",
+    "target",
+    "status",
+    "role_type",
+    "creation_source",
+    "created_at",
+    "created_by",
+    "updated_at",
+    "updated_by"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "2"
+    },
+    "record_type": {
+      "const": "event_participant_role"
+    },
+    "module_id": {
+      "const": "portia"
+    },
+    "class_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+    },
+    "work_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-event-id.schema.json"
+    },
+    "role_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-event-participant-role-id.schema.json"
+    },
+    "target": {
+      "$ref": "#/$defs/singularParticipantTarget"
+    },
+    "status": {
+      "enum": [
+        "proposed",
+        "active",
+        "invalidated",
+        "superseded"
+      ]
+    },
+    "role_type": {
+      "enum": [
+        "directly_involved",
+        "present",
+        "reported_involved",
+        "contextual"
+      ]
+    },
+    "basis": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/basisEntry"
+      },
+      "description": "Unordered structured sources or artifacts supporting this one Role assertion. Basis does not establish truth, credibility, weight, agreement, or a formal determination."
+    },
+    "detail": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json",
+      "description": "Concise neutral Event-context explanation; permitted only for contextual Roles."
+    },
+    "supersedes": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/roleSupersessionRef"
+      },
+      "description": "Canonical forward replacement references to prior Role records within the containing Event."
+    },
+    "creation_source": {
+      "allOf": [
+        {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/provenance/creation-source.schema.json"
+        },
+        {
+          "not": {
+            "properties": {
+              "type": {
+                "const": "paper_capture"
+              },
+              "stage": {
+                "const": "preallocated"
+              }
+            },
+            "required": [
+              "type",
+              "stage"
+            ]
+          }
+        }
+      ]
+    },
+    "created_at": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+    },
+    "created_by": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/attribution/attribution-agent.schema.json"
+    },
+    "updated_at": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+    },
+    "updated_by": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/attribution/attribution-agent.schema.json"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "role_type": {
+            "const": "contextual"
+          }
+        },
+        "required": [
+          "role_type"
+        ]
+      },
+      "then": {
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "status": {
+                  "enum": [
+                    "active",
+                    "superseded"
+                  ]
+                }
+              },
+              "required": [
+                "status"
+              ]
+            },
+            "then": {
+              "required": [
+                "detail"
+              ]
+            }
+          }
+        ]
+      },
+      "else": {
+        "not": {
+          "required": [
+            "detail"
+          ]
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "role_type": {
+            "const": "reported_involved"
+          }
+        },
+        "required": [
+          "role_type"
+        ]
+      },
+      "then": {
+        "required": [
+          "basis"
+        ],
+        "properties": {
+          "basis": {
+            "contains": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/accountRefBasis"
+                },
+                {
+                  "$ref": "#/$defs/paperCaptureBasis"
+                },
+                {
+                  "$ref": "#/$defs/importSourceBasis"
+                }
+              ]
+            },
+            "minContains": 1
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "allOf": [
+          {
+            "properties": {
+              "role_type": {
+                "const": "reported_involved"
+              }
+            },
+            "required": [
+              "role_type"
+            ]
+          },
+          {
+            "properties": {
+              "status": {
+                "enum": [
+                  "active",
+                  "superseded"
+                ]
+              }
+            },
+            "required": [
+              "status"
+            ]
+          }
+        ]
+      },
+      "then": {
+        "required": [
+          "basis"
+        ],
+        "properties": {
+          "basis": {
+            "contains": {
+              "$ref": "#/$defs/accountRefBasis"
+            },
+            "minContains": 1
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "creation_source": {
+            "properties": {
+              "type": {
+                "const": "paper_capture"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          }
+        },
+        "required": [
+          "creation_source"
+        ]
+      },
+      "then": {
+        "required": [
+          "basis"
+        ],
+        "properties": {
+          "basis": {
+            "contains": {
+              "$ref": "#/$defs/paperCaptureBasis"
+            },
+            "minContains": 1
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "participantRecordRef": {
+      "allOf": [
+        {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/local-record-ref.schema.json"
+        },
+        {
+          "properties": {
+            "record_kind": {
+              "const": "event_participant"
+            },
+            "record_id": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-event-participant-id.schema.json"
+            },
+            "contract_version": {
+              "enum": [
+                "1",
+                "2"
+              ]
+            }
+          },
+          "required": [
+            "record_kind",
+            "record_id",
+            "contract_version"
+          ]
+        }
+      ]
+    },
+    "singularParticipantTarget": {
+      "allOf": [
+        {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/targets/portia-target-ref.schema.json"
+        },
+        {
+          "properties": {
+            "kind": {
+              "const": "event_participant"
+            },
+            "record_ref": {
+              "$ref": "#/$defs/participantRecordRef"
+            }
+          },
+          "required": [
+            "kind",
+            "record_ref"
+          ]
+        }
+      ]
+    },
+    "accountRecordRef": {
+      "allOf": [
+        {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/local-record-ref.schema.json"
+        },
+        {
+          "properties": {
+            "record_kind": {
+              "const": "account"
+            },
+            "record_id": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+            }
+          },
+          "required": [
+            "record_kind",
+            "record_id",
+            "contract_version"
+          ]
+        }
+      ]
+    },
+    "observationRecordRef": {
+      "allOf": [
+        {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/local-record-ref.schema.json"
+        },
+        {
+          "properties": {
+            "record_kind": {
+              "const": "observation"
+            },
+            "record_id": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+            }
+          },
+          "required": [
+            "record_kind",
+            "record_id",
+            "contract_version"
+          ]
+        }
+      ]
+    },
+    "basisEntry": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/accountRefBasis"
+        },
+        {
+          "$ref": "#/$defs/observationRefBasis"
+        },
+        {
+          "$ref": "#/$defs/paperCaptureBasis"
+        },
+        {
+          "$ref": "#/$defs/importSourceBasis"
+        }
+      ]
+    },
+    "accountRefBasis": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "record_ref"
+      ],
+      "properties": {
+        "kind": {
+          "const": "account_ref"
+        },
+        "record_ref": {
+          "$ref": "#/$defs/accountRecordRef"
+        }
+      },
+      "description": "Same-Event reference to a canonical attributed Account. Until an Account contract is accepted, newly created references use explicit null contract_version."
+    },
+    "observationRefBasis": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "record_ref"
+      ],
+      "properties": {
+        "kind": {
+          "const": "observation_ref"
+        },
+        "record_ref": {
+          "$ref": "#/$defs/observationRecordRef"
+        }
+      },
+      "description": "Same-Event reference to a canonical Observation. Until an Observation contract is accepted, newly created references use explicit null contract_version."
+    },
+    "paperCaptureBasis": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "route_id",
+        "page_record_id"
+      ],
+      "properties": {
+        "kind": {
+          "const": "paper_capture"
+        },
+        "route_id": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+        },
+        "page_record_id": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+        }
+      },
+      "description": "Returned paper artifact supporting the Role assertion. Exact agreement with paper creation provenance is an application invariant."
+    },
+    "importSourceBasis": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "source_label"
+      ],
+      "properties": {
+        "kind": {
+          "const": "import_source"
+        },
+        "source_label": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+        },
+        "source_record_id": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+        }
+      }
+    },
+    "roleRecordRef": {
+      "allOf": [
+        {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/local-record-ref.schema.json"
+        },
+        {
+          "properties": {
+            "record_kind": {
+              "const": "event_participant_role"
+            },
+            "record_id": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-event-participant-role-id.schema.json"
+            },
+            "contract_version": {
+              "enum": [
+                "1",
+                "2"
+              ]
+            }
+          },
+          "required": [
+            "record_kind",
+            "record_id",
+            "contract_version"
+          ]
+        }
+      ]
+    },
+    "roleSupersessionRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "record_ref",
+        "reason"
+      ],
+      "properties": {
+        "record_ref": {
+          "$ref": "#/$defs/roleRecordRef"
+        },
+        "reason": {
+          "enum": [
+            "participant_corrected",
+            "role_type_corrected",
+            "basis_corrected",
+            "detail_corrected",
+            "duplicate_consolidated",
+            "role_relationship_corrected",
+            "other"
+          ]
+        },
+        "detail": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "reason": {
+                "const": "other"
+              }
+            },
+            "required": [
+              "reason"
+            ]
+          },
+          "then": {
+            "required": [
+              "detail"
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json",
+  "title": "Explicit-Offset Timestamp",
+  "description": "RFC 3339 date-time string with an explicit numeric UTC offset or uppercase Z. Chronology remains an application-validation concern.",
+  "type": "string",
+  "format": "date-time",
+  "pattern": "(?:Z|[+-][0-9]{2}:[0-9]{2})$"
+}

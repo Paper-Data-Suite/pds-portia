@@ -1,0 +1,14 @@
+{
+  "work_ref": {
+    "module_id": "portia",
+    "class_id": "eng10_p5_2026",
+    "work_id": "sup_example",
+    "work_kind": "support_process",
+    "contract_version": null
+  },
+  "record_ref": {
+    "record_kind": "support_process_participant",
+    "record_id": "spp_001",
+    "contract_version": null
+  }
+}

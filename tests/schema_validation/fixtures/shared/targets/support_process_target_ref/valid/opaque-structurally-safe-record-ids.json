@@ -1,0 +1,21 @@
+{
+  "kind": "support_process_participants",
+  "targets": [
+    {
+      "kind": "support_process_participant",
+      "record_ref": {
+        "record_kind": "support_process_participant",
+        "record_id": "legacy.001",
+        "contract_version": null
+      }
+    },
+    {
+      "kind": "support_process_participant",
+      "record_ref": {
+        "record_kind": "support_process_participant",
+        "record_id": "Legacy_002",
+        "contract_version": null
+      }
+    }
+  ]
+}

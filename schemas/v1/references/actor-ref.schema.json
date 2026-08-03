@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/actor-ref.schema.json",
+  "title": "Portia Actor Reference",
+  "description": "Identity-only reference to one Portia Actor Directory record. Display snapshots, work-specific roles, organization, title, and contact details are not part of the reference identity.",
+  "type": "object",
+  "required": [
+    "actor_id"
+  ],
+  "properties": {
+    "actor_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-actor-id.schema.json"
+    }
+  },
+  "additionalProperties": false
+}

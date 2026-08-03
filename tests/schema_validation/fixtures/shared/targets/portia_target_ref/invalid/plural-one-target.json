@@ -1,0 +1,13 @@
+{
+  "kind": "event_participants",
+  "targets": [
+    {
+      "kind": "event_participant",
+      "record_ref": {
+        "record_kind": "event_participant",
+        "record_id": "ep_001",
+        "contract_version": "2"
+      }
+    }
+  ]
+}

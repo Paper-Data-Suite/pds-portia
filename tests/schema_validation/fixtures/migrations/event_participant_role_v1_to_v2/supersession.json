@@ -1,0 +1,73 @@
+{
+  "source_v1": {
+    "schema_version": "1",
+    "record_type": "event_participant_role",
+    "module_id": "portia",
+    "class_id": "eng10_p2_2026",
+    "work_id": "evt_example",
+    "role_id": "epr_migrate_successor",
+    "participant_id": "ep_example",
+    "status": "active",
+    "role_type": "directly_involved",
+    "creation_source": {
+      "type": "digital_entry"
+    },
+    "created_at": "2026-08-02T19:00:00-04:00",
+    "created_by": {
+      "type": "local_operator",
+      "display_label": "S. Severino"
+    },
+    "updated_at": "2026-08-02T19:00:00-04:00",
+    "updated_by": {
+      "type": "local_operator",
+      "display_label": "S. Severino"
+    },
+    "supersedes": [
+      {
+        "role_id": "epr_prior_v1",
+        "reason": "basis_corrected"
+      }
+    ]
+  },
+  "target_v2": {
+    "schema_version": "2",
+    "record_type": "event_participant_role",
+    "module_id": "portia",
+    "class_id": "eng10_p2_2026",
+    "work_id": "evt_example",
+    "role_id": "epr_migrate_successor",
+    "status": "active",
+    "role_type": "directly_involved",
+    "creation_source": {
+      "type": "digital_entry"
+    },
+    "created_at": "2026-08-02T19:00:00-04:00",
+    "created_by": {
+      "type": "local_operator",
+      "display_label": "S. Severino"
+    },
+    "updated_at": "2026-08-02T19:00:00-04:00",
+    "updated_by": {
+      "type": "local_operator",
+      "display_label": "S. Severino"
+    },
+    "supersedes": [
+      {
+        "record_ref": {
+          "record_kind": "event_participant_role",
+          "record_id": "epr_prior_v1",
+          "contract_version": "1"
+        },
+        "reason": "basis_corrected"
+      }
+    ],
+    "target": {
+      "kind": "event_participant",
+      "record_ref": {
+        "record_kind": "event_participant",
+        "record_id": "ep_example",
+        "contract_version": "2"
+      }
+    }
+  }
+}

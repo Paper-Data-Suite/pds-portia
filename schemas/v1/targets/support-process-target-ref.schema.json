@@ -1,0 +1,85 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/targets/support-process-target-ref.schema.json",
+  "title": "Portia Support Process Target Reference",
+  "description": "Closed Support Process-local target family for a containing Support Process, one Support Process Participant, or a selected set of Support Process Participants. The target does not define participant roles such as recipient, provider, coordinator, or observer.",
+  "oneOf": [
+    {
+      "$ref": "#/$defs/supportProcessTarget"
+    },
+    {
+      "$ref": "#/$defs/supportProcessParticipantTarget"
+    },
+    {
+      "$ref": "#/$defs/supportProcessParticipantsTarget"
+    }
+  ],
+  "$defs": {
+    "supportProcessTarget": {
+      "type": "object",
+      "required": [
+        "kind"
+      ],
+      "properties": {
+        "kind": {
+          "const": "support_process"
+        }
+      },
+      "additionalProperties": false
+    },
+    "supportProcessParticipantRecordRef": {
+      "allOf": [
+        {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/local-record-ref.schema.json"
+        },
+        {
+          "properties": {
+            "record_kind": {
+              "const": "support_process_participant"
+            },
+            "record_id": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+            }
+          }
+        }
+      ]
+    },
+    "supportProcessParticipantTarget": {
+      "type": "object",
+      "required": [
+        "kind",
+        "record_ref"
+      ],
+      "properties": {
+        "kind": {
+          "const": "support_process_participant"
+        },
+        "record_ref": {
+          "$ref": "#/$defs/supportProcessParticipantRecordRef"
+        }
+      },
+      "additionalProperties": false
+    },
+    "supportProcessParticipantsTarget": {
+      "type": "object",
+      "required": [
+        "kind",
+        "targets"
+      ],
+      "properties": {
+        "kind": {
+          "const": "support_process_participants"
+        },
+        "targets": {
+          "type": "array",
+          "minItems": 2,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/supportProcessParticipantTarget"
+          }
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}
