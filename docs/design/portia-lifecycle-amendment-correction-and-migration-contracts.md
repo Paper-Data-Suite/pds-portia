@@ -1,6 +1,6 @@
 # Portia Lifecycle, Amendment, Correction, and Migration Contracts
 
-**Status:** Working design — approved through Decision 3  
+**Status:** Working design — approved through Decision 4  
 **Project:** Paper Data Suite  
 **Module:** `pds-portia`  
 **Issue:** `#12 — Define shared lifecycle, amendment, correction, and migration contracts`  
@@ -548,7 +548,290 @@ Application validation remains responsible for:
 
 ---
 
-# 7. Consequences
+
+# 7. Approved Decision 4: Lifecycle-Transition Reason Architecture
+
+## 7.1 Decision
+
+The required `reason` field is a closed object with:
+
+```text
+category
+code
+detail, optional
+```
+
+Example:
+
+```json
+{
+  "category": "correction",
+  "code": "identity_corrected"
+}
+```
+
+Example with neutral explanatory detail:
+
+```json
+{
+  "category": "dependency",
+  "code": "required_account_invalidated",
+  "detail": "The Account required for this reported-involvement Role was invalidated."
+}
+```
+
+Unknown properties are rejected.
+
+The shared lifecycle contract defines a small stable category vocabulary. Each target record family defines a closed application-level matrix of permitted reason codes for its own transitions.
+
+The generic lifecycle-transition schema does not contain one universal enum of every future Portia transition reason.
+
+## 7.2 Shared categories
+
+The initial shared categories are:
+
+```text
+workflow
+record_validity
+correction
+dependency
+consolidation
+migration
+other
+```
+
+### `workflow`
+
+An ordinary record-specific lifecycle progression, confirmation, completion, closure, reopening, reversal, or cancellation.
+
+Representative codes may include:
+
+```text
+review_confirmed
+work_completed
+teacher_cancelled
+reopened_for_review
+```
+
+### `record_validity`
+
+The target should no longer be treated as a valid current assertion, and replacement is not itself the primary reason.
+
+Representative codes may include:
+
+```text
+entered_in_error
+source_retracted
+insufficient_identity
+unsupported_assertion
+```
+
+This category does not assert blame, falsity, guilt, bad faith, or credibility.
+
+### `correction`
+
+The lifecycle change occurs because the target requires material correction or replacement.
+
+Representative codes may include:
+
+```text
+identity_corrected
+target_corrected
+role_type_corrected
+material_content_corrected
+owning_class_corrected
+```
+
+### `dependency`
+
+The target's lifecycle changes because another canonical record required for its current use changed lifecycle state or use eligibility.
+
+Representative codes may include:
+
+```text
+required_account_invalidated
+participant_superseded
+parent_work_invalidated
+```
+
+The reason object does not identify the dependency itself. Structured dependency identity belongs in the applicable domain record, successor relationship, or later dependency contract.
+
+### `consolidation`
+
+Several records are being resolved as duplicates through explicit consolidation.
+
+The initial shared code is:
+
+```text
+duplicate_consolidated
+```
+
+### `migration`
+
+The lifecycle change results from an explicit representation or contract migration that preserves intended identity and meaning.
+
+Representative codes may include:
+
+```text
+contract_version_migrated
+storage_envelope_migrated
+```
+
+This category must not be used when semantic correction is also required.
+
+### `other`
+
+No accepted category adequately describes the primary reason.
+
+When `category` is `other`:
+
+```text
+code = other
+detail is required
+```
+
+## 7.3 Reason-code structure
+
+`code` matches:
+
+```text
+^[a-z][a-z0-9_]*$
+```
+
+Reason codes:
+
+- are exact, case-sensitive semantic tokens;
+- are not silently normalized;
+- must describe why the transition occurred rather than merely repeat `to_status`;
+- must use neutral terminology;
+- and must not encode blame, guilt, credibility, diagnosis, punishment, or future risk.
+
+The generic lifecycle-transition schema validates lexical form.
+
+Each target record family must define a closed application-level matrix containing:
+
+```text
+from_status
+to_status
+reason.category
+reason.code
+```
+
+A structurally valid reason code may therefore be application-invalid for a particular target or transition.
+
+This allows later record families to add legitimate domain-specific reason codes without revising the shared lifecycle-transition schema.
+
+## 7.4 Detail rules
+
+`detail` composes the accepted `non_empty_text` contract.
+
+It is:
+
+- required when `category` is `other`;
+- required when `code` is `other`;
+- optional for recognized codes unless a record-specific policy requires it;
+- and prohibited from becoming the only canonical location of a material assertion, decision, dependency, or evidence reference.
+
+For all categories other than `other`, `code` must not equal `other`.
+
+A recognized category may use a recognized code with optional concise neutral clarification.
+
+`detail` must not replace:
+
+- an Account;
+- an Observation;
+- a Determination;
+- a successor record;
+- a supersession entry;
+- a structured dependency reference;
+- or another canonical domain record.
+
+## 7.5 Structural validation
+
+JSON Schema will validate:
+
+- the exact object shape;
+- the seven shared categories;
+- lowercase reason-code syntax;
+- optional nonempty detail;
+- required `code = other` and required `detail` when `category = other`;
+- required detail whenever `code = other`;
+- and prohibition of `code = other` for recognized non-`other` categories.
+
+The schema will not enumerate every permitted record-specific code.
+
+## 7.6 Application validation
+
+Application validation must confirm:
+
+- the code is permitted for the target record family;
+- the category and code are semantically compatible;
+- the reason is permitted for the exact `from_status` and `to_status`;
+- required record-specific detail is present;
+- the reason is consistent with any successor or supersession relationship;
+- the reason does not conceal a material correction as ordinary workflow;
+- migration reasons preserve intended meaning;
+- dependency reasons correspond to an actual affected dependency;
+- and neutral terminology is preserved.
+
+## 7.7 Relationship to specialized supersession reasons
+
+Existing Event-family and Work Relationship successor records retain their specialized forward supersession reasons.
+
+Those reasons remain canonical for the replacement relationship.
+
+The predecessor's lifecycle transition separately records why the predecessor moved to `superseded`.
+
+Where both records exist, application validation requires semantic consistency.
+
+Examples:
+
+```text
+Event Participant successor reason:
+identity_corrected
+
+Predecessor transition reason:
+category = correction
+code = identity_corrected
+```
+
+```text
+Work Relationship successor reason:
+duplicate_consolidated
+
+Predecessor transition reason:
+category = consolidation
+code = duplicate_consolidated
+```
+
+The two records preserve different facts:
+
+- the successor identifies why it replaces one or more predecessors;
+- the lifecycle transition records why the predecessor's status changed.
+
+Neither record replaces the other.
+
+## 7.8 Rejected alternatives
+
+### One universal reason enum
+
+Rejected because later Portia record families have materially different workflows and would continually expand or distort one shared enum.
+
+### Free-text reason
+
+Rejected because it weakens structural validation, deterministic comparison, migration, reporting, and dependency analysis.
+
+### Record-specific reason object schemas embedded in the shared transition
+
+Rejected because the shared lifecycle-transition contract would need revision whenever a later record family introduced a legitimate reason code.
+
+### Evidence and dependency references inside `reason`
+
+Rejected because `reason` should explain the transition's primary semantic cause, not become a universal container for supporting records or graph relationships.
+
+---
+
+# 8. Consequences
 
 ## Positive
 
@@ -597,34 +880,33 @@ Rejected because a transition is evidence of another record's state change, not 
 
 ---
 
-# 8. Unresolved Decisions
+# 9. Unresolved Decisions
 
 The following remain unresolved and must not be treated as accepted architecture:
 
-1. transition reason architecture;
-2. correction of an erroneous transition;
-3. amendment semantics and wire shape;
-4. nonmaterial-versus-material decision test;
-5. statement-of-disagreement semantics;
-6. invalidation and terminal-state rules;
-7. supersession reconciliation;
-8. dependency handling;
-9. duplicate consolidation;
-10. migration-record semantics;
-11. migration identity preservation;
-12. incorrect Event ownership or work-root correction;
-13. exceptional removal boundaries;
-14. integrity-finding vocabulary;
-15. final public schema organization.
+1. correction of an erroneous transition;
+2. amendment semantics and wire shape;
+3. nonmaterial-versus-material decision test;
+4. statement-of-disagreement semantics;
+5. invalidation and terminal-state rules;
+6. supersession reconciliation;
+7. dependency handling;
+8. duplicate consolidation;
+9. migration-record semantics;
+10. migration identity preservation;
+11. incorrect Event ownership or work-root correction;
+12. exceptional removal boundaries;
+13. integrity-finding vocabulary;
+14. final public schema organization.
 
 No schemas should be created for unresolved items until their architectural decisions are approved.
 
-## 9. Next Decision
+## 10. Next Decision
 
-The next decision should define the lifecycle-transition reason architecture, including:
+The next decision should define how Portia corrects an erroneous immutable lifecycle-transition record, including:
 
-- whether reasons use one shared vocabulary or shared categories plus record-specific values;
-- whether `reason` is a string or a closed object;
-- when explanatory detail is required or prohibited;
-- how `other` is represented;
-- and which reason semantics belong to the shared lifecycle contract rather than individual record families.
+- whether an accepted transition may ever be amended in place;
+- whether correction uses a separate history-correction record;
+- how the original transition remains visible but excluded from validated history;
+- how corrected predecessor chains are represented;
+- and how target status is repaired without silently rewriting historical evidence.
