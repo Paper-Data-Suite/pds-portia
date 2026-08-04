@@ -1,6 +1,6 @@
 # Portia Lifecycle, Amendment, Correction, and Migration Contracts
 
-**Status:** Working design — approved through Decision 12  
+**Status:** Working design — approved through Decision 13  
 **Project:** Paper Data Suite  
 **Module:** `pds-portia`  
 **Issue:** `#12 — Define shared lifecycle, amendment, correction, and migration contracts`  
@@ -4836,7 +4836,697 @@ Rejected because each material operation requires explicit semantics and lineage
 
 ---
 
-# 16. Consequences
+
+# 16. Approved Decision 13: Migration-Record Semantics
+
+## 16.1 Decision
+
+Portia represents a completed representation-only migration through a dedicated immutable canonical record:
+
+```text
+record_migration
+```
+
+A migration record certifies that one exact canonical Portia representation was transformed into one exact destination representation through one identified migration procedure while preserving canonical meaning.
+
+Migration-attempt progress, failure, retry, rollback, and recovery are not lifecycle states on this record. They belong to the Issue #13 operation-journal and recovery architecture.
+
+## 16.2 Identity and storage
+
+Migration identifiers use:
+
+```text
+mig_<opaque-id>
+```
+
+Canonical storage is:
+
+```text
+classes/<class_id>/modules/portia/work/<work_id>/
+  records/
+    record_migration/
+      <migration_id>.json
+```
+
+The migration record is stored beneath the destination's work root.
+
+Ordinary migration cannot change Event ownership or work-root placement.
+
+Source and destination therefore belong to the same Portia work root.
+
+Moving a record to another root uses the later ownership-correction contract.
+
+## 16.3 Semantic unit
+
+One migration record means:
+
+> One exact canonical Portia representation was transformed into one exact destination representation through one identified migration procedure, with canonical meaning preserved.
+
+One migration record contains exactly:
+
+- one source;
+- one destination;
+- one migration reason;
+- one transformation procedure;
+- and one effective time.
+
+A migration record never represents several sources or several destinations.
+
+## 16.4 Required envelope
+
+A record-migration version-1 record contains:
+
+```text
+schema_version
+record_type
+module_id
+class_id
+work_id
+migration_id
+source
+destination
+reason
+transformation
+effective_at
+creation_source
+created_at
+created_by
+```
+
+Constants are:
+
+```text
+schema_version = "1"
+record_type = "record_migration"
+module_id = "portia"
+```
+
+The record does not contain:
+
+```text
+status
+updated_at
+updated_by
+previous_migration
+operation_id
+authorized_by
+reviewed_by
+```
+
+## 16.5 No lifecycle status
+
+A canonical migration record represents only a migration accepted as complete.
+
+The following are operational conditions, not migration-record statuses:
+
+```text
+planned
+queued
+running
+failed
+retrying
+rolled_back
+abandoned
+```
+
+Those conditions belong to the Issue #13 operation journal and recovery model.
+
+Operational progress is not represented through mutable lifecycle state on the immutable migration certificate.
+
+## 16.6 Migration endpoint union
+
+`source` and `destination` use the same closed endpoint union.
+
+### Work endpoint
+
+```json
+{
+  "kind": "work",
+  "work_ref": {
+    "module_id": "portia",
+    "class_id": "eng10_p2_2026",
+    "work_id": "evt_example",
+    "work_kind": "event",
+    "contract_version": "1"
+  },
+  "observed_updated_at": "2026-08-03T20:10:00-04:00"
+}
+```
+
+### Work-record endpoint
+
+```json
+{
+  "kind": "work_record",
+  "work_record_ref": {
+    "work_ref": {
+      "module_id": "portia",
+      "class_id": "eng10_p2_2026",
+      "work_id": "evt_example",
+      "work_kind": "event",
+      "contract_version": "2"
+    },
+    "record_ref": {
+      "record_kind": "event_participant",
+      "record_id": "ept_example",
+      "contract_version": "1"
+    }
+  },
+  "observed_updated_at": "2026-08-03T20:10:00-04:00"
+}
+```
+
+Requirements are:
+
+- source and destination use the same endpoint kind;
+- both contract versions are non-null;
+- both references resolve exactly;
+- both belong to the same semantic record family;
+- both belong to the same owning work root;
+- source and destination references are not identical;
+- and each `observed_updated_at` identifies the exact domain-record revision evaluated during migration.
+
+The observed revision timestamp binds the certificate to the precise source and destination states that were compared.
+
+The next decision defines whether record identifiers and other identity-bearing values must remain the same across endpoints.
+
+## 16.7 Reason structure
+
+`reason` is a closed object containing:
+
+```text
+category
+code
+detail, optional
+```
+
+Permitted categories are:
+
+```text
+contract_upgrade
+contract_normalization
+canonical_representation_change
+other
+```
+
+### `contract_upgrade`
+
+The destination uses a newer supported contract version.
+
+### `contract_normalization`
+
+The source uses a supported but nonpreferred representation and is transformed to the preferred representation without semantic change.
+
+### `canonical_representation_change`
+
+Canonical serialization changes while the domain assertion remains equivalent.
+
+This category does not authorize movement to another ownership root.
+
+### `other`
+
+Reserved for a representation-only migration not covered by a recognized category.
+
+`detail` is required for `other`.
+
+`code` follows:
+
+```text
+^[a-z][a-z0-9_]*$
+```
+
+Representative codes include:
+
+```text
+event_v1_to_v2
+event_participant_v1_to_v2
+event_participant_role_v1_to_v2
+```
+
+A recognized migration code identifies a registered:
+
+- source semantic family;
+- source contract version;
+- destination contract version;
+- and transformation policy.
+
+## 16.8 Transformation procedure
+
+`transformation` is a closed object containing:
+
+```text
+transformer_id
+transformer_version
+```
+
+Example:
+
+```json
+{
+  "transformer_id": "event_v1_to_v2",
+  "transformer_version": "1"
+}
+```
+
+`transformer_id` follows:
+
+```text
+^[a-z][a-z0-9_]*$
+```
+
+`transformer_version` is a required nonempty version identifier.
+
+The procedure may be:
+
+- fully automated;
+- deterministic but human-triggered;
+- or manually applied through a registered migration procedure.
+
+A manual migration still uses a stable procedure identifier, such as:
+
+```text
+manual_event_v1_to_v2
+```
+
+The procedure identifier does not prove semantic validity.
+
+Application validation independently verifies the result.
+
+## 16.9 Creation provenance and attribution
+
+A migration record's `creation_source` is always:
+
+```json
+{
+  "type": "digital_entry"
+}
+```
+
+Paper capture cannot create a migration record.
+
+An external legacy record entering Portia for the first time is an import, not a migration, because no canonical Portia source representation exists.
+
+`created_by` composes `attribution_agent` and may identify:
+
+- a local operator;
+- or a deterministic system process.
+
+`created_by` means the agent that canonically persisted the completed migration certificate.
+
+It does not establish:
+
+- authorization;
+- institutional approval;
+- employment status;
+- legal authorship;
+- or decision authority.
+
+Version 1 does not add `authorized_by` or `reviewed_by`.
+
+Application policy may require human review before acceptance, but the shared migration envelope does not invent an authority claim.
+
+## 16.10 Representation-only boundary
+
+Migration preserves the same canonical assertion for every legitimate downstream use.
+
+It must not change:
+
+- semantic record family;
+- owning class;
+- owning work root;
+- subject identity;
+- target identity;
+- source identity;
+- represented occurrence;
+- relationship direction or type;
+- evidentiary meaning;
+- authority or disclosure meaning;
+- lifecycle meaning;
+- dependency meaning;
+- substantive proposition;
+- or historical attribution.
+
+Permitted differences are limited to those required by the destination contract or canonical representation.
+
+Examples include:
+
+- renamed schema properties with equivalent meaning;
+- replacement of an obsolete reference shape with an accepted shared reference;
+- normalized structural wrappers;
+- explicit representation of formerly implicit nullability;
+- or the same value expressed under a newer schema vocabulary.
+
+A migration must not introduce a factual proposition that cannot be derived from the source representation.
+
+## 16.11 No guessing
+
+When the destination requires information the source does not establish, migration is blocked unless the destination contract provides an honest semantically equivalent absence representation, such as:
+
+```text
+unknown
+not_reported
+withheld
+legacy_import
+```
+
+A migration process cannot guess a value merely to satisfy destination schema requirements.
+
+## 16.12 No repair during migration
+
+When migration reveals that the source is substantively wrong, the transformation must not silently correct it.
+
+The operator uses the applicable explicit process:
+
+- amendment;
+- material successor correction;
+- invalidation;
+- duplicate consolidation;
+- Event split;
+- dependency correction;
+- or ownership correction.
+
+Migration cannot be combined with those semantic changes in one operation.
+
+## 16.13 Relationship to correction and import
+
+| Operation | Meaning changes? | New representation? |
+|---|---:|---:|
+| Amendment | No | No contract migration |
+| Material correction | Yes | Usually new successor |
+| Duplicate consolidation | Unified assertion | New successor |
+| Migration | No | Yes |
+| Ownership correction | Ownership or root changes | Yes |
+| Import | Creates first Portia representation | Yes |
+
+The operator-selected reason does not establish semantic equivalence.
+
+Application validation compares the complete source and destination states.
+
+When semantic equivalence cannot be established, the operation is not a migration.
+
+## 16.14 Relationship to supersession
+
+A migration record does not by itself:
+
+- activate the destination;
+- change source status;
+- create a replacement edge;
+- or make the destination current.
+
+When migration creates a separate replacement representation, it also reconciles through the accepted supersession architecture:
+
+1. the destination identifies the source through the record-family `supersedes` mechanism;
+2. the source receives a lifecycle transition to `superseded`;
+3. the transition uses:
+
+```text
+reason.category = migration
+```
+
+4. the transition code matches the migration record's reason code;
+5. the migration record identifies the same source and destination;
+6. all effective times agree.
+
+For record families with specialized successor-edge reasons, the common initial migration reason is:
+
+```text
+contract_migrated
+```
+
+That reason must be added explicitly to migration-capable record-family contracts.
+
+Migration must not be hidden under `other` when a recognized migration reason exists.
+
+The migration certificate, successor edge, and predecessor transition form a three-part reconciliation.
+
+When any part is absent or contradictory after the destination becomes replacement-eligible, migration is broken and lifecycle-dependent operations are blocked pending recovery.
+
+The next identity-preservation decision determines whether every migration uses a distinct replacement identity or some contract versions may share a stable logical identity.
+
+## 16.15 Timing rules
+
+`effective_at` means:
+
+> The time at which the destination representation became the accepted current representation for the migration operation.
+
+Application validation requires:
+
+- source and destination existed no later than `effective_at`;
+- both observed revisions existed no later than `effective_at`;
+- `effective_at <= created_at`;
+- no future-effective migration;
+- destination was structurally and application-valid by `effective_at`;
+- source and destination semantic equivalence was established before effectiveness;
+- and any source supersession transition uses the same `effective_at`.
+
+The migration record may be persisted after the effective operation, but Issue #13 must make the coordinated sequence atomic or recoverable.
+
+Filesystem timestamps are not migration authority.
+
+## 16.16 One certificate per migrated record
+
+One migration record contains one source and one destination.
+
+A work migration involving:
+
+- one Event;
+- three Participants;
+- five Roles;
+- and two Work Relationships
+
+creates eleven migration records.
+
+Issue #13 may group those records through one coordinated operation-journal entry.
+
+Individual migration records remain independently:
+
+- resolvable;
+- validatable;
+- recoverable;
+- and attributable.
+
+This avoids a batch certificate whose partial success is ambiguous.
+
+## 16.17 Parent and child ordering
+
+A work-root migration may require an ordered operation:
+
+1. prepare the destination root;
+2. migrate required child records;
+3. validate the destination graph;
+4. make the destination representation replacement-eligible;
+5. reconcile source retirement;
+6. accept all migration certificates.
+
+The exact persistence sequence belongs to Issue #13.
+
+No child migration succeeds semantically merely because the parent root migrated.
+
+## 16.18 Eligible records
+
+Initial migration eligibility includes lifecycle-bearing Portia domain records and work roots.
+
+Examples include:
+
+- Event;
+- Event Participant;
+- Event Participant Role;
+- Work Relationship;
+- Statement of Disagreement;
+- Dependency;
+- and later substantive Portia record families.
+
+Version 1 does not migrate immutable audit records such as:
+
+- lifecycle transitions;
+- lifecycle-history corrections;
+- amendments;
+- record-migration records;
+- or Issue #13 operation journals.
+
+Those records remain valid under their historical contract versions.
+
+A newer immutable-audit schema applies prospectively instead of rewriting accepted historical audit records.
+
+## 16.19 Source lifecycle restrictions
+
+A migration source must not already be `superseded`.
+
+An already superseded representation remains available under its historical contract.
+
+A later migration applies to the current replacement-frontier record.
+
+Migration may operate on other replacement-eligible terminal states while preserving their semantics, including:
+
+- `cancelled`;
+- `withdrawn`;
+- or `invalidated`.
+
+For example, an invalidated v1 record may migrate to an invalidated v2 representation without becoming active.
+
+Migration cannot revive a terminal assertion.
+
+## 16.20 Destination lifecycle preservation
+
+A representation-only destination preserves the source's semantic lifecycle state at the moment migration becomes effective.
+
+Representative mappings are:
+
+```text
+active v1 -> active v2
+closed v1 -> closed v2
+withdrawn v1 -> withdrawn v2
+invalidated v1 -> invalidated v2
+```
+
+The source transitions to `superseded` only because the destination representation replaces it.
+
+Migration does not perform:
+
+```text
+invalidated -> active
+withdrawn -> active
+cancelled -> active
+```
+
+Such lifecycle changes require separate semantic operations.
+
+Record identifiers, original creation provenance, and lifecycle-history continuity are governed by the next identity-preservation decision.
+
+## 16.21 Failed and interrupted migrations
+
+A canonical migration record is not written merely because a migration attempt starts.
+
+Interrupted operations may leave:
+
+- destination preparation files;
+- pending successor declarations;
+- operation-journal entries;
+- temporary staging content;
+- or incomplete lifecycle updates.
+
+Issue #13 determines whether those artifacts are:
+
+- resumed;
+- rolled back;
+- quarantined;
+- or completed.
+
+A destination cannot be treated as the accepted current representation unless migration reconciliation is complete.
+
+Portia never chooses between source and destination based on:
+
+- file modification time;
+- highest schema version;
+- newest creation timestamp;
+- or mere destination existence.
+
+## 16.22 Erroneous migration records
+
+A canonically accepted migration record is immutable.
+
+It is not amended, invalidated, or deleted.
+
+When a migration record was accepted in error:
+
+- the failure is surfaced as an integrity problem;
+- erroneous successor or lifecycle effects are repaired explicitly;
+- a corrected migration certificate may be created only for a valid source-and-destination transformation;
+- and Issue #13 recovery records preserve what occurred.
+
+The migration graph does not silently ignore an accepted certificate.
+
+The later integrity-finding vocabulary defines its diagnostic classification.
+
+## 16.23 Derived migration views
+
+Applications may derive rebuildable views such as:
+
+```text
+source_representation -> migration_records
+destination_representation -> originating_migration
+record_family -> migration_history
+unsupported_contracts -> migration_candidates
+broken_migration_reconciliations
+```
+
+These views are not canonical authority.
+
+They are reproduced from:
+
+- exact source and destination records;
+- migration certificates;
+- lifecycle histories;
+- successor edges;
+- and accepted operation state.
+
+## 16.24 Structural validation
+
+JSON Schema will validate:
+
+- the exact envelope;
+- constants;
+- `mig_` identifier syntax;
+- closed source and destination endpoint forms;
+- non-null contract versions;
+- observed revision timestamps;
+- reason structure;
+- transformation structure;
+- digital-only creation provenance;
+- effective and creation timestamps;
+- and attribution.
+
+JSON Schema cannot establish semantic equivalence or coordinated effectiveness.
+
+## 16.25 Application validation
+
+Application validation must confirm:
+
+- canonical storage-path agreement with the destination work root;
+- exact source and destination resolution;
+- same endpoint kind;
+- same semantic family;
+- same owning work root;
+- source and destination are not identical references;
+- observed revision agreement;
+- registered migration reason and transformation compatibility;
+- representation-only semantic equivalence;
+- absence of guessed or repaired facts;
+- source lifecycle eligibility;
+- destination lifecycle preservation;
+- no migration of immutable audit records;
+- no ownership or work-root change;
+- no batch migration hidden inside one record;
+- successor and lifecycle reconciliation where required;
+- matching effective times;
+- no migration cycles;
+- and atomic or recoverable persistence.
+
+## 16.26 Rejected alternatives
+
+### Supersession-only migration
+
+Rejected because successor and lifecycle records do not identify the exact transformation procedure or certify semantic equivalence.
+
+### Migration metadata embedded in destination records
+
+Rejected because migration concerns two representations rather than the destination's substantive assertion.
+
+### Lifecycle-bearing migration jobs
+
+Rejected because attempt progress belongs to operation and recovery mechanics.
+
+### Batch migration certificates
+
+Rejected because each migrated record must remain independently resolvable, validatable, and recoverable.
+
+### Migration of immutable audit history
+
+Rejected because accepted audit records remain valid under their historical contract versions.
+
+---
+
+# 17. Consequences
 
 ## Positive
 
@@ -4885,25 +5575,24 @@ Rejected because a transition is evidence of another record's state change, not 
 
 ---
 
-# 17. Unresolved Decisions
+# 18. Unresolved Decisions
 
 The following remain unresolved and must not be treated as accepted architecture:
 
-1. migration-record semantics;
-2. migration identity preservation;
-3. incorrect Event ownership or work-root correction;
-4. exceptional removal boundaries;
-5. integrity-finding vocabulary;
-6. final public schema organization.
+1. migration identity preservation;
+2. incorrect Event ownership or work-root correction;
+3. exceptional removal boundaries;
+4. integrity-finding vocabulary;
+5. final public schema organization.
 
 No schemas should be created for unresolved items until their architectural decisions are approved.
 
-## 18. Next Decision
+## 19. Next Decision
 
-The next decision should define migration-record semantics, including:
+The next decision should define migration identity preservation, including:
 
-- whether migration is represented through a dedicated canonical record;
-- what source and destination identities a migration records;
-- how representation-only migration differs from semantic correction and supersession;
-- whether one migration may cover several records;
-- and how migration status, attribution, validation, and recovery are represented.
+- whether source and destination retain or change canonical record identifiers;
+- how original creation provenance and attribution are preserved;
+- whether lifecycle history continues across representation versions or remains attached to each exact representation;
+- how references resolve across migrated identities;
+- and which identity-bearing fields must remain invariant for migration to remain representation-only.
