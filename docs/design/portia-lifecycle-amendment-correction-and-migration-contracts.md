@@ -1,6 +1,6 @@
 # Portia Lifecycle, Amendment, Correction, and Migration Contracts
 
-**Status:** Working design — approved through Decision 14  
+**Status:** Working design — approved through Decision 15  
 **Project:** Paper Data Suite  
 **Module:** `pds-portia`  
 **Issue:** `#12 — Define shared lifecycle, amendment, correction, and migration contracts`  
@@ -6266,7 +6266,761 @@ Rejected because it would silently cross historical representation boundaries.
 
 ---
 
-# 18. Consequences
+
+# 18. Approved Decision 15: Incorrect Event Ownership and Work-Root Correction
+
+## 18.1 Decision
+
+Portia corrects incorrect Event ownership or child work-root placement through:
+
+1. a new destination record under the correct ownership scope;
+2. explicit cross-root successor lineage;
+3. a source lifecycle transition to `superseded`;
+4. and an immutable ownership-correction certificate.
+
+Portia does not:
+
+- mutate source ownership fields in place;
+- physically move or rename the source work directory;
+- preserve source identifiers under a different ownership scope;
+- rewrite incoming references;
+- or automatically copy the complete source graph.
+
+Each source record remains exactly resolvable under the scope where it was originally persisted.
+
+## 18.2 Canonical ownership-correction record
+
+The canonical record type is:
+
+```text
+ownership_correction
+```
+
+Identifiers use:
+
+```text
+owc_<opaque-id>
+```
+
+Canonical storage is:
+
+```text
+classes/<destination_class_id>/modules/portia/
+  work/<destination_work_id>/
+    records/
+      ownership_correction/
+        <correction_id>.json
+```
+
+The certificate is destination-owned because it documents how the destination representation originated.
+
+## 18.3 Semantic unit
+
+One ownership-correction record means:
+
+> One exact Portia work or child record was recreated under its correct ownership scope and replaced one exact incorrectly owned predecessor.
+
+One certificate contains:
+
+- one source;
+- one destination;
+- one correction kind;
+- one reason;
+- and one effective time.
+
+It does not cover several child records.
+
+A complete Event-root correction therefore creates:
+
+- one Event-level certificate;
+- one certificate for each relocated child record;
+- and one coordinated Issue #13 operation encompassing the complete graph.
+
+## 18.4 Required envelope
+
+An ownership-correction version-1 record contains:
+
+```text
+schema_version
+record_type
+module_id
+class_id
+work_id
+correction_id
+correction_kind
+source
+destination
+parent_correction, optional
+reason
+effective_at
+creation_source
+created_at
+created_by
+```
+
+Constants are:
+
+```text
+schema_version = "1"
+record_type = "ownership_correction"
+module_id = "portia"
+```
+
+The record does not contain:
+
+```text
+status
+updated_at
+updated_by
+operation_id
+authorized_by
+```
+
+The certificate is immutable and represents only an accepted correction.
+
+Attempt progress, partial persistence, rollback, and recovery belong to Issue #13.
+
+## 18.5 Correction kinds
+
+`correction_kind` is:
+
+```text
+event_class_ownership
+child_work_root
+```
+
+### `event_class_ownership`
+
+The Event was created beneath the wrong Core class.
+
+The destination is a new Event under the correct class and a new Portia work root.
+
+### `child_work_root`
+
+A child record was created beneath the wrong Event work root.
+
+The destination is a new record of the same semantic family beneath the correct Event root.
+
+This may occur:
+
+- as part of an Event class-ownership correction;
+- or independently when only one child record was misfiled.
+
+## 18.6 Source and destination endpoint union
+
+`source` and `destination` use the same closed endpoint union.
+
+### Event-work endpoint
+
+```json
+{
+  "kind": "event_work",
+  "work_ref": {
+    "module_id": "portia",
+    "class_id": "eng10_p2_2026",
+    "work_id": "evt_wrong",
+    "work_kind": "event",
+    "contract_version": "2"
+  },
+  "observed_updated_at": "2026-08-04T07:30:00-04:00"
+}
+```
+
+### Child-record endpoint
+
+```json
+{
+  "kind": "work_record",
+  "work_record_ref": {
+    "work_ref": {
+      "module_id": "portia",
+      "class_id": "eng10_p2_2026",
+      "work_id": "evt_wrong",
+      "work_kind": "event",
+      "contract_version": "2"
+    },
+    "record_ref": {
+      "record_kind": "event_participant",
+      "record_id": "ept_wrong",
+      "contract_version": "2"
+    }
+  },
+  "observed_updated_at": "2026-08-04T07:30:00-04:00"
+}
+```
+
+Requirements are:
+
+- source and destination use the same endpoint kind;
+- both resolve exactly;
+- both belong to the same semantic record family;
+- their ownership scopes differ;
+- source and destination exact identities differ;
+- and each observed timestamp binds the certificate to the exact revision reviewed.
+
+## 18.7 New canonical identifiers
+
+Ownership correction changes logical ownership identity.
+
+The destination therefore receives new identifiers.
+
+### Event correction
+
+A corrected Event receives:
+
+```text
+new class_id
+new work_id
+```
+
+It does not reuse the source `work_id` under the destination class.
+
+Example:
+
+```text
+class_A / evt_old
+    ->
+class_B / evt_new
+```
+
+### Child correction
+
+A relocated child receives:
+
+```text
+destination work_id
+new record_id
+```
+
+Example:
+
+```text
+class_A / evt_old / ept_old
+    ->
+class_B / evt_new / ept_new
+```
+
+Fresh identifiers preserve the distinction:
+
+```text
+same logical ID across versions = migration
+new logical ID = ownership or semantic replacement
+```
+
+Contract versions may remain the same or change independently.
+
+A version change is not what makes the operation an ownership correction.
+
+## 18.8 Parent correction
+
+A child certificate created as part of an Event-root correction contains:
+
+```text
+parent_correction
+```
+
+This is a same-destination-work `local_record_ref` to the Event-level ownership-correction certificate.
+
+Application validation requires:
+
+- the child source belongs to the parent certificate's source Event;
+- the child destination belongs to the parent certificate's destination Event;
+- and the parent correction became effective in the same coordinated operation.
+
+A standalone child correction omits `parent_correction`.
+
+## 18.9 Reason vocabulary
+
+`reason` is a closed object containing:
+
+```text
+code
+detail, optional
+```
+
+Initial codes are:
+
+```text
+wrong_class
+wrong_event_root
+incorrect_initial_routing
+other
+```
+
+Meanings are:
+
+- `wrong_class`: the Event was owned by the wrong Core class;
+- `wrong_event_root`: the child record belonged to another Event;
+- `incorrect_initial_routing`: ingestion or entry selected the wrong canonical root;
+- `other`: another ownership-only correction.
+
+`detail` is required for `other`.
+
+Reason language must remain neutral.
+
+It must not imply blame, fault, misconduct, or credibility.
+
+## 18.10 Event-root replacement reconciliation
+
+A corrected Event uses three canonical components:
+
+1. the destination Event's `supersedes` reference to the exact source Event;
+2. the source Event's lifecycle transition to `superseded`;
+3. the immutable ownership-correction certificate.
+
+The source transition uses:
+
+```text
+reason.category = correction
+reason.code = ownership_corrected
+```
+
+All three components agree on:
+
+- source Event;
+- destination Event;
+- reason;
+- effective time;
+- and correction kind.
+
+## 18.11 Child-record replacement reconciliation
+
+Each relocated child uses the analogous three components:
+
+1. destination child successor reference to the exact source child;
+2. source child lifecycle transition to `superseded`;
+3. child ownership-correction certificate.
+
+The source transition uses:
+
+```text
+reason.category = correction
+reason.code = work_root_corrected
+```
+
+## 18.12 Cross-work successor requirement
+
+A child contract participating in ownership correction must identify its predecessor through a complete:
+
+```text
+portia_work_record_ref
+```
+
+A same-work `local_record_ref` is insufficient because it cannot identify a predecessor under another Event root.
+
+Event Participant v2 currently restricts predecessor links to the same Event work scope.
+
+Cross-root correction of a Participant therefore requires a later Participant contract version whose successor entries support complete cross-work predecessor references.
+
+The same rule applies to every family whose current successor contract is same-work only.
+
+Portia does not introduce a second competing replacement authority merely to avoid versioning an affected domain contract.
+
+## 18.13 No physical move
+
+Ownership correction creates new destination records.
+
+It does not:
+
+- rename the source directory;
+- move source files;
+- edit source ownership fields;
+- or rewrite source paths.
+
+The complete source graph remains available under its original class and work root.
+
+That graph records what Portia actually persisted before correction.
+
+## 18.14 Destination provenance
+
+Destination records use representation-local provenance:
+
+```text
+creation_source = digital_entry
+created_at = correction effective_at
+created_by = correction created_by
+updated_at = created_at
+updated_by = created_by
+```
+
+They do not inherit or backdate source creation provenance.
+
+For example, a paper-captured source remains paper-captured, while its digitally recreated destination uses `digital_entry`.
+
+A derived ownership-lineage view may expose the original provenance chain.
+
+## 18.15 Destination lifecycle baseline
+
+The destination begins in the lifecycle state justified by current review.
+
+It does not automatically inherit source status.
+
+Representative outcomes include:
+
+- an active incorrectly owned Event producing an active destination;
+- a closed Event producing a closed destination;
+- an invalidated historical Event producing an invalidated destination;
+- a proposed child producing a proposed destination while correction remains preparatory.
+
+A destination does not become active or closed merely because the source had that status.
+
+It must independently satisfy:
+
+- schema validity;
+- record-family application rules;
+- dependency gates;
+- authorization;
+- and destination-scope identity validation.
+
+The source transitions to `superseded` only when the destination becomes replacement-eligible and the complete correction reconciles.
+
+## 18.16 Pre-acceptance routing mistakes
+
+When a routing mistake is discovered before the source became meaningfully accepted, referenced, or populated, the preferred workflow is:
+
+1. cancel or invalidate the mistaken draft or proposal;
+2. create the correct destination normally.
+
+An ownership-correction certificate is required when explicit replacement lineage matters, including when the source:
+
+- was active or closed;
+- has child records;
+- has incoming references;
+- has amendments or lifecycle history;
+- or was exposed to a user or downstream consumer.
+
+## 18.17 Complete Event-graph review
+
+Correcting the Event root does not automatically copy every source child.
+
+Every source child receives a record-family-specific disposition.
+
+### Relocated successor
+
+The child remains substantively applicable to the corrected Event.
+
+Portia creates:
+
+- a destination successor;
+- a child ownership-correction certificate;
+- and a source transition to `superseded`.
+
+### Explicit invalidation
+
+The child does not remain valid under the corrected Event and has no replacement.
+
+The source child transitions to `invalidated` using an appropriate record-validity or dependency reason.
+
+### Historical attachment retained at source
+
+Some records describe or audit the exact source representation and remain at the source.
+
+Examples include:
+
+- lifecycle transitions;
+- lifecycle-history corrections;
+- amendments;
+- migration certificates;
+- ownership-correction certificates;
+- Issue #13 operation records;
+- and Statements of Disagreement targeting the exact source record.
+
+These records are not copied merely because the Event was corrected.
+
+### Review required
+
+A current-use child cannot yet be safely relocated or invalidated.
+
+The root correction is not fully reconciled while an unresolved active child remains dependent on the incorrectly owned Event.
+
+## 18.18 No automatic cascade
+
+Superseding the Event does not itself rewrite child statuses.
+
+Instead, the coordinated correction explicitly resolves every lifecycle-bearing Event-owned child requiring current-use treatment.
+
+This preserves the accepted rule against automatic dependency cascades.
+
+A root correction is incomplete when active Event-owned children remain without an accepted disposition.
+
+## 18.19 Roster-scoped Participant identity
+
+A roster-student reference is authoritative only within its roster scope.
+
+Moving an Event to another class may therefore require a different destination `roster_student_ref`.
+
+Portia treats this as ownership-scope adaptation only when authorized review establishes that both roster references identify the same human.
+
+It does not infer identity from:
+
+- matching display names;
+- matching initials;
+- matching local student IDs;
+- or similar snapshots.
+
+The destination Participant uses:
+
+- the verified destination roster reference;
+- a display snapshot appropriate to destination creation;
+- and a fresh Participant identifier.
+
+When identity equivalence cannot be established, the Participant cannot be automatically relocated.
+
+Changing to an Actor, descriptive person, or another subject branch is a separate identity correction unless record-family policy explicitly establishes semantic equivalence.
+
+## 18.20 Child-reference rewriting
+
+Internal references among relocated child records identify destination counterparts explicitly.
+
+For example:
+
+- destination Roles target destination Participants;
+- destination Dependencies identify destination dependents and targets where reviewed;
+- destination Relationships identify destination endpoints.
+
+Portia does not preserve a source local reference and reinterpret it under the destination root.
+
+The complete destination graph must validate before effectiveness.
+
+## 18.21 Statements of Disagreement
+
+A Statement of Disagreement remains attached to its exact original target.
+
+It does not automatically transfer to:
+
+- the corrected Event;
+- a relocated Participant;
+- a relocated Role;
+- or another destination record.
+
+The represented source may also disagree with the destination, but that requires a separate Statement of Disagreement targeting the destination.
+
+Portia does not attribute a broader disagreement than the person expressed.
+
+## 18.22 Dependencies
+
+Dependencies remain exact.
+
+A Dependency targeting or owned by a source record does not silently retarget to the destination.
+
+Review may conclude that:
+
+- the source dependency remains historically sufficient;
+- a successor Dependency should identify the destination;
+- the dependent itself requires replacement;
+- or the Dependency should be invalidated.
+
+The accepted dependency rules continue to apply.
+
+## 18.23 Work Relationships
+
+A Work Relationship is source-owned.
+
+When its source Event is corrected to another root:
+
+- the old Relationship remains under the old source root;
+- a continuing Relationship requires a new successor under the destination root;
+- and the old Relationship transitions to `superseded`.
+
+A Relationship from another work targeting the old Event remains an exact reference.
+
+It is not rewritten automatically.
+
+Review may create a successor Relationship targeting the corrected Event when semantically appropriate.
+
+## 18.24 Incoming cross-work references
+
+References from outside the source root continue to identify the exact source record.
+
+They never silently return the destination.
+
+Applications may derive authorized navigation information such as:
+
+```text
+ownership_correction_available
+corrected_destination
+review_required
+```
+
+Changing an incoming current-use reference requires an explicit correction or successor in the referring record's own scope.
+
+## 18.25 Cross-class authorization boundary
+
+An Event class-ownership correction requires authority to:
+
+- read the complete source graph;
+- create and validate the destination graph;
+- transition source records;
+- and inspect affected incoming references.
+
+The initial teacher-local model supports correction only when both classes belong to the same teacher workspace.
+
+Cross-teacher relocation is unsupported in version 1.
+
+Portia does not copy records into another teacher's ownership scope through this contract.
+
+Insufficient visibility produces `review_required` or blocks correction.
+
+It is not interpreted as proof that no affected records exist.
+
+## 18.26 Timing
+
+`effective_at` means:
+
+> The time at which the destination became the accepted corrected owner or work-root representation.
+
+Requirements are:
+
+- source and destination existed by `effective_at`;
+- destination was independently valid by `effective_at`;
+- source observed revision still matched;
+- destination observed revision still matched;
+- successor edges and source transitions use the same effective time;
+- every certificate in one Event-root operation uses one consistent effective time;
+- and no certificate is future-effective.
+
+Issue #13 defines atomicity and recovery.
+
+## 18.27 One-to-one topology
+
+Each ownership-correction certificate maps:
+
+```text
+one source -> one destination
+```
+
+The contract does not perform:
+
+- consolidation;
+- Event split;
+- many-to-many movement;
+- or simultaneous semantic correction.
+
+When source records contain duplicates or conflated occurrences, those conditions use their existing explicit operations.
+
+Ownership correction must not conceal them.
+
+## 18.28 Immutability
+
+An accepted ownership-correction certificate is immutable.
+
+It is not amended, invalidated, or deleted.
+
+Its source and destination mapping never changes.
+
+A later-discovered routing error creates another explicit correction from the current destination.
+
+Example:
+
+```text
+class_A / evt_A
+    ->
+class_B / evt_B
+    ->
+class_C / evt_C
+```
+
+The first correction remains intact.
+
+## 18.29 Erroneous ownership correction
+
+When an ownership correction was accepted in error:
+
+- the certificate remains historically visible;
+- incorrect source supersession may require lifecycle-history correction;
+- the erroneous destination may require invalidation or supersession;
+- affected children require explicit repair;
+- and Issue #13 recovery records preserve the failed operation.
+
+Portia does not physically move the destination back or silently erase correction lineage.
+
+## 18.30 Exact resolution and derived navigation
+
+Exact references continue to resolve the exact source or destination identified.
+
+A resolver does not silently follow ownership correction.
+
+Applications may derive:
+
+```text
+source -> corrected destination
+destination -> ownership source
+event-root correction graph
+child relocation mappings
+unresolved source children
+affected incoming references
+```
+
+These indexes are rebuildable.
+
+They are not canonical authority.
+
+## 18.31 Structural validation
+
+JSON Schema will validate:
+
+- the exact certificate envelope;
+- `owc_` identifier syntax;
+- correction kind;
+- closed work and work-record endpoint forms;
+- optional parent-correction reference;
+- reason structure;
+- digital-only creation provenance;
+- timestamps;
+- and attribution.
+
+Schema validation cannot establish graph completeness or semantic ownership correctness.
+
+## 18.32 Application validation
+
+Application validation must confirm:
+
+- destination-root storage agreement;
+- exact source and destination resolution;
+- differing ownership scope;
+- same semantic record family;
+- fresh destination identifiers;
+- compatible contract versions;
+- independently valid destination content;
+- complete cross-root successor references;
+- source lifecycle eligibility;
+- reason and timing reconciliation;
+- parent and child correction consistency;
+- verified roster identity mapping;
+- complete destination internal references;
+- explicit disposition of every affected current-use child;
+- no automatic copying of audit or disagreement records;
+- no silent dependency, relationship, or incoming-reference retargeting;
+- one-to-one correction topology;
+- same-workspace authorization;
+- no cycles;
+- and atomic or recoverable persistence.
+
+## 18.33 Rejected alternatives
+
+### In-place ownership mutation
+
+Rejected because it would rewrite canonical identity and historical ownership.
+
+### Physical directory movement
+
+Rejected because record envelopes and references would continue to identify the old scope.
+
+### Ordinary supersession without a certificate
+
+Rejected because it would not certify why ownership changed or map relocated child records.
+
+### Automatic graph copy
+
+Rejected because every child and incoming relationship requires record-specific review.
+
+### Reused destination identifiers
+
+Rejected because ownership scope is part of logical identity.
+
+---
+
+# 19. Consequences
 
 ## Positive
 
@@ -6315,23 +7069,22 @@ Rejected because a transition is evidence of another record's state change, not 
 
 ---
 
-# 19. Unresolved Decisions
+# 20. Unresolved Decisions
 
 The following remain unresolved and must not be treated as accepted architecture:
 
-1. incorrect Event ownership or work-root correction;
-2. exceptional removal boundaries;
-3. integrity-finding vocabulary;
-4. final public schema organization.
+1. exceptional removal boundaries;
+2. integrity-finding vocabulary;
+3. final public schema organization.
 
 No schemas should be created for unresolved items until their architectural decisions are approved.
 
-## 20. Next Decision
+## 21. Next Decision
 
-The next decision should define incorrect Event ownership and work-root correction, including:
+The next decision should define exceptional removal boundaries, including:
 
-- how an Event recorded under the wrong Core class or Portia work root is replaced without mutating historical ownership;
-- whether the correction uses ordinary supersession, a dedicated relocation record, or both;
-- how child records and cross-work references are handled;
-- how source and destination roots reconcile across class boundaries;
-- and how exact historical resolution, authorization, and coordinated recovery are preserved.
+- whether any accepted canonical record may ever be physically removed;
+- which security, privacy, legal, corruption, or test-data cases justify exceptional removal;
+- how removal differs from invalidation, withdrawal, and supersession;
+- what durable evidence remains when content must no longer be retained;
+- and how authorization, dependency effects, exact resolution, and recovery are handled.
