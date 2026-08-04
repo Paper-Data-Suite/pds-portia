@@ -1,0 +1,10 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/lowercase-token.schema.json",
+  "title": "Lowercase Token",
+  "description": "Stable lowercase lexical token beginning with a letter and continuing with lowercase letters, digits, or underscores. Passing this schema does not establish that a token is registered or semantically permitted by a consuming contract.",
+  "type": "string",
+  "minLength": 1,
+  "maxLength": 128,
+  "pattern": "^[a-z][a-z0-9_]*$"
+}

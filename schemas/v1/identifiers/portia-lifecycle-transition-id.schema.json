@@ -1,0 +1,10 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-lifecycle-transition-id.schema.json",
+  "title": "Portia Lifecycle Transition Identifier",
+  "description": "Opaque canonical identifier for one immutable lifecycle-transition record. The lct_ prefix is part of the public identifier contract. The suffix begins with an alphanumeric character and may continue with letters, digits, underscores, or hyphens. Case and leading zeros are preserved.",
+  "type": "string",
+  "minLength": 5,
+  "maxLength": 128,
+  "pattern": "^lct_[A-Za-z0-9][A-Za-z0-9_-]*$"
+}

@@ -1,0 +1,8 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/json-pointer.schema.json",
+  "title": "JSON Pointer",
+  "description": "RFC 6901 JSON Pointer syntax. The empty string is the document-root pointer. Consuming contracts remain responsible for protected-path, existence, operation, and materiality rules.",
+  "type": "string",
+  "pattern": "^(?:/(?:[^~/]|~[01])*)*$"
+}

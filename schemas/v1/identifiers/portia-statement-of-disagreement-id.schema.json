@@ -1,0 +1,10 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-statement-of-disagreement-id.schema.json",
+  "title": "Portia Statement of Disagreement Identifier",
+  "description": "Opaque canonical identifier for one Statement of Disagreement record. The sod_ prefix is part of the public identifier contract. The suffix begins with an alphanumeric character and may continue with letters, digits, underscores, or hyphens. Case and leading zeros are preserved.",
+  "type": "string",
+  "minLength": 5,
+  "maxLength": 128,
+  "pattern": "^sod_[A-Za-z0-9][A-Za-z0-9_-]*$"
+}
