@@ -1,6 +1,6 @@
 # Portia Lifecycle, Amendment, Correction, and Migration Contracts
 
-**Status:** Working design — approved through Decision 16  
+**Status:** Working design — approved through Decision 17  
 **Project:** Paper Data Suite  
 **Module:** `pds-portia`  
 **Issue:** `#12 — Define shared lifecycle, amendment, correction, and migration contracts`  
@@ -7827,7 +7827,682 @@ Rejected because each exact representation requires explicit disposition and evi
 
 ---
 
-# 20. Consequences
+# 20. Approved Decision 17: Integrity-Finding Vocabulary
+
+## 20.1 Decision
+
+Portia integrity findings are structured, deterministic, rebuildable diagnostics. They are not canonical domain records.
+
+Version 1 does not introduce:
+
+```text
+record_type = integrity_finding
+```
+
+A finding has no canonical record identifier or lifecycle. It is not amended, superseded, migrated, or stored as the sole evidence of a defect. Canonical records and accepted operation evidence remain authoritative. Repairs create the applicable canonical transition, correction, certificate, successor, or recovery evidence.
+
+## 20.2 Core distinctions
+
+Portia distinguishes:
+
+```text
+domain_condition
+review_condition
+integrity_finding
+operation_failure
+```
+
+A domain condition is a valid state represented by a domain contract, such as a closed Event, withdrawn disagreement, superseded Dependency target, or exceptionally removed record.
+
+A review condition is a valid but unresolved situation requiring human review. It may exist without an invariant violation.
+
+An integrity finding means that a required invariant is confirmed to be violated or cannot be safely evaluated.
+
+An operation failure means a coordinated write did not complete. Issue #13 represents operation progress and recovery. Partial canonical state may also generate an integrity finding.
+
+## 20.3 Authority and reproducibility
+
+Findings are reproducible from:
+
+- canonical domain records;
+- lifecycle transitions and history corrections;
+- amendments;
+- successor edges;
+- migration, ownership-correction, and exceptional-removal certificates;
+- producer contracts;
+- configured policy;
+- and Issue #13 operation state.
+
+A public projection schema may standardize finding output without making findings canonical.
+
+## 20.4 Finding boundary
+
+Portia emits an integrity finding when canonical records contradict one another, canonical structure violates an accepted contract, a required invariant is violated, an operation leaves unresolved partial canonical state, current use continues despite a required block, exact resolution is ambiguous, or validation cannot safely conclude because required visibility or compatibility is unavailable.
+
+Portia does not emit a finding merely because a record is invalidated, withdrawn, cancelled, superseded, legitimately awaiting review, detected as a duplicate candidate, disputed, validly removed, draft, or proposed.
+
+## 20.5 Derived finding envelope
+
+A finding projection contains:
+
+```text
+finding_key
+evaluation_key
+rule_id
+rule_version
+category
+code
+severity
+assessment
+effects
+scope
+primary_target
+related_targets
+evidence
+observed_at
+```
+
+This is a derived-projection envelope, not a canonical record envelope.
+
+## 20.6 Deterministic keys
+
+`finding_key` is deterministic from stable `rule_id`, normalized primary target, normalized related exact identities, and an invariant-specific discriminator. The same underlying condition produces the same key across scans. Portia does not assign random finding identifiers.
+
+`evaluation_key` identifies one evaluation under the rule version, observed record revisions, contract versions, and policy version. A rule or record revision changes the evaluation key while the stable finding key may remain the same.
+
+## 20.7 Rule identity
+
+`rule_id` uses a stable namespaced form, such as:
+
+```text
+portia.lifecycle.status_history_mismatch
+portia.migration.multiple_current_representations
+portia.removal.payload_retained
+```
+
+`rule_version` is a required nonempty token.
+
+Changing wording does not require a new rule version. Changing detection semantics, affected-target calculation, default severity, or blocking effects does.
+
+## 20.8 Category vocabulary
+
+The initial closed categories are:
+
+```text
+structure
+identity_scope
+reference
+lifecycle
+replacement
+dependency
+migration
+ownership_correction
+removal
+chronology_provenance
+uniqueness_graph
+authorization_compatibility
+persistence_recovery
+derived_state
+```
+
+### Structure
+
+Initial codes:
+
+```text
+schema_invalid
+unsupported_contract_version
+canonical_path_mismatch
+envelope_scope_mismatch
+identifier_collision
+```
+
+### Identity and scope
+
+Initial codes:
+
+```text
+logical_identity_conflict
+ownership_scope_mismatch
+roster_identity_unresolved
+record_family_mismatch
+```
+
+`roster_identity_unresolved` is ordinarily indeterminate rather than a confirmed mismatch.
+
+### Reference
+
+Initial codes:
+
+```text
+exact_target_missing
+reference_kind_mismatch
+reference_scope_mismatch
+silent_retarget_detected
+removed_target_in_current_use
+```
+
+A validly removed historical target is not itself a finding. `removed_target_in_current_use` applies only when policy still treats it as usable.
+
+### Lifecycle
+
+Initial codes:
+
+```text
+status_history_mismatch
+illegal_transition
+history_chain_broken
+selected_history_ambiguous
+history_correction_invalid
+terminal_state_violation
+```
+
+### Replacement
+
+Initial codes:
+
+```text
+supersession_reconciliation_broken
+replacement_cycle
+unsupported_replacement_topology
+multiple_current_representations
+replacement_frontier_ambiguous
+partial_consolidation
+partial_event_split
+```
+
+### Dependency
+
+Initial codes:
+
+```text
+dependency_cycle
+duplicate_intrinsic_dependency
+dependency_declaration_conflict
+required_dependency_gate_violation
+dependency_target_resolution_ambiguous
+```
+
+An unsatisfied required Dependency becomes a finding only when an affected operation or current-use decision violates the required gate.
+
+### Migration
+
+Initial codes:
+
+```text
+migration_reconciliation_broken
+migration_identity_mismatch
+migration_semantic_mismatch
+migration_branch
+migration_cycle
+migration_lifecycle_mismatch
+```
+
+### Ownership correction
+
+Initial codes:
+
+```text
+ownership_reconciliation_broken
+unresolved_source_child
+destination_graph_invalid
+cross_workspace_ownership_correction
+roster_mapping_unverified
+```
+
+### Removal
+
+Initial codes:
+
+```text
+removal_reconciliation_broken
+payload_present_after_removal
+removal_certificate_without_target_history
+derived_payload_retained_after_removal
+duplicate_removal_certificate
+removed_target_resolved_as_not_found
+```
+
+Payload retained after removal may require immediate containment.
+
+### Chronology and provenance
+
+Initial codes:
+
+```text
+timestamp_order_invalid
+observed_revision_mismatch
+creation_provenance_inconsistent
+attribution_invalid
+effective_time_mismatch
+```
+
+### Uniqueness and graph
+
+Initial codes:
+
+```text
+active_uniqueness_violation
+graph_cycle
+duplicate_current_identity
+conflicting_exact_identity
+```
+
+A possible duplicate is not a finding; a confirmed uniqueness violation is.
+
+### Authorization and compatibility
+
+Initial codes:
+
+```text
+authorization_limited_resolution
+producer_contract_unavailable
+unsupported_cross_module_semantics
+policy_version_unavailable
+```
+
+These are normally indeterminate rather than confirmed defects.
+
+### Persistence and recovery
+
+Initial codes:
+
+```text
+operation_incomplete
+canonical_write_partial
+orphaned_canonical_artifact
+content_digest_mismatch
+recovery_required
+```
+
+A disposable staging artifact that never became canonical is cleanup, not necessarily a finding.
+
+### Derived state
+
+Initial codes:
+
+```text
+derived_index_drift
+projection_stale
+derived_reverse_link_mismatch
+derived_payload_policy_violation
+```
+
+These normally permit projection rebuilding unless sensitive removed content is exposed.
+
+## 20.9 Assessment
+
+`assessment` separates confirmed violations from incomplete evaluation:
+
+```text
+result
+limitation, when indeterminate
+```
+
+`result` is:
+
+```text
+confirmed
+indeterminate
+```
+
+`confirmed` means available canonical evidence proves the invariant is violated.
+
+`indeterminate` means Portia cannot safely establish whether the invariant holds.
+
+When indeterminate, `limitation` is one of:
+
+```text
+authorization_limited
+unsupported_contract
+external_module_unavailable
+incomplete_canonical_state
+recovery_in_progress
+insufficient_evidence
+```
+
+Portia never converts authorization-limited visibility into `missing`, `invalid`, or `cleared`. An indeterminate finding remains visible until the limitation resolves or policy explicitly permits the affected operation.
+
+## 20.10 Severity
+
+Severity communicates risk and urgency but does not independently determine enforcement.
+
+The vocabulary is:
+
+```text
+advisory
+warning
+error
+critical
+```
+
+`advisory` means canonical state remains usable but attention or maintenance is recommended.
+
+`warning` means the condition may affect interpretation or later operations and requires review.
+
+`error` means a confirmed invariant violation affects identified records, graph, or operation; relevant current use or writes are blocked.
+
+`critical` means the condition risks unauthorized disclosure, irreversible data loss, broad ambiguity in canonical authority, or unsafe continued operation.
+
+Severity is rule-defined but may escalate based on affected scope or evidence. Acknowledgement does not lower severity.
+
+## 20.11 Effects
+
+Blocking behavior is separate from severity.
+
+`effects` is a nonempty set drawn from:
+
+```text
+attention
+review_required
+block_current_use
+block_lifecycle_writes
+block_operation_completion
+block_work_writes
+block_class_writes
+quarantine_target
+```
+
+Meanings:
+
+- `attention`: display and report without blocking;
+- `review_required`: require explicit review;
+- `block_current_use`: prevent automatic use of the affected record;
+- `block_lifecycle_writes`: block lifecycle-dependent writes against the target;
+- `block_operation_completion`: prevent the coordinated operation from completing;
+- `block_work_writes`: block work-graph writes except authorized repair or containment;
+- `block_class_writes`: block class-wide writes except authorized repair or containment;
+- `quarantine_target`: disable ordinary resolution and display.
+
+Effects do not mutate persisted lifecycle status.
+
+## 20.12 Scope
+
+`scope` is one of:
+
+```text
+representation
+logical_record
+work
+class
+workspace
+operation
+graph
+```
+
+`representation` means one exact contract-versioned representation.
+
+`logical_record` means several representations of one stable migration identity.
+
+`work`, `class`, and `workspace` identify their corresponding ownership scopes.
+
+`operation` identifies one coordinated Issue #13 operation.
+
+`graph` identifies several exact records connected by replacement, dependency, migration, ownership, or another invariant.
+
+Scope controls escalation, blocking breadth, repair planning, and presentation. It does not replace exact affected references.
+
+## 20.13 Affected targets
+
+Every finding has one `primary_target`.
+
+Permitted targets include:
+
+- exact Portia work representation;
+- exact Portia work-record representation;
+- same-work immutable audit record;
+- class scope;
+- workspace scope;
+- or Issue #13 operation reference.
+
+`related_targets` contains zero or more additional exact references required to explain the invariant.
+
+Examples:
+
+- status/history mismatch: record as primary; selected and conflicting transitions as related;
+- broken migration reconciliation: migration certificate or source as primary; destination and transition as related;
+- unresolved ownership child: destination Event as primary; certificate and source child as related.
+
+The projection does not copy substantive narrative content merely for display.
+
+## 20.14 Evidence
+
+`evidence` contains minimal machine-readable facts necessary to explain detection.
+
+Examples include:
+
+```text
+persisted_status
+derived_status
+expected_effective_at
+observed_effective_at
+expected_target
+observed_target
+missing_component_kind
+conflicting_count
+```
+
+Evidence must not duplicate teacher narratives, Statements of Disagreement, student names, removed payloads, credentials, or other sensitive content.
+
+User-facing explanations are generated from rule metadata, authorized record access, and minimal evidence.
+
+## 20.15 Resolution
+
+A finding clears only when reevaluation determines that the violation or limitation no longer exists.
+
+Portia does not provide a canonical:
+
+```text
+mark_resolved
+```
+
+operation for findings.
+
+Resolution occurs because canonical state was repaired, history was corrected, an operation completed or recovered, authorization became available, a producer contract became supported, or a derived index was rebuilt.
+
+After repair, rescanning removes the active projection. Canonical repair artifacts preserve what occurred.
+
+## 20.16 Acknowledgement
+
+Applications may retain operational acknowledgement:
+
+```text
+acknowledged
+```
+
+Acknowledgement means only that an authorized local operator has seen the finding.
+
+It does not change severity, remove effects, establish correctness, authorize an exception, or clear the finding.
+
+Acknowledgement metadata belongs to Issue #13 operational workspace state, not canonical domain records.
+
+## 20.17 Suppression
+
+Suppression is presentation-only.
+
+It may be permitted only when:
+
+- severity is `advisory` or `warning`;
+- no blocking or quarantine effect applies;
+- the finding is understood;
+- suppression does not conceal sensitive exposure;
+- and configured policy permits it.
+
+Suppression is prohibited for errors, critical findings, blocking authorization limitations, incomplete operations, removal-policy violations, and any finding with a blocking effect.
+
+Suppression does not remove a finding from integrity reports, complete API results, operation validation, or policy enforcement.
+
+Suppression expires when the rule version, affected revisions, severity, effects, or configured expiration changes.
+
+## 20.18 Recurrence
+
+Because `finding_key` is deterministic, Portia can recognize recurrence.
+
+A finding recurs when it was absent after a complete evaluation and the same invariant and affected identity later produce the same key again.
+
+Operational metadata may retain:
+
+```text
+first_seen_at
+last_seen_at
+cleared_at
+recurrence_count
+```
+
+These timestamps are scan history, not canonical chronology.
+
+Losing this cache does not impair reconstruction of current integrity state.
+
+Recurrence may escalate severity or review under configured policy but does not alter canonical records automatically.
+
+## 20.19 False positives and rule changes
+
+When a finding was produced by an incorrect rule:
+
+- fix or version the rule;
+- reevaluate affected state;
+- clear obsolete operational instances;
+- preserve software or operation logs where required.
+
+Portia does not create a domain amendment asserting that a diagnostic was wrong.
+
+A real exception must be represented by an accepted domain contract, configured policy, or governed administrative certificate. Blocking invariants are not bypassed through suppression.
+
+## 20.20 Authorization-limited findings
+
+When complete validation requires inaccessible data:
+
+- assessment is `indeterminate`;
+- limitation is `authorization_limited`;
+- unavailable records are not identified through guessed metadata;
+- no conclusion of `missing` or `valid` is made;
+- the least-permissive applicable effect is enforced.
+
+A user-facing display may state that the condition cannot be fully validated with currently authorized data. It must not expose records beyond authorized visibility.
+
+## 20.21 Review disposition
+
+A finding may cause derived `review_required` treatment.
+
+The reverse is not always true.
+
+A record may require review because of a valid domain condition without any integrity finding.
+
+Therefore:
+
+```text
+review_required != integrity_error
+```
+
+Applications preserve that distinction in APIs and user interfaces.
+
+## 20.22 Relationship to validation
+
+Before canonical acceptance:
+
+- schema failure rejects the proposed write;
+- application-validation failure rejects or returns the operation for correction;
+- no workspace integrity finding is required.
+
+After canonical acceptance:
+
+- discovering structurally invalid canonical content produces an integrity finding;
+- content is not silently deleted;
+- repair follows recovery, correction, or exceptional-removal rules.
+
+Routine user-entry validation errors do not pollute workspace integrity reports.
+
+## 20.23 Relationship to Issue #13
+
+Issue #13 defines:
+
+- scan scheduling;
+- operational finding caches;
+- acknowledgement and suppression storage;
+- operation references;
+- repair-mode write allowances;
+- quarantine mechanics;
+- atomic recovery;
+- integrity-report rebuilding.
+
+Issue #12 defines semantic vocabulary and enforcement expectations.
+
+No operational cache may become the sole evidence required to determine canonical state.
+
+## 20.24 Derived views
+
+Applications may derive:
+
+```text
+active findings by work
+active findings by class
+blocking findings
+authorization-limited findings
+findings by category
+findings by rule
+recurring findings
+findings associated with incomplete operations
+```
+
+These views are rebuildable.
+
+Deleting the cache and rescanning must reproduce the currently active finding set under the same rule versions, policy, authorization, producer contracts, and operation state.
+
+## 20.25 Structural validation
+
+A later derived-projection schema may validate:
+
+- finding projection shape;
+- rule and category tokens;
+- severity;
+- assessment;
+- effects;
+- scope;
+- typed targets;
+- minimal evidence;
+- observation timestamps.
+
+JSON Schema cannot establish whether a finding should exist.
+
+## 20.26 Application validation
+
+Finding-generation logic must confirm:
+
+- stable rule identity and version;
+- deterministic finding-key construction;
+- exact affected-reference normalization;
+- correct category and code;
+- severity and effect compatibility;
+- no sensitive-content duplication;
+- confirmed versus indeterminate assessment;
+- conservative authorization-limited handling;
+- no conflation of review conditions with integrity defects;
+- no manual clearing of active violations;
+- suppression restrictions;
+- recurrence behavior;
+- reproducibility from canonical state and accepted operational evidence.
+
+## 20.27 Rejected alternatives
+
+### Canonical lifecycle-bearing findings
+
+Rejected because findings may clear, recur, or change under revised evaluation rules.
+
+### Unstructured validation messages
+
+Rejected because they cannot support deterministic deduplication, enforcement, or remediation.
+
+### Boolean validity
+
+Rejected because Portia must distinguish confirmed, indeterminate, blocking, scoped, and recoverable conditions.
+
+### User-cleared findings
+
+Rejected because acknowledgement or preference cannot make an active invariant violation disappear.
+
+---
+
+# 21. Consequences
 
 ## Positive
 
@@ -7876,21 +8551,21 @@ Rejected because a transition is evidence of another record's state change, not 
 
 ---
 
-# 21. Unresolved Decisions
+# 22. Unresolved Decisions
 
 The following remain unresolved and must not be treated as accepted architecture:
 
-1. integrity-finding vocabulary;
-2. final public schema organization.
+1. final public schema organization.
 
 No schemas should be created for unresolved items until their architectural decisions are approved.
 
-## 22. Next Decision
+## 23. Next Decision
 
-The next decision should define integrity-finding vocabulary, including:
+The final architectural decision should define public schema organization, including:
 
-- which integrity conditions are detected and how they are categorized;
-- how severity, scope, blocking behavior, and remediation status are represented;
-- whether findings are canonical records or rebuildable diagnostic projections;
-- how findings identify exact affected records and coordinated operations;
-- and how resolved, recurring, suppressed, and authorization-limited conditions are handled.
+- which approved contracts receive public Draft 2020-12 schemas in this issue;
+- how schema versions and directories are organized;
+- which shared primitives are reused versus introduced;
+- whether derived integrity-finding projections receive a public schema;
+- how later domain-family versions compose cross-work correction and migration contracts;
+- and how legacy, current, audit, certificate, and projection schemas are documented without implying unsupported automatic migration.
