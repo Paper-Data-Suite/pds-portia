@@ -1,6 +1,6 @@
 # Portia Lifecycle, Amendment, Correction, and Migration Contracts
 
-**Status:** Working design — approved through Decision 15  
+**Status:** Working design — approved through Decision 16  
 **Project:** Paper Data Suite  
 **Module:** `pds-portia`  
 **Issue:** `#12 — Define shared lifecycle, amendment, correction, and migration contracts`  
@@ -7020,7 +7020,814 @@ Rejected because ownership scope is part of logical identity.
 
 ---
 
-# 19. Consequences
+
+# 19. Approved Decision 16: Exceptional Removal Boundaries
+
+## 19.1 Decision
+
+Ordinary Portia workflows never physically remove accepted canonical records.
+
+Ordinary actions remain:
+
+```text
+cancel
+withdraw
+invalidate
+supersede
+correct
+consolidate
+migrate
+```
+
+Exceptional removal is a separate governed administrative operation.
+
+It is not:
+
+- ordinary correction;
+- a teacher-facing cleanup action;
+- a lifecycle transition;
+- a substitute for invalidation;
+- a substitute for withdrawal;
+- or a way to conceal disputed, embarrassing, obsolete, or incorrect information.
+
+When accepted canonical payload content must be removed under a narrow authorized basis, Portia destroys or quarantines that payload while retaining a minimal immutable exceptional-removal certificate.
+
+## 19.2 Removal domains
+
+Portia distinguishes:
+
+```text
+noncanonical_artifact_cleanup
+accepted_canonical_content_removal
+```
+
+### Noncanonical artifact cleanup
+
+Content may be deleted without a canonical removal certificate when it never became an accepted canonical record.
+
+Examples include:
+
+- temporary files;
+- staging files;
+- rejected writes;
+- incomplete serialization;
+- failed creation before canonical acceptance;
+- duplicate bytes from an interrupted write;
+- derived indexes;
+- disposable test-workspace data;
+- repository fixtures;
+- or a file that never passed structural and application acceptance.
+
+Issue #13 defines the exact acceptance boundary.
+
+Deleting such material is storage cleanup, not record removal.
+
+### Accepted canonical content removal
+
+Once a record has been accepted canonically, even in `draft` or `proposed` state, its payload may be removed only through the exceptional-removal contract.
+
+## 19.3 Canonical exceptional-removal record
+
+The canonical record type is:
+
+```text
+exceptional_removal
+```
+
+Identifiers use:
+
+```text
+rmv_<opaque-id>
+```
+
+Canonical storage is:
+
+```text
+classes/<class_id>/modules/portia/
+  removals/
+    <removal_id>.json
+```
+
+The certificate is stored at class-module scope rather than beneath the target work.
+
+This keeps the surviving evidence resolvable even when an entire Event work root is removed.
+
+## 19.4 Semantic unit
+
+One exceptional-removal record means:
+
+> One exact accepted Portia representation had its canonical payload intentionally removed under one authorized exceptional basis.
+
+One certificate identifies exactly one:
+
+- work representation;
+- or work-record representation.
+
+A certificate never implies that an entire child graph was also removed.
+
+## 19.5 Required envelope
+
+An exceptional-removal version-1 record contains:
+
+```text
+schema_version
+record_type
+module_id
+class_id
+removal_id
+target
+parent_removal, optional
+reason
+authorization
+content_evidence
+lifecycle_snapshot, optional
+effective_at
+creation_source
+created_at
+created_by
+```
+
+Constants are:
+
+```text
+schema_version = "1"
+record_type = "exceptional_removal"
+module_id = "portia"
+```
+
+The record does not contain:
+
+```text
+status
+updated_at
+updated_by
+supersedes
+operation_id
+replacement
+```
+
+The certificate is immutable and represents only an accepted removal.
+
+Attempt state, partial destruction, retry, rollback, and media-level recovery belong to Issue #13 or an externally governed retention process.
+
+## 19.6 Target branches
+
+`target` uses one of two exact branches.
+
+### Work representation
+
+```json
+{
+  "kind": "work",
+  "work_ref": {
+    "module_id": "portia",
+    "class_id": "eng10_p2_2026",
+    "work_id": "evt_example",
+    "work_kind": "event",
+    "contract_version": "2"
+  }
+}
+```
+
+### Work-record representation
+
+```json
+{
+  "kind": "work_record",
+  "work_record_ref": {
+    "work_ref": {
+      "module_id": "portia",
+      "class_id": "eng10_p2_2026",
+      "work_id": "evt_example",
+      "work_kind": "event",
+      "contract_version": "2"
+    },
+    "record_ref": {
+      "record_kind": "event_participant",
+      "record_id": "ept_example",
+      "contract_version": "2"
+    }
+  }
+}
+```
+
+Requirements are:
+
+- `contract_version` is non-null;
+- the target resolved exactly before removal;
+- certificate `class_id` matches the target;
+- and at most one accepted removal certificate exists for one exact representation.
+
+Version 1 does not use this contract for:
+
+- Actor-directory entries;
+- entire Core classes;
+- entire teacher workspaces;
+- exceptional-removal certificates;
+- or external-module records.
+
+Those require separate governed contracts.
+
+## 19.7 Parent removal
+
+When a work root and child records are removed together, each child certificate contains:
+
+```text
+parent_removal
+```
+
+`parent_removal` identifies the `rmv_` certificate for the removed work representation.
+
+Application validation confirms:
+
+- the child belonged to the parent target work;
+- both removals share one coordinated operation;
+- and effective times are consistent.
+
+A work-root certificate does not implicitly certify destruction of child records.
+
+Every removed child requires its own certificate.
+
+## 19.8 Permitted reason categories
+
+`reason` is a closed object containing:
+
+```text
+category
+code
+detail, optional
+```
+
+Initial categories are:
+
+```text
+legal_requirement
+privacy_requirement
+security_containment
+administrative_test_data
+unrecoverable_corruption
+other
+```
+
+### `legal_requirement`
+
+A governed external decision requires destruction.
+
+Representative code:
+
+```text
+required_destruction
+```
+
+Portia records the referenced decision supplied by the governing workflow; it does not determine legal sufficiency.
+
+### `privacy_requirement`
+
+Content must no longer be retained because of an accepted privacy or data-protection decision.
+
+Representative codes include:
+
+```text
+sensitive_data_erasure
+prohibited_data_retention
+unlawful_collection
+```
+
+Reason detail must not repeat sensitive content.
+
+### `security_containment`
+
+Continued storage presents a concrete security risk.
+
+Representative codes include:
+
+```text
+credential_exposure
+secret_exposure
+malicious_payload
+unsafe_embedded_content
+```
+
+Credential rotation, malware handling, incident response, and external notifications remain outside Portia.
+
+### `administrative_test_data`
+
+Canonical content was definitively established as synthetic test data accidentally accepted into a nondisposable workspace.
+
+Representative code:
+
+```text
+accepted_test_data
+```
+
+Similarity to test data is insufficient.
+
+### `unrecoverable_corruption`
+
+An accepted canonical representation cannot be recovered accurately.
+
+Representative code:
+
+```text
+unrecoverable_payload
+```
+
+This category is used only after storage recovery cannot restore the exact accepted content.
+
+### `other`
+
+Another exceptional governed basis not represented above.
+
+`detail` and an external decision reference are required.
+
+## 19.9 Prohibited removal reasons
+
+Exceptional removal is not permitted merely because a record is:
+
+- incorrect;
+- duplicated;
+- disputed;
+- withdrawn;
+- invalidated;
+- superseded;
+- embarrassing;
+- inconvenient;
+- old;
+- closed;
+- no longer needed;
+- or associated with the wrong class or Event root.
+
+Those conditions use accepted lifecycle, correction, consolidation, migration, or ownership-correction contracts.
+
+A request phrased as “delete this mistake” does not establish an exceptional-removal basis.
+
+## 19.10 Authorization
+
+`authorization` is a closed object containing:
+
+```text
+decision_reference
+authorized_by
+```
+
+`decision_reference` is an opaque nonempty reference to the externally governed decision authorizing removal.
+
+`authorized_by` uses the local-operator attribution branch.
+
+A deterministic system process may execute and persist the operation through `created_by`, but it may not be the sole recorded authorizer.
+
+The certificate does not itself prove legal or institutional authority.
+
+Application validation establishes that the identified operator holds the configured exceptional-removal capability.
+
+Exceptional removal is unavailable through ordinary teacher record-editing workflows.
+
+## 19.11 External governance boundary
+
+Portia does not decide:
+
+- legal retention periods;
+- whether a legal hold exists;
+- whether a privacy request must be granted;
+- whether regulatory destruction is complete;
+- or which backups an institution must purge.
+
+The governing administrative process supplies that decision.
+
+When authorization or legal-hold status is unknown, removal is blocked rather than presumed permissible.
+
+## 19.12 Content evidence
+
+The certificate preserves evidence of which exact payload was removed without retaining the payload itself.
+
+`content_evidence` uses one of two branches.
+
+### Salted content digest
+
+```json
+{
+  "kind": "salted_sha256",
+  "salt": "<base64 random salt>",
+  "digest": "<64 lowercase hexadecimal characters>",
+  "byte_length": 2847
+}
+```
+
+The digest is calculated over the exact canonical bytes removed.
+
+A random salt reduces precomputed content guessing.
+
+### Evidence unavailable
+
+```json
+{
+  "kind": "unavailable",
+  "reason": "unrecoverable_corruption"
+}
+```
+
+This branch is permitted only when exact bytes were already unavailable or unsafe to process.
+
+The certificate must not retain summaries, excerpts, names, statement text, credentials, secrets, or other removed substantive content.
+
+## 19.13 Lifecycle snapshot
+
+For a lifecycle-bearing target, the certificate records a minimal snapshot:
+
+```text
+status
+selected_transition, optional
+```
+
+`status` records semantic lifecycle state immediately before removal.
+
+`selected_transition` identifies the selected lifecycle head when one existed.
+
+The snapshot distinguishes a valid but removed record from an invalidated, withdrawn, or superseded representation.
+
+It is evidence only and does not create or change lifecycle status.
+
+Immutable audit records without lifecycle status omit `lifecycle_snapshot`.
+
+## 19.14 Removal is not invalidation
+
+Exceptional removal does not mean the removed assertion was false or invalid.
+
+Portia does not generate an `invalidated` transition merely because payload content was removed.
+
+When the record independently requires invalidation or supersession, that semantic operation remains separate and explicit.
+
+## 19.15 Availability override
+
+A removal certificate establishes the availability condition:
+
+```text
+removed
+```
+
+`removed` is not a domain-record lifecycle status.
+
+It is a derived canonical-resolution result.
+
+For current-use evaluation, content availability overrides persisted semantic status.
+
+A record whose last status was `active` but whose payload was removed is not usable merely because its historical status was active.
+
+## 19.16 Exact resolution
+
+An exact reference to removed content does not return `not_found`.
+
+It returns a minimal removal result containing:
+
+```text
+resolution = removed
+target
+removal_id
+effective_at
+reason.category
+lifecycle_snapshot, when present
+```
+
+The resolver does not fabricate a record body, silently follow a successor, return another contract version, search another root, or treat removal as accidental absence.
+
+Normal content views, search indexes, and exports do not expose the removed payload.
+
+Authorized audit views may expose the minimal certificate.
+
+## 19.17 One certificate per exact representation
+
+Removal applies to exact representation identity.
+
+For migrated lineage:
+
+```text
+evt_123 v1 -> evt_123 v2
+```
+
+removing v1 does not remove v2.
+
+Each removed representation requires its own certificate.
+
+A certificate cannot identify a versionless logical record.
+
+
+## 19.18 Work-root removal
+
+Removing an Event work representation does not automatically remove:
+
+- Event Participants;
+- Event Participant Roles;
+- Work Relationships;
+- Statements of Disagreement;
+- Dependencies;
+- lifecycle transitions;
+- amendments;
+- migration certificates;
+- ownership-correction certificates;
+- or Issue #13 operation records.
+
+Every child receives an explicit disposition:
+
+```text
+retained
+exceptionally_removed
+superseded
+invalidated
+review_required
+```
+
+A coordinated whole-graph destruction operation creates one removal certificate for every removed exact representation.
+
+Partial completion is an integrity failure requiring Issue #13 recovery.
+
+## 19.19 Audit-record treatment
+
+Audit records are preserved unless the governed removal basis explicitly requires their destruction.
+
+When substantive payload can be removed while audit records remain safely non-sensitive, Portia retains lifecycle transitions, amendment metadata, migration certificates, ownership-correction certificates, and operation evidence.
+
+Those records continue to reference a target resolving as `removed`.
+
+When an audit record itself contains prohibited content, it requires its own exceptional-removal certificate.
+
+Exceptional-removal certificates themselves cannot be targeted by version-1 exceptional removal.
+
+Their intentionally minimal design is the surviving evidence that removal occurred.
+
+A requirement prohibiting retention of even opaque identity and removal metadata requires a separately governed class- or workspace-destruction process outside this contract.
+
+## 19.20 Incoming references
+
+Incoming canonical references remain unchanged.
+
+They continue to identify the exact removed target.
+
+Applications may derive:
+
+```text
+target_removed
+review_required
+replacement_available
+```
+
+information where authorized.
+
+They do not silently substitute a successor, migrated version, consolidated record, or ownership-corrected destination.
+
+Changing a referring record requires its own explicit correction or successor operation.
+
+## 19.21 Dependency effects
+
+A dependency targeting removed content is not treated as merely missing.
+
+The dependency evaluator knows intentional removal occurred.
+
+### Required dependency
+
+A required dependency becomes:
+
+```text
+unsatisfied
+```
+
+unless consuming record-family policy explicitly permits tombstone-only historical sufficiency.
+
+When policy cannot safely decide, it becomes:
+
+```text
+review_required
+```
+
+rather than silently satisfied.
+
+### Advisory dependency
+
+An advisory dependency creates a derived attention indicator and remains subject to record-family review policy.
+
+### No automatic cascade
+
+Removal does not automatically invalidate or supersede dependent records.
+
+Portia:
+
+1. removes the target from current use;
+2. identifies affected dependents;
+3. blocks gated operations where required;
+4. places dependents in review;
+5. requires explicit outcomes.
+
+## 19.22 Derived data
+
+After accepted removal, Portia-managed derived stores must remove payload-bearing material, including:
+
+- search text;
+- previews;
+- cached summaries;
+- duplicate-detection fingerprints derived from substantive fields;
+- exported local projections under Portia's control;
+- and denormalized display content.
+
+Derived stores may retain only minimal removal state needed for exact resolution and review.
+
+Rebuilds reproduce the removed state from the certificate rather than restoring payload content.
+
+The certificate does not claim independently distributed exports or external backups were destroyed.
+
+Those remain externally governed.
+
+## 19.23 Corruption boundary
+
+### Never-valid file
+
+A file that never became a valid accepted canonical record may be deleted as a noncanonical artifact.
+
+No removal certificate is created.
+
+### Recoverable canonical corruption
+
+When an accepted record is damaged but exact accepted bytes can be restored from an operation journal, verified duplicate, backup, or another authoritative storage copy, Portia restores the exact representation.
+
+This is storage recovery, not exceptional removal.
+
+### Unrecoverable canonical corruption
+
+When accepted content cannot be recovered:
+
+- create an exceptional-removal certificate;
+- use `unrecoverable_corruption`;
+- preserve available minimal identity and lifecycle evidence;
+- mark exact resolution as `removed`;
+- and review dependents.
+
+Portia does not invent a replacement body.
+
+## 19.24 Test-data boundary
+
+Synthetic repository fixtures, disposable test workspaces, and pre-acceptance test files may be deleted normally.
+
+Canonical test data accidentally accepted into a real workspace requires:
+
+- positive confirmation that it is synthetic;
+- exceptional administrative authorization;
+- one certificate per removed representation;
+- dependency and incoming-reference review;
+- and no assumption that unlikely data is merely test data.
+
+Genuine records must not be removed under the test-data category.
+
+## 19.25 Emergency security containment
+
+Security containment may require payload quarantine or destruction before the complete certificate operation finishes.
+
+Issue #13 may permit the emergency sequence:
+
+1. remove the payload from ordinary resolution;
+2. quarantine surviving bytes;
+3. record pending operation state;
+4. validate authorization and affected graph;
+5. persist the removal certificate;
+6. purge Portia-managed derived content;
+7. complete recovery and review actions.
+
+Until completion, the target is unavailable and integrity review is required.
+
+Emergency containment does not authorize silent deletion without eventual durable evidence.
+
+## 19.26 Timing
+
+`effective_at` means:
+
+> The time at which the target payload ceased to be available through ordinary canonical resolution.
+
+Requirements are:
+
+- `effective_at <= created_at`;
+- no future-effective removal;
+- target exact identity was established before effectiveness;
+- content evidence corresponds to the removed revision;
+- authorization predates effectiveness or, for emergency containment, is reconciled immediately afterward;
+- and all certificates in one coordinated work-root removal use compatible effective times.
+
+Filesystem modification time is not removal authority.
+
+## 19.27 No ordinary restoration
+
+An accepted removal certificate is irreversible at the logical-resolution level.
+
+The removed exact identity remains:
+
+```text
+removed
+```
+
+even when bytes later become available from a backup.
+
+Portia does not silently restore the original file under the same exact identity.
+
+When recovered content must become usable again, a separately governed recovery or successor process must:
+
+- preserve the removal certificate;
+- create a new canonical representation or record identity;
+- establish why reuse is permitted;
+- and reconcile affected references.
+
+That recovery contract is not defined in version 1.
+
+## 19.28 Erroneous exceptional removal
+
+An accepted removal certificate is immutable.
+
+When removal was unauthorized or mistaken:
+
+- the certificate remains visible;
+- the exact target remains marked `removed`;
+- the incident becomes an integrity finding;
+- surviving or recovered content is quarantined;
+- affected dependents are reviewed;
+- and restoration uses a future explicit recovery contract.
+
+Portia does not erase the certificate or pretend removal never occurred.
+
+## 19.29 Derived indexes
+
+Applications may derive:
+
+```text
+exact target -> removal certificate
+work root -> removed child representations
+removed target -> incoming references
+removed target -> affected dependencies
+class -> exceptional-removal history
+```
+
+These indexes are rebuildable and are not canonical authority.
+
+## 19.30 Structural validation
+
+JSON Schema will validate:
+
+- exact certificate envelope;
+- constants;
+- `rmv_` identifier syntax;
+- exact work and work-record target branches;
+- optional parent-removal identity;
+- reason structure;
+- authorization structure;
+- content-evidence branch;
+- optional lifecycle snapshot;
+- digital-only creation provenance;
+- timestamps;
+- and attribution.
+
+JSON Schema cannot establish authorization, legal sufficiency, canonical acceptance, or successful payload destruction.
+
+## 19.31 Application validation
+
+Application validation must confirm:
+
+- the target was an accepted canonical representation;
+- the target resolved exactly before removal;
+- target and certificate class scope agree;
+- the reason falls within the narrow exceptional boundary;
+- ordinary lifecycle or correction mechanisms are insufficient;
+- authorization is valid under configured policy;
+- no unknown legal hold or governance block exists;
+- content evidence identifies the removed revision;
+- the certificate contains no removed substantive content;
+- one certificate exists per exact representation;
+- parent and child removal mappings are complete;
+- derived payload-bearing material is purged;
+- incoming references remain exact;
+- dependencies enter explicit review;
+- no silent successor following occurs;
+- removal certificates are not recursively removed;
+- and the physical operation is atomic or recoverable.
+
+## 19.32 Rejected alternatives
+
+### Absolute prohibition on physical removal
+
+Rejected because Portia must support narrow security, privacy, legal, test-data, and corruption cases.
+
+### `deleted` lifecycle status
+
+Rejected because removal changes availability rather than semantic validity.
+
+### Privileged deletion without surviving evidence
+
+Rejected because exact references and dependencies must distinguish intentional removal from accidental absence.
+
+### Retained substantive tombstone content
+
+Rejected because the removal basis may prohibit continued retention of the payload itself.
+
+### Automatic child-graph destruction
+
+Rejected because each exact representation requires explicit disposition and evidence.
+
+---
+
+# 20. Consequences
 
 ## Positive
 
@@ -7069,22 +7876,21 @@ Rejected because a transition is evidence of another record's state change, not 
 
 ---
 
-# 20. Unresolved Decisions
+# 21. Unresolved Decisions
 
 The following remain unresolved and must not be treated as accepted architecture:
 
-1. exceptional removal boundaries;
-2. integrity-finding vocabulary;
-3. final public schema organization.
+1. integrity-finding vocabulary;
+2. final public schema organization.
 
 No schemas should be created for unresolved items until their architectural decisions are approved.
 
-## 21. Next Decision
+## 22. Next Decision
 
-The next decision should define exceptional removal boundaries, including:
+The next decision should define integrity-finding vocabulary, including:
 
-- whether any accepted canonical record may ever be physically removed;
-- which security, privacy, legal, corruption, or test-data cases justify exceptional removal;
-- how removal differs from invalidation, withdrawal, and supersession;
-- what durable evidence remains when content must no longer be retained;
-- and how authorization, dependency effects, exact resolution, and recovery are handled.
+- which integrity conditions are detected and how they are categorized;
+- how severity, scope, blocking behavior, and remediation status are represented;
+- whether findings are canonical records or rebuildable diagnostic projections;
+- how findings identify exact affected records and coordinated operations;
+- and how resolved, recurring, suppressed, and authorization-limited conditions are handled.
