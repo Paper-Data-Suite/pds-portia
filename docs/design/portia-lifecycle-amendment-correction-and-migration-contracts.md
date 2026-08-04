@@ -1,6 +1,6 @@
 # Portia Lifecycle, Amendment, Correction, and Migration Contracts
 
-**Status:** Working design — approved through Decision 10  
+**Status:** Working design — approved through Decision 11  
 **Project:** Paper Data Suite  
 **Module:** `pds-portia`  
 **Issue:** `#12 — Define shared lifecycle, amendment, correction, and migration contracts`  
@@ -3529,7 +3529,688 @@ Rejected because lineage and completion semantics are too ambiguous without a de
 
 ---
 
-# 14. Consequences
+
+# 14. Approved Decision 11: Dependency Handling
+
+## 14.1 Decision
+
+Portia distinguishes:
+
+1. intrinsic dependencies derived from canonical domain fields and record-family rules;
+2. declared dependencies represented through separate lifecycle-bearing records when the dependency is not already fully encoded in the dependent record.
+
+Both forms feed one derived dependency-evaluation model.
+
+Portia does not duplicate canonical subject, target, basis, provenance, attribution, or relationship fields merely to create dependency edges.
+
+## 14.2 Intrinsic dependencies
+
+An intrinsic dependency exists because a domain record already contains the authoritative reference and its contract defines that reference as necessary.
+
+Examples include:
+
+- an Event Participant's containing Event;
+- an Event Participant Role's targeted Participant;
+- a Role's Account, Observation, paper, or import basis;
+- a Work Relationship's source and target;
+- a Statement of Disagreement's target;
+- and a Statement of Disagreement's represented human source.
+
+These relationships remain authoritative in their domain records.
+
+Portia does not create separate dependency records merely to restate them.
+
+A record-family policy defines:
+
+- whether the intrinsic dependency is required or advisory;
+- when the dependency is evaluated;
+- which lifecycle and use states satisfy it;
+- and what review follows when the dependency changes.
+
+Intrinsic dependencies may appear in derived dependency views, but those views are not canonical storage.
+
+## 14.3 Declared dependency record
+
+Additional dependency conditions use a separate record:
+
+```text
+dependency
+```
+
+Dependency identifiers use:
+
+```text
+dep_<opaque-id>
+```
+
+Canonical storage is:
+
+```text
+classes/<class_id>/modules/portia/work/<work_id>/
+  records/
+    dependency/
+      <dependency_id>.json
+```
+
+The dependency record is stored beneath the work containing its dependent target.
+
+## 14.4 Semantic unit
+
+One dependency record means:
+
+> One dependent Portia work or record has one declared dependency condition involving one exact referenced work or record.
+
+One dependency record contains:
+
+- one dependent;
+- one dependency target;
+- one strength;
+- one evaluation scope;
+- and one purpose.
+
+Several dependency conditions require several dependency records.
+
+## 14.5 Required envelope
+
+A dependency version-1 record contains:
+
+```text
+schema_version
+record_type
+module_id
+class_id
+work_id
+dependency_id
+status
+dependent
+dependency
+strength
+applies_to
+purpose
+detail, optional
+supersedes, optional
+creation_source
+created_at
+created_by
+updated_at
+updated_by
+```
+
+Constants are:
+
+```text
+schema_version = "1"
+record_type = "dependency"
+module_id = "portia"
+```
+
+## 14.6 Dependent target
+
+`dependent` uses the compact same-work target model:
+
+```text
+work
+local_record
+```
+
+The dependency record is dependent-owned.
+
+A dependency whose dependent belongs to another work must be stored under that work root.
+
+Reverse navigation from dependency target to dependent records is derived.
+
+## 14.7 Dependency target branches
+
+`dependency` uses one complete reference through one of the following branches.
+
+### Portia work
+
+```json
+{
+  "kind": "portia_work",
+  "work_ref": {
+    "module_id": "portia",
+    "class_id": "eng10_p2_2026",
+    "work_id": "evt_example",
+    "work_kind": "event",
+    "contract_version": "2"
+  }
+}
+```
+
+### Portia work record
+
+```json
+{
+  "kind": "portia_record",
+  "work_record_ref": {
+    "work_ref": {
+      "module_id": "portia",
+      "class_id": "eng10_p2_2026",
+      "work_id": "evt_example",
+      "work_kind": "event",
+      "contract_version": "2"
+    },
+    "record_ref": {
+      "record_kind": "observation",
+      "record_id": "obs_example",
+      "contract_version": null
+    }
+  }
+}
+```
+
+### Sibling-module work record
+
+```json
+{
+  "kind": "module_record",
+  "module_work_record_ref": {
+    "work_ref": {
+      "module_id": "another_module",
+      "class_id": "eng10_p2_2026",
+      "work_id": "work_example",
+      "work_kind": "example_kind",
+      "contract_version": "1"
+    },
+    "record_ref": {
+      "record_kind": "example_record",
+      "record_id": "record_example",
+      "contract_version": "1"
+    }
+  }
+}
+```
+
+## 14.8 Excluded targets
+
+Version 1 does not use generic dependency records for:
+
+- roster-student identity;
+- Actor identity;
+- creation attribution;
+- lifecycle transitions;
+- lifecycle-history corrections;
+- amendments;
+- dependency records;
+- operation journals;
+- or derived views.
+
+Those relationships use their specialized contracts.
+
+## 14.9 Strength
+
+`strength` is:
+
+```text
+required
+advisory
+```
+
+### `required`
+
+A required dependency must satisfy its applicable policy before the dependent may complete the affected operation or remain automatically usable.
+
+Failure does not directly rewrite the dependent's lifecycle status.
+
+It first produces a dependency review condition.
+
+### `advisory`
+
+An advisory dependency informs interpretation, context, or review.
+
+Loss or degradation of an advisory dependency:
+
+- produces a derived attention indicator;
+- does not alone block activation or closure;
+- does not alone make the dependent unusable;
+- and never automatically changes lifecycle status.
+
+A dependency that must block use is not advisory.
+
+## 14.10 Evaluation scope
+
+`applies_to` is:
+
+```text
+activation
+current_use
+completion
+```
+
+### `activation`
+
+The dependency is evaluated when the dependent transitions into `active`.
+
+It must satisfy the applicable policy at the lifecycle transition's `effective_at`.
+
+A later change to the dependency does not retroactively invalidate activation unless the record family separately requires a `current_use` dependency.
+
+### `current_use`
+
+The dependency is evaluated continuously for current-use eligibility.
+
+Changes to the dependency may place an active or closed dependent into derived review.
+
+### `completion`
+
+The dependency is evaluated when an Event or later supported workflow record transitions to its completed state.
+
+For Event, the initial completion gate applies before:
+
+```text
+active -> closed
+```
+
+A later dependency change does not rewrite the historical validity of a completed transition unless the original evaluation itself was erroneous.
+
+A dependent may have separate dependency records against the same target for different evaluation scopes.
+
+## 14.11 Purpose
+
+The initial purpose vocabulary is:
+
+```text
+identity_resolution
+evidentiary_support
+authorization_basis
+workflow_prerequisite
+implementation_input
+contextual_support
+other
+```
+
+`detail` is required for `other`.
+
+Purpose explains why the dependency matters.
+
+It does not replace:
+
+- a canonical subject;
+- a Role basis;
+- an Account;
+- an Observation;
+- an authority decision;
+- a Work Relationship;
+- or another substantive domain relationship.
+
+Record-specific policy defines which combinations of:
+
+```text
+record family
+strength
+applies_to
+purpose
+```
+
+are permitted.
+
+For example, `contextual_support` will ordinarily be advisory, while `authorization_basis` may be required.
+
+## 14.12 Dependency lifecycle
+
+Dependency records use:
+
+```text
+proposed
+active
+invalidated
+superseded
+```
+
+Transition matrix:
+
+| From | Permitted destinations |
+|---|---|
+| `proposed` | `active`, `invalidated`, `superseded` |
+| `active` | `invalidated`, `superseded` |
+| `invalidated` | `superseded` only |
+| `superseded` | none |
+
+Meanings are:
+
+- `proposed`: dependency condition prepared but not yet effective;
+- `active`: current canonical dependency declaration;
+- `invalidated`: dependency declaration should not be treated as valid and has no replacement;
+- `superseded`: a corrected dependency declaration replaces it.
+
+Only active declared dependencies affect current dependency evaluation.
+
+## 14.13 Correcting a dependency declaration
+
+The following are material changes:
+
+- dependent target;
+- dependency target;
+- strength;
+- evaluation scope;
+- purpose.
+
+They require a successor dependency record.
+
+The successor's `supersedes` entries use complete `portia_work_record_ref` values.
+
+Initial supersession reasons are:
+
+```text
+dependent_corrected
+dependency_target_corrected
+strength_corrected
+evaluation_scope_corrected
+purpose_corrected
+duplicate_consolidated
+other
+```
+
+`detail` is required for `other`.
+
+A spelling or punctuation correction in nonmaterial `detail` may use an amendment.
+
+Effective dependency supersession follows the accepted general supersession-reconciliation rules.
+
+## 14.14 No duplicate semantic relationship
+
+A declared dependency must not duplicate a canonical intrinsic dependency unless a future record-family contract explicitly requires both.
+
+For example, a Role cannot:
+
+1. identify an Account in `basis`;
+2. create a generic dependency record repeating the same Account as evidentiary support;
+3. and allow those references to diverge.
+
+The Role contract governs that intrinsic dependency.
+
+Declared dependency records exist for additional dependency conditions, not shadow copies of domain fields.
+
+## 14.15 Derived dependency condition
+
+Dependency health is derived rather than stored canonically.
+
+The initial derived conditions are:
+
+```text
+satisfied
+review_required
+unsatisfied
+indeterminate
+not_currently_evaluated
+```
+
+### `satisfied`
+
+The exact referenced target resolves and satisfies the applicable record-family policy.
+
+### `review_required`
+
+The dependency resolves, but its status, use disposition, disagreement state, compatibility, or another condition requires human review.
+
+### `unsatisfied`
+
+The exact dependency target is known not to satisfy policy.
+
+Representative cases include:
+
+- required target invalidated;
+- required target cancelled;
+- required source withdrawn;
+- exact target confirmed missing;
+- or target otherwise ineligible under its record-family contract.
+
+### `indeterminate`
+
+Portia cannot safely decide because of:
+
+- unsupported contract version;
+- unresolved external-module semantics;
+- insufficient authorized visibility;
+- or incomplete canonical state.
+
+`indeterminate` must not be mislabeled as missing when authorization prevents resolution.
+
+### `not_currently_evaluated`
+
+The dependency is valid, but its gate is not presently being evaluated.
+
+For example, an activation-only dependency attached to an already active record is not a continuous current-use dependency.
+
+## 14.16 External-module dependencies
+
+Portia does not interpret sibling-module lifecycle tokens directly.
+
+For a `module_record` dependency, Portia relies on:
+
+- Core reference resolution;
+- compatible producer contracts;
+- module-defined use disposition;
+- and accepted cross-module compatibility rules.
+
+When those semantics are unavailable:
+
+- a required dependency is `indeterminate` and blocks its gated operation or produces `review_required`;
+- an advisory dependency produces a derived attention indicator.
+
+Portia does not invent lifecycle meaning for another module.
+
+## 14.17 Activation gate
+
+A dependent cannot transition into `active` unless every required activation dependency is `satisfied`.
+
+These conditions block activation:
+
+```text
+review_required
+unsatisfied
+indeterminate
+```
+
+## 14.18 Completion gate
+
+A dependent cannot enter its completed state unless every required completion dependency is `satisfied`.
+
+## 14.19 Current-use dependency effects
+
+For an active or closed dependent:
+
+| Dependency condition | Derived dependent treatment |
+|---|---|
+| `satisfied` | No additional restriction |
+| `review_required` | Dependent becomes `review_required` |
+| `indeterminate` | Dependent becomes `review_required` |
+| `unsatisfied` | Dependent becomes `review_required`; lifecycle-dependent writes are blocked |
+
+The dependent's persisted lifecycle status is not automatically changed.
+
+This avoids cascading writes before semantic consequences have been reviewed.
+
+## 14.20 Review outcomes after dependency loss
+
+A required current-use dependency becoming unsatisfied triggers review.
+
+Review may produce one of the following outcomes.
+
+### No semantic change is required
+
+Examples include:
+
+- the dependency becomes usable again;
+- an external module becomes available;
+- an authorization problem is resolved;
+- or prior evaluation was temporarily indeterminate.
+
+The derived review condition clears.
+
+No lifecycle transition or amendment is required.
+
+### Dependency declaration correction
+
+When another exact dependency target can replace the prior dependency without changing the dependent's canonical meaning:
+
+1. create a successor dependency record;
+2. transition the prior dependency record to `superseded`;
+3. reevaluate the dependent.
+
+The dependent record remains unchanged.
+
+### Material correction of the dependent
+
+When repairing the dependency changes the dependent's:
+
+- subject;
+- target;
+- evidentiary basis;
+- authority;
+- substantive assertion;
+- or another material dimension,
+
+the dependent requires successor replacement.
+
+A dependency-edge correction cannot conceal a material correction to the dependent.
+
+### Dependent invalidation
+
+When no valid dependency can support continued current use and no corrected successor is appropriate, the dependent transitions to `invalidated`.
+
+### Erroneous historical invalidation
+
+Lifecycle-history correction is used only when the invalidation transition itself should never have been accepted.
+
+Newly restored evidence or later changed circumstances do not make an earlier genuine invalidation erroneous.
+
+## 14.21 Superseded dependency targets
+
+Dependency references remain exact.
+
+When a dependency target becomes `superseded`, Portia does not silently follow its replacement frontier.
+
+For a required current-use dependency, target supersession ordinarily produces:
+
+```text
+review_required
+```
+
+until an authorized process decides whether:
+
+- the original exact target remains historically sufficient;
+- one successor should become the corrected dependency target;
+- the dependent itself requires material replacement;
+- or no valid dependency remains.
+
+Selecting a successor requires an explicit successor dependency record.
+
+Exact references are never rewritten in place.
+
+## 14.22 No automatic cascades
+
+A dependency target's lifecycle change does not directly write new statuses into dependent records.
+
+Instead, Portia:
+
+1. derives affected dependency conditions;
+2. surfaces affected dependents through a review queue;
+3. blocks operations whose required gates are unsatisfied or indeterminate;
+4. applies explicit review outcomes to each dependent.
+
+This prevents one incorrect transition from automatically invalidating an entire graph.
+
+Coordinated multi-record repair remains subject to Issue #13 persistence and recovery rules.
+
+## 14.23 Dependency cycles
+
+Version 1 prohibits:
+
+- self-dependency;
+- direct dependency cycles;
+- indirect dependency cycles.
+
+This applies to required and advisory declared dependencies.
+
+Intrinsic dependency graphs must also remain acyclic unless a later record-family contract explicitly defines a safe recursive structure.
+
+A required cycle would make gate evaluation unstable.
+
+An advisory cycle provides little semantic value and complicates review.
+
+## 14.24 Reverse dependency discovery
+
+Reverse indexes are derived and rebuildable.
+
+They may provide:
+
+```text
+target -> intrinsic dependents
+target -> declared dependents
+target -> affected required dependents
+target -> affected advisory dependents
+```
+
+They are not canonical authority.
+
+Rebuilding them from domain records, dependency records, lifecycle histories, and producer contracts must yield the same results.
+
+## 14.25 Structural validation
+
+JSON Schema will validate:
+
+- the exact dependency-record envelope;
+- constants;
+- `dep_` identifier syntax;
+- status vocabulary;
+- compact dependent target;
+- complete dependency-target branches;
+- strength;
+- evaluation scope;
+- purpose and required `other` detail;
+- optional supersession entries;
+- creation provenance;
+- timestamps;
+- and attribution.
+
+## 14.26 Application validation
+
+Application validation must confirm:
+
+- canonical path and scope agreement;
+- exact dependent and dependency resolution;
+- dependency-target eligibility;
+- absence of duplicated intrinsic relationships;
+- record-specific strength, scope, and purpose compatibility;
+- unique active dependency conditions;
+- lifecycle legality;
+- supersession reconciliation;
+- no self-dependency or cycles;
+- exact temporal evaluation for activation and completion gates;
+- current-use dependency health;
+- external-module compatibility;
+- conservative treatment of authorization limitations;
+- no silent successor retargeting;
+- no automatic lifecycle cascade;
+- and atomic or recoverable coordinated operations.
+
+## 14.27 Rejected alternatives
+
+### Generic dependency arrays in all domain records
+
+Rejected because they would mix operational prerequisites with substantive domain references and require broad schema revision.
+
+### Purely derived dependencies
+
+Rejected because additional operational dependencies sometimes need explicit canonical representation.
+
+### Duplicate dependency records for every reference
+
+Rejected because canonical domain references and generic dependency edges could disagree.
+
+### Automatic dependent invalidation
+
+Rejected because dependency changes require explicit review and record-specific consequences.
+
+### Silent replacement-frontier following
+
+Rejected because exact dependency references must remain historically stable.
+
+---
+
+# 15. Consequences
 
 ## Positive
 
@@ -3578,27 +4259,26 @@ Rejected because a transition is evidence of another record's state change, not 
 
 ---
 
-# 15. Unresolved Decisions
+# 16. Unresolved Decisions
 
 The following remain unresolved and must not be treated as accepted architecture:
 
-1. dependency handling;
-2. duplicate consolidation;
-3. migration-record semantics;
-4. migration identity preservation;
-5. incorrect Event ownership or work-root correction;
-6. exceptional removal boundaries;
-7. integrity-finding vocabulary;
-8. final public schema organization.
+1. duplicate consolidation;
+2. migration-record semantics;
+3. migration identity preservation;
+4. incorrect Event ownership or work-root correction;
+5. exceptional removal boundaries;
+6. integrity-finding vocabulary;
+7. final public schema organization.
 
 No schemas should be created for unresolved items until their architectural decisions are approved.
 
-## 16. Next Decision
+## 17. Next Decision
 
-The next decision should define dependency handling, including:
+The next decision should define duplicate consolidation, including:
 
-- how required and advisory dependencies are represented;
-- whether dependencies are declared on the dependent record or through separate edges;
-- how dependency lifecycle changes affect current-use eligibility;
-- when dependency loss requires review, invalidation, or successor replacement;
-- and how dependency repair avoids automatic cascades or silent retargeting.
+- the semantic test for true duplicates;
+- which record families may be consolidated;
+- how a canonical survivor or replacement is selected;
+- how conflicting details, lifecycle states, and attached records are handled;
+- and how consolidation remains distinct from ordinary correction, Event splitting, and migration.
