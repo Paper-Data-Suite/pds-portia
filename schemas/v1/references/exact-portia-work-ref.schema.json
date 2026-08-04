@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-portia-work-ref.schema.json",
+  "title": "Exact Portia Work Reference",
+  "description": "Complete reference to one exact persisted Portia Event or Support Process representation. Canonical logical work identity remains module_id, class_id, and work_id. work_kind and the required non-null contract_version identify the expected representation. Resolution must not select another contract version or silently follow migration, supersession, consolidation, or ownership correction.",
+  "type": "object",
+  "required": [
+    "module_id",
+    "class_id",
+    "work_id",
+    "work_kind",
+    "contract_version"
+  ],
+  "properties": {
+    "module_id": {
+      "const": "portia"
+    },
+    "class_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+    },
+    "work_id": {
+      "type": "string"
+    },
+    "work_kind": {
+      "enum": [
+        "event",
+        "support_process"
+      ]
+    },
+    "contract_version": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+    }
+  },
+  "oneOf": [
+    {
+      "properties": {
+        "work_kind": {
+          "const": "event"
+        },
+        "work_id": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-event-id.schema.json"
+        }
+      }
+    },
+    {
+      "properties": {
+        "work_kind": {
+          "const": "support_process"
+        },
+        "work_id": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-support-process-id.schema.json"
+        }
+      }
+    }
+  ],
+  "additionalProperties": false
+}

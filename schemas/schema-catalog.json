@@ -139,16 +139,40 @@
         "path": "schemas/v1/references/local-record-ref.schema.json"
       }
     },
+    "exact_local_record_ref": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-local-record-ref.schema.json",
+        "path": "schemas/v1/references/exact-local-record-ref.schema.json"
+      }
+    },
     "portia_work_ref": {
       "1": {
         "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/portia-work-ref.schema.json",
         "path": "schemas/v1/references/portia-work-ref.schema.json"
       }
     },
+    "exact_portia_work_ref": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-portia-work-ref.schema.json",
+        "path": "schemas/v1/references/exact-portia-work-ref.schema.json"
+      }
+    },
     "portia_work_record_ref": {
       "1": {
         "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/portia-work-record-ref.schema.json",
         "path": "schemas/v1/references/portia-work-record-ref.schema.json"
+      }
+    },
+    "exact_portia_work_record_ref": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-portia-work-record-ref.schema.json",
+        "path": "schemas/v1/references/exact-portia-work-record-ref.schema.json"
+      }
+    },
+    "exceptional_removal_ref": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exceptional-removal-ref.schema.json",
+        "path": "schemas/v1/references/exceptional-removal-ref.schema.json"
       }
     },
     "module_work_record_ref": {
@@ -173,6 +197,18 @@
       "1": {
         "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/targets/support-process-target-ref.schema.json",
         "path": "schemas/v1/targets/support-process-target-ref.schema.json"
+      }
+    },
+    "portia_local_work_target": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/targets/portia-local-work-target.schema.json",
+        "path": "schemas/v1/targets/portia-local-work-target.schema.json"
+      }
+    },
+    "exact_portia_work_or_record_target": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/targets/exact-portia-work-or-record-target.schema.json",
+        "path": "schemas/v1/targets/exact-portia-work-or-record-target.schema.json"
       }
     },
     "non_empty_text": {
