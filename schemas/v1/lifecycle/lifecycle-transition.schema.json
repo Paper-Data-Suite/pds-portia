@@ -1,0 +1,206 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/lifecycle/lifecycle-transition.schema.json",
+  "title": "Portia Lifecycle Transition",
+  "description": "Immutable append-only record of one lifecycle-status change for one exact target inside the containing Portia work. The persisted predecessor chain establishes sequence; consumers must not sort by timestamps, rewrite history, or silently retarget references.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "record_type",
+    "module_id",
+    "class_id",
+    "work_id",
+    "transition_id",
+    "target",
+    "previous_transition",
+    "from_status",
+    "to_status",
+    "reason",
+    "effective_at",
+    "creation_source",
+    "created_at",
+    "created_by"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1"
+    },
+    "record_type": {
+      "const": "lifecycle_transition"
+    },
+    "module_id": {
+      "const": "portia"
+    },
+    "class_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+    },
+    "work_id": {
+      "oneOf": [
+        {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-event-id.schema.json"
+        },
+        {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-support-process-id.schema.json"
+        }
+      ]
+    },
+    "transition_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-lifecycle-transition-id.schema.json"
+    },
+    "target": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/targets/portia-local-work-target.schema.json"
+    },
+    "previous_transition": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/lifecycleTransitionRef"
+        }
+      ]
+    },
+    "from_status": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/lowercase-token.schema.json"
+    },
+    "to_status": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/lowercase-token.schema.json"
+    },
+    "reason": {
+      "$ref": "#/$defs/transitionReason"
+    },
+    "effective_at": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+    },
+    "creation_source": {
+      "$ref": "#/$defs/digitalOrImportCreationSource"
+    },
+    "created_at": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+    },
+    "created_by": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/attribution/attribution-agent.schema.json"
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "lifecycleTransitionRef": {
+      "allOf": [
+        {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-local-record-ref.schema.json"
+        },
+        {
+          "properties": {
+            "record_kind": {
+              "const": "lifecycle_transition"
+            },
+            "record_id": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-lifecycle-transition-id.schema.json"
+            },
+            "contract_version": {
+              "const": "1"
+            }
+          }
+        }
+      ]
+    },
+    "recognizedTransitionReason": {
+      "type": "object",
+      "required": [
+        "category",
+        "code"
+      ],
+      "properties": {
+        "category": {
+          "enum": [
+            "workflow",
+            "record_validity",
+            "correction",
+            "dependency",
+            "consolidation",
+            "migration"
+          ]
+        },
+        "code": {
+          "allOf": [
+            {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/lowercase-token.schema.json"
+            },
+            {
+              "not": {
+                "const": "other"
+              }
+            }
+          ]
+        },
+        "detail": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+        }
+      },
+      "additionalProperties": false
+    },
+    "otherTransitionReason": {
+      "type": "object",
+      "required": [
+        "category",
+        "code",
+        "detail"
+      ],
+      "properties": {
+        "category": {
+          "const": "other"
+        },
+        "code": {
+          "const": "other"
+        },
+        "detail": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+        }
+      },
+      "additionalProperties": false
+    },
+    "transitionReason": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/recognizedTransitionReason"
+        },
+        {
+          "$ref": "#/$defs/otherTransitionReason"
+        }
+      ]
+    },
+    "digitalOrImportCreationSource": {
+      "allOf": [
+        {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/provenance/creation-source.schema.json"
+        },
+        {
+          "type": "object",
+          "required": [
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "enum": [
+                "digital_entry",
+                "import"
+              ]
+            }
+          }
+        }
+      ]
+    }
+  },
+  "x-portia-application-invariants": [
+    "from_status_must_differ_from_to_status",
+    "effective_at_must_not_precede_target_created_at",
+    "effective_at_must_not_follow_created_at",
+    "previous_transition_must_not_reference_self",
+    "previous_transition_must_resolve_in_same_work",
+    "previous_transition_must_target_same_record",
+    "previous_transition_to_status_must_equal_from_status",
+    "previous_transition_must_be_unique_selected_head",
+    "target_status_must_reconcile_with_selected_history",
+    "transition_must_be_legal_for_target_contract"
+  ]
+}

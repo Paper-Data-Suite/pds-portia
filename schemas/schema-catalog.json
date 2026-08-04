@@ -211,6 +211,18 @@
         "path": "schemas/v1/targets/exact-portia-work-or-record-target.schema.json"
       }
     },
+    "lifecycle_transition": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/lifecycle/lifecycle-transition.schema.json",
+        "path": "schemas/v1/lifecycle/lifecycle-transition.schema.json"
+      }
+    },
+    "lifecycle_history_correction": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/lifecycle/lifecycle-history-correction.schema.json",
+        "path": "schemas/v1/lifecycle/lifecycle-history-correction.schema.json"
+      }
+    },
     "non_empty_text": {
       "1": {
         "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json",

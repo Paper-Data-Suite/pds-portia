@@ -1,0 +1,217 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/lifecycle/lifecycle-history-correction.schema.json",
+  "title": "Portia Lifecycle History Correction",
+  "description": "Immutable append-only record selecting an explicitly rebuilt lifecycle-transition branch for one exact same-work target. It preserves the replaced branch and never edits transitions, substitutes predecessor references, or silently rewrites history.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "record_type",
+    "module_id",
+    "class_id",
+    "work_id",
+    "correction_id",
+    "target",
+    "previous_correction",
+    "replaced_head",
+    "replacement_head",
+    "reason",
+    "creation_source",
+    "created_at",
+    "created_by"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1"
+    },
+    "record_type": {
+      "const": "lifecycle_history_correction"
+    },
+    "module_id": {
+      "const": "portia"
+    },
+    "class_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+    },
+    "work_id": {
+      "oneOf": [
+        {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-event-id.schema.json"
+        },
+        {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-support-process-id.schema.json"
+        }
+      ]
+    },
+    "correction_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-lifecycle-history-correction-id.schema.json"
+    },
+    "target": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/targets/portia-local-work-target.schema.json"
+    },
+    "previous_correction": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/lifecycleHistoryCorrectionRef"
+        }
+      ]
+    },
+    "replaced_head": {
+      "$ref": "#/$defs/lifecycleTransitionRef"
+    },
+    "replacement_head": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/lifecycleTransitionRef"
+        }
+      ]
+    },
+    "reason": {
+      "$ref": "#/$defs/correctionReason"
+    },
+    "creation_source": {
+      "$ref": "#/$defs/digitalOrImportCreationSource"
+    },
+    "created_at": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+    },
+    "created_by": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/attribution/attribution-agent.schema.json"
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "lifecycleTransitionRef": {
+      "allOf": [
+        {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-local-record-ref.schema.json"
+        },
+        {
+          "properties": {
+            "record_kind": {
+              "const": "lifecycle_transition"
+            },
+            "record_id": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-lifecycle-transition-id.schema.json"
+            },
+            "contract_version": {
+              "const": "1"
+            }
+          }
+        }
+      ]
+    },
+    "lifecycleHistoryCorrectionRef": {
+      "allOf": [
+        {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-local-record-ref.schema.json"
+        },
+        {
+          "properties": {
+            "record_kind": {
+              "const": "lifecycle_history_correction"
+            },
+            "record_id": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-lifecycle-history-correction-id.schema.json"
+            },
+            "contract_version": {
+              "const": "1"
+            }
+          }
+        }
+      ]
+    },
+    "recognizedCorrectionReason": {
+      "type": "object",
+      "required": [
+        "code"
+      ],
+      "properties": {
+        "code": {
+          "enum": [
+            "wrong_target",
+            "wrong_predecessor",
+            "wrong_from_status",
+            "wrong_to_status",
+            "wrong_reason",
+            "wrong_effective_at",
+            "wrong_attribution",
+            "duplicate_transition",
+            "transition_should_not_exist",
+            "multiple_fields_corrected"
+          ]
+        },
+        "detail": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+        }
+      },
+      "additionalProperties": false
+    },
+    "otherCorrectionReason": {
+      "type": "object",
+      "required": [
+        "code",
+        "detail"
+      ],
+      "properties": {
+        "code": {
+          "const": "other"
+        },
+        "detail": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+        }
+      },
+      "additionalProperties": false
+    },
+    "correctionReason": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/recognizedCorrectionReason"
+        },
+        {
+          "$ref": "#/$defs/otherCorrectionReason"
+        }
+      ]
+    },
+    "digitalOrImportCreationSource": {
+      "allOf": [
+        {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/provenance/creation-source.schema.json"
+        },
+        {
+          "type": "object",
+          "required": [
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "enum": [
+                "digital_entry",
+                "import"
+              ]
+            }
+          }
+        }
+      ]
+    }
+  },
+  "x-portia-application-invariants": [
+    "previous_correction_must_not_reference_self",
+    "previous_correction_must_resolve_in_same_work",
+    "previous_correction_must_target_same_record",
+    "previous_correction_must_be_unique_selected_head",
+    "replaced_head_must_be_currently_selected_head",
+    "replacement_head_must_differ_from_replaced_head",
+    "replacement_branch_must_target_same_record",
+    "replacement_branch_must_be_complete_and_valid",
+    "replacement_branch_must_share_ancestor_or_creation_baseline",
+    "excluded_branch_must_not_be_extended",
+    "target_status_must_reconcile_with_corrected_history"
+  ]
+}

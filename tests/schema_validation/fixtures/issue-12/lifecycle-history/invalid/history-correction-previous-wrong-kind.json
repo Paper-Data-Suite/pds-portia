@@ -1,0 +1,39 @@
+{
+  "schema_version": "1",
+  "record_type": "lifecycle_history_correction",
+  "module_id": "portia",
+  "class_id": "eng10_p2_2026",
+  "work_id": "evt_example",
+  "correction_id": "lhc_fix_history",
+  "target": {
+    "kind": "work",
+    "work_kind": "event",
+    "contract_version": "2"
+  },
+  "previous_correction": {
+    "record_kind": "lifecycle_transition",
+    "record_id": "lhc_prior",
+    "contract_version": "1"
+  },
+  "replaced_head": {
+    "record_kind": "lifecycle_transition",
+    "record_id": "lct_wrong",
+    "contract_version": "1"
+  },
+  "replacement_head": {
+    "record_kind": "lifecycle_transition",
+    "record_id": "lct_corrected",
+    "contract_version": "1"
+  },
+  "reason": {
+    "code": "wrong_to_status"
+  },
+  "creation_source": {
+    "type": "digital_entry"
+  },
+  "created_at": "2026-08-04T15:00:00-04:00",
+  "created_by": {
+    "type": "local_operator",
+    "display_label": "Stephen Severino"
+  }
+}
