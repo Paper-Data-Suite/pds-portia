@@ -1,6 +1,6 @@
 # Portia Lifecycle, Amendment, Correction, and Migration Contracts
 
-**Status:** Working design — approved through Decision 11  
+**Status:** Working design — approved through Decision 12  
 **Project:** Paper Data Suite  
 **Module:** `pds-portia`  
 **Issue:** `#12 — Define shared lifecycle, amendment, correction, and migration contracts`  
@@ -4210,7 +4210,633 @@ Rejected because exact dependency references must remain historically stable.
 
 ---
 
-# 15. Consequences
+
+# 15. Approved Decision 12: Duplicate Consolidation
+
+## 15.1 Decision
+
+Portia represents duplicate consolidation through the accepted many-to-one supersession topology.
+
+A successful consolidation creates one new reviewed successor that supersedes every confirmed duplicate predecessor.
+
+Portia does not:
+
+- delete duplicate records;
+- select one existing duplicate as the survivor;
+- mutate an existing record to absorb predecessor lineage;
+- or automatically consolidate records based on similarity.
+
+Every predecessor remains exactly resolvable with its original provenance, lifecycle, amendments, disagreements, dependencies, and incoming references.
+
+## 15.2 Core classifications
+
+Portia distinguishes:
+
+```text
+duplicate_candidate
+confirmed_duplicate
+related_but_distinct
+material_correction
+```
+
+A similarity match creates only a duplicate candidate.
+
+Consolidation occurs only after authorized review confirms that the records represent the same canonical assertion, subject, occurrence, relationship, or dependency condition.
+
+## 15.3 Duplicate-equivalence test
+
+Records are confirmed duplicates only when all five gates pass.
+
+### Same semantic family
+
+Every proposed predecessor belongs to the same semantic record family.
+
+Permitted examples include:
+
+```text
+Event + Event
+Event Participant + Event Participant
+Dependency + Dependency
+```
+
+Prohibited examples include:
+
+```text
+Event + Observation
+Account + Statement of Disagreement
+Event Participant + Event Participant Role
+```
+
+Contract versions may differ when the records remain members of the same semantic family.
+
+### Same real-world referent or assertion
+
+The records represent the same underlying thing, not merely similar or overlapping things.
+
+The following are not sufficient by themselves:
+
+- same student;
+- same date;
+- same classroom;
+- similar wording;
+- same Role type;
+- same dependency target;
+- or nearby timestamps.
+
+### No independent semantic significance
+
+Preserving both records must not communicate independently meaningful:
+
+- source attribution;
+- observation act;
+- communication act;
+- institutional decision;
+- occurrence;
+- implementation;
+- outcome;
+- or lifecycle event.
+
+Two independently made Observations are not duplicates merely because they report the same conduct.
+
+Two separate statements from the same person are not duplicates merely because their wording is identical.
+
+They are duplicates only when review establishes that both are duplicate captures of the same originating act or assertion.
+
+### Compatible material content
+
+The records must not materially contradict one another.
+
+Potentially compatible differences include:
+
+- one record omitting a detail contained in another;
+- spelling or formatting differences;
+- complementary noncontradictory Role basis entries;
+- or compatible descriptive precision.
+
+Material conflicts block consolidation.
+
+Representative conflicts include disagreement about:
+
+- who was involved;
+- whether an occurrence happened;
+- occurrence date or time;
+- Role type;
+- represented statement source;
+- target;
+- authority;
+- relationship direction;
+- or substantive meaning.
+
+Conflicting records remain separate until handled through correction, disagreement, determination, invalidation, or another appropriate process.
+
+### Complete provenance preservation
+
+Every predecessor remains an immutable historical record.
+
+The consolidation must preserve access to:
+
+- each predecessor's creator;
+- creation time;
+- creation source;
+- lifecycle history;
+- amendments;
+- statements of disagreement;
+- dependencies;
+- and references from other records.
+
+Successor lineage exposes predecessor provenance.
+
+It does not overwrite or collapse it.
+
+## 15.4 Duplicate classes
+
+### Exact duplicate
+
+Records are semantically identical after excluding:
+
+- canonical identifiers;
+- storage paths;
+- creation and update timestamps;
+- creation and update attribution;
+- lifecycle history;
+- and replacement lineage.
+
+Mechanical detection may identify exact equivalence, but human confirmation remains required before canonical consolidation.
+
+### Compatible duplicate
+
+Records represent the same canonical assertion but contain compatible, noncontradictory differences.
+
+A human constructs the unified successor.
+
+### Related but distinct
+
+Records overlap but preserve independent semantic or evidentiary value.
+
+They are not consolidated.
+
+A relationship, shared target, derived grouping, or another domain mechanism may connect them.
+
+## 15.5 No separate consolidation record
+
+Version 1 does not introduce a canonical `consolidation` record.
+
+Consolidation is represented through:
+
+1. one new successor containing the complete predecessor set;
+2. one lifecycle transition to `superseded` for each predecessor;
+3. `consolidation / duplicate_consolidated` lifecycle-transition reasons;
+4. record-family successor entries using `duplicate_consolidated` where supported;
+5. the coordinated-operation contract defined in Issue #13.
+
+The successor's `supersedes` set is the canonical consolidation-membership list.
+
+A separate consolidation record would duplicate that topology.
+
+## 15.6 New successor required
+
+Portia never designates an existing duplicate as the survivor.
+
+Every successful consolidation creates a new canonical successor.
+
+This applies even when the predecessors are exact duplicates.
+
+The new successor provides:
+
+- symmetric treatment of predecessor provenance;
+- immutable predecessor content;
+- explicit reviewed lineage;
+- a canonical consolidation time;
+- and an independently validated unified representation.
+
+The successor receives its own:
+
+```text
+record_id
+creation_source
+created_at
+created_by
+updated_at
+updated_by
+```
+
+It does not inherit or backdate those fields from a predecessor.
+
+Domain occurrence time remains represented in the relevant domain field.
+
+## 15.7 Eligible predecessors
+
+A direct consolidation predecessor:
+
+- resolves exactly;
+- belongs to the same semantic family as every other predecessor;
+- is not already `superseded`;
+- passes the duplicate-equivalence test;
+- and may legally transition to `superseded`.
+
+A predecessor may currently be:
+
+- active;
+- closed;
+- invalidated;
+- withdrawn;
+- cancelled;
+- proposed;
+- or draft,
+
+when its record-family lifecycle permits replacement from that status.
+
+A duplicate draft or proposal that was never meaningfully accepted and contributes no unique compatible information should ordinarily be cancelled or invalidated rather than consolidated.
+
+Consolidation is appropriate when symmetric lineage preservation is substantively useful.
+
+## 15.8 Pure-consolidation rule
+
+A duplicate-consolidation operation must be a pure consolidation.
+
+It may:
+
+- reconcile compatible omissions;
+- normalize presentation;
+- preserve the union of compatible set-valued information;
+- and create a reviewed unified expression of the same assertion.
+
+It must not simultaneously conceal:
+
+- identity correction;
+- target correction;
+- source correction;
+- changed occurrence;
+- changed Role type;
+- changed authority basis;
+- or another unrelated material correction.
+
+When one record materially corrects another, Portia uses ordinary replacement with the appropriate correction reason.
+
+When one Event conflates several occurrences, Portia uses Event split replacement.
+
+Mixed correction and consolidation must be decomposed into explicit operations.
+
+## 15.9 Constructing the successor
+
+The successor must be independently valid under its current record-family contract.
+
+### Identity-bearing fields
+
+Identity-bearing fields must:
+
+- agree exactly;
+- be demonstrably equivalent under record-family policy;
+- or cause consolidation to fail.
+
+### Scalar substantive fields
+
+A scalar value may be selected from one predecessor only when:
+
+- other predecessors do not contradict it;
+- the value remains part of the same assertion;
+- and selection does not hide uncertainty.
+
+Portia does not use:
+
+```text
+newest_wins
+oldest_wins
+majority_vote
+non_null_wins
+longest_text_wins
+```
+
+rules.
+
+### Set-valued fields
+
+Compatible set-valued fields may be unified when:
+
+- order is contractually nonsemantic;
+- every item remains valid;
+- entries do not conflict;
+- and the union does not alter canonical meaning.
+
+For example, duplicate Role records with the same target and Role type may preserve a union of compatible basis entries.
+
+### Narrative fields
+
+Narrative content may be synthesized only when:
+
+- every material proposition is supported by at least one predecessor;
+- no predecessor materially contradicts the proposition;
+- the result introduces no unsupported proposition;
+- and the result remains the same canonical assertion.
+
+Simple concatenation is not automatically valid.
+
+## 15.10 Event duplicate rules
+
+Events are duplicates only when they represent the same real-world occurrence.
+
+Review considers:
+
+- occurrence;
+- participants;
+- location;
+- instructional context;
+- summary;
+- ownership;
+- and surrounding records.
+
+Two Events on the same day involving the same student are not necessarily duplicates.
+
+When one Event conflates several occurrences, use Event split replacement.
+
+Consolidation must not bypass later Event-ownership correction rules.
+
+## 15.11 Event Participant duplicate rules
+
+Event Participants are duplicates only when they:
+
+- belong to the same Event;
+- and represent the same human subject.
+
+Different durable subject identities block consolidation.
+
+Resolving an unknown or descriptive subject to a roster student or Actor is ordinarily identity correction, not pure duplicate consolidation.
+
+## 15.12 Event Participant Role duplicate rules
+
+Roles are duplicates only when they have:
+
+- the same Event;
+- the same Participant target;
+- the same Role type;
+- and materially compatible Role meaning.
+
+Compatible basis sets may be unified.
+
+Different Role types or materially conflicting details are not duplicates.
+
+## 15.13 Work Relationship duplicate rules
+
+Work Relationships are duplicates only when they have:
+
+- the same source;
+- the same target;
+- the same relationship type;
+- and compatible detail.
+
+Similar relationships with different endpoints remain distinct.
+
+## 15.14 Statement-of-Disagreement duplicate rules
+
+Statements of disagreement are duplicates only when they represent duplicate captures of the same originating statement by:
+
+- the same represented source;
+- concerning the same exact target;
+- with the same material positions;
+- and the same substantive statement.
+
+Separate expressions of disagreement remain distinct even when wording is identical.
+
+## 15.15 Dependency duplicate rules
+
+Dependencies are duplicates only when they have the same:
+
+- dependent;
+- dependency target;
+- strength;
+- evaluation scope;
+- and purpose.
+
+A difference in any of these dimensions is material dependency correction, not consolidation.
+
+## 15.16 Consolidation operation
+
+A successful consolidation logically performs:
+
+1. identify and lock the complete predecessor set;
+2. confirm duplicate equivalence;
+3. create and validate the new successor;
+4. make the successor replacement-eligible;
+5. transition every predecessor to `superseded`;
+6. reconcile every successor edge and transition reason;
+7. confirm the complete effective many-to-one replacement graph;
+8. rebuild affected projections and review queues.
+
+Every predecessor transition uses:
+
+```text
+reason.category = consolidation
+reason.code = duplicate_consolidated
+```
+
+Application policy requires concise `reason.detail` explaining why the records were determined to represent the same canonical assertion.
+
+Where the successor contract includes per-edge reasons, every edge uses:
+
+```text
+duplicate_consolidated
+```
+
+Every predecessor transition uses one mutually consistent effective time.
+
+Partial success creates a broken replacement and an integrity failure.
+
+Issue #13 defines persistence and recovery mechanics.
+
+## 15.17 Successor lifecycle
+
+The successor begins in the lifecycle state appropriate to the unified canonical record.
+
+It does not automatically inherit the chronologically newest or nominally highest predecessor state.
+
+Representative outcomes include:
+
+- duplicate active Roles ordinarily producing an active successor;
+- duplicate closed Events potentially producing a closed successor;
+- duplicate historical invalidated records potentially producing an invalidated successor;
+- duplicate disagreements not becoming active when represented-source withdrawal still applies.
+
+Lifecycle selection requires record-specific review.
+
+## 15.18 Attached records and exact references
+
+Consolidation does not automatically move or copy:
+
+- statements of disagreement;
+- dependencies;
+- Accounts;
+- Observations;
+- relationships;
+- amendments;
+- or other records attached to a predecessor.
+
+Those records continue to identify the exact predecessor they originally referenced.
+
+They do not silently apply to the consolidated successor.
+
+A current-use relationship that should target the successor requires explicit review and, where necessary:
+
+- successor dependency;
+- successor relationship;
+- new statement of disagreement;
+- or materially corrected dependent record.
+
+Exact references remain stable.
+
+## 15.19 Duplicate detection
+
+Applications may derive duplicate candidates using:
+
+- exact semantic fingerprints;
+- matching authoritative identities;
+- overlapping occurrence information;
+- matching endpoints;
+- normalized-text comparison;
+- import-source identifiers;
+- or other family-specific signals.
+
+Candidate-generation logic must preserve the distinction between:
+
+```text
+possible_duplicate
+confirmed_duplicate
+```
+
+A confidence score, fingerprint match, or machine-learning result cannot canonically consolidate records.
+
+Automated detection may place candidates in a review queue only.
+
+## 15.20 Existing uniqueness violations
+
+When several active records violate a record-family uniqueness rule:
+
+- affected records become `review_required`;
+- lifecycle-dependent writes may be blocked;
+- but Portia does not automatically select a survivor or consolidate them.
+
+Review may conclude that records are:
+
+- duplicates requiring consolidation;
+- materially conflicting;
+- valid and distinct;
+- or subject to another correction path.
+
+## 15.21 Later-discovered duplicates
+
+An effective consolidation set is immutable.
+
+A later-discovered duplicate is not added retroactively to the old successor's predecessor set.
+
+Instead, Portia creates a new successor that supersedes:
+
+- the current replacement-frontier record;
+- and the newly discovered duplicate.
+
+Example:
+
+```text
+A + B -> C
+C + D -> E
+```
+
+The original:
+
+```text
+A + B -> C
+```
+
+consolidation remains unchanged.
+
+## 15.22 Erroneous consolidation
+
+An effective consolidation edge is never edited or deleted.
+
+Incorrect consolidation may require:
+
+- lifecycle-history correction for predecessors that should not have been superseded;
+- invalidation or supersession of the erroneous consolidated successor;
+- new corrected successor records;
+- and coordinated recovery under Issue #13.
+
+Portia does not silently hide an erroneous consolidation or restore predecessors through ordinary lifecycle transitions.
+
+The later integrity-finding decision defines how such failures are classified and surfaced.
+
+## 15.23 Derived views
+
+Derived indexes may expose:
+
+```text
+duplicate_candidates
+confirmed_effective_consolidations
+consolidation_predecessor_sets
+current_replacement_frontiers
+```
+
+These indexes are rebuildable.
+
+They are not canonical authority.
+
+## 15.24 Structural validation
+
+Duplicate equivalence cannot be established by JSON Schema.
+
+Existing and later record-family schemas validate:
+
+- successor structure;
+- predecessor-reference structure;
+- supersession reasons;
+- lifecycle-transition structure;
+- and local field constraints.
+
+Consolidation semantics remain application-level.
+
+## 15.25 Application validation
+
+Application validation must confirm:
+
+- same semantic record family;
+- complete predecessor set;
+- no already-superseded direct predecessor;
+- duplicate equivalence;
+- absence of independently meaningful source acts;
+- compatible material content;
+- independently valid successor content;
+- no survivor shortcut;
+- no newest-wins or other arbitrary selection rule;
+- pure-consolidation semantics;
+- complete reason reconciliation;
+- mutually consistent effective timing;
+- supported many-to-one topology;
+- no silent movement of attached records;
+- immutable completed consolidation sets;
+- and atomic or recoverable persistence.
+
+## 15.26 Rejected alternatives
+
+### Delete duplicate records
+
+Rejected because deletion would erase provenance, lifecycle history, references, amendments, and disagreement context.
+
+### Select an existing survivor
+
+Rejected because it privileges one predecessor's provenance and requires retroactive lineage mutation.
+
+### Automatic consolidation
+
+Rejected because similarity signals cannot prove semantic equivalence.
+
+### Separate consolidation record
+
+Rejected because the successor's predecessor set already provides canonical consolidation membership.
+
+### Mixed correction and consolidation
+
+Rejected because each material operation requires explicit semantics and lineage.
+
+---
+
+# 16. Consequences
 
 ## Positive
 
@@ -4259,26 +4885,25 @@ Rejected because a transition is evidence of another record's state change, not 
 
 ---
 
-# 16. Unresolved Decisions
+# 17. Unresolved Decisions
 
 The following remain unresolved and must not be treated as accepted architecture:
 
-1. duplicate consolidation;
-2. migration-record semantics;
-3. migration identity preservation;
-4. incorrect Event ownership or work-root correction;
-5. exceptional removal boundaries;
-6. integrity-finding vocabulary;
-7. final public schema organization.
+1. migration-record semantics;
+2. migration identity preservation;
+3. incorrect Event ownership or work-root correction;
+4. exceptional removal boundaries;
+5. integrity-finding vocabulary;
+6. final public schema organization.
 
 No schemas should be created for unresolved items until their architectural decisions are approved.
 
-## 17. Next Decision
+## 18. Next Decision
 
-The next decision should define duplicate consolidation, including:
+The next decision should define migration-record semantics, including:
 
-- the semantic test for true duplicates;
-- which record families may be consolidated;
-- how a canonical survivor or replacement is selected;
-- how conflicting details, lifecycle states, and attached records are handled;
-- and how consolidation remains distinct from ordinary correction, Event splitting, and migration.
+- whether migration is represented through a dedicated canonical record;
+- what source and destination identities a migration records;
+- how representation-only migration differs from semantic correction and supersession;
+- whether one migration may cover several records;
+- and how migration status, attribution, validation, and recovery are represented.
