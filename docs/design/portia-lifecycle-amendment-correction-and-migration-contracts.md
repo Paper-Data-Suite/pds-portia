@@ -1,6 +1,6 @@
 # Portia Lifecycle, Amendment, Correction, and Migration Contracts
 
-**Status:** Working design — approved through Decision 17  
+**Status:** Architecture approved through Decision 18 — implementation pending  
 **Project:** Paper Data Suite  
 **Module:** `pds-portia`  
 **Issue:** `#12 — Define shared lifecycle, amendment, correction, and migration contracts`  
@@ -8502,7 +8502,710 @@ Rejected because acknowledgement or preference cannot make an active invariant v
 
 ---
 
-# 21. Consequences
+
+# 21. Approved Decision 18: Final Public Schema Organization
+
+## 21.1 Decision
+
+Portia preserves its existing version-first public schema layout and selectively versions only the contracts that actually change.
+
+Published schema paths and `$id` values are immutable.
+
+Portia does not:
+
+- reorganize existing schemas into new permanent taxonomy directories;
+- modify published instance contracts in place;
+- introduce lockstep Event-family versioning;
+- create mutable `latest` aliases;
+- or interpret the highest version token as the automatically current contract.
+
+## 21.2 Public path and `$id`
+
+Every new public schema uses:
+
+```text
+https://paper-data-suite.github.io/pds-portia/<repository-relative-schema-path>
+```
+
+The `$id` exactly matches the repository-relative schema path.
+
+Example:
+
+```text
+schemas/v1/lifecycle-transition.schema.json
+
+https://paper-data-suite.github.io/pds-portia/
+schemas/v1/lifecycle-transition.schema.json
+```
+
+Existing root-level schemas retain their current paths and `$id` values permanently.
+
+No schema receives:
+
+- a mutable versionless alias;
+- a `/latest/` path;
+- a redirecting `$id`;
+- or an `$id` differing from its checked-in location.
+
+## 21.3 Version-directory meaning
+
+Directories such as:
+
+```text
+schemas/v1/
+schemas/v2/
+schemas/v3/
+```
+
+identify versions of individual schema contracts.
+
+They do not identify:
+
+- the Portia application version;
+- the Issue #12 version;
+- one aggregate Event-family version;
+- the Core contract version;
+- or the newest automatically preferred schema.
+
+Different current record families may legitimately use different contract versions.
+
+Contract versions remain explicit strings used for exact resolution.
+
+## 21.4 Published-schema immutability
+
+After a public contract version is merged, a new version is required for:
+
+- instance-shape changes;
+- changed field meaning;
+- expanded or narrowed enums;
+- changed conditional requirements;
+- changed canonical reference shape;
+- changed successor-entry shape;
+- or another change affecting accepted instances or semantics.
+
+Editorial clarification may remain in place when it does not alter accepted instances or meaning.
+
+Historical schemas remain valid historical contracts even when no longer recommended for new records.
+
+## 21.5 Frozen historical root
+
+Existing unversioned root-level schemas remain frozen beneath:
+
+```text
+schemas/*.schema.json
+```
+
+No new schema is added at the unversioned root.
+
+That location exists only because the original Event-family version-1 contracts predate the version-directory convention.
+
+## 21.6 Canonical record schemas
+
+Canonical work and record schemas live directly beneath their contract-version directory:
+
+```text
+schemas/v1/<record-name>.schema.json
+schemas/v2/<record-name>.schema.json
+schemas/v3/<record-name>.schema.json
+```
+
+Canonical audit records and certificates also remain at the version root.
+
+They are documented by semantic role rather than assigned permanent public paths under `audit/` or `certificates/`.
+
+## 21.7 Shared components
+
+Reusable non-record schemas remain in semantic subdirectories:
+
+```text
+schemas/v1/attribution/
+schemas/v1/common/
+schemas/v1/identifiers/
+schemas/v1/provenance/
+schemas/v1/references/
+schemas/v1/snapshots/
+schemas/v1/targets/
+```
+
+These directories organize JSON Schema components.
+
+They do not define canonical record storage paths.
+
+## 21.8 Derived projections
+
+Noncanonical projection schemas live beneath:
+
+```text
+schemas/v1/projections/
+```
+
+Issue #12 introduces:
+
+```text
+schemas/v1/projections/integrity-finding.schema.json
+```
+
+That schema explicitly states that integrity findings:
+
+- are derived diagnostics;
+- are not canonical Portia records;
+- have no canonical storage location;
+- and may be deleted and rebuilt without altering domain history.
+
+## 21.9 Reserved operational schemas
+
+Issue #13 may later introduce:
+
+```text
+schemas/v1/operations/
+```
+
+for operation journals, recovery state, acknowledgements, suppression settings, or other operational contracts.
+
+Issue #12 does not create that directory.
+
+Operational schemas must not be classified as canonical domain records merely because they are persisted.
+
+## 21.10 New canonical version-1 schemas
+
+Issue #12 publishes:
+
+```text
+schemas/v1/lifecycle-transition.schema.json
+schemas/v1/lifecycle-history-correction.schema.json
+schemas/v1/amendment.schema.json
+schemas/v1/statement-of-disagreement.schema.json
+schemas/v1/dependency.schema.json
+schemas/v1/record-migration.schema.json
+schemas/v1/ownership-correction.schema.json
+schemas/v1/exceptional-removal.schema.json
+```
+
+Each schema:
+
+- uses Draft 2020-12;
+- has a path-matching immutable `$id`;
+- uses `schema_version = "1"`;
+- uses the approved `record_type`;
+- closes its object shape;
+- reuses accepted shared components;
+- and documents structural versus application validation.
+
+## 21.11 Integrity-finding projection schema
+
+Issue #12 publishes:
+
+```text
+schemas/v1/projections/integrity-finding.schema.json
+```
+
+It validates:
+
+```text
+finding_key
+evaluation_key
+rule_id
+rule_version
+category
+code
+severity
+assessment
+effects
+scope
+primary_target
+related_targets
+evidence
+observed_at
+```
+
+It does not introduce:
+
+```text
+record_type
+status
+created_by
+updated_by
+canonical storage
+```
+
+The projection schema closes the approved category, severity, assessment, effect, and scope vocabularies.
+
+Rule-specific code compatibility is enforced through conditional schema branches where practical and through application validation otherwise.
+
+## 21.12 Event remains version 2
+
+The current Event implementation target remains:
+
+```text
+schemas/v2/event.schema.json
+```
+
+Issue #12 does not introduce Event version 3.
+
+Event version 2 already supports:
+
+- exact versioned predecessor work references;
+- predecessors under other classes and roots;
+- multiple predecessors;
+- same-ID cross-version migration;
+- new-ID ownership correction;
+- duplicate consolidation;
+- and Event-split replacement topology.
+
+A new Event version is created only when the Event instance contract itself must change.
+
+## 21.13 Event Participant version 3
+
+Issue #12 introduces:
+
+```text
+schemas/v3/event-participant.schema.json
+```
+
+Version 3 preserves Participant version-2 domain semantics but changes `supersedes` entries from same-work `local_record_ref` references to complete:
+
+```text
+portia_work_record_ref
+```
+
+This permits:
+
+- same-work material correction;
+- cross-work and cross-class ownership correction within the teacher workspace;
+- same-ID version-2-to-version-3 migration;
+- and exact predecessor resolution.
+
+Its successor reasons include the existing Participant reasons plus:
+
+```text
+work_root_corrected
+contract_migrated
+```
+
+Application validation requires:
+
+- `contract_migrated` only for the same logical Participant identity across different contract versions;
+- `work_root_corrected` only for fresh destination identity under a different ownership scope;
+- and no semantic correction disguised as migration.
+
+Participant version 2 remains immutable and supported as a predecessor contract.
+
+## 21.14 Event Participant Role version 3
+
+Issue #12 introduces:
+
+```text
+schemas/v3/event-participant-role.schema.json
+```
+
+Version 3 preserves Role version-2 semantics while replacing same-work Role predecessor references with complete:
+
+```text
+portia_work_record_ref
+```
+
+Its successor reasons add:
+
+```text
+work_root_corrected
+contract_migrated
+```
+
+The destination Role continues to target a Participant within its destination Event scope.
+
+Cross-root correction therefore requires coordinated destination Participant and Role records and ownership-correction certificates.
+
+Role version 2 remains immutable and supported as a predecessor contract.
+
+## 21.15 Work Relationship version 2
+
+Issue #12 introduces:
+
+```text
+schemas/v2/work-relationship.schema.json
+```
+
+Work Relationship version 1 already uses complete work-record predecessor references.
+
+Version 2:
+
+- permits predecessor contract versions 1 and 2;
+- adds `work_root_corrected`;
+- adds `contract_migrated`;
+- preserves accepted correction and consolidation reasons;
+- and documents same-ID migration versus new-ID semantic or ownership replacement.
+
+Work Relationship version 1 remains immutable and supported.
+
+## 21.16 New record-family predecessor references
+
+Statement of Disagreement and Dependency version-1 contracts use complete:
+
+```text
+portia_work_record_ref
+```
+
+successor entries from their first published versions.
+
+Their reason vocabularies include approved domain correction reasons plus, where applicable:
+
+```text
+duplicate_consolidated
+work_root_corrected
+contract_migrated
+other
+```
+
+This avoids immediately requiring a second version solely to support already-approved cross-root correction.
+
+## 21.17 Reuse before invention
+
+New schemas reuse existing public components for:
+
+- structurally safe identifiers;
+- Portia domain identifiers;
+- explicit-offset timestamps;
+- nonempty text;
+- attribution agents;
+- creation provenance;
+- roster-student references;
+- Actor references;
+- display snapshots;
+- Portia work references;
+- local record references;
+- complete Portia work-record references;
+- module work-record references;
+- and Event-local targets.
+
+The existing general references continue to permit explicit null contract versions where a referenced record family lacks an accepted contract.
+
+Exact lifecycle, migration, ownership, and removal uses compose constrained exact variants rather than modifying the existing shared references.
+
+## 21.18 New identifier components
+
+Issue #12 introduces:
+
+```text
+schemas/v1/identifiers/portia-lifecycle-transition-id.schema.json
+schemas/v1/identifiers/portia-lifecycle-history-correction-id.schema.json
+schemas/v1/identifiers/portia-amendment-id.schema.json
+schemas/v1/identifiers/portia-statement-of-disagreement-id.schema.json
+schemas/v1/identifiers/portia-dependency-id.schema.json
+schemas/v1/identifiers/portia-record-migration-id.schema.json
+schemas/v1/identifiers/portia-ownership-correction-id.schema.json
+schemas/v1/identifiers/portia-exceptional-removal-id.schema.json
+```
+
+They compose the accepted opaque identifier-suffix rule and enforce:
+
+```text
+lct_
+lhc_
+amd_
+sod_
+dep_
+mig_
+owc_
+rmv_
+```
+
+prefixes.
+
+## 21.19 Exact reference components
+
+Issue #12 introduces:
+
+```text
+schemas/v1/references/exact-portia-work-ref.schema.json
+schemas/v1/references/exact-local-record-ref.schema.json
+schemas/v1/references/exact-portia-work-record-ref.schema.json
+schemas/v1/references/exceptional-removal-ref.schema.json
+```
+
+The exact variants:
+
+- preserve existing field names;
+- require non-null `contract_version`;
+- do not silently follow migration or supersession;
+- do not select a current version;
+- and do not change logical identity rules.
+
+`exceptional-removal-ref` supports class-module-scoped removal certificates.
+
+## 21.20 Shared target components
+
+Issue #12 introduces:
+
+```text
+schemas/v1/targets/portia-local-work-target.schema.json
+schemas/v1/targets/exact-portia-work-or-record-target.schema.json
+```
+
+`portia-local-work-target` identifies:
+
+- the containing work root;
+- or one child record inside the containing work.
+
+It is reused by lifecycle transitions, lifecycle-history corrections, amendments, Statements of Disagreement, and Dependency dependents.
+
+`exact-portia-work-or-record-target` identifies:
+
+- one exact Portia work representation;
+- or one exact child-record representation.
+
+It is reused by exceptional removal and integrity-finding projections.
+
+Migration and ownership-correction endpoints compose exact references with observed-revision bindings.
+
+## 21.21 Common lexical primitives
+
+Issue #12 may introduce narrowly reusable components such as:
+
+```text
+schemas/v1/common/lowercase-token.schema.json
+schemas/v1/common/json-pointer.schema.json
+```
+
+A primitive becomes shared only when:
+
+- its meaning is stable;
+- it is reused by at least two public contracts or defines a public boundary;
+- and sharing does not erase record-specific validation meaning.
+
+Record-specific reason objects, migration endpoints, removal evidence, amendment operations, and finding evidence remain local `$defs` unless genuinely shared.
+
+Portia does not create:
+
+- a generic universal record schema;
+- a generic reason object;
+- a generic “anything” target;
+- or a universal lifecycle-status schema.
+
+## 21.22 Human-readable schema catalog
+
+Issue #12 adds:
+
+```text
+schemas/README.md
+```
+
+The catalog groups schemas as:
+
+- retained historical canonical contracts;
+- supported predecessor contracts;
+- current implementation targets;
+- shared components;
+- immutable audit and certificate records;
+- derived projection contracts.
+
+For each canonical record family, it identifies:
+
+- public `$id`;
+- contract version;
+- semantic role;
+- current or predecessor status;
+- predecessor versions;
+- permitted migration path where defined;
+- canonical storage category;
+- governing ADR and design decision.
+
+## 21.23 Current implementation-target matrix
+
+After Issue #12 implementation, the catalog identifies:
+
+```text
+Event                         v2
+Event Participant             v3
+Event Participant Role        v3
+Work Relationship             v2
+Lifecycle Transition          v1
+Lifecycle History Correction  v1
+Amendment                     v1
+Statement of Disagreement     v1
+Dependency                    v1
+Record Migration              v1
+Ownership Correction          v1
+Exceptional Removal           v1
+Integrity Finding Projection  v1, derived
+```
+
+“Current” means recommended for new records.
+
+It does not mean:
+
+- silently migrate existing records;
+- reject historical exact references;
+- resolve versionless IDs;
+- or reinterpret older records under a newer contract.
+
+## 21.24 No mutable machine-readable latest pointer
+
+Issue #12 does not add a mutable schema alias or manifest that software may treat as automatic resolution authority.
+
+Applications select accepted contract versions through explicit implementation policy.
+
+Exact references and migration certificates remain authoritative.
+
+## 21.25 Historical records remain exact
+
+Existing records retain the contract version under which they were accepted.
+
+Portia does not automatically rewrite:
+
+```text
+Event Participant v2 -> v3
+Event Participant Role v2 -> v3
+Work Relationship v1 -> v2
+```
+
+during ordinary loading.
+
+## 21.26 Explicit migration fixtures
+
+Issue #12 adds successful and blocked migration examples for:
+
+```text
+Event Participant v2 -> v3
+Event Participant Role v2 -> v3
+Work Relationship v1 -> v2
+```
+
+Existing Event version-1-to-version-2 migration fixtures remain unchanged.
+
+Blocked examples include:
+
+- missing exact source revision;
+- changed logical identity;
+- guessed destination values;
+- changed semantic meaning;
+- branching migration;
+- lifecycle-state mismatch;
+- incomplete three-part reconciliation.
+
+## 21.27 New successors may use current contracts
+
+A material successor may use the current recommended schema even when its predecessor used an older version.
+
+Example:
+
+```text
+Participant v2 with old logical ID
+    ->
+corrected Participant v3 with new logical ID
+```
+
+That is semantic replacement, not migration.
+
+The successor must not use `contract_migrated`.
+
+Migration remains reserved for:
+
+```text
+same logical identity
+different exact contract representation
+preserved semantic meaning
+```
+
+## 21.28 Repository validation
+
+Issue #12 tests confirm:
+
+- every JSON Schema uses Draft 2020-12;
+- every `$id` is unique;
+- every versioned `$id` matches its repository path;
+- root-level historical `$id` values remain unchanged;
+- every public Portia `$ref` resolves offline;
+- no public schema uses `/latest/`;
+- exact references reject null contract versions;
+- projection schemas are not accepted as canonical records;
+- current domain schemas accept approved successor reasons;
+- historical schemas remain unchanged;
+- the schema catalog covers every public schema;
+- documentation does not imply highest-version or automatic-current resolution.
+
+## 21.29 Fixture classes
+
+Every new canonical schema receives:
+
+- structurally valid fixtures;
+- structurally invalid fixtures;
+- application-invalid fixtures that pass JSON Schema but violate cross-record rules.
+
+The integrity-finding projection receives:
+
+- valid confirmed examples;
+- valid indeterminate examples;
+- invalid severity or effect combinations where structurally enforceable;
+- examples demonstrating the absence of a canonical lifecycle envelope.
+
+Domain-version fixtures cover:
+
+- same-work successors;
+- cross-work ownership successors;
+- same-ID migration successors;
+- new-ID material successors.
+
+## 21.30 ADR 0008
+
+ADR 0008 records:
+
+- Decisions 1 through 18;
+- version-first public schema organization;
+- immutable paths and `$id` values;
+- selective rather than lockstep domain versioning;
+- canonical-versus-derived schema distinction;
+- no automatic migration or versionless resolution;
+- and Issue #13 persistence and recovery boundaries.
+
+## 21.31 Documentation reconciliation
+
+Issue #12 updates:
+
+- repository README;
+- schema catalog;
+- Event-family design documentation;
+- shared reference documentation;
+- storage and ownership documentation;
+- lifecycle, correction, and migration design;
+- ADR index;
+- fixture documentation;
+- validation-test documentation.
+
+Documentation clearly distinguishes:
+
+```text
+historical contract
+supported predecessor
+current implementation target
+derived projection
+future operational contract
+```
+
+## 21.32 Rejected alternatives
+
+### Full schema-tree reorganization
+
+Rejected because moving schemas would change durable public `$id` values.
+
+### In-place modification of published contracts
+
+Rejected because changed accepted instances or semantics require new versions.
+
+### Lockstep Event-family versioning
+
+Rejected because each record family is independently versioned.
+
+### Mutable latest aliases
+
+Rejected because exact version selection must remain explicit.
+
+### Permanent audit and certificate directories
+
+Rejected because semantic taxonomy should not become part of immutable public URLs when version-root organization is sufficient.
+
+---
+
+# 22. Consequences
 
 ## Positive
 
@@ -8551,21 +9254,28 @@ Rejected because a transition is evidence of another record's state change, not 
 
 ---
 
-# 22. Unresolved Decisions
+# 23. Architectural Decisions Complete
 
-The following remain unresolved and must not be treated as accepted architecture:
+All Issue #12 architectural decisions are approved.
 
-1. final public schema organization.
+No unresolved design item remains in this document.
 
-No schemas should be created for unresolved items until their architectural decisions are approved.
+Implementation must conform to Decisions 1 through 18. A contradiction discovered during implementation must be surfaced explicitly and resolved through an additional approved decision rather than silently changing the accepted architecture.
 
-## 23. Next Decision
+## 24. Next Phase: Implementation
 
-The final architectural decision should define public schema organization, including:
+Issue #12 now proceeds through implementation slices covering:
 
-- which approved contracts receive public Draft 2020-12 schemas in this issue;
-- how schema versions and directories are organized;
-- which shared primitives are reused versus introduced;
-- whether derived integrity-finding projections receive a public schema;
-- how later domain-family versions compose cross-work correction and migration contracts;
-- and how legacy, current, audit, certificate, and projection schemas are documented without implying unsupported automatic migration.
+- shared identifiers, references, targets, and lexical primitives;
+- canonical lifecycle, correction, disagreement, dependency, migration, ownership-correction, and exceptional-removal schemas;
+- Event Participant v3, Event Participant Role v3, and Work Relationship v2;
+- the derived integrity-finding projection schema;
+- valid, structurally invalid, and application-invalid fixtures;
+- migration and cross-root correction fixtures;
+- offline schema-validation and documentation-consistency tests;
+- `schemas/README.md`;
+- ADR 0008;
+- repository README and design-document reconciliation;
+- and final full-suite validation.
+
+Production persistence, coordinated operation journals, atomicity, rollback, crash recovery, quarantine mechanics, and operational finding caches remain deferred to Issue #13.
