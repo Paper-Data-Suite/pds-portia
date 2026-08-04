@@ -1,6 +1,6 @@
 # Portia Lifecycle, Amendment, Correction, and Migration Contracts
 
-**Status:** Working design — approved through Decision 13  
+**Status:** Working design — approved through Decision 14  
 **Project:** Paper Data Suite  
 **Module:** `pds-portia`  
 **Issue:** `#12 — Define shared lifecycle, amendment, correction, and migration contracts`  
@@ -5526,7 +5526,747 @@ Rejected because accepted audit records remain valid under their historical cont
 
 ---
 
-# 17. Consequences
+# 17. Approved Decision 14: Migration Identity Preservation
+
+## 17.1 Decision
+
+Portia distinguishes:
+
+```text
+logical record identity
+exact representation identity
+```
+
+A representation-only migration preserves logical identity and changes only exact representation identity.
+
+Portia does not:
+
+- assign a new Event `work_id`;
+- assign a new child-record identifier;
+- overwrite the source representation;
+- copy source creation provenance into the destination;
+- replay source lifecycle history into the destination;
+- or silently redirect exact references.
+
+## 17.2 Logical work identity
+
+For a Portia work root, logical identity is:
+
+```text
+module_id
+class_id
+work_kind
+work_id
+```
+
+These values remain stable across migration.
+
+## 17.3 Logical child-record identity
+
+For a Portia child record, logical identity is:
+
+```text
+module_id
+class_id
+work_id
+record_kind
+record_id
+```
+
+These values remain stable across migration.
+
+## 17.4 Exact representation identity
+
+Exact representation identity adds:
+
+```text
+contract_version
+```
+
+Therefore:
+
+```text
+evt_example / Event v1
+evt_example / Event v2
+```
+
+are:
+
+- the same logical Event identity;
+- but different exact Event representations.
+
+Likewise:
+
+```text
+ept_example / Event Participant v1
+ept_example / Event Participant v2
+```
+
+are the same logical Participant identity but different exact representations.
+
+## 17.5 Required identifier preservation
+
+A representation-only migration preserves:
+
+- `module_id`;
+- `class_id`;
+- `work_kind`;
+- `work_id`;
+- `record_kind`, for child records;
+- `record_id`, for child records.
+
+Source and destination differ in:
+
+```text
+contract_version
+```
+
+Version 1 does not support same-contract-version migration.
+
+A representation rewrite retaining the same contract version is ordinarily:
+
+- a nonmaterial amendment;
+- an integrity repair;
+- or no canonical operation,
+
+depending on its semantics.
+
+## 17.6 Event-root consequence
+
+An Event migration retains the same `work_id`.
+
+Example:
+
+```text
+Portia Event evt_123, contract v1
+    ->
+Portia Event evt_123, contract v2
+```
+
+The migration does not create a new Event work root.
+
+All destination child records remain beneath:
+
+```text
+classes/<class_id>/modules/portia/work/evt_123/
+```
+
+A new Event ID would represent a different work.
+
+It would therefore be correction, split, consolidation, or ownership movement rather than representation-only migration.
+
+## 17.7 Child-record consequence
+
+Migrated child records retain their record identifiers.
+
+Example:
+
+```text
+Event Participant ept_123, contract v1
+    ->
+Event Participant ept_123, contract v2
+```
+
+Changing `ept_123` to another Participant ID is not ordinary migration.
+
+It requires another explicit operation unless a future contract defines a broader identity-mapping architecture.
+
+## 17.8 Stable kind tokens
+
+Version 1 migration also requires stable:
+
+```text
+work_kind
+record_kind
+```
+
+tokens.
+
+Renaming a canonical kind cannot be represented safely as ordinary version-1 migration because no separate stable semantic-family identifier currently exists outside those tokens.
+
+A future contract may add explicit semantic-family identifiers and permit kind renaming.
+
+Until then, kind changes are blocked.
+
+## 17.9 Representation coexistence
+
+Source and destination are separate canonical representations.
+
+Both remain exactly resolvable by:
+
+```text
+logical identifiers + contract_version
+```
+
+The destination does not overwrite or destroy the source representation.
+
+The physical persistence mechanism for historical versioned representations belongs to Issue #13, but it must satisfy:
+
+- the old representation remains immutable and retrievable;
+- the new representation becomes current only after reconciliation;
+- source and destination coexist logically under the same stable ID;
+- and exact version resolution does not depend on filesystem modification time.
+
+Migration cannot be enabled until persistence supports version-qualified historical resolution.
+
+## 17.10 Self-supersession interpretation
+
+The prohibition on self-supersession applies to the same exact representation identity.
+
+Prohibited:
+
+```text
+Event evt_123 v2 -> Event evt_123 v2
+```
+
+Permitted only for accepted migration:
+
+```text
+Event evt_123 v1 -> Event evt_123 v2
+```
+
+The migration case preserves logical identity while replacing one exact representation with another.
+
+Reusing one logical ID across contract versions is reserved for representation-only migration.
+
+Ordinary material correction, consolidation, or split replacement creates new logical identifiers.
+
+## 17.11 One current representation
+
+For each logical identity, Portia permits at most one effective current representation.
+
+After successful migration:
+
+```text
+evt_123 v1 = superseded
+evt_123 v2 = current
+```
+
+Two non-superseded canonical representations of the same logical identity constitute a broken migration or integrity failure.
+
+A source representation has at most one direct effective migration destination.
+
+Migration therefore forms a nonbranching version chain:
+
+```text
+v1 -> v2 -> v3
+```
+
+It does not form:
+
+```text
+      -> v2a
+v1
+      -> v2b
+```
+
+Branching replacement remains available only through record-family correction or Event-split rules using new logical IDs.
+
+## 17.12 Destination creation provenance
+
+Creation provenance is representation-local.
+
+The destination uses:
+
+```json
+{
+  "type": "digital_entry"
+}
+```
+
+It does not copy the source's `creation_source`.
+
+For example:
+
+```text
+source v1 creation_source = paper_capture
+destination v2 creation_source = digital_entry
+```
+
+This does not erase paper provenance.
+
+The source remains immutable and is linked through:
+
+- the migration certificate;
+- the destination's migration supersession entry;
+- and the source's lifecycle transition.
+
+A derived provenance view may report that the current representation migrated from a paper-captured source representation.
+
+Copying `paper_capture` to the destination would falsely claim the destination representation came directly from paper.
+
+## 17.13 Destination timestamps and attribution
+
+The destination receives representation-local provenance:
+
+```text
+created_at = migration effective_at
+created_by = migration record created_by
+updated_at = created_at
+updated_by = created_by
+creation_source = digital_entry
+```
+
+The destination does not backdate `created_at` to source creation time.
+
+The source retains its original:
+
+- `creation_source`;
+- `created_at`;
+- `created_by`;
+- `updated_at`;
+- and `updated_by`.
+
+The migration certificate preserves the relationship between representation histories.
+
+## 17.14 Logical-origin projection
+
+Applications may derive:
+
+```text
+logical_origin_representation
+logical_origin_creation_source
+logical_origin_created_at
+logical_origin_created_by
+migration_chain
+current_representation
+```
+
+These are projections.
+
+They are not copied into every destination record.
+
+For:
+
+```text
+v1 -> v2 -> v3
+```
+
+the logical origin remains v1, while v3 retains its own representation-local creation provenance.
+
+## 17.15 Lifecycle-history treatment
+
+Lifecycle history remains attached to exact representations.
+
+The source representation retains:
+
+- its creation baseline;
+- all ordinary lifecycle transitions;
+- all lifecycle-history corrections;
+- all amendments;
+- and its final transition to `superseded` for migration.
+
+The destination does not copy or replay those transitions.
+
+It begins with a creation baseline matching the source's semantic status immediately before migration.
+
+Representative baselines include:
+
+```text
+active v1 -> active v2 baseline
+closed v1 -> closed v2 baseline
+proposed v1 -> proposed v2 baseline
+withdrawn v1 -> withdrawn v2 baseline
+invalidated v1 -> invalidated v2 baseline
+```
+
+The destination baseline is established at migration `effective_at`.
+
+The source ends in:
+
+```text
+superseded
+```
+
+using:
+
+```text
+reason.category = migration
+reason.code = <migration reason code>
+```
+
+## 17.16 No fabricated transition replay
+
+Suppose v1 followed:
+
+```text
+draft -> active -> closed
+```
+
+A migrated v2 Event begins with baseline:
+
+```text
+closed
+```
+
+Portia does not fabricate v2 transitions replaying:
+
+```text
+draft -> active -> closed
+```
+
+Those transitions occurred in v1 representation history.
+
+A logical-history projection may display:
+
+```text
+v1 creation and transitions
+migration
+v2 baseline and later transitions
+```
+
+but exact representation histories remain separate.
+
+## 17.17 Migration of preparatory states
+
+Pure migration may preserve:
+
+```text
+draft
+proposed
+```
+
+states.
+
+This is a narrow migration exception to ordinary successor replacement eligibility.
+
+A migrated draft remains draft.
+
+A migrated proposal remains proposed.
+
+The migration becomes effective because:
+
+- logical identity is unchanged;
+- semantic status is unchanged;
+- the migration certificate is accepted;
+- and three-part migration reconciliation is complete.
+
+This exception does not permit an ordinary correction or consolidation successor to become effective while merely draft or proposed.
+
+## 17.18 Amendment history
+
+Accepted amendment records remain attached to the exact source representation they amended.
+
+The destination substantive state includes the complete valid effect of source amendments through:
+
+```text
+source.observed_updated_at
+```
+
+but amendment records are not copied or retargeted.
+
+Future amendments target the destination representation.
+
+A logical-history view may display source and destination amendments in migration-chain order.
+
+## 17.19 Exact attached references
+
+Records targeting the source remain exact historical references.
+
+Migration does not automatically move or rewrite:
+
+- Statements of Disagreement;
+- Dependencies;
+- Work Relationships;
+- Role basis references;
+- Accounts;
+- Observations;
+- or other attached records.
+
+They continue to resolve to the source contract version.
+
+For current use against the destination, each referring record must be:
+
+- migrated;
+- replaced;
+- or explicitly reviewed under its own contract.
+
+Sharing a logical ID does not authorize changing only a referenced `contract_version` in place.
+
+That remains a material reference change unless performed as part of the referring record's own valid migration.
+
+## 17.20 Exact reference resolution
+
+Canonical references resolve exactly by:
+
+```text
+module
+class
+work
+record kind and ID, where applicable
+contract_version
+```
+
+An exact reference to v1 always returns v1.
+
+It never silently returns v2.
+
+## 17.21 Current-representation discovery
+
+Applications may provide an explicit derived operation such as:
+
+```text
+resolve_current_representation
+```
+
+That operation may return:
+
+- the exact requested representation;
+- migration status;
+- migration chain;
+- current representation;
+- and any integrity condition.
+
+This is navigation, not canonical reference substitution.
+
+## 17.22 Versionless lookup prohibited
+
+Internal and public operations must not identify migrated records by identifier alone when several contract representations may exist.
+
+`contract_version` is mandatory for exact canonical resolution.
+
+Versionless lookup would be ambiguous and could silently cross historical boundaries.
+
+## 17.23 Record-family identity invariants
+
+Migration preserves every record-family identity invariant.
+
+### Event
+
+Migration preserves:
+
+- the same real-world occurrence;
+- the same owning class and school year;
+- the same summary meaning;
+- the same location meaning;
+- and the same instructional-context meaning.
+
+### Event Participant
+
+Migration preserves:
+
+- the same Event;
+- the same represented human;
+- and the same subject identity or honest equivalent representation.
+
+### Event Participant Role
+
+Migration preserves:
+
+- the same Event;
+- the same Participant target;
+- the same Role type;
+- the same basis meaning;
+- and the same substantive contextual meaning.
+
+### Work Relationship
+
+Migration preserves:
+
+- the same source;
+- the same target;
+- the same relationship type;
+- and the same directional meaning.
+
+### Statement of Disagreement
+
+Migration preserves:
+
+- the same represented source;
+- the same exact disputed target;
+- the same positions;
+- the same substantive statement;
+- and the same withdrawal state where applicable.
+
+### Dependency
+
+Migration preserves:
+
+- the same dependent;
+- the same dependency target;
+- the same strength;
+- the same evaluation scope;
+- and the same purpose.
+
+Failure of any invariant makes the operation correction, consolidation, split, invalidation, or ownership correction rather than migration.
+
+## 17.24 Identifier compatibility requirement
+
+A destination contract must permit the source's stable canonical identifier.
+
+A schema upgrade that rejects previously valid Portia identifiers cannot use ordinary migration unless the destination contract explicitly preserves those IDs.
+
+Migration cannot assign a new ID merely to satisfy a newer identifier pattern.
+
+Changing the ID changes logical identity.
+
+Contract evolution should preserve accepted historical identifier syntax or introduce a future explicit identity-mapping architecture.
+
+## 17.25 Migration reconciliation
+
+Every successful migration uses all three canonical components:
+
+1. destination representation with the same logical ID and a different contract version;
+2. source lifecycle transition to `superseded`;
+3. immutable `record_migration` certificate.
+
+Where the destination contract has `supersedes`, it references:
+
+```text
+same logical ID
+source contract_version
+```
+
+All components agree on:
+
+- source exact representation;
+- destination exact representation;
+- semantic family;
+- reason;
+- effective time;
+- and migration procedure.
+
+## 17.26 Current-representation chain
+
+For:
+
+```text
+evt_123 v1 -> evt_123 v2 -> evt_123 v3
+```
+
+the effective migration chain determines current representation.
+
+Portia does not select v3 merely because `3` is the highest version token.
+
+A higher version lacking complete reconciliation is not current.
+
+## 17.27 Corrections after migration
+
+A material correction after migration creates a new logical record identifier.
+
+Example:
+
+```text
+evt_123 v1
+    migration
+evt_123 v2
+    material correction
+evt_456 v2
+```
+
+The corrected Event does not reuse `evt_123`.
+
+This preserves:
+
+```text
+same logical ID across versions = migration only
+new logical ID = semantic replacement
+```
+
+A later migration of the corrected Event may preserve:
+
+```text
+evt_456 v2 -> evt_456 v3
+```
+
+## 17.28 Interrupted migration
+
+Staged destination content is not a second canonical current representation.
+
+Issue #13 must keep incomplete destination representations:
+
+- outside ordinary canonical resolution;
+- explicitly marked through operation state;
+- or quarantined from current-use indexes.
+
+Only the completed coordinated operation makes the destination canonical at `effective_at`.
+
+Portia does not resolve competing representations by:
+
+- highest contract version;
+- newest filesystem timestamp;
+- destination file existence;
+- or newest `created_at`.
+
+## 17.29 Erroneous identity-preserving migration
+
+When a supposed migration changed logical identity or semantic meaning:
+
+- the migration certificate remains immutable;
+- the operation is surfaced as an integrity failure;
+- source lifecycle history may require correction;
+- the erroneous destination may require invalidation or supersession;
+- and corrected records use the appropriate semantic operation.
+
+Portia does not relabel the operation as valid migration after the fact.
+
+## 17.30 Structural validation
+
+JSON Schema may validate:
+
+- source and destination contract versions;
+- stable identifier syntax;
+- endpoint kinds;
+- and local reference shapes.
+
+JSON Schema cannot prove:
+
+- logical-identity equality across endpoint structures;
+- record-family invariant preservation;
+- lifecycle-baseline equivalence;
+- provenance reconciliation;
+- or migration-chain uniqueness.
+
+These remain application-level obligations.
+
+## 17.31 Application validation
+
+Application validation must confirm:
+
+- source and destination have the same logical identity;
+- contract versions differ;
+- exact representations differ;
+- work-kind and record-kind tokens remain stable;
+- destination identifiers equal source identifiers;
+- destination contract accepts preserved IDs;
+- same owning class and work root;
+- all record-family identity invariants;
+- destination representation-local creation provenance;
+- source historical provenance remains intact;
+- lifecycle status is semantically preserved;
+- lifecycle and amendment histories remain representation-local;
+- destination state incorporates all valid source amendments through the observed revision;
+- one effective current representation per logical ID;
+- no migration branching or cycles;
+- no silent reference rewriting;
+- complete three-part reconciliation;
+- and version-aware historical persistence.
+
+## 17.32 Rejected alternatives
+
+### New identifiers for every migration
+
+Rejected because representation-only schema change would appear to create a different domain entity.
+
+### In-place source overwrite
+
+Rejected because historical exact representation resolution would be destroyed.
+
+### Copied source creation provenance
+
+Rejected because the destination representation was created digitally during migration.
+
+### Replayed lifecycle history
+
+Rejected because lifecycle events belong to the exact representation in which they occurred.
+
+### Versionless current-record lookup
+
+Rejected because it would silently cross historical representation boundaries.
+
+---
+
+# 18. Consequences
 
 ## Positive
 
@@ -5575,24 +6315,23 @@ Rejected because a transition is evidence of another record's state change, not 
 
 ---
 
-# 18. Unresolved Decisions
+# 19. Unresolved Decisions
 
 The following remain unresolved and must not be treated as accepted architecture:
 
-1. migration identity preservation;
-2. incorrect Event ownership or work-root correction;
-3. exceptional removal boundaries;
-4. integrity-finding vocabulary;
-5. final public schema organization.
+1. incorrect Event ownership or work-root correction;
+2. exceptional removal boundaries;
+3. integrity-finding vocabulary;
+4. final public schema organization.
 
 No schemas should be created for unresolved items until their architectural decisions are approved.
 
-## 19. Next Decision
+## 20. Next Decision
 
-The next decision should define migration identity preservation, including:
+The next decision should define incorrect Event ownership and work-root correction, including:
 
-- whether source and destination retain or change canonical record identifiers;
-- how original creation provenance and attribution are preserved;
-- whether lifecycle history continues across representation versions or remains attached to each exact representation;
-- how references resolve across migrated identities;
-- and which identity-bearing fields must remain invariant for migration to remain representation-only.
+- how an Event recorded under the wrong Core class or Portia work root is replaced without mutating historical ownership;
+- whether the correction uses ordinary supersession, a dedicated relocation record, or both;
+- how child records and cross-work references are handled;
+- how source and destination roots reconcile across class boundaries;
+- and how exact historical resolution, authorization, and coordinated recovery are preserved.
