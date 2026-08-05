@@ -19,6 +19,10 @@
       "2": {
         "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v2/event-participant.schema.json",
         "path": "schemas/v2/event-participant.schema.json"
+      },
+      "3": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v3/event-participant.schema.json",
+        "path": "schemas/v3/event-participant.schema.json"
       }
     },
     "event_participant_role": {
@@ -29,6 +33,10 @@
       "2": {
         "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v2/event-participant-role.schema.json",
         "path": "schemas/v2/event-participant-role.schema.json"
+      },
+      "3": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v3/event-participant-role.schema.json",
+        "path": "schemas/v3/event-participant-role.schema.json"
       }
     },
     "portia_event_id": {
@@ -275,6 +283,10 @@
       "1": {
         "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/work-relationship.schema.json",
         "path": "schemas/v1/work-relationship.schema.json"
+      },
+      "2": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v2/work-relationship.schema.json",
+        "path": "schemas/v2/work-relationship.schema.json"
       }
     },
     "dependency": {

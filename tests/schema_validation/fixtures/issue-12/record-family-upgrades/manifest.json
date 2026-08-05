@@ -1,0 +1,111 @@
+{
+  "valid": {
+    "participant-active-roster.json": "schemas/v3/event-participant.schema.json",
+    "participant-proposed-actor-import.json": "schemas/v3/event-participant.schema.json",
+    "participant-cross-work-ownership-successor.json": "schemas/v3/event-participant.schema.json",
+    "participant-migration-successor.json": "schemas/v3/event-participant.schema.json",
+    "role-active-direct.json": "schemas/v3/event-participant-role.schema.json",
+    "role-active-reported-account.json": "schemas/v3/event-participant-role.schema.json",
+    "role-cross-work-ownership-successor.json": "schemas/v3/event-participant-role.schema.json",
+    "role-migration-successor.json": "schemas/v3/event-participant-role.schema.json",
+    "relationship-active.json": "schemas/v2/work-relationship.schema.json",
+    "relationship-proposed-detail.json": "schemas/v2/work-relationship.schema.json",
+    "relationship-cross-work-ownership-successor.json": "schemas/v2/work-relationship.schema.json",
+    "relationship-migration-successor.json": "schemas/v2/work-relationship.schema.json"
+  },
+  "invalid": {
+    "participant-wrong-schema-version.json": "schemas/v3/event-participant.schema.json",
+    "participant-local-predecessor-shape.json": "schemas/v3/event-participant.schema.json",
+    "participant-predecessor-null-version.json": "schemas/v3/event-participant.schema.json",
+    "participant-predecessor-wrong-kind.json": "schemas/v3/event-participant.schema.json",
+    "participant-unsupported-supersession-reason.json": "schemas/v3/event-participant.schema.json",
+    "participant-other-missing-detail.json": "schemas/v3/event-participant.schema.json",
+    "participant-extra-property.json": "schemas/v3/event-participant.schema.json",
+    "participant-invalid-status.json": "schemas/v3/event-participant.schema.json",
+    "participant-actor-missing-snapshot.json": "schemas/v3/event-participant.schema.json",
+    "participant-invalid-id.json": "schemas/v3/event-participant.schema.json",
+    "role-local-predecessor-shape.json": "schemas/v3/event-participant-role.schema.json",
+    "role-predecessor-null-version.json": "schemas/v3/event-participant-role.schema.json",
+    "role-predecessor-wrong-kind.json": "schemas/v3/event-participant-role.schema.json",
+    "role-unsupported-supersession-reason.json": "schemas/v3/event-participant-role.schema.json",
+    "role-other-missing-detail.json": "schemas/v3/event-participant-role.schema.json",
+    "role-target-null-contract-version.json": "schemas/v3/event-participant-role.schema.json",
+    "role-invalid-role-type.json": "schemas/v3/event-participant-role.schema.json",
+    "role-active-contextual-missing-detail.json": "schemas/v3/event-participant-role.schema.json",
+    "role-active-reported-missing-account.json": "schemas/v3/event-participant-role.schema.json",
+    "role-paper-preallocated.json": "schemas/v3/event-participant-role.schema.json",
+    "role-extra-property.json": "schemas/v3/event-participant-role.schema.json",
+    "relationship-predecessor-null-version.json": "schemas/v2/work-relationship.schema.json",
+    "relationship-predecessor-wrong-kind.json": "schemas/v2/work-relationship.schema.json",
+    "relationship-unsupported-supersession-reason.json": "schemas/v2/work-relationship.schema.json",
+    "relationship-other-missing-detail.json": "schemas/v2/work-relationship.schema.json",
+    "relationship-source-null-version.json": "schemas/v2/work-relationship.schema.json",
+    "relationship-target-null-version.json": "schemas/v2/work-relationship.schema.json",
+    "relationship-target-support-process.json": "schemas/v2/work-relationship.schema.json",
+    "relationship-invalid-type.json": "schemas/v2/work-relationship.schema.json",
+    "relationship-extra-reverse-field.json": "schemas/v2/work-relationship.schema.json",
+    "relationship-paper-preallocated.json": "schemas/v2/work-relationship.schema.json"
+  },
+  "application_invalid": {
+    "participant-cross-work-with-ordinary-reason.json": {
+      "schema_path": "schemas/v3/event-participant.schema.json",
+      "rule_id": "portia.participant_v3.cross_work_requires_ownership_reason"
+    },
+    "participant-ownership-reason-same-work.json": {
+      "schema_path": "schemas/v3/event-participant.schema.json",
+      "rule_id": "portia.participant_v3.ownership_reason_requires_cross_work"
+    },
+    "participant-migration-id-changed.json": {
+      "schema_path": "schemas/v3/event-participant.schema.json",
+      "rule_id": "portia.participant_v3.migration_identity_preservation"
+    },
+    "participant-migration-cross-work.json": {
+      "schema_path": "schemas/v3/event-participant.schema.json",
+      "rule_id": "portia.participant_v3.migration_same_work"
+    },
+    "participant-duplicate-active-durable-subject.json": {
+      "schema_path": "schemas/v3/event-participant.schema.json",
+      "rule_id": "portia.participant_v3.active_subject_uniqueness"
+    },
+    "role-cross-work-with-ordinary-reason.json": {
+      "schema_path": "schemas/v3/event-participant-role.schema.json",
+      "rule_id": "portia.role_v3.cross_work_requires_ownership_reason"
+    },
+    "role-migration-id-changed.json": {
+      "schema_path": "schemas/v3/event-participant-role.schema.json",
+      "rule_id": "portia.role_v3.migration_identity_preservation"
+    },
+    "role-ownership-reason-same-work.json": {
+      "schema_path": "schemas/v3/event-participant-role.schema.json",
+      "rule_id": "portia.role_v3.ownership_reason_requires_cross_work"
+    },
+    "role-target-unresolved.json": {
+      "schema_path": "schemas/v3/event-participant-role.schema.json",
+      "rule_id": "portia.role_v3.target_resolution"
+    },
+    "role-self-supersession.json": {
+      "schema_path": "schemas/v3/event-participant-role.schema.json",
+      "rule_id": "portia.role_v3.self_supersession"
+    },
+    "relationship-envelope-source-mismatch.json": {
+      "schema_path": "schemas/v2/work-relationship.schema.json",
+      "rule_id": "portia.relationship_v2.source_envelope_agreement"
+    },
+    "relationship-self-reference.json": {
+      "schema_path": "schemas/v2/work-relationship.schema.json",
+      "rule_id": "portia.relationship_v2.self_reference"
+    },
+    "relationship-cross-work-with-ordinary-reason.json": {
+      "schema_path": "schemas/v2/work-relationship.schema.json",
+      "rule_id": "portia.relationship_v2.cross_work_requires_ownership_reason"
+    },
+    "relationship-migration-id-changed.json": {
+      "schema_path": "schemas/v2/work-relationship.schema.json",
+      "rule_id": "portia.relationship_v2.migration_identity_preservation"
+    },
+    "relationship-silent-target-retarget.json": {
+      "schema_path": "schemas/v2/work-relationship.schema.json",
+      "rule_id": "portia.relationship_v2.no_silent_retarget"
+    }
+  }
+}

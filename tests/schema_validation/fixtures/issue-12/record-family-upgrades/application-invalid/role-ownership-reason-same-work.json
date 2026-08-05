@@ -1,0 +1,50 @@
+{
+  "schema_version": "3",
+  "record_type": "event_participant_role",
+  "module_id": "portia",
+  "class_id": "eng10_p2_2026",
+  "work_id": "evt_alpha",
+  "role_id": "epr_new",
+  "target": {
+    "kind": "event_participant",
+    "record_ref": {
+      "record_kind": "event_participant",
+      "record_id": "ep_alpha",
+      "contract_version": "3"
+    }
+  },
+  "status": "active",
+  "role_type": "directly_involved",
+  "creation_source": {
+    "type": "digital_entry"
+  },
+  "created_at": "2026-08-04T20:00:00-04:00",
+  "created_by": {
+    "type": "local_operator",
+    "display_label": "Stephen Severino"
+  },
+  "updated_at": "2026-08-04T20:05:00-04:00",
+  "updated_by": {
+    "type": "local_operator",
+    "display_label": "Stephen Severino"
+  },
+  "supersedes": [
+    {
+      "work_record_ref": {
+        "work_ref": {
+          "module_id": "portia",
+          "class_id": "eng10_p2_2026",
+          "work_id": "evt_alpha",
+          "work_kind": "event",
+          "contract_version": "2"
+        },
+        "record_ref": {
+          "record_kind": "event_participant_role",
+          "record_id": "epr_old",
+          "contract_version": "2"
+        }
+      },
+      "reason": "work_root_corrected"
+    }
+  ]
+}
