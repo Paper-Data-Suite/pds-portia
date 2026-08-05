@@ -1,6 +1,6 @@
 # Portia Coordinated Persistence, Recovery, and Derived-Index Contracts
 
-**Status:** In development — through Decision 6
+**Status:** In development — through Decision 9
 **Project:** Paper Data Suite
 **Module:** `pds-portia`
 **Issue:** `#13 — Define coordinated persistence, recovery, and derived-index contracts`
@@ -2099,38 +2099,1254 @@ The final schema set should avoid separate public files where `$defs` provide cl
 
 ---
 
-# 11. Decisions Remaining
+# 11. Approved Decision 7: Lock Identity, Scope, Ordering, and Conservative Clearing
+
+## 11.1 Decision
+
+Portia uses explicit exclusive lock records to coordinate writers that may affect the same operational or canonical scope.
+
+A lock:
+
+- prevents a conflicting writer from beginning the protected mutation;
+- identifies the operation that owns the coordination claim;
+- preserves minimum diagnostic metadata;
+- and supports exact inspection and conservative clearing.
+
+A lock does not:
+
+- establish canonical identity;
+- prove authorization;
+- prove that its owner process is still active;
+- prove that the protected target exists;
+- make a multi-file operation atomic;
+- or replace operation-journal evidence.
+
+## 11.2 Lock namespace
+
+Workspace-scoped lock records are stored beneath:
+
+```text
+<PDS workspace>/
+  portia/
+    locks/
+      <lock_id>.json
+```
+
+The lock namespace is bounded and separate from:
+
+- canonical Portia work roots;
+- operation-journal revisions;
+- staged artifacts;
+- and derived projections.
+
+A lock path is derived from a validated stable lock identity.
+
+User-supplied arbitrary paths must not determine the lock location.
+
+## 11.3 Stable lock identity
+
+Lock identifiers use:
+
+```text
+lock_<64-lowercase-hex-digits>
+```
+
+The hexadecimal suffix is the SHA-256 digest of the deterministic canonical encoding of the lock key.
+
+The lock key includes:
+
+```text
+lock_scope
++
+normalized protected target
+```
+
+The lock ID is stable for the same protected scope.
+
+It must not encode human-readable student, class, work, or record information.
+
+## 11.4 Lock scopes
+
+The initial lock scopes are:
+
+```text
+operation
+workspace
+class
+work
+record
+derived_projection
+```
+
+### `operation`
+
+Protects one Operation Journal series, its current pointer, and operation-owned coordination state.
+
+### `workspace`
+
+Protects an explicitly bounded workspace-wide Portia mutation.
+
+Workspace locks are exceptional because they block broad work.
+
+They must not be used merely because acquiring narrower locks is inconvenient.
+
+### `class`
+
+Protects Portia mutations whose safe evaluation requires exclusive access to one class scope.
+
+A class lock does not grant authority to modify Core-owned class or roster records.
+
+### `work`
+
+Protects one exact Portia work and its same-work records against conflicting writes.
+
+### `record`
+
+Protects one exact Portia work-record representation when the operation contract proves that broader work locking is unnecessary.
+
+### `derived_projection`
+
+Protects installation or replacement of one exact derived-projection kind and scope.
+
+It does not block canonical writes unless the operation separately owns the required canonical lock scopes.
+
+## 11.5 Protected targets
+
+A lock target uses a normalized branch appropriate to its scope.
+
+Examples include:
+
+```text
+operation reference
+exact Portia work reference
+exact Portia work-record reference
+class ID
+workspace marker
+derived projection kind + exact projection scope
+```
+
+Lock normalization must preserve exact identity and must not rely on display labels, filenames, or directory enumeration.
+
+## 11.6 Lock conflict hierarchy
+
+Application validation enforces these initial conflicts:
+
+- a workspace lock conflicts with every Portia mutation lock in the workspace;
+- a class lock conflicts with work and record locks within that class;
+- a work lock conflicts with record locks within that work;
+- two record locks conflict only when they protect the same exact record;
+- two operation locks conflict only when they protect the same operation series;
+- two derived-projection locks conflict when projection kind and scope agree;
+- and operation-specific validation may require a broader conflict where one derived installation is safety-critical to the canonical mutation.
+
+A narrower lock cannot bypass a conflicting broader lock.
+
+## 11.7 Minimum necessary scope
+
+An operation must acquire the narrowest lock set that safely protects:
+
+- its precondition recheck;
+- staged candidate validation;
+- canonical-gate writes;
+- current-pointer publication;
+- and operation-specific safety effects.
+
+The operation must not acquire broad locks merely to conceal an incomplete target analysis.
+
+## 11.8 Complete lock set before canonical mutation
+
+The prepared journal records the complete intended lock set.
+
+Before canonical mutation:
+
+1. every required lock is acquired;
+2. every acquired lock matches the journaled lock identity;
+3. the complete set is revalidated;
+4. and every protected precondition is rechecked.
+
+An operation must not acquire an unplanned additional canonical lock after mutation may have begun.
+
+A newly required lock after that boundary triggers recovery, compensation, quarantine, or a new repair operation.
+
+## 11.9 Deterministic acquisition order
+
+Locks are acquired in ascending order by this tuple:
+
+```text
+scope_rank
+normalized_lock_key
+lock_id
+```
+
+The initial scope ranks are:
+
+```text
+1 operation
+2 workspace
+3 class
+4 work
+5 record
+6 derived_projection
+```
+
+Within one scope rank, the normalized lock key is compared bytewise using its deterministic UTF-8 encoding.
+
+Every operation computes and records the complete ordered lock list before acquisition.
+
+The implementation must not acquire locks in discovery order, dictionary order, or filesystem enumeration order.
+
+## 11.10 Multiple operation locks
+
+A repair or recovery action may need to coordinate:
+
+- its own operation series;
+- and one or more target operation series.
+
+All required operation locks are included in the same ordered lock set and sorted by normalized operation identity.
+
+The repair operation must not acquire one operation lock, inspect another, and later acquire the second in an inconsistent order.
+
+## 11.11 Lock creation
+
+Lock acquisition uses exclusive creation.
+
+If the lock path already exists:
+
+- the operation does not overwrite it;
+- the existing lock is read and validated;
+- exact same-operation reentrancy is evaluated only under an accepted operation-specific rule;
+- otherwise the operation reports a conflict, recovery condition, or malformed lock.
+
+Version 1 should not permit general recursive or reentrant lock ownership.
+
+## 11.12 Lock record contents
+
+A lock record contains minimum coordination metadata comparable to:
+
+```text
+schema_version
+record_type
+lock_id
+lock_scope
+protected_target
+owning_operation
+acquired_at
+deployment_instance_id
+process_instance_id
+```
+
+`deployment_instance_id` and `process_instance_id` are opaque diagnostic tokens.
+
+They do not establish that the process remains active.
+
+The lock record must not contain:
+
+- canonical payload;
+- student names;
+- Event narratives;
+- credentials;
+- authorization secrets;
+- removed content;
+- or complete operation plans.
+
+## 11.13 Lock fingerprint
+
+Every lock observation records an exact content fingerprint:
+
+```text
+workspace-relative path
+SHA-256 digest
+byte length
+```
+
+The fingerprint binds later release or clearing to the exact inspected bytes.
+
+The lock ID alone is insufficient because a lock may have been replaced after inspection.
+
+## 11.14 Lock release by owner
+
+Normal lock release requires:
+
+- the exact lock identity;
+- the exact observed fingerprint;
+- agreement with the owning operation;
+- confirmation that the protected mutation no longer requires the lock;
+- and unchanged lock bytes immediately before removal.
+
+If the lock changed, release stops and recovery begins.
+
+A missing lock during an active mutation is an integrity condition.
+
+## 11.15 Age does not prove staleness
+
+Neither of these facts proves that a lock is stale:
+
+```text
+old acquired_at
+old filesystem modification time
+```
+
+A long-running process, suspended host, clock skew, or delayed recovery may produce an old valid lock.
+
+Portia must not automatically clear a lock based on age.
+
+## 11.16 Conservative external clearing
+
+Clearing a lock outside normal owner release requires:
+
+1. identify the exact lock;
+2. read and validate it;
+3. record its exact fingerprint;
+4. identify the owning operation;
+5. inspect the selected journal and canonical state;
+6. obtain external evidence that no active writer owns the lock;
+7. perform a dry-run clearing evaluation;
+8. reread and confirm the fingerprint is unchanged;
+9. remove only that exact lock;
+10. record the clearing through a recovery or repair operation;
+11. and rerun affected integrity validation.
+
+External evidence may include deployment-specific process inspection or an explicit operator assertion supported by the local environment.
+
+The schema cannot establish that evidence.
+
+## 11.17 Dry-run clearing
+
+A dry run reports:
+
+- exact lock reference;
+- exact fingerprint;
+- owning operation;
+- protected target;
+- selected journal revision;
+- known durable steps;
+- potential conflicts;
+- and whether clearing would be structurally permitted if the external no-owner assertion is supplied.
+
+A dry run does not modify the lock.
+
+## 11.18 Lock replacement is prohibited
+
+A lock is never updated in place to transfer ownership.
+
+Ownership transfer requires:
+
+- release or conservative clearing of the exact old lock;
+- reevaluation;
+- and exclusive creation of a new lock record.
+
+Replacing lock bytes at the same path would defeat fingerprint-protected clearing.
+
+## 11.19 Lock loss during commit
+
+If a required lock disappears or changes after canonical mutation may have begun:
+
+- no additional canonical step proceeds automatically;
+- the operation publishes partial state when possible;
+- affected targets are treated as requiring recovery;
+- and operation-specific validation determines whether quarantine is required.
+
+The operation must not simply reacquire the lock and continue without reconciling observed state.
+
+## 11.20 Lock and journal ordering
+
+The operation-series lock protects publication of journal revisions and the current pointer.
+
+Target locks protect canonical and projection mutation.
+
+The future implementation may release and reacquire only the operation-series lock between journal publications when it can prove that:
+
+- target locks remain held;
+- the selected journal expectation remains exact;
+- and no concurrent recovery can acquire the full required lock set.
+
+The simpler safe implementation may retain the complete lock set through the canonical commit gate.
+
+The accepted behavior must be documented and tested before production use.
+
+## 11.21 Lock cleanup failure
+
+Failure to release a lock after canonical commit does not undo accepted canonical state.
+
+It produces:
+
+- structured partial success;
+- an operation or lock recovery obligation;
+- and an Integrity Finding when the stale coordination condition persists.
+
+The operation must not report ordinary completion while required locks remain without an explicitly allowed deferred release state.
+
+## 11.22 Public schema direction
+
+Later schema work should evaluate:
+
+```text
+schemas/v1/identifiers/portia-lock-id.schema.json
+schemas/v1/operations/operation-lock.schema.json
+```
+
+Lock fingerprinting should compose the common content-fingerprint contract rather than define another digest shape.
+
+---
+
+# 12. Approved Decision 8: One-File Durability and Recoverable Multi-Record Commit
+
+## 12.1 Decision
+
+Portia distinguishes:
+
+```text
+atomic replacement of one directory entry
+from
+recoverable completion of one coordinated operation
+```
+
+A supported filesystem primitive may atomically install or replace one file.
+
+It does not make all canonical records, journal revisions, current pointers, locks, quarantine records, and derived projections one transaction.
+
+Multi-record Portia operations therefore use:
+
+- deterministic write ordering;
+- immutable operation-journal evidence;
+- exact per-step verification;
+- explicit commit gates;
+- and evidence-based recovery.
+
+## 12.2 Filesystem capability preflight
+
+Before staging or commit, the implementation must establish that every byte-producing step can use the required local filesystem primitives.
+
+The capability evaluation includes:
+
+- source staging and destination reside on a compatible filesystem;
+- destination parent is validated and contained;
+- exclusive creation is supported for create steps;
+- same-filesystem atomic replacement is supported for replace steps;
+- regular-file semantics are available;
+- required flush and synchronization operations are available or their limitations are explicitly handled;
+- and the environment is not known to provide weaker semantics than the operation requires.
+
+When a required primitive cannot be verified, the operation fails closed before canonical mutation.
+
+## 12.3 Honest durability language
+
+The architecture uses these terms precisely:
+
+### `durable`
+
+The implementation completed its documented write and synchronization protocol and the file is observable at the intended path.
+
+### `verified`
+
+The implementation reread the installed bytes and confirmed:
+
+- exact fingerprint;
+- schema validity;
+- identity;
+- path agreement;
+- and required local invariants.
+
+### `accepted`
+
+The step satisfied every operation-specific acceptance condition.
+
+The design does not claim immunity from:
+
+- hardware failure;
+- storage-controller defects;
+- filesystem corruption;
+- unsupported network filesystems;
+- malicious external mutation;
+- or backup failure.
+
+## 12.4 Exclusive-create protocol
+
+The conceptual protocol for one `exclusive_create` step is:
+
+1. confirm required locks remain owned;
+2. revalidate `must_be_absent`;
+3. verify the staged candidate fingerprint;
+4. ensure the destination parent is contained and suitable;
+5. create the destination exclusively;
+6. write the exact candidate bytes;
+7. flush the file;
+8. synchronize the file where supported;
+9. synchronize the containing directory where required and supported;
+10. reread the destination;
+11. verify the exact fingerprint and contract;
+12. verify identity and path agreement;
+13. mark the step `accepted` in a new journal revision.
+
+If exclusive creation reports that the destination exists, the writer does not overwrite it.
+
+## 12.5 Revision-aware replacement protocol
+
+The conceptual protocol for one `revision_aware_replace` step is:
+
+1. confirm required locks remain owned;
+2. resolve the exact destination again;
+3. revalidate `must_match`;
+4. verify exact prior content fingerprint;
+5. verify required semantic cross-checks;
+6. verify the staged candidate fingerprint;
+7. flush and synchronize the staged candidate;
+8. atomically replace the destination with the staged candidate;
+9. synchronize the containing directory where required and supported;
+10. reread the destination;
+11. verify the intended fingerprint, contract, identity, and path;
+12. mark the step `accepted` in a new journal revision.
+
+The old representation is not retained as an implicit backup unless its contract already preserves it canonically.
+
+Required historical evidence must exist through explicit canonical records.
+
+## 12.6 Pointer-replacement protocol
+
+An `atomic_pointer_replace` step follows the revision-aware replacement protocol, with additional validation that:
+
+- the pointer identity is correct;
+- the expected selected revision agrees;
+- the intended selected revision exists and validates;
+- the intended revision belongs to the same series;
+- and operation-specific monotonicity or rollback rules permit the selection.
+
+A pointer is never published before its selected immutable revision is durably verified.
+
+## 12.7 Derived-installation protocol
+
+An `install_derived_replacement` step must install one complete verified candidate or publish one explicit current-generation pointer.
+
+The source snapshot must be rechecked immediately before installation.
+
+If the source changed, the candidate is not installed.
+
+Detailed derived-rebuild rules remain for a later decision.
+
+## 12.8 One-file ambiguity
+
+A write may become visible at the destination while final synchronization, readback, or journal publication fails.
+
+Such a result is not reported as clean failure.
+
+The step disposition becomes:
+
+- `durable` when installation is confirmed but full verification is incomplete;
+- `verified` when bytes and local structure are confirmed;
+- `accepted` only when all step conditions are satisfied;
+- or `indeterminate` when the process cannot establish which state occurred.
+
+The operation then returns structured partial success or recovery required.
+
+## 12.9 Commit preparation
+
+Before the first canonical-gate write, Portia must:
+
+1. own the complete ordered lock set;
+2. verify the selected prepared or staged journal revision;
+3. verify the complete staged candidate set;
+4. recheck every required preflight observation;
+5. recheck operation intent and write set;
+6. verify no conflicting lock or operation appeared;
+7. publish and select a `committing` journal revision;
+8. and verify that journal selection.
+
+If `committing` cannot be durably selected, canonical mutation does not begin.
+
+## 12.10 Safety-oriented write ordering
+
+Within the deterministic write set, operation-specific order follows these general priorities:
+
+1. create immutable canonical destination or evidence records;
+2. verify those new records;
+3. update mutable current projections;
+4. transition predecessors or affected current records;
+5. publish explicit current pointers or selected representations;
+6. perform safety-critical availability or derived-purge steps;
+7. record canonical commit;
+8. perform ordinary rebuildable post-commit work;
+9. perform cleanup.
+
+The exact operation family may refine this order.
+
+It must preserve these safety principles:
+
+- a predecessor is not made superseded before the successor exists and verifies;
+- a current pointer is not advanced before its selected revision verifies;
+- a mutable status is not changed without the required append-only history being available;
+- a migration source is not displaced before the destination and certificate verify;
+- and removal is not considered complete while prohibited payload remains ordinarily available.
+
+## 12.11 Journal publication after accepted steps
+
+After every canonical-gate step becomes accepted, Portia publishes a new complete journal revision recording:
+
+- the accepted disposition;
+- exact installed fingerprint;
+- exact path;
+- acceptance time;
+- remaining steps;
+- and any changed partial-state summary.
+
+The operation does not rely only on an in-memory list of completed writes.
+
+If journal publication fails after a canonical write, recovery compares the intended step with observed canonical bytes.
+
+## 12.12 Canonical commit point
+
+The operation reaches its canonical commit point when every `canonical_gate` step is accepted.
+
+At that point Portia publishes and selects a `committed` journal revision.
+
+The `committed` revision records:
+
+- every accepted canonical-gate step;
+- exact resulting references and fingerprints;
+- current pointer selections;
+- unresolved post-commit work;
+- remaining locks;
+- quarantine state;
+- and any active Integrity Findings known at commit.
+
+Canonical commit does not require ordinary rebuildable projections to be current unless the operation contract classifies a specific projection or purge as a canonical gate.
+
+## 12.13 Commit publication ambiguity
+
+All canonical-gate records may be accepted while publication of the `committed` journal revision or its current pointer fails.
+
+The operation is not assumed uncommitted.
+
+Recovery must evaluate:
+
+- the last selected journal revision;
+- any orphan journal successor;
+- all canonical-gate target bytes;
+- pointer selections;
+- and operation-specific invariants.
+
+A unique exact completed graph may be reconciled as committed through recovery.
+
+## 12.14 Post-commit phase
+
+After canonical commit, the operation may perform:
+
+- rebuildable projection regeneration;
+- current-view regeneration;
+- operation-recovery queue maintenance;
+- ordinary cache invalidation;
+- nonessential diagnostics;
+- and cleanup.
+
+Each post-commit step remains journaled.
+
+A failure in optional rebuildable work does not invalidate accepted canonical records.
+
+It may prevent `completed` when the operation contract requires a fresh view, or it may permit completion with an active derived-state finding.
+
+## 12.15 Reader behavior during commit
+
+Ordinary readers must not synthesize a confident current graph from known partial operation state.
+
+When a relevant operation is `committing`, `recovering`, `compensating`, or `quarantined`, an authoritative reader must:
+
+- use an exact pre-operation representation only where the operation contract proves that it remains valid;
+- use an exact accepted post-operation representation only where the commit state proves it;
+- or return blocked, unverified, or indeterminate state.
+
+A reader must not fill missing pieces by:
+
+- following successors;
+- choosing newest files;
+- selecting greatest revisions;
+- or trusting stale derived views.
+
+## 12.16 Discovering relevant in-progress operations
+
+A later derived recovery queue may accelerate discovery of operations affecting a target.
+
+That queue is not authoritative.
+
+A safety-sensitive reader or writer must use:
+
+- the exact operation or lock references already known;
+- a verified current affected-operation projection;
+- or a bounded scan of the operation and lock namespaces required by the target scope.
+
+A missing queue does not prove that no operation is active.
+
+## 12.17 Lock retention through commit
+
+Required target locks remain held until:
+
+- every canonical-gate step is accepted;
+- the `committed` journal revision is durably selected or commit-publication ambiguity is recorded;
+- and operation-specific safety conditions permit release.
+
+A privacy-critical exceptional-removal operation may retain locks through required derived-payload purge.
+
+Ordinary optional projection regeneration should not retain broad canonical locks unnecessarily.
+
+## 12.18 Interruption boundaries
+
+The operation journal must make these interruption points diagnosable:
+
+```text
+before staging
+during staging
+after complete staging
+after selecting committing
+after each canonical write
+after each readback
+after every accepted-step journal update
+after all canonical gates
+during committed-journal publication
+during post-commit work
+during cleanup
+during lock release
+```
+
+Recovery must not assume that an interrupted process stopped between high-level steps.
+
+## 12.19 External mutation
+
+If canonical bytes, staged bytes, pointers, locks, or journal state change outside the protected operation:
+
+- no further canonical step proceeds automatically;
+- exact mismatches are recorded;
+- the operation enters recovery, quarantine, or failure according to risk;
+- and no later timestamp is treated as authority.
+
+## 12.20 Unsupported filesystem behavior
+
+When the environment cannot provide an accepted atomic replace, exclusive create, or containment guarantee, the later implementation must either:
+
+- fail before mutation;
+- use another separately accepted persistence backend;
+- or obtain a future architecture amendment that defines a weaker but still recoverable protocol.
+
+The implementation must not silently downgrade guarantees.
+
+## 12.21 Production implementation boundary
+
+This decision defines the contract-level write protocol.
+
+It does not select:
+
+- one Python standard-library call;
+- one Windows API;
+- one POSIX system call;
+- one database;
+- or one synchronization library.
+
+The later implementation must document how each supported platform satisfies the accepted steps.
+
+---
+
+# 13. Approved Decision 9: Structured Partial Success, Cleanup, and Compensation
+
+## 13.1 Decision
+
+Portia treats partial success as a first-class result whenever an operation may have changed durable state without reaching clean completion.
+
+The governing rule is:
+
+```text
+generic failure
+must never conceal
+possible or confirmed durable effects
+```
+
+The operation result, selected journal revision where possible, and Integrity Findings must describe the known state precisely.
+
+## 13.2 Outcome vocabulary
+
+The initial service-level outcome vocabulary is:
+
+```text
+completed
+replayed
+rejected
+conflict
+partial_success
+recovery_required
+compensated
+failed
+```
+
+### `completed`
+
+The operation reached journal state `completed`.
+
+### `replayed`
+
+An exact prior operation result was returned without repeating its canonical writes.
+
+The response also reports the prior operation's actual terminal or active state.
+
+### `rejected`
+
+Validation, authorization, policy, compatibility, or preflight prevented mutation.
+
+No canonical step became durable.
+
+### `conflict`
+
+Expected prior state, lock ownership, operation identity, or exclusive scope disagreed before mutation.
+
+No new canonical step became durable through the rejected attempt.
+
+### `partial_success`
+
+One or more effects may be or are durable, but the operation has not reached a safe terminal result.
+
+### `recovery_required`
+
+The observed state cannot be completed or compensated safely without an explicit recovery evaluation.
+
+This outcome may accompany `partial_success`.
+
+### `compensated`
+
+The operation reached journal state `compensated`.
+
+### `failed`
+
+The operation cannot continue automatically.
+
+A failed operation may still have durable effects, which must be reported separately.
+
+## 13.3 Direct result versus durable journal
+
+A service response reports what the process observed.
+
+The selected Operation Journal is the durable operational record when publication succeeded.
+
+If journal publication failed:
+
+- the response must say so;
+- durable canonical effects must still be reported;
+- and the operation must not claim that the response alone completed durable journaling.
+
+Recovery later reconciles the workspace.
+
+## 13.4 Partial-state structure
+
+The operation's `partial_state` contains bounded structured fields comparable to:
+
+```text
+durability_assessment
+accepted_steps
+verified_steps
+durable_unverified_steps
+indeterminate_steps
+remaining_canonical_steps
+remaining_post_commit_steps
+current_pointer_changes
+staged_artifacts
+held_or_possible_locks
+quarantined_targets
+active_findings
+recommended_disposition
+```
+
+The structure uses step IDs, typed references, relative paths, fingerprints, and bounded codes.
+
+It must not duplicate substantive canonical payload.
+
+## 13.5 Durability assessment
+
+The initial operation-level durability assessment is:
+
+```text
+none
+possible
+confirmed
+```
+
+### `none`
+
+The process confirmed that no canonical-gate step became durable.
+
+### `possible`
+
+The process cannot prove whether one or more planned effects became durable.
+
+### `confirmed`
+
+At least one canonical-gate step is known durable or accepted.
+
+This assessment does not state that the entire operation committed.
+
+## 13.6 Per-step evidence
+
+Every nonpending step result records as applicable:
+
+- action;
+- exact target;
+- intended path;
+- observed path;
+- intended fingerprint;
+- observed fingerprint;
+- disposition;
+- acceptance result;
+- and bounded failure or limitation code.
+
+A path without a fingerprint is insufficient for exact cleanup or recovery.
+
+## 13.7 Partial-success triggers
+
+Structured partial success is required when any of these may occur:
+
+- destination creation succeeded but final synchronization failed;
+- atomic replacement may have succeeded but readback failed;
+- accepted bytes exist but journal update failed;
+- all canonical gates succeeded but committed-pointer publication failed;
+- a current pointer changed but final operation verification failed;
+- cleanup failed after accepted state;
+- required lock release failed;
+- operation interruption occurred after selecting `committing`;
+- compensation became partially durable;
+- or a safety-critical post-commit step remains incomplete.
+
+## 13.8 Failure messages
+
+A direct error message must not say only:
+
+```text
+save failed
+operation failed
+rollback failed
+```
+
+when durable state may exist.
+
+It must identify:
+
+- the Operation Reference;
+- the latest known journal revision;
+- durability assessment;
+- affected step IDs;
+- recovery requirement;
+- and whether ordinary use is blocked or quarantined.
+
+## 13.9 Pre-acceptance cleanup
+
+Pre-acceptance cleanup may remove:
+
+- staged candidate files;
+- temporary pointer candidates;
+- empty operation-owned staging directories;
+- and other proven-unaccepted transient artifacts.
+
+Cleanup requires:
+
+- exact operation ownership;
+- exact step ownership;
+- exact fingerprint when bytes exist;
+- confirmation that the artifact is not the accepted destination;
+- confirmation that active recovery does not require it;
+- and journal permission.
+
+Pre-acceptance cleanup is not canonical rollback.
+
+## 13.10 Aborted operations
+
+An operation may enter `aborted` only when Portia confirms:
+
+- no canonical-gate step became durable;
+- no current pointer changed;
+- no canonical availability changed;
+- and remaining artifacts are transient or operational only.
+
+If any canonical effect is possible, the operation cannot be classified as aborted.
+
+## 13.11 Cleanup after commit
+
+After canonical commit, cleanup may remove only:
+
+- exact staged leftovers;
+- temporary candidate files;
+- releasable lock records;
+- and other operation-owned transient artifacts.
+
+Cleanup must not remove:
+
+- accepted canonical records;
+- accepted immutable journal revisions;
+- active quarantine evidence;
+- required compensation evidence;
+- or files merely because they were part of the original preflight snapshot.
+
+## 13.12 Cleanup failure
+
+Cleanup failure does not erase accepted canonical state.
+
+It produces:
+
+- partial success when the operation cannot finalize;
+- a recovery obligation;
+- and an Integrity Finding when the leftover artifact or lock persists.
+
+An operation may reach `completed` with a harmless deferred transient cleanup only if the final contract explicitly permits it and records a nonblocking finding.
+
+Sensitive staged payload should normally prevent completion until securely handled.
+
+## 13.13 Canonical rollback is rejected
+
+Portia rejects generic rollback that deletes or rewrites an accepted canonical record to make the operation appear never to have occurred.
+
+This applies even when:
+
+- the record was created seconds earlier;
+- the user immediately changed their mind;
+- a later step failed;
+- or the accepted record is inconvenient for recovery.
+
+Accepted history remains visible.
+
+## 13.14 Compensation
+
+Compensation is an explicit, journaled, evidence-preserving operation phase that establishes a defined safe state after accepted effects prevent simple pre-acceptance cleanup.
+
+Compensation may:
+
+- create a correcting or superseding canonical record;
+- create a lifecycle transition;
+- create a lifecycle-history correction;
+- restore an explicit current pointer to an already accepted revision;
+- quarantine a target;
+- create a required Dependency disposition;
+- or perform exceptional removal only under the accepted Exceptional Removal contract.
+
+Compensation must not silently alter domain meaning.
+
+## 13.15 Compensation plan
+
+The prepared journal records operation-specific compensation capabilities before canonical mutation.
+
+A compensation plan identifies:
+
+- which accepted steps may require compensation;
+- safe compensation actions;
+- required authorization or policy;
+- exact evidence needed to choose a branch;
+- and conditions requiring quarantine or manual review instead.
+
+The plan does not require Portia to predict every hardware or external corruption case.
+
+## 13.16 Compensation after newly discovered conditions
+
+A newly discovered condition after mutation may use the predeclared compensation plan only when:
+
+- the condition fits an accepted branch;
+- the required authorization exists;
+- affected scope remains bounded;
+- and exact observed state supports the branch.
+
+Otherwise the operation enters quarantine or failure and a new repair operation is required.
+
+## 13.17 Compensation journal state
+
+The normal compensation path is:
+
+```text
+recovering
+-> compensating
+-> compensated
+```
+
+Each compensating write is represented as an explicit step with:
+
+- its own step ID;
+- exact precondition;
+- intended result;
+- disposition;
+- and accepted canonical evidence.
+
+The complete journal snapshot preserves both original and compensating steps.
+
+## 13.18 Compensated step disposition
+
+An original step may be marked `compensated` only when:
+
+- the original accepted effect remains preserved;
+- explicit compensating evidence exists;
+- the defined safe state is verified;
+- and the journal links the compensation step.
+
+`compensated` does not mean that the original bytes were removed or that the operation never happened.
+
+## 13.19 Pointer restoration
+
+Restoring an explicit current pointer to a prior accepted revision is compensation only when:
+
+- the pointer contract permits rollback;
+- the exact currently selected pointer still matches;
+- the prior revision remains valid;
+- intervening canonical records remain preserved;
+- and the restoration is journaled.
+
+Pointer restoration does not delete the temporarily selected revision.
+
+## 13.20 Lifecycle compensation
+
+When an accepted current-state change must be counteracted, compensation follows the record family's legal lifecycle and correction contracts.
+
+It must not:
+
+- edit the prior Lifecycle Transition;
+- delete transition history;
+- reset status without a new accepted transition;
+- or fabricate an earlier effective time.
+
+## 13.21 Successor and migration compensation
+
+An accepted successor, migration destination, or ownership-corrected destination is not deleted as generic compensation.
+
+Depending on accepted state, recovery may:
+
+- complete the remaining activation;
+- create an invalidating or superseding transition;
+- restore a pointer;
+- quarantine the new representation;
+- create another explicit correction;
+- or require manual review.
+
+The exact operation-family decisions remain later in this design.
+
+## 13.22 Exceptional-removal boundary
+
+Generic compensation and cleanup cannot delete accepted canonical payload.
+
+When actual removal is required, the Exceptional Removal contract governs:
+
+- authority;
+- evidence;
+- target availability;
+- certificate;
+- dependencies;
+- and derived-payload purge.
+
+A compensation plan cannot bypass that contract.
+
+## 13.23 Compensation failure
+
+If compensation becomes partial or indeterminate:
+
+- the operation remains `compensating`, becomes `quarantined`, or becomes `failed`;
+- structured partial state reports both original and compensating durable effects;
+- affected current use is blocked where safety requires;
+- and a later repair operation may be required.
+
+Compensation failure is not hidden by returning the original operation's failure alone.
+
+## 13.24 Post-commit derived failure
+
+Failure to rebuild an ordinary derived projection after canonical commit does not invalidate canonical records.
+
+The operation may:
+
+- remain `committed` until required finalization succeeds;
+- reach `completed` with a permitted active derived-state finding;
+- or require recovery when the projection is safety-critical.
+
+A missing or corrupt derived projection must not be filled from partial operation memory.
+
+## 13.25 Privacy-critical post-commit work
+
+For Exceptional Removal and any later privacy-critical operation, removing prohibited payload from derived artifacts may be classified as a canonical gate rather than optional post-commit work.
+
+The operation cannot report canonical commit or completion while prohibited payload remains available contrary to the accepted removal contract.
+
+## 13.26 Recommended disposition vocabulary
+
+Partial-state reporting uses the initial recommended-disposition vocabulary:
+
+```text
+retry_preflight
+resume
+reconcile_as_complete
+complete_remaining_steps
+compensate
+restore_pointer
+clear_lock_after_external_verification
+quarantine
+abandon_preacceptance_artifacts
+rebuild_projection
+require_manual_review
+```
+
+A recommendation is not authority to execute the action.
+
+The later recovery decision validates exact evidence again.
+
+## 13.27 Integrity Finding integration
+
+Persistent operational defects use the existing Integrity Finding categories:
+
+```text
+persistence_recovery
+derived_state
+```
+
+Current Issue #12 codes already support conditions including:
+
+```text
+operation_incomplete
+canonical_write_partial
+orphaned_canonical_artifact
+content_digest_mismatch
+recovery_required
+derived_index_drift
+projection_stale
+```
+
+Later decisions will determine whether additional codes require Integrity Finding version 2.
+
+Issue #13 must not modify version 1 in place.
+
+## 13.28 Public schema direction
+
+Later schema work should evaluate:
+
+```text
+schemas/v1/operations/operation-partial-state.schema.json
+schemas/v1/operations/operation-result.schema.json
+```
+
+A service result need not become a durable independent record when the complete information already belongs in the Operation Journal.
+
+The final schema set should avoid duplicating one partial-state vocabulary across journal and API contracts.
+
+---
+
+# 14. Decisions Remaining
 
 Later design slices must resolve:
 
-1. deterministic lock scope and acquisition order;
-2. one-file atomic replacement and durability assumptions;
-3. recoverable multi-record commit order;
-4. partial-success reporting;
-5. pre-acceptance cleanup completion;
-6. post-acceptance compensation;
-7. recovery dispositions and missing-journal behavior;
-8. repair mode and quarantine;
-9. coordinated lifecycle and history operations;
-10. successor activation and duplicate consolidation;
-11. migration and ownership-correction recovery;
-12. exceptional-removal recovery;
-13. Dependency gating;
-14. Integrity Finding operational code vocabulary;
-15. acknowledgement and suppression records;
-16. derived-index families and common metadata;
-17. deterministic source inventories and source snapshots;
-18. complete candidate build, verification, and atomic installation;
-19. missing, stale, corrupt, and incompatible derived-state behavior;
-20. current-view regeneration;
-21. privacy-minimized diagnostics;
-22. public schema organization;
-23. Issue #12 contract reconciliation;
-24. and final cross-repository drift checks.
+1. recovery dispositions and recovery state evaluation;
+2. missing, corrupt, orphaned, and branching journal behavior;
+3. repair mode and quarantine;
+4. coordinated lifecycle and history operations;
+5. successor activation and duplicate consolidation;
+6. migration and ownership-correction recovery;
+7. exceptional-removal recovery;
+8. Dependency gating;
+9. Integrity Finding operational code vocabulary and version audit;
+10. acknowledgement and suppression records;
+11. derived-index families and common metadata;
+12. deterministic source inventories and source snapshots;
+13. complete candidate build, verification, and atomic installation;
+14. missing, stale, corrupt, and incompatible derived-state behavior;
+15. current-view regeneration;
+16. privacy-minimized diagnostics;
+17. public schema organization;
+18. Issue #12 contract reconciliation;
+19. and final cross-repository drift checks.
 
-## 12. Current implementation boundary
+## 15. Current implementation boundary
 
-No production filesystem mutation is introduced by Decisions 1–6.
+No production filesystem mutation is introduced by Decisions 1–9.
 
 The current design now establishes:
 
@@ -2138,11 +3354,15 @@ The current design now establishes:
 durable state categories and authority
 operation identity, intent, scope, and replay
 immutable journal revisions and explicit current selection
-complete preflight and observation boundaries
-exact relative-path and byte-fingerprint evidence
+complete preflight and exact observation boundaries
+relative-path and byte-fingerprint evidence
 exclusive-create and guarded-replacement preconditions
-ordered write sets
-target-adjacent staged candidates
+ordered write sets and staged candidates
+stable lock identity, conflicts, ordering, and clearing
+one-file durability and recoverable multi-record commit
+structured partial success
+pre-acceptance cleanup
+post-acceptance compensation
 ```
 
-Later slices will define locking, commit, partial success, compensation, recovery, coordinated domain-operation plans, integrity operations, and derived-state rebuilding before public operational schemas are finalized.
+Later slices will define the recovery state machine, repair and quarantine, exact coordinated operation-family plans, integrity administration, and complete derived-state rebuilding before public operational schemas are finalized.
