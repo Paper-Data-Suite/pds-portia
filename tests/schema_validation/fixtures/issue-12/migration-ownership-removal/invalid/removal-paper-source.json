@@ -1,0 +1,62 @@
+{
+  "schema_version": "1",
+  "record_type": "exceptional_removal",
+  "module_id": "portia",
+  "class_id": "eng10_p2_2026",
+  "removal_id": "rmv_work_001",
+  "target": {
+    "kind": "work",
+    "work_ref": {
+      "module_id": "portia",
+      "class_id": "eng10_p2_2026",
+      "work_id": "evt_example",
+      "work_kind": "event",
+      "contract_version": "2"
+    }
+  },
+  "reason": {
+    "category": "privacy_requirement",
+    "code": "sensitive_data_erasure"
+  },
+  "authorization": {
+    "decision_reference": "privacy_case_2026_004",
+    "authorized_by": {
+      "type": "local_operator",
+      "display_label": "Privacy Administrator"
+    }
+  },
+  "content_evidence": {
+    "kind": "salted_sha256",
+    "salt": "YWJjZGVmZ2hpamtsbW5vcA==",
+    "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "byte_length": 2847
+  },
+  "lifecycle_snapshot": {
+    "status": "active",
+    "selected_transition": {
+      "work_ref": {
+        "module_id": "portia",
+        "class_id": "eng10_p2_2026",
+        "work_id": "evt_example",
+        "work_kind": "event",
+        "contract_version": "2"
+      },
+      "record_ref": {
+        "record_kind": "lifecycle_transition",
+        "record_id": "lct_active_001",
+        "contract_version": "1"
+      }
+    }
+  },
+  "effective_at": "2026-08-04T09:00:00-04:00",
+  "creation_source": {
+    "type": "paper_capture",
+    "stage": "ingested",
+    "paper_ref": "page_1"
+  },
+  "created_at": "2026-08-04T09:01:00-04:00",
+  "created_by": {
+    "type": "system_process",
+    "process_id": "portia_removal_executor"
+  }
+}

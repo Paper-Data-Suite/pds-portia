@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exceptional-removal-ref.schema.json",
+  "title": "Exceptional Removal Reference",
+  "description": "Exact class-module-scoped reference to one Portia exceptional-removal certificate representation. The required non-null contract_version identifies the expected certificate contract. Resolution must not select another version or silently follow any later administrative action.",
+  "type": "object",
+  "required": [
+    "module_id",
+    "class_id",
+    "removal_id",
+    "contract_version"
+  ],
+  "properties": {
+    "module_id": {
+      "const": "portia"
+    },
+    "class_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+    },
+    "removal_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-exceptional-removal-id.schema.json"
+    },
+    "contract_version": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+    }
+  },
+  "additionalProperties": false
+}

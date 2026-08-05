@@ -1,0 +1,41 @@
+{
+  "schema_version": "1",
+  "record_type": "amendment",
+  "module_id": "portia",
+  "class_id": "eng10_p2_2026",
+  "work_id": "evt_example",
+  "amendment_id": "amd_remove",
+  "target": {
+    "kind": "work",
+    "work_kind": "event",
+    "contract_version": "2"
+  },
+  "previous_amendment": null,
+  "target_updated_at_before": "2026-08-04T14:00:00-04:00",
+  "changes": [
+    {
+      "path": "/display_note",
+      "operation": "remove",
+      "before": {
+        "present": true,
+        "value": "Old note"
+      },
+      "after": {
+        "present": false
+      }
+    }
+  ],
+  "reason": {
+    "code": "formatting_corrected",
+    "detail": "Removed a duplicated display-only note."
+  },
+  "creation_source": {
+    "type": "import",
+    "source_label": "Legacy behavior notes"
+  },
+  "created_at": "2026-08-04T14:05:00-04:00",
+  "created_by": {
+    "type": "local_operator",
+    "display_label": "Stephen Severino"
+  }
+}

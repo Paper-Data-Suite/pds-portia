@@ -1,0 +1,42 @@
+{
+  "finding_key": "fnd_reference_exact_target_missing",
+  "evaluation_key": "evl_reference_exact_target_missing_r1",
+  "rule_id": "portia.reference.exact_target_missing",
+  "rule_version": "1",
+  "category": "reference",
+  "code": "exact_target_missing",
+  "severity": "error",
+  "assessment": {
+    "result": "confirmed"
+  },
+  "effects": [
+    "block_current_use"
+  ],
+  "scope": "representation",
+  "primary_target": {
+    "kind": "portia_work_record",
+    "work_record_ref": {
+      "work_ref": {
+        "module_id": "portia",
+        "class_id": "eng10_p2_2026",
+        "work_id": "evt_001",
+        "work_kind": "event",
+        "contract_version": "2"
+      },
+      "record_ref": {
+        "record_kind": "event_participant",
+        "record_id": "ep_missing",
+        "contract_version": "3"
+      }
+    }
+  },
+  "related_targets": [],
+  "evidence": [
+    {
+      "name": "resolved",
+      "kind": "boolean",
+      "value": false
+    }
+  ],
+  "observed_at": "2026-08-05T08:00:00-04:00"
+}

@@ -1,0 +1,51 @@
+{
+  "schema_version": "3",
+  "record_type": "event_participant",
+  "module_id": "portia",
+  "class_id": "eng10_p2_2026",
+  "work_id": "evt_alpha",
+  "participant_id": "ep_alpha",
+  "status": "active",
+  "subject": {
+    "kind": "roster_student",
+    "roster_student_ref": {
+      "class_id": "eng10_p2_2026",
+      "student_id": "stu_001"
+    },
+    "display_snapshot": {
+      "display_label": "Jordan Lee"
+    }
+  },
+  "creation_source": {
+    "type": "digital_entry"
+  },
+  "created_at": "2026-08-04T20:00:00-04:00",
+  "created_by": {
+    "type": "local_operator",
+    "display_label": "Stephen Severino"
+  },
+  "updated_at": "2026-08-04T20:05:00-04:00",
+  "updated_by": {
+    "type": "local_operator",
+    "display_label": "Stephen Severino"
+  },
+  "supersedes": [
+    {
+      "work_record_ref": {
+        "work_ref": {
+          "module_id": "portia",
+          "class_id": "eng10_p2_2026",
+          "work_id": "evt_alpha",
+          "work_kind": "event",
+          "contract_version": "2"
+        },
+        "record_ref": {
+          "record_kind": "event_participant",
+          "record_id": "ep_old",
+          "contract_version": null
+        }
+      },
+      "reason": "identity_corrected"
+    }
+  ]
+}

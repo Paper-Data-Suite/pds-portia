@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/targets/exact-portia-work-or-record-target.schema.json",
+  "title": "Exact Portia Work or Record Target",
+  "description": "Closed target family for one exact Portia work representation or one exact child-record representation. The target preserves exact contract versions and must not silently follow migration, supersession, consolidation, ownership correction, or another representation.",
+  "oneOf": [
+    {
+      "$ref": "#/$defs/workTarget"
+    },
+    {
+      "$ref": "#/$defs/workRecordTarget"
+    }
+  ],
+  "$defs": {
+    "workTarget": {
+      "type": "object",
+      "required": [
+        "kind",
+        "work_ref"
+      ],
+      "properties": {
+        "kind": {
+          "const": "work"
+        },
+        "work_ref": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-portia-work-ref.schema.json"
+        }
+      },
+      "additionalProperties": false
+    },
+    "workRecordTarget": {
+      "type": "object",
+      "required": [
+        "kind",
+        "work_record_ref"
+      ],
+      "properties": {
+        "kind": {
+          "const": "work_record"
+        },
+        "work_record_ref": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-portia-work-record-ref.schema.json"
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

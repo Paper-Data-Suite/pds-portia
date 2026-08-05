@@ -1,0 +1,218 @@
+{
+  "valid": {
+    "migration-event-v1-to-v2.json": "schemas/v1/migrations/record-migration.schema.json",
+    "migration-participant-normalization.json": "schemas/v1/migrations/record-migration.schema.json",
+    "migration-dependency-representation-change.json": "schemas/v1/migrations/record-migration.schema.json",
+    "migration-other-manual-procedure.json": "schemas/v1/migrations/record-migration.schema.json",
+    "ownership-event-wrong-class.json": "schemas/v1/corrections/ownership-correction.schema.json",
+    "ownership-child-standalone-root-correction.json": "schemas/v1/corrections/ownership-correction.schema.json",
+    "ownership-child-with-parent-correction.json": "schemas/v1/corrections/ownership-correction.schema.json",
+    "ownership-event-routing-correction.json": "schemas/v1/corrections/ownership-correction.schema.json",
+    "removal-work-privacy-salted-digest.json": "schemas/v1/removals/exceptional-removal.schema.json",
+    "removal-child-security-with-parent.json": "schemas/v1/removals/exceptional-removal.schema.json",
+    "removal-corruption-evidence-unavailable.json": "schemas/v1/removals/exceptional-removal.schema.json",
+    "removal-accepted-test-data.json": "schemas/v1/removals/exceptional-removal.schema.json",
+    "removal-legal-requirement-system-executed.json": "schemas/v1/removals/exceptional-removal.schema.json",
+    "removal-other-governed-basis.json": "schemas/v1/removals/exceptional-removal.schema.json"
+  },
+  "invalid": {
+    "migration-missing-destination.json": "schemas/v1/migrations/record-migration.schema.json",
+    "migration-extra-status.json": "schemas/v1/migrations/record-migration.schema.json",
+    "migration-invalid-id.json": "schemas/v1/migrations/record-migration.schema.json",
+    "migration-source-array.json": "schemas/v1/migrations/record-migration.schema.json",
+    "migration-mixed-endpoint-kinds.json": "schemas/v1/migrations/record-migration.schema.json",
+    "migration-work-null-contract-version.json": "schemas/v1/migrations/record-migration.schema.json",
+    "migration-record-null-work-version.json": "schemas/v1/migrations/record-migration.schema.json",
+    "migration-record-null-record-version.json": "schemas/v1/migrations/record-migration.schema.json",
+    "migration-effective-at-without-offset.json": "schemas/v1/migrations/record-migration.schema.json",
+    "migration-paper-source.json": "schemas/v1/migrations/record-migration.schema.json",
+    "migration-invalid-reason-category.json": "schemas/v1/migrations/record-migration.schema.json",
+    "migration-other-reason-missing-detail.json": "schemas/v1/migrations/record-migration.schema.json",
+    "migration-transformation-missing-version.json": "schemas/v1/migrations/record-migration.schema.json",
+    "migration-invalid-transformer-id.json": "schemas/v1/migrations/record-migration.schema.json",
+    "migration-extra-operation-id.json": "schemas/v1/migrations/record-migration.schema.json",
+    "migration-invalid-envelope-work-id.json": "schemas/v1/migrations/record-migration.schema.json",
+    "migration-observed-timestamp-invalid.json": "schemas/v1/migrations/record-migration.schema.json",
+    "migration-invalid-reason-code.json": "schemas/v1/migrations/record-migration.schema.json",
+    "ownership-missing-correction-kind.json": "schemas/v1/corrections/ownership-correction.schema.json",
+    "ownership-extra-status.json": "schemas/v1/corrections/ownership-correction.schema.json",
+    "ownership-invalid-id.json": "schemas/v1/corrections/ownership-correction.schema.json",
+    "ownership-mixed-endpoint-kinds.json": "schemas/v1/corrections/ownership-correction.schema.json",
+    "ownership-event-kind-with-record-endpoints.json": "schemas/v1/corrections/ownership-correction.schema.json",
+    "ownership-child-kind-with-work-endpoints.json": "schemas/v1/corrections/ownership-correction.schema.json",
+    "ownership-event-endpoint-support-process.json": "schemas/v1/corrections/ownership-correction.schema.json",
+    "ownership-source-null-version.json": "schemas/v1/corrections/ownership-correction.schema.json",
+    "ownership-destination-null-record-version.json": "schemas/v1/corrections/ownership-correction.schema.json",
+    "ownership-parent-wrong-kind.json": "schemas/v1/corrections/ownership-correction.schema.json",
+    "ownership-parent-null-version.json": "schemas/v1/corrections/ownership-correction.schema.json",
+    "ownership-other-reason-missing-detail.json": "schemas/v1/corrections/ownership-correction.schema.json",
+    "ownership-import-source.json": "schemas/v1/corrections/ownership-correction.schema.json",
+    "ownership-created-at-without-offset.json": "schemas/v1/corrections/ownership-correction.schema.json",
+    "ownership-extra-authorized-by.json": "schemas/v1/corrections/ownership-correction.schema.json",
+    "ownership-child-endpoint-missing-observed-time.json": "schemas/v1/corrections/ownership-correction.schema.json",
+    "ownership-invalid-reason-code.json": "schemas/v1/corrections/ownership-correction.schema.json",
+    "ownership-event-parent-correction-prohibited.json": "schemas/v1/corrections/ownership-correction.schema.json",
+    "removal-missing-authorization.json": "schemas/v1/removals/exceptional-removal.schema.json",
+    "removal-extra-status.json": "schemas/v1/removals/exceptional-removal.schema.json",
+    "removal-invalid-id.json": "schemas/v1/removals/exceptional-removal.schema.json",
+    "removal-target-array.json": "schemas/v1/removals/exceptional-removal.schema.json",
+    "removal-work-null-version.json": "schemas/v1/removals/exceptional-removal.schema.json",
+    "removal-record-null-version.json": "schemas/v1/removals/exceptional-removal.schema.json",
+    "removal-parent-invalid-id.json": "schemas/v1/removals/exceptional-removal.schema.json",
+    "removal-parent-null-version.json": "schemas/v1/removals/exceptional-removal.schema.json",
+    "removal-parent-on-work-target.json": "schemas/v1/removals/exceptional-removal.schema.json",
+    "removal-other-missing-detail.json": "schemas/v1/removals/exceptional-removal.schema.json",
+    "removal-invalid-reason-category.json": "schemas/v1/removals/exceptional-removal.schema.json",
+    "removal-paper-source.json": "schemas/v1/removals/exceptional-removal.schema.json",
+    "removal-system-authorizer.json": "schemas/v1/removals/exceptional-removal.schema.json",
+    "removal-whitespace-decision-reference.json": "schemas/v1/removals/exceptional-removal.schema.json",
+    "removal-uppercase-digest.json": "schemas/v1/removals/exceptional-removal.schema.json",
+    "removal-invalid-base64-salt.json": "schemas/v1/removals/exceptional-removal.schema.json",
+    "removal-negative-byte-length.json": "schemas/v1/removals/exceptional-removal.schema.json",
+    "removal-unavailable-invalid-reason.json": "schemas/v1/removals/exceptional-removal.schema.json",
+    "removal-unavailable-with-privacy-reason.json": "schemas/v1/removals/exceptional-removal.schema.json",
+    "removal-lifecycle-snapshot-substantive-extra.json": "schemas/v1/removals/exceptional-removal.schema.json",
+    "removal-selected-transition-wrong-kind.json": "schemas/v1/removals/exceptional-removal.schema.json",
+    "removal-effective-at-without-offset.json": "schemas/v1/removals/exceptional-removal.schema.json",
+    "removal-extra-replacement.json": "schemas/v1/removals/exceptional-removal.schema.json",
+    "removal-invalid-reason-code.json": "schemas/v1/removals/exceptional-removal.schema.json"
+  },
+  "application_invalid": {
+    "migration-identical-representation.json": {
+      "schema_path": "schemas/v1/migrations/record-migration.schema.json",
+      "rule_id": "portia.migration.identical_representations"
+    },
+    "migration-same-contract-version.json": {
+      "schema_path": "schemas/v1/migrations/record-migration.schema.json",
+      "rule_id": "portia.migration.same_contract_version"
+    },
+    "migration-logical-record-id-changed.json": {
+      "schema_path": "schemas/v1/migrations/record-migration.schema.json",
+      "rule_id": "portia.migration.logical_identity_mismatch"
+    },
+    "migration-cross-work-root.json": {
+      "schema_path": "schemas/v1/migrations/record-migration.schema.json",
+      "rule_id": "portia.migration.work_root_changed"
+    },
+    "migration-record-family-changed.json": {
+      "schema_path": "schemas/v1/migrations/record-migration.schema.json",
+      "rule_id": "portia.migration.record_family_mismatch"
+    },
+    "migration-effective-after-created.json": {
+      "schema_path": "schemas/v1/migrations/record-migration.schema.json",
+      "rule_id": "portia.migration.effective_after_created"
+    },
+    "migration-immutable-audit-target.json": {
+      "schema_path": "schemas/v1/migrations/record-migration.schema.json",
+      "rule_id": "portia.migration.immutable_audit_target"
+    },
+    "migration-unregistered-transformer.json": {
+      "schema_path": "schemas/v1/migrations/record-migration.schema.json",
+      "rule_id": "portia.migration.unregistered_or_incompatible_transformer"
+    },
+    "migration-substantive-repair-hidden.json": {
+      "schema_path": "schemas/v1/migrations/record-migration.schema.json",
+      "rule_id": "portia.migration.substantive_repair_hidden"
+    },
+    "migration-lifecycle-not-preserved.json": {
+      "schema_path": "schemas/v1/migrations/record-migration.schema.json",
+      "rule_id": "portia.migration.lifecycle_not_preserved"
+    },
+    "ownership-same-class-scope.json": {
+      "schema_path": "schemas/v1/corrections/ownership-correction.schema.json",
+      "rule_id": "portia.ownership.scope_not_changed"
+    },
+    "ownership-event-identifier-reused.json": {
+      "schema_path": "schemas/v1/corrections/ownership-correction.schema.json",
+      "rule_id": "portia.ownership.destination_identifier_reused"
+    },
+    "ownership-child-identifier-reused.json": {
+      "schema_path": "schemas/v1/corrections/ownership-correction.schema.json",
+      "rule_id": "portia.ownership.destination_identifier_reused"
+    },
+    "ownership-envelope-destination-scope-mismatch.json": {
+      "schema_path": "schemas/v1/corrections/ownership-correction.schema.json",
+      "rule_id": "portia.ownership.destination_scope_mismatch"
+    },
+    "ownership-parent-self-reference.json": {
+      "schema_path": "schemas/v1/corrections/ownership-correction.schema.json",
+      "rule_id": "portia.ownership.cycle"
+    },
+    "ownership-parent-child-mapping-mismatch.json": {
+      "schema_path": "schemas/v1/corrections/ownership-correction.schema.json",
+      "rule_id": "portia.ownership.parent_child_mapping_mismatch"
+    },
+    "ownership-cross-workspace.json": {
+      "schema_path": "schemas/v1/corrections/ownership-correction.schema.json",
+      "rule_id": "portia.ownership.cross_workspace"
+    },
+    "ownership-effective-after-created.json": {
+      "schema_path": "schemas/v1/corrections/ownership-correction.schema.json",
+      "rule_id": "portia.ownership.effective_after_created"
+    },
+    "ownership-record-family-changed.json": {
+      "schema_path": "schemas/v1/corrections/ownership-correction.schema.json",
+      "rule_id": "portia.ownership.record_family_mismatch"
+    },
+    "ownership-reason-kind-mismatch.json": {
+      "schema_path": "schemas/v1/corrections/ownership-correction.schema.json",
+      "rule_id": "portia.ownership.reason_or_time_mismatch"
+    },
+    "ownership-unresolved-active-child.json": {
+      "schema_path": "schemas/v1/corrections/ownership-correction.schema.json",
+      "rule_id": "portia.ownership.unresolved_current_use_child"
+    },
+    "ownership-silent-incoming-reference-retarget.json": {
+      "schema_path": "schemas/v1/corrections/ownership-correction.schema.json",
+      "rule_id": "portia.ownership.silent_reference_retarget"
+    },
+    "removal-targets-removal-certificate.json": {
+      "schema_path": "schemas/v1/removals/exceptional-removal.schema.json",
+      "rule_id": "portia.removal.certificate_targeted"
+    },
+    "removal-class-scope-mismatch.json": {
+      "schema_path": "schemas/v1/removals/exceptional-removal.schema.json",
+      "rule_id": "portia.removal.class_scope_mismatch"
+    },
+    "removal-duplicate-certificate.json": {
+      "schema_path": "schemas/v1/removals/exceptional-removal.schema.json",
+      "rule_id": "portia.removal.duplicate_certificate"
+    },
+    "removal-ordinary-mistake-as-exception.json": {
+      "schema_path": "schemas/v1/removals/exceptional-removal.schema.json",
+      "rule_id": "portia.removal.nonexceptional_reason"
+    },
+    "removal-unauthorized-operator.json": {
+      "schema_path": "schemas/v1/removals/exceptional-removal.schema.json",
+      "rule_id": "portia.removal.authorization_invalid"
+    },
+    "removal-governance-block-unresolved.json": {
+      "schema_path": "schemas/v1/removals/exceptional-removal.schema.json",
+      "rule_id": "portia.removal.governance_block_unresolved"
+    },
+    "removal-content-evidence-revision-mismatch.json": {
+      "schema_path": "schemas/v1/removals/exceptional-removal.schema.json",
+      "rule_id": "portia.removal.content_evidence_mismatch"
+    },
+    "removal-parent-child-mapping-mismatch.json": {
+      "schema_path": "schemas/v1/removals/exceptional-removal.schema.json",
+      "rule_id": "portia.removal.parent_child_mapping_incomplete"
+    },
+    "removal-effective-after-created.json": {
+      "schema_path": "schemas/v1/removals/exceptional-removal.schema.json",
+      "rule_id": "portia.removal.effective_after_created"
+    },
+    "removal-certificate-retains-substantive-content.json": {
+      "schema_path": "schemas/v1/removals/exceptional-removal.schema.json",
+      "rule_id": "portia.removal.substantive_content_retained"
+    },
+    "removal-derived-payload-not-purged.json": {
+      "schema_path": "schemas/v1/removals/exceptional-removal.schema.json",
+      "rule_id": "portia.removal.derived_payload_retained"
+    },
+    "removal-dependency-review-not-triggered.json": {
+      "schema_path": "schemas/v1/removals/exceptional-removal.schema.json",
+      "rule_id": "portia.removal.dependency_review_missing"
+    }
+  }
+}

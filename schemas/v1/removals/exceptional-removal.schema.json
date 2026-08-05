@@ -1,0 +1,396 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/removals/exceptional-removal.schema.json",
+  "title": "Portia Exceptional Removal",
+  "description": "Minimal immutable class-module-scoped certificate that one exact accepted Portia work or work-record representation had its canonical payload intentionally removed under a narrowly authorized exceptional basis.",
+  "$comment": "Application validation must establish prior canonical acceptance and exact resolution, class-scope agreement, narrow exceptional grounds, valid local-operator authorization, absence of legal or governance blocks, content-evidence agreement, one certificate per exact representation, complete parent-child mappings, derived-payload purge, stable incoming references, dependency review, no recursive certificate removal, chronology, and atomic or recoverable physical execution.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "record_type",
+    "module_id",
+    "class_id",
+    "removal_id",
+    "target",
+    "reason",
+    "authorization",
+    "content_evidence",
+    "effective_at",
+    "creation_source",
+    "created_at",
+    "created_by"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1"
+    },
+    "record_type": {
+      "const": "exceptional_removal"
+    },
+    "module_id": {
+      "const": "portia"
+    },
+    "class_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+    },
+    "removal_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-exceptional-removal-id.schema.json"
+    },
+    "target": {
+      "$ref": "#/$defs/removalTarget"
+    },
+    "parent_removal": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exceptional-removal-ref.schema.json"
+    },
+    "reason": {
+      "$ref": "#/$defs/removalReason"
+    },
+    "authorization": {
+      "$ref": "#/$defs/authorization"
+    },
+    "content_evidence": {
+      "$ref": "#/$defs/contentEvidence"
+    },
+    "lifecycle_snapshot": {
+      "$ref": "#/$defs/lifecycleSnapshot"
+    },
+    "effective_at": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+    },
+    "creation_source": {
+      "$ref": "#/$defs/digitalCreationSource"
+    },
+    "created_at": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+    },
+    "created_by": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/attribution/attribution-agent.schema.json"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "target": {
+            "properties": {
+              "kind": {
+                "const": "work"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          }
+        },
+        "required": [
+          "target"
+        ]
+      },
+      "then": {
+        "not": {
+          "required": [
+            "parent_removal"
+          ]
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "content_evidence": {
+            "properties": {
+              "kind": {
+                "const": "unavailable"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          }
+        },
+        "required": [
+          "content_evidence"
+        ]
+      },
+      "then": {
+        "properties": {
+          "reason": {
+            "properties": {
+              "category": {
+                "const": "unrecoverable_corruption"
+              }
+            },
+            "required": [
+              "category"
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "removalTarget": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/workTarget"
+        },
+        {
+          "$ref": "#/$defs/workRecordTarget"
+        }
+      ]
+    },
+    "workTarget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "work_ref"
+      ],
+      "properties": {
+        "kind": {
+          "const": "work"
+        },
+        "work_ref": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-portia-work-ref.schema.json"
+        }
+      }
+    },
+    "workRecordTarget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "work_record_ref"
+      ],
+      "properties": {
+        "kind": {
+          "const": "work_record"
+        },
+        "work_record_ref": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-portia-work-record-ref.schema.json"
+        }
+      }
+    },
+    "removalReason": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/recognizedRemovalReason"
+        },
+        {
+          "$ref": "#/$defs/otherRemovalReason"
+        }
+      ]
+    },
+    "recognizedRemovalReason": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "category",
+        "code"
+      ],
+      "properties": {
+        "category": {
+          "enum": [
+            "legal_requirement",
+            "privacy_requirement",
+            "security_containment",
+            "administrative_test_data",
+            "unrecoverable_corruption"
+          ]
+        },
+        "code": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/lowercase-token.schema.json"
+        },
+        "detail": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+        }
+      }
+    },
+    "otherRemovalReason": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "category",
+        "code",
+        "detail"
+      ],
+      "properties": {
+        "category": {
+          "const": "other"
+        },
+        "code": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/lowercase-token.schema.json"
+        },
+        "detail": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+        }
+      }
+    },
+    "authorization": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "decision_reference",
+        "authorized_by"
+      ],
+      "properties": {
+        "decision_reference": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+        },
+        "authorized_by": {
+          "$ref": "#/$defs/localOperator"
+        }
+      }
+    },
+    "localOperator": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "display_label"
+      ],
+      "properties": {
+        "type": {
+          "const": "local_operator"
+        },
+        "display_label": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+        }
+      }
+    },
+    "contentEvidence": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/saltedSha256Evidence"
+        },
+        {
+          "$ref": "#/$defs/unavailableEvidence"
+        }
+      ]
+    },
+    "saltedSha256Evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "salt",
+        "digest",
+        "byte_length"
+      ],
+      "properties": {
+        "kind": {
+          "const": "salted_sha256"
+        },
+        "salt": {
+          "type": "string",
+          "minLength": 4,
+          "pattern": "^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$"
+        },
+        "digest": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "byte_length": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "unavailableEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "reason"
+      ],
+      "properties": {
+        "kind": {
+          "const": "unavailable"
+        },
+        "reason": {
+          "const": "unrecoverable_corruption"
+        }
+      }
+    },
+    "lifecycleSnapshot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status"
+      ],
+      "properties": {
+        "status": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/lowercase-token.schema.json"
+        },
+        "selected_transition": {
+          "$ref": "#/$defs/lifecycleTransitionWorkRecordRef"
+        }
+      }
+    },
+    "lifecycleTransitionWorkRecordRef": {
+      "allOf": [
+        {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-portia-work-record-ref.schema.json"
+        },
+        {
+          "properties": {
+            "record_ref": {
+              "allOf": [
+                {
+                  "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-local-record-ref.schema.json"
+                },
+                {
+                  "properties": {
+                    "record_kind": {
+                      "const": "lifecycle_transition"
+                    },
+                    "record_id": {
+                      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-lifecycle-transition-id.schema.json"
+                    },
+                    "contract_version": {
+                      "const": "1"
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "digitalCreationSource": {
+      "type": "object",
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "type": {
+          "const": "digital_entry"
+        }
+      },
+      "additionalProperties": false,
+      "description": "Canonical certificate creation is digital-only."
+    }
+  },
+  "x-portia-application-invariants": [
+    "portia.removal.target_not_canonically_accepted",
+    "portia.removal.target_not_exactly_resolved",
+    "portia.removal.class_scope_mismatch",
+    "portia.removal.nonexceptional_reason",
+    "portia.removal.ordinary_mechanism_sufficient",
+    "portia.removal.authorization_invalid",
+    "portia.removal.governance_block_unresolved",
+    "portia.removal.content_evidence_mismatch",
+    "portia.removal.substantive_content_retained",
+    "portia.removal.duplicate_certificate",
+    "portia.removal.parent_child_mapping_incomplete",
+    "portia.removal.derived_payload_retained",
+    "portia.removal.incoming_reference_rewritten",
+    "portia.removal.dependency_review_missing",
+    "portia.removal.silent_successor_follow",
+    "portia.removal.certificate_targeted",
+    "portia.removal.effective_after_created",
+    "portia.removal.execution_not_atomic_or_recoverable"
+  ]
+}

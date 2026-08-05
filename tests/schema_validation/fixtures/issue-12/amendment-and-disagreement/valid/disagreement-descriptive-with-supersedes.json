@@ -1,0 +1,63 @@
+{
+  "schema_version": "1",
+  "record_type": "statement_of_disagreement",
+  "module_id": "portia",
+  "class_id": "eng10_p2_2026",
+  "work_id": "evt_example",
+  "disagreement_id": "sod_successor",
+  "status": "withdrawn",
+  "target": {
+    "kind": "local_record",
+    "record_ref": {
+      "record_kind": "event_participant",
+      "record_id": "ept_example",
+      "contract_version": "2"
+    }
+  },
+  "source": {
+    "kind": "descriptive_person",
+    "description_type": "family_member",
+    "display_label": "Student's parent"
+  },
+  "positions": [
+    "objects_to_disclosure",
+    "other"
+  ],
+  "statement": {
+    "representation": "recorded_summary",
+    "text": "The parent objects to disclosure and raises an additional privacy concern."
+  },
+  "creation_source": {
+    "type": "import",
+    "source_label": "Legacy behavior notes"
+  },
+  "created_at": "2026-08-04T15:00:00-04:00",
+  "created_by": {
+    "type": "local_operator",
+    "display_label": "Stephen Severino"
+  },
+  "updated_at": "2026-08-04T15:00:00-04:00",
+  "updated_by": {
+    "type": "local_operator",
+    "display_label": "Stephen Severino"
+  },
+  "supersedes": [
+    {
+      "work_record_ref": {
+        "work_ref": {
+          "module_id": "portia",
+          "class_id": "eng10_p2_2026",
+          "work_id": "evt_example",
+          "work_kind": "event",
+          "contract_version": "2"
+        },
+        "record_ref": {
+          "record_kind": "statement_of_disagreement",
+          "record_id": "sod_prior",
+          "contract_version": "1"
+        }
+      },
+      "reason": "statement_corrected"
+    }
+  ]
+}

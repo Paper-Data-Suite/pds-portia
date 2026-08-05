@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/targets/portia-local-work-target.schema.json",
+  "title": "Portia Local Work Target",
+  "description": "Closed same-work target family for the containing Portia work root or one exact canonical child-record representation inside that work. The containing record supplies module_id, class_id, and work_id. This target never identifies another work root and never silently follows migration or supersession.",
+  "oneOf": [
+    {
+      "$ref": "#/$defs/workTarget"
+    },
+    {
+      "$ref": "#/$defs/localRecordTarget"
+    }
+  ],
+  "$defs": {
+    "workTarget": {
+      "type": "object",
+      "required": [
+        "kind",
+        "work_kind",
+        "contract_version"
+      ],
+      "properties": {
+        "kind": {
+          "const": "work"
+        },
+        "work_kind": {
+          "enum": [
+            "event",
+            "support_process"
+          ]
+        },
+        "contract_version": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+        }
+      },
+      "additionalProperties": false
+    },
+    "localRecordTarget": {
+      "type": "object",
+      "required": [
+        "kind",
+        "record_ref"
+      ],
+      "properties": {
+        "kind": {
+          "const": "local_record"
+        },
+        "record_ref": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-local-record-ref.schema.json"
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

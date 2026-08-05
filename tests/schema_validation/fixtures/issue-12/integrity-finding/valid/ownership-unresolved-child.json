@@ -1,0 +1,71 @@
+{
+  "finding_key": "fnd_ownership_unresolved_child",
+  "evaluation_key": "evl_ownership_unresolved_child_r1",
+  "rule_id": "portia.ownership_correction.unresolved_source_child",
+  "rule_version": "1",
+  "category": "ownership_correction",
+  "code": "unresolved_source_child",
+  "severity": "error",
+  "assessment": {
+    "result": "confirmed"
+  },
+  "effects": [
+    "block_operation_completion",
+    "block_work_writes"
+  ],
+  "scope": "graph",
+  "primary_target": {
+    "kind": "portia_work",
+    "work_ref": {
+      "module_id": "portia",
+      "class_id": "eng10_p3_2026",
+      "work_id": "evt_002",
+      "work_kind": "event",
+      "contract_version": "2"
+    }
+  },
+  "related_targets": [
+    {
+      "kind": "portia_work_record",
+      "work_record_ref": {
+        "work_ref": {
+          "module_id": "portia",
+          "class_id": "eng10_p3_2026",
+          "work_id": "evt_002",
+          "work_kind": "event",
+          "contract_version": "2"
+        },
+        "record_ref": {
+          "record_kind": "ownership_correction",
+          "record_id": "owc_001",
+          "contract_version": "1"
+        }
+      }
+    },
+    {
+      "kind": "portia_work_record",
+      "work_record_ref": {
+        "work_ref": {
+          "module_id": "portia",
+          "class_id": "eng10_p2_2026",
+          "work_id": "evt_001",
+          "work_kind": "event",
+          "contract_version": "2"
+        },
+        "record_ref": {
+          "record_kind": "event_participant",
+          "record_id": "ep_001",
+          "contract_version": "3"
+        }
+      }
+    }
+  ],
+  "evidence": [
+    {
+      "name": "unresolved_child_count",
+      "kind": "integer",
+      "value": 1
+    }
+  ],
+  "observed_at": "2026-08-05T08:00:00-04:00"
+}

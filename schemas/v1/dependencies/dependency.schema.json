@@ -1,0 +1,289 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/dependencies/dependency.schema.json",
+  "title": "Portia Dependency",
+  "description": "Lifecycle-bearing declaration that one Portia work or record depends on one complete Portia or sibling-module work-record reference. The dependent supplies the storage root. References remain exact historical references and are never silently retargeted to a successor or replacement frontier.",
+  "$comment": "Application validation remains responsible for canonical path agreement, target resolution, dependency-target eligibility, intrinsic-dependency duplication, record-specific strength/scope/purpose compatibility, unique active conditions, lifecycle legality, supersession reconciliation, self-dependency and cycle detection, temporal gate evaluation, external-module compatibility, no silent successor following, no automatic lifecycle cascade, authorization, privacy, and atomic or recoverable coordinated persistence.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "record_type",
+    "module_id",
+    "class_id",
+    "work_id",
+    "dependency_id",
+    "status",
+    "dependent",
+    "dependency",
+    "strength",
+    "applies_to",
+    "purpose",
+    "creation_source",
+    "created_at",
+    "created_by",
+    "updated_at",
+    "updated_by"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1"
+    },
+    "record_type": {
+      "const": "dependency"
+    },
+    "module_id": {
+      "const": "portia"
+    },
+    "class_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+    },
+    "work_id": {
+      "oneOf": [
+        {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-event-id.schema.json"
+        },
+        {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-support-process-id.schema.json"
+        }
+      ]
+    },
+    "dependency_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-dependency-id.schema.json"
+    },
+    "status": {
+      "enum": [
+        "proposed",
+        "active",
+        "invalidated",
+        "superseded"
+      ]
+    },
+    "dependent": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/targets/portia-local-work-target.schema.json"
+    },
+    "dependency": {
+      "$ref": "#/$defs/dependencyTarget"
+    },
+    "strength": {
+      "enum": [
+        "required",
+        "advisory"
+      ]
+    },
+    "applies_to": {
+      "enum": [
+        "activation",
+        "current_use",
+        "completion"
+      ]
+    },
+    "purpose": {
+      "enum": [
+        "identity_resolution",
+        "evidentiary_support",
+        "authorization_basis",
+        "workflow_prerequisite",
+        "implementation_input",
+        "contextual_support",
+        "other"
+      ]
+    },
+    "detail": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+    },
+    "supersedes": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/supersessionRef"
+      },
+      "description": "Canonical forward replacement links to prior dependency declarations. Each predecessor is identified exactly and is never silently followed."
+    },
+    "creation_source": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/provenance/creation-source.schema.json"
+    },
+    "created_at": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+    },
+    "created_by": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/attribution/attribution-agent.schema.json"
+    },
+    "updated_at": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+    },
+    "updated_by": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/attribution/attribution-agent.schema.json"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "purpose": {
+            "const": "other"
+          }
+        },
+        "required": [
+          "purpose"
+        ]
+      },
+      "then": {
+        "required": [
+          "detail"
+        ]
+      }
+    }
+  ],
+  "$defs": {
+    "portiaWorkDependency": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "work_ref"
+      ],
+      "properties": {
+        "kind": {
+          "const": "portia_work"
+        },
+        "work_ref": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/portia-work-ref.schema.json"
+        }
+      }
+    },
+    "portiaRecordDependency": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "work_record_ref"
+      ],
+      "properties": {
+        "kind": {
+          "const": "portia_record"
+        },
+        "work_record_ref": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/portia-work-record-ref.schema.json"
+        }
+      }
+    },
+    "moduleRecordDependency": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "module_work_record_ref"
+      ],
+      "properties": {
+        "kind": {
+          "const": "module_record"
+        },
+        "module_work_record_ref": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/module-work-record-ref.schema.json"
+        }
+      }
+    },
+    "dependencyTarget": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/portiaWorkDependency"
+        },
+        {
+          "$ref": "#/$defs/portiaRecordDependency"
+        },
+        {
+          "$ref": "#/$defs/moduleRecordDependency"
+        }
+      ]
+    },
+    "dependencyRecordRef": {
+      "allOf": [
+        {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-portia-work-record-ref.schema.json"
+        },
+        {
+          "properties": {
+            "record_ref": {
+              "allOf": [
+                {
+                  "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-local-record-ref.schema.json"
+                },
+                {
+                  "properties": {
+                    "record_kind": {
+                      "const": "dependency"
+                    },
+                    "record_id": {
+                      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-dependency-id.schema.json"
+                    },
+                    "contract_version": {
+                      "const": "1"
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "recognizedSupersessionRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "work_record_ref",
+        "reason"
+      ],
+      "properties": {
+        "work_record_ref": {
+          "$ref": "#/$defs/dependencyRecordRef"
+        },
+        "reason": {
+          "enum": [
+            "dependent_corrected",
+            "dependency_target_corrected",
+            "strength_corrected",
+            "evaluation_scope_corrected",
+            "purpose_corrected",
+            "duplicate_consolidated"
+          ]
+        },
+        "detail": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+        }
+      }
+    },
+    "otherSupersessionRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "work_record_ref",
+        "reason",
+        "detail"
+      ],
+      "properties": {
+        "work_record_ref": {
+          "$ref": "#/$defs/dependencyRecordRef"
+        },
+        "reason": {
+          "const": "other"
+        },
+        "detail": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+        }
+      }
+    },
+    "supersessionRef": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/recognizedSupersessionRef"
+        },
+        {
+          "$ref": "#/$defs/otherSupersessionRef"
+        }
+      ]
+    }
+  }
+}

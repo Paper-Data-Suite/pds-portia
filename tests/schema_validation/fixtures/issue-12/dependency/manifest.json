@@ -1,0 +1,50 @@
+{
+  "valid": {
+    "dependency-required-current-use-portia-record.json": "schemas/v1/dependencies/dependency.schema.json",
+    "dependency-advisory-activation-portia-work.json": "schemas/v1/dependencies/dependency.schema.json",
+    "dependency-required-completion-module-record.json": "schemas/v1/dependencies/dependency.schema.json",
+    "dependency-proposed-paper-preallocated.json": "schemas/v1/dependencies/dependency.schema.json",
+    "dependency-superseded-with-predecessor.json": "schemas/v1/dependencies/dependency.schema.json",
+    "dependency-support-process-other-purpose.json": "schemas/v1/dependencies/dependency.schema.json"
+  },
+  "invalid": {
+    "dependency-invalid-id.json": "schemas/v1/dependencies/dependency.schema.json",
+    "dependency-invalid-status.json": "schemas/v1/dependencies/dependency.schema.json",
+    "dependency-missing-dependent.json": "schemas/v1/dependencies/dependency.schema.json",
+    "dependency-dependent-array.json": "schemas/v1/dependencies/dependency.schema.json",
+    "dependency-dependent-mixed-branches.json": "schemas/v1/dependencies/dependency.schema.json",
+    "dependency-target-array.json": "schemas/v1/dependencies/dependency.schema.json",
+    "dependency-target-unknown-kind.json": "schemas/v1/dependencies/dependency.schema.json",
+    "dependency-portia-work-missing-class.json": "schemas/v1/dependencies/dependency.schema.json",
+    "dependency-portia-work-kind-id-mismatch.json": "schemas/v1/dependencies/dependency.schema.json",
+    "dependency-portia-record-missing-version.json": "schemas/v1/dependencies/dependency.schema.json",
+    "dependency-module-record-incomplete.json": "schemas/v1/dependencies/dependency.schema.json",
+    "dependency-invalid-strength.json": "schemas/v1/dependencies/dependency.schema.json",
+    "dependency-invalid-applies-to.json": "schemas/v1/dependencies/dependency.schema.json",
+    "dependency-invalid-purpose.json": "schemas/v1/dependencies/dependency.schema.json",
+    "dependency-other-purpose-missing-detail.json": "schemas/v1/dependencies/dependency.schema.json",
+    "dependency-whitespace-detail.json": "schemas/v1/dependencies/dependency.schema.json",
+    "dependency-empty-supersedes.json": "schemas/v1/dependencies/dependency.schema.json",
+    "dependency-supersedes-wrong-kind.json": "schemas/v1/dependencies/dependency.schema.json",
+    "dependency-supersedes-null-version.json": "schemas/v1/dependencies/dependency.schema.json",
+    "dependency-supersedes-invalid-id.json": "schemas/v1/dependencies/dependency.schema.json",
+    "dependency-supersedes-other-missing-detail.json": "schemas/v1/dependencies/dependency.schema.json",
+    "dependency-duplicate-supersedes.json": "schemas/v1/dependencies/dependency.schema.json",
+    "dependency-missing-updated-by.json": "schemas/v1/dependencies/dependency.schema.json",
+    "dependency-extra-derived-condition.json": "schemas/v1/dependencies/dependency.schema.json",
+    "dependency-created-at-without-offset.json": "schemas/v1/dependencies/dependency.schema.json",
+    "dependency-malformed-import-source.json": "schemas/v1/dependencies/dependency.schema.json"
+  },
+  "application_invalid": {
+    "dependency-active-successor-claims-unsuperseded-predecessor.json": "schemas/v1/dependencies/dependency.schema.json",
+    "dependency-advisory-authorization-basis.json": "schemas/v1/dependencies/dependency.schema.json",
+    "dependency-completion-on-unsupported-child.json": "schemas/v1/dependencies/dependency.schema.json",
+    "dependency-direct-cycle-member.json": "schemas/v1/dependencies/dependency.schema.json",
+    "dependency-duplicates-intrinsic-role-basis.json": "schemas/v1/dependencies/dependency.schema.json",
+    "dependency-module-id-mismatch.json": "schemas/v1/dependencies/dependency.schema.json",
+    "dependency-self-dependency.json": "schemas/v1/dependencies/dependency.schema.json",
+    "dependency-self-supersedes.json": "schemas/v1/dependencies/dependency.schema.json",
+    "dependency-superseded-target-silent-follow.json": "schemas/v1/dependencies/dependency.schema.json",
+    "dependency-targets-lifecycle-transition.json": "schemas/v1/dependencies/dependency.schema.json"
+  }
+}

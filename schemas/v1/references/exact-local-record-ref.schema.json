@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-local-record-ref.schema.json",
+  "title": "Exact Portia Local Record Reference",
+  "description": "Typed reference to one exact persisted canonical record representation inside the unambiguous Portia work scope supplied by the containing contract. The required non-null contract_version identifies the expected representation. Resolution must not select another contract version or silently follow migration, supersession, consolidation, or ownership correction.",
+  "type": "object",
+  "required": [
+    "record_kind",
+    "record_id",
+    "contract_version"
+  ],
+  "properties": {
+    "record_kind": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+    },
+    "record_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+    },
+    "contract_version": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+    }
+  },
+  "additionalProperties": false
+}

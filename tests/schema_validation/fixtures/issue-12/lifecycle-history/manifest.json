@@ -1,0 +1,56 @@
+{
+  "valid": {
+    "transition-work-first-digital.json": "schemas/v1/lifecycle/lifecycle-transition.schema.json",
+    "transition-local-record-with-predecessor.json": "schemas/v1/lifecycle/lifecycle-transition.schema.json",
+    "transition-support-process-import.json": "schemas/v1/lifecycle/lifecycle-transition.schema.json",
+    "transition-other-reason-with-detail.json": "schemas/v1/lifecycle/lifecycle-transition.schema.json",
+    "history-correction-replacement-branch.json": "schemas/v1/lifecycle/lifecycle-history-correction.schema.json",
+    "history-correction-return-to-baseline.json": "schemas/v1/lifecycle/lifecycle-history-correction.schema.json",
+    "history-correction-with-predecessor.json": "schemas/v1/lifecycle/lifecycle-history-correction.schema.json",
+    "history-correction-import-other.json": "schemas/v1/lifecycle/lifecycle-history-correction.schema.json"
+  },
+  "invalid": {
+    "transition-missing-target.json": "schemas/v1/lifecycle/lifecycle-transition.schema.json",
+    "transition-extra-status.json": "schemas/v1/lifecycle/lifecycle-transition.schema.json",
+    "transition-invalid-id.json": "schemas/v1/lifecycle/lifecycle-transition.schema.json",
+    "transition-previous-wrong-kind.json": "schemas/v1/lifecycle/lifecycle-transition.schema.json",
+    "transition-previous-null-version.json": "schemas/v1/lifecycle/lifecycle-transition.schema.json",
+    "transition-paper-source.json": "schemas/v1/lifecycle/lifecycle-transition.schema.json",
+    "transition-other-reason-missing-detail.json": "schemas/v1/lifecycle/lifecycle-transition.schema.json",
+    "transition-recognized-category-other-code.json": "schemas/v1/lifecycle/lifecycle-transition.schema.json",
+    "transition-uppercase-status.json": "schemas/v1/lifecycle/lifecycle-transition.schema.json",
+    "transition-timestamp-without-offset.json": "schemas/v1/lifecycle/lifecycle-transition.schema.json",
+    "transition-local-target-missing-version.json": "schemas/v1/lifecycle/lifecycle-transition.schema.json",
+    "history-correction-missing-replacement-head.json": "schemas/v1/lifecycle/lifecycle-history-correction.schema.json",
+    "history-correction-null-replaced-head.json": "schemas/v1/lifecycle/lifecycle-history-correction.schema.json",
+    "history-correction-previous-wrong-kind.json": "schemas/v1/lifecycle/lifecycle-history-correction.schema.json",
+    "history-correction-replacement-wrong-version.json": "schemas/v1/lifecycle/lifecycle-history-correction.schema.json",
+    "history-correction-other-reason-missing-detail.json": "schemas/v1/lifecycle/lifecycle-history-correction.schema.json",
+    "history-correction-extra-effective-at.json": "schemas/v1/lifecycle/lifecycle-history-correction.schema.json",
+    "history-correction-paper-source.json": "schemas/v1/lifecycle/lifecycle-history-correction.schema.json",
+    "history-correction-invalid-id.json": "schemas/v1/lifecycle/lifecycle-history-correction.schema.json",
+    "history-correction-head-wrong-kind.json": "schemas/v1/lifecycle/lifecycle-history-correction.schema.json"
+  },
+  "application_invalid": {
+    "transition-same-status.json": {
+      "schema_path": "schemas/v1/lifecycle/lifecycle-transition.schema.json",
+      "rule_id": "from_status_must_differ_from_to_status"
+    },
+    "transition-effective-after-created.json": {
+      "schema_path": "schemas/v1/lifecycle/lifecycle-transition.schema.json",
+      "rule_id": "effective_at_must_not_follow_created_at"
+    },
+    "transition-self-predecessor.json": {
+      "schema_path": "schemas/v1/lifecycle/lifecycle-transition.schema.json",
+      "rule_id": "previous_transition_must_not_reference_self"
+    },
+    "history-correction-same-heads.json": {
+      "schema_path": "schemas/v1/lifecycle/lifecycle-history-correction.schema.json",
+      "rule_id": "replacement_head_must_differ_from_replaced_head"
+    },
+    "history-correction-self-predecessor.json": {
+      "schema_path": "schemas/v1/lifecycle/lifecycle-history-correction.schema.json",
+      "rule_id": "previous_correction_must_not_reference_self"
+    }
+  }
+}

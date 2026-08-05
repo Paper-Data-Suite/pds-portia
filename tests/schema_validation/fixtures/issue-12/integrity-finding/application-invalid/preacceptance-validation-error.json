@@ -1,0 +1,42 @@
+{
+  "finding_key": "fnd_structure_schema_invalid",
+  "evaluation_key": "evl_structure_schema_invalid_r1",
+  "rule_id": "portia.structure.schema_invalid",
+  "rule_version": "1",
+  "category": "structure",
+  "code": "schema_invalid",
+  "severity": "error",
+  "assessment": {
+    "result": "confirmed"
+  },
+  "effects": [
+    "block_current_use"
+  ],
+  "scope": "representation",
+  "primary_target": {
+    "kind": "portia_work_record",
+    "work_record_ref": {
+      "work_ref": {
+        "module_id": "portia",
+        "class_id": "eng10_p2_2026",
+        "work_id": "evt_001",
+        "work_kind": "event",
+        "contract_version": "2"
+      },
+      "record_ref": {
+        "record_kind": "event_participant",
+        "record_id": "ep_001",
+        "contract_version": "3"
+      }
+    }
+  },
+  "related_targets": [],
+  "evidence": [
+    {
+      "name": "acceptance_state",
+      "kind": "token",
+      "value": "proposed_write"
+    }
+  ],
+  "observed_at": "2026-08-05T08:00:00-04:00"
+}

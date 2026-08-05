@@ -1,0 +1,59 @@
+{
+  "schema_version": "1",
+  "record_type": "exceptional_removal",
+  "module_id": "portia",
+  "class_id": "eng10_p2_2026",
+  "removal_id": "rmv_child_001",
+  "target": {
+    "kind": "work_record",
+    "work_record_ref": {
+      "work_ref": {
+        "module_id": "portia",
+        "class_id": "eng10_p2_2026",
+        "work_id": "evt_example",
+        "work_kind": "event",
+        "contract_version": "2"
+      },
+      "record_ref": {
+        "record_kind": "event_participant",
+        "record_id": "ep_example",
+        "contract_version": "2"
+      }
+    }
+  },
+  "reason": {
+    "category": "security_containment",
+    "code": "secret_exposure"
+  },
+  "authorization": {
+    "decision_reference": "security_incident_2026_021",
+    "authorized_by": {
+      "type": "local_operator",
+      "display_label": "Security Administrator"
+    }
+  },
+  "content_evidence": {
+    "kind": "salted_sha256",
+    "salt": "YWJjZGVmZ2hpamtsbW5vcA==",
+    "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "byte_length": 1024
+  },
+  "lifecycle_snapshot": {
+    "status": "active"
+  },
+  "effective_at": "2026-08-04T09:00:00-04:00",
+  "creation_source": {
+    "type": "digital_entry"
+  },
+  "created_at": "2026-08-04T09:02:00-04:00",
+  "created_by": {
+    "type": "system_process",
+    "process_id": "portia_removal_executor"
+  },
+  "parent_removal": {
+    "module_id": "portia",
+    "class_id": "eng10_p2_2026",
+    "removal_id": "rmv_work_001",
+    "contract_version": null
+  }
+}

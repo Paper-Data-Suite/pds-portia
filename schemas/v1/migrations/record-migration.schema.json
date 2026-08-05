@@ -1,0 +1,298 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/migrations/record-migration.schema.json",
+  "title": "Portia Record Migration",
+  "description": "Immutable certificate for one completed representation-only migration of one exact Portia work or work-record representation. It preserves logical identity and canonical meaning while changing exact contract-versioned representation identity.",
+  "$comment": "Application validation must establish exact resolution, stable logical identity, differing contract versions, same semantic family and work root, observed-revision agreement, registered transformation compatibility, semantic equivalence, lifecycle preservation, complete supersession reconciliation, and an acyclic unbranched migration graph. Migration must not repair substantive facts, change ownership, or rewrite exact references.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "record_type",
+    "module_id",
+    "class_id",
+    "work_id",
+    "migration_id",
+    "source",
+    "destination",
+    "reason",
+    "transformation",
+    "effective_at",
+    "creation_source",
+    "created_at",
+    "created_by"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1"
+    },
+    "record_type": {
+      "const": "record_migration"
+    },
+    "module_id": {
+      "const": "portia"
+    },
+    "class_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+    },
+    "work_id": {
+      "oneOf": [
+        {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-event-id.schema.json"
+        },
+        {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-support-process-id.schema.json"
+        }
+      ]
+    },
+    "migration_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-record-migration-id.schema.json"
+    },
+    "source": {
+      "$ref": "#/$defs/migrationEndpoint"
+    },
+    "destination": {
+      "$ref": "#/$defs/migrationEndpoint"
+    },
+    "reason": {
+      "$ref": "#/$defs/migrationReason"
+    },
+    "transformation": {
+      "$ref": "#/$defs/transformation"
+    },
+    "effective_at": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+    },
+    "creation_source": {
+      "$ref": "#/$defs/digitalCreationSource"
+    },
+    "created_at": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+    },
+    "created_by": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/attribution/attribution-agent.schema.json"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "source": {
+            "properties": {
+              "kind": {
+                "const": "work"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          }
+        },
+        "required": [
+          "source"
+        ]
+      },
+      "then": {
+        "properties": {
+          "destination": {
+            "properties": {
+              "kind": {
+                "const": "work"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "source": {
+            "properties": {
+              "kind": {
+                "const": "work_record"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          }
+        },
+        "required": [
+          "source"
+        ]
+      },
+      "then": {
+        "properties": {
+          "destination": {
+            "properties": {
+              "kind": {
+                "const": "work_record"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "migrationEndpoint": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/workEndpoint"
+        },
+        {
+          "$ref": "#/$defs/workRecordEndpoint"
+        }
+      ]
+    },
+    "workEndpoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "work_ref",
+        "observed_updated_at"
+      ],
+      "properties": {
+        "kind": {
+          "const": "work"
+        },
+        "work_ref": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-portia-work-ref.schema.json"
+        },
+        "observed_updated_at": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+        }
+      }
+    },
+    "workRecordEndpoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "work_record_ref",
+        "observed_updated_at"
+      ],
+      "properties": {
+        "kind": {
+          "const": "work_record"
+        },
+        "work_record_ref": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-portia-work-record-ref.schema.json"
+        },
+        "observed_updated_at": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+        }
+      }
+    },
+    "migrationReason": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/recognizedMigrationReason"
+        },
+        {
+          "$ref": "#/$defs/otherMigrationReason"
+        }
+      ]
+    },
+    "recognizedMigrationReason": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "category",
+        "code"
+      ],
+      "properties": {
+        "category": {
+          "enum": [
+            "contract_upgrade",
+            "contract_normalization",
+            "canonical_representation_change"
+          ]
+        },
+        "code": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/lowercase-token.schema.json"
+        },
+        "detail": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+        }
+      }
+    },
+    "otherMigrationReason": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "category",
+        "code",
+        "detail"
+      ],
+      "properties": {
+        "category": {
+          "const": "other"
+        },
+        "code": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/lowercase-token.schema.json"
+        },
+        "detail": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+        }
+      }
+    },
+    "transformation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "transformer_id",
+        "transformer_version"
+      ],
+      "properties": {
+        "transformer_id": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/lowercase-token.schema.json"
+        },
+        "transformer_version": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+        }
+      }
+    },
+    "digitalCreationSource": {
+      "type": "object",
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "type": {
+          "const": "digital_entry"
+        }
+      },
+      "additionalProperties": false,
+      "description": "Canonical certificate creation is digital-only."
+    }
+  },
+  "x-portia-application-invariants": [
+    "portia.migration.exact_resolution_required",
+    "portia.migration.endpoint_kind_mismatch",
+    "portia.migration.logical_identity_mismatch",
+    "portia.migration.same_contract_version",
+    "portia.migration.record_family_mismatch",
+    "portia.migration.work_root_changed",
+    "portia.migration.identical_representations",
+    "portia.migration.observed_revision_mismatch",
+    "portia.migration.unregistered_or_incompatible_transformer",
+    "portia.migration.semantic_mismatch",
+    "portia.migration.substantive_repair_hidden",
+    "portia.migration.source_lifecycle_ineligible",
+    "portia.migration.lifecycle_not_preserved",
+    "portia.migration.immutable_audit_target",
+    "portia.migration.ownership_scope_changed",
+    "portia.migration.reconciliation_incomplete",
+    "portia.migration.effective_after_created",
+    "portia.migration.branch_or_cycle"
+  ]
+}

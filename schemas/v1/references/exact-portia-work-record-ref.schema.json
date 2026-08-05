@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-portia-work-record-ref.schema.json",
+  "title": "Exact Portia Work Record Reference",
+  "description": "Complete reference to one exact canonical child-record representation in one exact Portia work representation. The reference preserves both logical identities and both required contract versions. Resolution must not select another version or silently follow migration, supersession, consolidation, or ownership correction.",
+  "type": "object",
+  "required": [
+    "work_ref",
+    "record_ref"
+  ],
+  "properties": {
+    "work_ref": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-portia-work-ref.schema.json"
+    },
+    "record_ref": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-local-record-ref.schema.json"
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,31 @@
+{
+  "finding_key": "fnd_authorization_producer_unavailable",
+  "evaluation_key": "evl_authorization_producer_unavailable_r1",
+  "rule_id": "portia.authorization_compatibility.producer_contract_unavailable",
+  "rule_version": "1",
+  "category": "authorization_compatibility",
+  "code": "producer_contract_unavailable",
+  "severity": "warning",
+  "assessment": {
+    "result": "indeterminate",
+    "limitation": "unsupported_contract"
+  },
+  "effects": [
+    "review_required",
+    "block_current_use"
+  ],
+  "scope": "workspace",
+  "primary_target": {
+    "kind": "workspace",
+    "workspace_id": "teacher_workspace_001"
+  },
+  "related_targets": [],
+  "evidence": [
+    {
+      "name": "producer_module_id",
+      "kind": "identifier",
+      "value": "quillan"
+    }
+  ],
+  "observed_at": "2026-08-05T08:00:00-04:00"
+}

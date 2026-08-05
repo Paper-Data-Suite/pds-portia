@@ -1,7 +1,7 @@
 # Portia JSON Schemas
 
 Portia uses JSON Schema Draft 2020-12 for structural validation of canonical
-records and reusable value objects.
+records, reusable value objects, and explicitly noncanonical derived projections.
 
 ## Canonical schema identity
 
@@ -42,6 +42,14 @@ The initial prefixes are:
 - Event Participant: `ep_`
 - Event Participant Role: `epr_`
 - Work Relationship: `rel_`
+- Lifecycle Transition: `lct_`
+- Lifecycle-History Correction: `lhc_`
+- Amendment: `amd_`
+- Statement of Disagreement: `sod_`
+- Dependency: `dep_`
+- Record Migration: `mig_`
+- Ownership Correction: `owc_`
+- Exceptional Removal: `rmv_`
 
 Portia-owned identifiers:
 
@@ -371,6 +379,80 @@ Migration fixtures beneath
 document explicit version-1 to version-2 transformations. Reading a historical
 version-1 Role does not silently mutate it or change its canonical identity.
 
+## Lifecycle and lifecycle-history contracts
+
+The shared append-only history contracts are:
+
+    schemas/v1/lifecycle/lifecycle-transition.schema.json
+    schemas/v1/lifecycle/lifecycle-history-correction.schema.json
+
+A Lifecycle Transition identifies one exact work or same-work record target, the prior and resulting status tokens, reason, effective time, creation provenance, and attribution. Status vocabularies and permitted edges remain record-family responsibilities.
+
+The canonical target may persist current status for direct loading. Application validation must reconcile that value with the selected transition history. A mismatch is not silently repaired.
+
+A Lifecycle-History Correction selects a replacement transition-history head while preserving the replaced branch. It is append-only correction evidence and is not itself a status transition.
+
+## Amendment and disagreement contracts
+
+The correction contracts are:
+
+    schemas/v1/corrections/amendment.schema.json
+    schemas/v1/corrections/statement-of-disagreement.schema.json
+
+An Amendment records a bounded nonmaterial change with explicit before-and-after presence and value, JSON Pointer path, target-revision precondition, reason, chronology, and attribution. Application validation determines materiality and protects identity, ownership, subject, target, source, basis, status, and substantive meaning.
+
+A Statement of Disagreement preserves an attributable dispute, qualification, objection, or withdrawal position. It does not mutate, invalidate, supersede, or adjudicate its target.
+
+## Dependency contract
+
+The shared dependency record is:
+
+    schemas/v1/dependencies/dependency.schema.json
+
+A Dependency identifies one same-work dependent and one exact Portia work, Portia record, or sibling-module record dependency. It records required or advisory strength, activation/current-use/completion scope, and purpose.
+
+Dependency effects are derived through application evaluation. Portia does not store one universal dependency-health value, silently follow a successor, duplicate an intrinsic domain dependency, or apply an automatic lifecycle cascade.
+
+## Migration, ownership correction, and exceptional removal
+
+The operation-evidence contracts are:
+
+    schemas/v1/migrations/record-migration.schema.json
+    schemas/v1/corrections/ownership-correction.schema.json
+    schemas/v1/removals/exceptional-removal.schema.json
+
+Record Migration changes representation while preserving logical identity, record family, work root, lifecycle meaning, and substantive semantics. Source and destination are exact representations and the transformer identity and version are explicit.
+
+Ownership Correction records a wrong Event class or child work root. It identifies exact source and destination representations and supports parent-child mapping without treating filesystem movement as canonical authority. References do not silently retarget.
+
+Exceptional Removal is the narrow administrative boundary for legal, privacy, security, accepted-test-data, and unrecoverable-corruption cases. The certificate preserves exact target identity, authorization, minimal content evidence, available lifecycle evidence, and effective time without retaining prohibited payload. Removal is not a `deleted` lifecycle state.
+
+## Upgraded Event-family and relationship contracts
+
+Issue #12 introduces these current implementation targets:
+
+    schemas/v3/event-participant.schema.json
+    schemas/v3/event-participant-role.schema.json
+    schemas/v2/work-relationship.schema.json
+
+Participant and Role version 3 preserve version-2 domain semantics while replacing same-work predecessor references with complete exact Portia work-record references. Work Relationship version 2 accepts predecessor versions 1 and 2.
+
+All three support `work_root_corrected` and `contract_migrated`. Application validation requires ownership correction to use a changed work scope and fresh destination identity where required, while migration preserves logical identity in the same work across different contract versions.
+
+Event remains at version 2 because its existing exact predecessor work references already support migration, correction, duplicate consolidation, and Event ownership replacement.
+
+## Integrity-finding projection
+
+The noncanonical diagnostic projection is:
+
+    schemas/v1/projections/integrity-finding.schema.json
+
+An Integrity Finding contains deterministic finding and evaluation keys, stable rule identity and version, category and code, severity, confirmed or indeterminate assessment, explicit effects, scope, exact targets, bounded evidence, and observation time.
+
+The projection deliberately excludes `schema_version`, `record_type`, lifecycle status, attribution, supersession, amendment, migration, and canonical storage identity. It may be deleted and rebuilt without altering domain history.
+
+Finding acknowledgement, suppression, recurrence caches, quarantine mechanics, operation state, and repair-mode persistence belong to Issue #13.
+
 ## Offline resolution
 
 Schema tests build a local `referencing.Registry` from checked-in schema
@@ -379,9 +461,20 @@ between a catalog entry and its source schema is a test failure.
 
 ## Validation boundary
 
-JSON Schema establishes local structure. It does not establish target
-existence, authoritative identity resolution, lifecycle eligibility,
-authorization, duplicate state across files, or other cross-record invariants.
+JSON Schema establishes local structure, closed envelopes, required fields,
+controlled vocabularies, identifier and timestamp syntax, exact reference
+shape, and structural conditionals.
+
+Application validation remains responsible for authoritative resolution,
+storage and envelope agreement, lifecycle legality, history reconciliation,
+materiality, authorization, chronology across records, duplicate identity,
+successor and dependency graphs, migration semantic preservation, ownership
+and child reconciliation, removal execution, deterministic finding generation,
+and coordinated atomic or recoverable persistence.
+
+Issue #13 owns operation journals, write ordering, rollback, crash recovery,
+repair-mode writes, quarantine, acknowledgement and suppression state, and
+rebuildable operational indexes.
 
 ## Running the schema tests
 

@@ -1,0 +1,41 @@
+{
+  "finding_key": "fnd_persistence_operation_incomplete",
+  "evaluation_key": "evl_persistence_operation_incomplete_r1",
+  "rule_id": "portia.persistence_recovery.operation_incomplete",
+  "rule_version": "1",
+  "category": "persistence_recovery",
+  "code": "operation_incomplete",
+  "severity": "error",
+  "assessment": {
+    "result": "confirmed"
+  },
+  "effects": [
+    "block_operation_completion",
+    "block_work_writes"
+  ],
+  "scope": "operation",
+  "primary_target": {
+    "kind": "operation",
+    "operation_id": "op_001"
+  },
+  "related_targets": [
+    {
+      "kind": "portia_work",
+      "work_ref": {
+        "module_id": "portia",
+        "class_id": "eng10_p2_2026",
+        "work_id": "evt_001",
+        "work_kind": "event",
+        "contract_version": "2"
+      }
+    }
+  ],
+  "evidence": [
+    {
+      "name": "operation_state",
+      "kind": "token",
+      "value": "recovery_required"
+    }
+  ],
+  "observed_at": "2026-08-05T08:00:00-04:00"
+}

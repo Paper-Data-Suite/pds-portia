@@ -1,0 +1,29 @@
+{
+  "finding_key": "fnd_derived_index_drift",
+  "evaluation_key": "evl_derived_index_drift_r1",
+  "rule_id": "portia.derived_state.derived_index_drift",
+  "rule_version": "1",
+  "category": "derived_state",
+  "code": "derived_index_drift",
+  "severity": "advisory",
+  "assessment": {
+    "result": "confirmed"
+  },
+  "effects": [
+    "attention"
+  ],
+  "scope": "class",
+  "primary_target": {
+    "kind": "class",
+    "class_id": "eng10_p2_2026"
+  },
+  "related_targets": [],
+  "evidence": [
+    {
+      "name": "external_transient_state",
+      "kind": "token",
+      "value": "current_process_memory"
+    }
+  ],
+  "observed_at": "2026-08-05T08:00:00-04:00"
+}

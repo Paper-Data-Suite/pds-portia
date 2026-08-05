@@ -1,0 +1,31 @@
+{
+  "valid": {
+    "exact-portia-work-ref-event.json": "schemas/v1/references/exact-portia-work-ref.schema.json",
+    "exact-portia-work-ref-support-process.json": "schemas/v1/references/exact-portia-work-ref.schema.json",
+    "exact-local-record-ref.json": "schemas/v1/references/exact-local-record-ref.schema.json",
+    "exact-portia-work-record-ref.json": "schemas/v1/references/exact-portia-work-record-ref.schema.json",
+    "exceptional-removal-ref.json": "schemas/v1/references/exceptional-removal-ref.schema.json",
+    "portia-local-work-target-work.json": "schemas/v1/targets/portia-local-work-target.schema.json",
+    "portia-local-work-target-record.json": "schemas/v1/targets/portia-local-work-target.schema.json",
+    "exact-target-work.json": "schemas/v1/targets/exact-portia-work-or-record-target.schema.json",
+    "exact-target-work-record.json": "schemas/v1/targets/exact-portia-work-or-record-target.schema.json"
+  },
+  "invalid": {
+    "exact-portia-work-ref-null-version.json": "schemas/v1/references/exact-portia-work-ref.schema.json",
+    "exact-portia-work-ref-missing-version.json": "schemas/v1/references/exact-portia-work-ref.schema.json",
+    "exact-portia-work-ref-kind-id-mismatch.json": "schemas/v1/references/exact-portia-work-ref.schema.json",
+    "exact-local-record-ref-null-version.json": "schemas/v1/references/exact-local-record-ref.schema.json",
+    "exact-local-record-ref-missing-version.json": "schemas/v1/references/exact-local-record-ref.schema.json",
+    "exact-portia-work-record-ref-incomplete-record.json": "schemas/v1/references/exact-portia-work-record-ref.schema.json",
+    "exceptional-removal-ref-missing-class.json": "schemas/v1/references/exceptional-removal-ref.schema.json",
+    "exceptional-removal-ref-null-version.json": "schemas/v1/references/exceptional-removal-ref.schema.json",
+    "portia-local-work-target-mixed-branches.json": "schemas/v1/targets/portia-local-work-target.schema.json",
+    "portia-local-work-target-work-null-version.json": "schemas/v1/targets/portia-local-work-target.schema.json",
+    "portia-local-work-target-record-missing-version.json": "schemas/v1/targets/portia-local-work-target.schema.json",
+    "portia-local-work-target-cross-work-wrapper.json": "schemas/v1/targets/portia-local-work-target.schema.json",
+    "exact-target-mixed-branches.json": "schemas/v1/targets/exact-portia-work-or-record-target.schema.json",
+    "exact-target-work-null-version.json": "schemas/v1/targets/exact-portia-work-or-record-target.schema.json",
+    "exact-target-work-record-incomplete.json": "schemas/v1/targets/exact-portia-work-or-record-target.schema.json",
+    "exact-target-array.json": "schemas/v1/targets/exact-portia-work-or-record-target.schema.json"
+  }
+}

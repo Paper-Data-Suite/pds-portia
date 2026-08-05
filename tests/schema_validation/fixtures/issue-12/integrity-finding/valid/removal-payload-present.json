@@ -1,0 +1,53 @@
+{
+  "finding_key": "fnd_removal_payload_present",
+  "evaluation_key": "evl_removal_payload_present_r1",
+  "rule_id": "portia.removal.payload_present_after_removal",
+  "rule_version": "1",
+  "category": "removal",
+  "code": "payload_present_after_removal",
+  "severity": "critical",
+  "assessment": {
+    "result": "confirmed"
+  },
+  "effects": [
+    "quarantine_target",
+    "block_current_use"
+  ],
+  "scope": "representation",
+  "primary_target": {
+    "kind": "portia_work_record",
+    "work_record_ref": {
+      "work_ref": {
+        "module_id": "portia",
+        "class_id": "eng10_p2_2026",
+        "work_id": "evt_001",
+        "work_kind": "event",
+        "contract_version": "2"
+      },
+      "record_ref": {
+        "record_kind": "event_participant",
+        "record_id": "ep_001",
+        "contract_version": "3"
+      }
+    }
+  },
+  "related_targets": [
+    {
+      "kind": "exceptional_removal",
+      "removal_ref": {
+        "module_id": "portia",
+        "class_id": "eng10_p2_2026",
+        "removal_id": "rmv_001",
+        "contract_version": "1"
+      }
+    }
+  ],
+  "evidence": [
+    {
+      "name": "payload_present",
+      "kind": "boolean",
+      "value": true
+    }
+  ],
+  "observed_at": "2026-08-05T08:00:00-04:00"
+}

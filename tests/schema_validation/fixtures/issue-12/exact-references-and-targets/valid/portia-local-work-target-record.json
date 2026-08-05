@@ -1,0 +1,8 @@
+{
+  "kind": "local_record",
+  "record_ref": {
+    "record_kind": "event_participant",
+    "record_id": "ept_example",
+    "contract_version": "2"
+  }
+}

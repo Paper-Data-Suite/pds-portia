@@ -11,14 +11,14 @@ Portia is in its initial research and architecture phase.
 The repository currently contains:
 
 * evidence-based research on responsible K–12 behavior documentation and management;
-* accepted design analyses defining Portia’s role, identity model, ownership rules, canonical storage, shared references, targets, relationships, and initial Event family;
-* Architecture Decision Records through ADR 0007;
-* independently versioned Draft 2020-12 shared identifier, reference, target, snapshot, provenance, attribution, and Work Relationship schemas;
-* retained historical Event-family version-1 schemas and current implementation-target Event-family version-2 schemas;
-* validated synthetic examples and explicit v1-to-v2 migration fixtures;
+* accepted design analyses defining Portia’s role, identity model, ownership rules, canonical storage, references, lifecycle, correction, migration, removal, integrity diagnostics, and initial Event family;
+* Architecture Decision Records through ADR 0008;
+* independently versioned Draft 2020-12 identifier, reference, target, lifecycle, correction, disagreement, dependency, migration, ownership-correction, removal, relationship, and projection schemas;
+* retained historical Event-family version-1 schemas, Event version 2, Event Participant and Role version 3, and Work Relationship version 2;
+* validated synthetic examples, migration fixtures, and a cross-contract application-invalid matrix;
 * and automated offline schema-validation and documentation-consistency tests.
 
-Portia does not yet contain an executable application. The current Event, Event Participant, and Event Participant Role v2 contracts are defined; Support Process and later record families remain architectural work.
+Portia does not yet contain an executable application. The current implementation targets are Event v2, Event Participant v3, Event Participant Role v3, and Work Relationship v2; Support Process and later record families remain architectural work.
 
 ## Product Position
 
@@ -367,7 +367,37 @@ Cross-module references compose Core work and record identity while leaving the 
 
 Work Relationships have one canonical source-owned direction. Reverse views are derived. The initial type `draws_context_from` is contextual and noncausal.
 
-Historical Event-family version-1 schemas remain readable. The version-2 Event family is the current implementation target.
+Historical Event-family version-1 schemas remain readable. Event v2, Event Participant v3, Event Participant Role v3, and Work Relationship v2 are the current implementation targets.
+
+## Accepted Lifecycle, Correction, and Migration Contracts
+
+ADR 0008 establishes shared infrastructure without imposing one universal state machine.
+
+The principal public contracts are:
+
+```text
+lifecycle_transition
+lifecycle_history_correction
+amendment
+statement_of_disagreement
+dependency
+record_migration
+ownership_correction
+exceptional_removal
+integrity_finding
+```
+
+Current status remains practical to load directly, while append-only transition records preserve history. A status/history mismatch is an integrity finding rather than an invitation to silently rewrite either source.
+
+Nonmaterial amendments preserve explicit before-and-after values. Material correction creates a successor. Invalidation differs from supersession, disagreement does not rewrite its target, migration preserves meaning and logical identity, and ownership correction is not filesystem relocation.
+
+Dependencies require explicit record-family evaluation and never create one automatic cascade. Exact references do not silently follow successors or retarget after migration, consolidation, ownership correction, or removal.
+
+Ordinary workflows do not hard-delete accepted canonical records. Narrow exceptional cases retain an authorization-bearing removal certificate and minimal content evidence without retaining prohibited substantive payload.
+
+Integrity findings are deterministic rebuildable projections. They have no canonical record identity or lifecycle and clear only when reevaluation no longer detects the violation or limitation.
+
+Issue #13 remains responsible for operation journals, atomic multi-record persistence, rollback, crash recovery, repair-mode writes, quarantine, acknowledgement, suppression, and rebuildable operational caches.
 
 ## Initial Event, Event Participant, and Role Model
 
@@ -703,33 +733,53 @@ Portia should use Core infrastructure and public cross-module contracts rather t
 
   Defines scope-specific identity and record references, target families, bounded display snapshots, exact resolution, schema versioning, Work Relationship ownership and lifecycle, and Event-family v2 reconciliation.
 
+* [Portia Lifecycle, Amendment, Correction, and Migration Contracts](docs/design/portia-lifecycle-amendment-correction-and-migration-contracts.md)
+
+  Defines current status and append-only history, lifecycle transitions, amendment, disagreement, replacement, dependencies, migration, ownership correction, exceptional removal, integrity findings, record-family upgrades, schema organization, and the Issue #13 persistence boundary.
+
 ### Schemas
 
 * [Schema Guide and Catalog](schemas/README.md)
 
-  Documents canonical schema identity, offline resolution, public shared contracts, Work Relationship, and Event-family v2.
+  Documents immutable schema identity, offline resolution, shared references, lifecycle, correction, migration, removal, upgraded record contracts, the integrity-finding projection, and structural-versus-application validation.
 
 * [Event v2 Schema](schemas/v2/event.schema.json)
 
   Current implementation-target Event `work.json` contract.
 
-* [Event Participant v2 Schema](schemas/v2/event-participant.schema.json)
+* [Event Participant v3 Schema](schemas/v3/event-participant.schema.json)
 
-  Current implementation-target Event Participant contract using shared person references and snapshots.
+  Current implementation-target Participant contract with exact cross-work predecessor references for ownership correction and migration.
 
-* [Event Participant Role v2 Schema](schemas/v2/event-participant-role.schema.json)
+* [Event Participant Role v3 Schema](schemas/v3/event-participant-role.schema.json)
 
-  Current implementation-target Role contract using singular participant targets and nested local-record basis references.
+  Current implementation-target Role contract with exact cross-work predecessor references while preserving Role version-2 domain semantics.
 
-* [Work Relationship v1 Schema](schemas/v1/work-relationship.schema.json)
+* [Work Relationship v2 Schema](schemas/v2/work-relationship.schema.json)
 
-  Source-owned canonical relationship contract with the initial directional type `draws_context_from`.
+  Current source-owned relationship contract with exact predecessor versions 1 and 2 plus ownership-correction and migration reasons.
+
+* [Lifecycle Transition Schema](schemas/v1/lifecycle/lifecycle-transition.schema.json)
+
+  Append-only status-transition history for Portia works and records.
+
+* [Amendment Schema](schemas/v1/corrections/amendment.schema.json)
+
+  Append-only nonmaterial before-and-after correction evidence.
+
+* [Integrity-Finding Projection Schema](schemas/v1/projections/integrity-finding.schema.json)
+
+  Deterministic rebuildable diagnostics that are explicitly noncanonical.
 
 * [Historical Event-family v1 Schemas](schemas/event.schema.json)
 
   The unversioned-path Event, Event Participant, and Event Participant Role schemas remain historical version-1 contracts and are not the current implementation target.
 
 ### Examples
+
+* [Portia Lifecycle, Amendment, Correction, and Migration Examples](docs/examples/portia-lifecycle-amendment-correction-and-migration-examples.md)
+
+  Accepted synthetic and machine-validated examples for lifecycle history, amendment, disagreement, dependency, migration, ownership correction, exceptional removal, upgraded record contracts, and integrity findings.
 
 * [Portia Reference, Targeting, and Relationship Examples](docs/examples/portia-reference-targeting-and-relationship-examples.md)
 
@@ -744,6 +794,10 @@ Portia should use Core infrastructure and public cross-module contracts rather t
   Historical validated examples covering direct digital Role creation, compatible Role assignments, contextual detail, paper-derived and imported reported involvement, basis correction, and supersession.
 
 ### Validation
+
+* [Issue #12 Validation: Lifecycle, Amendment, Correction, and Migration Contracts](docs/validation/issue-12-lifecycle-amendment-correction-and-migration-validation.md)
+
+  Records the public-contract inventory, validation boundary, executable examples, comprehensive application-invalid matrix, documentation checks, and repository acceptance commands.
 
 * [Issue #8 Validation: Event Participant Role Domain Model](docs/validation/issue-8-event-participant-role-validation.md)
 
@@ -778,6 +832,10 @@ Portia should use Core infrastructure and public cross-module contracts rather t
 * [ADR 0007: Define Shared Reference, Targeting, and Relationship Contracts](docs/decisions/0007-define-shared-reference-targeting-and-relationship-contracts.md)
 
   Establishes the public reference and target families, bounded historical snapshots, exact layered resolution, Work Relationship ownership and lifecycle, stable schema identity, and current Event-family v2 implementation target.
+
+* [ADR 0008: Define Shared Lifecycle, Correction, and Migration Contracts](docs/decisions/0008-define-lifecycle-correction-and-migration-contracts.md)
+
+  Establishes current status plus append-only history, amendment and replacement boundaries, disagreement, dependency handling, migration, ownership correction, exceptional removal, record-family upgrades, integrity findings, immutable public schema organization, and the Issue #13 persistence boundary.
 
 ## Explicit Product Prohibitions
 
@@ -826,12 +884,10 @@ Local-first storage does not make student records inherently non-sensitive. Port
 
 Likely next work includes:
 
-* defining Event, Event Participant, and Event Participant Role lifecycle-transition schemas;
+* Issue #13 coordinated persistence, operation journals, atomic multi-record changes, rollback, crash recovery, repair-mode writes, quarantine, and rebuildable operational indexes;
 * defining the minimal Support Process root and status contract, followed by the broader Support, Intervention, implementation, and fidelity model;
 * defining Account, Observation, Classification, Hypothesis, Determination, Response, Follow-Up, Outcome, and Communication schemas;
 * defining the Actor Directory schema and Actor lifecycle;
-* specifying general amendment, correction, and owning-class migration behavior;
-* defining staged-write, atomic-replacement, rollback, validation, and recovery behavior;
 * defining how teacher schedules assist Event ownership selection;
 * implementing and performance-testing the minimum viable teacher workflow;
 * establishing privacy projections and redaction for multi-student Events;
