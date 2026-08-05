@@ -1,6 +1,6 @@
 # Portia Coordinated Persistence, Recovery, and Derived-Index Contracts
 
-**Status:** In development — through Decision 3
+**Status:** In development — through Decision 6
 **Project:** Paper Data Suite
 **Module:** `pds-portia`
 **Issue:** `#13 — Define coordinated persistence, recovery, and derived-index contracts`
@@ -1036,54 +1036,1113 @@ Reusable step, digest, path, target, and partial-state contracts may be separate
 
 ---
 
-# 8. Decisions Remaining
+# 8. Approved Decision 4: Preflight and Exact Observation Boundaries
+
+## 8.1 Decision
+
+Every operation begins with a complete bounded preflight before any canonical domain mutation.
+
+Preflight establishes:
+
+```text
+what the operation intends
++
+what exact state was observed
++
+which invariants were evaluated
++
+which targets may be affected
++
+which writes would be required
++
+which facts remain unavailable or indeterminate
+```
+
+A preflight is successful only when every required fact for the operation kind is either:
+
+- confirmed from authoritative state;
+- confirmed from a verified current derived projection whose source snapshot still matches;
+- or explicitly declared unnecessary by the operation contract.
+
+A required fact that is unavailable, authorization-limited, unsupported, contradictory, or stale prevents successful preflight.
+
+## 8.2 Preflight is read-only
+
+Preflight must not:
+
+- create or modify canonical domain records;
+- publish lifecycle transitions;
+- select a journal revision;
+- acquire long-lived commit locks;
+- create a current pointer;
+- rebuild a missing derived index implicitly;
+- repair a malformed record;
+- follow a successor silently;
+- retarget a reference;
+- or remove an artifact.
+
+Temporary in-memory serialization and bounded read-only validation do not constitute mutation.
+
+A later implementation may create short-lived operating-system resources while computing preflight, but those resources must not become durable workspace state.
+
+## 8.3 Initial journal publication follows successful preflight
+
+Operation Journal revision 1 records the accepted preflight result.
+
+The sequence is:
+
+```text
+receive bounded operation request
+-> resolve and validate selected workspace
+-> perform preflight
+-> construct exact operation intent and write set
+-> compute intent digest
+-> exclusively create operation series
+-> publish prepared journal revision 1
+```
+
+No canonical domain write may occur before the prepared journal is durably selected.
+
+If operation-series creation discovers an existing exact intent, the service evaluates replay rather than repeating preflight blindly.
+
+## 8.4 Preflight scope
+
+Preflight must identify:
+
+- one primary target;
+- every initially known affected target;
+- every planned canonical or operational write;
+- every required current pointer;
+- every required lifecycle head;
+- every required predecessor or successor;
+- every required Dependency;
+- every incoming reference relevant to the operation;
+- every authorization or policy reference required by the operation;
+- and every derived projection relied upon for safe planning.
+
+The scope must be bounded and explicit.
+
+Preflight must not recursively crawl the entire workspace merely because the operation references one record.
+
+## 8.5 Canonical source priority
+
+Preflight obtains domain facts from canonical records.
+
+A derived projection may narrow discovery or accelerate evaluation only when:
+
+1. the projection contract is supported;
+2. the projection is complete for the required scope;
+3. its recorded source snapshot is available;
+4. the current canonical source snapshot matches;
+5. the projection is not quarantined or known stale;
+6. and the operation contract permits reliance on that projection.
+
+Otherwise Portia must perform a bounded canonical evaluation or return an indeterminate blocking result.
+
+## 8.6 Exact observed-representation entry
+
+For every representation whose state matters to the operation, preflight records one observed-representation entry.
+
+The conceptual entry contains:
+
+```text
+target
+representation_role
+expected_presence
+workspace_relative_path
+contract_version
+content_digest
+byte_length
+observed_at
+selected_state
+```
+
+`selected_state` contains only operation-relevant structured facts, such as:
+
+- lifecycle status;
+- selected lifecycle transition;
+- selected journal revision;
+- current pointer revision;
+- migration representation role;
+- exceptional-removal availability;
+- or quarantine state.
+
+It must not copy complete canonical payload merely to avoid rereading the source.
+
+## 8.7 Presence expectations
+
+The initial presence vocabulary is:
+
+```text
+must_be_absent
+must_match
+```
+
+### `must_be_absent`
+
+The target identity and canonical path must not already contain an accepted representation.
+
+This expectation is used for exclusive creation.
+
+### `must_match`
+
+The target must exist and its exact prior bytes and contract-significant selected state must match preflight.
+
+This expectation is used for revision-aware replacement, pointer replacement, and exact cleanup or quarantine actions.
+
+Version 1 does not use a permissive `may_exist` precondition for canonical writes.
+
+An operation that can validly handle either condition must preflight the observed branch and publish an exact branch-specific write plan.
+
+## 8.8 Missing, malformed, and unsupported representations
+
+Preflight distinguishes:
+
+```text
+expected absence
+unexpected absence
+malformed representation
+unsupported contract
+unresolved exact target
+authorization-limited target
+quarantined target
+removed target
+```
+
+These outcomes are not interchangeable.
+
+An expected absence may support exclusive creation.
+
+The other outcomes require operation-specific blocking, recovery, quarantine, or historical behavior.
+
+## 8.9 Contract and record-family agreement
+
+For each observed representation, preflight validates:
+
+- public contract version;
+- record family;
+- typed identity;
+- envelope identity;
+- canonical path agreement;
+- selected workspace containment;
+- and operation-kind compatibility.
+
+A structurally valid record of the wrong family or scope is not an acceptable match.
+
+## 8.10 Lifecycle and replacement observation
+
+When lifecycle or replacement state matters, preflight records the exact selected state rather than a computed label alone.
+
+Examples include:
+
+```text
+target persisted status
+selected lifecycle-history head
+selected history-correction record
+exact predecessor set
+exact active successor frontier
+exact current migration representation
+```
+
+Preflight must not choose state from:
+
+- newest timestamp;
+- greatest contract version;
+- lexical filename;
+- directory order;
+- or an unverified reverse index.
+
+## 8.11 Dependency and incoming-reference observation
+
+An operation that may affect current usability, replacement, migration, ownership, or removal must evaluate the relevant Dependencies and incoming references.
+
+The preflight result records:
+
+- the evaluation scope;
+- the authoritative records or verified projection used;
+- exact required Dependency identities;
+- exact advisory Dependency identities;
+- unresolved or authorization-limited scope;
+- and the operation-specific disposition required for each relevant dependency.
+
+A missing derived index does not establish that the dependency or incoming-reference set is empty.
+
+## 8.12 Authorization and policy observation
+
+Where an operation requires authorization or policy, preflight records an exact reference or bounded evidence object.
+
+Examples include:
+
+- exceptional-removal authorization;
+- repair-mode authorization;
+- finding-suppression policy;
+- source-access authorization;
+- or a compatible migration-transformer reference.
+
+An authorization reference states which evidence was evaluated.
+
+It does not cause JSON Schema validation or operation scope to establish authority.
+
+## 8.13 Preflight findings
+
+Preflight may produce:
+
+```text
+blocking validation result
+indeterminate result
+nonblocking review result
+Integrity Finding projection
+```
+
+Routine rejected input that has not produced durable workspace inconsistency should normally return a direct validation result rather than create persistent integrity noise.
+
+An Integrity Finding is appropriate when preflight detects an existing canonical or operational condition that remains after the request ends.
+
+## 8.14 Preflight freshness
+
+A successful preflight is valid only for the exact observed state.
+
+Before staging or canonical mutation, Portia must recheck every required precondition according to the later commit decision.
+
+If a required representation changed, the operation must not silently update its expected state.
+
+It must:
+
+- return to preflight before canonical mutation;
+- publish a new prepared journal revision with the revised bounded plan;
+- or fail or quarantine when mutation may already have begun.
+
+## 8.15 Scope expansion before mutation
+
+Before any canonical step is accepted, newly discovered required targets may be added only by:
+
+1. stopping the current progression;
+2. repeating the affected preflight evaluations;
+3. updating the immutable intent where the newly discovered target changes requested intent;
+4. or preserving the same intent while publishing a new complete prepared plan where the target was a deterministic consequence;
+5. and selecting a new prepared journal revision.
+
+The architecture must define operation-specific rules for whether newly discovered targets change intent.
+
+## 8.16 Scope expansion after mutation
+
+After canonical mutation may have begun, the operation must not silently broaden its write set.
+
+A newly discovered required target produces:
+
+- recovery;
+- compensation;
+- quarantine;
+- or manual review.
+
+A later repair uses a new `repair_operation` when the original operation cannot safely continue within its accepted scope.
+
+## 8.17 Preflight snapshot digest
+
+The prepared journal records a deterministic `preflight_snapshot_digest`.
+
+The digest binds the ordered, normalized preflight entries that are relevant to safe execution.
+
+It is distinct from:
+
+- the operation `intent_digest`;
+- each representation's exact `content_digest`;
+- and a derived projection's source-snapshot digest.
+
+The same intent may be preflighted against different canonical state and therefore produce different preflight snapshot digests.
+
+## 8.18 Preflight reproducibility
+
+Given the same:
+
+- operation intent;
+- supported contract set;
+- selected workspace;
+- authorization context;
+- policy versions;
+- canonical bytes;
+- selected pointers;
+- and verified derived inputs,
+
+preflight should produce the same normalized plan and preflight snapshot digest.
+
+Time of observation may be recorded separately and must not make the logical snapshot nondeterministic.
+
+## 8.19 Application boundary
+
+JSON Schema may validate preflight-entry structure.
+
+Application logic must establish:
+
+- actual containment;
+- exact target resolution;
+- authoritative source selection;
+- content digest;
+- selected lifecycle state;
+- dependency completeness;
+- authorization;
+- policy compatibility;
+- and freshness.
+
+---
+
+# 9. Approved Decision 5: Paths, Content Digests, and Expected Prior State
+
+## 9.1 Decision
+
+Portia uses exact workspace-relative paths and exact byte digests as operational evidence while preserving typed references as canonical identity.
+
+The governing distinction is:
+
+```text
+typed reference
+= identity
+
+workspace-relative path
+= validated location evidence
+
+content digest + byte length
+= exact representation evidence
+```
+
+None substitutes for the others.
+
+## 9.2 Workspace-relative path contract
+
+A serialized operational path is relative to the selected Paper Data Suite workspace.
+
+It uses POSIX separators regardless of host platform.
+
+Examples:
+
+```text
+classes/english10_p2/modules/portia/work/evt_example/work.json
+portia/operations/op_example/revisions/1.json
+```
+
+A structurally valid path must:
+
+- be nonempty;
+- be relative;
+- use `/`, not `\`;
+- contain no NUL;
+- contain no empty component;
+- contain no `.` or `..` component;
+- contain no URI scheme;
+- contain no drive prefix;
+- and remain within the accepted maximum length.
+
+Lexical validity does not prove containment.
+
+## 9.3 Path containment and symlink safety
+
+Application validation must resolve every operational path beneath the exact selected workspace.
+
+It must reject:
+
+- absolute paths;
+- traversal;
+- symlink escape;
+- junction or reparse-point escape where applicable;
+- unexpected mount boundaries where required primitives cannot be guaranteed;
+- nonregular files where a regular file is required;
+- and identity-derived paths that disagree with the target reference.
+
+A path previously validated during preflight must be revalidated before mutation.
+
+## 9.4 Path is not identity
+
+Portia must not identify a record through:
+
+- stored path alone;
+- filename;
+- directory name;
+- or a scan for matching bytes.
+
+The typed target and canonical path must agree.
+
+A record found at the wrong path is an integrity condition, not permission to reinterpret its identity.
+
+## 9.5 Durable path reporting
+
+Operation journals and structured results may report validated workspace-relative paths when required for:
+
+- recovery;
+- partial-success reporting;
+- staged-artifact inspection;
+- lock inspection;
+- or derived-projection replacement.
+
+They must not report host-specific absolute paths in canonical or public operational records.
+
+A user-facing implementation may display an absolute path locally when authorized, but that display is not persisted contract identity.
+
+## 9.6 Exact content digest
+
+Version 1 uses:
+
+```text
+algorithm = sha256
+value = 64 lowercase hexadecimal characters
+```
+
+The digest is computed over the exact bytes read from or intended for the recorded path.
+
+It is not computed over:
+
+- a parsed object;
+- normalized whitespace;
+- a reconstructed dictionary;
+- or an assumed canonical serialization
+
+unless the exact operation contract explicitly defines those bytes as the representation.
+
+## 9.7 Byte length
+
+Every exact content observation records the nonnegative byte length.
+
+Digest plus byte length supports:
+
+- readback verification;
+- staged-candidate verification;
+- exact cleanup;
+- lock fingerprinting;
+- replay diagnosis;
+- and source inventories.
+
+Byte length is not a substitute for the digest.
+
+## 9.8 Deterministic operation intent versus representation bytes
+
+The operation `intent_digest` is computed over a deterministic canonical encoding of operation intent.
+
+A representation `content_digest` is computed over exact stored or staged bytes.
+
+Therefore two byte-distinct serializations may represent semantically similar JSON while still having different content digests.
+
+Portia must not treat semantic similarity as exact representation equality during guarded replacement.
+
+## 9.9 Expected absence
+
+An exclusive-create step records:
+
+```text
+expected_presence = must_be_absent
+```
+
+and the exact intended target path.
+
+Immediately before creation, application validation must confirm:
+
+- the path does not exist;
+- no accepted target with that identity exists elsewhere;
+- no conflicting operation owns the exclusive scope;
+- and the parent scope remains valid.
+
+A preexisting path is not overwritten.
+
+## 9.10 Existing target during exclusive creation
+
+When the target exists, the service distinguishes:
+
+### Exact replay candidate
+
+The existing canonical representation, operation intent, and journal evidence exactly match a previously accepted result.
+
+### Conflict
+
+Another accepted representation owns the identity or path.
+
+### Integrity failure
+
+The existing bytes, envelope, path, or operation evidence are malformed or contradictory.
+
+The low-level exclusive writer does not make this distinction by overwriting. Higher-level orchestration evaluates it.
+
+## 9.11 Expected match
+
+A guarded replacement step records:
+
+```text
+expected_presence = must_match
+expected_content_digest
+expected_byte_length
+expected_contract_version
+```
+
+It may also record operation-significant semantic cross-checks such as:
+
+```text
+expected_updated_at
+expected_status
+expected_selected_transition
+expected_pointer_revision
+```
+
+The exact byte digest is the primary representation concurrency token.
+
+Semantic cross-checks strengthen validation but do not replace byte equality.
+
+## 9.12 Revision-aware replacement
+
+Immediately before replacing an existing representation, Portia must:
+
+1. resolve the exact target again;
+2. confirm identity and canonical path;
+3. read the current bytes;
+4. confirm byte length and content digest;
+5. confirm contract version;
+6. confirm required semantic cross-checks;
+7. confirm the operation still owns the required lock scope;
+8. and confirm the staged intended bytes remain unchanged.
+
+Any mismatch prevents the replacement.
+
+Last-write-wins is prohibited.
+
+## 9.13 Mutable current records
+
+A Portia domain record may persist a mutable current projection such as `status` or nonmaterial amended fields.
+
+Guarded replacement of that file does not erase history when the operation also creates the required append-only canonical records.
+
+For example:
+
+```text
+target status replacement
++
+Lifecycle Transition exclusive creation
+```
+
+is one coordinated logical operation.
+
+The target-file replacement remains revision-aware.
+
+## 9.14 Immutable canonical records
+
+An immutable canonical record is never updated through revision-aware replacement.
+
+Correction produces:
+
+- another canonical record;
+- another immutable revision;
+- a current-pointer change;
+- a lifecycle or history correction;
+- or explicit compensation,
+
+according to the record contract.
+
+## 9.15 Pointer replacement
+
+A current pointer is replaced only when its exact selected prior state matches.
+
+The expected state includes:
+
+- exact operation or series identity;
+- expected selected revision;
+- expected pointer content digest;
+- and expected pointer contract version.
+
+A missing pointer and an existing pointer are distinct operation branches.
+
+A pointer is never advanced by selecting the greatest available revision automatically.
+
+## 9.16 Exact cleanup and quarantine targeting
+
+Cleanup or quarantine of a transient or operational artifact requires an exact observed digest or fingerprint when the artifact may change concurrently.
+
+Portia must not remove or quarantine a path merely because its filename matches an operation ID.
+
+If the bytes changed after inspection, the action must stop and reevaluate.
+
+## 9.17 Candidate-result digest
+
+Every planned write that creates or replaces bytes records an `intended_content_digest` and `intended_byte_length` before commit.
+
+The staged candidate must match them.
+
+The accepted readback must also match them.
+
+If the intended bytes change, the write step and applicable journal revision must change before mutation.
+
+## 9.18 JSON serialization boundary
+
+Issue #13 does not require every existing Portia record to be reserialized into one new byte format.
+
+The future implementation must choose and document a stable canonical writer for new writes.
+
+Operational equality remains exact byte equality for the representation observed and guarded.
+
+Migration to a different serialization is a representation migration when contract-significant representation changes require it.
+
+## 9.19 Digest privacy boundary
+
+A digest is minimum-necessary evidence, not a guarantee that sensitive low-entropy content cannot be guessed.
+
+Operational contracts must not publish unsalted hashes of narrowly enumerable sensitive fields as substitutes for full-record digests.
+
+Exceptional Removal retains its separately accepted salted evidence rules.
+
+## 9.20 Required reusable lexical contracts
+
+Later schema work should evaluate:
+
+```text
+schemas/v1/common/workspace-relative-path.schema.json
+schemas/v1/common/sha256-digest.schema.json
+schemas/v1/common/content-fingerprint.schema.json
+```
+
+`content-fingerprint` should compose algorithm, digest, and byte length rather than repeat that structure inconsistently.
+
+---
+
+# 10. Approved Decision 6: Ordered Write Sets and Staged Candidate Artifacts
+
+## 10.1 Decision
+
+Every prepared operation contains one complete ordered write set.
+
+The write set states:
+
+```text
+which effects are planned
+in what deterministic order
+against which exact targets and paths
+under which prior-state expectations
+with which intended bytes
+and in which commit phase
+```
+
+The write set is part of the complete journal snapshot.
+
+It is not an informal implementation log.
+
+## 10.2 Step identity
+
+Each operation step has an opaque operation-local identifier:
+
+```text
+step_<opaque-id>
+```
+
+The step ID is stable across journal revisions for the same planned effect.
+
+It must not encode:
+
+- student identity;
+- record content;
+- operation result;
+- path;
+- or sequence number.
+
+A new materially different planned effect receives a new step ID.
+
+## 10.3 Step sequence
+
+Every step has a positive integer `sequence`.
+
+Within one complete write set:
+
+- sequences are unique;
+- sequences begin at 1;
+- sequences are contiguous;
+- array order agrees with sequence;
+- and execution order follows sequence unless the final operation contract explicitly permits safe parallel execution.
+
+Version 1 should prefer deterministic sequential ordering over parallel writes.
+
+## 10.4 Step phases
+
+Each step belongs to exactly one phase:
+
+```text
+canonical_gate
+post_commit
+cleanup
+```
+
+The meaning follows Decision 3.
+
+A post-commit or cleanup step cannot be used to conceal a write that is necessary for canonical correctness or privacy safety.
+
+Operation-specific validation decides whether derived-payload purge is a canonical gate.
+
+## 10.5 Initial action vocabulary
+
+The initial write-action vocabulary is:
+
+```text
+exclusive_create
+revision_aware_replace
+atomic_pointer_replace
+install_derived_replacement
+quarantine_artifact
+remove_transient
+```
+
+### `exclusive_create`
+
+Create one new canonical or durable operational representation only when the exact target is absent.
+
+### `revision_aware_replace`
+
+Replace one mutable current canonical or operational representation only when exact expected prior bytes and semantic preconditions match.
+
+### `atomic_pointer_replace`
+
+Publish an explicit current selection only when the expected pointer state matches.
+
+### `install_derived_replacement`
+
+Install one complete verified derived candidate or select one complete verified generation.
+
+### `quarantine_artifact`
+
+Make an exact artifact unavailable to ordinary resolution without changing its domain lifecycle.
+
+### `remove_transient`
+
+Remove an exact proven-unaccepted artifact.
+
+This generic action must not remove an accepted canonical domain record.
+
+Exceptional Removal of canonical payload is an operation-specific protocol, not a generic write action.
+
+## 10.6 Step target and representation role
+
+Each write step identifies:
+
+- exact target;
+- representation role;
+- intended workspace-relative path;
+- action;
+- phase;
+- expected prior state;
+- intended result state;
+- and operation-specific reason code where needed.
+
+Initial representation roles include:
+
+```text
+canonical_domain
+operational_revision
+operational_pointer
+derived_projection
+staged_candidate
+transient_artifact
+quarantine_state
+```
+
+The representation role does not change the authority of the referenced record.
+
+## 10.7 Step precondition
+
+Every mutating step contains exactly one expected-state branch.
+
+### Exclusive-create branch
+
+Contains:
+
+```text
+expected_presence = must_be_absent
+```
+
+### Match branch
+
+Contains:
+
+```text
+expected_presence = must_match
+expected content fingerprint
+expected contract version
+required semantic cross-checks
+```
+
+A step cannot contain both branches.
+
+## 10.8 Intended result
+
+A byte-producing step records:
+
+- intended contract version;
+- intended content fingerprint;
+- intended target path;
+- and intended identity or pointer selection.
+
+The journal may record the intended fingerprint without embedding the complete candidate payload.
+
+## 10.9 Staging requirement
+
+Every byte-producing canonical-gate step must be staged before canonical mutation.
+
+Pointer replacement and small operational selection files should also use staged candidate bytes.
+
+A future implementation may exempt an operation-specific action only through an accepted design amendment proving equivalent validation and recoverability.
+
+## 10.10 Staging path
+
+A staged candidate uses a validated operation-owned path on the same filesystem as its intended destination.
+
+The initial conceptual layout is target-adjacent:
+
+```text
+<validated target parent>/
+  .portia-staging/
+    <operation_id>/
+      <step_id>.candidate
+```
+
+For a target whose final parent does not yet exist, staging occurs beneath the nearest validated existing parent that will remain on the same filesystem.
+
+Examples include:
+
+```text
+classes/<class_id>/modules/portia/work/.portia-staging/<operation_id>/
+portia/operations/<operation_id>/.portia-staging/
+```
+
+The exact later implementation layout may refine the hidden directory name, but it must preserve the accepted containment and same-filesystem invariants.
+
+## 10.11 Staging namespace is noncanonical
+
+Staging directories:
+
+- are excluded from canonical record enumeration;
+- are excluded from ordinary derived-index inputs;
+- are excluded from normal reference resolution;
+- and do not establish record existence.
+
+A staged Event is not a canonical Event.
+
+A staged transition is not lifecycle history.
+
+## 10.12 Staged-candidate metadata
+
+The journal records for every staged candidate:
+
+```text
+step_id
+staging_path
+destination_path
+contract_version
+content fingerprint
+staged_at
+validation disposition
+```
+
+The metadata does not grant acceptance.
+
+## 10.13 Candidate validation before commit
+
+Before moving to `staged`, every required candidate must pass:
+
+- exact byte fingerprint verification;
+- JSON decoding where applicable;
+- Draft 2020-12 schema validation;
+- contract-version validation;
+- envelope and target identity validation;
+- intended destination-path validation;
+- operation-specific local invariants;
+- and staging containment and regular-file checks.
+
+Cross-record invariants are evaluated against the intended post-operation graph, not only the current graph.
+
+## 10.14 Complete staging gate
+
+An operation may enter journal state `staged` only when:
+
+- every required pre-commit candidate exists;
+- every candidate matches its intended fingerprint;
+- every candidate passed required validation;
+- the complete write set remains current;
+- no canonical step has been accepted;
+- and required preflight observations remain valid or have been revalidated according to the operation contract.
+
+## 10.15 Staging failure
+
+A staging failure before any canonical mutation may lead to:
+
+```text
+prepared
+-> aborted
+```
+
+or a later same-operation prepared revision when the intent remains unchanged and a deterministic candidate can be regenerated safely.
+
+No accepted canonical record is deleted because staging failed.
+
+## 10.16 Candidate regeneration
+
+Regenerating a staged candidate is permitted before canonical mutation only when:
+
+- operation intent is unchanged;
+- the write step identity and intended semantic result are unchanged;
+- the new exact bytes are recorded in a new journal revision;
+- the preflight state still supports the plan;
+- and the old staged candidate is removed only through exact fingerprinted cleanup.
+
+If the intended semantic result changes, the operation must return to preflight and may require a different intent digest.
+
+## 10.17 Staging after canonical mutation
+
+Once any canonical-gate step may have become durable, Portia must not silently regenerate a missing or contradictory staged candidate.
+
+Recovery must compare:
+
+- journaled intended bytes;
+- remaining staged bytes;
+- accepted canonical bytes;
+- and current operation scope.
+
+The result may be resume, compensation, quarantine, or manual review.
+
+## 10.18 Write-set mutation before commit
+
+Before canonical mutation, a write-set change requires a new complete prepared journal revision.
+
+The new revision must identify:
+
+- retained steps;
+- removed pre-acceptance steps;
+- newly required steps;
+- changed ordering;
+- and whether the preflight or intent digest changed.
+
+No existing accepted step may exist at this point.
+
+## 10.19 Write-set mutation after commit begins
+
+After canonical mutation may have begun, the accepted write set is frozen.
+
+A newly required effect must be handled through:
+
+- an operation-specific recovery branch already represented in the journal;
+- explicit compensation;
+- quarantine;
+- or a new repair operation.
+
+The original operation must not pretend that the newly discovered effect was always part of its prepared plan.
+
+## 10.20 Step disposition monotonicity
+
+Within the normal path, a step may advance:
+
+```text
+pending
+-> staged
+-> durable
+-> verified
+-> accepted
+```
+
+A later journal revision must not move a step backward.
+
+`compensated`, `skipped`, `blocked`, and `indeterminate` require operation-specific justification.
+
+A step known durable must never be reported later as merely pending.
+
+## 10.21 Intended post-operation graph
+
+Preflight and staging validate the intended graph assembled from:
+
+```text
+unchanged current canonical representations
++
+staged candidate representations
++
+planned pointer selections
++
+planned availability or quarantine changes
+```
+
+Validation must not assume that array order or filesystem state during staging already represents the intended committed graph.
+
+## 10.22 Staging privacy and permissions
+
+Staged artifacts may contain the same sensitive information as their intended canonical targets.
+
+A future implementation must apply permissions at least as restrictive as the destination and must avoid:
+
+- world-readable temporary files;
+- predictable public temporary locations;
+- system-wide temporary directories when target-adjacent staging is required;
+- diagnostic content dumps;
+- and backup or synchronization behavior that exposes abandoned candidates.
+
+The architecture does not claim that a dot-prefixed directory is a security boundary.
+
+## 10.23 Staging cleanup
+
+Pre-acceptance staged artifacts may be removed only when:
+
+- their exact operation and step are known;
+- the exact fingerprint still matches;
+- they are not accepted canonical representations;
+- they are not required for active recovery;
+- and the selected journal permits cleanup.
+
+Cleanup failure is reported but does not convert staged data into canonical state.
+
+## 10.24 Public schema direction
+
+Later schema work should evaluate:
+
+```text
+schemas/v1/identifiers/portia-operation-step-id.schema.json
+schemas/v1/operations/operation-preflight-entry.schema.json
+schemas/v1/operations/operation-write-step.schema.json
+schemas/v1/operations/operation-staged-artifact.schema.json
+```
+
+The final schema set should avoid separate public files where `$defs` provide clearer reuse without creating independent contracts.
+
+---
+
+# 11. Decisions Remaining
 
 Later design slices must resolve:
 
-1. preflight snapshots and exact expected prior state;
-2. workspace-relative path and digest contracts;
-3. complete write-set and step structure;
-4. staging placement and same-filesystem requirements;
-5. exclusive canonical creation;
-6. revision-aware canonical replacement;
-7. deterministic lock scope and acquisition order;
-8. one-file atomic replacement and durability assumptions;
-9. recoverable multi-record commit order;
-10. partial-success reporting;
-11. pre-acceptance cleanup;
-12. post-acceptance compensation;
-13. recovery dispositions and missing-journal behavior;
-14. repair mode and quarantine;
-15. coordinated lifecycle and history operations;
-16. successor activation and duplicate consolidation;
-17. migration and ownership-correction recovery;
-18. exceptional-removal recovery;
-19. Dependency gating;
-20. Integrity Finding versioning and operational code vocabulary;
-21. acknowledgement and suppression records;
-22. derived-index families and common metadata;
-23. deterministic source inventories and source snapshots;
-24. complete candidate build, verification, and atomic installation;
-25. missing, stale, corrupt, and incompatible derived-state behavior;
-26. current-view regeneration;
-27. privacy-minimized diagnostics;
-28. public schema organization;
-29. Issue #12 contract reconciliation;
-30. and final cross-repository drift checks.
+1. deterministic lock scope and acquisition order;
+2. one-file atomic replacement and durability assumptions;
+3. recoverable multi-record commit order;
+4. partial-success reporting;
+5. pre-acceptance cleanup completion;
+6. post-acceptance compensation;
+7. recovery dispositions and missing-journal behavior;
+8. repair mode and quarantine;
+9. coordinated lifecycle and history operations;
+10. successor activation and duplicate consolidation;
+11. migration and ownership-correction recovery;
+12. exceptional-removal recovery;
+13. Dependency gating;
+14. Integrity Finding operational code vocabulary;
+15. acknowledgement and suppression records;
+16. derived-index families and common metadata;
+17. deterministic source inventories and source snapshots;
+18. complete candidate build, verification, and atomic installation;
+19. missing, stale, corrupt, and incompatible derived-state behavior;
+20. current-view regeneration;
+21. privacy-minimized diagnostics;
+22. public schema organization;
+23. Issue #12 contract reconciliation;
+24. and final cross-repository drift checks.
 
-## 9. Current implementation boundary
+## 12. Current implementation boundary
 
-No production filesystem mutation is introduced by Decisions 1–3.
+No production filesystem mutation is introduced by Decisions 1–6.
 
-The current design establishes:
+The current design now establishes:
 
 ```text
-what kind of persisted evidence exists
-how an operation is identified
-how exact replay is distinguished
-where the journal series lives
-how journal revisions are selected
-which top-level operation states exist
+durable state categories and authority
+operation identity, intent, scope, and replay
+immutable journal revisions and explicit current selection
+complete preflight and observation boundaries
+exact relative-path and byte-fingerprint evidence
+exclusive-create and guarded-replacement preconditions
+ordered write sets
+target-adjacent staged candidates
 ```
 
-Later slices will define the remaining operation and derived-state contracts before any public schema is treated as final.
+Later slices will define locking, commit, partial success, compensation, recovery, coordinated domain-operation plans, integrity operations, and derived-state rebuilding before public operational schemas are finalized.
