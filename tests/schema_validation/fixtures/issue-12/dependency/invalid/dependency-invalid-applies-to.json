@@ -1,0 +1,50 @@
+{
+  "schema_version": "1",
+  "record_type": "dependency",
+  "module_id": "portia",
+  "class_id": "eng10_p2_2026",
+  "work_id": "evt_example",
+  "dependency_id": "dep_example",
+  "status": "active",
+  "dependent": {
+    "kind": "local_record",
+    "record_ref": {
+      "record_kind": "event_participant_role",
+      "record_id": "epr_role_001",
+      "contract_version": "2"
+    }
+  },
+  "dependency": {
+    "kind": "portia_record",
+    "work_record_ref": {
+      "work_ref": {
+        "module_id": "portia",
+        "class_id": "eng10_p2_2026",
+        "work_id": "evt_example",
+        "work_kind": "event",
+        "contract_version": "2"
+      },
+      "record_ref": {
+        "record_kind": "observation",
+        "record_id": "obs_001",
+        "contract_version": null
+      }
+    }
+  },
+  "strength": "required",
+  "applies_to": "always",
+  "purpose": "evidentiary_support",
+  "creation_source": {
+    "type": "digital_entry"
+  },
+  "created_at": "2026-08-04T18:00:00-04:00",
+  "created_by": {
+    "type": "local_operator",
+    "display_label": "Stephen Severino"
+  },
+  "updated_at": "2026-08-04T18:00:00-04:00",
+  "updated_by": {
+    "type": "local_operator",
+    "display_label": "Stephen Severino"
+  }
+}

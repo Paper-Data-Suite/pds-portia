@@ -1,0 +1,41 @@
+{
+  "schema_version": "1",
+  "record_type": "dependency",
+  "module_id": "portia",
+  "class_id": "eng10_p2_2026",
+  "work_id": "sup_example",
+  "dependency_id": "dep_other",
+  "status": "active",
+  "dependent": {
+    "kind": "work",
+    "work_kind": "support_process",
+    "contract_version": "1"
+  },
+  "dependency": {
+    "kind": "portia_work",
+    "work_ref": {
+      "module_id": "portia",
+      "class_id": "eng10_p2_2026",
+      "work_id": "sup_source",
+      "work_kind": "support_process",
+      "contract_version": "1"
+    }
+  },
+  "strength": "advisory",
+  "applies_to": "current_use",
+  "purpose": "other",
+  "creation_source": {
+    "type": "digital_entry"
+  },
+  "created_at": "2026-08-04T18:00:00-04:00",
+  "created_by": {
+    "type": "local_operator",
+    "display_label": "Stephen Severino"
+  },
+  "updated_at": "2026-08-04T18:00:00-04:00",
+  "updated_by": {
+    "type": "local_operator",
+    "display_label": "Stephen Severino"
+  },
+  "detail": "Locally defined representation-only coordination dependency."
+}

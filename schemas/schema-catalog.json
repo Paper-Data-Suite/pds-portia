@@ -276,6 +276,12 @@
         "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/work-relationship.schema.json",
         "path": "schemas/v1/work-relationship.schema.json"
       }
+    },
+    "dependency": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/dependencies/dependency.schema.json",
+        "path": "schemas/v1/dependencies/dependency.schema.json"
+      }
     }
   }
 }
