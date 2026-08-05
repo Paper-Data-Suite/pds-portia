@@ -1,0 +1,334 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/corrections/amendment.schema.json",
+  "title": "Portia Amendment",
+  "description": "Immutable append-only audit record for one atomic nonmaterial in-place update to one exact canonical Portia domain record inside the containing work. It preserves explicit prior and resulting property states without replacing the target, changing lifecycle status, or silently rewriting earlier amendment history.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "record_type",
+    "module_id",
+    "class_id",
+    "work_id",
+    "amendment_id",
+    "target",
+    "previous_amendment",
+    "target_updated_at_before",
+    "changes",
+    "reason",
+    "creation_source",
+    "created_at",
+    "created_by"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1"
+    },
+    "record_type": {
+      "const": "amendment"
+    },
+    "module_id": {
+      "const": "portia"
+    },
+    "class_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+    },
+    "work_id": {
+      "oneOf": [
+        {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-event-id.schema.json"
+        },
+        {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-support-process-id.schema.json"
+        }
+      ]
+    },
+    "amendment_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-amendment-id.schema.json"
+    },
+    "target": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/targets/portia-local-work-target.schema.json"
+    },
+    "previous_amendment": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/amendmentRef"
+        }
+      ]
+    },
+    "target_updated_at_before": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+    },
+    "changes": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/change"
+      }
+    },
+    "reason": {
+      "$ref": "#/$defs/amendmentReason"
+    },
+    "creation_source": {
+      "$ref": "#/$defs/digitalOrImportCreationSource"
+    },
+    "created_at": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+    },
+    "created_by": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/attribution/attribution-agent.schema.json"
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "amendmentRef": {
+      "allOf": [
+        {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-local-record-ref.schema.json"
+        },
+        {
+          "properties": {
+            "record_kind": {
+              "const": "amendment"
+            },
+            "record_id": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-amendment-id.schema.json"
+            },
+            "contract_version": {
+              "const": "1"
+            }
+          }
+        }
+      ]
+    },
+    "presentState": {
+      "type": "object",
+      "required": [
+        "present",
+        "value"
+      ],
+      "properties": {
+        "present": {
+          "const": true
+        },
+        "value": {}
+      },
+      "additionalProperties": false
+    },
+    "absentState": {
+      "type": "object",
+      "required": [
+        "present"
+      ],
+      "properties": {
+        "present": {
+          "const": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "propertyState": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/presentState"
+        },
+        {
+          "$ref": "#/$defs/absentState"
+        }
+      ]
+    },
+    "change": {
+      "type": "object",
+      "required": [
+        "path",
+        "operation",
+        "before",
+        "after"
+      ],
+      "properties": {
+        "path": {
+          "allOf": [
+            {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/json-pointer.schema.json"
+            },
+            {
+              "minLength": 1
+            }
+          ]
+        },
+        "operation": {
+          "enum": [
+            "add",
+            "replace",
+            "remove"
+          ]
+        },
+        "before": {
+          "$ref": "#/$defs/propertyState"
+        },
+        "after": {
+          "$ref": "#/$defs/propertyState"
+        }
+      },
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "operation": {
+                "const": "add"
+              }
+            },
+            "required": [
+              "operation"
+            ]
+          },
+          "then": {
+            "properties": {
+              "before": {
+                "$ref": "#/$defs/absentState"
+              },
+              "after": {
+                "$ref": "#/$defs/presentState"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "operation": {
+                "const": "replace"
+              }
+            },
+            "required": [
+              "operation"
+            ]
+          },
+          "then": {
+            "properties": {
+              "before": {
+                "$ref": "#/$defs/presentState"
+              },
+              "after": {
+                "$ref": "#/$defs/presentState"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "operation": {
+                "const": "remove"
+              }
+            },
+            "required": [
+              "operation"
+            ]
+          },
+          "then": {
+            "properties": {
+              "before": {
+                "$ref": "#/$defs/presentState"
+              },
+              "after": {
+                "$ref": "#/$defs/absentState"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "recognizedAmendmentReason": {
+      "type": "object",
+      "required": [
+        "code"
+      ],
+      "properties": {
+        "code": {
+          "enum": [
+            "spelling_corrected",
+            "punctuation_corrected",
+            "formatting_corrected",
+            "transcription_corrected",
+            "display_value_corrected",
+            "nonsemantic_metadata_corrected"
+          ]
+        },
+        "detail": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+        }
+      },
+      "additionalProperties": false
+    },
+    "otherAmendmentReason": {
+      "type": "object",
+      "required": [
+        "code",
+        "detail"
+      ],
+      "properties": {
+        "code": {
+          "const": "other"
+        },
+        "detail": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+        }
+      },
+      "additionalProperties": false
+    },
+    "amendmentReason": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/recognizedAmendmentReason"
+        },
+        {
+          "$ref": "#/$defs/otherAmendmentReason"
+        }
+      ]
+    },
+    "digitalOrImportCreationSource": {
+      "allOf": [
+        {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/provenance/creation-source.schema.json"
+        },
+        {
+          "type": "object",
+          "required": [
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "enum": [
+                "digital_entry",
+                "import"
+              ]
+            }
+          }
+        }
+      ]
+    }
+  },
+  "x-portia-application-invariants": [
+    "target_must_be_amendable_domain_record",
+    "previous_amendment_must_not_reference_self",
+    "previous_amendment_must_resolve_in_same_work_and_target",
+    "previous_amendment_must_be_unique_current_head",
+    "target_updated_at_must_equal_target_updated_at_before_before_mutation",
+    "created_at_must_follow_target_updated_at_before",
+    "target_updated_at_must_equal_created_at_after_mutation",
+    "target_updated_by_must_equal_created_by_after_mutation",
+    "change_paths_must_be_unique",
+    "change_paths_must_not_overlap_as_ancestor_and_descendant",
+    "change_paths_must_not_traverse_array_indices",
+    "change_paths_must_be_record_family_amendable",
+    "replace_before_and_after_values_must_differ",
+    "before_and_after_states_must_match_target_revisions",
+    "individual_and_combined_changes_must_be_nonmaterial",
+    "identity_lifecycle_provenance_and_supersession_must_remain_unchanged"
+  ]
+}

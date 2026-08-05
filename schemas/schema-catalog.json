@@ -223,6 +223,18 @@
         "path": "schemas/v1/lifecycle/lifecycle-history-correction.schema.json"
       }
     },
+    "amendment": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/corrections/amendment.schema.json",
+        "path": "schemas/v1/corrections/amendment.schema.json"
+      }
+    },
+    "statement_of_disagreement": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/corrections/statement-of-disagreement.schema.json",
+        "path": "schemas/v1/corrections/statement-of-disagreement.schema.json"
+      }
+    },
     "non_empty_text": {
       "1": {
         "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json",

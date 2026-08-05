@@ -1,0 +1,387 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/corrections/statement-of-disagreement.schema.json",
+  "title": "Portia Statement of Disagreement",
+  "description": "Lifecycle-bearing substantive attributed record preserving one identified human source position about one exact canonical Portia domain target. It does not rewrite, adjudicate, invalidate, supersede, delete, or silently retarget the disputed record.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "record_type",
+    "module_id",
+    "class_id",
+    "work_id",
+    "disagreement_id",
+    "status",
+    "target",
+    "source",
+    "positions",
+    "statement",
+    "creation_source",
+    "created_at",
+    "created_by",
+    "updated_at",
+    "updated_by"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1"
+    },
+    "record_type": {
+      "const": "statement_of_disagreement"
+    },
+    "module_id": {
+      "const": "portia"
+    },
+    "class_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+    },
+    "work_id": {
+      "oneOf": [
+        {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-event-id.schema.json"
+        },
+        {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-support-process-id.schema.json"
+        }
+      ]
+    },
+    "disagreement_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-statement-of-disagreement-id.schema.json"
+    },
+    "status": {
+      "enum": [
+        "proposed",
+        "active",
+        "withdrawn",
+        "invalidated",
+        "superseded"
+      ]
+    },
+    "target": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/targets/portia-local-work-target.schema.json"
+    },
+    "source": {
+      "$ref": "#/$defs/disagreementSource"
+    },
+    "positions": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "disputes_accuracy",
+          "disputes_completeness",
+          "disputes_attribution",
+          "disputes_interpretation",
+          "disputes_context",
+          "disputes_authority",
+          "qualifies_record",
+          "objects_to_recording",
+          "objects_to_disclosure",
+          "other"
+        ]
+      }
+    },
+    "statement": {
+      "$ref": "#/$defs/statement"
+    },
+    "supersedes": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/supersessionRef"
+      }
+    },
+    "creation_source": {
+      "$ref": "#/$defs/disagreementCreationSource"
+    },
+    "created_at": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+    },
+    "created_by": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/attribution/attribution-agent.schema.json"
+    },
+    "updated_at": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+    },
+    "updated_by": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/attribution/attribution-agent.schema.json"
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "rosterStudentSource": {
+      "type": "object",
+      "required": [
+        "kind",
+        "roster_student_ref",
+        "display_snapshot"
+      ],
+      "properties": {
+        "kind": {
+          "const": "roster_student"
+        },
+        "roster_student_ref": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/roster-student-ref.schema.json"
+        },
+        "display_snapshot": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/snapshots/person-display-snapshot.schema.json"
+        }
+      },
+      "additionalProperties": false
+    },
+    "actorSource": {
+      "type": "object",
+      "required": [
+        "kind",
+        "actor_ref",
+        "display_snapshot"
+      ],
+      "properties": {
+        "kind": {
+          "const": "actor"
+        },
+        "actor_ref": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/actor-ref.schema.json"
+        },
+        "display_snapshot": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/snapshots/person-display-snapshot.schema.json"
+        }
+      },
+      "additionalProperties": false
+    },
+    "localOperatorSource": {
+      "type": "object",
+      "required": [
+        "kind",
+        "display_label"
+      ],
+      "properties": {
+        "kind": {
+          "const": "local_operator"
+        },
+        "display_label": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+        }
+      },
+      "additionalProperties": false
+    },
+    "descriptivePersonSource": {
+      "type": "object",
+      "required": [
+        "kind",
+        "description_type",
+        "display_label"
+      ],
+      "properties": {
+        "kind": {
+          "const": "descriptive_person"
+        },
+        "description_type": {
+          "enum": [
+            "outside_student",
+            "family_member",
+            "school_staff",
+            "visitor",
+            "community_member",
+            "other"
+          ]
+        },
+        "display_label": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+        },
+        "detail": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+        }
+      },
+      "additionalProperties": false
+    },
+    "disagreementSource": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/rosterStudentSource"
+        },
+        {
+          "$ref": "#/$defs/actorSource"
+        },
+        {
+          "$ref": "#/$defs/localOperatorSource"
+        },
+        {
+          "$ref": "#/$defs/descriptivePersonSource"
+        }
+      ]
+    },
+    "statement": {
+      "type": "object",
+      "required": [
+        "representation",
+        "text"
+      ],
+      "properties": {
+        "representation": {
+          "enum": [
+            "verbatim_quote",
+            "recorded_summary"
+          ]
+        },
+        "text": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+        }
+      },
+      "additionalProperties": false
+    },
+    "disagreementRecordRef": {
+      "allOf": [
+        {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-portia-work-record-ref.schema.json"
+        },
+        {
+          "properties": {
+            "record_ref": {
+              "allOf": [
+                {
+                  "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-local-record-ref.schema.json"
+                },
+                {
+                  "properties": {
+                    "record_kind": {
+                      "const": "statement_of_disagreement"
+                    },
+                    "record_id": {
+                      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-statement-of-disagreement-id.schema.json"
+                    },
+                    "contract_version": {
+                      "const": "1"
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "recognizedSupersessionRef": {
+      "type": "object",
+      "required": [
+        "work_record_ref",
+        "reason"
+      ],
+      "properties": {
+        "work_record_ref": {
+          "$ref": "#/$defs/disagreementRecordRef"
+        },
+        "reason": {
+          "enum": [
+            "source_corrected",
+            "target_corrected",
+            "positions_corrected",
+            "statement_corrected",
+            "duplicate_consolidated"
+          ]
+        },
+        "detail": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+        }
+      },
+      "additionalProperties": false
+    },
+    "otherSupersessionRef": {
+      "type": "object",
+      "required": [
+        "work_record_ref",
+        "reason",
+        "detail"
+      ],
+      "properties": {
+        "work_record_ref": {
+          "$ref": "#/$defs/disagreementRecordRef"
+        },
+        "reason": {
+          "const": "other"
+        },
+        "detail": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+        }
+      },
+      "additionalProperties": false
+    },
+    "supersessionRef": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/recognizedSupersessionRef"
+        },
+        {
+          "$ref": "#/$defs/otherSupersessionRef"
+        }
+      ]
+    },
+    "disagreementCreationSource": {
+      "allOf": [
+        {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/provenance/creation-source.schema.json"
+        },
+        {
+          "oneOf": [
+            {
+              "type": "object",
+              "required": [
+                "type"
+              ],
+              "properties": {
+                "type": {
+                  "const": "digital_entry"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "required": [
+                "type",
+                "stage"
+              ],
+              "properties": {
+                "type": {
+                  "const": "paper_capture"
+                },
+                "stage": {
+                  "const": "ingested"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "required": [
+                "type"
+              ],
+              "properties": {
+                "type": {
+                  "const": "import"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "x-portia-application-invariants": [
+    "target_must_resolve_exactly_in_containing_work",
+    "target_must_be_human_meaningful_domain_record",
+    "target_must_not_be_disagreement_or_infrastructure_record",
+    "represented_source_must_resolve_and_remain_distinct_from_recorder_concept",
+    "paper_captured_disagreement_must_begin_proposed",
+    "imported_disagreement_must_begin_proposed_unless_reviewed_import_policy_allows_otherwise",
+    "automated_interpretation_must_not_activate_disagreement",
+    "human_review_must_confirm_source_target_positions_and_representation_before_activation",
+    "supersession_must_not_reference_self",
+    "supersession_predecessors_must_be_unique_and_same_semantic_family",
+    "supersession_graph_must_be_acyclic",
+    "target_lifecycle_changes_must_not_retarget_or_change_disagreement_automatically",
+    "withdrawal_must_represent_actual_source_withdrawal",
+    "statement_representation_must_honestly_distinguish_quote_from_summary",
+    "lifecycle_transitions_must_follow_statement_of_disagreement_matrix"
+  ]
+}

@@ -1,0 +1,105 @@
+{
+  "valid": {
+    "amendment-add-digital.json": "schemas/v1/corrections/amendment.schema.json",
+    "amendment-replace-with-predecessor.json": "schemas/v1/corrections/amendment.schema.json",
+    "amendment-remove-import.json": "schemas/v1/corrections/amendment.schema.json",
+    "amendment-present-null.json": "schemas/v1/corrections/amendment.schema.json",
+    "disagreement-roster-active-digital.json": "schemas/v1/corrections/statement-of-disagreement.schema.json",
+    "disagreement-actor-proposed-paper.json": "schemas/v1/corrections/statement-of-disagreement.schema.json",
+    "disagreement-local-operator.json": "schemas/v1/corrections/statement-of-disagreement.schema.json",
+    "disagreement-descriptive-with-supersedes.json": "schemas/v1/corrections/statement-of-disagreement.schema.json"
+  },
+  "invalid": {
+    "amendment-missing-previous.json": "schemas/v1/corrections/amendment.schema.json",
+    "amendment-root-path.json": "schemas/v1/corrections/amendment.schema.json",
+    "amendment-unsupported-operation.json": "schemas/v1/corrections/amendment.schema.json",
+    "amendment-add-before-present.json": "schemas/v1/corrections/amendment.schema.json",
+    "amendment-add-after-absent.json": "schemas/v1/corrections/amendment.schema.json",
+    "amendment-replace-before-absent.json": "schemas/v1/corrections/amendment.schema.json",
+    "amendment-remove-after-present.json": "schemas/v1/corrections/amendment.schema.json",
+    "amendment-present-missing-value.json": "schemas/v1/corrections/amendment.schema.json",
+    "amendment-absent-with-value.json": "schemas/v1/corrections/amendment.schema.json",
+    "amendment-empty-changes.json": "schemas/v1/corrections/amendment.schema.json",
+    "amendment-paper-source.json": "schemas/v1/corrections/amendment.schema.json",
+    "amendment-other-missing-detail.json": "schemas/v1/corrections/amendment.schema.json",
+    "amendment-invalid-id.json": "schemas/v1/corrections/amendment.schema.json",
+    "amendment-extra-status.json": "schemas/v1/corrections/amendment.schema.json",
+    "amendment-predecessor-wrong-kind.json": "schemas/v1/corrections/amendment.schema.json",
+    "amendment-predecessor-null-version.json": "schemas/v1/corrections/amendment.schema.json",
+    "amendment-timestamp-no-offset.json": "schemas/v1/corrections/amendment.schema.json",
+    "disagreement-unknown-source.json": "schemas/v1/corrections/statement-of-disagreement.schema.json",
+    "disagreement-system-source.json": "schemas/v1/corrections/statement-of-disagreement.schema.json",
+    "disagreement-empty-positions.json": "schemas/v1/corrections/statement-of-disagreement.schema.json",
+    "disagreement-duplicate-positions.json": "schemas/v1/corrections/statement-of-disagreement.schema.json",
+    "disagreement-invalid-position.json": "schemas/v1/corrections/statement-of-disagreement.schema.json",
+    "disagreement-empty-statement.json": "schemas/v1/corrections/statement-of-disagreement.schema.json",
+    "disagreement-invalid-representation.json": "schemas/v1/corrections/statement-of-disagreement.schema.json",
+    "disagreement-paper-preallocated.json": "schemas/v1/corrections/statement-of-disagreement.schema.json",
+    "disagreement-supersedes-wrong-kind.json": "schemas/v1/corrections/statement-of-disagreement.schema.json",
+    "disagreement-other-supersession-missing-detail.json": "schemas/v1/corrections/statement-of-disagreement.schema.json",
+    "disagreement-invalid-id.json": "schemas/v1/corrections/statement-of-disagreement.schema.json",
+    "disagreement-target-array.json": "schemas/v1/corrections/statement-of-disagreement.schema.json",
+    "disagreement-extra-reply.json": "schemas/v1/corrections/statement-of-disagreement.schema.json",
+    "disagreement-invalid-status.json": "schemas/v1/corrections/statement-of-disagreement.schema.json",
+    "disagreement-missing-updated-by.json": "schemas/v1/corrections/statement-of-disagreement.schema.json",
+    "disagreement-empty-source-label.json": "schemas/v1/corrections/statement-of-disagreement.schema.json"
+  },
+  "application_invalid": {
+    "amendment-self-predecessor.json": {
+      "schema_path": "schemas/v1/corrections/amendment.schema.json",
+      "rule_id": "portia.amendment.self_predecessor"
+    },
+    "amendment-precondition-after-created.json": {
+      "schema_path": "schemas/v1/corrections/amendment.schema.json",
+      "rule_id": "portia.amendment.invalid_revision_chronology"
+    },
+    "amendment-duplicate-paths.json": {
+      "schema_path": "schemas/v1/corrections/amendment.schema.json",
+      "rule_id": "portia.amendment.duplicate_paths"
+    },
+    "amendment-overlapping-paths.json": {
+      "schema_path": "schemas/v1/corrections/amendment.schema.json",
+      "rule_id": "portia.amendment.overlapping_paths"
+    },
+    "amendment-array-index-path.json": {
+      "schema_path": "schemas/v1/corrections/amendment.schema.json",
+      "rule_id": "portia.amendment.array_index_path"
+    },
+    "amendment-replace-equal-values.json": {
+      "schema_path": "schemas/v1/corrections/amendment.schema.json",
+      "rule_id": "portia.amendment.no_effect_replace"
+    },
+    "amendment-protected-status-path.json": {
+      "schema_path": "schemas/v1/corrections/amendment.schema.json",
+      "rule_id": "portia.amendment.protected_path"
+    },
+    "amendment-material-change-mislabeled.json": {
+      "schema_path": "schemas/v1/corrections/amendment.schema.json",
+      "rule_id": "portia.amendment.material_change"
+    },
+    "disagreement-source-recorder-conflated.json": {
+      "schema_path": "schemas/v1/corrections/statement-of-disagreement.schema.json",
+      "rule_id": "portia.disagreement.source_recorder_conflated"
+    },
+    "disagreement-paper-active-without-review.json": {
+      "schema_path": "schemas/v1/corrections/statement-of-disagreement.schema.json",
+      "rule_id": "portia.disagreement.paper_activation_without_review"
+    },
+    "disagreement-import-active-without-reviewed-policy.json": {
+      "schema_path": "schemas/v1/corrections/statement-of-disagreement.schema.json",
+      "rule_id": "portia.disagreement.import_activation_without_review"
+    },
+    "disagreement-targets-disagreement.json": {
+      "schema_path": "schemas/v1/corrections/statement-of-disagreement.schema.json",
+      "rule_id": "portia.disagreement.ineligible_target"
+    },
+    "disagreement-self-supersedes.json": {
+      "schema_path": "schemas/v1/corrections/statement-of-disagreement.schema.json",
+      "rule_id": "portia.disagreement.self_supersession"
+    },
+    "disagreement-withdrawn-without-source-withdrawal.json": {
+      "schema_path": "schemas/v1/corrections/statement-of-disagreement.schema.json",
+      "rule_id": "portia.disagreement.withdrawal_not_source_attributed"
+    }
+  }
+}
