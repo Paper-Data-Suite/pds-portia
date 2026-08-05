@@ -1,0 +1,658 @@
+{
+  "matrix_version": "1",
+  "issue": 12,
+  "entry_count": 93,
+  "entries": [
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-12/amendment-and-disagreement/application-invalid/amendment-array-index-path.json",
+      "contract": "amendment",
+      "version": "1",
+      "schema_path": "schemas/v1/corrections/amendment.schema.json",
+      "rule_id": "portia.amendment.array_index_path"
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-12/amendment-and-disagreement/application-invalid/amendment-duplicate-paths.json",
+      "contract": "amendment",
+      "version": "1",
+      "schema_path": "schemas/v1/corrections/amendment.schema.json",
+      "rule_id": "portia.amendment.duplicate_paths"
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-12/amendment-and-disagreement/application-invalid/amendment-material-change-mislabeled.json",
+      "contract": "amendment",
+      "version": "1",
+      "schema_path": "schemas/v1/corrections/amendment.schema.json",
+      "rule_id": "portia.amendment.material_change"
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-12/amendment-and-disagreement/application-invalid/amendment-overlapping-paths.json",
+      "contract": "amendment",
+      "version": "1",
+      "schema_path": "schemas/v1/corrections/amendment.schema.json",
+      "rule_id": "portia.amendment.overlapping_paths"
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-12/amendment-and-disagreement/application-invalid/amendment-precondition-after-created.json",
+      "contract": "amendment",
+      "version": "1",
+      "schema_path": "schemas/v1/corrections/amendment.schema.json",
+      "rule_id": "portia.amendment.invalid_revision_chronology"
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-12/amendment-and-disagreement/application-invalid/amendment-protected-status-path.json",
+      "contract": "amendment",
+      "version": "1",
+      "schema_path": "schemas/v1/corrections/amendment.schema.json",
+      "rule_id": "portia.amendment.protected_path"
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-12/amendment-and-disagreement/application-invalid/amendment-replace-equal-values.json",
+      "contract": "amendment",
+      "version": "1",
+      "schema_path": "schemas/v1/corrections/amendment.schema.json",
+      "rule_id": "portia.amendment.no_effect_replace"
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-12/amendment-and-disagreement/application-invalid/amendment-self-predecessor.json",
+      "contract": "amendment",
+      "version": "1",
+      "schema_path": "schemas/v1/corrections/amendment.schema.json",
+      "rule_id": "portia.amendment.self_predecessor"
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-12/amendment-and-disagreement/application-invalid/disagreement-import-active-without-reviewed-policy.json",
+      "contract": "statement_of_disagreement",
+      "version": "1",
+      "schema_path": "schemas/v1/corrections/statement-of-disagreement.schema.json",
+      "rule_id": "portia.disagreement.import_activation_without_review"
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-12/amendment-and-disagreement/application-invalid/disagreement-paper-active-without-review.json",
+      "contract": "statement_of_disagreement",
+      "version": "1",
+      "schema_path": "schemas/v1/corrections/statement-of-disagreement.schema.json",
+      "rule_id": "portia.disagreement.paper_activation_without_review"
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-12/amendment-and-disagreement/application-invalid/disagreement-self-supersedes.json",
+      "contract": "statement_of_disagreement",
+      "version": "1",
+      "schema_path": "schemas/v1/corrections/statement-of-disagreement.schema.json",
+      "rule_id": "portia.disagreement.self_supersession"
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-12/amendment-and-disagreement/application-invalid/disagreement-source-recorder-conflated.json",
+      "contract": "statement_of_disagreement",
+      "version": "1",
+      "schema_path": "schemas/v1/corrections/statement-of-disagreement.schema.json",
+      "rule_id": "portia.disagreement.source_recorder_conflated"
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-12/amendment-and-disagreement/application-invalid/disagreement-targets-disagreement.json",
+      "contract": "statement_of_disagreement",
+      "version": "1",
+      "schema_path": "schemas/v1/corrections/statement-of-disagreement.schema.json",
+      "rule_id": "portia.disagreement.ineligible_target"
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-12/amendment-and-disagreement/application-invalid/disagreement-withdrawn-without-source-withdrawal.json",
+      "contract": "statement_of_disagreement",
+      "version": "1",
+      "schema_path": "schemas/v1/corrections/statement-of-disagreement.schema.json",
+      "rule_id": "portia.disagreement.withdrawal_not_source_attributed"
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-12/dependency/application-invalid/dependency-active-successor-claims-unsuperseded-predecessor.json",
+      "contract": "dependency",
+      "version": "1",
+      "schema_path": "schemas/v1/dependencies/dependency.schema.json",
+      "rule_id": "portia.dependency.predecessor_successor_reconciliation"
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-12/dependency/application-invalid/dependency-advisory-authorization-basis.json",
+      "contract": "dependency",
+      "version": "1",
+      "schema_path": "schemas/v1/dependencies/dependency.schema.json",
+      "rule_id": "portia.dependency.authorization_basis_requires_required_strength"
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-12/dependency/application-invalid/dependency-completion-on-unsupported-child.json",
+      "contract": "dependency",
+      "version": "1",
+      "schema_path": "schemas/v1/dependencies/dependency.schema.json",
+      "rule_id": "portia.dependency.completion_scope_supported"
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-12/dependency/application-invalid/dependency-direct-cycle-member.json",
+      "contract": "dependency",
+      "version": "1",
+      "schema_path": "schemas/v1/dependencies/dependency.schema.json",
+      "rule_id": "portia.dependency.cycle"
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-12/dependency/application-invalid/dependency-duplicates-intrinsic-role-basis.json",
+      "contract": "dependency",
+      "version": "1",
+      "schema_path": "schemas/v1/dependencies/dependency.schema.json",
+      "rule_id": "portia.dependency.no_intrinsic_duplication"
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-12/dependency/application-invalid/dependency-module-id-mismatch.json",
+      "contract": "dependency",
+      "version": "1",
+      "schema_path": "schemas/v1/dependencies/dependency.schema.json",
+      "rule_id": "portia.dependency.module_id_agreement"
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-12/dependency/application-invalid/dependency-self-dependency.json",
+      "contract": "dependency",
+      "version": "1",
+      "schema_path": "schemas/v1/dependencies/dependency.schema.json",
+      "rule_id": "portia.dependency.no_self_dependency"
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-12/dependency/application-invalid/dependency-self-supersedes.json",
+      "contract": "dependency",
+      "version": "1",
+      "schema_path": "schemas/v1/dependencies/dependency.schema.json",
+      "rule_id": "portia.dependency.no_self_supersession"
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-12/dependency/application-invalid/dependency-superseded-target-silent-follow.json",
+      "contract": "dependency",
+      "version": "1",
+      "schema_path": "schemas/v1/dependencies/dependency.schema.json",
+      "rule_id": "portia.dependency.no_silent_successor_following"
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-12/dependency/application-invalid/dependency-targets-lifecycle-transition.json",
+      "contract": "dependency",
+      "version": "1",
+      "schema_path": "schemas/v1/dependencies/dependency.schema.json",
+      "rule_id": "portia.dependency.eligible_target_family"
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-12/integrity-finding/application-invalid/advisory-blocks-class.json",
+      "contract": "integrity_finding",
+      "version": "1",
+      "schema_path": "schemas/v1/projections/integrity-finding.schema.json",
+      "rule_id": "portia.integrity_finding.severity_effect_compatibility"
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-12/integrity-finding/application-invalid/authorization-limited-permissive-effects.json",
+      "contract": "integrity_finding",
+      "version": "1",
+      "schema_path": "schemas/v1/projections/integrity-finding.schema.json",
+      "rule_id": "portia.integrity_finding.authorization_limited_conservative_effects"
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-12/integrity-finding/application-invalid/critical-attention-only.json",
+      "contract": "integrity_finding",
+      "version": "1",
+      "schema_path": "schemas/v1/projections/integrity-finding.schema.json",
+      "rule_id": "portia.integrity_finding.severity_effect_compatibility"
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-12/integrity-finding/application-invalid/evaluation-key-not-revision-sensitive.json",
+      "contract": "integrity_finding",
+      "version": "1",
+      "schema_path": "schemas/v1/projections/integrity-finding.schema.json",
+      "rule_id": "portia.integrity_finding.deterministic_evaluation_key"
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-12/integrity-finding/application-invalid/nonreproducible-transient-state.json",
+      "contract": "integrity_finding",
+      "version": "1",
+      "schema_path": "schemas/v1/projections/integrity-finding.schema.json",
+      "rule_id": "portia.integrity_finding.reproducible_from_canonical_state"
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-12/integrity-finding/application-invalid/possible-duplicate-as-confirmed.json",
+      "contract": "integrity_finding",
+      "version": "1",
+      "schema_path": "schemas/v1/projections/integrity-finding.schema.json",
+      "rule_id": "portia.integrity_finding.possible_duplicate_not_confirmed_violation"
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-12/integrity-finding/application-invalid/preacceptance-validation-error.json",
+      "contract": "integrity_finding",
+      "version": "1",
+      "schema_path": "schemas/v1/projections/integrity-finding.schema.json",
+      "rule_id": "portia.integrity_finding.pre_acceptance_validation_not_workspace_finding"
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-12/integrity-finding/application-invalid/primary-repeated-as-related.json",
+      "contract": "integrity_finding",
+      "version": "1",
+      "schema_path": "schemas/v1/projections/integrity-finding.schema.json",
+      "rule_id": "portia.integrity_finding.primary_related_target_roles"
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-12/integrity-finding/application-invalid/proposed-record-review-only.json",
+      "contract": "integrity_finding",
+      "version": "1",
+      "schema_path": "schemas/v1/projections/integrity-finding.schema.json",
+      "rule_id": "portia.integrity_finding.review_condition_not_integrity_finding"
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-12/integrity-finding/application-invalid/random-finding-key.json",
+      "contract": "integrity_finding",
+      "version": "1",
+      "schema_path": "schemas/v1/projections/integrity-finding.schema.json",
+      "rule_id": "portia.integrity_finding.deterministic_finding_key"
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-12/integrity-finding/application-invalid/sensitive-evidence-path.json",
+      "contract": "integrity_finding",
+      "version": "1",
+      "schema_path": "schemas/v1/projections/integrity-finding.schema.json",
+      "rule_id": "portia.integrity_finding.sensitive_evidence_prohibited"
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-12/integrity-finding/application-invalid/silently-retargeted-primary.json",
+      "contract": "integrity_finding",
+      "version": "1",
+      "schema_path": "schemas/v1/projections/integrity-finding.schema.json",
+      "rule_id": "portia.integrity_finding.exact_target_normalization"
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-12/integrity-finding/application-invalid/unsatisfied-dependency-without-gate-use.json",
+      "contract": "integrity_finding",
+      "version": "1",
+      "schema_path": "schemas/v1/projections/integrity-finding.schema.json",
+      "rule_id": "portia.integrity_finding.required_dependency_gate_violation_only"
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-12/integrity-finding/application-invalid/unstable-rule-identity.json",
+      "contract": "integrity_finding",
+      "version": "1",
+      "schema_path": "schemas/v1/projections/integrity-finding.schema.json",
+      "rule_id": "portia.integrity_finding.stable_rule_identity"
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-12/integrity-finding/application-invalid/valid-removed-historical-target.json",
+      "contract": "integrity_finding",
+      "version": "1",
+      "schema_path": "schemas/v1/projections/integrity-finding.schema.json",
+      "rule_id": "portia.integrity_finding.removed_historical_target_not_current_use_finding"
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-12/lifecycle-history/application-invalid/history-correction-same-heads.json",
+      "contract": "lifecycle_history_correction",
+      "version": "1",
+      "schema_path": "schemas/v1/lifecycle/lifecycle-history-correction.schema.json",
+      "rule_id": "replacement_head_must_differ_from_replaced_head"
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-12/lifecycle-history/application-invalid/history-correction-self-predecessor.json",
+      "contract": "lifecycle_history_correction",
+      "version": "1",
+      "schema_path": "schemas/v1/lifecycle/lifecycle-history-correction.schema.json",
+      "rule_id": "previous_correction_must_not_reference_self"
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-12/lifecycle-history/application-invalid/transition-effective-after-created.json",
+      "contract": "lifecycle_transition",
+      "version": "1",
+      "schema_path": "schemas/v1/lifecycle/lifecycle-transition.schema.json",
+      "rule_id": "effective_at_must_not_follow_created_at"
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-12/lifecycle-history/application-invalid/transition-same-status.json",
+      "contract": "lifecycle_transition",
+      "version": "1",
+      "schema_path": "schemas/v1/lifecycle/lifecycle-transition.schema.json",
+      "rule_id": "from_status_must_differ_from_to_status"
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-12/lifecycle-history/application-invalid/transition-self-predecessor.json",
+      "contract": "lifecycle_transition",
+      "version": "1",
+      "schema_path": "schemas/v1/lifecycle/lifecycle-transition.schema.json",
+      "rule_id": "previous_transition_must_not_reference_self"
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-12/migration-ownership-removal/application-invalid/migration-cross-work-root.json",
+      "contract": "record_migration",
+      "version": "1",
+      "schema_path": "schemas/v1/migrations/record-migration.schema.json",
+      "rule_id": "portia.migration.work_root_changed"
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-12/migration-ownership-removal/application-invalid/migration-effective-after-created.json",
+      "contract": "record_migration",
+      "version": "1",
+      "schema_path": "schemas/v1/migrations/record-migration.schema.json",
+      "rule_id": "portia.migration.effective_after_created"
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-12/migration-ownership-removal/application-invalid/migration-identical-representation.json",
+      "contract": "record_migration",
+      "version": "1",
+      "schema_path": "schemas/v1/migrations/record-migration.schema.json",
+      "rule_id": "portia.migration.identical_representations"
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-12/migration-ownership-removal/application-invalid/migration-immutable-audit-target.json",
+      "contract": "record_migration",
+      "version": "1",
+      "schema_path": "schemas/v1/migrations/record-migration.schema.json",
+      "rule_id": "portia.migration.immutable_audit_target"
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-12/migration-ownership-removal/application-invalid/migration-lifecycle-not-preserved.json",
+      "contract": "record_migration",
+      "version": "1",
+      "schema_path": "schemas/v1/migrations/record-migration.schema.json",
+      "rule_id": "portia.migration.lifecycle_not_preserved"
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-12/migration-ownership-removal/application-invalid/migration-logical-record-id-changed.json",
+      "contract": "record_migration",
+      "version": "1",
+      "schema_path": "schemas/v1/migrations/record-migration.schema.json",
+      "rule_id": "portia.migration.logical_identity_mismatch"
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-12/migration-ownership-removal/application-invalid/migration-record-family-changed.json",
+      "contract": "record_migration",
+      "version": "1",
+      "schema_path": "schemas/v1/migrations/record-migration.schema.json",
+      "rule_id": "portia.migration.record_family_mismatch"
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-12/migration-ownership-removal/application-invalid/migration-same-contract-version.json",
+      "contract": "record_migration",
+      "version": "1",
+      "schema_path": "schemas/v1/migrations/record-migration.schema.json",
+      "rule_id": "portia.migration.same_contract_version"
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-12/migration-ownership-removal/application-invalid/migration-substantive-repair-hidden.json",
+      "contract": "record_migration",
+      "version": "1",
+      "schema_path": "schemas/v1/migrations/record-migration.schema.json",
+      "rule_id": "portia.migration.substantive_repair_hidden"
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-12/migration-ownership-removal/application-invalid/migration-unregistered-transformer.json",
+      "contract": "record_migration",
+      "version": "1",
+      "schema_path": "schemas/v1/migrations/record-migration.schema.json",
+      "rule_id": "portia.migration.unregistered_or_incompatible_transformer"
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-12/migration-ownership-removal/application-invalid/ownership-child-identifier-reused.json",
+      "contract": "ownership_correction",
+      "version": "1",
+      "schema_path": "schemas/v1/corrections/ownership-correction.schema.json",
+      "rule_id": "portia.ownership.destination_identifier_reused"
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-12/migration-ownership-removal/application-invalid/ownership-cross-workspace.json",
+      "contract": "ownership_correction",
+      "version": "1",
+      "schema_path": "schemas/v1/corrections/ownership-correction.schema.json",
+      "rule_id": "portia.ownership.cross_workspace"
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-12/migration-ownership-removal/application-invalid/ownership-effective-after-created.json",
+      "contract": "ownership_correction",
+      "version": "1",
+      "schema_path": "schemas/v1/corrections/ownership-correction.schema.json",
+      "rule_id": "portia.ownership.effective_after_created"
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-12/migration-ownership-removal/application-invalid/ownership-envelope-destination-scope-mismatch.json",
+      "contract": "ownership_correction",
+      "version": "1",
+      "schema_path": "schemas/v1/corrections/ownership-correction.schema.json",
+      "rule_id": "portia.ownership.destination_scope_mismatch"
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-12/migration-ownership-removal/application-invalid/ownership-event-identifier-reused.json",
+      "contract": "ownership_correction",
+      "version": "1",
+      "schema_path": "schemas/v1/corrections/ownership-correction.schema.json",
+      "rule_id": "portia.ownership.destination_identifier_reused"
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-12/migration-ownership-removal/application-invalid/ownership-parent-child-mapping-mismatch.json",
+      "contract": "ownership_correction",
+      "version": "1",
+      "schema_path": "schemas/v1/corrections/ownership-correction.schema.json",
+      "rule_id": "portia.ownership.parent_child_mapping_mismatch"
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-12/migration-ownership-removal/application-invalid/ownership-parent-self-reference.json",
+      "contract": "ownership_correction",
+      "version": "1",
+      "schema_path": "schemas/v1/corrections/ownership-correction.schema.json",
+      "rule_id": "portia.ownership.cycle"
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-12/migration-ownership-removal/application-invalid/ownership-reason-kind-mismatch.json",
+      "contract": "ownership_correction",
+      "version": "1",
+      "schema_path": "schemas/v1/corrections/ownership-correction.schema.json",
+      "rule_id": "portia.ownership.reason_or_time_mismatch"
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-12/migration-ownership-removal/application-invalid/ownership-record-family-changed.json",
+      "contract": "ownership_correction",
+      "version": "1",
+      "schema_path": "schemas/v1/corrections/ownership-correction.schema.json",
+      "rule_id": "portia.ownership.record_family_mismatch"
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-12/migration-ownership-removal/application-invalid/ownership-same-class-scope.json",
+      "contract": "ownership_correction",
+      "version": "1",
+      "schema_path": "schemas/v1/corrections/ownership-correction.schema.json",
+      "rule_id": "portia.ownership.scope_not_changed"
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-12/migration-ownership-removal/application-invalid/ownership-silent-incoming-reference-retarget.json",
+      "contract": "ownership_correction",
+      "version": "1",
+      "schema_path": "schemas/v1/corrections/ownership-correction.schema.json",
+      "rule_id": "portia.ownership.silent_reference_retarget"
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-12/migration-ownership-removal/application-invalid/ownership-unresolved-active-child.json",
+      "contract": "ownership_correction",
+      "version": "1",
+      "schema_path": "schemas/v1/corrections/ownership-correction.schema.json",
+      "rule_id": "portia.ownership.unresolved_current_use_child"
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-12/migration-ownership-removal/application-invalid/removal-certificate-retains-substantive-content.json",
+      "contract": "exceptional_removal",
+      "version": "1",
+      "schema_path": "schemas/v1/removals/exceptional-removal.schema.json",
+      "rule_id": "portia.removal.substantive_content_retained"
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-12/migration-ownership-removal/application-invalid/removal-class-scope-mismatch.json",
+      "contract": "exceptional_removal",
+      "version": "1",
+      "schema_path": "schemas/v1/removals/exceptional-removal.schema.json",
+      "rule_id": "portia.removal.class_scope_mismatch"
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-12/migration-ownership-removal/application-invalid/removal-content-evidence-revision-mismatch.json",
+      "contract": "exceptional_removal",
+      "version": "1",
+      "schema_path": "schemas/v1/removals/exceptional-removal.schema.json",
+      "rule_id": "portia.removal.content_evidence_mismatch"
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-12/migration-ownership-removal/application-invalid/removal-dependency-review-not-triggered.json",
+      "contract": "exceptional_removal",
+      "version": "1",
+      "schema_path": "schemas/v1/removals/exceptional-removal.schema.json",
+      "rule_id": "portia.removal.dependency_review_missing"
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-12/migration-ownership-removal/application-invalid/removal-derived-payload-not-purged.json",
+      "contract": "exceptional_removal",
+      "version": "1",
+      "schema_path": "schemas/v1/removals/exceptional-removal.schema.json",
+      "rule_id": "portia.removal.derived_payload_retained"
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-12/migration-ownership-removal/application-invalid/removal-duplicate-certificate.json",
+      "contract": "exceptional_removal",
+      "version": "1",
+      "schema_path": "schemas/v1/removals/exceptional-removal.schema.json",
+      "rule_id": "portia.removal.duplicate_certificate"
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-12/migration-ownership-removal/application-invalid/removal-effective-after-created.json",
+      "contract": "exceptional_removal",
+      "version": "1",
+      "schema_path": "schemas/v1/removals/exceptional-removal.schema.json",
+      "rule_id": "portia.removal.effective_after_created"
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-12/migration-ownership-removal/application-invalid/removal-governance-block-unresolved.json",
+      "contract": "exceptional_removal",
+      "version": "1",
+      "schema_path": "schemas/v1/removals/exceptional-removal.schema.json",
+      "rule_id": "portia.removal.governance_block_unresolved"
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-12/migration-ownership-removal/application-invalid/removal-ordinary-mistake-as-exception.json",
+      "contract": "exceptional_removal",
+      "version": "1",
+      "schema_path": "schemas/v1/removals/exceptional-removal.schema.json",
+      "rule_id": "portia.removal.nonexceptional_reason"
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-12/migration-ownership-removal/application-invalid/removal-parent-child-mapping-mismatch.json",
+      "contract": "exceptional_removal",
+      "version": "1",
+      "schema_path": "schemas/v1/removals/exceptional-removal.schema.json",
+      "rule_id": "portia.removal.parent_child_mapping_incomplete"
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-12/migration-ownership-removal/application-invalid/removal-targets-removal-certificate.json",
+      "contract": "exceptional_removal",
+      "version": "1",
+      "schema_path": "schemas/v1/removals/exceptional-removal.schema.json",
+      "rule_id": "portia.removal.certificate_targeted"
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-12/migration-ownership-removal/application-invalid/removal-unauthorized-operator.json",
+      "contract": "exceptional_removal",
+      "version": "1",
+      "schema_path": "schemas/v1/removals/exceptional-removal.schema.json",
+      "rule_id": "portia.removal.authorization_invalid"
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-12/record-family-upgrades/application-invalid/participant-cross-work-with-ordinary-reason.json",
+      "contract": "event_participant",
+      "version": "3",
+      "schema_path": "schemas/v3/event-participant.schema.json",
+      "rule_id": "portia.participant_v3.cross_work_requires_ownership_reason"
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-12/record-family-upgrades/application-invalid/participant-duplicate-active-durable-subject.json",
+      "contract": "event_participant",
+      "version": "3",
+      "schema_path": "schemas/v3/event-participant.schema.json",
+      "rule_id": "portia.participant_v3.active_subject_uniqueness"
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-12/record-family-upgrades/application-invalid/participant-migration-cross-work.json",
+      "contract": "event_participant",
+      "version": "3",
+      "schema_path": "schemas/v3/event-participant.schema.json",
+      "rule_id": "portia.participant_v3.migration_same_work"
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-12/record-family-upgrades/application-invalid/participant-migration-id-changed.json",
+      "contract": "event_participant",
+      "version": "3",
+      "schema_path": "schemas/v3/event-participant.schema.json",
+      "rule_id": "portia.participant_v3.migration_identity_preservation"
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-12/record-family-upgrades/application-invalid/participant-ownership-reason-same-work.json",
+      "contract": "event_participant",
+      "version": "3",
+      "schema_path": "schemas/v3/event-participant.schema.json",
+      "rule_id": "portia.participant_v3.ownership_reason_requires_cross_work"
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-12/record-family-upgrades/application-invalid/relationship-cross-work-with-ordinary-reason.json",
+      "contract": "work_relationship",
+      "version": "2",
+      "schema_path": "schemas/v2/work-relationship.schema.json",
+      "rule_id": "portia.relationship_v2.cross_work_requires_ownership_reason"
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-12/record-family-upgrades/application-invalid/relationship-envelope-source-mismatch.json",
+      "contract": "work_relationship",
+      "version": "2",
+      "schema_path": "schemas/v2/work-relationship.schema.json",
+      "rule_id": "portia.relationship_v2.source_envelope_agreement"
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-12/record-family-upgrades/application-invalid/relationship-migration-id-changed.json",
+      "contract": "work_relationship",
+      "version": "2",
+      "schema_path": "schemas/v2/work-relationship.schema.json",
+      "rule_id": "portia.relationship_v2.migration_identity_preservation"
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-12/record-family-upgrades/application-invalid/relationship-self-reference.json",
+      "contract": "work_relationship",
+      "version": "2",
+      "schema_path": "schemas/v2/work-relationship.schema.json",
+      "rule_id": "portia.relationship_v2.self_reference"
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-12/record-family-upgrades/application-invalid/relationship-silent-target-retarget.json",
+      "contract": "work_relationship",
+      "version": "2",
+      "schema_path": "schemas/v2/work-relationship.schema.json",
+      "rule_id": "portia.relationship_v2.no_silent_retarget"
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-12/record-family-upgrades/application-invalid/role-cross-work-with-ordinary-reason.json",
+      "contract": "event_participant_role",
+      "version": "3",
+      "schema_path": "schemas/v3/event-participant-role.schema.json",
+      "rule_id": "portia.role_v3.cross_work_requires_ownership_reason"
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-12/record-family-upgrades/application-invalid/role-migration-id-changed.json",
+      "contract": "event_participant_role",
+      "version": "3",
+      "schema_path": "schemas/v3/event-participant-role.schema.json",
+      "rule_id": "portia.role_v3.migration_identity_preservation"
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-12/record-family-upgrades/application-invalid/role-ownership-reason-same-work.json",
+      "contract": "event_participant_role",
+      "version": "3",
+      "schema_path": "schemas/v3/event-participant-role.schema.json",
+      "rule_id": "portia.role_v3.ownership_reason_requires_cross_work"
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-12/record-family-upgrades/application-invalid/role-self-supersession.json",
+      "contract": "event_participant_role",
+      "version": "3",
+      "schema_path": "schemas/v3/event-participant-role.schema.json",
+      "rule_id": "portia.role_v3.self_supersession"
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-12/record-family-upgrades/application-invalid/role-target-unresolved.json",
+      "contract": "event_participant_role",
+      "version": "3",
+      "schema_path": "schemas/v3/event-participant-role.schema.json",
+      "rule_id": "portia.role_v3.target_resolution"
+    }
+  ]
+}

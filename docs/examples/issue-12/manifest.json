@@ -1,0 +1,66 @@
+{
+  "manifest_version": "1",
+  "issue": 12,
+  "examples": {
+    "lifecycle-transition.json": {
+      "contract": "lifecycle_transition",
+      "version": "1",
+      "schema_path": "schemas/v1/lifecycle/lifecycle-transition.schema.json"
+    },
+    "lifecycle-history-correction.json": {
+      "contract": "lifecycle_history_correction",
+      "version": "1",
+      "schema_path": "schemas/v1/lifecycle/lifecycle-history-correction.schema.json"
+    },
+    "amendment.json": {
+      "contract": "amendment",
+      "version": "1",
+      "schema_path": "schemas/v1/corrections/amendment.schema.json"
+    },
+    "statement-of-disagreement.json": {
+      "contract": "statement_of_disagreement",
+      "version": "1",
+      "schema_path": "schemas/v1/corrections/statement-of-disagreement.schema.json"
+    },
+    "dependency.json": {
+      "contract": "dependency",
+      "version": "1",
+      "schema_path": "schemas/v1/dependencies/dependency.schema.json"
+    },
+    "record-migration.json": {
+      "contract": "record_migration",
+      "version": "1",
+      "schema_path": "schemas/v1/migrations/record-migration.schema.json"
+    },
+    "ownership-correction.json": {
+      "contract": "ownership_correction",
+      "version": "1",
+      "schema_path": "schemas/v1/corrections/ownership-correction.schema.json"
+    },
+    "exceptional-removal.json": {
+      "contract": "exceptional_removal",
+      "version": "1",
+      "schema_path": "schemas/v1/removals/exceptional-removal.schema.json"
+    },
+    "event-participant-v3.json": {
+      "contract": "event_participant",
+      "version": "3",
+      "schema_path": "schemas/v3/event-participant.schema.json"
+    },
+    "event-participant-role-v3.json": {
+      "contract": "event_participant_role",
+      "version": "3",
+      "schema_path": "schemas/v3/event-participant-role.schema.json"
+    },
+    "work-relationship-v2.json": {
+      "contract": "work_relationship",
+      "version": "2",
+      "schema_path": "schemas/v2/work-relationship.schema.json"
+    },
+    "integrity-finding.json": {
+      "contract": "integrity_finding",
+      "version": "1",
+      "schema_path": "schemas/v1/projections/integrity-finding.schema.json"
+    }
+  }
+}

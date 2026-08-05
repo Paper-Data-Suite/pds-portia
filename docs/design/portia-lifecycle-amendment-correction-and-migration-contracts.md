@@ -1,6 +1,6 @@
 # Portia Lifecycle, Amendment, Correction, and Migration Contracts
 
-**Status:** Architecture approved through Decision 18 — implementation pending  
+**Status:** Accepted — implemented through Decision 18
 **Project:** Paper Data Suite  
 **Module:** `pds-portia`  
 **Issue:** `#12 — Define shared lifecycle, amendment, correction, and migration contracts`  
@@ -15,9 +15,9 @@ This document defines Portia's shared architecture for lifecycle state, append-o
 It applies first to:
 
 - Event v2;
-- Event Participant v2;
-- Event Participant Role v2;
-- Work Relationship v1;
+- Event Participant v3;
+- Event Participant Role v3;
+- Work Relationship v2;
 - and later Portia record families.
 
 This document is implementation-neutral. Production persistence, operation journals, atomicity, rollback, and crash recovery belong to Issue #13.
@@ -28,9 +28,9 @@ This design must remain consistent with ADRs 0001–0007 and these current imple
 
 ```text
 schemas/v2/event.schema.json
-schemas/v2/event-participant.schema.json
-schemas/v2/event-participant-role.schema.json
-schemas/v1/work-relationship.schema.json
+schemas/v3/event-participant.schema.json
+schemas/v3/event-participant-role.schema.json
+schemas/v2/work-relationship.schema.json
 ```
 
 Historical Event-family version-1 schemas remain immutable compatibility contracts.
