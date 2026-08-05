@@ -1,0 +1,315 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/corrections/ownership-correction.schema.json",
+  "title": "Portia Ownership Correction",
+  "description": "Immutable destination-owned certificate mapping one exact incorrectly owned Event or Event child representation to one exact recreated destination representation under the correct class or Event work root.",
+  "$comment": "Application validation must establish exact source and destination resolution, changed ownership scope, same semantic family, fresh destination identifiers, independently valid destination content, complete cross-root successor and lifecycle reconciliation, parent-child mapping, verified roster adaptation, explicit child disposition, same-workspace authorization, no silent retargeting, one-to-one topology, chronology, and acyclic lineage.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "record_type",
+    "module_id",
+    "class_id",
+    "work_id",
+    "correction_id",
+    "correction_kind",
+    "source",
+    "destination",
+    "reason",
+    "effective_at",
+    "creation_source",
+    "created_at",
+    "created_by"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1"
+    },
+    "record_type": {
+      "const": "ownership_correction"
+    },
+    "module_id": {
+      "const": "portia"
+    },
+    "class_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+    },
+    "work_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-event-id.schema.json"
+    },
+    "correction_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-ownership-correction-id.schema.json"
+    },
+    "correction_kind": {
+      "enum": [
+        "event_class_ownership",
+        "child_work_root"
+      ]
+    },
+    "source": {
+      "$ref": "#/$defs/ownershipEndpoint"
+    },
+    "destination": {
+      "$ref": "#/$defs/ownershipEndpoint"
+    },
+    "parent_correction": {
+      "$ref": "#/$defs/ownershipCorrectionRef"
+    },
+    "reason": {
+      "$ref": "#/$defs/ownershipReason"
+    },
+    "effective_at": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+    },
+    "creation_source": {
+      "$ref": "#/$defs/digitalCreationSource"
+    },
+    "created_at": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+    },
+    "created_by": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/attribution/attribution-agent.schema.json"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "correction_kind": {
+            "const": "event_class_ownership"
+          }
+        },
+        "required": [
+          "correction_kind"
+        ]
+      },
+      "then": {
+        "properties": {
+          "source": {
+            "$ref": "#/$defs/eventWorkEndpoint"
+          },
+          "destination": {
+            "$ref": "#/$defs/eventWorkEndpoint"
+          }
+        },
+        "not": {
+          "required": [
+            "parent_correction"
+          ]
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "correction_kind": {
+            "const": "child_work_root"
+          }
+        },
+        "required": [
+          "correction_kind"
+        ]
+      },
+      "then": {
+        "properties": {
+          "source": {
+            "$ref": "#/$defs/workRecordEndpoint"
+          },
+          "destination": {
+            "$ref": "#/$defs/workRecordEndpoint"
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "ownershipEndpoint": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/eventWorkEndpoint"
+        },
+        {
+          "$ref": "#/$defs/workRecordEndpoint"
+        }
+      ]
+    },
+    "eventWorkRef": {
+      "allOf": [
+        {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-portia-work-ref.schema.json"
+        },
+        {
+          "properties": {
+            "work_kind": {
+              "const": "event"
+            }
+          }
+        }
+      ]
+    },
+    "eventWorkRecordRef": {
+      "allOf": [
+        {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-portia-work-record-ref.schema.json"
+        },
+        {
+          "properties": {
+            "work_ref": {
+              "allOf": [
+                {
+                  "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-portia-work-ref.schema.json"
+                },
+                {
+                  "properties": {
+                    "work_kind": {
+                      "const": "event"
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "eventWorkEndpoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "work_ref",
+        "observed_updated_at"
+      ],
+      "properties": {
+        "kind": {
+          "const": "event_work"
+        },
+        "work_ref": {
+          "$ref": "#/$defs/eventWorkRef"
+        },
+        "observed_updated_at": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+        }
+      }
+    },
+    "workRecordEndpoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "work_record_ref",
+        "observed_updated_at"
+      ],
+      "properties": {
+        "kind": {
+          "const": "work_record"
+        },
+        "work_record_ref": {
+          "$ref": "#/$defs/eventWorkRecordRef"
+        },
+        "observed_updated_at": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+        }
+      }
+    },
+    "ownershipCorrectionRef": {
+      "allOf": [
+        {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-local-record-ref.schema.json"
+        },
+        {
+          "properties": {
+            "record_kind": {
+              "const": "ownership_correction"
+            },
+            "record_id": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-ownership-correction-id.schema.json"
+            },
+            "contract_version": {
+              "const": "1"
+            }
+          }
+        }
+      ]
+    },
+    "ownershipReason": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/recognizedOwnershipReason"
+        },
+        {
+          "$ref": "#/$defs/otherOwnershipReason"
+        }
+      ]
+    },
+    "recognizedOwnershipReason": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "code"
+      ],
+      "properties": {
+        "code": {
+          "enum": [
+            "wrong_class",
+            "wrong_event_root",
+            "incorrect_initial_routing"
+          ]
+        },
+        "detail": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+        }
+      }
+    },
+    "otherOwnershipReason": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "code",
+        "detail"
+      ],
+      "properties": {
+        "code": {
+          "const": "other"
+        },
+        "detail": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+        }
+      }
+    },
+    "digitalCreationSource": {
+      "type": "object",
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "type": {
+          "const": "digital_entry"
+        }
+      },
+      "additionalProperties": false,
+      "description": "Canonical certificate creation is digital-only."
+    }
+  },
+  "x-portia-application-invariants": [
+    "portia.ownership.destination_scope_mismatch",
+    "portia.ownership.exact_resolution_required",
+    "portia.ownership.scope_not_changed",
+    "portia.ownership.record_family_mismatch",
+    "portia.ownership.destination_identifier_reused",
+    "portia.ownership.destination_invalid",
+    "portia.ownership.reconciliation_incomplete",
+    "portia.ownership.source_lifecycle_ineligible",
+    "portia.ownership.reason_or_time_mismatch",
+    "portia.ownership.parent_child_mapping_mismatch",
+    "portia.ownership.roster_mapping_unverified",
+    "portia.ownership.destination_internal_reference_mismatch",
+    "portia.ownership.unresolved_current_use_child",
+    "portia.ownership.silent_reference_retarget",
+    "portia.ownership.non_one_to_one_topology",
+    "portia.ownership.cross_workspace",
+    "portia.ownership.effective_after_created",
+    "portia.ownership.cycle"
+  ]
+}

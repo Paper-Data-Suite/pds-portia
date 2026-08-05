@@ -282,6 +282,24 @@
         "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/dependencies/dependency.schema.json",
         "path": "schemas/v1/dependencies/dependency.schema.json"
       }
+    },
+    "record_migration": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/migrations/record-migration.schema.json",
+        "path": "schemas/v1/migrations/record-migration.schema.json"
+      }
+    },
+    "ownership_correction": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/corrections/ownership-correction.schema.json",
+        "path": "schemas/v1/corrections/ownership-correction.schema.json"
+      }
+    },
+    "exceptional_removal": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/removals/exceptional-removal.schema.json",
+        "path": "schemas/v1/removals/exceptional-removal.schema.json"
+      }
     }
   }
 }

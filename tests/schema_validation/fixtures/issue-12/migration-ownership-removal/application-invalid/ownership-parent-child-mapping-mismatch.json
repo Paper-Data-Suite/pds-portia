@@ -1,0 +1,62 @@
+{
+  "schema_version": "1",
+  "record_type": "ownership_correction",
+  "module_id": "portia",
+  "class_id": "eng10_p3_2026",
+  "work_id": "evt_corrected",
+  "correction_id": "owc_child_001",
+  "correction_kind": "child_work_root",
+  "source": {
+    "kind": "work_record",
+    "work_record_ref": {
+      "work_ref": {
+        "module_id": "portia",
+        "class_id": "eng10_p2_2026",
+        "work_id": "evt_wrong",
+        "work_kind": "event",
+        "contract_version": "2"
+      },
+      "record_ref": {
+        "record_kind": "event_participant",
+        "record_id": "ep_wrong",
+        "contract_version": "2"
+      }
+    },
+    "observed_updated_at": "2026-08-04T07:35:00-04:00"
+  },
+  "destination": {
+    "kind": "work_record",
+    "work_record_ref": {
+      "work_ref": {
+        "module_id": "portia",
+        "class_id": "eng10_p3_2026",
+        "work_id": "evt_corrected",
+        "work_kind": "event",
+        "contract_version": "2"
+      },
+      "record_ref": {
+        "record_kind": "event_participant",
+        "record_id": "ep_corrected",
+        "contract_version": "2"
+      }
+    },
+    "observed_updated_at": "2026-08-04T08:00:00-04:00"
+  },
+  "reason": {
+    "code": "wrong_event_root"
+  },
+  "effective_at": "2026-08-04T08:00:00-04:00",
+  "creation_source": {
+    "type": "digital_entry"
+  },
+  "created_at": "2026-08-04T08:02:00-04:00",
+  "created_by": {
+    "type": "local_operator",
+    "display_label": "Stephen Severino"
+  },
+  "parent_correction": {
+    "record_kind": "ownership_correction",
+    "record_id": "owc_unrelated_event",
+    "contract_version": "1"
+  }
+}
