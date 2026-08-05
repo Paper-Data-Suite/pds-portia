@@ -1,0 +1,120 @@
+{
+  "valid": {
+    "authorization-producer-unavailable.json": "schemas/v1/projections/integrity-finding.schema.json",
+    "chronology-observed-revision.json": "schemas/v1/projections/integrity-finding.schema.json",
+    "dependency-required-gate.json": "schemas/v1/projections/integrity-finding.schema.json",
+    "derived-index-drift.json": "schemas/v1/projections/integrity-finding.schema.json",
+    "identity-roster-unresolved.json": "schemas/v1/projections/integrity-finding.schema.json",
+    "lifecycle-status-history-mismatch.json": "schemas/v1/projections/integrity-finding.schema.json",
+    "migration-reconciliation-broken.json": "schemas/v1/projections/integrity-finding.schema.json",
+    "ownership-unresolved-child.json": "schemas/v1/projections/integrity-finding.schema.json",
+    "persistence-operation-incomplete.json": "schemas/v1/projections/integrity-finding.schema.json",
+    "reference-exact-target-missing.json": "schemas/v1/projections/integrity-finding.schema.json",
+    "removal-payload-present.json": "schemas/v1/projections/integrity-finding.schema.json",
+    "replacement-multiple-current.json": "schemas/v1/projections/integrity-finding.schema.json",
+    "structure-schema-invalid.json": "schemas/v1/projections/integrity-finding.schema.json",
+    "uniqueness-active-violation.json": "schemas/v1/projections/integrity-finding.schema.json"
+  },
+  "invalid": {
+    "blank-rule-version.json": "schemas/v1/projections/integrity-finding.schema.json",
+    "category-code-mismatch.json": "schemas/v1/projections/integrity-finding.schema.json",
+    "class-target-missing-class.json": "schemas/v1/projections/integrity-finding.schema.json",
+    "confirmed-with-limitation.json": "schemas/v1/projections/integrity-finding.schema.json",
+    "duplicate-effects.json": "schemas/v1/projections/integrity-finding.schema.json",
+    "duplicate-related-targets.json": "schemas/v1/projections/integrity-finding.schema.json",
+    "empty-effects.json": "schemas/v1/projections/integrity-finding.schema.json",
+    "empty-evidence.json": "schemas/v1/projections/integrity-finding.schema.json",
+    "evidence-negative-integer.json": "schemas/v1/projections/integrity-finding.schema.json",
+    "evidence-target-invalid.json": "schemas/v1/projections/integrity-finding.schema.json",
+    "evidence-timestamp-without-offset.json": "schemas/v1/projections/integrity-finding.schema.json",
+    "evidence-token-invalid.json": "schemas/v1/projections/integrity-finding.schema.json",
+    "evidence-unknown-kind.json": "schemas/v1/projections/integrity-finding.schema.json",
+    "extra-record-type.json": "schemas/v1/projections/integrity-finding.schema.json",
+    "extra-schema-version.json": "schemas/v1/projections/integrity-finding.schema.json",
+    "extra-status.json": "schemas/v1/projections/integrity-finding.schema.json",
+    "forbidden-acknowledged.json": "schemas/v1/projections/integrity-finding.schema.json",
+    "forbidden-first-seen-at.json": "schemas/v1/projections/integrity-finding.schema.json",
+    "indeterminate-missing-limitation.json": "schemas/v1/projections/integrity-finding.schema.json",
+    "invalid-evaluation-key.json": "schemas/v1/projections/integrity-finding.schema.json",
+    "invalid-finding-key.json": "schemas/v1/projections/integrity-finding.schema.json",
+    "invalid-rule-id.json": "schemas/v1/projections/integrity-finding.schema.json",
+    "missing-finding-key.json": "schemas/v1/projections/integrity-finding.schema.json",
+    "observed-at-without-offset.json": "schemas/v1/projections/integrity-finding.schema.json",
+    "operation-target-invalid-id.json": "schemas/v1/projections/integrity-finding.schema.json",
+    "primary-target-array.json": "schemas/v1/projections/integrity-finding.schema.json",
+    "record-target-missing-version.json": "schemas/v1/projections/integrity-finding.schema.json",
+    "related-target-invalid.json": "schemas/v1/projections/integrity-finding.schema.json",
+    "removal-target-null-version.json": "schemas/v1/projections/integrity-finding.schema.json",
+    "target-unknown-kind.json": "schemas/v1/projections/integrity-finding.schema.json",
+    "unknown-category.json": "schemas/v1/projections/integrity-finding.schema.json",
+    "unknown-code.json": "schemas/v1/projections/integrity-finding.schema.json",
+    "unknown-effect.json": "schemas/v1/projections/integrity-finding.schema.json",
+    "unknown-limitation.json": "schemas/v1/projections/integrity-finding.schema.json",
+    "unknown-scope.json": "schemas/v1/projections/integrity-finding.schema.json",
+    "unknown-severity.json": "schemas/v1/projections/integrity-finding.schema.json",
+    "work-target-null-version.json": "schemas/v1/projections/integrity-finding.schema.json",
+    "workspace-target-extra-field.json": "schemas/v1/projections/integrity-finding.schema.json"
+  },
+  "application_invalid": {
+    "advisory-blocks-class.json": {
+      "schema_path": "schemas/v1/projections/integrity-finding.schema.json",
+      "rule_id": "portia.integrity_finding.severity_effect_compatibility"
+    },
+    "authorization-limited-permissive-effects.json": {
+      "schema_path": "schemas/v1/projections/integrity-finding.schema.json",
+      "rule_id": "portia.integrity_finding.authorization_limited_conservative_effects"
+    },
+    "critical-attention-only.json": {
+      "schema_path": "schemas/v1/projections/integrity-finding.schema.json",
+      "rule_id": "portia.integrity_finding.severity_effect_compatibility"
+    },
+    "evaluation-key-not-revision-sensitive.json": {
+      "schema_path": "schemas/v1/projections/integrity-finding.schema.json",
+      "rule_id": "portia.integrity_finding.deterministic_evaluation_key"
+    },
+    "nonreproducible-transient-state.json": {
+      "schema_path": "schemas/v1/projections/integrity-finding.schema.json",
+      "rule_id": "portia.integrity_finding.reproducible_from_canonical_state"
+    },
+    "possible-duplicate-as-confirmed.json": {
+      "schema_path": "schemas/v1/projections/integrity-finding.schema.json",
+      "rule_id": "portia.integrity_finding.possible_duplicate_not_confirmed_violation"
+    },
+    "preacceptance-validation-error.json": {
+      "schema_path": "schemas/v1/projections/integrity-finding.schema.json",
+      "rule_id": "portia.integrity_finding.pre_acceptance_validation_not_workspace_finding"
+    },
+    "primary-repeated-as-related.json": {
+      "schema_path": "schemas/v1/projections/integrity-finding.schema.json",
+      "rule_id": "portia.integrity_finding.primary_related_target_roles"
+    },
+    "proposed-record-review-only.json": {
+      "schema_path": "schemas/v1/projections/integrity-finding.schema.json",
+      "rule_id": "portia.integrity_finding.review_condition_not_integrity_finding"
+    },
+    "random-finding-key.json": {
+      "schema_path": "schemas/v1/projections/integrity-finding.schema.json",
+      "rule_id": "portia.integrity_finding.deterministic_finding_key"
+    },
+    "sensitive-evidence-path.json": {
+      "schema_path": "schemas/v1/projections/integrity-finding.schema.json",
+      "rule_id": "portia.integrity_finding.sensitive_evidence_prohibited"
+    },
+    "silently-retargeted-primary.json": {
+      "schema_path": "schemas/v1/projections/integrity-finding.schema.json",
+      "rule_id": "portia.integrity_finding.exact_target_normalization"
+    },
+    "unsatisfied-dependency-without-gate-use.json": {
+      "schema_path": "schemas/v1/projections/integrity-finding.schema.json",
+      "rule_id": "portia.integrity_finding.required_dependency_gate_violation_only"
+    },
+    "unstable-rule-identity.json": {
+      "schema_path": "schemas/v1/projections/integrity-finding.schema.json",
+      "rule_id": "portia.integrity_finding.stable_rule_identity"
+    },
+    "valid-removed-historical-target.json": {
+      "schema_path": "schemas/v1/projections/integrity-finding.schema.json",
+      "rule_id": "portia.integrity_finding.removed_historical_target_not_current_use_finding"
+    }
+  }
+}

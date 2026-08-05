@@ -1,0 +1,65 @@
+{
+  "finding_key": "fnd_chronology_observed_revision",
+  "evaluation_key": "evl_chronology_observed_revision_r1",
+  "rule_id": "portia.chronology_provenance.observed_revision_mismatch",
+  "rule_version": "1",
+  "category": "chronology_provenance",
+  "code": "observed_revision_mismatch",
+  "severity": "error",
+  "assessment": {
+    "result": "confirmed"
+  },
+  "effects": [
+    "block_operation_completion"
+  ],
+  "scope": "graph",
+  "primary_target": {
+    "kind": "portia_work_record",
+    "work_record_ref": {
+      "work_ref": {
+        "module_id": "portia",
+        "class_id": "eng10_p2_2026",
+        "work_id": "evt_001",
+        "work_kind": "event",
+        "contract_version": "2"
+      },
+      "record_ref": {
+        "record_kind": "record_migration",
+        "record_id": "mig_001",
+        "contract_version": "1"
+      }
+    }
+  },
+  "related_targets": [
+    {
+      "kind": "portia_work_record",
+      "work_record_ref": {
+        "work_ref": {
+          "module_id": "portia",
+          "class_id": "eng10_p2_2026",
+          "work_id": "evt_001",
+          "work_kind": "event",
+          "contract_version": "2"
+        },
+        "record_ref": {
+          "record_kind": "event_participant",
+          "record_id": "ep_001",
+          "contract_version": "3"
+        }
+      }
+    }
+  ],
+  "evidence": [
+    {
+      "name": "expected_updated_at",
+      "kind": "timestamp",
+      "value": "2026-08-05T07:00:00-04:00"
+    },
+    {
+      "name": "observed_updated_at",
+      "kind": "timestamp",
+      "value": "2026-08-05T07:05:00-04:00"
+    }
+  ],
+  "observed_at": "2026-08-05T08:00:00-04:00"
+}

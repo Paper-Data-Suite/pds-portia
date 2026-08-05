@@ -1,0 +1,61 @@
+{
+  "finding_key": "fnd_dependency_required_gate",
+  "evaluation_key": "evl_dependency_required_gate_r1",
+  "rule_id": "portia.dependency.required_dependency_gate_violation",
+  "rule_version": "1",
+  "category": "dependency",
+  "code": "required_dependency_gate_violation",
+  "severity": "error",
+  "assessment": {
+    "result": "confirmed"
+  },
+  "effects": [
+    "block_current_use",
+    "block_operation_completion"
+  ],
+  "scope": "graph",
+  "primary_target": {
+    "kind": "portia_work_record",
+    "work_record_ref": {
+      "work_ref": {
+        "module_id": "portia",
+        "class_id": "eng10_p2_2026",
+        "work_id": "evt_001",
+        "work_kind": "event",
+        "contract_version": "2"
+      },
+      "record_ref": {
+        "record_kind": "dependency",
+        "record_id": "dep_001",
+        "contract_version": "1"
+      }
+    }
+  },
+  "related_targets": [
+    {
+      "kind": "portia_work_record",
+      "work_record_ref": {
+        "work_ref": {
+          "module_id": "portia",
+          "class_id": "eng10_p2_2026",
+          "work_id": "evt_001",
+          "work_kind": "event",
+          "contract_version": "2"
+        },
+        "record_ref": {
+          "record_kind": "event_participant",
+          "record_id": "ep_001",
+          "contract_version": "3"
+        }
+      }
+    }
+  ],
+  "evidence": [
+    {
+      "name": "dependency_condition",
+      "kind": "token",
+      "value": "unsatisfied"
+    }
+  ],
+  "observed_at": "2026-08-05T08:00:00-04:00"
+}

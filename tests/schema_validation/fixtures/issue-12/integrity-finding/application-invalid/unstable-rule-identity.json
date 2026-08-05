@@ -1,0 +1,66 @@
+{
+  "finding_key": "fnd_lifecycle_status_history",
+  "evaluation_key": "evl_lifecycle_status_history_r1",
+  "rule_id": "portia.lifecycle.temporary_check_20260805",
+  "rule_version": "1",
+  "category": "lifecycle",
+  "code": "status_history_mismatch",
+  "severity": "error",
+  "assessment": {
+    "result": "confirmed"
+  },
+  "effects": [
+    "block_current_use",
+    "block_lifecycle_writes"
+  ],
+  "scope": "representation",
+  "primary_target": {
+    "kind": "portia_work_record",
+    "work_record_ref": {
+      "work_ref": {
+        "module_id": "portia",
+        "class_id": "eng10_p2_2026",
+        "work_id": "evt_001",
+        "work_kind": "event",
+        "contract_version": "2"
+      },
+      "record_ref": {
+        "record_kind": "event_participant",
+        "record_id": "ep_001",
+        "contract_version": "3"
+      }
+    }
+  },
+  "related_targets": [
+    {
+      "kind": "portia_work_record",
+      "work_record_ref": {
+        "work_ref": {
+          "module_id": "portia",
+          "class_id": "eng10_p2_2026",
+          "work_id": "evt_001",
+          "work_kind": "event",
+          "contract_version": "2"
+        },
+        "record_ref": {
+          "record_kind": "lifecycle_transition",
+          "record_id": "trn_001",
+          "contract_version": "1"
+        }
+      }
+    }
+  ],
+  "evidence": [
+    {
+      "name": "persisted_status",
+      "kind": "token",
+      "value": "active"
+    },
+    {
+      "name": "derived_status",
+      "kind": "token",
+      "value": "invalidated"
+    }
+  ],
+  "observed_at": "2026-08-05T08:00:00-04:00"
+}

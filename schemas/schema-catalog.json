@@ -312,6 +312,12 @@
         "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/removals/exceptional-removal.schema.json",
         "path": "schemas/v1/removals/exceptional-removal.schema.json"
       }
+    },
+    "integrity_finding": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/projections/integrity-finding.schema.json",
+        "path": "schemas/v1/projections/integrity-finding.schema.json"
+      }
     }
   }
 }
