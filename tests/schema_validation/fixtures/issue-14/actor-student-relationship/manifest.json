@@ -1,0 +1,112 @@
+{
+  "manifest_version": "1",
+  "issue": 14,
+  "contract": "actor_student_relationship",
+  "version": "1",
+  "valid": {
+    "minimum-active-parent.json": "Structurally and application-valid synthetic Actor-to-Student Relationship.",
+    "proposed-import-counselor.json": "Structurally and application-valid synthetic Actor-to-Student Relationship.",
+    "actor-statement-caregiver.json": "Structurally and application-valid synthetic Actor-to-Student Relationship.",
+    "student-statement-family-contact.json": "Structurally and application-valid synthetic Actor-to-Student Relationship.",
+    "school-record-case-manager.json": "Structurally and application-valid synthetic Actor-to-Student Relationship.",
+    "bounded-effective-period.json": "Structurally and application-valid synthetic Actor-to-Student Relationship.",
+    "open-ended-effective-period.json": "Structurally and application-valid synthetic Actor-to-Student Relationship.",
+    "other-relationship-and-basis.json": "Structurally and application-valid synthetic Actor-to-Student Relationship.",
+    "corrected-relationship-successor.json": "Structurally and application-valid synthetic Actor-to-Student Relationship.",
+    "wrong-actor-correction.json": "Structurally and application-valid synthetic Actor-to-Student Relationship.",
+    "wrong-student-correction.json": "Structurally and application-valid synthetic Actor-to-Student Relationship.",
+    "duplicate-consolidation-successor.json": "Structurally and application-valid synthetic Actor-to-Student Relationship.",
+    "inactive-historical-relationship.json": "Structurally and application-valid synthetic Actor-to-Student Relationship."
+  },
+  "invalid": {
+    "missing-student-ref.json": "Structurally invalid Actor-to-Student Relationship rejected by JSON Schema.",
+    "student-ref-missing-class.json": "Structurally invalid Actor-to-Student Relationship rejected by JSON Schema.",
+    "student-ref-extra-name.json": "Structurally invalid Actor-to-Student Relationship rejected by JSON Schema.",
+    "unknown-status.json": "Structurally invalid Actor-to-Student Relationship rejected by JSON Schema.",
+    "unknown-relationship-type.json": "Structurally invalid Actor-to-Student Relationship rejected by JSON Schema.",
+    "other-relationship-missing-detail.json": "Structurally invalid Actor-to-Student Relationship rejected by JSON Schema.",
+    "standard-relationship-with-detail.json": "Structurally invalid Actor-to-Student Relationship rejected by JSON Schema.",
+    "embedded-authority.json": "Structurally invalid Actor-to-Student Relationship rejected by JSON Schema.",
+    "embedded-consent.json": "Structurally invalid Actor-to-Student Relationship rejected by JSON Schema.",
+    "embedded-contact.json": "Structurally invalid Actor-to-Student Relationship rejected by JSON Schema.",
+    "unknown-basis.json": "Structurally invalid Actor-to-Student Relationship rejected by JSON Schema.",
+    "actor-statement-missing-source.json": "Structurally invalid Actor-to-Student Relationship rejected by JSON Schema.",
+    "actor-statement-identity-only-source.json": "Structurally invalid Actor-to-Student Relationship rejected by JSON Schema.",
+    "student-statement-missing-source.json": "Structurally invalid Actor-to-Student Relationship rejected by JSON Schema.",
+    "school-record-missing-label.json": "Structurally invalid Actor-to-Student Relationship rejected by JSON Schema.",
+    "import-basis-missing-label.json": "Structurally invalid Actor-to-Student Relationship rejected by JSON Schema.",
+    "other-basis-missing-detail.json": "Structurally invalid Actor-to-Student Relationship rejected by JSON Schema.",
+    "unknown-review.json": "Structurally invalid Actor-to-Student Relationship rejected by JSON Schema.",
+    "local-review-missing-attribution.json": "Structurally invalid Actor-to-Student Relationship rejected by JSON Schema.",
+    "empty-effective-period.json": "Structurally invalid Actor-to-Student Relationship rejected by JSON Schema.",
+    "effective-period-extra-property.json": "Structurally invalid Actor-to-Student Relationship rejected by JSON Schema.",
+    "paper-capture-source.json": "Structurally invalid Actor-to-Student Relationship rejected by JSON Schema.",
+    "empty-supersedes.json": "Structurally invalid Actor-to-Student Relationship rejected by JSON Schema.",
+    "unknown-supersession-reason.json": "Structurally invalid Actor-to-Student Relationship rejected by JSON Schema.",
+    "other-reason-missing-detail.json": "Structurally invalid Actor-to-Student Relationship rejected by JSON Schema.",
+    "predecessor-missing-version.json": "Structurally invalid Actor-to-Student Relationship rejected by JSON Schema.",
+    "unknown-top-level-property.json": "Structurally invalid Actor-to-Student Relationship rejected by JSON Schema."
+  },
+  "application_invalid": {
+    "updated-before-created.json": {
+      "rule_id": "portia.actor_student_relationship.timestamp_chronology",
+      "description": "updated_at must not precede created_at."
+    },
+    "review-before-created.json": {
+      "rule_id": "portia.actor_student_relationship.review_chronology",
+      "description": "Local review cannot predate record creation."
+    },
+    "review-after-updated.json": {
+      "rule_id": "portia.actor_student_relationship.review_chronology",
+      "description": "Current local review cannot postdate the current record update."
+    },
+    "active-unreviewed.json": {
+      "rule_id": "portia.actor_student_relationship.active_requires_review",
+      "description": "An active current relationship requires completed local review."
+    },
+    "active-import-without-review-history.json": {
+      "rule_id": "portia.actor_student_relationship.imported_status_requires_review_history",
+      "description": "An imported Relationship cannot be active without accepted review and lifecycle history."
+    },
+    "reversed-effective-period.json": {
+      "rule_id": "portia.actor_student_relationship.effective_period_chronology",
+      "description": "ends_on must not precede starts_on."
+    },
+    "self-supersession.json": {
+      "rule_id": "portia.actor_student_relationship.self_supersession",
+      "description": "A nonmigration Relationship replacement cannot list itself."
+    },
+    "duplicate-predecessor-identity.json": {
+      "rule_id": "portia.actor_student_relationship.predecessor_identity_unique",
+      "description": "One successor cannot list the same Actor-owned Relationship identity more than once."
+    },
+    "unsupported-predecessor-version.json": {
+      "rule_id": "portia.actor_student_relationship.predecessor_contract_supported",
+      "description": "Every exact predecessor contract version must be cataloged and supported."
+    },
+    "single-predecessor-duplicate-consolidation.json": {
+      "rule_id": "portia.actor_student_relationship.replacement_topology",
+      "description": "duplicate_consolidated requires at least two distinct predecessor Relationships."
+    },
+    "mixed-supersession-reasons.json": {
+      "rule_id": "portia.actor_student_relationship.supersession_reason_uniform",
+      "description": "One replacement operation cannot mix incompatible reasons."
+    },
+    "relationship-correction-crosses-actor.json": {
+      "rule_id": "portia.actor_student_relationship.actor_correction",
+      "description": "relationship_corrected preserves Actor ownership."
+    },
+    "wrong-actor-reason-same-actor.json": {
+      "rule_id": "portia.actor_student_relationship.actor_correction",
+      "description": "wrong_actor_corrected requires a different predecessor Actor."
+    },
+    "wrong-student-correction-crosses-actor.json": {
+      "rule_id": "portia.actor_student_relationship.student_correction",
+      "description": "wrong_student_corrected preserves Actor ownership."
+    },
+    "multiple-relationship-correction-predecessors.json": {
+      "rule_id": "portia.actor_student_relationship.replacement_topology",
+      "description": "Ordinary relationship correction is one-to-one."
+    }
+  }
+}

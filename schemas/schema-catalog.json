@@ -51,6 +51,12 @@
         "path": "schemas/v1/actors/actor-contact-point.schema.json"
       }
     },
+    "actor_student_relationship": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/actors/actor-student-relationship.schema.json",
+        "path": "schemas/v1/actors/actor-student-relationship.schema.json"
+      }
+    },
     "portia_event_id": {
       "1": {
         "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-event-id.schema.json",
