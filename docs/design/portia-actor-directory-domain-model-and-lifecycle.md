@@ -1,6 +1,6 @@
 # Portia Actor Directory Domain Model and Lifecycle
 
-**Status:** Working design — Decisions 1–5 adopted
+**Status:** Working design — Decisions 1–10 adopted
 **Project:** Paper Data Suite
 **Module:** `pds-portia`
 **Issue:** `#14 — Define the Actor Directory domain model and lifecycle`
@@ -1279,23 +1279,1560 @@ Support, or other domain record.
 
 ---
 
-## 10. Consequences of Decisions 1–5
+# 10. Approved Decision 6: Actor Contact Point Semantic Unit and Identity
 
-The initial accepted direction requires Issue #14 to introduce at least:
+## 10.1 Decision
+
+Actor contact information uses a separate canonical child record:
+
+```text
+actor_contact_point@1
+```
+
+One Actor Contact Point represents:
+
+> One exact contact method and value recorded for one exact Actor, together with
+> its local source, verification state, use preference, lifecycle, and
+> provenance.
+
+One contact-point record never represents:
+
+- several Actors;
+- several email addresses;
+- several phone numbers;
+- a household;
+- a recipient group;
+- an organization switchboard as an organization identity;
+- or a communication event.
+
+Several contact values require several Contact Point records.
+
+## 10.2 Identity
+
+Actor Contact Point identifiers use:
+
+```text
+acp_<opaque-id>
+```
+
+The prefix is diagnostic only.
+
+The identifier must not encode:
+
+- the contact value;
+- an email domain;
+- phone digits;
+- the Actor name;
+- contact type;
+- preference;
+- status;
+- or source.
+
+The public identifier contract will be:
+
+```text
+portia_actor_contact_point_id@1
+```
+
+## 10.3 Canonical storage
+
+A Contact Point is Actor-owned and stored beneath the owning Actor root:
+
+```text
+portia/actors/<actor_id>/
+  records/
+    actor_contact_point/
+      <contact_point_id>.json
+```
+
+The contained `actor_id` and `contact_point_id` must agree with the canonical
+path.
+
+A Contact Point is not stored:
+
+- beneath a class;
+- beneath a Communication;
+- in the Actor root record;
+- in a workspace-wide address book;
+- or in a derived search index.
+
+## 10.4 Stable reference
+
+The stable child identity is:
+
+```text
+actor_id + contact_point_id
+```
+
+Issue #14 will introduce an exact reference containing:
+
+```text
+actor_ref
+contact_point_id
+contract_version
+```
+
+Conceptually:
+
+```json
+{
+  "actor_ref": {
+    "actor_id": "actr_example"
+  },
+  "contact_point_id": "acp_example",
+  "contract_version": "1"
+}
+```
+
+The contact value is not part of the reference.
+
+A later Communication may preserve an exact Contact Point reference when the
+selected method materially matters. The Communication contract, not the Contact
+Point, owns the communication act, direction, recipient role, delivery status,
+and message summary.
+
+## 10.5 Initial supported contact kinds
+
+Actor Contact Point v1 supports exactly:
+
+```text
+email
+phone
+```
+
+Postal addresses are excluded from version 1 because:
+
+- Portia does not yet have a mailing workflow;
+- full addresses are highly sensitive;
+- address sharing does not establish person identity;
+- and storing addresses would create retention and disclosure obligations
+  without a current product need.
+
+Website, social-media handle, messaging-app account, portal identity, and other
+arbitrary contact kinds are also deferred.
+
+A later version may add a contact kind only for a concrete accepted workflow.
+
+## 10.6 Contact-value branches
+
+The final schema will use a discriminated union.
+
+### Email
+
+Conceptually:
+
+```json
+{
+  "kind": "email",
+  "address": "person@example.test",
+  "label": "personal"
+}
+```
+
+Email labels are:
+
+```text
+personal
+work
+other
+```
+
+`other` requires a concise non-sensitive `other_label`.
+
+### Phone
+
+Conceptually:
+
+```json
+{
+  "kind": "phone",
+  "number": "+1 555 010 0100",
+  "label": "mobile"
+}
+```
+
+Phone labels are:
+
+```text
+mobile
+home
+work
+other
+```
+
+`other` requires a concise non-sensitive `other_label`.
+
+## 10.7 Entered representation and normalization
+
+The canonical Contact Point preserves the reviewed human-readable value entered
+or imported into Portia.
+
+Application validation may normalize a value in memory for:
+
+- structural validation;
+- exact-current duplicate checks;
+- teacher-facing search;
+- or duplicate-candidate generation.
+
+Portia v1 does not persist an unsalted deterministic hash of an email address or
+phone number as a general lookup identity.
+
+Email addresses and phone numbers have low enough entropy that such hashes may
+be reversible through guessing.
+
+A normalized value:
+
+- is not Actor identity;
+- is not Contact Point identity;
+- does not prove ownership or control;
+- and does not prove that two Actors are the same person.
+
+## 10.8 Contact identity and value changes
+
+The exact contact value is material to one Contact Point record.
+
+After activation, changing:
+
+```text
+email.address
+phone.number
+contact.kind
+```
+
+requires a new Contact Point successor.
+
+It must not be represented as a hidden in-place amendment.
+
+This preserves:
+
+- historical communication context;
+- exact source provenance;
+- correction history;
+- and the distinction between an obsolete value and a value that was always
+  wrong.
+
+Nonmaterial label, preference, source-detail, or verification corrections may
+use Actor-directory amendment when semantic equivalence remains true.
+
+## 10.9 Shared values across Actors
+
+The same contact value may legitimately appear under several Actors, including:
+
+- a shared household phone;
+- a shared family email;
+- an office switchboard;
+- a department inbox;
+- or an external provider's shared scheduling address.
+
+A shared value may create a duplicate-review signal.
+
+It does not establish duplicate Actor identity and does not permit automatic
+consolidation.
+
+## 10.10 Contact-point invariants
+
+1. One Contact Point belongs to one Actor.
+2. One Contact Point contains one contact value.
+3. Contact identity is `actor_id + contact_point_id`.
+4. Contact values never appear in identifiers or paths.
+5. Email and phone are the only version-1 kinds.
+6. Postal address and arbitrary handles are excluded.
+7. Contact-value normalization is not identity.
+8. Contact-value changes after activation create a successor.
+9. Shared values do not prove duplicate Actor identity.
+10. A Communication act is not a Contact Point record.
+
+---
+
+# 11. Approved Decision 7: Actor Contact Point Envelope, Privacy, and Lifecycle
+
+## 11.1 Required envelope
+
+Actor Contact Point v1 will contain exactly:
+
+```text
+schema_version
+record_type
+module_id
+actor_id
+contact_point_id
+status
+contact
+use_preference
+source
+verification
+supersedes, optional
+creation_source
+created_at
+created_by
+updated_at
+updated_by
+```
+
+Constants are:
+
+```text
+schema_version = "1"
+record_type = "actor_contact_point"
+module_id = "portia"
+```
+
+## 11.2 Use preference
+
+`use_preference` is:
+
+```text
+preferred
+alternate
+unspecified
+```
+
+It is a teacher-local current presentation preference.
+
+It does not:
+
+- authorize contact;
+- establish consent;
+- override a consuming Communication's purpose or restrictions;
+- guarantee deliverability;
+- or require a future Communication to use that method.
+
+Application validation permits at most one active `preferred` Contact Point per
+Actor and contact kind.
+
+If no active Contact Point is preferred, selection remains explicit.
+
+## 11.3 Contact source
+
+`source` is a closed object whose initial source kinds are:
+
+```text
+actor_provided
+related_person_provided
+student_provided
+school_record
+professional_directory
+communication_observed
+import
+other
+```
+
+Source means:
+
+> The locally recorded origin from which the teacher or import workflow obtained
+> the contact value.
+
+It does not establish that the value is current, controlled by the Actor, or
+lawfully usable for every purpose.
+
+The final schema will require bounded detail for:
+
+```text
+school_record
+professional_directory
+import
+other
+```
+
+The detail must identify the source sufficiently for local review without
+copying an unrestricted narrative or credential.
+
+## 11.4 Verification object
+
+`verification` records only the local verification state:
+
+```text
+unverified
+locally_reviewed
+actor_confirmed
+```
+
+### `unverified`
+
+The value was recorded but has not completed local review.
+
+### `locally_reviewed`
+
+The local operator reviewed the source and accepted the value for possible
+Portia use.
+
+This does not prove current Actor control or successful delivery.
+
+### `actor_confirmed`
+
+The represented Actor directly confirmed the value according to the recorded
+local process.
+
+This still does not prove:
+
+- authenticated digital control;
+- legal identity;
+- future deliverability;
+- consent for every communication;
+- or institutional authority.
+
+For `locally_reviewed` and `actor_confirmed`, the verification object records:
+
+```text
+observed_at
+observed_by
+```
+
+For `unverified`, both are null.
+
+Application validation enforces branch consistency.
+
+## 11.5 Contact lifecycle
+
+Contact Point statuses are:
+
+```text
+proposed
+active
+inactive
+invalidated
+superseded
+```
+
+### `proposed`
+
+The Contact Point is structurally present but not accepted for ordinary current
+selection.
+
+Imported unreviewed contact values begin as proposed.
+
+### `active`
+
+The Contact Point is eligible for explicit current selection, subject to
+purpose, privacy, authorization, relationship, and Communication policy.
+
+### `inactive`
+
+The Contact Point remains historically valid but is excluded from ordinary
+current selection.
+
+Representative reasons include:
+
+- value no longer used;
+- Actor requested another method;
+- organization assignment changed;
+- teacher no longer expects the method to be useful;
+- or value has not been recently confirmed.
+
+Inactive does not mean the value was false.
+
+### `invalidated`
+
+The Contact Point must not be treated as a valid current contact assertion and no
+accepted corrected Contact Point presently replaces it.
+
+Representative grounds include:
+
+- entered for the wrong Actor;
+- unsupported value;
+- prohibited sensitive value;
+- or source proved unreliable.
+
+### `superseded`
+
+An accepted successor Contact Point provides the corrected representation.
+
+Superseded is absolute terminal.
+
+## 11.6 Contact transition matrix
+
+| From | Permitted destinations |
+| --- | --- |
+| `proposed` | `active`, `inactive`, `invalidated`, `superseded` |
+| `active` | `inactive`, `invalidated`, `superseded` |
+| `inactive` | `active`, `invalidated`, `superseded` |
+| `invalidated` | `superseded` only |
+| `superseded` | none |
+
+The status does not change automatically because:
+
+- time passed;
+- a delivery failed;
+- another Contact Point became preferred;
+- the Actor became inactive;
+- or the related student left a roster.
+
+Those conditions may produce review or an explicit coordinated operation.
+
+## 11.7 Obsolescence versus correction
+
+Portia distinguishes:
+
+```text
+obsolete but historically correct
+from
+incorrect canonical value
+```
+
+An obsolete but historically correct value ordinarily transitions:
+
+```text
+active -> inactive
+```
+
+A materially incorrect value with an accepted corrected successor transitions:
+
+```text
+active or inactive -> superseded
+```
+
+A materially incorrect value without a successor transitions:
+
+```text
+active or inactive -> invalidated
+```
+
+Portia must not classify ordinary obsolescence as falsity.
+
+## 11.8 Contact supersession
+
+A Contact Point successor uses exact predecessor references.
+
+Initial reasons are:
+
+```text
+value_corrected
+wrong_actor_corrected
+duplicate_consolidated
+contract_migrated
+other
+```
+
+`other` requires bounded detail.
+
+Ordinary replacement is one-to-one.
+
+Duplicate Contact Point consolidation may be many-to-one only when review
+confirms that the predecessor records captured the same contact assertion for
+the same Actor.
+
+## 11.9 Contact privacy rules
+
+Contact values are privacy-sensitive canonical payload.
+
+They must not be copied into:
+
+- Actor identifiers;
+- Contact Point identifiers;
+- paths;
+- ordinary Actor display snapshots;
+- Actor-to-student relationship snapshots;
+- lock records;
+- integrity-finding keys;
+- ordinary operation intent facts;
+- duplicate-candidate titles;
+- or nonsensitive derived summary indexes.
+
+Operation journals may preserve:
+
+- typed Contact Point identity;
+- contract version;
+- workspace-relative path;
+- content fingerprint;
+- byte length;
+- and bounded non-payload state facts.
+
+They must not duplicate the contact value merely to support recovery.
+
+Staging and canonical files necessarily contain the proposed or accepted
+payload and therefore require deployment-appropriate filesystem protection.
+
+## 11.10 Contact discovery and current selection
+
+Loading one Actor's Contact Points requires bounded discovery beneath:
+
+```text
+portia/actors/<actor_id>/records/actor_contact_point/
+```
+
+Current selection requires:
+
+- structurally valid canonical records;
+- path and identity agreement;
+- reconciled lifecycle history;
+- absence of blocking Quarantine;
+- current status of `active`;
+- and consuming-workflow eligibility.
+
+A missing Contact Point index does not prove that the Actor has no Contact
+Points.
+
+## 11.11 Contact application validation
+
+Application validation must establish:
+
+- canonical path agreement;
+- exact Actor ownership;
+- supported contact syntax;
+- lifecycle/history reconciliation;
+- legal status transitions;
+- supersession reconciliation;
+- no self-reference or cycle;
+- contact-value-change replacement rules;
+- at most one active preferred Contact Point per kind;
+- no duplicate current Contact Point for the same normalized Actor-owned value;
+- source and verification consistency;
+- import review gates;
+- privacy-safe diagnostics;
+- typed operation targeting;
+- and recoverable persistence.
+
+## 11.12 Contact rejected alternatives
+
+### Contact arrays embedded in Actor
+
+Rejected because values have independent provenance, lifecycle, sensitivity, and
+correction requirements.
+
+### Email or phone as Contact Point identity
+
+Rejected because contact values change, may be shared, and are sensitive.
+
+### Global verified/unverified boolean
+
+Rejected because local review, direct Actor confirmation, deliverability, legal
+identity, and consent are different claims.
+
+### Automatic inactivation after time elapsed
+
+Rejected because age alone does not establish that a contact method is obsolete.
+
+### Unsalted deterministic contact hash
+
+Rejected because low-entropy contact values may be recovered through guessing.
+
+---
+
+# 12. Approved Decision 8: Actor-to-Student Relationship Semantic Unit and Identity
+
+## 12.1 Decision
+
+Recurring Actor-to-student relationships use a separate canonical child record:
+
+```text
+actor_student_relationship@1
+```
+
+One record represents:
+
+> One locally accepted relationship assertion between one exact Actor and one
+> exact Core roster-qualified student identity.
+
+The Actor owns the relationship record.
+
+The target student remains owned and resolved by Core through:
+
+```text
+class_id + student_id
+```
+
+## 12.2 Relationship identity
+
+Actor-to-Student Relationship identifiers use:
+
+```text
+asrel_<opaque-id>
+```
+
+The public identifier contract will be:
+
+```text
+portia_actor_student_relationship_id@1
+```
+
+The identifier must not encode:
+
+- Actor name;
+- student identity;
+- class;
+- relationship type;
+- legal status;
+- school;
+- or lifecycle state.
+
+Stable child identity is:
+
+```text
+actor_id + relationship_id
+```
+
+## 12.3 Canonical storage
+
+The relationship is stored beneath its Actor owner:
+
+```text
+portia/actors/<actor_id>/
+  records/
+    actor_student_relationship/
+      <relationship_id>.json
+```
+
+The relationship is not duplicated beneath:
+
+- the target class;
+- the target student's roster;
+- an Event;
+- a Support Process;
+- or another Actor.
+
+Reverse navigation from a roster student to Actor relationships is derived.
+
+## 12.4 Exact target student
+
+The relationship target composes the existing identity-only
+`roster_student_ref@1`:
+
+```json
+{
+  "class_id": "english10_p2",
+  "student_id": "1001"
+}
+```
+
+The same real-world student appearing in two Core rosters remains two distinct
+roster-qualified identities unless a future shared identity authority explicitly
+links them.
+
+Portia therefore does not silently apply one Actor relationship across several
+rosters.
+
+When the teacher needs the relationship available for two roster-qualified
+student identities, Portia records two independently reviewable relationship
+records.
+
+## 12.5 Initial relationship types
+
+The initial relationship vocabulary is:
+
+```text
+parent
+guardian
+caregiver
+family_contact
+counselor
+case_manager
+administrator
+support_staff
+external_support_provider
+other
+```
+
+`other` requires bounded detail.
+
+The relationship type is a teacher-local descriptive assertion.
+
+It does not by itself establish:
+
+- legal parentage;
+- legal guardianship;
+- custody;
+- educational decision authority;
+- employment;
+- case assignment;
+- professional licensure;
+- access authorization;
+- or communication consent.
+
+A future consequential record must preserve its own authority basis.
+
+## 12.6 Relationship versus Actor category
+
+Actor category and Actor-to-student relationship remain independent.
+
+Examples:
+
+- an Actor categorized `family_or_caregiver` may have a `parent` relationship to
+  one student and a `family_contact` relationship to another;
+- an Actor categorized `school_staff` may be `counselor` for one student and
+  have no canonical relationship to another;
+- an Actor categorized `external_support_provider` may have a
+  `external_support_provider` relationship only where deliberately recorded.
+
+Category does not generate relationship records automatically.
+
+A relationship does not rewrite Actor category automatically.
+
+## 12.7 No household or family graph
+
+Actor-to-Student Relationship v1 does not create:
+
+- a household identity;
+- family-unit membership;
+- sibling relationships;
+- Actor-to-Actor relationships;
+- shared custody topology;
+- or organization identity.
+
+Several Actors may independently relate to one roster student.
+
+One Actor may independently relate to several roster students.
+
+Those records do not imply relationships among the other people.
+
+## 12.8 Stable relationship reference
+
+Issue #14 will add an exact relationship reference containing:
+
+```text
+actor_ref
+relationship_id
+contract_version
+```
+
+Conceptually:
+
+```json
+{
+  "actor_ref": {
+    "actor_id": "actr_example"
+  },
+  "relationship_id": "asrel_example",
+  "contract_version": "1"
+}
+```
+
+A consuming record may use the exact relationship reference when the canonical
+relationship materially supports interpretation.
+
+The reference does not authorize access or action.
+
+## 12.9 Relationship uniqueness
+
+Application validation ordinarily permits at most one active relationship for:
+
+```text
+exact Actor
++ exact roster_student_ref
++ relationship_type
+```
+
+A second structurally valid record with the same tuple is a duplicate candidate,
+not an automatically accepted second current relationship.
+
+Different relationship types may coexist when they represent distinct locally
+accepted assertions.
+
+## 12.10 Relationship invariants
+
+1. One relationship has one Actor owner.
+2. One relationship targets one exact roster-qualified student.
+3. Relationship identity is `actor_id + relationship_id`.
+4. Relationship type is not Actor identity.
+5. Relationship type is not legal or institutional authority.
+6. Actor category does not imply a relationship.
+7. A relationship does not silently span several rosters.
+8. Reverse student-to-Actor navigation is derived.
+9. Duplicate tuples require review.
+10. No household or general family graph is introduced.
+
+---
+
+# 13. Approved Decision 9: Relationship Envelope, Basis, Lifecycle, and Correction
+
+## 13.1 Required envelope
+
+Actor-to-Student Relationship v1 will contain exactly:
+
+```text
+schema_version
+record_type
+module_id
+actor_id
+relationship_id
+status
+student_ref
+relationship
+basis
+supersedes, optional
+creation_source
+created_at
+created_by
+updated_at
+updated_by
+```
+
+Constants are:
+
+```text
+schema_version = "1"
+record_type = "actor_student_relationship"
+module_id = "portia"
+```
+
+## 13.2 Relationship object
+
+`relationship` is a closed object containing:
+
+```text
+type
+detail, conditionally required
+```
+
+`detail` is:
+
+- prohibited for standard types unless a later schema branch explicitly permits
+  bounded clarification;
+- and required when `type = other`.
+
+The relationship object does not contain authority, contact, communication, or
+workflow-role fields.
+
+## 13.3 Basis architecture
+
+Every relationship requires one explicit basis branch.
+
+Initial branches are:
+
+```text
+local_operator_knowledge
+actor_statement
+roster_student_statement
+school_record
+import
+other
+```
+
+### Local operator knowledge
+
+```text
+kind = local_operator_knowledge
+```
+
+This records that the local teacher entered the relationship from their own
+professional knowledge.
+
+It is not an institutional verification claim.
+
+### Actor statement
+
+```text
+kind = actor_statement
+source_actor_ref
+```
+
+The source may be the relationship's owning Actor or another exact Actor.
+
+The source Actor's statement remains a reported basis, not proof of legal status.
+
+### Roster-student statement
+
+```text
+kind = roster_student_statement
+source_student_ref
+```
+
+The source student may be the target student or another exact roster-qualified
+student.
+
+The statement does not become institutional verification.
+
+### School record
+
+```text
+kind = school_record
+source_label
+external_reference, optional
+```
+
+This identifies a locally reviewed source sufficiently for audit without copying
+an entire school record into the relationship.
+
+It does not make Portia authoritative for the source record.
+
+### Import
+
+```text
+kind = import
+source_label
+external_reference, optional
+```
+
+An imported basis ordinarily requires the relationship to begin as proposed.
+
+### Other
+
+```text
+kind = other
+detail
+```
+
+The detail is concise and bounded.
+
+It must not become an unrestricted narrative or contain contact credentials.
+
+## 13.4 Relationship lifecycle
+
+Relationship statuses are:
+
+```text
+proposed
+active
+inactive
+invalidated
+superseded
+```
+
+### `proposed`
+
+The relationship assertion is present but has not completed required local
+review.
+
+Imported relationships ordinarily begin proposed.
+
+### `active`
+
+The relationship is accepted for current teacher-local Portia context.
+
+Active does not mean legally or institutionally verified.
+
+### `inactive`
+
+The relationship remains historically valid but is excluded from ordinary
+current relationship selection.
+
+Representative reasons include:
+
+- relationship no longer current;
+- assignment ended;
+- student left the relevant context;
+- Actor no longer performs the role;
+- or teacher chose to retain it only as history.
+
+### `invalidated`
+
+The assertion must not be treated as valid current relationship context and no
+accepted corrected successor presently replaces it.
+
+### `superseded`
+
+An accepted successor relationship provides the corrected representation.
+
+Superseded is absolute terminal.
+
+## 13.5 Relationship transition matrix
+
+| From | Permitted destinations |
+| --- | --- |
+| `proposed` | `active`, `inactive`, `invalidated`, `superseded` |
+| `active` | `inactive`, `invalidated`, `superseded` |
+| `inactive` | `active`, `invalidated`, `superseded` |
+| `invalidated` | `superseded` only |
+| `superseded` | none |
+
+The relationship does not change lifecycle automatically because:
+
+- the target roster changes;
+- the student is removed from the current roster;
+- the Actor becomes inactive;
+- the school year changes;
+- a date passes;
+- or the relationship is not recently used.
+
+Those conditions may create a review requirement.
+
+## 13.6 Roster resolution and historical validity
+
+New activation requires successful resolution of the exact `student_ref` against
+the applicable current Core roster.
+
+Later failure to resolve the historical student reference does not silently
+invalidate or delete the relationship.
+
+Portia reports the current resolution condition separately, such as:
+
+```text
+current
+historical_unresolved
+roster_unavailable
+malformed
+indeterminate
+```
+
+A historical unresolved relationship remains exactly identifiable from its
+stored roster-qualified reference and provenance.
+
+## 13.7 Material relationship fields
+
+The following fields are material to relationship identity and meaning:
+
+```text
+actor_id
+student_ref
+relationship.type
+basis branch and source identity
+```
+
+Changing any of those after activation ordinarily requires a successor
+relationship record.
+
+It must not be concealed as an in-place amendment.
+
+Examples include:
+
+- changing the target student;
+- changing `parent` to `counselor`;
+- changing the source Actor;
+- changing from a reported statement to a different school-record basis;
+- or moving the record to another Actor.
+
+## 13.8 Nonmaterial amendment
+
+Potentially nonmaterial changes include:
+
+- punctuation or formatting in bounded detail;
+- correcting a source label without changing source identity;
+- correcting a nonidentity external-reference transcription;
+- or another field explicitly declared amendable by the final contract.
+
+The semantic-equivalence test must pass.
+
+No amendment may change:
+
+- Actor owner;
+- target student;
+- relationship type;
+- basis branch;
+- source person identity;
+- or lifecycle status.
+
+## 13.9 Relationship supersession
+
+Initial supersession reasons are:
+
+```text
+relationship_corrected
+wrong_actor_corrected
+wrong_student_corrected
+basis_corrected
+duplicate_consolidated
+contract_migrated
+other
+```
+
+`other` requires bounded detail.
+
+Ordinary correction is one-to-one.
+
+Duplicate consolidation may be many-to-one only when review confirms the same
+Actor, same exact student, same relationship type, and same underlying
+relationship assertion.
+
+Records that preserve independently meaningful source assertions are related but
+distinct and must not be consolidated merely because the relationship tuple
+matches.
+
+## 13.10 Relationship authority rules
+
+An active relationship may support user-interface context and record selection.
+
+It does not by itself establish:
+
+- permission to disclose student records;
+- legal educational decision authority;
+- consent;
+- custody;
+- emergency pickup authorization;
+- authority to approve an intervention;
+- authority to make a Determination;
+- or authority to receive a Communication.
+
+A consequential consuming record must preserve the applicable purpose,
+authorization, policy, or decision basis independently.
+
+Portia must not expose a button or API that treats:
+
+```text
+relationship.type = guardian
+```
+
+as sufficient authorization for disclosure.
+
+## 13.11 Relationship application validation
+
+Application validation must establish:
+
+- path and Actor ownership agreement;
+- exact roster-student resolution for current activation;
+- historical-resolution behavior;
+- allowed relationship type;
+- basis branch completeness;
+- source Actor or source student resolution where used;
+- import review gates;
+- lifecycle/history reconciliation;
+- legal transition;
+- material-field replacement rules;
+- supersession reconciliation;
+- no self-reference or cycle;
+- active tuple uniqueness;
+- duplicate versus independently meaningful assertion;
+- authority limitation;
+- privacy-safe diagnostics;
+- typed operation targeting;
+- and recoverable persistence.
+
+## 13.12 Relationship rejected alternatives
+
+### Relationship labels embedded in Actor
+
+Rejected because one Actor may have different relationships to several students
+and relationship claims require independent source and lifecycle.
+
+### Name-qualified student target
+
+Rejected because Core roster identity is `class_id + student_id`.
+
+### Relationship inferred from Communication history
+
+Rejected because communication recurrence does not prove the represented
+relationship.
+
+### Active relationship as legal verification
+
+Rejected because Portia is teacher-local and does not adjudicate institutional or
+legal authority.
+
+### Automatic cross-roster propagation
+
+Rejected because Core does not provide workspace-wide student identity.
+
+### Automatic inactivation at school-year rollover
+
+Rejected because relationship lifecycle changes require explicit review and may
+remain relevant across years.
+
+---
+
+# 14. Approved Decision 10: Historical Actor Bindings and Shared Child Lifecycle
+
+## 14.1 Decision
+
+Portia will standardize three distinct concepts:
+
+```text
+stable Actor identity
+exact Actor-directory child identity
+historical display or relationship snapshot
+```
+
+They must not be collapsed into one universal person object.
+
+## 14.2 Actor binding in consuming records
+
+When a consuming record references an Actor as a person, the standard historical
+binding is:
+
+```text
+actor_ref
+person_display_snapshot
+contextual role
+```
+
+Conceptually:
+
+```json
+{
+  "actor_ref": {
+    "actor_id": "actr_example"
+  },
+  "display_snapshot": {
+    "display_name": "Maria Smith"
+  },
+  "role": "communication_recipient"
+}
+```
+
+The role belongs to the consuming record.
+
+The binding does not contain current contact values.
+
+## 14.3 Canonical relationship binding
+
+When an Actor-to-Student Relationship is materially relevant, a consuming record
+may additionally preserve:
+
+```text
+exact relationship reference
+relationship snapshot
+```
+
+The relationship snapshot v1 will contain exactly:
+
+```text
+relationship_type
+```
+
+Conceptually:
+
+```json
+{
+  "relationship_ref": {
+    "actor_ref": {
+      "actor_id": "actr_example"
+    },
+    "relationship_id": "asrel_example",
+    "contract_version": "1"
+  },
+  "relationship_snapshot": {
+    "relationship_type": "parent"
+  }
+}
+```
+
+The snapshot is a bounded historical display aid.
+
+It does not contain:
+
+- source basis;
+- student name;
+- contact information;
+- authority;
+- status;
+- verification language;
+- or successor identity.
+
+## 14.4 Contextual role without canonical relationship
+
+A consuming record may use an Actor without an Actor-to-Student Relationship
+when the workflow role does not assert a recurring student relationship.
+
+Examples include:
+
+- visitor to one Event;
+- interpreter for one Communication;
+- meeting participant;
+- Account source;
+- consulted administrator;
+- or external provider participating in one bounded workflow.
+
+Portia must not create a canonical Actor-to-Student Relationship merely because
+an Actor appeared in one workflow.
+
+## 14.5 Contact selection in future Communications
+
+A future Communication contract may preserve:
+
+- exact Actor reference;
+- historical display snapshot;
+- contextual participant role;
+- exact Contact Point reference, when used;
+- communication channel;
+- direction;
+- purpose;
+- and delivery evidence.
+
+The Contact Point remains the canonical reusable method.
+
+The Communication remains the canonical communication act.
+
+Issue #14 does not define the Communication wire shape.
+
+## 14.6 No current-data rewrite
+
+When the current Actor, Contact Point, or Relationship changes, Portia must not
+rewrite:
+
+- Event Participant display snapshots;
+- Account source snapshots;
+- historical Communication participants;
+- historical relationship snapshots;
+- or prior exact Contact Point references.
+
+A user interface may display current resolution alongside the recorded snapshot,
+clearly labeled.
+
+## 14.7 Shared Actor-directory lifecycle family
+
+Actor, Actor Contact Point, and Actor-to-Student Relationship will share one
+workspace-scoped append-only lifecycle-transition family:
+
+```text
+actor_directory_lifecycle_transition@1
+```
+
+The transition is stored under the Actor root:
+
+```text
+portia/actors/<actor_id>/
+  records/
+    actor_lifecycle_transition/
+      <transition_id>.json
+```
+
+It targets exactly one of:
+
+```text
+Actor root
+Actor Contact Point
+Actor-to-Student Relationship
+```
+
+The target is compact because the containing Actor root supplies `actor_id`.
+
+The transition will reuse the existing opaque `lct_` identifier contract unless
+the schema implementation audit finds a concrete incompatibility.
+
+## 14.8 Shared lifecycle principles
+
+The Actor-directory lifecycle family preserves the accepted Issue #12 model:
+
+```text
+persisted current status
++ creation baseline
++ append-only selected transition history
+= validated current state
+```
+
+It requires:
+
+- one target per transition;
+- explicit `previous_transition` chaining;
+- no timestamp sorting;
+- same-target predecessor agreement;
+- branch and cycle detection;
+- current-status reconciliation;
+- record-family transition legality;
+- and coordinated status-plus-transition persistence.
+
+The detailed envelope, reason vocabulary, chronology, and history-correction
+contract belong to the next slice.
+
+## 14.9 Shared Actor-directory amendment family
+
+Actor, Contact Point, and Actor-to-Student Relationship will share one
+workspace-scoped amendment family:
+
+```text
+actor_directory_amendment@1
+```
+
+It is stored under the Actor root and targets exactly one Actor-directory record.
+
+The amendment will reuse the existing opaque `amd_` identifier contract unless
+the schema implementation audit finds a concrete incompatibility.
+
+The amendment must preserve:
+
+- exact prior and resulting property state;
+- explicit amendable paths;
+- immutable append-only history;
+- target `updated_at` precondition;
+- and no lifecycle mutation.
+
+Sensitive Contact Point prior values require special handling.
+
+The next slice must decide whether a Contact Point amendment may retain a prior
+sensitive value or whether all value-affecting changes are categorically
+replacement-only.
+
+Decisions 6–7 currently require contact value changes to use replacement, which
+substantially limits sensitive prior-value exposure in amendments.
+
+## 14.10 Child-record behavior when Actor state changes
+
+An Actor lifecycle change does not automatically rewrite child statuses.
+
+When an Actor becomes inactive:
+
+- active Contact Points and Relationships remain canonical;
+- ordinary current Actor selection is blocked or de-emphasized;
+- and consuming workflows evaluate Actor eligibility before use.
+
+When an Actor becomes invalidated or superseded:
+
+- new ordinary use of its child records is blocked;
+- child records remain historically resolvable;
+- and explicit review determines whether any child requires independent
+  invalidation, supersession, reassignment, or exceptional removal.
+
+Portia must not perform an automatic lifecycle cascade.
+
+A coordinated Actor correction may include explicit child operations when
+preflight determines they are necessary.
+
+## 14.11 Broken and historical resolution
+
+Actor-directory resolution distinguishes:
+
+```text
+current
+inactive
+invalidated
+superseded
+missing
+malformed
+quarantined
+historical_child_under_noncurrent_actor
+authorization_limited
+indeterminate
+```
+
+A missing current Actor index does not prove a missing Actor.
+
+A missing or malformed Actor record does not authorize reconstruction from:
+
+- contact values;
+- relationship records;
+- historical display names;
+- or consuming-record snapshots.
+
+## 14.12 Historical-binding invariants
+
+1. Actor identity, child identity, and snapshots remain distinct.
+2. Contextual roles belong to consuming records.
+3. Canonical student relationships are referenced only when materially relevant.
+4. Relationship snapshots contain no authority or contact data.
+5. Contact values are not copied into ordinary person snapshots.
+6. Current Actor changes do not rewrite historical bindings.
+7. One shared Actor-directory lifecycle family governs root and child statuses.
+8. One shared Actor-directory amendment family governs allowed nonmaterial edits.
+9. Actor lifecycle changes do not automatically cascade to children.
+10. Broken identity is never reconstructed from display or contact similarity.
+
+---
+
+## 15. Consequences of Decisions 1–10
+
+The accepted direction now requires Issue #14 to introduce at least:
 
 ```text
 actor@1
+portia_actor_contact_point_id@1
+portia_actor_student_relationship_id@1
 exact_actor_ref@1
+exact_actor_contact_point_ref@1
+exact_actor_student_relationship_ref@1
 actor_target@1
+actor_contact_point_target@1
+actor_student_relationship_target@1
 actor_contact_point@1
 actor_student_relationship@1
-actor_lifecycle_transition@1
-actor_lifecycle_history_correction@1
-actor_amendment@1
+actor_student_relationship_snapshot@1
+actor_directory_lifecycle_transition@1
+actor_directory_lifecycle_history_correction@1
+actor_directory_amendment@1
 ```
 
-Later decisions will determine whether Actor-specific forms are also required
-for:
+The design has also fixed these implementation boundaries:
+
+- `actor_ref@1` remains unchanged;
+- `person_display_snapshot@1` remains unchanged;
+- Actor Contact Points are canonical child records;
+- Actor-to-Student Relationships are canonical child records;
+- email and phone are the only initial contact kinds;
+- contact values are replacement-significant;
+- relationship source is explicit;
+- relationship status is not institutional authority;
+- contextual workflow roles remain consumer-owned;
+- and Actor, Contact Point, and Relationship share workspace-scoped lifecycle and
+  amendment history.
+
+Later decisions must determine whether new versions or Actor-specific forms are
+required for:
 
 ```text
 record migration
@@ -1304,6 +2841,7 @@ integrity finding
 operation journal
 operation lock
 Quarantine
+source snapshot
 derived projection metadata
 ```
 
@@ -1311,18 +2849,18 @@ Existing public schemas will not be modified in place.
 
 The design must next resolve:
 
-1. exact Actor Contact Point fields and lifecycle;
-2. exact Actor-to-Student Relationship fields and authority limitations;
-3. Actor lifecycle-transition and history-correction envelopes;
-4. Actor amendment paths and privacy treatment of prior values;
-5. duplicate-candidate and consolidation rules;
+1. the exact Actor-directory lifecycle-transition envelope;
+2. transition reason vocabularies and record-family legality;
+3. Actor-directory lifecycle-history correction;
+4. Actor-directory amendment paths and sensitive-value restrictions;
+5. duplicate candidates and Actor consolidation;
 6. roster-student collision and conflated-person correction;
-7. Actor migration and exceptional removal;
+7. migration and exceptional removal;
 8. operational target versioning;
 9. Actor-specific integrity rules;
-10. and whether any persisted Actor projection is required in v1.
+10. and persisted versus in-memory Actor projections.
 
-## 11. Rejected initial alternatives
+## 16. Rejected alternatives through Decision 10
 
 ### Flat Actor file with workspace-wide history collections
 
@@ -1362,18 +2900,52 @@ and conflict with the accepted new-successor consolidation model.
 
 Rejected because workspace scope does not identify the Actor being changed.
 
-## 12. Next design slice
+### Contact arrays embedded in Actor
+
+Rejected because Contact Points require independent provenance, lifecycle,
+privacy, and correction.
+
+### Contact value as identity
+
+Rejected because values may change, be shared, and expose sensitive data.
+
+### Full postal-address support in v1
+
+Rejected because no current accepted Portia workflow requires it and the privacy
+cost is substantial.
+
+### Relationship labels embedded in Actor
+
+Rejected because one Actor may have different relationships to several exact
+roster-qualified students.
+
+### Relationship as legal authority
+
+Rejected because Portia records teacher-local context rather than institutional
+or legal identity authority.
+
+### Automatic cross-roster relationship propagation
+
+Rejected because Core does not provide workspace-wide student identity.
+
+### Automatic lifecycle cascade from Actor to children
+
+Rejected because each canonical child assertion requires independent review and
+historical preservation.
+
+## 17. Next design slice
 
 The next slice should decide:
 
 ```text
-Actor Contact Point
-Actor-to-Student Relationship
-relationship authority and source
-contact and relationship lifecycle
-historical relationship snapshots
+Actor-directory lifecycle-transition envelope
+Actor-directory lifecycle-history correction
+Actor-directory amendment
+chronology and predecessor chains
+record-family state-machine enforcement
+sensitive prior-value treatment
 ```
 
-Those decisions should precede Actor lifecycle-history schema implementation
-because child-record lifecycle and correction requirements may affect the final
-workspace-scoped history family.
+Those decisions should precede schema implementation and ADR acceptance because
+duplicate consolidation, roster collision, migration, and operational recovery
+all depend on exact workspace-scoped history semantics.
