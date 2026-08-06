@@ -1,6 +1,6 @@
 # Portia Actor Directory Domain Model and Lifecycle
 
-**Status:** Working design — Decisions 1–14 adopted
+**Status:** Working design — Decisions 1–19 adopted
 **Project:** Paper Data Suite
 **Module:** `pds-portia`
 **Issue:** `#14 — Define the Actor Directory domain model and lifecycle`
@@ -3965,7 +3965,1445 @@ new successor record
 
 ---
 
-## 19. Consequences of Decisions 1–14
+# 19. Approved Decision 15: Duplicate Candidates and Reviewed Disposition
+
+## 19.1 Decision
+
+Actor duplicate detection is a derived review process.
+
+A duplicate candidate is not a canonical Actor relationship and is not identity
+authority.
+
+Issue #14 will not introduce a separate canonical `actor_duplicate_review`
+record in version 1.
+
+Instead:
+
+- candidate generation produces an Actor-targeted Integrity Finding;
+- the finding uses stable deterministic Actor-set and evaluation keys;
+- Finding Acknowledgement records that an authorized person reviewed the exact
+  evaluation;
+- bounded Finding Suppression may de-emphasize a reviewed candidate until
+  relevant evidence changes;
+- and confirmed duplicate identity is expressed only through an accepted Actor
+  consolidation operation and resulting replacement graph.
+
+This reuses the Issue #13 finding-administration model without creating a second
+parallel review system.
+
+## 19.2 Candidate semantic unit
+
+One duplicate-candidate evaluation asks:
+
+> Do these exact current Actor records appear likely enough to represent the same
+> human person that authorized human review is required?
+
+The initial candidate set contains two or more exact Actor references.
+
+Candidate-set identity is based on the sorted exact Actor identities and the
+candidate rule version.
+
+It does not contain:
+
+- names;
+- email addresses;
+- phone numbers;
+- organizations;
+- titles;
+- student identifiers;
+- or other sensitive payload.
+
+A deterministic candidate key may conceptually use:
+
+```text
+rule ID
++ rule version
++ sorted actor IDs
+```
+
+The key does not prove duplicate identity.
+
+## 19.3 Candidate evidence kinds
+
+Candidate generation may consider privacy-minimized evidence kinds such as:
+
+```text
+display_name_similarity
+shared_contact_value
+shared_import_identity
+shared_relationship_pattern
+same_operator_selected_identity
+overlapping_organization_and_title
+other
+```
+
+Evidence should reference exact canonical records where possible.
+
+For example, a shared-contact signal may preserve:
+
+```text
+exact Contact Point references
++ equality or normalization rule version
+```
+
+It must not copy the contact value into:
+
+- finding keys;
+- candidate titles;
+- operation summaries;
+- ordinary logs;
+- or nonsensitive derived projections.
+
+The authorized duplicate-review interface may resolve the underlying canonical
+values according to privacy policy.
+
+## 19.4 Candidate-generation limits
+
+The following may create a candidate but cannot confirm identity:
+
+- equal display names;
+- similar names;
+- equal normalized contact values;
+- equal organization and title;
+- overlapping student relationships;
+- repeated co-occurrence;
+- same import source;
+- or a confidence score.
+
+One shared household or office contact value may legitimately belong to several
+distinct people.
+
+One person may also have several different names and contact values.
+
+## 19.5 Review outcomes
+
+Human review uses these conceptual outcomes:
+
+```text
+confirmed_duplicate
+related_but_distinct
+insufficient_information
+candidate_error
+```
+
+### `confirmed_duplicate`
+
+The reviewed Actors represent the same human person and satisfy the pure
+consolidation requirements in Decision 16.
+
+The review outcome alone does not change canonical state.
+
+A complete consolidation operation remains required.
+
+### `related_but_distinct`
+
+The Actors are connected or similar but represent different people.
+
+The finding may be acknowledged as reviewed.
+
+A bounded suppression may hide the same presentation warning until:
+
+```text
+Actor evaluation changes
+Contact Point evaluation changes
+relationship evaluation changes
+rule version changes
+policy version changes
+or fixed expiry
+```
+
+Suppression does not establish a canonical relationship between the Actors.
+
+### `insufficient_information`
+
+Available evidence cannot support either identity equivalence or distinctness.
+
+The finding remains available for future review.
+
+An acknowledgement may record:
+
+```text
+awaiting_external_evidence
+```
+
+No lifecycle or replacement change follows.
+
+### `candidate_error`
+
+The candidate rule or source evidence was not applicable to the Actor set.
+
+The evaluation may be acknowledged and suppressed until its evaluation inputs
+change.
+
+The underlying rule defect may require a separate integrity or implementation
+correction.
+
+## 19.6 Actor-targeted Integrity Finding requirement
+
+The existing `integrity_finding@1` target union does not contain an exact Actor
+target.
+
+Issue #14 must introduce a new compatible Integrity Finding version or a
+distinct Actor-directory finding contract.
+
+The preferred direction is a new `integrity_finding@2` that:
+
+- preserves all version-1 fields and semantics;
+- adds exact Actor-directory record targets;
+- remains wire-compatible for all existing version-1 target branches;
+- and does not add Actor contact values or relationship payload to keys.
+
+Existing version-1 findings remain valid and immutable.
+
+The final operational-integration decision will confirm the exact versioning
+approach.
+
+## 19.7 Finding administration
+
+Duplicate-candidate findings use the existing concepts:
+
+```text
+finding_key
+evaluation_key
+rule_id
+rule_version
+severity
+effects
+```
+
+The initial candidate finding should ordinarily be:
+
+```text
+severity = advisory or warning
+effects = attention and/or review_required
+```
+
+It is not automatically:
+
+```text
+error
+critical
+block_current_use
+quarantine
+```
+
+A duplicate candidate becomes blocking only when another accepted invariant is
+already violated, such as:
+
+- an explicit uniqueness conflict;
+- an incomplete attempted consolidation;
+- contradictory effective successor edges;
+- or a current operation that requires identity certainty.
+
+## 19.8 Re-evaluation
+
+A candidate evaluation changes when any contract-significant input changes,
+including:
+
+- Actor current representation;
+- Actor lifecycle;
+- relevant Contact Point current representation or lifecycle;
+- relevant Actor-to-Student Relationship representation or lifecycle;
+- candidate-rule version;
+- authorization coverage;
+- or candidate policy version.
+
+A suppression tied to the prior evaluation must not conceal the new evaluation.
+
+## 19.9 No canonical negative identity assertion
+
+Portia v1 does not create a permanent canonical assertion that:
+
+```text
+Actor A is not Actor B
+```
+
+Human knowledge and evidence may change.
+
+A reviewed `related_but_distinct` outcome is preserved through bounded finding
+administration, not an irrevocable identity edge.
+
+## 19.10 Candidate invariants
+
+1. Duplicate candidates are derived.
+2. Candidate keys contain no sensitive values.
+3. Similarity never proves identity.
+4. Human review is required.
+5. Finding acknowledgement records review, not resolution.
+6. Finding suppression affects presentation only and expires when relevant
+   evidence changes.
+7. Confirmed duplicate identity requires consolidation.
+8. Related-but-distinct does not create a canonical Actor relationship.
+9. Insufficient information causes no identity mutation.
+10. Existing Integrity Finding v1 remains immutable.
+
+---
+
+# 20. Approved Decision 16: Actor Duplicate Consolidation
+
+## 20.1 Decision
+
+Confirmed duplicate Actors use the accepted many-to-one new-successor topology:
+
+```text
+several Actor predecessors
+-> one new reviewed Actor successor
+```
+
+Portia never designates one existing Actor as the survivor.
+
+The successor's exact predecessor set is the canonical consolidation membership
+list.
+
+No separate canonical consolidation record is introduced.
+
+## 20.2 Eligibility
+
+Actors may be consolidated only when human review establishes all of the
+following:
+
+1. every predecessor resolves exactly;
+2. every predecessor is an Actor under the same workspace;
+3. every predecessor represents the same human person;
+4. no predecessor is already superseded;
+5. all material profile, contact, and relationship conflicts have explicit
+   reviewed dispositions;
+6. preserving separate Actor identities has no independent semantic value;
+7. the complete predecessor set is known for this operation;
+8. every predecessor may legally transition to `superseded`;
+9. and the resulting successor is independently valid.
+
+Matching names or contacts alone never satisfy eligibility.
+
+## 20.3 Pure-consolidation rule
+
+Actor consolidation must remain a pure consolidation.
+
+It may:
+
+- reconcile compatible display metadata;
+- choose a reviewed current display name;
+- preserve compatible organization and title information;
+- create reviewed successor Contact Points;
+- create reviewed successor Actor-to-Student Relationships;
+- and preserve complete predecessor lineage.
+
+It must not conceal:
+
+- roster-student correction;
+- conflated-person splitting;
+- wrong-person correction;
+- unsupported legal or institutional relationship claims;
+- prohibited sensitive data;
+- or another unrelated material correction.
+
+Those conditions require their own explicit correction operations.
+
+## 20.4 Successor Actor
+
+The successor receives a new:
+
+```text
+actor_id
+creation_source
+created_at
+created_by
+updated_at
+updated_by
+```
+
+The successor does not inherit or backdate identity or provenance from a
+predecessor.
+
+The successor's `supersedes` entries identify every exact Actor predecessor and
+use:
+
+```text
+reason = duplicate_consolidated
+```
+
+The successor's current status is selected through review.
+
+It is not chosen through:
+
+```text
+newest_wins
+active_wins
+highest_status_wins
+most_complete_wins
+```
+
+Typical results are:
+
+- active predecessors producing an active successor;
+- inactive historical duplicates producing an inactive successor;
+- or consolidation being blocked when current-use state cannot be resolved.
+
+A successor must not begin as `proposed` while predecessors are made effectively
+superseded.
+
+Preparation may use a staged or proposed successor, but effective consolidation
+requires a replacement-eligible successor.
+
+## 20.5 Predecessor transitions
+
+Every predecessor receives its own Actor-directory lifecycle transition:
+
+```text
+new_status = superseded
+reason = duplicate_consolidated
+```
+
+All predecessor transitions use one mutually consistent `effective_at`.
+
+The successor becomes an effective replacement only when:
+
+- it is replacement-eligible;
+- every exact predecessor transition is accepted;
+- every transition and successor edge reconciles;
+- and the Issue #13 operation is complete or recoverable.
+
+Partial consolidation is an integrity failure.
+
+No successful subset is accepted.
+
+## 20.6 Actor profile reconciliation
+
+The successor's profile is constructed through explicit review.
+
+### Display name
+
+A current display name may be selected or composed only when it truthfully
+describes the same person and does not conceal uncertainty.
+
+Name length, formatting, or apparent completeness does not determine the winner.
+
+### Organization and title
+
+Organization and title may be selected when:
+
+- values are compatible;
+- one is current and another is clearly historical;
+- or the reviewer has sufficient basis.
+
+Materially conflicting organization or title evidence must be resolved before
+effective consolidation or omitted when omission remains honest.
+
+### Actor category
+
+The category must describe the successor's broad current role in Portia without
+creating specific student relationship or authority claims.
+
+Predecessor categories are not mechanically unioned.
+
+## 20.7 Contact Point reconciliation
+
+Contact Points do not move automatically to the successor Actor root.
+
+Every current or materially relevant predecessor Contact Point receives one
+explicit disposition:
+
+```text
+create_successor_contact
+historical_only
+inactive_obsolete
+invalid_assertion
+duplicate_contact_consolidation
+requires_further_review
+```
+
+### Create successor contact
+
+A new successor-owned Contact Point is created when review accepts the contact
+assertion for current or historical use under the consolidated Actor.
+
+The new Contact Point may supersede one exact predecessor Contact Point.
+
+### Duplicate Contact Point consolidation
+
+When several predecessor Contact Points represent the same exact contact
+assertion for the same person, one new successor-owned Contact Point may
+supersede all compatible predecessors.
+
+This is a child-record many-to-one consolidation.
+
+It requires exact value review and compatible source, verification, and use
+meaning.
+
+### Distinct compatible contacts
+
+Different valid email addresses or phone numbers are not duplicates merely
+because their Actors are duplicates.
+
+Portia creates separate successor Contact Points for each accepted distinct
+method.
+
+### Conflicting contacts
+
+A conflict must be classified explicitly, for example:
+
+```text
+both_valid_distinct_methods
+one_obsolete
+one_wrong_actor
+one_invalid
+insufficient_information
+```
+
+Unresolved material contact conflict blocks effective Actor consolidation when
+the unresolved value would otherwise be silently discarded or treated as
+current.
+
+The successor Actor root never embeds the reconciled contact values.
+
+## 20.8 Relationship reconciliation
+
+Actor-to-Student Relationships do not move automatically.
+
+Every current or materially relevant predecessor Relationship receives one
+explicit disposition:
+
+```text
+create_successor_relationship
+historical_only
+relationship_ended
+invalid_assertion
+duplicate_relationship_consolidation
+requires_further_review
+```
+
+### Exact duplicate relationship
+
+Relationships may be consolidated only when they have:
+
+- the same exact roster-qualified student target;
+- materially equivalent relationship type;
+- compatible basis and review state;
+- and the same underlying teacher-local assertion.
+
+The successor-owned Relationship may supersede all compatible predecessors.
+
+### Different roster-qualified targets
+
+Different `class_id + student_id` targets are never mechanically collapsed.
+
+They may represent:
+
+- different students;
+- the same real student in different rosters;
+- or unresolved cross-roster identity.
+
+Core does not establish which case applies.
+
+The successor Actor may retain several separate Relationships.
+
+Portia does not infer cross-roster student equivalence.
+
+### Different relationship types
+
+Different relationship types may both remain valid.
+
+For example, one Actor may be recorded as both:
+
+```text
+caregiver
+family_contact
+```
+
+for the same roster-qualified student when the teacher-local assertions are
+independently supported.
+
+Types are not mechanically unioned into one Relationship.
+
+## 20.9 Child lifecycle independence
+
+Actor consolidation does not automatically transition every predecessor child
+record.
+
+A predecessor child remains exact historical evidence unless an explicit child
+operation:
+
+- supersedes it;
+- inactivates it;
+- invalidates it;
+- or creates a reviewed successor.
+
+Because the owning Actor becomes superseded, predecessor children are not
+eligible for ordinary new current selection through that Actor.
+
+Their independent status and history remain intact.
+
+## 20.10 Later-discovered duplicate
+
+A completed predecessor set is immutable.
+
+A later-discovered duplicate is handled through a new successor:
+
+```text
+A + B -> C
+C + D -> E
+```
+
+Portia does not retroactively add `D` to `C`'s predecessor set.
+
+The prior consolidation remains historically exact.
+
+## 20.11 Erroneous consolidation
+
+Effective consolidation edges are not edited or deleted.
+
+An erroneous Actor consolidation may require:
+
+- lifecycle-history correction for predecessors that should not have become
+  superseded;
+- invalidation or supersession of the erroneous successor;
+- new corrected Actor records;
+- explicit child-record correction;
+- explicit consuming-record correction;
+- and Issue #13 recovery or repair operations.
+
+Portia does not reactivate a superseded predecessor through an ordinary
+lifecycle transition.
+
+## 20.12 Operation semantics
+
+A successful Actor consolidation operation must:
+
+1. identify the complete predecessor Actor set;
+2. obtain a fresh complete incoming-reference inventory;
+3. lock the Actor collection scope required to prevent conflicting creation;
+4. lock every predecessor Actor root in deterministic order;
+5. lock all child records selected for coordinated replacement;
+6. validate duplicate equivalence;
+7. stage and validate the successor Actor and all selected successor children;
+8. exclusively create the successor root and child records;
+9. make every predecessor transition durable;
+10. verify the effective replacement graph;
+11. record all unresolved incoming-reference review obligations;
+12. regenerate affected derived views;
+13. and release locks only after external verification.
+
+The operation kind remains:
+
+```text
+consolidate_duplicates
+```
+
+Operation facts and lock records must not copy contact values.
+
+## 20.13 Consolidation invariants
+
+1. Consolidation is many-to-one.
+2. The successor is always new.
+3. Every predecessor remains exactly resolvable.
+4. Duplicate equivalence requires human review.
+5. Consolidation is pure and cannot hide roster or split correction.
+6. Every predecessor transition is required.
+7. The complete predecessor set is immutable after effectiveness.
+8. Child records move only through explicit reviewed child operations.
+9. Contact and relationship conflicts require explicit disposition.
+10. Incoming references are never silently retargeted.
+
+---
+
+# 21. Approved Decision 17: Confirmed Actor–Roster Student Collision
+
+## 21.1 Decision
+
+A confirmed Actor–roster student collision means:
+
+> One Actor record was incorrectly used to represent a person who, for the
+> relevant Portia student relationship, must be represented by one exact Core
+> roster-qualified student reference.
+
+This is cross-family identity correction.
+
+It is not:
+
+- Actor duplicate consolidation;
+- Actor-to-Actor supersession;
+- migration;
+- or proof of workspace-wide student identity.
+
+The Actor is invalidated rather than superseded because a Core roster student is
+not an Actor successor in the Actor replacement graph.
+
+## 21.2 Candidate versus confirmed collision
+
+A possible collision may be generated from:
+
+- matching display names;
+- matching contact values;
+- imported identifiers;
+- or local operator review.
+
+Those signals create an Actor-targeted review finding only.
+
+A collision becomes confirmed only through authorized human review of the exact:
+
+```text
+Actor
++ roster-qualified student
++ relevant evidence
+```
+
+Portia must distinguish:
+
+```text
+possible_same_person
+confirmed_same_person
+matching_name_only
+matching_contact_only
+related_but_distinct
+insufficient_information
+```
+
+Only `confirmed_same_person` permits the correction operation.
+
+## 21.3 Collision-resolution record
+
+Issue #14 will introduce an immutable canonical record:
+
+```text
+actor_roster_student_collision@1
+```
+
+It is stored beneath the affected Actor root:
+
+```text
+portia/actors/<actor_id>/
+  records/
+    actor_roster_student_collision/
+      <collision_id>.json
+```
+
+The identifier will use:
+
+```text
+arsc_<opaque-id>
+```
+
+The record will preserve at least:
+
+```text
+actor exact reference
+exact roster_student_ref
+resolution = confirmed_same_person
+bounded evidence kinds
+reviewed_at
+reviewed_by
+operation_ref
+Actor invalidation transition reference
+created_at
+created_by
+```
+
+The record does not contain:
+
+- a student name copied from the roster;
+- Actor contact values;
+- a new workspace student identity;
+- or a claim that another roster entry represents the same person.
+
+## 21.4 Roster authority boundary
+
+The exact roster identity remains:
+
+```text
+class_id + student_id
+```
+
+The collision record applies only to that exact Core roster-qualified reference.
+
+When the same human may appear in another roster:
+
+- Portia does not infer equivalence;
+- equal student IDs do not prove equivalence;
+- equal names do not prove equivalence;
+- and the collision record does not become a workspace person registry.
+
+A separately reviewed exact roster collision may be recorded when another class
+context requires it.
+
+## 21.5 Actor lifecycle result
+
+The Actor transitions to:
+
+```text
+invalidated
+```
+
+with:
+
+```text
+reason = roster_student_collision
+```
+
+The Actor does not transition to `superseded`.
+
+No Actor successor is created merely to bridge the identity families.
+
+The collision record and lifecycle transition must reconcile.
+
+The Actor remains exactly resolvable for historical records.
+
+## 21.6 Contact Points
+
+Contact Points beneath the invalidated Actor do not become roster-student contact
+records.
+
+Portia must not:
+
+- copy them into Core;
+- reinterpret them as student contact data;
+- use them for new Actor communication;
+- or expose them through ordinary student views.
+
+Each Contact Point remains historical evidence and receives review where
+required.
+
+A Contact Point may be invalidated when it was recorded only because the false
+Actor identity existed or when privacy policy prohibits retention.
+
+Exceptional removal may apply to prohibited payload under a later decision.
+
+## 21.7 Actor-to-Student Relationships
+
+A Relationship whose Actor and target student are confirmed to represent the
+same person is a self-relationship defect.
+
+It must be reviewed and ordinarily invalidated with:
+
+```text
+wrong_actor_corrected
+```
+
+Other Relationships beneath the Actor do not automatically transfer to the
+roster student.
+
+For example, a false student Actor recorded as a counselor for another student
+requires explicit domain correction and cannot be inferred valid merely because
+the represented person is a student.
+
+## 21.8 Incoming consuming records
+
+Historical records continue to resolve the exact Actor reference.
+
+A current consuming record that should identify the roster student requires
+explicit domain-specific material correction.
+
+Examples include:
+
+- replacing an Event Participant Actor subject with a roster-student subject;
+- creating a corrected Account source;
+- creating a corrected Communication party;
+- or creating a corrected Support participant.
+
+Changing Actor identity to roster-student identity is never a nonmaterial
+amendment.
+
+When the consuming record belongs to a different class than the confirmed roster
+reference, Portia must not reuse that student reference automatically.
+
+The result may remain:
+
+```text
+review_required
+authorization_limited
+or indeterminate
+```
+
+until an authoritative exact roster target is available.
+
+## 21.9 Operation semantics
+
+The collision-correction operation must:
+
+1. lock the exact Actor and relevant child records;
+2. obtain a complete incoming-reference inventory;
+3. validate the exact Core roster reference;
+4. preserve human review evidence;
+5. create the collision-resolution record;
+6. create the Actor invalidation transition;
+7. replace the current Actor status;
+8. create any explicitly reviewed corrected consuming records;
+9. review or quarantine affected children;
+10. regenerate derived views;
+11. and verify that the Actor is no longer eligible for new Actor selection.
+
+The operation kind is:
+
+```text
+correct_history
+```
+
+or a later new operation kind only if the pre-ADR audit shows that the existing
+vocabulary cannot express the operation honestly.
+
+The preferred direction is to retain the existing operation vocabulary and
+classify the domain correction through the typed primary target and write set.
+
+## 21.10 Collision invariants
+
+1. A possible match is not a confirmed collision.
+2. Confirmation is human-reviewed.
+3. The exact Core identity is class-qualified.
+4. The Actor is invalidated, not superseded.
+5. No cross-family replacement edge is created.
+6. Existing Actor references remain exact.
+7. Current consuming records require explicit material correction.
+8. Contact Points are not converted into roster data.
+9. Self-Relationships are explicitly reviewed.
+10. The correction makes no workspace-wide student identity claim.
+
+---
+
+# 22. Approved Decision 18: Conflated-Person Actor Split
+
+## 22.1 Decision
+
+Actor is explicitly eligible for one-to-many split replacement when one Actor
+record incorrectly conflates several distinct human people.
+
+The topology is:
+
+```text
+one Actor predecessor
+-> several new Actor successors
+```
+
+This extends the accepted split-replacement architecture to the Actor semantic
+family.
+
+No many-to-many Actor replacement is permitted.
+
+## 22.2 Eligibility
+
+An Actor split is permitted only when review establishes:
+
+1. the predecessor resolves exactly;
+2. the predecessor materially conflates several distinct people;
+3. every successor represents one distinct human person;
+4. the complete direct successor set is known for the operation;
+5. each successor is independently valid;
+6. no successor is a roster-student identity disguised as an Actor;
+7. child and incoming-reference uncertainty is explicitly inventoried;
+8. the predecessor may legally transition to `superseded`;
+9. and one coordinated operation can establish the complete split.
+
+When the complete successor set is not known, Portia must not guess a split.
+
+The predecessor may instead be:
+
+```text
+invalidated
+quarantined
+or left review_required
+```
+
+until sufficient evidence exists.
+
+## 22.3 Successor lineage
+
+Every successor Actor lists the same exact predecessor with:
+
+```text
+reason = conflated_person_split
+```
+
+Every successor must be replacement-eligible by the common split effective time.
+
+The predecessor receives one transition:
+
+```text
+new_status = superseded
+reason = conflated_person_split
+```
+
+The operation journal identifies the complete successor set.
+
+A later successor cannot be added to the completed direct split.
+
+If another person is discovered later, a new correction must operate from the
+appropriate current replacement frontier without rewriting the old split.
+
+## 22.4 No separate split record
+
+Version 1 does not introduce a canonical Actor split record.
+
+The complete split is represented through:
+
+```text
+successor-owned predecessor edges
++ predecessor lifecycle transition
++ complete Issue #13 operation journal
+```
+
+This matches the accepted replacement architecture and avoids duplicate topology
+authority.
+
+## 22.5 Profile construction
+
+Each successor Actor receives independently reviewed:
+
+- display;
+- category;
+- organization;
+- title;
+- lifecycle state;
+- creation provenance;
+- and timestamps.
+
+Profile data is not copied mechanically to every successor.
+
+A predecessor field may be copied only when evidence supports that it applies to
+the specific successor.
+
+Uncertain information is omitted or remains attached to the predecessor
+historically.
+
+## 22.6 Contact Point assignment
+
+Predecessor Contact Points are not automatically assigned.
+
+Every materially relevant Contact Point receives one explicit split disposition:
+
+```text
+assigned_to_one_successor
+supported_for_several_successors
+historical_unassigned
+invalid_assertion
+requires_further_review
+```
+
+### Assigned to one successor
+
+A new successor-owned Contact Point is created and may supersede the predecessor
+Contact Point when evidence establishes the correct person.
+
+### Supported for several successors
+
+A shared household or office contact may legitimately apply to several
+successors.
+
+Portia creates one new Contact Point under each supported successor.
+
+One predecessor Contact Point is not physically shared across Actor roots.
+
+The operation must preserve why multi-assignment was accepted.
+
+### Historical unassigned
+
+When available evidence cannot identify the correct person, the Contact Point
+remains attached to the predecessor historically.
+
+It is not available for ordinary current use through a successor.
+
+### Invalid assertion
+
+When the Contact Point should not have been recorded or belongs to none of the
+successors, it is explicitly invalidated or handled under exceptional-removal
+policy.
+
+## 22.7 Relationship assignment
+
+Predecessor Actor-to-Student Relationships are not automatically assigned.
+
+Each Relationship receives one disposition:
+
+```text
+assigned_to_one_successor
+supported_for_several_successors
+historical_unassigned
+invalid_assertion
+requires_further_review
+```
+
+A new successor-owned Relationship is created for every accepted assignment.
+
+A relationship may be supported for several successors only when the
+teacher-local assertion independently applies to each person.
+
+Portia must not infer assignment from:
+
+- name similarity;
+- contact ownership;
+- organization;
+- or arbitrary ordering.
+
+## 22.8 Incoming-reference assignment
+
+Existing incoming Actor references remain exact references to the conflated
+predecessor.
+
+Portia does not guess which successor an existing reference intended.
+
+Every active incoming reference requiring current identity receives one of:
+
+```text
+correct_to_one_successor
+replace_with_several_domain_records
+historical_only
+cannot_resolve
+not_material_to_current_use
+```
+
+### Correct to one successor
+
+The consuming record receives an explicit domain-specific material correction.
+
+### Replace with several domain records
+
+This is permitted only when the consuming record family supports plural
+replacement honestly.
+
+For example, one conflated Event Participant may require several corrected
+Participants under the containing Event.
+
+The consuming record's own replacement topology governs the correction.
+
+### Historical only
+
+The exact predecessor reference remains historically readable and no current
+retarget is required.
+
+### Cannot resolve
+
+The record remains review-required or Quarantined according to use impact.
+
+Portia does not choose a successor automatically.
+
+## 22.9 Split operation
+
+A successful split operation must:
+
+1. identify and lock the predecessor Actor;
+2. obtain a complete incoming-reference and child-record inventory;
+3. validate the complete successor set;
+4. stage all successor Actors and explicitly assigned child records;
+5. exclusively create every successor root;
+6. make the predecessor transition durable;
+7. verify every successor edge and common effective time;
+8. preserve unresolved assignment obligations;
+9. perform only explicitly accepted consuming-record corrections;
+10. regenerate affected derived views;
+11. and verify that no hidden automatic assignment occurred.
+
+The operation kind is:
+
+```text
+correct_history
+```
+
+or another existing semantically accurate correction kind selected during the
+operational-integration decision.
+
+It is not `consolidate_duplicates`.
+
+## 22.10 Split invariants
+
+1. Actor split is one-to-many.
+2. The predecessor conflates distinct people.
+3. Every successor is new.
+4. The complete successor set is fixed at effectiveness.
+5. Many-to-many replacement is prohibited.
+6. Profiles are reviewed independently.
+7. Contact Points are assigned explicitly.
+8. Relationships are assigned explicitly.
+9. Incoming references are never guessed.
+10. Unresolved evidence remains explicit and may block current use.
+
+---
+
+# 23. Approved Decision 19: Incoming References and Current-Use Reconciliation
+
+## 23.1 Exact historical references remain stable
+
+Actor correction never rewrites historical references automatically.
+
+This applies to references from:
+
+```text
+Events
+Event Participants
+Accounts
+Communications
+Supports and Interventions
+Follow-Ups
+Determinations
+Responses
+Outcomes
+future Portia records
+```
+
+The exact reference continues to identify the exact original Actor.
+
+Historical display snapshots remain unchanged.
+
+## 23.2 Reference-resolution result
+
+Actor reference resolution should distinguish at least:
+
+```text
+current
+inactive
+invalidated
+superseded
+missing
+malformed
+quarantined
+authorization_limited
+indeterminate
+```
+
+Resolution returns the exact referenced Actor and its current diagnostic state.
+
+It does not return a successor as though it were the referenced Actor.
+
+## 23.3 Current-use disposition
+
+Current-use evaluation is separate from exact resolution.
+
+Representative dispositions are:
+
+```text
+eligible
+historical_only
+review_required
+blocked
+indeterminate
+```
+
+Examples:
+
+- active, valid, unquarantined Actor: ordinarily `eligible`;
+- inactive Actor: ordinarily `historical_only` or `review_required`;
+- superseded Actor: `historical_only` for new selection and often
+  `review_required` for active consuming records;
+- invalidated Actor: ordinarily `blocked` for new use;
+- missing or malformed Actor: `indeterminate` or `blocked`;
+- authorization-limited resolution: `indeterminate`.
+
+Record-family policy determines the exact result.
+
+## 23.4 Incoming-reference discovery
+
+Graph-sensitive Actor operations require complete incoming-reference discovery.
+
+The accepted generic projection kind:
+
+```text
+incoming_reference_index
+```
+
+may be used at workspace scope.
+
+Issue #14 does not require a new Actor-specific projection kind merely to index
+Actor references.
+
+The index may contain entries keyed by exact Actor or Actor-directory child
+identity.
+
+It remains:
+
+- nonauthoritative;
+- source-snapshot-bound;
+- authorization-aware;
+- immutable by generation;
+- explicitly selected;
+- disposable;
+- and rebuildable.
+
+A missing index does not prove no incoming references.
+
+## 23.5 Complete versus limited discovery
+
+Before consolidation, collision correction, split, exceptional removal, or
+another graph-sensitive operation, Portia must obtain either:
+
+1. a fresh complete verified incoming-reference generation; or
+2. a complete bounded canonical scan under the current authorization scope.
+
+When discovery is:
+
+```text
+authorization_limited
+stale
+corrupt
+missing
+or otherwise indeterminate
+```
+
+Portia must not make a complete-graph claim.
+
+The graph-sensitive operation is blocked unless its accepted semantics explicitly
+permit limited scope.
+
+Actor consolidation, collision correction, and split require complete discovery
+for the selected workspace.
+
+## 23.6 Reference classes
+
+Every incoming reference is classified for correction planning.
+
+### Immutable historical reference
+
+Examples include:
+
+- closed historical Event Participant;
+- historical Account source;
+- completed Communication party;
+- accepted Determination attribution.
+
+The reference remains unchanged.
+
+Authorized views may show:
+
+- recorded display snapshot;
+- exact Actor state;
+- direct effective successors;
+- replacement frontier;
+- or collision warning.
+
+### Mutable current canonical assertion
+
+When current domain meaning depends on Actor identity, the record may require
+explicit material correction.
+
+Changing an Actor reference to:
+
+- another Actor;
+- an Actor consolidation successor;
+- an Actor split successor;
+- or a roster student
+
+is not a nonmaterial amendment unless that future consuming contract explicitly
+defines a safe specialized correction model.
+
+The default is successor replacement or another domain-specific material
+correction.
+
+### Current record where identity is not material to continued use
+
+Some active records may remain valid while retaining the historical predecessor
+reference.
+
+The record-family validator must state why.
+
+Portia does not assume that every active reference must be retargeted.
+
+### Derived reference
+
+Search results, reverse indexes, summaries, current Actor lists, preferred
+contact views, and review queues are rebuilt.
+
+Derived records are never manually retargeted.
+
+### Operational reference
+
+Operation journals, locks, Quarantine, findings, acknowledgements, and
+suppressions continue to identify the exact target they originally governed.
+
+They are not rewritten to a successor.
+
+## 23.7 New selection after correction
+
+After effective Actor consolidation or split:
+
+- the superseded predecessor is excluded from ordinary new Actor selection;
+- the reviewed successor or successors may be selected according to policy;
+- the user interface may show predecessor lineage;
+- and exact predecessor lookup remains available for authorized history.
+
+After confirmed roster collision:
+
+- the invalidated Actor is excluded from new Actor selection;
+- the exact roster student may be selected only in the class context where the
+  Core identity is authoritative;
+- and Portia does not offer the roster student as a workspace Actor replacement.
+
+## 23.8 Contact resolution after Actor correction
+
+A new Communication must not resolve a current contact method through:
+
+- a superseded Actor's child records;
+- an invalidated collision Actor;
+- an unassigned split predecessor;
+- or a stale derived preferred-contact view.
+
+Current contact selection requires:
+
+```text
+current eligible Actor
++ active eligible Contact Point under that Actor
++ purpose and authorization eligibility
++ absence of blocking Quarantine
+```
+
+Historical Communications retain the exact Contact Point or recorded party
+evidence they originally used.
+
+## 23.9 Relationship resolution after Actor correction
+
+A new workflow must not infer a current Actor-to-Student Relationship from:
+
+- a superseded Actor;
+- an invalidated Actor;
+- a predecessor child record not explicitly reconciled;
+- or a historical relationship snapshot.
+
+Current use requires an active eligible Relationship under the current Actor.
+
+Historical records preserve the exact predecessor relationship evidence where
+recorded.
+
+## 23.10 Review obligations
+
+A correction operation may create durable review obligations for incoming
+records that cannot be corrected safely in the same operation.
+
+Those obligations must be represented through:
+
+- Actor-targeted or consuming-record-targeted Integrity Findings;
+- Quarantine where current use must be blocked;
+- or later domain-specific review records.
+
+The operation journal alone is not the long-term user-facing review queue.
+
+A review obligation must contain typed identity, not sensitive payload.
+
+## 23.11 No automatic cascade
+
+Portia never automatically:
+
+- rewrites Actor references;
+- rewrites display snapshots;
+- changes child ownership;
+- duplicates Contact Points;
+- duplicates Relationships;
+- converts Actor identity to roster identity;
+- chooses one split successor;
+- or copies attached records.
+
+Every canonical change requires explicit domain semantics and accepted
+persistence evidence.
+
+## 23.12 Incoming-reference invariants
+
+1. Exact references remain exact.
+2. Resolution and current-use eligibility are separate.
+3. Successors are not silently substituted.
+4. Graph-sensitive operations require complete discovery.
+5. Authorization-limited discovery cannot support complete-graph claims.
+6. Historical records remain unchanged.
+7. Current material references require explicit domain correction.
+8. Derived references are rebuilt.
+9. Contact and Relationship resolution uses the current owning Actor.
+10. Unresolved incoming references remain explicit review obligations.
+
+---
+
+## 24. Consequences of Decisions 1–19
 
 The accepted design now requires Issue #14 to introduce:
 
@@ -3973,6 +5411,7 @@ The accepted design now requires Issue #14 to introduce:
 actor@1
 actor_contact_point@1
 actor_student_relationship@1
+actor_roster_student_collision@1
 
 exact_actor_ref@1
 exact_actor_contact_point_ref@1
@@ -3985,49 +5424,61 @@ actor_directory_lifecycle_history_correction@1
 actor_directory_amendment@1
 ```
 
-Required identifier additions remain:
+Required identifier additions now include:
 
 ```text
 portia_actor_contact_point_id@1
 portia_actor_student_relationship_id@1
+portia_actor_roster_student_collision_id@1
 ```
 
-The following existing identifier contracts are reused:
+The design does not require a separate canonical:
 
 ```text
-portia_actor_id@1
-portia_lifecycle_transition_id@1
-portia_lifecycle_history_correction_id@1
-portia_amendment_id@1
-```
-
-The history design establishes:
-
-```text
-creation baseline
-+ predecessor-selected transition chain
-+ optional predecessor-selected history correction
-+ persisted current status
-= validated current lifecycle
-```
-
-and:
-
-```text
-expected prior current representation
-+ append-only amendment
-+ revision-aware current replacement
-= validated nonmaterial correction
-```
-
-Later decisions must determine whether new versions or Actor-specific forms are
-required for:
-
-```text
-duplicate candidate disposition
+Actor duplicate review
 Actor consolidation
-roster-student collision correction
-conflated-person correction
+Actor split
+```
+
+record.
+
+Those meanings are represented through:
+
+```text
+derived Integrity Findings and finding administration
++ successor-owned predecessor lineage
++ predecessor lifecycle transitions
++ complete Issue #13 operation journals
+```
+
+The Actor replacement graph now explicitly supports:
+
+```text
+one Actor -> one Actor
+several Actors -> one Actor
+one Actor -> several Actors
+```
+
+It prohibits:
+
+```text
+several Actors -> several Actors
+Actor -> roster student replacement edge
+silent successor substitution
+```
+
+A confirmed Actor–roster student collision is preserved through:
+
+```text
+actor_roster_student_collision
++ Actor invalidation transition
++ explicit consuming-record corrections
+```
+
+Later decisions must determine exact Actor-aware versions or companion contracts
+for:
+
+```text
 record migration
 exceptional removal
 integrity finding
@@ -4038,9 +5489,12 @@ source snapshot
 derived projection metadata
 ```
 
+The existing workspace-scoped `incoming_reference_index` projection kind can
+support Actor incoming-reference discovery without a new projection kind.
+
 No existing public schema will be modified in place.
 
-## 20. Rejected alternatives through Decision 14
+## 25. Rejected alternatives through Decision 19
 
 ### Flat Actor file with workspace-wide history collections
 
@@ -4157,19 +5611,73 @@ and historical communication context.
 
 Rejected because interruption could leave an unexplained accepted state change.
 
-## 21. Next design slice
+### Canonical negative identity edges
+
+Rejected because a reviewed related-but-distinct conclusion may change as
+evidence changes and does not justify a permanent person-identity assertion.
+
+### Automatic duplicate consolidation
+
+Rejected because candidate signals do not establish identity.
+
+### Separate canonical Actor consolidation record
+
+Rejected because successor lineage and predecessor transitions already provide
+canonical consolidation topology.
+
+### Mixed consolidation and roster correction
+
+Rejected because Actor consolidation cannot replace an Actor with a Core
+roster-student identity.
+
+### Actor-to-roster supersession edge
+
+Rejected because replacement edges require one semantic family and Core roster
+identity is class-qualified rather than an Actor successor.
+
+### Automatic Contact Point migration during consolidation
+
+Rejected because contact values may be obsolete, shared, conflicting, or
+assigned to the wrong person.
+
+### Automatic Relationship migration during consolidation
+
+Rejected because relationship targets and authority claims require explicit
+review.
+
+### Invalidate a conflated Actor without preserving known successors
+
+Rejected when a complete reviewed successor set is available, because it would
+discard useful explicit lineage.
+
+### Guess child or incoming-reference assignment during Actor split
+
+Rejected because conflated identity means the original reference is precisely
+what cannot be resolved automatically.
+
+### Rewrite all current Actor references to the consolidation successor
+
+Rejected because exact references remain historical identity and consuming
+record families own material correction.
+
+### Treat a missing incoming-reference index as an empty graph
+
+Rejected because missing, stale, corrupt, or authorization-limited derived state
+cannot prove absence.
+
+## 26. Next design slice
 
 The next slice should decide:
 
 ```text
-duplicate-candidate generation and disposition
-Actor duplicate consolidation
-Contact Point and Relationship reconciliation during consolidation
-roster-student collision correction
-conflated-person correction
-incoming-reference behavior
+Actor-directory migration
+exceptional removal
+Actor-aware Integrity Finding versioning
+Actor-aware Operation Journal target versioning
+Actor-aware lock and Quarantine versioning
+source-snapshot roles and derived-index compatibility
+privacy-minimized operational evidence
 ```
 
-Those decisions should precede ADR 0010 and schema implementation because they
-determine Actor supersession topology and the operational contracts that must
-receive Actor-aware versions.
+Those decisions should complete the pre-ADR architecture and public-contract
+inventory before ADR 0010 and schema implementation begin.
