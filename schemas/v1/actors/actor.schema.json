@@ -1,0 +1,262 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/actors/actor.schema.json",
+  "title": "Portia Actor",
+  "description": "Canonical version-1 root record for one recurring non-roster human person in one teacher-local Portia workspace Actor Directory. Actor identity is opaque and stable. Display data, broad category, organization, title, lifecycle, and replacement lineage are not institutional identity or authority. Contact Points and Actor-to-Student Relationships are separate canonical child records.",
+  "$comment": "Application validation remains responsible for canonical Actor-root path and actor_id agreement, one-human-person semantics, the prohibition against representing a Core roster student as an Actor, timestamp chronology, creation-provenance immutability, imported review gates, lifecycle/history reconciliation, current-use eligibility, exact predecessor resolution, self-supersession, predecessor identity uniqueness, replacement reason and topology, successor effectiveness, replacement cycles, complete incoming reference discovery, authorization, Quarantine, and no silent successor following.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "record_type",
+    "module_id",
+    "actor_id",
+    "status",
+    "display",
+    "actor_category",
+    "creation_source",
+    "created_at",
+    "created_by",
+    "updated_at",
+    "updated_by"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1"
+    },
+    "record_type": {
+      "const": "actor"
+    },
+    "module_id": {
+      "const": "portia"
+    },
+    "actor_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-actor-id.schema.json"
+    },
+    "status": {
+      "enum": [
+        "proposed",
+        "active",
+        "inactive",
+        "invalidated",
+        "superseded"
+      ]
+    },
+    "display": {
+      "$ref": "#/$defs/display"
+    },
+    "actor_category": {
+      "$ref": "#/$defs/actorCategory"
+    },
+    "supersedes": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 100,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/supersessionEntry"
+      },
+      "description": "Exact predecessor Actor representations replaced by this Actor representation. Application validation establishes same-family correction, consolidation or split topology, migration compatibility, complete predecessor membership, and coordinated predecessor lifecycle transitions."
+    },
+    "creation_source": {
+      "allOf": [
+        {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/provenance/creation-source.schema.json"
+        },
+        {
+          "not": {
+            "properties": {
+              "type": {
+                "const": "paper_capture"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          }
+        }
+      ],
+      "description": "Immutable Actor creation provenance. Actor v1 accepts deliberate digital entry or import. Paper capture does not directly establish a canonical Actor under this contract."
+    },
+    "created_at": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+    },
+    "created_by": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/attribution/attribution-agent.schema.json"
+    },
+    "updated_at": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+    },
+    "updated_by": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/attribution/attribution-agent.schema.json"
+    }
+  },
+  "$defs": {
+    "display": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "display_name"
+      ],
+      "properties": {
+        "display_name": {
+          "allOf": [
+            {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+            },
+            {
+              "maxLength": 200
+            }
+          ],
+          "description": "Current teacher-facing display name. It supports human use but is not Actor identity or verified legal identity."
+        },
+        "organization": {
+          "allOf": [
+            {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+            },
+            {
+              "maxLength": 200
+            }
+          ],
+          "description": "Optional current organization display. It does not establish employment, institutional identity, or authority."
+        },
+        "title": {
+          "allOf": [
+            {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+            },
+            {
+              "maxLength": 200
+            }
+          ],
+          "description": "Optional current title display. It does not establish current assignment, licensure, decision authority, or access authorization."
+        }
+      }
+    },
+    "actorCategory": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/standardActorCategory"
+        },
+        {
+          "$ref": "#/$defs/otherActorCategory"
+        }
+      ]
+    },
+    "standardActorCategory": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind"
+      ],
+      "properties": {
+        "kind": {
+          "enum": [
+            "family_or_caregiver",
+            "school_staff",
+            "external_support_provider",
+            "community_collaborator"
+          ]
+        }
+      }
+    },
+    "otherActorCategory": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "detail"
+      ],
+      "properties": {
+        "kind": {
+          "const": "other"
+        },
+        "detail": {
+          "allOf": [
+            {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+            },
+            {
+              "maxLength": 200
+            }
+          ],
+          "description": "Concise current category detail. It must not become an unrestricted narrative or authority claim."
+        }
+      }
+    },
+    "supersessionEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "actor_ref",
+        "reason"
+      ],
+      "properties": {
+        "actor_ref": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-actor-ref.schema.json"
+        },
+        "reason": {
+          "enum": [
+            "identity_corrected",
+            "duplicate_consolidated",
+            "conflated_person_split",
+            "contract_migrated",
+            "other"
+          ]
+        },
+        "detail": {
+          "allOf": [
+            {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+            },
+            {
+              "maxLength": 500
+            }
+          ],
+          "description": "Bounded replacement detail. It must not copy contact values, student narratives, credentials, or other unnecessary sensitive payload."
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "reason": {
+                "const": "other"
+              }
+            },
+            "required": [
+              "reason"
+            ]
+          },
+          "then": {
+            "required": [
+              "detail"
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "x-portia-application-invariants": [
+    "portia.actor.canonical_storage_scope",
+    "portia.actor.path_identity_agreement",
+    "portia.actor.one_human_person",
+    "portia.actor.roster_student_prohibition",
+    "portia.actor.timestamp_chronology",
+    "portia.actor.creation_provenance_immutable",
+    "portia.actor.imported_status_requires_review_history",
+    "portia.actor.lifecycle_history_reconciliation",
+    "portia.actor.current_use_eligibility",
+    "portia.actor.predecessor_resolution",
+    "portia.actor.predecessor_contract_supported",
+    "portia.actor.self_supersession",
+    "portia.actor.predecessor_identity_unique",
+    "portia.actor.supersession_reason_uniform",
+    "portia.actor.replacement_topology",
+    "portia.actor.supersession_cycle",
+    "portia.actor.successor_effectiveness",
+    "portia.actor.incoming_reference_complete",
+    "portia.actor.no_silent_successor_following"
+  ]
+}

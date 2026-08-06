@@ -1,0 +1,68 @@
+{
+  "manifest_version": "1",
+  "issue": 14,
+  "contract": "actor",
+  "version": "1",
+  "valid": {
+    "minimum-active.json": "Structurally and application-valid synthetic Actor.",
+    "proposed-import.json": "Structurally and application-valid synthetic Actor.",
+    "inactive-with-display-metadata.json": "Structurally and application-valid synthetic Actor.",
+    "other-category.json": "Structurally and application-valid synthetic Actor.",
+    "identity-correction-successor.json": "Structurally and application-valid synthetic Actor.",
+    "duplicate-consolidation-successor.json": "Structurally and application-valid synthetic Actor.",
+    "conflated-split-successor.json": "Structurally and application-valid synthetic Actor.",
+    "invalidated-historical-actor.json": "Structurally and application-valid synthetic Actor."
+  },
+  "invalid": {
+    "missing-display.json": "Structurally invalid Actor rejected by JSON Schema.",
+    "blank-display-name.json": "Structurally invalid Actor rejected by JSON Schema.",
+    "display-extra-property.json": "Structurally invalid Actor rejected by JSON Schema.",
+    "unknown-status.json": "Structurally invalid Actor rejected by JSON Schema.",
+    "unknown-category.json": "Structurally invalid Actor rejected by JSON Schema.",
+    "other-category-missing-detail.json": "Structurally invalid Actor rejected by JSON Schema.",
+    "standard-category-with-detail.json": "Structurally invalid Actor rejected by JSON Schema.",
+    "embedded-contact.json": "Structurally invalid Actor rejected by JSON Schema.",
+    "embedded-student-list.json": "Structurally invalid Actor rejected by JSON Schema.",
+    "unbounded-notes.json": "Structurally invalid Actor rejected by JSON Schema.",
+    "paper-capture-source.json": "Structurally invalid Actor rejected by JSON Schema.",
+    "empty-supersedes.json": "Structurally invalid Actor rejected by JSON Schema.",
+    "unknown-supersession-reason.json": "Structurally invalid Actor rejected by JSON Schema.",
+    "other-reason-missing-detail.json": "Structurally invalid Actor rejected by JSON Schema.",
+    "predecessor-missing-contract-version.json": "Structurally invalid Actor rejected by JSON Schema.",
+    "unknown-top-level-property.json": "Structurally invalid Actor rejected by JSON Schema."
+  },
+  "application_invalid": {
+    "updated-before-created.json": {
+      "rule_id": "portia.actor.timestamp_chronology",
+      "description": "updated_at must not precede created_at."
+    },
+    "self-supersession.json": {
+      "rule_id": "portia.actor.self_supersession",
+      "description": "An Actor identity-correction replacement cannot list itself as predecessor."
+    },
+    "duplicate-predecessor-identity.json": {
+      "rule_id": "portia.actor.predecessor_identity_unique",
+      "description": "One successor cannot list the same predecessor Actor identity more than once under different entries."
+    },
+    "unsupported-predecessor-version.json": {
+      "rule_id": "portia.actor.predecessor_contract_supported",
+      "description": "Every exact predecessor contract version must be cataloged and supported."
+    },
+    "active-import-without-review-history.json": {
+      "rule_id": "portia.actor.imported_status_requires_review_history",
+      "description": "An imported Actor cannot be active without accepted review and lifecycle history."
+    },
+    "single-predecessor-duplicate-consolidation.json": {
+      "rule_id": "portia.actor.replacement_topology",
+      "description": "duplicate_consolidated requires at least two distinct predecessor Actors."
+    },
+    "mixed-supersession-reasons.json": {
+      "rule_id": "portia.actor.supersession_reason_uniform",
+      "description": "One Actor replacement operation cannot mix incompatible predecessor reasons."
+    },
+    "multiple-identity-correction-predecessors.json": {
+      "rule_id": "portia.actor.replacement_topology",
+      "description": "identity_corrected is a one-to-one Actor replacement."
+    }
+  }
+}

@@ -39,6 +39,12 @@
         "path": "schemas/v3/event-participant-role.schema.json"
       }
     },
+    "actor": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/actors/actor.schema.json",
+        "path": "schemas/v1/actors/actor.schema.json"
+      }
+    },
     "portia_event_id": {
       "1": {
         "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-event-id.schema.json",
