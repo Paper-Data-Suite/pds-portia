@@ -1,0 +1,88 @@
+{
+  "schema_version": "1",
+  "record_type": "derived_index_metadata",
+  "module_id": "portia",
+  "generation_id": "dgen_recovery_queue_01",
+  "generation_state": "complete",
+  "projection_kind": "operation_recovery_queue",
+  "projection_scope": {
+    "scope": "operation",
+    "operation_ref": {
+      "operation_id": "op_recovery_example"
+    }
+  },
+  "projection_contract_version": "1",
+  "builder": {
+    "builder_id": "portia_recovery_queue_builder",
+    "builder_version": "1"
+  },
+  "authorization_scope": {
+    "authorization_scope_id": "local_support_limited",
+    "coverage": "authorization_limited",
+    "limitation_codes": [
+      "external_module_unavailable"
+    ]
+  },
+  "source_snapshot": {
+    "schema_version": "1",
+    "record_type": "source_snapshot",
+    "module_id": "portia",
+    "snapshot_algorithm": "portia_source_snapshot_v1",
+    "projection_kind": "operation_recovery_queue",
+    "projection_scope": {
+      "scope": "operation",
+      "operation_ref": {
+        "operation_id": "op_recovery_example"
+      }
+    },
+    "authorization_scope": {
+      "authorization_scope_id": "local_support_limited",
+      "coverage": "authorization_limited",
+      "limitation_codes": [
+        "external_module_unavailable"
+      ]
+    },
+    "discovery_roots": [
+      "portia/operations/op_recovery_example"
+    ],
+    "source_contracts": [
+      {
+        "contract_name": "operation_journal",
+        "contract_version": "1"
+      }
+    ],
+    "entries": [
+      {
+        "workspace_relative_path": "portia/operations/op_recovery_example/revisions/3.json",
+        "byte_length": 2600,
+        "sha256_digest": "3333333333333333333333333333333333333333333333333333333333333333",
+        "source_role": "operational_revision",
+        "contract_or_artifact_kind": "operation_journal"
+      }
+    ],
+    "source_snapshot_digest": "7b95e20a6d66cf0950ea22b8ef4f9c74524a40accd9c9186a29c57f4f953cc05",
+    "observed_at": "2026-08-06T08:11:00-04:00"
+  },
+  "data_artifact": {
+    "workspace_relative_path": "portia/derived/operation_recovery_queue/op_recovery_example/dgen_recovery_queue_01/data.json",
+    "contract_version": "1",
+    "fingerprint": {
+      "algorithm": "sha256",
+      "digest": "2222222222222222222222222222222222222222222222222222222222222222",
+      "byte_length": 600
+    }
+  },
+  "validation": {
+    "schema_validation": "passed",
+    "identity_validation": "passed",
+    "reference_validation": "passed",
+    "privacy_validation": "passed",
+    "invariant_validation": "passed"
+  },
+  "generating_operation": {
+    "operation_id": "op_rebuild_recovery_queue",
+    "journal_revision": 3,
+    "contract_version": "1"
+  },
+  "generated_at": "2026-08-06T08:11:05-04:00"
+}

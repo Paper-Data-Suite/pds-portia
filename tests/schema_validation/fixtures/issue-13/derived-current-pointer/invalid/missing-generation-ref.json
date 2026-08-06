@@ -1,0 +1,16 @@
+{
+  "schema_version": "1",
+  "record_type": "derived_current_pointer",
+  "module_id": "portia",
+  "projection_kind": "current_state_view",
+  "projection_scope": {
+    "scope": "work",
+    "work_ref": {
+      "module_id": "portia",
+      "class_id": "class_english10_p2",
+      "work_id": "evt_example",
+      "work_kind": "event",
+      "contract_version": "2"
+    }
+  }
+}

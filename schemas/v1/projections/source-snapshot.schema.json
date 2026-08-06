@@ -1,0 +1,289 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/projections/source-snapshot.schema.json",
+  "title": "Portia Derived Source Snapshot",
+  "description": "Deterministic bounded inventory of the exact source representations used or proposed for one Portia derived-projection generation. The snapshot records paths, byte lengths, SHA-256 digests, roles, source contracts, scope, and authorization coverage. It does not establish that the sources remain unchanged or that a generation is current.",
+  "$comment": "Application validation must perform only documented bounded discovery, establish actual workspace containment and symlink safety, verify each source fingerprint and contract, sort entries and source contracts by the versioned algorithm, reject duplicate paths and contradictory identities, recompute source_snapshot_digest over the contract-significant canonical encoding, confirm authorization coverage and required-source completeness, and recheck the same inventory immediately before generation installation. Modification time and observation time are not digest inputs.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "record_type",
+    "module_id",
+    "snapshot_algorithm",
+    "projection_kind",
+    "projection_scope",
+    "authorization_scope",
+    "discovery_roots",
+    "source_contracts",
+    "entries",
+    "source_snapshot_digest",
+    "observed_at"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1"
+    },
+    "record_type": {
+      "const": "source_snapshot"
+    },
+    "module_id": {
+      "const": "portia"
+    },
+    "snapshot_algorithm": {
+      "const": "portia_source_snapshot_v1"
+    },
+    "projection_kind": {
+      "enum": [
+        "incoming_reference_index",
+        "work_relationship_reverse_index",
+        "replacement_frontier_index",
+        "dependency_graph",
+        "lifecycle_timeline",
+        "current_state_view",
+        "migration_logical_identity_index",
+        "ownership_correction_index",
+        "exceptional_removal_index",
+        "active_integrity_finding_index",
+        "active_quarantine_index",
+        "operation_recovery_queue",
+        "finding_acknowledgement_index",
+        "finding_suppression_index",
+        "work_summary",
+        "class_summary"
+      ]
+    },
+    "projection_scope": {
+      "$ref": "#/$defs/projectionScope"
+    },
+    "authorization_scope": {
+      "$ref": "#/$defs/authorizationScope"
+    },
+    "discovery_roots": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 32,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/workspace-relative-path.schema.json"
+      }
+    },
+    "source_contracts": {
+      "type": "array",
+      "maxItems": 128,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/sourceContract"
+      }
+    },
+    "entries": {
+      "type": "array",
+      "maxItems": 100000,
+      "items": {
+        "$ref": "#/$defs/sourceEntry"
+      }
+    },
+    "source_snapshot_digest": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/sha256-digest.schema.json"
+    },
+    "observed_at": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "projectionScope": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": [
+            "scope",
+            "work_ref"
+          ],
+          "properties": {
+            "scope": {
+              "const": "work"
+            },
+            "work_ref": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-portia-work-ref.schema.json"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "scope",
+            "class_id"
+          ],
+          "properties": {
+            "scope": {
+              "const": "class"
+            },
+            "class_id": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "scope",
+            "workspace_id"
+          ],
+          "properties": {
+            "scope": {
+              "const": "workspace"
+            },
+            "workspace_id": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "scope",
+            "operation_ref"
+          ],
+          "properties": {
+            "scope": {
+              "const": "operation"
+            },
+            "operation_ref": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/operation-ref.schema.json"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "scope",
+            "graph_id"
+          ],
+          "properties": {
+            "scope": {
+              "const": "graph"
+            },
+            "graph_id": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+            }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "authorizationScope": {
+      "type": "object",
+      "required": [
+        "authorization_scope_id",
+        "coverage",
+        "limitation_codes"
+      ],
+      "properties": {
+        "authorization_scope_id": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+        },
+        "coverage": {
+          "enum": [
+            "complete",
+            "authorization_limited"
+          ]
+        },
+        "limitation_codes": {
+          "type": "array",
+          "maxItems": 32,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/lowercase-token.schema.json"
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "coverage": {
+                "const": "complete"
+              }
+            },
+            "required": [
+              "coverage"
+            ]
+          },
+          "then": {
+            "properties": {
+              "limitation_codes": {
+                "maxItems": 0
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "limitation_codes": {
+                "minItems": 1
+              }
+            }
+          }
+        }
+      ],
+      "additionalProperties": false
+    },
+    "sourceContract": {
+      "type": "object",
+      "required": [
+        "contract_name",
+        "contract_version"
+      ],
+      "properties": {
+        "contract_name": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/lowercase-token.schema.json"
+        },
+        "contract_version": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+        }
+      },
+      "additionalProperties": false
+    },
+    "sourceEntry": {
+      "type": "object",
+      "required": [
+        "workspace_relative_path",
+        "byte_length",
+        "sha256_digest",
+        "source_role",
+        "contract_or_artifact_kind"
+      ],
+      "properties": {
+        "workspace_relative_path": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/workspace-relative-path.schema.json"
+        },
+        "byte_length": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "sha256_digest": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/sha256-digest.schema.json"
+        },
+        "source_role": {
+          "enum": [
+            "canonical_domain",
+            "operational_revision",
+            "operational_pointer",
+            "operational_lock",
+            "quarantine_state",
+            "finding_acknowledgement",
+            "finding_suppression",
+            "source_projection"
+          ]
+        },
+        "contract_or_artifact_kind": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/lowercase-token.schema.json"
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

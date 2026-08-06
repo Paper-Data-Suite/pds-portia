@@ -1,0 +1,31 @@
+{
+  "manifest_version": "1",
+  "issue": 13,
+  "contract": "source_snapshot",
+  "version": "1",
+  "valid": {
+    "complete-current-state-view.json": "Complete deterministically ordered work-scoped snapshot.",
+    "authorization-limited-recovery-queue.json": "Explicitly authorization-limited operation-scoped snapshot.",
+    "complete-empty-quarantine-index.json": "Complete bounded discovery may validly produce zero entries."
+  },
+  "invalid": {
+    "unsupported-snapshot-algorithm.json": "The versioned snapshot algorithm is fixed.",
+    "complete-with-limitation.json": "Complete authorization coverage cannot list limitations.",
+    "absolute-entry-path.json": "Source paths are lexical workspace-relative evidence.",
+    "unknown-projection-kind.json": "Projection kinds use the accepted closed vocabulary."
+  },
+  "application_invalid": {
+    "digest-mismatch.json": {
+      "rule_id": "portia.derived.source_snapshot_digest_matches",
+      "description": "The declared digest must match the versioned canonical snapshot encoding."
+    },
+    "entries-not-deterministically-sorted.json": {
+      "rule_id": "portia.derived.source_snapshot_entries_sorted",
+      "description": "Source entries must use deterministic path-first ordering."
+    },
+    "duplicate-source-path.json": {
+      "rule_id": "portia.derived.source_snapshot_path_unique",
+      "description": "A snapshot cannot contain contradictory observations for one source path."
+    }
+  }
+}

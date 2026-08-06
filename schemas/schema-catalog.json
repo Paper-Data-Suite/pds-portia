@@ -450,6 +450,24 @@
         "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/operations/finding-suppression-current-pointer.schema.json",
         "path": "schemas/v1/operations/finding-suppression-current-pointer.schema.json"
       }
+    },
+    "source_snapshot": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/projections/source-snapshot.schema.json",
+        "path": "schemas/v1/projections/source-snapshot.schema.json"
+      }
+    },
+    "derived_index_metadata": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/projections/derived-index-metadata.schema.json",
+        "path": "schemas/v1/projections/derived-index-metadata.schema.json"
+      }
+    },
+    "derived_current_pointer": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/projections/derived-current-pointer.schema.json",
+        "path": "schemas/v1/projections/derived-current-pointer.schema.json"
+      }
     }
   }
 }

@@ -1,0 +1,140 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/projections/derived-current-pointer.schema.json",
+  "title": "Portia Derived Current Pointer",
+  "description": "Minimal explicit selection of one immutable Portia derived generation for one projection kind and scope. The pointer does not claim that the generation is fresh, complete for a different authorization scope, compatible with the caller, or safe for a particular absence claim.",
+  "$comment": "Application validation must establish expected prior pointer state, projection-kind and scope agreement with referenced generation metadata, generation existence and complete validation, data and metadata fingerprint truth, authorization compatibility, source snapshot freshness, no active blocking Quarantine, atomic replacement, readback, and workspace containment. Consumers must not infer current selection from filenames, timestamps, or generation identity.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "record_type",
+    "module_id",
+    "projection_kind",
+    "projection_scope",
+    "generation_ref"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1"
+    },
+    "record_type": {
+      "const": "derived_current_pointer"
+    },
+    "module_id": {
+      "const": "portia"
+    },
+    "projection_kind": {
+      "enum": [
+        "incoming_reference_index",
+        "work_relationship_reverse_index",
+        "replacement_frontier_index",
+        "dependency_graph",
+        "lifecycle_timeline",
+        "current_state_view",
+        "migration_logical_identity_index",
+        "ownership_correction_index",
+        "exceptional_removal_index",
+        "active_integrity_finding_index",
+        "active_quarantine_index",
+        "operation_recovery_queue",
+        "finding_acknowledgement_index",
+        "finding_suppression_index",
+        "work_summary",
+        "class_summary"
+      ]
+    },
+    "projection_scope": {
+      "$ref": "#/$defs/projectionScope"
+    },
+    "generation_ref": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/derived-generation-ref.schema.json"
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "projectionScope": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": [
+            "scope",
+            "work_ref"
+          ],
+          "properties": {
+            "scope": {
+              "const": "work"
+            },
+            "work_ref": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-portia-work-ref.schema.json"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "scope",
+            "class_id"
+          ],
+          "properties": {
+            "scope": {
+              "const": "class"
+            },
+            "class_id": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "scope",
+            "workspace_id"
+          ],
+          "properties": {
+            "scope": {
+              "const": "workspace"
+            },
+            "workspace_id": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "scope",
+            "operation_ref"
+          ],
+          "properties": {
+            "scope": {
+              "const": "operation"
+            },
+            "operation_ref": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/operation-ref.schema.json"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "scope",
+            "graph_id"
+          ],
+          "properties": {
+            "scope": {
+              "const": "graph"
+            },
+            "graph_id": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+            }
+          },
+          "additionalProperties": false
+        }
+      ]
+    }
+  }
+}
