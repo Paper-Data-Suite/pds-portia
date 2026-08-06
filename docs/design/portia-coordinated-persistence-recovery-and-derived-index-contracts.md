@@ -1,6 +1,6 @@
 # Portia Coordinated Persistence, Recovery, and Derived-Index Contracts
 
-**Status:** Accepted — ADR 0009 adopted
+**Status:** Accepted — implemented and validated
 **Project:** Paper Data Suite
 **Module:** `pds-portia`
 **Issue:** `#13 — Define coordinated persistence, recovery, and derived-index contracts`
@@ -59,7 +59,7 @@ This document defines architecture and public contracts. Production Python persi
 
 ## 2. Governing contracts
 
-This design remains subordinate to accepted ADRs 0001–0008.
+This design remains subordinate to accepted ADRs 0001–0009.
 
 It must not change the meaning of accepted public records merely to simplify storage.
 
@@ -122,6 +122,23 @@ The required pre-ADR checkpoint was completed on 2026-08-05 before accepting ADR
 The checkpoint found no sibling change requiring a revision to Decisions 1–18.
 
 The final checkpoint remains required immediately before Issue #13 completion.
+
+## 3.2 Final cross-repository checkpoint
+
+The required final checkpoint was completed on 2026-08-06 after the public
+Issue #13 contracts and fixtures were implemented and immediately before issue
+acceptance.
+
+| Repository | Reviewed commit | Change since the pre-ADR checkpoint | Classification and response |
+| --- | --- | --- | --- |
+| `pds-core` | `6c507213618b68a6dd3ea096e1a898201ff029e6` | No change. Core remains at the accepted v0.6 explicit-current-pointer, expected-revision, conservative recovery, fingerprint-protected lock clearing, source-snapshot, and complete derived-catalog baseline. | Documentation reconciliation only; no Portia contract change. |
+| `pds-meridian` | `44778d43b13b8c5f66b9adc24a6674692816300f` | Meridian added an immutable typed evidence inventory with exact Core provenance, producer-native targets and values, privacy-minimal student identity, and explicit eligibility status. It still has no Portia adapter, real producer ingestion, grading, reporting, or persistence. | Future integration concern; no immediate Portia contract change. The inventory reinforces exact provenance and nonauthoritative projection boundaries. |
+| `pds-vitrine` | `840cf492b3503d5d6eba77c7ca2130cf21125d0c` | Vitrine added proposed regulated Portfolio and compliance-profile designs with immutable profile revisions, exact authority sources, append-preserving findings, submissions, receipts, outcomes, and rebuildable workflow views. | Future integration concern; no immediate Portia contract change. Portia records do not become portfolio evidence or regulated workflow authority automatically. |
+
+The final checkpoint found no sibling change requiring a new Portia schema
+version or a revision to Decisions 1–18. Later Meridian and Vitrine integration
+must consume Portia public contracts and exact canonical provenance rather than
+private implementation code or derived rows as authority.
 
 ## 4. Governing principles
 
@@ -5441,33 +5458,48 @@ The later executable milestone owns Python models, path services, writers, locks
 
 ---
 
-# 23. Design Completion and Remaining Issue Work
+# 23. Design Completion and Repository Acceptance
 
-The Issue #13 design is accepted through Decision 18.
+The Issue #13 design is accepted through Decision 18 and implemented through the
+public schema, fixture, example, validation, and documentation layers.
 
-The pre-ADR sibling-repository checkpoint is recorded above, and ADR 0009 now adopts Decisions 1–18.
+The repository now includes:
 
-Remaining issue work is:
+1. seven Portia-owned operational and generation identifier contracts;
+2. workspace-relative path, SHA-256 digest, and content-fingerprint primitives;
+3. stable and exact operation, journal, Quarantine, and generation references;
+4. immutable Operation Journal revisions and explicit current pointers;
+5. deterministic lock records;
+6. revisioned Quarantine and explicit current selection;
+7. append-only Finding Acknowledgements;
+8. bounded, expiring Finding Suppressions and explicit current selection;
+9. deterministic Source Snapshots;
+10. immutable complete Derived Index Metadata and explicit generation selection;
+11. valid, invalid, and application-invalid fixtures;
+12. machine-readable and narrative examples;
+13. a comprehensive Issue #13 application-invalid matrix;
+14. schema, state-machine, compatibility, example, and documentation tests;
+15. reconciled root and schema documentation;
+16. ADR 0009;
+17. and all three required sibling-repository drift checkpoints.
 
-1. implement identifier, common, and reference primitives;
-2. implement journal and pointer contracts;
-3. implement lock and Quarantine contracts;
-4. implement acknowledgement and suppression contracts;
-5. implement source-snapshot and derived metadata contracts;
-6. update the catalog and schema guide;
-7. add valid, invalid, and application-invalid fixtures;
-8. add machine-readable and narrative examples;
-9. add schema, state-machine, compatibility, and documentation tests;
-10. reconcile README and active designs;
-11. produce the Issue #13 validation record;
-12. perform the final sibling-repository drift check;
-13. and accept the final repository state.
+The final validation record is:
+
+```text
+docs/validation/issue-13-coordinated-persistence-recovery-and-derived-index-validation.md
+```
+
+No Issue #12 public wire shape changed. Integrity Finding v1 remains compatible
+with `op_` operation identifiers through its structurally safe external
+identifier field.
 
 ## 24. Current implementation boundary
 
-No production filesystem mutation is introduced by Decisions 1–18.
+Issue #13 introduces no production filesystem mutation, background worker,
+transaction manager, executable recovery service, or user-facing maintenance
+workflow.
 
-The accepted design now establishes:
+The accepted repository state establishes:
 
 ```text
 durable state categories and authority
@@ -5485,4 +5517,8 @@ explicit unavailable and current-view behavior
 public schema organization and Issue #12 reconciliation
 ```
 
-The next slice should begin the public schema implementation with identifier, common, and reference primitives.
+The later executable persistence milestone owns Python models, path services,
+strict storage writers, lock acquisition and clearing, staging, orchestration,
+recovery execution, Quarantine enforcement, projection builders, integrity
+scans, and teacher-facing maintenance. It must implement these accepted public
+contracts rather than redefine them.

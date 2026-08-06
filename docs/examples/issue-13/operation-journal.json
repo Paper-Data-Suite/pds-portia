@@ -1,0 +1,341 @@
+{
+  "schema_version": "1",
+  "record_type": "operation_journal",
+  "module_id": "portia",
+  "operation_id": "op_transition",
+  "operation_kind": "transition_lifecycle",
+  "intent_digest": "1111111111111111111111111111111111111111111111111111111111111111",
+  "scope": "work",
+  "primary_target": {
+    "kind": "work_record",
+    "work_record_ref": {
+      "work_ref": {
+        "module_id": "portia",
+        "class_id": "class_english10_p2",
+        "work_id": "evt_example",
+        "work_kind": "event",
+        "contract_version": "2"
+      },
+      "record_ref": {
+        "record_kind": "event_participant",
+        "record_id": "ept_example",
+        "contract_version": "3"
+      }
+    }
+  },
+  "affected_targets": [],
+  "intent_facts": [
+    {
+      "name": "requested_status",
+      "kind": "token",
+      "value": "superseded"
+    }
+  ],
+  "initiated_at": "2026-08-05T21:00:00-04:00",
+  "initiated_by": {
+    "type": "system_process",
+    "process_id": "portia_persistence"
+  },
+  "authorization_references": [],
+  "journal_revision": 4,
+  "previous_journal_revision": 3,
+  "state": "committed",
+  "preflight_snapshot_digest": "2222222222222222222222222222222222222222222222222222222222222222",
+  "preflight_snapshot": [
+    {
+      "target": {
+        "kind": "work_record",
+        "work_record_ref": {
+          "work_ref": {
+            "module_id": "portia",
+            "class_id": "class_english10_p2",
+            "work_id": "evt_example",
+            "work_kind": "event",
+            "contract_version": "2"
+          },
+          "record_ref": {
+            "record_kind": "event_participant",
+            "record_id": "ept_example",
+            "contract_version": "3"
+          }
+        }
+      },
+      "representation_role": "canonical_domain",
+      "expected_state": {
+        "presence": "must_match",
+        "fingerprint": {
+          "algorithm": "sha256",
+          "digest": "0000000000000000000000000000000000000000000000000000000000000000",
+          "byte_length": 900
+        },
+        "semantic_checks": [
+          {
+            "name": "status",
+            "kind": "token",
+            "value": "active"
+          }
+        ]
+      },
+      "workspace_relative_path": "classes/class_english10_p2/modules/portia/work/evt_example/records/event_participant/ept_example.json",
+      "contract_version": "3",
+      "source_basis": "canonical",
+      "source_projection": null,
+      "selected_state": [
+        {
+          "name": "status",
+          "kind": "token",
+          "value": "active"
+        }
+      ],
+      "observed_at": "2026-08-05T21:00:01-04:00"
+    }
+  ],
+  "lock_set": [
+    {
+      "lock_id": "lock_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "sequence": 1,
+      "lock_scope": "operation",
+      "protected_target": {
+        "kind": "operation",
+        "operation_ref": {
+          "operation_id": "op_transition"
+        }
+      },
+      "lock_path": "portia/locks/lock_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.json",
+      "disposition": "acquired",
+      "fingerprint": {
+        "algorithm": "sha256",
+        "digest": "4444444444444444444444444444444444444444444444444444444444444444",
+        "byte_length": 180
+      },
+      "acquired_at": "2026-08-05T21:00:02-04:00",
+      "released_at": null
+    },
+    {
+      "lock_id": "lock_bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "sequence": 2,
+      "lock_scope": "work",
+      "protected_target": {
+        "kind": "work",
+        "work_ref": {
+          "module_id": "portia",
+          "class_id": "class_english10_p2",
+          "work_id": "evt_example",
+          "work_kind": "event",
+          "contract_version": "2"
+        }
+      },
+      "lock_path": "portia/locks/lock_bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb.json",
+      "disposition": "acquired",
+      "fingerprint": {
+        "algorithm": "sha256",
+        "digest": "3333333333333333333333333333333333333333333333333333333333333333",
+        "byte_length": 180
+      },
+      "acquired_at": "2026-08-05T21:00:02-04:00",
+      "released_at": null
+    }
+  ],
+  "write_set": [
+    {
+      "step_id": "step_create_transition",
+      "sequence": 1,
+      "phase": "canonical_gate",
+      "action": "exclusive_create",
+      "target": {
+        "kind": "work_record",
+        "work_record_ref": {
+          "work_ref": {
+            "module_id": "portia",
+            "class_id": "class_english10_p2",
+            "work_id": "evt_example",
+            "work_kind": "event",
+            "contract_version": "2"
+          },
+          "record_ref": {
+            "record_kind": "event_participant",
+            "record_id": "ept_example",
+            "contract_version": "3"
+          }
+        }
+      },
+      "representation_role": "canonical_domain",
+      "destination_path": "classes/class_english10_p2/modules/portia/work/evt_example/lifecycle/lct_example.json",
+      "precondition": {
+        "presence": "must_be_absent"
+      },
+      "intended_result": {
+        "contract_version": "1",
+        "fingerprint": {
+          "algorithm": "sha256",
+          "digest": "1111111111111111111111111111111111111111111111111111111111111111",
+          "byte_length": 640
+        },
+        "selected_state": []
+      },
+      "disposition": "accepted",
+      "observed_result": {
+        "workspace_relative_path": "classes/class_english10_p2/modules/portia/work/evt_example/lifecycle/lct_example.json",
+        "fingerprint": {
+          "algorithm": "sha256",
+          "digest": "1111111111111111111111111111111111111111111111111111111111111111",
+          "byte_length": 640
+        },
+        "observed_at": "2026-08-05T21:00:03-04:00"
+      },
+      "compensation_step_id": null,
+      "reason_code": null
+    },
+    {
+      "step_id": "step_replace_target",
+      "sequence": 2,
+      "phase": "canonical_gate",
+      "action": "revision_aware_replace",
+      "target": {
+        "kind": "work_record",
+        "work_record_ref": {
+          "work_ref": {
+            "module_id": "portia",
+            "class_id": "class_english10_p2",
+            "work_id": "evt_example",
+            "work_kind": "event",
+            "contract_version": "2"
+          },
+          "record_ref": {
+            "record_kind": "event_participant",
+            "record_id": "ept_example",
+            "contract_version": "3"
+          }
+        }
+      },
+      "representation_role": "canonical_domain",
+      "destination_path": "classes/class_english10_p2/modules/portia/work/evt_example/records/event_participant/ept_example.json",
+      "precondition": {
+        "presence": "must_match",
+        "fingerprint": {
+          "algorithm": "sha256",
+          "digest": "0000000000000000000000000000000000000000000000000000000000000000",
+          "byte_length": 900
+        },
+        "contract_version": "3",
+        "semantic_checks": [
+          {
+            "name": "status",
+            "kind": "token",
+            "value": "active"
+          }
+        ]
+      },
+      "intended_result": {
+        "contract_version": "3",
+        "fingerprint": {
+          "algorithm": "sha256",
+          "digest": "2222222222222222222222222222222222222222222222222222222222222222",
+          "byte_length": 920
+        },
+        "selected_state": [
+          {
+            "name": "status",
+            "kind": "token",
+            "value": "superseded"
+          }
+        ]
+      },
+      "disposition": "accepted",
+      "observed_result": {
+        "workspace_relative_path": "classes/class_english10_p2/modules/portia/work/evt_example/records/event_participant/ept_example.json",
+        "fingerprint": {
+          "algorithm": "sha256",
+          "digest": "2222222222222222222222222222222222222222222222222222222222222222",
+          "byte_length": 920
+        },
+        "observed_at": "2026-08-05T21:00:04-04:00"
+      },
+      "compensation_step_id": null,
+      "reason_code": null
+    },
+    {
+      "step_id": "step_rebuild_view",
+      "sequence": 3,
+      "phase": "post_commit",
+      "action": "install_derived_replacement",
+      "target": {
+        "kind": "work",
+        "work_ref": {
+          "module_id": "portia",
+          "class_id": "class_english10_p2",
+          "work_id": "evt_example",
+          "work_kind": "event",
+          "contract_version": "2"
+        }
+      },
+      "representation_role": "derived_projection",
+      "destination_path": "classes/class_english10_p2/modules/portia/work/evt_example/derived/current_state_view/current.json",
+      "precondition": {
+        "presence": "must_be_absent"
+      },
+      "intended_result": {
+        "contract_version": "1",
+        "fingerprint": {
+          "algorithm": "sha256",
+          "digest": "3333333333333333333333333333333333333333333333333333333333333333",
+          "byte_length": 300
+        },
+        "selected_state": []
+      },
+      "disposition": "pending",
+      "observed_result": null,
+      "compensation_step_id": null,
+      "reason_code": null
+    }
+  ],
+  "staged_artifacts": [],
+  "commit_point": {
+    "reached": true,
+    "reached_at": "2026-08-05T21:00:05-04:00"
+  },
+  "compensation_plan": [
+    {
+      "trigger_code": "status_reconciliation_failure",
+      "affected_steps": [
+        "step_create_transition",
+        "step_replace_target"
+      ],
+      "disposition": "quarantine",
+      "required_authorization": [],
+      "planned_actions": [
+        "quarantine_artifact"
+      ]
+    }
+  ],
+  "recovery_plan": [
+    "reconcile_as_complete",
+    "complete_remaining_steps",
+    "quarantine",
+    "require_manual_review"
+  ],
+  "partial_state": {
+    "durability_assessment": "confirmed",
+    "accepted_steps": [
+      "step_create_transition",
+      "step_replace_target"
+    ],
+    "verified_steps": [],
+    "durable_unverified_steps": [],
+    "indeterminate_steps": [],
+    "remaining_canonical_steps": [],
+    "remaining_post_commit_steps": [
+      "step_rebuild_view"
+    ],
+    "current_pointer_changes": [],
+    "held_or_possible_locks": [
+      "lock_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "lock_bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    ],
+    "quarantined_targets": [],
+    "active_finding_keys": [],
+    "recommended_disposition": "complete_remaining_steps"
+  },
+  "created_at": "2026-08-05T21:00:01-04:00",
+  "updated_at": "2026-08-05T21:00:06-04:00"
+}

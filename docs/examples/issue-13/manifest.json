@@ -1,0 +1,72 @@
+{
+  "manifest_version": "1",
+  "issue": 13,
+  "examples": {
+    "operation-journal.json": {
+      "contract": "operation_journal",
+      "version": "1",
+      "schema_path": "schemas/v1/operations/operation-journal.schema.json",
+      "source_fixture": "tests/schema_validation/fixtures/issue-13/operation-journal/valid/committed-lifecycle-transition.json"
+    },
+    "operation-current-pointer.json": {
+      "contract": "operation_current_pointer",
+      "version": "1",
+      "schema_path": "schemas/v1/operations/operation-current-pointer.schema.json",
+      "source_fixture": "tests/schema_validation/fixtures/issue-13/operation-current-pointer/valid/current-transition.json"
+    },
+    "operation-lock.json": {
+      "contract": "operation_lock",
+      "version": "1",
+      "schema_path": "schemas/v1/operations/operation-lock.schema.json",
+      "source_fixture": "tests/schema_validation/fixtures/issue-13/operation-lock/valid/work-lock.json"
+    },
+    "quarantine-record.json": {
+      "contract": "quarantine_record",
+      "version": "1",
+      "schema_path": "schemas/v1/operations/quarantine-record.schema.json",
+      "source_fixture": "tests/schema_validation/fixtures/issue-13/quarantine-record/valid/released-after-repair.json"
+    },
+    "quarantine-current-pointer.json": {
+      "contract": "quarantine_current_pointer",
+      "version": "1",
+      "schema_path": "schemas/v1/operations/quarantine-current-pointer.schema.json",
+      "source_fixture": "tests/schema_validation/fixtures/issue-13/quarantine-current-pointer/valid/current-released.json"
+    },
+    "finding-acknowledgement.json": {
+      "contract": "finding_acknowledgement",
+      "version": "1",
+      "schema_path": "schemas/v1/operations/finding-acknowledgement.schema.json",
+      "source_fixture": "tests/schema_validation/fixtures/issue-13/finding-acknowledgement/valid/reviewed-finding.json"
+    },
+    "finding-suppression.json": {
+      "contract": "finding_suppression",
+      "version": "1",
+      "schema_path": "schemas/v1/operations/finding-suppression.schema.json",
+      "source_fixture": "tests/schema_validation/fixtures/issue-13/finding-suppression/valid/released-warning.json"
+    },
+    "finding-suppression-current-pointer.json": {
+      "contract": "finding_suppression_current_pointer",
+      "version": "1",
+      "schema_path": "schemas/v1/operations/finding-suppression-current-pointer.schema.json",
+      "source_fixture": "tests/schema_validation/fixtures/issue-13/finding-suppression-current-pointer/valid/current-released.json"
+    },
+    "source-snapshot.json": {
+      "contract": "source_snapshot",
+      "version": "1",
+      "schema_path": "schemas/v1/projections/source-snapshot.schema.json",
+      "source_fixture": "tests/schema_validation/fixtures/issue-13/source-snapshot/valid/complete-current-state-view.json"
+    },
+    "derived-index-metadata.json": {
+      "contract": "derived_index_metadata",
+      "version": "1",
+      "schema_path": "schemas/v1/projections/derived-index-metadata.schema.json",
+      "source_fixture": "tests/schema_validation/fixtures/issue-13/derived-index-metadata/valid/complete-current-state-view.json"
+    },
+    "derived-current-pointer.json": {
+      "contract": "derived_current_pointer",
+      "version": "1",
+      "schema_path": "schemas/v1/projections/derived-current-pointer.schema.json",
+      "source_fixture": "tests/schema_validation/fixtures/issue-13/derived-current-pointer/valid/current-state-view.json"
+    }
+  }
+}
