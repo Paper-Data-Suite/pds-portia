@@ -1,6 +1,6 @@
 # Portia Coordinated Persistence, Recovery, and Derived-Index Contracts
 
-**Status:** In development — through Decision 9
+**Status:** In development — through Decision 13
 **Project:** Paper Data Suite
 **Module:** `pds-portia`
 **Issue:** `#13 — Define coordinated persistence, recovery, and derived-index contracts`
@@ -3320,33 +3320,1501 @@ The final schema set should avoid duplicating one partial-state vocabulary acros
 
 ---
 
-# 14. Decisions Remaining
+# 14. Approved Decision 10: Recovery Diagnosis, Dispositions, and Journal Reconciliation
+
+## 14.1 Decision
+
+Portia recovery is an evidence-based operation that determines the safest supported disposition for an interrupted, partial, contradictory, or operationally incomplete state.
+
+Recovery does not begin by writing.
+
+It begins by constructing one exact recovery observation over:
+
+```text
+operation intent
+selected journal revision
+all reachable journal revisions
+current pointer
+planned write set
+staged candidates
+canonical target bytes
+current domain pointers
+locks
+quarantine state
+Dependencies
+relevant incoming references
+derived-state status
+```
+
+Only after that observation is complete may Portia select a recovery disposition.
+
+## 14.2 Recovery authority
+
+Recovery may continue within the original Operation Journal series only when:
+
+- the original series is nonterminal;
+- its identity and immutable intent remain unambiguous;
+- the selected journal chain can be validated or reconciled safely;
+- the recovery action remains within the accepted operation scope;
+- and required authorization still applies.
+
+A separate `repair_operation` is required when:
+
+- the original operation is terminal;
+- the original intent is contradictory or unavailable;
+- the repair requires broader scope;
+- a prior compensation must itself be corrected;
+- the journal cannot be updated safely;
+- or the operator is changing the requested canonical outcome rather than completing the original intent.
+
+## 14.3 Recovery does not invent history
+
+Recovery must not fabricate:
+
+- a missing journal revision;
+- a successful step that cannot be evidenced;
+- a lifecycle transition;
+- a prior current-pointer selection;
+- a lock owner;
+- an authorization decision;
+- or an operation timestamp.
+
+When evidence is insufficient, the result is `indeterminate`, quarantine, or manual review.
+
+## 14.4 Recovery observation
+
+A recovery observation records:
+
+- exact Operation Reference;
+- latest selected Operation Journal Reference, when readable;
+- complete journal-chain assessment;
+- intent-digest assessment;
+- exact operation state;
+- exact step dispositions claimed by the journal;
+- exact observed state for every planned target;
+- staged-artifact fingerprints;
+- lock fingerprints;
+- quarantine references;
+- derived-state availability and source snapshots;
+- discrepancies;
+- authorization limitations;
+- and observation time.
+
+The observation is a bounded operational structure.
+
+It must not duplicate substantive student records.
+
+## 14.5 Observation consistency
+
+A recovery observation is valid only when its protected inputs remain unchanged during evaluation.
+
+The recovery process must:
+
+1. acquire the complete required lock set where safe;
+2. record exact input fingerprints;
+3. evaluate the operation graph;
+4. reread required mutable inputs before selecting a write disposition;
+5. and invalidate the observation if any required input changed.
+
+A changed-during-recovery condition does not permit combining earlier and later observations.
+
+## 14.6 Journal-chain assessment
+
+The initial journal-chain assessments are:
+
+```text
+valid_selected_chain
+missing_current_pointer
+selected_revision_missing
+selected_revision_corrupt
+unselected_linear_successor
+orphan_noncurrent_revision
+branching_revisions
+predecessor_gap
+intent_mismatch
+contract_unsupported
+authorization_limited
+```
+
+Several assessments may apply to different revisions, but one selected chain cannot be both valid and branching.
+
+## 14.7 Exact current selection remains authoritative
+
+When `current.json` is valid, it selects the journal revision governing ordinary inspection.
+
+Recovery may inspect unselected revisions, but it must not choose the greatest revision automatically.
+
+An unselected revision may be selected only through an explicit recovery disposition after validating:
+
+- same operation identity;
+- same immutable intent;
+- exact predecessor;
+- legal state transition;
+- complete snapshot monotonicity;
+- and agreement with observed durable state.
+
+## 14.8 Missing current pointer
+
+When journal revisions exist but `current.json` is missing, recovery must determine whether:
+
+- revision 1 was durably created before initial pointer publication;
+- a later pointer was lost;
+- several revisions form one unique valid chain;
+- several branches exist;
+- or the directory is malformed.
+
+A unique valid chain does not become current automatically.
+
+Recovery may publish an explicit pointer only after selecting the exact revision justified by canonical and operational evidence.
+
+## 14.9 Selected revision missing
+
+When `current.json` selects a missing revision:
+
+- the pointer is not redirected to another revision automatically;
+- existing revisions are inspected;
+- canonical and staged state are compared;
+- and ordinary operation use is blocked.
+
+A repair may restore a prior exact selected revision or select a unique valid successor only when the evidence supports that precise state.
+
+## 14.10 Corrupt journal revision
+
+A corrupt journal revision is never edited in place.
+
+Recovery may use:
+
+- earlier valid immutable revisions;
+- a valid current pointer;
+- exact staged bytes;
+- exact canonical target bytes;
+- lock records;
+- and later independently accepted canonical evidence.
+
+If the corrupt revision is the only record of claimed progress, recovery cannot assume that progress occurred.
+
+Possible durable canonical effects remain `possible` until directly evaluated.
+
+## 14.11 Unselected linear successor
+
+An unselected journal revision is an exact linear successor when:
+
+- it belongs to the same operation;
+- its predecessor is the selected revision;
+- its intent digest matches;
+- its complete snapshot is monotonic;
+- its state transition is legal;
+- and no competing successor exists.
+
+Recovery may:
+
+- select it when observed durable state agrees;
+- leave it unselected and resume from the selected revision when it records no additional durable truth;
+- or quarantine when it contradicts observed state.
+
+## 14.12 Branching journal revisions
+
+Two revisions that claim the same predecessor create a branch.
+
+Recovery must not choose a branch from:
+
+- higher revision number;
+- later timestamp;
+- filesystem modification time;
+- lexical filename;
+- or greater reported progress.
+
+A branch may be resolved automatically only when one branch is proven to be a byte-for-byte duplicate operational snapshot with no unique effect and the other uniquely agrees with all observed durable state.
+
+Otherwise the operation is quarantined and requires a repair operation or manual review.
+
+No revision is deleted to conceal the branch.
+
+## 14.13 Predecessor gaps
+
+A revision that references a missing predecessor does not form a valid selected chain.
+
+Recovery may not bridge the gap by assuming that the missing revision contained expected state.
+
+Exact canonical state may still support:
+
+- reconciliation as committed;
+- compensation;
+- quarantine;
+- or manual repair.
+
+The missing operational history remains an integrity condition.
+
+## 14.14 Intent mismatch
+
+Every revision in one operation series must preserve the same immutable intent digest.
+
+A mismatch indicates contradictory operation identity reuse or corruption.
+
+Recovery must not merge the intents.
+
+The operation series is quarantined, and any canonical effects are evaluated against each claimed plan without assuming either claim is authoritative.
+
+## 14.15 Step reconciliation
+
+For every planned step, recovery compares:
+
+```text
+journal disposition
+intended path
+intended fingerprint
+observed path
+observed fingerprint
+target identity
+operation-specific acceptance conditions
+```
+
+The initial reconciled step assessments are:
+
+```text
+not_started
+staged_only
+installed_unverified
+accepted_as_planned
+accepted_but_unjournaled
+journal_claim_not_observed
+contradictory_representation
+compensated_as_planned
+indeterminate
+```
+
+A journal claim does not override contradictory canonical bytes.
+
+## 14.16 Accepted but unjournaled
+
+When an intended canonical representation exists and satisfies every planned acceptance condition, but the selected journal does not record acceptance, recovery may classify the step as `accepted_but_unjournaled`.
+
+Recovery may publish a monotonic journal revision recording the accepted state only when:
+
+- the exact intended bytes match;
+- identity and path match;
+- the write was within the accepted plan;
+- no conflicting operation claims the result;
+- and operation-specific invariants agree.
+
+## 14.17 Journal claim not observed
+
+When the journal claims an accepted step but the intended representation is absent or does not match:
+
+- the step is not treated as accepted;
+- the operation becomes recovery-required;
+- and the discrepancy may require quarantine.
+
+Recovery must evaluate whether the representation was:
+
+- never installed;
+- later removed improperly;
+- replaced by another operation;
+- quarantined;
+- exceptionally removed;
+- or rendered authorization-limited.
+
+## 14.18 Recovery dispositions
+
+The accepted recovery dispositions are:
+
+```text
+resume
+reconcile_as_complete
+complete_remaining_steps
+compensate
+restore_pointer
+clear_lock_after_external_verification
+quarantine
+abandon_preacceptance_artifacts
+rebuild_projection
+require_manual_review
+```
+
+Each disposition identifies exact evidence and permitted writes.
+
+## 14.19 `resume`
+
+`resume` continues the original operation from its selected valid state.
+
+It is allowed only when:
+
+- immutable intent remains valid;
+- remaining steps are already present in the accepted plan;
+- required staged candidates remain exact or may be regenerated under Decision 6;
+- all preconditions can be revalidated;
+- and no contradictory accepted state exists.
+
+## 14.20 `reconcile_as_complete`
+
+`reconcile_as_complete` is used when observed state proves that all required canonical and finalization effects already occurred, but the journal did not reach the matching terminal state.
+
+Recovery publishes the missing monotonic journal evidence and explicit current selection.
+
+It must not use this disposition merely because the apparent user-visible result looks correct.
+
+## 14.21 `complete_remaining_steps`
+
+`complete_remaining_steps` performs exact planned steps that remain safe and necessary after earlier planned effects became accepted.
+
+It differs from `resume` only in emphasis: the recovery observation has confirmed partial durability and is completing a known remainder.
+
+No new unplanned canonical effect may be added.
+
+## 14.22 `compensate`
+
+`compensate` follows the accepted predeclared compensation branch when the requested result cannot be completed safely.
+
+It must preserve original effects and create explicit compensating evidence.
+
+## 14.23 `restore_pointer`
+
+`restore_pointer` selects one already accepted immutable revision under the exact guarded-pointer rules.
+
+It does not delete the currently selected or intervening revision.
+
+## 14.24 `clear_lock_after_external_verification`
+
+This disposition records the evidence and exact fingerprint required by Decision 7.
+
+It is not selected from age alone.
+
+## 14.25 `quarantine`
+
+`quarantine` blocks ordinary use of an exact operation or target scope when:
+
+- current state is contradictory;
+- a safe automatic repair is unavailable;
+- further writes could amplify harm;
+- authorization is insufficient;
+- or evidence must be preserved for review.
+
+The quarantine contract is defined in Decision 11.
+
+## 14.26 `abandon_preacceptance_artifacts`
+
+This disposition removes only exact proven-unaccepted transient artifacts.
+
+It may permit an operation to become `aborted` only when no canonical effect is possible.
+
+## 14.27 `rebuild_projection`
+
+This disposition rebuilds nonauthoritative derived state from accepted canonical and operational sources.
+
+It does not repair canonical state.
+
+## 14.28 `require_manual_review`
+
+This disposition is selected when the architecture cannot justify one automatic result.
+
+The review record must explain:
+
+- the exact ambiguity;
+- affected targets;
+- blocked effects;
+- known durable state;
+- evidence that must be supplied;
+- and which repair operations would be permitted after review.
+
+## 14.29 Recovery journaling
+
+A recovery attempt continuing the original operation publishes:
+
+```text
+current state -> recovering
+```
+
+before making a recovery write.
+
+The recovering revision records:
+
+- recovery observation digest;
+- selected disposition;
+- exact evidence references;
+- required lock set;
+- planned recovery steps;
+- and authorization context.
+
+Every accepted recovery step receives the same durable journal treatment as an original commit step.
+
+## 14.30 Recovery idempotency
+
+Repeating recovery against unchanged state must produce:
+
+- the same recovery observation digest;
+- the same reconciled step assessments;
+- the same permitted disposition set;
+- and no duplicate canonical records.
+
+A repeated accepted recovery write is reconciled as exact replay.
+
+## 14.31 Recovery after completed, compensated, aborted, or failed
+
+Terminal original operations are not reopened.
+
+Any required later change uses a new `repair_operation` referencing the exact terminal Operation Journal revision.
+
+The repair operation may preserve the original terminal state while correcting canonical or operational consequences.
+
+## 14.32 Recovery and Integrity Findings
+
+Persistent recovery conditions emit or retain Integrity Findings, including:
+
+```text
+operation_incomplete
+canonical_write_partial
+orphaned_canonical_artifact
+content_digest_mismatch
+recovery_required
+```
+
+A finding clears only when reevaluation no longer detects the condition.
+
+Marking an operation reviewed does not clear the finding.
+
+---
+
+# 15. Approved Decision 11: Repair Mode and Independent Quarantine State
+
+## 15.1 Decision
+
+Portia defines:
+
+- `repair_operation` as an explicitly authorized bounded operation kind;
+- and Quarantine as independent durable operational state that blocks ordinary use without changing canonical domain lifecycle.
+
+Repair and quarantine are related but distinct.
+
+A repair may apply, release, or supersede quarantine.
+
+Quarantine does not itself repair the target.
+
+## 15.2 Repair operation
+
+A repair operation identifies:
+
+- one exact source operation or integrity condition;
+- one bounded repair scope;
+- exact targets;
+- exact observed state;
+- the ordinary gate preventing repair;
+- the narrow bypass requested;
+- required authorization or operator assertion;
+- intended canonical or operational result;
+- and a compensation plan.
+
+Repair remains subject to the complete Issue #13 operation protocol.
+
+## 15.3 Permitted repair purposes
+
+Initial repair purposes include:
+
+```text
+reconcile_journal
+restore_current_pointer
+complete_interrupted_operation
+apply_compensation
+repair_status_history
+resolve_journal_branch
+release_verified_quarantine
+clear_verified_lock
+repair_derived_selection
+complete_removal_evidence
+```
+
+A new repair purpose requires explicit contract support.
+
+## 15.4 Narrow bypass
+
+Repair mode may bypass only a named ordinary gate whose normal enforcement would prevent the approved repair.
+
+Examples include:
+
+- allowing a Lifecycle History Correction to address a broken selected chain;
+- allowing explicit pointer restoration to a prior accepted revision;
+- allowing a fingerprint-protected lock clear after external verification;
+- allowing a missing journal current pointer to be republished;
+- or permitting completion of emergency removal evidence after payload containment.
+
+## 15.5 Non-bypassable invariants
+
+Repair mode must never bypass:
+
+- Draft 2020-12 schema validation;
+- typed identity;
+- selected workspace containment;
+- canonical path agreement;
+- symlink and path safety;
+- exact expected prior state for mutable writes;
+- immutable public schema versioning;
+- no generic deletion of accepted canonical records;
+- required exceptional-removal authorization;
+- operation journaling;
+- readback verification;
+- or minimum privacy protections.
+
+## 15.6 Repair authorization
+
+The design does not define institutional authorization.
+
+The repair journal must preserve bounded authorization evidence or an explicit local-operator assertion where the initial teacher-local deployment permits it.
+
+Authorization evidence must be operation-specific.
+
+A general `repair_mode=true` flag is prohibited.
+
+## 15.7 Repair does not conceal the defect
+
+Repair records preserve references to:
+
+- the original operation;
+- affected Integrity Findings;
+- quarantines;
+- locks;
+- contradictory journal revisions;
+- and canonical records being reconciled.
+
+Repair must not rewrite old journal revisions or delete contradictory evidence.
+
+## 15.8 Quarantine semantic unit
+
+One Quarantine series represents one protective claim over one exact target or operation scope for one reason.
+
+A target may have several independent active Quarantine series.
+
+The target remains blocked while any applicable series is active.
+
+## 15.9 Quarantine identity
+
+Quarantine identifiers use:
+
+```text
+qnt_<opaque-id>
+```
+
+The identifier is opaque, workspace-scoped, nonsemantic, and never reused.
+
+It follows the established Portia-owned identifier rules.
+
+## 15.10 Quarantine storage
+
+One Quarantine series is stored at:
+
+```text
+<PDS workspace>/
+  portia/
+    quarantines/
+      <quarantine_id>/
+        revisions/
+          1.json
+          2.json
+          ...
+        current.json
+```
+
+Quarantine uses immutable revisions plus an explicit current pointer.
+
+This preserves application, review, extension, and release history without deleting earlier evidence.
+
+## 15.11 Quarantine state
+
+The initial Quarantine state vocabulary is:
+
+```text
+active
+released
+superseded
+```
+
+### `active`
+
+The protective effect applies.
+
+### `released`
+
+The exact quarantine series no longer blocks ordinary use because its release conditions were verified.
+
+### `superseded`
+
+Another exact quarantine series replaces the claim for a documented reason.
+
+Supersession does not imply release of the successor quarantine.
+
+## 15.12 Quarantine target
+
+Initial target branches include:
+
+```text
+Operation Reference
+exact Portia work reference
+exact Portia work-record reference
+Exceptional Removal reference
+class
+workspace
+derived projection scope
+```
+
+The target is exact and bounded.
+
+A class or workspace quarantine is exceptional and must identify why narrower target quarantine is insufficient.
+
+## 15.13 Quarantine reason
+
+Initial reason categories include:
+
+```text
+journal_integrity
+partial_commit
+canonical_contradiction
+lock_integrity
+lifecycle_reconciliation
+replacement_reconciliation
+dependency_reconciliation
+migration_reconciliation
+ownership_reconciliation
+removal_reconciliation
+authorization_limitation
+derived_state_safety
+external_mutation
+```
+
+A bounded detail may explain the condition without copying sensitive payload.
+
+## 15.14 Quarantine effects
+
+Initial effects include:
+
+```text
+block_current_use
+block_lifecycle_writes
+block_work_writes
+block_class_writes
+block_operation_completion
+block_projection_use
+review_required
+```
+
+Effects are explicit.
+
+Severity and effect compatibility are application invariants.
+
+## 15.15 Quarantine is not lifecycle
+
+Applying Quarantine must not:
+
+- set canonical status;
+- create a Lifecycle Transition;
+- invalidate or supersede a target;
+- mark a target removed;
+- select a successor;
+- or rewrite a current pointer.
+
+The target's domain lifecycle remains whatever the canonical domain records establish.
+
+## 15.16 Quarantine application
+
+A Quarantine revision 1 records:
+
+- exact target;
+- reason;
+- effects;
+- applying Operation Journal Reference;
+- supporting Integrity Finding keys;
+- applied time;
+- attribution;
+- release requirements;
+- and optional review deadline.
+
+The quarantine series and current pointer must be durably selected before a reader relies on the protective effect.
+
+## 15.17 Quarantine release
+
+Release requires a new immutable revision selected through expected-current-revision protection.
+
+The release revision records:
+
+- exact prior active revision;
+- releasing repair Operation Journal Reference;
+- satisfied release requirements;
+- resolved or remaining Integrity Findings;
+- release time;
+- and attribution.
+
+Release is prohibited merely because:
+
+- the operation ended;
+- the lock disappeared;
+- the quarantine is old;
+- or a finding was acknowledged.
+
+## 15.18 Quarantine supersession
+
+Supersession is used when the protective claim is replaced by another more accurate Quarantine series.
+
+The superseding reference is exact.
+
+The old series remains historical.
+
+## 15.19 Ordinary resolution behavior
+
+When an applicable active Quarantine exists, ordinary resolution must return a typed quarantined or blocked result.
+
+It must not return:
+
+- not found;
+- removed;
+- invalidated;
+- superseded;
+- or an unqualified canonical record.
+
+Authorized repair and diagnostic operations may inspect the target under minimum-necessary access.
+
+## 15.20 Discovering quarantine
+
+A derived active-quarantine index may accelerate target checks.
+
+The index is nonauthoritative.
+
+A missing index does not prove no Quarantine exists.
+
+Safety-sensitive operations must use:
+
+- an exact known Quarantine reference;
+- a verified complete active-quarantine projection;
+- or a bounded scan of the Quarantine namespace relevant to the target.
+
+## 15.21 Quarantine and authorization-limited existence
+
+A Quarantine response must not reveal target details to an unauthorized caller.
+
+The caller may receive a generic blocked or unavailable result while authorized diagnostics preserve the exact target internally.
+
+## 15.22 Quarantine failure
+
+If Quarantine publication becomes partial:
+
+- the operation reports partial success;
+- ordinary use is blocked where possible through the operation state and known lock scope;
+- and recovery reconciles the Quarantine series and pointer.
+
+A partially published Quarantine must not be assumed active or absent solely from directory contents.
+
+## 15.23 Quarantine retention
+
+Released and superseded Quarantine revisions remain durable operational history under the applicable retention policy.
+
+They may not be deleted while required to explain:
+
+- prior blocked use;
+- repair authorization;
+- exceptional-removal containment;
+- or operation recovery.
+
+## 15.24 Public schema direction
+
+Later schema work should evaluate:
+
+```text
+schemas/v1/identifiers/portia-quarantine-id.schema.json
+schemas/v1/operations/quarantine-record.schema.json
+schemas/v1/operations/quarantine-current-pointer.schema.json
+```
+
+The record name may remain `quarantine_record` even though each file is one immutable series revision.
+
+---
+
+# 16. Approved Decision 12: Lifecycle, Amendment, Successor, and Dependency Operations
+
+## 16.1 Decision
+
+Issue #12 domain contracts remain individually canonical.
+
+Issue #13 coordinates their persistence through explicit operation plans.
+
+The operation journal correlates the records without collapsing them into one multi-target domain record.
+
+## 16.2 Nonmaterial Amendment operation
+
+A nonmaterial Amendment operation coordinates:
+
+```text
+target expected prior representation
++
+new Amendment record
++
+target guarded replacement
++
+derived current view
+```
+
+The safety-oriented canonical order is:
+
+1. exclusively create and verify the Amendment;
+2. revision-aware replace the target with the exact `after` value;
+3. verify target and Amendment reconciliation;
+4. commit canonical gates;
+5. regenerate ordinary derived views.
+
+If the Amendment exists while the target retains the `before` value, the operation is partial and recoverable.
+
+If the target contains the `after` value but the Amendment is absent, the operation requires recovery and may require quarantine because accepted correction evidence is missing.
+
+## 16.3 Amendment replay
+
+Exact replay requires:
+
+- same Amendment identity;
+- same target;
+- same field path;
+- same before and after values;
+- same observed prior fingerprint;
+- and same operation intent.
+
+A different after value or target revision is not replay.
+
+## 16.4 Lifecycle transition operation
+
+A lifecycle operation coordinates:
+
+```text
+target expected status and bytes
++
+new Lifecycle Transition
++
+target guarded status replacement
++
+selected lifecycle reconciliation
++
+derived current view
+```
+
+The canonical order is:
+
+1. exclusively create and verify the Lifecycle Transition;
+2. revision-aware replace the target's persisted status;
+3. validate the complete selected lifecycle chain;
+4. commit canonical gates;
+5. regenerate the derived timeline and current view.
+
+This order ensures that a target status is not advanced without durable transition evidence.
+
+A transition present with the old target status is a partial recoverable state.
+
+## 16.5 Lifecycle status mismatch during commit
+
+While a relevant operation is `committing`, ordinary lifecycle-sensitive use must not treat either side as independently authoritative.
+
+The reader returns unverified or blocked state until:
+
+- the operation commits;
+- recovery completes;
+- or Quarantine provides the explicit protective result.
+
+## 16.6 Lifecycle History Correction operation
+
+A history-correction operation coordinates:
+
+- exact target;
+- exact previously selected history;
+- new Lifecycle History Correction;
+- any required target-status reconciliation;
+- and derived timeline regeneration.
+
+The operation first creates and verifies the correction record.
+
+If the corrected selected head implies a different valid current status, the same operation includes a guarded target-status replacement.
+
+Recovery must not simply choose another transition head without the correction record.
+
+## 16.7 Material successor operation
+
+A material correction creates a successor and preserves exact predecessor identity.
+
+The generic successor operation coordinates:
+
+```text
+successor representation
++
+successor predecessor references
++
+predecessor lifecycle transitions
++
+predecessor guarded status replacements
++
+successor activation when required
++
+Dependencies and incoming-reference review
++
+replacement frontier
+```
+
+## 16.8 Successor preparation
+
+Before canonical mutation, the operation validates:
+
+- successor identity is new;
+- predecessor set is exact and complete;
+- successor contract accepts the replacement topology;
+- no competing successor already owns the same purpose;
+- successor content is valid;
+- every required Dependency is supported;
+- and every incoming reference has an explicit disposition where required.
+
+## 16.9 Successor write order
+
+The generic safety-oriented order is:
+
+1. create and verify the successor in an operation-legal initial state;
+2. create and verify any required successor-side evidence records;
+3. create and verify predecessor Lifecycle Transitions;
+4. guarded-replace predecessor statuses;
+5. create and verify successor activation transition when activation is separate;
+6. guarded-replace successor status when required;
+7. verify one coherent replacement frontier;
+8. commit canonical gates;
+9. regenerate replacement and current views.
+
+The operation-specific record family determines the legal initial and active states.
+
+## 16.10 Successor visibility before commit
+
+A newly accepted successor representation is not automatically a valid current successor merely because its file exists.
+
+Current-use resolution also requires:
+
+- completed predecessor reconciliation;
+- legal successor lifecycle;
+- Dependency gates;
+- no competing frontier;
+- and operation commit or successful recovery.
+
+## 16.11 Partial successor activation
+
+Partial states include:
+
+- successor exists but predecessors remain current;
+- some predecessor transitions exist but statuses are unchanged;
+- predecessors are superseded but successor activation is incomplete;
+- or several successor candidates compete.
+
+Such states produce replacement or persistence-recovery findings and block unsupported current use.
+
+## 16.12 Duplicate consolidation
+
+Duplicate consolidation uses one successor with several exact predecessors.
+
+Preflight must preserve:
+
+- every predecessor;
+- differing provenance;
+- amendments;
+- disagreement statements;
+- Dependencies;
+- incoming references;
+- and operation-specific subject or ownership evidence.
+
+The operation does not merge predecessor files in place.
+
+## 16.13 Consolidation ordering
+
+The operation:
+
+1. creates and verifies the consolidation successor;
+2. verifies that its predecessor set exactly matches the accepted duplicate set;
+3. transitions every predecessor under deterministic order;
+4. verifies all predecessor status replacements;
+5. activates the successor where required;
+6. verifies the unified frontier;
+7. commits;
+8. regenerates reverse and current views.
+
+If one predecessor remains unresolved, the consolidation is partial.
+
+## 16.14 No silent reference retargeting
+
+Successor activation and consolidation do not edit incoming historical references.
+
+Each incoming record continues to identify its exact original target.
+
+A referring record changes only through its own explicit correction operation.
+
+## 16.15 Dependency creation operation
+
+Creating a Dependency coordinates:
+
+- exact dependent;
+- exact dependency target;
+- Dependency record creation;
+- duplicate and conflict checks;
+- cycle evaluation;
+- and derived Dependency graph regeneration.
+
+The Dependency record is created exclusively.
+
+A derived graph row does not substitute for the canonical Dependency.
+
+## 16.16 Required Dependency gates
+
+Before an operation activates, supersedes, migrates, moves, or removes a target, every relevant required Dependency receives an explicit operation-specific disposition.
+
+Initial dispositions include:
+
+```text
+satisfied
+preserved_historical
+replaced_by_exact_successor
+blocked
+unsupported
+authorization_limited
+requires_manual_review
+```
+
+The disposition is operational evidence.
+
+It does not mutate the Dependency record unless a separate canonical Dependency correction is required.
+
+## 16.17 Advisory Dependencies
+
+An advisory Dependency may produce:
+
+- attention;
+- review requirement;
+- or a nonblocking Integrity Finding.
+
+It does not automatically cascade lifecycle state.
+
+## 16.18 Dependency uncertainty
+
+When authorization or unsupported contracts prevent complete Dependency evaluation:
+
+- the result remains indeterminate;
+- required current-use or operation-completion gates block as defined;
+- and Portia does not assume the dependency set is empty.
+
+## 16.19 Dependency cycles
+
+A planned operation must not introduce a prohibited Dependency cycle.
+
+A cycle discovered after partial mutation requires recovery or Quarantine.
+
+The operation must not delete accepted Dependency records to hide the cycle.
+
+## 16.20 Statements of Disagreement
+
+Creating a Statement of Disagreement is ordinarily one exclusive canonical creation plus derived-view regeneration.
+
+It does not mutate the disputed target.
+
+A coordinated operation is still used for:
+
+- exact target preflight;
+- authorization and attribution;
+- exclusive creation;
+- readback;
+- and replay.
+
+The operation must not add a lifecycle or correction effect to the target.
+
+## 16.21 Operation-family compensation
+
+Compensation for these operations follows their canonical contracts:
+
+- an accepted Amendment is not deleted;
+- an accepted Lifecycle Transition is not edited;
+- a successor is not erased;
+- a predecessor status is not reset without a new legal transition;
+- and a Dependency is not removed generically.
+
+Compensation creates explicit later evidence or Quarantine.
+
+---
+
+# 17. Approved Decision 13: Migration, Ownership Correction, and Exceptional Removal Operations
+
+## 17.1 Decision
+
+Migration, ownership correction, and exceptional removal are high-risk coordinated operations because they can affect:
+
+- representation selection;
+- class-qualified identity;
+- several work roots;
+- child graphs;
+- incoming references;
+- authorization;
+- and payload availability.
+
+Each operation uses a dedicated plan and recovery rules.
+
+## 17.2 Representation migration preflight
+
+Migration preflight validates:
+
+- exact source representation;
+- exact destination identity;
+- same logical identity;
+- supported source and destination contracts;
+- deterministic or reviewed transformation;
+- semantic preservation;
+- exact current representation selection;
+- Dependencies;
+- incoming references;
+- and absence of a competing migration branch.
+
+Migration does not select the greatest contract version.
+
+## 17.3 Migration canonical order
+
+The generic migration order is:
+
+1. create and verify the destination representation;
+2. create and verify the Record Migration certificate;
+3. create and verify required lifecycle evidence;
+4. guarded-replace source or destination current projections where applicable;
+5. guarded-update the explicit current representation pointer or selection record where the accepted record-family design provides one;
+6. verify one current logical representation;
+7. commit canonical gates;
+8. regenerate logical-identity and current views.
+
+The source representation remains historical.
+
+## 17.4 Migration partial states
+
+Recovery must distinguish:
+
+- destination staged only;
+- destination accepted without certificate;
+- certificate accepted without destination;
+- source lifecycle changed without current selection;
+- destination selected while source remains impermissibly current;
+- or several destination branches.
+
+No state is resolved by choosing the newest or highest-version representation.
+
+## 17.5 Migration compensation
+
+An accepted destination is not deleted as rollback.
+
+Depending on observed state, recovery may:
+
+- complete certificate and selection;
+- restore an explicit prior pointer;
+- transition the destination;
+- create another migration or correction;
+- quarantine one or both representations;
+- or require review.
+
+## 17.6 Ownership-correction preflight
+
+Ownership correction preflight binds:
+
+```text
+exact source work root
+exact destination class and work identity
+destination work plan
+complete source child inventory
+child disposition for every source child
+incoming-reference dispositions
+Dependencies
+attachments and derived payload scope
+authorization and roster mapping evidence
+```
+
+A source child may not disappear from the plan merely because its contract is unsupported.
+
+Unsupported or authorization-limited children remain explicit blocking or review obligations.
+
+## 17.7 Destination graph
+
+The intended destination graph includes:
+
+- destination work root;
+- destination canonical work record;
+- every copied or corrected child representation;
+- every Ownership Correction certificate;
+- required lifecycle records;
+- exact source-to-destination mappings;
+- and required destination Dependencies.
+
+The graph is staged and validated as one bounded plan before canonical mutation.
+
+## 17.8 Ownership-correction canonical order
+
+The generic order is:
+
+1. create and verify the destination work root and work record;
+2. create and verify destination child records in deterministic mapping order;
+3. create and verify Ownership Correction certificates and child mappings;
+4. verify destination graph completeness;
+5. create and verify source lifecycle transitions;
+6. guarded-replace source statuses;
+7. activate destination current use where required;
+8. verify Dependencies and incoming-reference dispositions;
+9. commit canonical gates;
+10. regenerate ownership, reverse-reference, and current views.
+
+The source class-qualified identity is never reinterpreted as the destination identity.
+
+## 17.9 Partial ownership correction
+
+Partial states include:
+
+- destination root without complete children;
+- destination child without mapping certificate;
+- certificate without destination representation;
+- some source children unresolved;
+- source superseded before destination graph validates;
+- or active source and destination graphs violating uniqueness.
+
+These states require ownership-reconciliation findings and may require Quarantine.
+
+## 17.10 Incoming references during ownership correction
+
+Historical incoming references remain exact to the source representation.
+
+The operation records a disposition for each reference class where required:
+
+```text
+remain_exact_historical
+requires_referrer_correction
+blocks_destination_activation
+authorization_limited
+unsupported
+```
+
+The ownership operation does not silently rewrite referrers.
+
+## 17.11 Cross-work and cross-class locks
+
+Ownership correction acquires:
+
+- its operation lock;
+- source work lock;
+- destination class or work lock as required;
+- affected child record locks where a work lock is insufficient;
+- and safety-critical derived-projection locks only when required.
+
+The complete set is sorted under Decision 7.
+
+## 17.12 Ownership-correction compensation
+
+Accepted destination records are preserved.
+
+Compensation may:
+
+- complete missing mappings;
+- transition or quarantine incomplete destination records;
+- restore an explicit current selection;
+- create a later correcting ownership operation;
+- or require manual review.
+
+It must not delete the destination graph generically.
+
+## 17.13 Exceptional Removal principles
+
+Exceptional Removal is the narrow operation that may make accepted canonical substantive payload unavailable.
+
+It remains governed by Issue #12 authorization, evidence, and certificate rules.
+
+The operation must distinguish:
+
+```text
+ordinary authorized removal
+emergency containment
+```
+
+## 17.14 Ordinary authorized removal preflight
+
+Ordinary removal preflight validates:
+
+- exact target;
+- target current bytes;
+- target lifecycle;
+- required authorization;
+- removal reason;
+- salted content evidence requirements;
+- Dependencies;
+- incoming references;
+- active operations;
+- active Quarantines;
+- derivative and staged payload locations;
+- and retention or legal constraints available to Portia.
+
+An indeterminate required authorization or dependency blocks removal.
+
+## 17.15 Ordinary removal canonical order
+
+The generic ordinary sequence is:
+
+1. apply and verify active Quarantine to the target scope;
+2. create and verify the Exceptional Removal certificate containing permitted minimal evidence;
+3. create and verify required lifecycle evidence;
+4. make the canonical substantive payload unavailable through the accepted removal primitive;
+5. verify ordinary resolution no longer returns the payload;
+6. purge prohibited substantive payload from derived projections, staged artifacts, and operation-owned caches;
+7. verify required Dependencies and incoming-reference behavior;
+8. commit canonical gates;
+9. release or supersede the containment Quarantine only when the removal contract permits;
+10. regenerate minimal removal-aware views.
+
+Payload unavailability and prohibited derived-payload purge are canonical gates.
+
+## 17.16 Removal primitive
+
+The later implementation must define a specialized removal primitive.
+
+It must not reuse generic `remove_transient`.
+
+The removal primitive requires:
+
+- exact target identity;
+- exact observed fingerprint;
+- active removal operation;
+- verified authorization;
+- verified certificate;
+- active Quarantine;
+- and operation-specific target-path validation.
+
+## 17.17 Removal resolution behavior
+
+After verified removal:
+
+- ordinary resolution returns a typed removed or unavailable result;
+- the Exceptional Removal certificate remains resolvable under authorization;
+- historical exact references remain exact;
+- and missing payload is not reported as ordinary not-found.
+
+## 17.18 Emergency containment
+
+Emergency containment is permitted only under the narrow Issue #12 security or legal boundary when waiting to create complete evidence would cause additional harm.
+
+The sequence may begin:
+
+1. acquire the safest available bounded locks;
+2. apply or attempt Quarantine;
+3. make the prohibited payload unavailable;
+4. purge immediately known prohibited derived or staged copies;
+5. publish partial-success evidence;
+6. create a recovery or repair operation;
+7. complete the Exceptional Removal certificate and lifecycle evidence;
+8. reconcile Dependencies, incoming references, and all derived locations;
+9. verify final removal state.
+
+Emergency containment does not waive the certificate obligation.
+
+## 17.19 Emergency containment without journal completion
+
+When the journal cannot be published before containment:
+
+- the service reports exact direct partial success;
+- a minimal local emergency evidence artifact may be permitted only under a separately accepted operational contract;
+- the affected scope remains quarantined;
+- and a repair operation must complete durable journaling and canonical certificate evidence.
+
+The architecture must not encourage routine use of this branch.
+
+## 17.20 Removal partial states
+
+Recovery distinguishes:
+
+- certificate accepted but payload still available;
+- payload unavailable but certificate missing;
+- lifecycle evidence missing;
+- prohibited derived payload retained;
+- incoming current use unresolved;
+- duplicate removal certificates;
+- or payload absence caused by unrelated corruption.
+
+These states are not interchangeable.
+
+## 17.21 Removal compensation
+
+Exceptional Removal cannot generally be compensated by reconstructing removed substantive payload from hashes, derived copies, logs, or backups.
+
+If authorized restoration is possible from an independent lawful source, it is a new explicit import or correction operation.
+
+The removal operation preserves its historical certificate.
+
+## 17.22 Removed payload in staging or journals
+
+Operation journals must not contain substantive payload copies.
+
+Any staged or cached copies within the removal scope must be identified and purged as required canonical gates.
+
+A digest or permitted bounded evidence may remain under Issue #12 rules.
+
+## 17.23 Dependency effects during removal
+
+Required Dependencies may:
+
+- block ordinary removal;
+- require prior dependent correction;
+- require historical-only disposition;
+- or require explicit unresolved-reference behavior after removal.
+
+No universal cascade deletes dependent records.
+
+## 17.24 Removal and current views
+
+Current views must distinguish:
+
+- removed target with certificate;
+- quarantined target;
+- missing or corrupt target;
+- authorization-limited target;
+- and exact historical reference to removed content.
+
+A view must not reconstruct removed payload from retained derived data.
+
+## 17.25 Operation-family Integrity Findings
+
+These operation families reuse Issue #12 finding categories:
+
+```text
+lifecycle
+replacement
+dependency
+migration
+ownership_correction
+removal
+persistence_recovery
+derived_state
+```
+
+Operational detection does not create a second competing integrity model.
+
+## 17.26 Public schema impact
+
+Issue #13 does not add `operation_id` to every Issue #12 canonical record.
+
+Correlation is provided by the Operation Journal write set and exact canonical references.
+
+A canonical record receives an operation field only if a later record-family contract establishes independent domain meaning and publishes a new schema version.
+
+---
+
+# 18. Decisions Remaining
 
 Later design slices must resolve:
 
-1. recovery dispositions and recovery state evaluation;
-2. missing, corrupt, orphaned, and branching journal behavior;
-3. repair mode and quarantine;
-4. coordinated lifecycle and history operations;
-5. successor activation and duplicate consolidation;
-6. migration and ownership-correction recovery;
-7. exceptional-removal recovery;
-8. Dependency gating;
-9. Integrity Finding operational code vocabulary and version audit;
-10. acknowledgement and suppression records;
-11. derived-index families and common metadata;
-12. deterministic source inventories and source snapshots;
-13. complete candidate build, verification, and atomic installation;
-14. missing, stale, corrupt, and incompatible derived-state behavior;
-15. current-view regeneration;
-16. privacy-minimized diagnostics;
-17. public schema organization;
-18. Issue #12 contract reconciliation;
-19. and final cross-repository drift checks.
+1. Integrity Finding operational code vocabulary and version audit;
+2. acknowledgement and suppression records;
+3. derived-index families and common metadata;
+4. deterministic source inventories and source snapshots;
+5. complete candidate build, verification, and atomic installation;
+6. missing, stale, corrupt, and incompatible derived-state behavior;
+7. current-view regeneration;
+8. privacy-minimized diagnostics;
+9. public schema organization;
+10. Issue #12 contract reconciliation;
+11. ADR 0009;
+12. synthetic example strategy;
+13. validation and fixture strategy;
+14. and final cross-repository drift checks.
 
-## 15. Current implementation boundary
+## 19. Current implementation boundary
 
-No production filesystem mutation is introduced by Decisions 1–9.
+No production filesystem mutation is introduced by Decisions 1–13.
 
 The current design now establishes:
 
@@ -3360,9 +4828,12 @@ exclusive-create and guarded-replacement preconditions
 ordered write sets and staged candidates
 stable lock identity, conflicts, ordering, and clearing
 one-file durability and recoverable multi-record commit
-structured partial success
-pre-acceptance cleanup
-post-acceptance compensation
+structured partial success, cleanup, and compensation
+evidence-based recovery and journal reconciliation
+narrow repair mode
+independent revisioned Quarantine
+lifecycle, Amendment, successor, and Dependency operation plans
+migration, ownership-correction, and Exceptional Removal plans
 ```
 
-Later slices will define the recovery state machine, repair and quarantine, exact coordinated operation-family plans, integrity administration, and complete derived-state rebuilding before public operational schemas are finalized.
+Later design work will define integrity administration, complete derived-state rebuilding, current views, schema organization, ADR 0009, and the final validation strategy before public operational schemas are implemented.
