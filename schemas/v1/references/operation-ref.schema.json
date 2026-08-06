@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/operation-ref.schema.json",
+  "title": "Portia Operation Reference",
+  "description": "Stable reference to one workspace-scoped Portia operation series. The reference does not select a journal revision or prove that the operation exists, is current, is authorized, or completed.",
+  "type": "object",
+  "required": [
+    "operation_id"
+  ],
+  "properties": {
+    "operation_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-operation-id.schema.json"
+    }
+  },
+  "additionalProperties": false
+}

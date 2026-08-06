@@ -1,0 +1,114 @@
+{
+  "schema_version": "1",
+  "record_type": "derived_index_metadata",
+  "module_id": "portia",
+  "generation_id": "dgen_current_state_01",
+  "generation_state": "building",
+  "projection_kind": "current_state_view",
+  "projection_scope": {
+    "scope": "work",
+    "work_ref": {
+      "module_id": "portia",
+      "class_id": "class_english10_p2",
+      "work_id": "evt_example",
+      "work_kind": "event",
+      "contract_version": "2"
+    }
+  },
+  "projection_contract_version": "1",
+  "builder": {
+    "builder_id": "portia_current_state_builder",
+    "builder_version": "1"
+  },
+  "authorization_scope": {
+    "authorization_scope_id": "local_teacher_full",
+    "coverage": "complete",
+    "limitation_codes": []
+  },
+  "source_snapshot": {
+    "schema_version": "1",
+    "record_type": "source_snapshot",
+    "module_id": "portia",
+    "snapshot_algorithm": "portia_source_snapshot_v1",
+    "projection_kind": "current_state_view",
+    "projection_scope": {
+      "scope": "work",
+      "work_ref": {
+        "module_id": "portia",
+        "class_id": "class_english10_p2",
+        "work_id": "evt_example",
+        "work_kind": "event",
+        "contract_version": "2"
+      }
+    },
+    "authorization_scope": {
+      "authorization_scope_id": "local_teacher_full",
+      "coverage": "complete",
+      "limitation_codes": []
+    },
+    "discovery_roots": [
+      "classes/class_english10_p2/modules/portia/work/evt_example"
+    ],
+    "source_contracts": [
+      {
+        "contract_name": "event",
+        "contract_version": "2"
+      },
+      {
+        "contract_name": "event_participant",
+        "contract_version": "3"
+      },
+      {
+        "contract_name": "lifecycle_transition",
+        "contract_version": "1"
+      }
+    ],
+    "entries": [
+      {
+        "workspace_relative_path": "classes/class_english10_p2/modules/portia/work/evt_example/event.json",
+        "byte_length": 850,
+        "sha256_digest": "0000000000000000000000000000000000000000000000000000000000000000",
+        "source_role": "canonical_domain",
+        "contract_or_artifact_kind": "event"
+      },
+      {
+        "workspace_relative_path": "classes/class_english10_p2/modules/portia/work/evt_example/lifecycle/lct_example.json",
+        "byte_length": 420,
+        "sha256_digest": "1111111111111111111111111111111111111111111111111111111111111111",
+        "source_role": "canonical_domain",
+        "contract_or_artifact_kind": "lifecycle_transition"
+      },
+      {
+        "workspace_relative_path": "classes/class_english10_p2/modules/portia/work/evt_example/records/event_participant/ept_example.json",
+        "byte_length": 620,
+        "sha256_digest": "2222222222222222222222222222222222222222222222222222222222222222",
+        "source_role": "canonical_domain",
+        "contract_or_artifact_kind": "event_participant"
+      }
+    ],
+    "source_snapshot_digest": "465f1e494d4711ecb9575ccc1e7d11dccfa9bd861c0cec5a41cc8b59b3ea15a8",
+    "observed_at": "2026-08-06T08:10:00-04:00"
+  },
+  "data_artifact": {
+    "workspace_relative_path": "classes/class_english10_p2/modules/portia/work/evt_example/derived/current_state_view/dgen_current_state_01/data.json",
+    "contract_version": "1",
+    "fingerprint": {
+      "algorithm": "sha256",
+      "digest": "3333333333333333333333333333333333333333333333333333333333333333",
+      "byte_length": 1200
+    }
+  },
+  "validation": {
+    "schema_validation": "passed",
+    "identity_validation": "passed",
+    "reference_validation": "passed",
+    "privacy_validation": "passed",
+    "invariant_validation": "passed"
+  },
+  "generating_operation": {
+    "operation_id": "op_rebuild_current_state",
+    "journal_revision": 4,
+    "contract_version": "1"
+  },
+  "generated_at": "2026-08-06T08:10:05-04:00"
+}

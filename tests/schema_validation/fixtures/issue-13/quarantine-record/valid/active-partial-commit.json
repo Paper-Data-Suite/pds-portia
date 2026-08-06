@@ -1,0 +1,55 @@
+{
+  "schema_version": "1",
+  "record_type": "quarantine_record",
+  "module_id": "portia",
+  "quarantine_id": "qnt_example",
+  "quarantine_revision": 1,
+  "previous_quarantine_revision": null,
+  "state": "active",
+  "target": {
+    "kind": "work_record",
+    "work_record_ref": {
+      "work_ref": {
+        "module_id": "portia",
+        "class_id": "class_english10_p2",
+        "work_id": "evt_example",
+        "work_kind": "event",
+        "contract_version": "2"
+      },
+      "record_ref": {
+        "record_kind": "event_participant",
+        "record_id": "ept_example",
+        "contract_version": "3"
+      }
+    }
+  },
+  "reason": "partial_commit",
+  "reason_detail": "A lifecycle transition is durable while the target status remains unreconciled.",
+  "effects": [
+    "block_current_use",
+    "block_lifecycle_writes",
+    "review_required"
+  ],
+  "origin": {
+    "applying_operation": {
+      "operation_id": "op_repair_example",
+      "journal_revision": 3,
+      "contract_version": "1"
+    },
+    "supporting_finding_keys": [
+      "finding:operation:partial_commit:op_repair_example"
+    ],
+    "applied_at": "2026-08-05T22:10:00-04:00",
+    "applied_by": {
+      "type": "local_operator",
+      "display_label": "Synthetic teacher"
+    },
+    "release_requirements": [
+      "canonical_state_reconciled",
+      "integrity_scan_clean"
+    ],
+    "review_deadline": null
+  },
+  "resolution": null,
+  "created_at": "2026-08-05T22:10:01-04:00"
+}

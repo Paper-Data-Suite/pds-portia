@@ -1,0 +1,14 @@
+{
+  "schema_version": "1",
+  "record_type": "derived_current_pointer",
+  "module_id": "portia",
+  "projection_kind": "current_state_view",
+  "projection_scope": {
+    "scope": "class",
+    "class_id": "class_english10_p2"
+  },
+  "generation_ref": {
+    "generation_id": "dgen_current_state_01",
+    "contract_version": "1"
+  }
+}

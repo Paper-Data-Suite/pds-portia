@@ -1,0 +1,15 @@
+{
+  "manifest_version": "1",
+  "issue": 13,
+  "contract": "finding_suppression_current_pointer",
+  "version": "1",
+  "valid": {
+    "current-released.json": "Minimal explicit selection of suppression revision two."
+  },
+  "invalid": {
+    "missing-revision.json": "The selected suppression revision is required.",
+    "zero-revision.json": "Suppression revisions begin at one.",
+    "unexpected-state.json": "Current state is loaded from the selected immutable revision."
+  },
+  "application_invalid": {}
+}

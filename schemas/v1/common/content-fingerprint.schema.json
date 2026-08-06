@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/content-fingerprint.schema.json",
+  "title": "Exact Content Fingerprint",
+  "description": "Exact representation evidence consisting of the SHA-256 digest and byte length of one observed, staged, intended, or installed byte sequence. A fingerprint is not identity and does not by itself establish path containment, contract validity, semantic meaning, acceptance, or authorization.",
+  "type": "object",
+  "required": [
+    "algorithm",
+    "digest",
+    "byte_length"
+  ],
+  "properties": {
+    "algorithm": {
+      "const": "sha256"
+    },
+    "digest": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/sha256-digest.schema.json"
+    },
+    "byte_length": {
+      "type": "integer",
+      "minimum": 0
+    }
+  },
+  "additionalProperties": false
+}

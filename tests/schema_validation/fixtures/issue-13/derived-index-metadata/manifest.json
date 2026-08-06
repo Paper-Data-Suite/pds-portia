@@ -1,0 +1,30 @@
+{
+  "manifest_version": "1",
+  "issue": 13,
+  "contract": "derived_index_metadata",
+  "version": "1",
+  "valid": {
+    "complete-current-state-view.json": "Complete immutable current-state-view generation metadata.",
+    "authorization-limited-recovery-queue.json": "Complete generation within an explicitly limited authorization scope."
+  },
+  "invalid": {
+    "generation-not-complete.json": "Only complete immutable generations use this contract.",
+    "validation-not-passed.json": "Installed generation metadata records passed validation.",
+    "unknown-projection-kind.json": "Projection kind is closed.",
+    "missing-data-fingerprint.json": "Exact output fingerprint is required."
+  },
+  "application_invalid": {
+    "scope-disagrees-with-snapshot.json": {
+      "rule_id": "portia.derived.metadata_scope_matches_snapshot",
+      "description": "Generation scope must equal the embedded snapshot scope."
+    },
+    "authorization-disagrees-with-snapshot.json": {
+      "rule_id": "portia.derived.metadata_authorization_matches_snapshot",
+      "description": "Generation authorization coverage must equal snapshot coverage."
+    },
+    "generated-before-snapshot.json": {
+      "rule_id": "portia.derived.generated_after_snapshot",
+      "description": "Generation completion cannot predate source observation."
+    }
+  }
+}

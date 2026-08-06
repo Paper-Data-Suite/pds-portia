@@ -1,0 +1,31 @@
+{
+  "manifest_version": "1",
+  "issue": 13,
+  "contract": "quarantine_record",
+  "version": "1",
+  "valid": {
+    "active-partial-commit.json": "Active protective state over one exact work record.",
+    "released-after-repair.json": "Release through a new immutable revision with exact repair operation evidence.",
+    "superseded-by-narrower-quarantine.json": "Supersession through a new immutable revision and exact successor reference."
+  },
+  "invalid": {
+    "active-with-resolution.json": "Active Quarantine cannot contain release evidence.",
+    "released-with-null-resolution.json": "Released Quarantine requires release evidence.",
+    "revision-one-released.json": "Revision one establishes active protective state.",
+    "duplicate-effect.json": "Quarantine effects are unique."
+  },
+  "application_invalid": {
+    "nonimmediate-predecessor.json": {
+      "rule_id": "portia.quarantine.predecessor_immediate",
+      "description": "A revision greater than one must identify the exact immediately preceding Quarantine revision."
+    },
+    "resolution-prior-mismatch.json": {
+      "rule_id": "portia.quarantine.resolution_prior_matches_revision",
+      "description": "Release or supersession evidence must identify the same immediate prior revision as the Quarantine envelope."
+    },
+    "self-supersession.json": {
+      "rule_id": "portia.quarantine.successor_distinct",
+      "description": "A Quarantine series cannot supersede itself as its successor."
+    }
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "manifest_version": "1",
+  "issue": 13,
+  "contract": "operation_lock",
+  "version": "1",
+  "valid": {
+    "work-lock.json": "Work-scoped lock with deterministic identity and stable operation-series ownership.",
+    "operation-lock.json": "Operation-series lock whose protected target matches the owning operation."
+  },
+  "invalid": {
+    "scope-target-mismatch.json": "lock_scope and protected_target kind must agree.",
+    "uppercase-lock-digest.json": "Lock digest characters are lowercase hexadecimal.",
+    "unexpected-expiry.json": "Locks have no schema-level expiry field and cannot be cleared from age alone."
+  },
+  "application_invalid": {
+    "lock-id-digest-mismatch.json": {
+      "rule_id": "portia.operation.lock_id_matches_key",
+      "description": "The stable lock ID must equal the SHA-256 digest of the deterministic canonical lock key."
+    },
+    "operation-owner-mismatch.json": {
+      "rule_id": "portia.operation.lock_operation_owner_matches_target",
+      "description": "An operation-series lock must be owned by the same operation identified by its protected target."
+    }
+  }
+}

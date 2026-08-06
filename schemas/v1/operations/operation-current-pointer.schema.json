@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/operations/operation-current-pointer.schema.json",
+  "title": "Portia Operation Current Pointer",
+  "description": "Minimal explicit selection of one immutable Operation Journal revision for one operation series. Consumers must not infer current state from the greatest revision, newest timestamp, filename, or directory order.",
+  "$comment": "Application validation must establish expected prior pointer state, operation identity, selected revision existence and validity, legal journal-chain selection, atomic replacement, readback, and workspace containment.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "record_type",
+    "module_id",
+    "operation_id",
+    "journal_revision"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1"
+    },
+    "record_type": {
+      "const": "operation_current_pointer"
+    },
+    "module_id": {
+      "const": "portia"
+    },
+    "operation_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-operation-id.schema.json"
+    },
+    "journal_revision": {
+      "type": "integer",
+      "minimum": 1
+    }
+  },
+  "additionalProperties": false
+}

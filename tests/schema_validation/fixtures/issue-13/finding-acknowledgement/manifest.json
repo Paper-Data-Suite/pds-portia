@@ -1,0 +1,22 @@
+{
+  "manifest_version": "1",
+  "issue": 13,
+  "contract": "finding_acknowledgement",
+  "version": "1",
+  "valid": {
+    "reviewed-finding.json": "Append-only review of one exact finding evaluation.",
+    "awaiting-external-evidence.json": "Workflow acknowledgement without a creating operation or narrative rationale."
+  },
+  "invalid": {
+    "missing-evaluation-key.json": "Acknowledgement must target an exact evaluation.",
+    "unknown-category.json": "Acknowledgement does not include a resolved category.",
+    "unexpected-suppressed-flag.json": "Acknowledgement cannot encode suppression.",
+    "wrong-identifier-prefix.json": "Acknowledgement identity uses the fack_ prefix."
+  },
+  "application_invalid": {
+    "finding-evaluation-pair-mismatch.json": {
+      "rule_id": "portia.finding_acknowledgement.exact_evaluation",
+      "description": "The evaluation key must identify an actual evaluation of the named finding key."
+    }
+  }
+}

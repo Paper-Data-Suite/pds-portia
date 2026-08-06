@@ -50,6 +50,18 @@ The initial prefixes are:
 - Record Migration: `mig_`
 - Ownership Correction: `owc_`
 - Exceptional Removal: `rmv_`
+- Coordinated Operation: `op_`
+- Operation Step: `step_`
+- Operation Lock: `lock_`
+- Quarantine: `qnt_`
+- Finding Acknowledgement: `fack_`
+- Finding Suppression: `fsup_`
+- Derived Generation: `dgen_`
+
+The operation, step, Quarantine, acknowledgement, suppression, and generation
+suffixes are opaque. `portia-lock-id` is specialized: `lock_` is followed by
+exactly 64 lowercase hexadecimal characters derived from the deterministic
+canonical lock key.
 
 Portia-owned identifiers:
 
@@ -134,6 +146,17 @@ These schemas validate local structure only. Target existence, authoritative
 resolution, lifecycle eligibility, contract support, authorization, and
 consumer-specific use remain application-validation responsibilities.
 
+Issue #13 adds these operational reference contracts:
+
+- `operation-ref.schema.json` identifies one stable operation series;
+- `operation-journal-ref.schema.json` selects one exact immutable journal revision;
+- `quarantine-ref.schema.json` selects one exact immutable Quarantine revision;
+- `derived-generation-ref.schema.json` selects one immutable derived generation.
+
+Stable references do not imply existence or currentness. Exact revision references
+must resolve the named revision and contract; consumers must not substitute the
+greatest revision, newest timestamp, filename order, or current pointer.
+
 ## Shared snapshots and target contracts
 
 The initial reusable historical snapshot is:
@@ -205,6 +228,18 @@ The retained Event-family version-1 schemas keep their private historical
 `$defs` unchanged. New record contracts compose these public shared schemas so
 that provenance, attribution, text, and timestamp behavior do not drift across
 record families.
+
+Issue #13 adds three reusable persistence primitives:
+
+    schemas/v1/common/workspace-relative-path.schema.json
+    schemas/v1/common/sha256-digest.schema.json
+    schemas/v1/common/content-fingerprint.schema.json
+
+A workspace-relative path is lexical diagnostic location evidence, not identity.
+Passing the schema does not prove actual containment, symlink safety, existence,
+file kind, or identity/path agreement. A content fingerprint binds exact SHA-256
+bytes and byte length; it does not prove semantic meaning, acceptance, or
+authorization.
 
 ## Work Relationship contract
 
@@ -345,7 +380,7 @@ boundary, and correction semantics while reconciling its reference shapes.
 
 Version 2 replaces the direct `participant_id` property with a required
 singular `target` using the Event Participant branch of `portia_target_ref`.
-The target must identify `record_kind = "event_participant"`, an `ep_` record
+The target must identify `record_kind = "event_participant"`, an `epr_` record
 identifier, and contract version `"1"` or `"2"`. Event-level and
 multi-participant Role targets are structurally rejected.
 
@@ -451,7 +486,94 @@ An Integrity Finding contains deterministic finding and evaluation keys, stable 
 
 The projection deliberately excludes `schema_version`, `record_type`, lifecycle status, attribution, supersession, amendment, migration, and canonical storage identity. It may be deleted and rebuilt without altering domain history.
 
-Finding acknowledgement, suppression, recurrence caches, quarantine mechanics, operation state, and repair-mode persistence belong to Issue #13.
+Issue #13 implements acknowledgement, suppression, Quarantine, operation
+state, recovery evidence, and rebuildable operational projections without
+changing Integrity Finding v1.
+
+## Coordinated operation journals and pointers
+
+The central durable operational contracts are:
+
+    schemas/v1/operations/operation-journal.schema.json
+    schemas/v1/operations/operation-current-pointer.schema.json
+
+An Operation Journal is one immutable complete revision of a bounded operation
+series. It records stable intent, scope, exact targets, preflight observations,
+locks, an ordered write set, staged artifacts, per-step dispositions, the
+canonical commit point, compensation and recovery plans, and structured partial
+state.
+
+The pointer contains only `operation_id + journal_revision` with its fixed
+envelope. Current state is never inferred from the greatest revision, newest
+file, timestamp, or directory order.
+
+JSON Schema closes the journal envelope and vocabularies and enforces selected
+state-dependent constraints. Application validation establishes intent and
+preflight digest truth, journal linearity and monotonicity, contiguous unique
+step ordering, exact replay, expected prior state, lock ownership, canonical
+acceptance, operation-specific ordering, authorization, compensation safety, and
+recovery disposition.
+
+## Locks and Quarantine
+
+The protective operational contracts are:
+
+    schemas/v1/operations/operation-lock.schema.json
+    schemas/v1/operations/quarantine-record.schema.json
+    schemas/v1/operations/quarantine-current-pointer.schema.json
+
+A lock has deterministic scope and target, stable operation-series ownership,
+and privacy-minimized acquisition metadata. It has no expiry, heartbeat, mutable
+state, or age-based stale claim. Clearing requires exact fingerprint protection
+and external evidence that no active writer remains.
+
+Quarantine is an immutable revision series with `active`, `released`, and
+`superseded` states. It blocks explicit ordinary effects while preserving
+canonical identity and lifecycle. Age, acknowledgement, operation completion,
+or lock absence does not release Quarantine. The current pointer explicitly
+selects one revision.
+
+## Finding acknowledgement and suppression
+
+Finding administration uses:
+
+    schemas/v1/operations/finding-acknowledgement.schema.json
+    schemas/v1/operations/finding-suppression.schema.json
+    schemas/v1/operations/finding-suppression-current-pointer.schema.json
+
+Acknowledgement is append-only review workflow over one exact
+`finding_key + evaluation_key`. It does not resolve, suppress, waive, downgrade,
+or make the finding nonblocking.
+
+Suppression is a bounded immutable revision series. It structurally permits only
+`advisory` or `warning` findings whose effects are `attention` and/or
+`review_required`, binds the exact evaluation, rule, severity, and effects, names
+presentation surfaces and audiences, records policy and authorization evidence,
+and requires at least one explicit expiry condition. It never hides a finding
+from validation, recovery, audit, or authorized maintenance.
+
+## Deterministic source snapshots and derived generations
+
+The shared derived-generation contracts are:
+
+    schemas/v1/projections/source-snapshot.schema.json
+    schemas/v1/projections/derived-index-metadata.schema.json
+    schemas/v1/projections/derived-current-pointer.schema.json
+
+A Source Snapshot is a deterministic bounded inventory of exact source paths,
+byte lengths, SHA-256 digests, roles, contracts, scope, and authorization
+coverage. Observation time is recorded but is not a digest input.
+
+Derived Index Metadata describes one immutable `complete` generation. It binds
+projection kind and scope, contract version, builder identity, authorization
+coverage, the complete source snapshot, output artifact fingerprint, passed
+validation summary, generating Operation Journal revision, and generation time.
+
+A Derived Current Pointer selects one generation explicitly for one projection
+kind and scope. It contains no freshness, authorization, builder, or source-digest
+claim. Consumers must load and verify the selected generation and compare its
+snapshot with current canonical sources. A missing or stale projection is not an
+empty graph, and reads do not silently rebuild it.
 
 ## Offline resolution
 
@@ -470,11 +592,15 @@ storage and envelope agreement, lifecycle legality, history reconciliation,
 materiality, authorization, chronology across records, duplicate identity,
 successor and dependency graphs, migration semantic preservation, ownership
 and child reconciliation, removal execution, deterministic finding generation,
-and coordinated atomic or recoverable persistence.
+workspace containment, exact byte and digest truth, replay, journal linearity,
+lock conflicts and conservative clearing, expected prior state, operation
+ordering, compensation and recovery safety, suppression eligibility, source
+snapshot truth, generation completeness, freshness, authorization compatibility,
+and verified atomic installation of complete derived replacements.
 
-Issue #13 owns operation journals, write ordering, rollback, crash recovery,
-repair-mode writes, quarantine, acknowledgement and suppression state, and
-rebuildable operational indexes.
+Issue #13 defines those public operational and derived contracts but does not
+implement production filesystem writers, orchestration, recovery execution,
+Quarantine enforcement, projection builders, or teacher-facing maintenance.
 
 ## Running the schema tests
 

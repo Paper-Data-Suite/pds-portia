@@ -1,0 +1,82 @@
+{
+  "schema_version": "1",
+  "record_type": "finding_suppression",
+  "module_id": "portia",
+  "suppression_id": "fsup_projection_warning",
+  "suppression_revision": 2,
+  "previous_suppression_revision": 1,
+  "state": "released",
+  "finding_binding": {
+    "finding_key": "finding:derived_state:projection_stale:work_example",
+    "evaluation_key": "evaluation:derived_state:projection_stale:work_example:v1",
+    "rule_id": "portia.derived.projection_stale",
+    "rule_version": "1",
+    "severity": "warning",
+    "effects": [
+      "attention",
+      "review_required"
+    ]
+  },
+  "presentation_scope": {
+    "surfaces": [
+      "teacher_dashboard"
+    ],
+    "audiences": [
+      "local_operator"
+    ]
+  },
+  "policy": {
+    "policy_id": "local_integrity_presentation",
+    "policy_version": "1"
+  },
+  "authorization": {
+    "authorized_by": {
+      "type": "local_operator",
+      "display_label": "Synthetic teacher"
+    },
+    "asserted_role": "teacher",
+    "authorization_reference": {
+      "kind": "local_policy",
+      "reference_id": "portia_local_suppression_policy",
+      "contract_version": "1"
+    }
+  },
+  "rationale": "Temporarily de-emphasize the warning while the verified rebuild is scheduled.",
+  "starts_at": "2026-08-05T22:45:00-04:00",
+  "expiry_conditions": [
+    {
+      "kind": "fixed_timestamp",
+      "expires_at": "2026-08-12T22:45:00-04:00"
+    },
+    {
+      "kind": "target_evaluation_change"
+    },
+    {
+      "kind": "severity_or_effects_change"
+    }
+  ],
+  "origin": {
+    "created_by_operation": {
+      "operation_id": "op_create_suppression",
+      "journal_revision": 3,
+      "contract_version": "1"
+    },
+    "created_at": "2026-08-05T22:45:00-04:00"
+  },
+  "resolution": {
+    "kind": "release",
+    "prior_revision": 8,
+    "resolving_operation": {
+      "operation_id": "op_release_suppression",
+      "journal_revision": 2,
+      "contract_version": "1"
+    },
+    "effective_at": "2026-08-06T08:00:00-04:00",
+    "resolved_by": {
+      "type": "local_operator",
+      "display_label": "Synthetic teacher"
+    },
+    "rationale": "The warning should return to normal presentation."
+  },
+  "created_at": "2026-08-06T08:00:01-04:00"
+}

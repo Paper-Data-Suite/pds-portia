@@ -228,7 +228,7 @@ class Issue12FinalIntegrationTests(unittest.TestCase):
 
     def test_readme_names_current_implementation_targets(self) -> None:
         readme = self.read("README.md")
-        self.assertIn("Architecture Decision Records through ADR 0008", readme)
+        self.assertIn("Architecture Decision Records through ADR 0009", readme)
         for phrase in (
             "Event v2",
             "Event Participant v3",

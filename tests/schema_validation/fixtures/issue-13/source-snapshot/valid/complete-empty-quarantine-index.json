@@ -1,0 +1,34 @@
+{
+  "schema_version": "1",
+  "record_type": "source_snapshot",
+  "module_id": "portia",
+  "snapshot_algorithm": "portia_source_snapshot_v1",
+  "projection_kind": "active_quarantine_index",
+  "projection_scope": {
+    "scope": "work",
+    "work_ref": {
+      "module_id": "portia",
+      "class_id": "class_english10_p2",
+      "work_id": "evt_example",
+      "work_kind": "event",
+      "contract_version": "2"
+    }
+  },
+  "authorization_scope": {
+    "authorization_scope_id": "local_teacher_full",
+    "coverage": "complete",
+    "limitation_codes": []
+  },
+  "discovery_roots": [
+    "classes/class_english10_p2/modules/portia/work/evt_example"
+  ],
+  "source_contracts": [
+    {
+      "contract_name": "quarantine_record",
+      "contract_version": "1"
+    }
+  ],
+  "entries": [],
+  "source_snapshot_digest": "a1d20c24cf504faf2aeae9a7cffc3dc945b994b22419a082c7b6fe79dca45359",
+  "observed_at": "2026-08-06T08:12:00-04:00"
+}

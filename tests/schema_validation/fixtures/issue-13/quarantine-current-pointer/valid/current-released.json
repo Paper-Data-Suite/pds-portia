@@ -1,0 +1,7 @@
+{
+  "schema_version": "1",
+  "record_type": "quarantine_current_pointer",
+  "module_id": "portia",
+  "quarantine_id": "qnt_example",
+  "quarantine_revision": 2
+}

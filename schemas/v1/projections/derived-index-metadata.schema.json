@@ -1,0 +1,296 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/projections/derived-index-metadata.schema.json",
+  "title": "Portia Derived Index Metadata",
+  "description": "Immutable complete metadata for one Portia derived-projection generation. It binds generation identity, kind, scope, source snapshot, builder, authorization coverage, output fingerprint, validation summary, and generating operation. The generation remains nonauthoritative and is current only when selected by an explicit derived current pointer.",
+  "$comment": "Application validation must establish generation-ID uniqueness, identity-derived storage location, projection-kind and scope agreement with the source snapshot and data contract, source completeness for the declared authorization scope, source-snapshot digest truth, output fingerprint truth, builder and contract compatibility, generating-operation acceptance, chronological consistency, privacy policy, complete candidate installation, and immediate source recheck before pointer selection. A stale or corrupt generation does not alter canonical records.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "record_type",
+    "module_id",
+    "generation_id",
+    "generation_state",
+    "projection_kind",
+    "projection_scope",
+    "projection_contract_version",
+    "builder",
+    "authorization_scope",
+    "source_snapshot",
+    "data_artifact",
+    "validation",
+    "generating_operation",
+    "generated_at"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1"
+    },
+    "record_type": {
+      "const": "derived_index_metadata"
+    },
+    "module_id": {
+      "const": "portia"
+    },
+    "generation_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-derived-generation-id.schema.json"
+    },
+    "generation_state": {
+      "const": "complete"
+    },
+    "projection_kind": {
+      "enum": [
+        "incoming_reference_index",
+        "work_relationship_reverse_index",
+        "replacement_frontier_index",
+        "dependency_graph",
+        "lifecycle_timeline",
+        "current_state_view",
+        "migration_logical_identity_index",
+        "ownership_correction_index",
+        "exceptional_removal_index",
+        "active_integrity_finding_index",
+        "active_quarantine_index",
+        "operation_recovery_queue",
+        "finding_acknowledgement_index",
+        "finding_suppression_index",
+        "work_summary",
+        "class_summary"
+      ]
+    },
+    "projection_scope": {
+      "$ref": "#/$defs/projectionScope"
+    },
+    "projection_contract_version": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+    },
+    "builder": {
+      "$ref": "#/$defs/builder"
+    },
+    "authorization_scope": {
+      "$ref": "#/$defs/authorizationScope"
+    },
+    "source_snapshot": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/projections/source-snapshot.schema.json"
+    },
+    "data_artifact": {
+      "$ref": "#/$defs/dataArtifact"
+    },
+    "validation": {
+      "$ref": "#/$defs/validationSummary"
+    },
+    "generating_operation": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/operation-journal-ref.schema.json"
+    },
+    "generated_at": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "projectionScope": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": [
+            "scope",
+            "work_ref"
+          ],
+          "properties": {
+            "scope": {
+              "const": "work"
+            },
+            "work_ref": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-portia-work-ref.schema.json"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "scope",
+            "class_id"
+          ],
+          "properties": {
+            "scope": {
+              "const": "class"
+            },
+            "class_id": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "scope",
+            "workspace_id"
+          ],
+          "properties": {
+            "scope": {
+              "const": "workspace"
+            },
+            "workspace_id": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "scope",
+            "operation_ref"
+          ],
+          "properties": {
+            "scope": {
+              "const": "operation"
+            },
+            "operation_ref": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/operation-ref.schema.json"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "scope",
+            "graph_id"
+          ],
+          "properties": {
+            "scope": {
+              "const": "graph"
+            },
+            "graph_id": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+            }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "authorizationScope": {
+      "type": "object",
+      "required": [
+        "authorization_scope_id",
+        "coverage",
+        "limitation_codes"
+      ],
+      "properties": {
+        "authorization_scope_id": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+        },
+        "coverage": {
+          "enum": [
+            "complete",
+            "authorization_limited"
+          ]
+        },
+        "limitation_codes": {
+          "type": "array",
+          "maxItems": 32,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/lowercase-token.schema.json"
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "coverage": {
+                "const": "complete"
+              }
+            },
+            "required": [
+              "coverage"
+            ]
+          },
+          "then": {
+            "properties": {
+              "limitation_codes": {
+                "maxItems": 0
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "limitation_codes": {
+                "minItems": 1
+              }
+            }
+          }
+        }
+      ],
+      "additionalProperties": false
+    },
+    "builder": {
+      "type": "object",
+      "required": [
+        "builder_id",
+        "builder_version"
+      ],
+      "properties": {
+        "builder_id": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+        },
+        "builder_version": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+        }
+      },
+      "additionalProperties": false
+    },
+    "dataArtifact": {
+      "type": "object",
+      "required": [
+        "workspace_relative_path",
+        "contract_version",
+        "fingerprint"
+      ],
+      "properties": {
+        "workspace_relative_path": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/workspace-relative-path.schema.json"
+        },
+        "contract_version": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+        },
+        "fingerprint": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/content-fingerprint.schema.json"
+        }
+      },
+      "additionalProperties": false
+    },
+    "validationSummary": {
+      "type": "object",
+      "required": [
+        "schema_validation",
+        "identity_validation",
+        "reference_validation",
+        "privacy_validation",
+        "invariant_validation"
+      ],
+      "properties": {
+        "schema_validation": {
+          "const": "passed"
+        },
+        "identity_validation": {
+          "const": "passed"
+        },
+        "reference_validation": {
+          "const": "passed"
+        },
+        "privacy_validation": {
+          "const": "passed"
+        },
+        "invariant_validation": {
+          "const": "passed"
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

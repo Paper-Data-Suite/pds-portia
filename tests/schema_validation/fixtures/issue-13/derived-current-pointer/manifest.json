@@ -1,0 +1,24 @@
+{
+  "manifest_version": "1",
+  "issue": 13,
+  "contract": "derived_current_pointer",
+  "version": "1",
+  "valid": {
+    "current-state-view.json": "Explicit selection of one exact current-state-view generation."
+  },
+  "invalid": {
+    "missing-generation-ref.json": "An explicit generation reference is required.",
+    "unknown-projection-kind.json": "Projection kind uses the accepted closed vocabulary.",
+    "unexpected-updated-at.json": "The current pointer is deliberately minimal."
+  },
+  "application_invalid": {
+    "projection-kind-mismatch.json": {
+      "rule_id": "portia.derived.pointer_kind_matches_generation",
+      "description": "Pointer kind must equal referenced generation metadata."
+    },
+    "projection-scope-mismatch.json": {
+      "rule_id": "portia.derived.pointer_scope_matches_generation",
+      "description": "Pointer scope must equal referenced generation metadata."
+    }
+  }
+}

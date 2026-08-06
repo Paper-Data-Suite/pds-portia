@@ -1,0 +1,38 @@
+{
+  "manifest_version": "1",
+  "issue": 13,
+  "contract": "finding_suppression",
+  "version": "1",
+  "valid": {
+    "active-warning.json": "Active bounded presentation suppression over an exact warning evaluation.",
+    "released-warning.json": "Explicit release through a new immutable revision.",
+    "expired-on-evaluation-change.json": "Expiry after the bound evaluation changed.",
+    "superseded-by-narrower-policy.json": "Supersession by a distinct narrower suppression series."
+  },
+  "invalid": {
+    "active-with-resolution.json": "Active suppression cannot contain terminal resolution.",
+    "revision-one-released.json": "Revision one establishes active suppression.",
+    "critical-severity.json": "Critical findings are not suppressible.",
+    "blocking-effect.json": "Blocking findings are not suppressible.",
+    "empty-expiry-conditions.json": "Indefinite suppression is prohibited.",
+    "fixed-expiry-without-timestamp.json": "Fixed expiry requires an explicit timestamp."
+  },
+  "application_invalid": {
+    "nonimmediate-predecessor.json": {
+      "rule_id": "portia.finding_suppression.predecessor_immediate",
+      "description": "A revision greater than one must identify the exact immediately preceding suppression revision."
+    },
+    "resolution-prior-mismatch.json": {
+      "rule_id": "portia.finding_suppression.resolution_prior_matches",
+      "description": "Release, expiry, or supersession evidence must identify the same immediate prior revision as the envelope."
+    },
+    "fixed-expiry-before-start.json": {
+      "rule_id": "portia.finding_suppression.expiry_after_start",
+      "description": "A fixed expiry timestamp must be later than suppression start."
+    },
+    "self-supersession.json": {
+      "rule_id": "portia.finding_suppression.successor_distinct",
+      "description": "A suppression series cannot supersede itself as its successor."
+    }
+  }
+}

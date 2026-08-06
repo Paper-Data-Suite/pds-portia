@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/operation-journal-ref.schema.json",
+  "title": "Portia Operation Journal Reference",
+  "description": "Exact reference to one immutable Operation Journal revision. Resolution must load the named revision and contract version; it must not select the greatest revision, newest timestamp, current pointer, filename order, or another operation.",
+  "$comment": "Application validation must establish workspace selection, series existence, revision existence, supported contract, journal identity, predecessor-chain consistency, and authorization.",
+  "type": "object",
+  "required": [
+    "operation_id",
+    "journal_revision",
+    "contract_version"
+  ],
+  "properties": {
+    "operation_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-operation-id.schema.json"
+    },
+    "journal_revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "contract_version": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+    }
+  },
+  "additionalProperties": false
+}

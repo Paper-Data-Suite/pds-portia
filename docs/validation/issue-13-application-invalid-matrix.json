@@ -1,0 +1,237 @@
+{
+  "matrix_version": "1",
+  "issue": 13,
+  "entry_count": 23,
+  "entries": [
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-13/derived-current-pointer/application-invalid/projection-kind-mismatch.json",
+      "contract": "derived_current_pointer",
+      "version": "1",
+      "schema_path": "schemas/v1/projections/derived-current-pointer.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.derived.pointer_kind_matches_generation",
+      "operation_family": "derived-current-pointer",
+      "description": "Pointer kind must equal referenced generation metadata."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-13/derived-current-pointer/application-invalid/projection-scope-mismatch.json",
+      "contract": "derived_current_pointer",
+      "version": "1",
+      "schema_path": "schemas/v1/projections/derived-current-pointer.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.derived.pointer_scope_matches_generation",
+      "operation_family": "derived-current-pointer",
+      "description": "Pointer scope must equal referenced generation metadata."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-13/derived-index-metadata/application-invalid/authorization-disagrees-with-snapshot.json",
+      "contract": "derived_index_metadata",
+      "version": "1",
+      "schema_path": "schemas/v1/projections/derived-index-metadata.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.derived.metadata_authorization_matches_snapshot",
+      "operation_family": "derived-index-metadata",
+      "description": "Generation authorization coverage must equal snapshot coverage."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-13/derived-index-metadata/application-invalid/generated-before-snapshot.json",
+      "contract": "derived_index_metadata",
+      "version": "1",
+      "schema_path": "schemas/v1/projections/derived-index-metadata.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.derived.generated_after_snapshot",
+      "operation_family": "derived-index-metadata",
+      "description": "Generation completion cannot predate source observation."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-13/derived-index-metadata/application-invalid/scope-disagrees-with-snapshot.json",
+      "contract": "derived_index_metadata",
+      "version": "1",
+      "schema_path": "schemas/v1/projections/derived-index-metadata.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.derived.metadata_scope_matches_snapshot",
+      "operation_family": "derived-index-metadata",
+      "description": "Generation scope must equal the embedded snapshot scope."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-13/finding-acknowledgement/application-invalid/finding-evaluation-pair-mismatch.json",
+      "contract": "finding_acknowledgement",
+      "version": "1",
+      "schema_path": "schemas/v1/operations/finding-acknowledgement.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.finding_acknowledgement.exact_evaluation",
+      "operation_family": "finding-acknowledgement",
+      "description": "The evaluation key must identify an actual evaluation of the named finding key."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-13/finding-suppression/application-invalid/fixed-expiry-before-start.json",
+      "contract": "finding_suppression",
+      "version": "1",
+      "schema_path": "schemas/v1/operations/finding-suppression.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.finding_suppression.expiry_after_start",
+      "operation_family": "finding-suppression",
+      "description": "A fixed expiry timestamp must be later than suppression start."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-13/finding-suppression/application-invalid/nonimmediate-predecessor.json",
+      "contract": "finding_suppression",
+      "version": "1",
+      "schema_path": "schemas/v1/operations/finding-suppression.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.finding_suppression.predecessor_immediate",
+      "operation_family": "finding-suppression",
+      "description": "A revision greater than one must identify the exact immediately preceding suppression revision."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-13/finding-suppression/application-invalid/resolution-prior-mismatch.json",
+      "contract": "finding_suppression",
+      "version": "1",
+      "schema_path": "schemas/v1/operations/finding-suppression.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.finding_suppression.resolution_prior_matches",
+      "operation_family": "finding-suppression",
+      "description": "Release, expiry, or supersession evidence must identify the same immediate prior revision as the envelope."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-13/finding-suppression/application-invalid/self-supersession.json",
+      "contract": "finding_suppression",
+      "version": "1",
+      "schema_path": "schemas/v1/operations/finding-suppression.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.finding_suppression.successor_distinct",
+      "operation_family": "finding-suppression",
+      "description": "A suppression series cannot supersede itself as its successor."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-13/operation-journal/application-invalid/completed-lock-still-acquired.json",
+      "contract": "operation_journal",
+      "version": "1",
+      "schema_path": "schemas/v1/operations/operation-journal.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.operation.completed_locks_released",
+      "operation_family": "operation-journal",
+      "description": "A completed operation must not retain acquired target locks."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-13/operation-journal/application-invalid/duplicate-step-id.json",
+      "contract": "operation_journal",
+      "version": "1",
+      "schema_path": "schemas/v1/operations/operation-journal.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.operation.step_id_unique",
+      "operation_family": "operation-journal",
+      "description": "Step identifiers must be unique within one complete write set."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-13/operation-journal/application-invalid/noncontiguous-step-sequence.json",
+      "contract": "operation_journal",
+      "version": "1",
+      "schema_path": "schemas/v1/operations/operation-journal.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.operation.step_sequence_contiguous",
+      "operation_family": "operation-journal",
+      "description": "Write-step sequences must be contiguous and agree with array order."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-13/operation-journal/application-invalid/nonimmediate-journal-predecessor.json",
+      "contract": "operation_journal",
+      "version": "1",
+      "schema_path": "schemas/v1/operations/operation-journal.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.operation.journal_predecessor_immediate",
+      "operation_family": "operation-journal",
+      "description": "A revision greater than one must identify the exact immediately preceding revision."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-13/operation-journal/application-invalid/staged-destination-mismatch.json",
+      "contract": "operation_journal",
+      "version": "1",
+      "schema_path": "schemas/v1/operations/operation-journal.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.operation.staged_destination_matches_step",
+      "operation_family": "operation-journal",
+      "description": "A staged artifact must identify the same destination as its write step."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-13/operation-lock/application-invalid/lock-id-digest-mismatch.json",
+      "contract": "operation_lock",
+      "version": "1",
+      "schema_path": "schemas/v1/operations/operation-lock.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.operation.lock_id_matches_key",
+      "operation_family": "operation-lock",
+      "description": "The stable lock ID must equal the SHA-256 digest of the deterministic canonical lock key."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-13/operation-lock/application-invalid/operation-owner-mismatch.json",
+      "contract": "operation_lock",
+      "version": "1",
+      "schema_path": "schemas/v1/operations/operation-lock.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.operation.lock_operation_owner_matches_target",
+      "operation_family": "operation-lock",
+      "description": "An operation-series lock must be owned by the same operation identified by its protected target."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-13/quarantine-record/application-invalid/nonimmediate-predecessor.json",
+      "contract": "quarantine_record",
+      "version": "1",
+      "schema_path": "schemas/v1/operations/quarantine-record.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.quarantine.predecessor_immediate",
+      "operation_family": "quarantine-record",
+      "description": "A revision greater than one must identify the exact immediately preceding Quarantine revision."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-13/quarantine-record/application-invalid/resolution-prior-mismatch.json",
+      "contract": "quarantine_record",
+      "version": "1",
+      "schema_path": "schemas/v1/operations/quarantine-record.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.quarantine.resolution_prior_matches_revision",
+      "operation_family": "quarantine-record",
+      "description": "Release or supersession evidence must identify the same immediate prior revision as the Quarantine envelope."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-13/quarantine-record/application-invalid/self-supersession.json",
+      "contract": "quarantine_record",
+      "version": "1",
+      "schema_path": "schemas/v1/operations/quarantine-record.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.quarantine.successor_distinct",
+      "operation_family": "quarantine-record",
+      "description": "A Quarantine series cannot supersede itself as its successor."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-13/source-snapshot/application-invalid/digest-mismatch.json",
+      "contract": "source_snapshot",
+      "version": "1",
+      "schema_path": "schemas/v1/projections/source-snapshot.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.derived.source_snapshot_digest_matches",
+      "operation_family": "source-snapshot",
+      "description": "The declared digest must match the versioned canonical snapshot encoding."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-13/source-snapshot/application-invalid/duplicate-source-path.json",
+      "contract": "source_snapshot",
+      "version": "1",
+      "schema_path": "schemas/v1/projections/source-snapshot.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.derived.source_snapshot_path_unique",
+      "operation_family": "source-snapshot",
+      "description": "A snapshot cannot contain contradictory observations for one source path."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-13/source-snapshot/application-invalid/entries-not-deterministically-sorted.json",
+      "contract": "source_snapshot",
+      "version": "1",
+      "schema_path": "schemas/v1/projections/source-snapshot.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.derived.source_snapshot_entries_sorted",
+      "operation_family": "source-snapshot",
+      "description": "Source entries must use deterministic path-first ordering."
+    }
+  ]
+}

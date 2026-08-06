@@ -11,14 +11,14 @@ Portia is in its initial research and architecture phase.
 The repository currently contains:
 
 * evidence-based research on responsible K–12 behavior documentation and management;
-* accepted design analyses defining Portia’s role, identity model, ownership rules, canonical storage, references, lifecycle, correction, migration, removal, integrity diagnostics, and initial Event family;
-* Architecture Decision Records through ADR 0008;
-* independently versioned Draft 2020-12 identifier, reference, target, lifecycle, correction, disagreement, dependency, migration, ownership-correction, removal, relationship, and projection schemas;
+* accepted design analyses defining Portia’s role, identity model, ownership rules, canonical storage, references, lifecycle, correction, migration, removal, integrity diagnostics, coordinated persistence, recovery, Quarantine, finding administration, derived rebuilding, and the initial Event family;
+* Architecture Decision Records through ADR 0009;
+* independently versioned Draft 2020-12 identifier, reference, target, lifecycle, correction, disagreement, dependency, migration, ownership-correction, removal, relationship, operational, and derived-projection schemas;
 * retained historical Event-family version-1 schemas, Event version 2, Event Participant and Role version 3, and Work Relationship version 2;
-* validated synthetic examples, migration fixtures, and a cross-contract application-invalid matrix;
-* and automated offline schema-validation and documentation-consistency tests.
+* validated synthetic examples, migration fixtures, and comprehensive Issue #12 and Issue #13 application-invalid matrices;
+* and automated offline schema-validation, state-machine, compatibility, example, and documentation-consistency tests.
 
-Portia does not yet contain an executable application. The current implementation targets are Event v2, Event Participant v3, Event Participant Role v3, and Work Relationship v2; Support Process and later record families remain architectural work.
+Portia does not yet contain an executable application. The current domain implementation targets are Event v2, Event Participant v3, Event Participant Role v3, and Work Relationship v2; Support Process and later record families remain architectural work. Issue #13 completes the public coordinated-persistence, recovery, Quarantine, finding-administration, and derived-generation contracts, while production filesystem services remain assigned to a later executable milestone.
 
 ## Product Position
 
@@ -127,8 +127,8 @@ Portia does not duplicate sibling-module workflows:
 * `pds-scoreform` owns optical-mark recognition and selected-response processing.
 * `pds-quillan` owns written-response review and feedback workflows.
 * `pds-concord` owns collaborative Activities, Groups, Artifacts, evidence Review and Moderation, and collaborative Scoring.
-* a future grading and reporting module will own academic grade calculation and formal academic reporting;
-* a future portfolio module will own student-work curation and presentation;
+* `pds-meridian` owns academic evidence policy, proficiency, Grade calculation, and formal academic reporting;
+* `pds-vitrine` owns student-work curation, portfolio composition, presentation, and regulated portfolio workflows;
 * a future planning module will own Units, Lessons, Assignments, objectives, and instructional sequencing;
 * `pds-sunset` will own suite-wide archival orchestration.
 
@@ -397,7 +397,33 @@ Ordinary workflows do not hard-delete accepted canonical records. Narrow excepti
 
 Integrity findings are deterministic rebuildable projections. They have no canonical record identity or lifecycle and clear only when reevaluation no longer detects the violation or limitation.
 
-Issue #13 remains responsible for operation journals, atomic multi-record persistence, rollback, crash recovery, repair-mode writes, quarantine, acknowledgement, suppression, and rebuildable operational caches.
+## Accepted Coordinated Persistence, Recovery, and Derived-Index Contracts
+
+ADR 0009 establishes Portia’s implementation-neutral protocol for recoverable multi-record operations without claiming filesystem-wide atomicity.
+
+The principal public contracts are:
+
+```text
+operation_journal
+operation_current_pointer
+operation_lock
+quarantine_record
+quarantine_current_pointer
+finding_acknowledgement
+finding_suppression
+finding_suppression_current_pointer
+source_snapshot
+derived_index_metadata
+derived_current_pointer
+```
+
+Operations use opaque identity, immutable journal revisions, explicit current pointers, complete preflight observations, ordered write sets, exact prior-state fingerprints, deterministic lock ordering, and structured partial state. Canonical acceptance remains distinct from operation completion. Accepted canonical records are not erased merely to simulate rollback.
+
+Quarantine is revisioned operational protection rather than lifecycle. Acknowledgement records review without resolving or suppressing a finding. Suppression is narrowly limited to exact advisory or warning evaluations with presentation-only effects and explicit expiry conditions.
+
+Derived generations are immutable, complete, nonauthoritative, source-snapshot-bound replacements. A current pointer selects one generation explicitly but does not prove freshness, authorization compatibility, or absence. Reads do not silently rebuild derived state, and a missing index never proves an empty graph.
+
+JSON Schema validates local wire shape. Application validation remains responsible for exact filesystem containment, digest truth, journal linearity, replay, lock conflicts and clearing, operation-specific ordering, authorization, recovery safety, snapshot freshness, complete installation, and current-use eligibility.
 
 ## Initial Event, Event Participant, and Role Model
 
@@ -737,11 +763,15 @@ Portia should use Core infrastructure and public cross-module contracts rather t
 
   Defines current status and append-only history, lifecycle transitions, amendment, disagreement, replacement, dependencies, migration, ownership correction, exceptional removal, integrity findings, record-family upgrades, schema organization, and the Issue #13 persistence boundary.
 
+* [Portia Coordinated Persistence, Recovery, and Derived-Index Contracts](docs/design/portia-coordinated-persistence-recovery-and-derived-index-contracts.md)
+
+  Defines operation identity and journaling, preflight, exact write sets, locks, recoverable commit, partial success, compensation, repair, Quarantine, finding administration, deterministic source snapshots, immutable derived generations, current pointers, unavailable-state behavior, and the production implementation boundary.
+
 ### Schemas
 
 * [Schema Guide and Catalog](schemas/README.md)
 
-  Documents immutable schema identity, offline resolution, shared references, lifecycle, correction, migration, removal, upgraded record contracts, the integrity-finding projection, and structural-versus-application validation.
+  Documents immutable schema identity, offline resolution, shared references, lifecycle, correction, migration, removal, coordinated-operation records, Quarantine, finding administration, deterministic source snapshots, immutable derived generations, explicit current pointers, and structural-versus-application validation.
 
 * [Event v2 Schema](schemas/v2/event.schema.json)
 
@@ -771,11 +801,27 @@ Portia should use Core infrastructure and public cross-module contracts rather t
 
   Deterministic rebuildable diagnostics that are explicitly noncanonical.
 
+* [Operation Journal Schema](schemas/v1/operations/operation-journal.schema.json)
+
+  Immutable complete operational snapshots for bounded coordinated operations.
+
+* [Quarantine Record Schema](schemas/v1/operations/quarantine-record.schema.json)
+
+  Revisioned operational protection that remains distinct from canonical lifecycle.
+
+* [Derived Index Metadata Schema](schemas/v1/projections/derived-index-metadata.schema.json)
+
+  Immutable complete generation metadata bound to deterministic source snapshots and exact output fingerprints.
+
 * [Historical Event-family v1 Schemas](schemas/event.schema.json)
 
   The unversioned-path Event, Event Participant, and Event Participant Role schemas remain historical version-1 contracts and are not the current implementation target.
 
 ### Examples
+
+* [Portia Coordinated Persistence, Recovery, and Derived-Index Examples](docs/examples/portia-coordinated-persistence-recovery-and-derived-index-examples.md)
+
+  Accepted synthetic and machine-validated examples for journals, pointers, locks, Quarantine, finding administration, source snapshots, immutable generations, and derived current selection.
 
 * [Portia Lifecycle, Amendment, Correction, and Migration Examples](docs/examples/portia-lifecycle-amendment-correction-and-migration-examples.md)
 
@@ -794,6 +840,10 @@ Portia should use Core infrastructure and public cross-module contracts rather t
   Historical validated examples covering direct digital Role creation, compatible Role assignments, contextual detail, paper-derived and imported reported involvement, basis correction, and supersession.
 
 ### Validation
+
+* [Issue #13 Validation: Coordinated Persistence, Recovery, and Derived-Index Contracts](docs/validation/issue-13-coordinated-persistence-recovery-and-derived-index-validation.md)
+
+  Records the 25 public Issue #13 contracts, examples, fixture totals, comprehensive application-invalid matrix, final sibling-repository drift check, validation boundary, and repository acceptance commands.
 
 * [Issue #12 Validation: Lifecycle, Amendment, Correction, and Migration Contracts](docs/validation/issue-12-lifecycle-amendment-correction-and-migration-validation.md)
 
@@ -836,6 +886,10 @@ Portia should use Core infrastructure and public cross-module contracts rather t
 * [ADR 0008: Define Shared Lifecycle, Correction, and Migration Contracts](docs/decisions/0008-define-lifecycle-correction-and-migration-contracts.md)
 
   Establishes current status plus append-only history, amendment and replacement boundaries, disagreement, dependency handling, migration, ownership correction, exceptional removal, record-family upgrades, integrity findings, immutable public schema organization, and the Issue #13 persistence boundary.
+
+* [ADR 0009: Define Coordinated Persistence, Recovery, and Derived-Index Contracts](docs/decisions/0009-define-coordinated-persistence-recovery-and-derived-index-contracts.md)
+
+  Establishes durable state categories, immutable operation journals, exact preflight and write sets, lock identity and conservative clearing, recoverable multi-record completion, structured partial success, repair and Quarantine, finding acknowledgement and suppression, deterministic source snapshots, immutable derived generations, and explicit current selection.
 
 ## Explicit Product Prohibitions
 
@@ -884,7 +938,7 @@ Local-first storage does not make student records inherently non-sensitive. Port
 
 Likely next work includes:
 
-* Issue #13 coordinated persistence, operation journals, atomic multi-record changes, rollback, crash recovery, repair-mode writes, quarantine, and rebuildable operational indexes;
+* implementing the accepted ADR 0009 persistence, recovery, Quarantine, and derived-generation contracts as strictly typed production services in a later executable milestone;
 * defining the minimal Support Process root and status contract, followed by the broader Support, Intervention, implementation, and fidelity model;
 * defining Account, Observation, Classification, Hypothesis, Determination, Response, Follow-Up, Outcome, and Communication schemas;
 * defining the Actor Directory schema and Actor lifecycle;

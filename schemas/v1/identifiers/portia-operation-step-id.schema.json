@@ -1,0 +1,10 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-operation-step-id.schema.json",
+  "title": "Portia Operation Step Identifier",
+  "description": "Opaque operation-local identifier for one stable planned or recovery step. The step_ prefix is part of the public contract. The identifier must remain stable across journal revisions for the same planned effect and must not encode sequence, target content, student identity, path, or result.",
+  "type": "string",
+  "minLength": 6,
+  "maxLength": 128,
+  "pattern": "^step_[A-Za-z0-9][A-Za-z0-9_-]*$"
+}

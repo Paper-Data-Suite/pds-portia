@@ -1,0 +1,6 @@
+{
+  "schema_version": "1",
+  "record_type": "operation_current_pointer",
+  "module_id": "portia",
+  "operation_id": "op_transition"
+}
