@@ -402,6 +402,18 @@
         "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/derived-generation-ref.schema.json",
         "path": "schemas/v1/references/derived-generation-ref.schema.json"
       }
+    },
+    "operation_journal": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/operations/operation-journal.schema.json",
+        "path": "schemas/v1/operations/operation-journal.schema.json"
+      }
+    },
+    "operation_current_pointer": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/operations/operation-current-pointer.schema.json",
+        "path": "schemas/v1/operations/operation-current-pointer.schema.json"
+      }
     }
   }
 }

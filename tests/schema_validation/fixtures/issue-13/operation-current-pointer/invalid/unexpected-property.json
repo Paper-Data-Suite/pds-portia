@@ -1,0 +1,8 @@
+{
+  "schema_version": "1",
+  "record_type": "operation_current_pointer",
+  "module_id": "portia",
+  "operation_id": "op_transition",
+  "journal_revision": 4,
+  "updated_at": "2026-08-05T21:00:06-04:00"
+}

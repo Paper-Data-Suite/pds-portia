@@ -1,0 +1,16 @@
+{
+  "manifest_version": "1",
+  "issue": 13,
+  "contract": "operation_current_pointer",
+  "version": "1",
+  "valid": {
+    "current-transition.json": "Minimal explicit selection of journal revision four."
+  },
+  "invalid": {
+    "missing-journal-revision.json": "The selected revision is required.",
+    "zero-journal-revision.json": "Journal revisions begin at one.",
+    "wrong-record-type.json": "The pointer record type is fixed.",
+    "unexpected-property.json": "The pointer is deliberately minimal and closed."
+  },
+  "application_invalid": {}
+}

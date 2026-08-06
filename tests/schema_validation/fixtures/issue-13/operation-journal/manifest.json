@@ -1,0 +1,41 @@
+{
+  "manifest_version": "1",
+  "issue": 13,
+  "contract": "operation_journal",
+  "version": "1",
+  "valid": {
+    "prepared-create-record.json": "Prepared exclusive-create operation with no canonical durability.",
+    "staged-create-record.json": "Complete valid candidate and acquired lock snapshot before canonical mutation.",
+    "committed-lifecycle-transition.json": "Accepted canonical gates with an ordinary derived rebuild remaining post-commit."
+  },
+  "invalid": {
+    "missing-operation-kind.json": "Required operation_kind is absent.",
+    "revision-one-with-predecessor.json": "Revision one must not identify a predecessor.",
+    "prepared-commit-reached.json": "Prepared state cannot claim the canonical commit point.",
+    "must-match-without-fingerprint.json": "must_match requires an exact content fingerprint.",
+    "committed-canonical-step-pending.json": "Committed state requires every canonical-gate step to be accepted.",
+    "unexpected-property.json": "The journal envelope is closed."
+  },
+  "application_invalid": {
+    "noncontiguous-step-sequence.json": {
+      "rule_id": "portia.operation.step_sequence_contiguous",
+      "description": "Write-step sequences must be contiguous and agree with array order."
+    },
+    "duplicate-step-id.json": {
+      "rule_id": "portia.operation.step_id_unique",
+      "description": "Step identifiers must be unique within one complete write set."
+    },
+    "nonimmediate-journal-predecessor.json": {
+      "rule_id": "portia.operation.journal_predecessor_immediate",
+      "description": "A revision greater than one must identify the exact immediately preceding revision."
+    },
+    "staged-destination-mismatch.json": {
+      "rule_id": "portia.operation.staged_destination_matches_step",
+      "description": "A staged artifact must identify the same destination as its write step."
+    },
+    "completed-lock-still-acquired.json": {
+      "rule_id": "portia.operation.completed_locks_released",
+      "description": "A completed operation must not retain acquired target locks."
+    }
+  }
+}
