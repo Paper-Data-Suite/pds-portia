@@ -1,0 +1,84 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/operations/finding-acknowledgement.schema.json",
+  "title": "Portia Finding Acknowledgement",
+  "description": "Append-only durable operational record that one authorized actor or system process reviewed one exact Integrity Finding evaluation. Acknowledgement does not resolve, suppress, waive, downgrade, close, or make the finding nonblocking.",
+  "$comment": "Application validation must establish that finding_key and evaluation_key identify one actual compatible Integrity Finding evaluation, that the acknowledgement actor is authorized for the requested workflow category, that any creating operation exists and accepted this record, and that rationale content is bounded and does not copy narrative, removed, credential, or other sensitive payload.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "record_type",
+    "module_id",
+    "acknowledgement_id",
+    "finding_key",
+    "evaluation_key",
+    "acknowledged_at",
+    "acknowledged_by",
+    "acknowledgement_category",
+    "rationale",
+    "creating_operation"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1"
+    },
+    "record_type": {
+      "const": "finding_acknowledgement"
+    },
+    "module_id": {
+      "const": "portia"
+    },
+    "acknowledgement_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-finding-acknowledgement-id.schema.json"
+    },
+    "finding_key": {
+      "$ref": "#/$defs/deterministicKey"
+    },
+    "evaluation_key": {
+      "$ref": "#/$defs/deterministicKey"
+    },
+    "acknowledged_at": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+    },
+    "acknowledged_by": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/attribution/attribution-agent.schema.json"
+    },
+    "acknowledgement_category": {
+      "enum": [
+        "reviewed",
+        "assigned_for_follow_up",
+        "known_limitation",
+        "awaiting_external_evidence"
+      ]
+    },
+    "rationale": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+        }
+      ]
+    },
+    "creating_operation": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/operation-journal-ref.schema.json"
+        }
+      ]
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "deterministicKey": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    }
+  }
+}

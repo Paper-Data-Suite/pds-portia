@@ -432,6 +432,24 @@
         "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/operations/quarantine-current-pointer.schema.json",
         "path": "schemas/v1/operations/quarantine-current-pointer.schema.json"
       }
+    },
+    "finding_acknowledgement": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/operations/finding-acknowledgement.schema.json",
+        "path": "schemas/v1/operations/finding-acknowledgement.schema.json"
+      }
+    },
+    "finding_suppression": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/operations/finding-suppression.schema.json",
+        "path": "schemas/v1/operations/finding-suppression.schema.json"
+      }
+    },
+    "finding_suppression_current_pointer": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/operations/finding-suppression-current-pointer.schema.json",
+        "path": "schemas/v1/operations/finding-suppression-current-pointer.schema.json"
+      }
     }
   }
 }

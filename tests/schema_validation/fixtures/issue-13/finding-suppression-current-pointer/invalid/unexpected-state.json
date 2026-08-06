@@ -1,0 +1,8 @@
+{
+  "schema_version": "1",
+  "record_type": "finding_suppression_current_pointer",
+  "module_id": "portia",
+  "suppression_id": "fsup_projection_warning",
+  "suppression_revision": 2,
+  "state": "released"
+}

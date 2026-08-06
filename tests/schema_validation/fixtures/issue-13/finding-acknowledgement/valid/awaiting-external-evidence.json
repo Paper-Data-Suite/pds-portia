@@ -1,0 +1,16 @@
+{
+  "schema_version": "1",
+  "record_type": "finding_acknowledgement",
+  "module_id": "portia",
+  "acknowledgement_id": "fack_external_01",
+  "finding_key": "finding:derived_state:projection_stale:work_example",
+  "evaluation_key": "evaluation:derived_state:projection_stale:work_example:v1",
+  "acknowledged_at": "2026-08-05T22:40:00-04:00",
+  "acknowledged_by": {
+    "type": "local_operator",
+    "display_label": "Synthetic teacher"
+  },
+  "acknowledgement_category": "awaiting_external_evidence",
+  "rationale": null,
+  "creating_operation": null
+}
