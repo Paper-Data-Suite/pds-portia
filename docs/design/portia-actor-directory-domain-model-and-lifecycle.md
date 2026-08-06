@@ -1,6 +1,6 @@
 # Portia Actor Directory Domain Model and Lifecycle
 
-**Status:** Working design — Decisions 1–19 adopted
+**Status:** Working design — Decisions 1–25 adopted
 **Project:** Paper Data Suite
 **Module:** `pds-portia`
 **Issue:** `#14 — Define the Actor Directory domain model and lifecycle`
@@ -5403,9 +5403,1590 @@ persistence evidence.
 
 ---
 
-## 24. Consequences of Decisions 1–19
+# 24. Approved Decision 20: Actor-Directory Representation Migration
 
-The accepted design now requires Issue #14 to introduce:
+## 24.1 Decision
+
+Representation-only migration for Actor-directory records uses a dedicated
+immutable contract:
+
+```text
+actor_directory_record_migration@1
+```
+
+The contract applies to:
+
+```text
+Actor
+Actor Contact Point
+Actor-to-Student Relationship
+Actor–Roster Student Collision
+```
+
+It does not apply to:
+
+- lifecycle transitions;
+- lifecycle-history corrections;
+- amendments;
+- operation journals;
+- locks;
+- Quarantine records;
+- Integrity Findings;
+- or derived generations.
+
+Those independently versioned records remain readable under their accepted
+historical contracts.
+
+## 24.2 Identity
+
+Migration identifiers reuse the accepted scope-neutral:
+
+```text
+mig_<opaque-id>
+```
+
+contract.
+
+No Actor-specific migration prefix is required.
+
+One migration record represents:
+
+> One exact Actor-directory record transformed from one exact public contract
+> version to one exact destination contract version through one identified
+> representation-only procedure while preserving semantic identity.
+
+## 24.3 Canonical storage
+
+A migration is stored beneath the destination Actor root:
+
+```text
+portia/actors/<actor_id>/
+  records/
+    actor_directory_record_migration/
+      <migration_id>.json
+```
+
+The destination Actor owner embedded in the migration target must agree with the
+containing Actor root.
+
+Actor-directory migration never moves a record to another Actor root.
+
+Changing Actor ownership is material correction and requires a successor.
+
+## 24.4 Required conceptual envelope
+
+The migration contract will preserve:
+
+```text
+schema_version
+record_type
+module_id
+actor_id
+migration_id
+source
+destination
+reason
+procedure
+source_fingerprint
+destination_fingerprint
+effective_at
+created_at
+created_by
+operation_ref
+```
+
+Constants are:
+
+```text
+schema_version = "1"
+record_type = "actor_directory_record_migration"
+module_id = "portia"
+```
+
+`source` and `destination` are exact Actor-directory representation references.
+
+## 24.5 Identity-preserving rules
+
+A migration must preserve:
+
+- Actor ownership;
+- record family;
+- opaque domain identifier;
+- represented person or assertion;
+- current lifecycle meaning;
+- successor lineage;
+- creation provenance;
+- and all contract-significant domain semantics.
+
+Permitted examples include:
+
+```text
+actor@1 -> actor@2 with the same actor_id
+actor_contact_point@1 -> actor_contact_point@2
+actor_student_relationship@1 -> actor_student_relationship@2
+actor_roster_student_collision@1 -> actor_roster_student_collision@2
+```
+
+Prohibited migration includes:
+
+- changing Actor identity;
+- changing Contact Point value or owner;
+- changing Relationship Actor, student, type, or material basis;
+- converting an Actor into a roster-student reference;
+- consolidating duplicates;
+- splitting a conflated Actor;
+- changing lifecycle status;
+- or removing prohibited payload.
+
+Those are explicit correction, lifecycle, consolidation, split, collision, or
+exceptional-removal operations.
+
+## 24.6 Same logical identity
+
+Source and destination use the same opaque domain identity.
+
+Migration does not allocate a new:
+
+```text
+actor_id
+contact_point_id
+relationship_id
+collision_id
+```
+
+A public contract that cannot preserve the same logical identity is not a
+representation-only migration.
+
+## 24.7 Procedure identity
+
+`procedure` identifies one versioned deterministic migration procedure.
+
+It includes:
+
+```text
+procedure_id
+procedure_version
+```
+
+The procedure ID is nonsecret and must not encode contact values, names, or
+student information.
+
+Application validation must establish that the procedure is approved for the
+exact source and destination contracts.
+
+## 24.8 Current-file replacement
+
+Actor, Contact Point, and Relationship records are mutable current
+representations with append-only supporting history.
+
+A migration operation:
+
+1. reads and validates the exact source representation;
+2. verifies lifecycle and amendment consistency;
+3. transforms the logical value through the approved procedure;
+4. stages and validates the destination bytes;
+5. creates and verifies the migration record;
+6. revalidates the exact source fingerprint;
+7. atomically replaces the current representation at its canonical path;
+8. verifies the destination fingerprint;
+9. and rebuilds affected derived views.
+
+The migration record becomes durable before replacement of the current file.
+
+Interruption therefore leaves recoverable migration evidence rather than an
+unexplained contract-version change.
+
+## 24.9 Historical version resolution
+
+The migration record preserves exact source and destination contract versions and
+fingerprints.
+
+Historical references that contain an older expected contract version do not
+silently resolve as though the current bytes still implement that version.
+
+Resolution may return:
+
+```text
+migrated_representation
+```
+
+together with the exact migration chain.
+
+It must not:
+
+- pretend that old bytes remain current;
+- rewrite historical references;
+- or classify migration as identity correction.
+
+## 24.10 Migration predecessor chain
+
+Several sequential representation migrations are ordered through exact
+source/destination version continuity and migration chronology.
+
+A destination representation may serve as the source of a later migration.
+
+The chain must contain no:
+
+- branch;
+- cycle;
+- skipped incompatible version;
+- contradictory source fingerprint;
+- or competing current destination.
+
+## 24.11 Collision record migration
+
+An Actor–Roster Student Collision record is immutable domain evidence.
+
+A later schema migration may create a new representation with the same
+`collision_id` only when semantic meaning is unchanged.
+
+The migration does not alter:
+
+- the exact Actor;
+- the exact roster-qualified student;
+- reviewed resolution;
+- or linked invalidation evidence.
+
+## 24.12 Migration invariants
+
+1. Migration is representation-only.
+2. Record identity and Actor ownership are preserved.
+3. Record family is preserved.
+4. Migration cannot conceal correction or removal.
+5. Migration evidence is accepted before current-file replacement.
+6. Source and destination fingerprints are exact.
+7. Historical references are not rewritten.
+8. Migration chains contain no branch or cycle.
+9. Contact payload is not copied into operation facts.
+10. Existing class/work `record_migration@1` remains immutable.
+
+---
+
+# 25. Approved Decision 21: Actor-Directory Exceptional Removal
+
+## 25.1 Decision
+
+Ordinary deletion of Actor-directory canonical records is prohibited.
+
+Narrow exceptional removal uses a separate immutable certificate:
+
+```text
+actor_directory_exceptional_removal@1
+```
+
+The certificate preserves the minimum permitted evidence that an exact
+Actor-directory payload was removed under explicit authority.
+
+Exceptional removal is not:
+
+- ordinary lifecycle;
+- invalidation;
+- supersession;
+- duplicate consolidation;
+- migration;
+- privacy projection;
+- or a substitute for retention policy.
+
+## 25.2 Eligible targets
+
+The initial target union permits:
+
+```text
+Actor
+Actor Contact Point
+Actor-to-Student Relationship
+Actor–Roster Student Collision
+```
+
+Removal of an append-only lifecycle transition, correction, amendment, or
+operation journal is not permitted through this contract.
+
+Errors in those records use history correction, repair, or Quarantine.
+
+## 25.3 Narrow grounds
+
+Initial grounds are:
+
+```text
+prohibited_sensitive_payload
+synthetic_or_test_record
+unrecoverable_corruption
+binding_legal_or_administrative_requirement
+other_exceptional_ground
+```
+
+`other_exceptional_ground` requires bounded detail and explicit authorization.
+
+Convenience, inactivity, lack of current references, duplicate status, or user
+preference alone are not exceptional-removal grounds.
+
+## 25.4 Workspace-level certificate storage
+
+Certificates are stored outside the removable Actor root:
+
+```text
+portia/
+  actor-directory-removals/
+    <removal_id>.json
+```
+
+This permits the certificate to survive removal of:
+
+- `actor.json`;
+- an Actor child payload;
+- or, in the narrowest case, the remaining Actor root.
+
+The directory is a canonical Portia workspace collection.
+
+It is not derived state.
+
+## 25.5 Identifier reuse
+
+Issue #14 will reuse the existing exceptional-removal identifier contract when
+its accepted syntax is scope-neutral.
+
+If the existing identifier contract is tied structurally to class/work removal,
+Issue #14 will add an Actor-directory removal identifier with the same opaque,
+nonsemantic principles.
+
+The pre-ADR contract audit must record the final choice.
+
+No identifier may encode:
+
+- Actor name;
+- contact value;
+- student identity;
+- removal ground;
+- or sensitive payload.
+
+## 25.6 Required certificate evidence
+
+The conceptual envelope preserves:
+
+```text
+schema_version
+record_type
+module_id
+removal_id
+target
+original_workspace_relative_path
+original_contract_version
+original_fingerprint
+original_byte_length
+ground
+authorization
+removed_at
+removed_by
+operation_ref
+retained_identity_evidence
+```
+
+The certificate does not retain the removed substantive payload.
+
+## 25.7 Retained identity evidence
+
+Retained identity evidence is limited to exact opaque identity required for:
+
+- historical reference resolution;
+- authorization audit;
+- operation recovery;
+- and proof that a specific canonical payload was removed.
+
+For an Actor, it may retain only:
+
+```text
+actor_id
+original contract version
+content fingerprint
+byte length
+```
+
+For a Contact Point, it may retain:
+
+```text
+actor_id
+contact_point_id
+original contract version
+content fingerprint
+byte length
+```
+
+It does not retain:
+
+- display name;
+- email address;
+- phone number;
+- organization;
+- title;
+- relationship type;
+- student name;
+- or unrestricted narrative.
+
+An exact roster-qualified student reference may be retained only when necessary
+to identify a removed Relationship or Collision certificate and permitted by the
+authorizing policy.
+
+## 25.8 Actor-root removal
+
+Removing `actor.json` is permitted only under exceptional authority.
+
+Before Actor-root removal, Portia must:
+
+1. obtain complete incoming-reference discovery;
+2. inventory all canonical child records and history;
+3. determine which child payloads must also be removed;
+4. preserve every required removal certificate;
+5. preserve operation and authorization evidence;
+6. ensure no ordinary workflow can select the Actor;
+7. and verify post-removal historical-resolution behavior.
+
+The resulting exact Actor resolution is:
+
+```text
+exceptionally_removed
+```
+
+It is not:
+
+```text
+missing
+superseded
+invalidated
+```
+
+unless separate surviving canonical evidence also establishes one of those
+states.
+
+Portia must not create a replacement Actor merely to avoid removal semantics.
+
+## 25.9 Contact payload removal
+
+Contact Point is the most likely exceptional-removal target because it contains
+privacy-sensitive payload.
+
+Removal may be appropriate when:
+
+- the value was prohibited from retention;
+- the value belongs to the wrong person and must not remain;
+- a binding requirement prohibits retaining it;
+- or synthetic/test data must be destroyed.
+
+The certificate retains no contact value or reversible unsalted contact hash.
+
+Historical Communications may retain their own independently justified evidence
+under their future contract and policy. The Contact Point removal certificate
+does not rewrite them.
+
+## 25.10 Relationship and collision removal
+
+Relationship or Collision removal requires heightened review because those
+records preserve identity and correction context.
+
+Removal is not appropriate merely because:
+
+- the Relationship ended;
+- the Actor was invalidated;
+- the roster changed;
+- or the collision became historical.
+
+When removal is required, the certificate retains exact opaque identity and the
+minimum permitted target evidence.
+
+## 25.11 Graph-sensitive preflight
+
+Exceptional removal requires:
+
+- fresh complete incoming-reference discovery;
+- exact target and path validation;
+- authorization validation;
+- removal-ground validation;
+- child and dependent review;
+- expected fingerprint agreement;
+- and a complete write/remove plan.
+
+Authorization-limited discovery blocks removal.
+
+No absence claim may be inferred from a missing or stale index.
+
+## 25.12 Operation ordering
+
+The operation:
+
+1. validates and stages the certificate;
+2. creates and verifies the certificate;
+3. revalidates the exact target fingerprint;
+4. removes the target payload through the approved filesystem procedure;
+5. verifies absence and containment;
+6. creates required findings or Quarantines for affected references;
+7. regenerates derived views;
+8. and verifies exact historical resolution through the certificate.
+
+Certificate acceptance precedes payload removal.
+
+An accepted certificate with a remaining payload or a removed payload without an
+accepted certificate is recovery-required state.
+
+## 25.13 No contact value in diagnostics
+
+Findings, journals, locks, Quarantine records, and removal certificates refer to
+the exact Contact Point identity and fingerprint.
+
+They do not copy the removed value.
+
+Authorized repair tools may inspect staged or surviving canonical payload only
+when policy permits.
+
+## 25.14 Exceptional-removal invariants
+
+1. Ordinary deletion is prohibited.
+2. Grounds are narrow and explicit.
+3. The certificate survives outside the Actor root.
+4. Certificate acceptance precedes payload removal.
+5. Removed payload is not copied into the certificate.
+6. Complete incoming-reference discovery is required.
+7. Removal does not masquerade as lifecycle.
+8. Exact resolution returns `exceptionally_removed`.
+9. Historical references are not silently rewritten.
+10. Existing class/work `exceptional_removal@1` remains immutable.
+
+---
+
+# 26. Approved Decision 22: Actor-Aware Integrity Findings
+
+## 26.1 Decision
+
+Issue #14 will introduce:
+
+```text
+integrity_finding@2
+```
+
+Version 2 preserves the complete version-1 envelope, severity vocabulary, effect
+vocabulary, deterministic key semantics, and noncanonical derived status.
+
+It adds Actor-directory target branches.
+
+Version 1 remains immutable and valid for all existing targets.
+
+## 26.2 Added target branches
+
+Integrity Finding v2 adds:
+
+```text
+actor_directory_record
+actor_set
+actor_directory_collection
+```
+
+### Actor-directory record
+
+This branch targets one exact:
+
+```text
+Actor
+Actor Contact Point
+Actor-to-Student Relationship
+Actor–Roster Student Collision
+```
+
+It composes the appropriate exact reference.
+
+### Actor set
+
+This branch targets a bounded sorted unique set of exact Actors.
+
+It is intended for:
+
+- duplicate candidates;
+- conflicting effective successor sets;
+- and multi-Actor consolidation diagnostics.
+
+The set contains at least two Actors.
+
+It contains no display or contact data.
+
+### Actor-directory collection
+
+This branch targets the workspace Actor collection when one finding cannot be
+honestly assigned to a single known Actor, such as:
+
+- malformed Actor-root discovery;
+- duplicate directory identity;
+- collection-level path conflict;
+- or authorization-limited collection scan.
+
+It does not replace exact targets when exact identity is known.
+
+## 26.3 Existing target compatibility
+
+Every value valid under `integrity_finding@1` remains valid under version 2 when
+its `schema_version` and `$id` expectations are updated according to the accepted
+versioning policy.
+
+Version 2 must not reinterpret:
+
+- work targets;
+- operation targets;
+- class targets;
+- workspace targets;
+- graph targets;
+- or derived-projection targets.
+
+## 26.4 Actor rule families
+
+Initial Actor rule families include:
+
+```text
+portia.actor.path_identity_mismatch
+portia.actor.lifecycle_disagreement
+portia.actor.replacement_broken
+portia.actor.duplicate_candidate
+portia.actor.roster_collision_candidate
+portia.actor.roster_collision_incomplete
+portia.actor.split_incomplete
+portia.actor.contact_owner_mismatch
+portia.actor.contact_preference_conflict
+portia.actor.relationship_owner_mismatch
+portia.actor.relationship_target_unavailable
+portia.actor.relationship_authority_overclaim
+portia.actor.incoming_reference_indeterminate
+portia.actor.privacy_payload_leak
+portia.actor.removal_incomplete
+portia.actor.migration_inconsistent
+portia.actor.operation_incomplete
+```
+
+Rule IDs remain versioned separately from the finding contract.
+
+## 26.5 Severity and effects
+
+Representative duplicate candidates are ordinarily:
+
+```text
+advisory or warning
+attention and/or review_required
+```
+
+Representative corrupt or incomplete Actor operations may be:
+
+```text
+error or critical
+block_current_use
+block_lifecycle_writes
+quarantine
+review_required
+```
+
+Severity and effects are selected from actual consequence, not record family.
+
+A name or contact similarity signal alone is never critical.
+
+## 26.6 Privacy-minimized evidence
+
+Finding keys, evaluation keys, titles, and context must not contain:
+
+- display names;
+- contact values;
+- phone digits;
+- email domains;
+- student names;
+- relationship narratives;
+- or removed payload.
+
+Findings may preserve:
+
+- exact opaque references;
+- rule and contract versions;
+- paths;
+- fingerprints;
+- counts;
+- bounded evidence-kind tokens;
+- and authorization-coverage status.
+
+An authorized review interface may resolve canonical values separately.
+
+## 26.7 Finding administration compatibility
+
+The existing contracts remain reusable unchanged:
+
+```text
+finding_acknowledgement@1
+finding_suppression@1
+finding_suppression_current_pointer@1
+```
+
+They bind stable:
+
+```text
+finding_key
+evaluation_key
+rule_id
+rule_version
+severity
+effects
+```
+
+and do not embed the Integrity Finding target wire shape.
+
+Acknowledgement and suppression therefore work for version-2 Actor findings
+without new versions.
+
+Application validation must still confirm that the bound finding evaluation
+exists and that suppression eligibility remains permitted.
+
+## 26.8 Quarantine distinction
+
+An Integrity Finding may recommend or require Quarantine.
+
+It is not itself Quarantine.
+
+A duplicate candidate ordinarily does not quarantine an Actor.
+
+A broken consolidation, contradictory identity graph, privacy leak, or incomplete
+removal may require Quarantine according to actual risk.
+
+## 26.9 Finding invariants
+
+1. Integrity Finding v2 is additive.
+2. Version-1 findings remain valid.
+3. Actor sets contain opaque exact identities only.
+4. Collection targets are used only when exact identity is unavailable or
+   genuinely plural at collection scope.
+5. Findings are derived and rebuildable.
+6. Findings do not mutate Actor lifecycle.
+7. Acknowledgement and suppression v1 remain reusable.
+8. Sensitive payload is excluded from keys and presentation context.
+9. Duplicate candidates do not establish identity.
+10. Quarantine remains a separate operational control.
+
+---
+
+# 27. Approved Decision 23: Actor-Aware Operation Journals
+
+## 27.1 Decision
+
+Issue #14 will introduce:
+
+```text
+operation_journal@2
+```
+
+Version 2 preserves:
+
+- immutable journal revisions;
+- explicit current pointer selection;
+- operation identity;
+- intent digest;
+- replay semantics;
+- preconditions;
+- planned writes;
+- observed evidence;
+- step state;
+- outcomes;
+- compensation;
+- and recovery behavior
+
+from version 1.
+
+It adds Actor-directory operation targets.
+
+## 27.2 Current pointer and references
+
+These contracts remain unchanged:
+
+```text
+operation_current_pointer@1
+operation_ref@1
+operation_journal_ref@1
+```
+
+The current pointer selects:
+
+```text
+operation_id + journal_revision
+```
+
+and does not embed the journal target shape.
+
+`operation_journal_ref@1` already carries `contract_version`, so it may refer to a
+version-2 journal revision.
+
+## 27.3 Operation scope
+
+Actor-directory operations use:
+
+```text
+scope = workspace
+```
+
+because Actor ownership is workspace-scoped.
+
+Issue #14 does not add a new operation-scope token merely to restate that
+ownership.
+
+Exact Actor identity is carried by the version-2 primary and affected target
+unions.
+
+## 27.4 Added operation target branches
+
+Operation Journal v2 adds:
+
+```text
+actor_directory_record
+actor_set
+actor_directory_collection
+```
+
+The semantics match Integrity Finding v2.
+
+Actor-set targets are used for:
+
+- duplicate consolidation;
+- Actor split planning;
+- and other operations whose complete identity set is contract-significant.
+
+The planned write set still identifies every exact path and expected
+representation independently.
+
+## 27.5 Existing operation kinds
+
+The accepted operation-kind vocabulary is sufficient.
+
+Actor workflows use:
+
+| Actor workflow | Operation kind |
+| --- | --- |
+| Create Actor, Contact Point, Relationship, or Collision | `create_record` |
+| Nonmaterial Actor-directory correction | `apply_amendment` |
+| Lifecycle status change | `transition_lifecycle` |
+| Lifecycle-history repair | `correct_history` |
+| Ordinary material successor correction | `correct_history` |
+| Duplicate consolidation | `consolidate_duplicates` |
+| Conflated-person split | `correct_history` |
+| Actor–roster collision correction | `correct_history` |
+| Representation-only migration | `migrate_representation` |
+| Exceptional removal | `exceptionally_remove` |
+| Derived rebuild | `rebuild_projection` |
+| Integrity scan | `integrity_scan` |
+| Interrupted-operation repair | `repair_operation` |
+
+No new operation kind is introduced merely because the target is an Actor.
+
+## 27.6 Typed primary target
+
+An operation changing one Actor-directory record must use that exact record as
+its primary target.
+
+A generic workspace target is insufficient.
+
+A consolidation uses the complete Actor set.
+
+A split uses:
+
+- the exact predecessor Actor as primary target;
+- and the complete successor set in intent and planned writes.
+
+A creation may identify the intended new exact Actor-directory identity together
+with a `must_be_absent` precondition.
+
+## 27.7 Write-set privacy
+
+Planned and observed write evidence may preserve:
+
+```text
+workspace-relative path
+must_be_absent or must_match precondition
+content fingerprint
+byte length
+contract name and version
+typed record identity
+step state
+readback result
+```
+
+It must not copy:
+
+- contact values;
+- display names;
+- organization or title;
+- relationship detail;
+- student names;
+- or removed payload
+
+into operation facts merely for convenience.
+
+The canonical staged and destination payload necessarily contains the domain
+record and is protected by deployment filesystem policy.
+
+## 27.8 Actor operation families
+
+Version-2 operation validation must recognize complete write families.
+
+### Actor creation
+
+Expected writes may include:
+
+```text
+actor.json
+initial Contact Points
+initial Relationships
+journal revisions
+current pointer
+```
+
+Initial child creation remains explicit.
+
+### Lifecycle transition
+
+Expected writes include:
+
+```text
+Actor-directory transition
+current target replacement
+derived regeneration or finding update
+journal evidence
+```
+
+### Amendment
+
+Expected writes include:
+
+```text
+Actor-directory amendment
+current target replacement
+derived regeneration
+journal evidence
+```
+
+### Consolidation or split
+
+Expected writes include:
+
+```text
+successor Actor roots
+selected successor children
+predecessor lifecycle transitions
+current predecessor replacements
+incoming-reference review findings
+derived regeneration
+journal evidence
+```
+
+### Collision correction
+
+Expected writes include:
+
+```text
+collision record
+Actor invalidation transition
+current Actor replacement
+selected consuming-record corrections
+child review findings or Quarantines
+derived regeneration
+journal evidence
+```
+
+### Exceptional removal
+
+Expected writes include:
+
+```text
+removal certificate
+target removal
+reference findings or Quarantines
+derived regeneration
+journal evidence
+```
+
+## 27.9 Replay and recovery
+
+Actor operations retain exact Issue #13 replay rules.
+
+The same `operation_id` may be replayed only with the same immutable
+`intent_digest`.
+
+Recovery evaluates actual evidence, not timestamps or greatest revisions.
+
+A partially created Actor root is never accepted merely because `actor.json`
+exists.
+
+A partially completed consolidation or split is never reduced to a successful
+subset.
+
+## 27.10 Operation outcomes
+
+The existing outcomes remain sufficient:
+
+```text
+completed
+replayed
+rejected
+conflict
+partial_success
+recovery_required
+compensated
+failed
+```
+
+Actor-domain meaning does not require a new outcome vocabulary.
+
+## 27.11 Operation Journal v1 compatibility
+
+Version-1 journals remain valid and readable.
+
+They are not retroactively upgraded.
+
+An operation involving any Actor-directory target uses version 2.
+
+A version-2 journal may also contain existing work or projection targets when one
+coordinated Actor correction explicitly affects those records.
+
+## 27.12 Journal invariants
+
+1. Actor operations use workspace scope plus exact Actor targets.
+2. Operation Journal v2 is additive.
+3. Existing operation identities and pointers remain valid.
+4. Existing operation kinds are sufficient.
+5. Contact and other sensitive payload is excluded from journal facts.
+6. Actor sets are complete and deterministically ordered.
+7. Partial consolidation and split are not successful subsets.
+8. Exact replay requires the same intent digest.
+9. Recovery uses evidence rather than age or timestamps.
+10. Version-1 journals remain immutable.
+
+---
+
+# 28. Approved Decision 24: Actor-Aware Locks and Quarantine
+
+## 28.1 Operation Lock v2
+
+Issue #14 will introduce:
+
+```text
+operation_lock@2
+```
+
+Version 2 preserves the deterministic lock-key rule:
+
+```text
+lock_id =
+  "lock_" + sha256(
+    canonical_json({
+      "lock_scope": lock_scope,
+      "protected_target": protected_target
+    })
+  )
+```
+
+It adds Actor-directory scopes and protected targets.
+
+Version-1 locks remain valid for existing scopes.
+
+## 28.2 Added lock scopes
+
+Operation Lock v2 adds:
+
+```text
+actor_directory_collection
+actor_directory_record
+```
+
+### Actor-directory collection
+
+Protects namespace-sensitive operations beneath:
+
+```text
+portia/actors/
+```
+
+Representative uses include:
+
+- Actor creation;
+- duplicate consolidation;
+- Actor split;
+- collection-wide migration;
+- and discovery-sensitive repair.
+
+It does not imply a lock over unrelated workspace content.
+
+### Actor-directory record
+
+Protects one exact:
+
+```text
+Actor
+Contact Point
+Actor-to-Student Relationship
+Actor–Roster Student Collision
+```
+
+A multi-Actor operation acquires one deterministic lock per exact record rather
+than one opaque set lock.
+
+## 28.3 Lock ordering
+
+The initial deterministic acquisition order is:
+
+1. Actor-directory collection lock, when required;
+2. Actor locks sorted by `actor_id`;
+3. Contact Point locks sorted by `(actor_id, contact_point_id)`;
+4. Relationship locks sorted by `(actor_id, relationship_id)`;
+5. Collision locks sorted by `(actor_id, collision_id)`;
+6. class/work or derived locks required by consuming-record corrections;
+7. operation lock.
+
+The implementation must document any refinement before production use.
+
+All participants use the same total order.
+
+## 28.4 No age-based lock inference
+
+Actor locks have no:
+
+```text
+expires_at
+released_at
+heartbeat_at
+state
+```
+
+Lock age, modification time, or process absence does not prove that a lock is
+stale.
+
+Release or takeover follows Issue #13 evidence and recovery rules.
+
+## 28.5 Lock privacy
+
+Protected targets contain opaque exact identity only.
+
+Lock records do not contain:
+
+- Actor display name;
+- contact value;
+- relationship detail;
+- roster student name;
+- removal payload;
+- or duplicate-review narrative.
+
+## 28.6 Quarantine Record v2
+
+Issue #14 will introduce:
+
+```text
+quarantine_record@2
+```
+
+Version 2 preserves:
+
+- immutable revisions;
+- explicit current pointer selection;
+- `active`, `released`, and `superseded` states;
+- reason, effects, origin, resolution, and review evidence;
+- and the separation between Quarantine and lifecycle.
+
+It adds Actor-directory targets and one Actor-specific write effect.
+
+## 28.7 Added Quarantine targets
+
+Quarantine v2 adds:
+
+```text
+actor_directory_record
+actor_directory_collection
+actor_set
+```
+
+Actor-set Quarantine is permitted only when the risk is genuinely set-wide, such
+as an incomplete consolidation or split.
+
+When independent per-Actor controls are sufficient, separate exact Actor
+Quarantines are preferred.
+
+## 28.8 Added effect
+
+Quarantine v2 adds:
+
+```text
+block_actor_directory_writes
+```
+
+Existing generic effects remain reusable, including:
+
+```text
+block_current_use
+block_lifecycle_writes
+block_operation_completion
+block_projection_use
+review_required
+```
+
+`block_actor_directory_writes` blocks writes to the targeted Actor root or
+collection according to target scope.
+
+It does not block unrelated class/work records unless separately targeted.
+
+## 28.9 Actor Quarantine reasons
+
+Existing reason categories remain broadly applicable.
+
+Version 2 may add or document Actor-specific reason mapping for:
+
+```text
+actor_identity_contradiction
+actor_replacement_reconciliation
+actor_relationship_reconciliation
+actor_contact_privacy
+actor_roster_collision
+actor_split_reconciliation
+actor_removal_reconciliation
+```
+
+The final schema should prefer existing general reason values when they remain
+semantically accurate, adding new enum values only where necessary.
+
+## 28.10 Lifecycle separation
+
+Quarantining an Actor does not change it to:
+
+```text
+inactive
+invalidated
+superseded
+```
+
+Releasing Quarantine does not reactivate an Actor.
+
+Lifecycle and Quarantine require separate canonical evidence.
+
+## 28.11 Quarantine current pointer
+
+The existing:
+
+```text
+quarantine_current_pointer@1
+```
+
+remains unchanged.
+
+It identifies only:
+
+```text
+quarantine_id
+quarantine_revision
+```
+
+and does not embed target shape.
+
+## 28.12 Quarantine privacy
+
+Quarantine records preserve:
+
+- exact target identity;
+- bounded reason codes;
+- supporting finding keys;
+- operation references;
+- effects;
+- and review requirements.
+
+They do not copy:
+
+- contact values;
+- display names;
+- student names;
+- relationship narratives;
+- or removed payload.
+
+## 28.13 Lock and Quarantine invariants
+
+1. Lock v2 is additive.
+2. Quarantine v2 is additive.
+3. Collection and exact-record scopes are distinct.
+4. Multi-Actor operations use deterministic per-record locks.
+5. Lock age never proves staleness.
+6. Quarantine does not mutate lifecycle.
+7. Actor-specific write blocking is explicit.
+8. Current-pointer contracts remain unchanged.
+9. Sensitive payload is excluded.
+10. Version-1 locks and Quarantines remain immutable.
+
+---
+
+# 29. Approved Decision 25: Derived State and Privacy-Minimized Operational Evidence
+
+## 29.1 Existing derived contracts remain sufficient
+
+Issue #14 reuses these published contracts unchanged:
+
+```text
+source_snapshot@1
+derived_index_metadata@1
+derived_current_pointer@1
+```
+
+Actor-directory sources fit the existing model through:
+
+```text
+workspace scope
+workspace-relative paths
+exact byte lengths and SHA-256 digests
+canonical_domain source role
+operational_revision source role
+operational_pointer source role
+operational_lock source role
+quarantine_state source role
+```
+
+No Actor payload field must be added to the metadata contracts.
+
+## 29.2 Existing projection kinds
+
+The initial Actor architecture reuses:
+
+```text
+incoming_reference_index
+replacement_frontier_index
+lifecycle_timeline
+active_integrity_finding_index
+active_quarantine_index
+operation_recovery_queue
+finding_acknowledgement_index
+finding_suppression_index
+current_state_view
+```
+
+These projection kinds are generic enough to include Actor-directory identity.
+
+Issue #14 does not add a persisted Actor search index or duplicate-candidate
+index.
+
+Duplicate candidates appear through `active_integrity_finding_index`.
+
+Actor search may initially use bounded canonical scanning and an in-memory index.
+
+## 29.3 Projection scope
+
+Actor projections ordinarily use:
+
+```text
+scope = workspace
+```
+
+A graph-scoped projection may use a nonsemantic `graph_id` when it represents a
+specific replacement or incoming-reference graph.
+
+The existing work scope is not used for Actor ownership.
+
+## 29.4 Source-snapshot roles
+
+Actor root, Contact Point, Relationship, Collision, Actor-directory lifecycle,
+correction, amendment, migration, and exceptional-removal certificates are
+canonical domain evidence.
+
+They may use:
+
+```text
+source_role = canonical_domain
+```
+
+Operation Journal revisions, pointers, locks, and Quarantine use their existing
+operational roles.
+
+Issue #14 does not need a new source-role token merely to name Actor data.
+
+## 29.5 Freshness
+
+An Actor-derived generation is fresh only when its exact source snapshot still
+matches all contract-significant canonical and operational sources required by
+its declared scope and authorization coverage.
+
+A generation does not remain fresh because:
+
+- its build time is recent;
+- Actor file modification times are unchanged;
+- its generation ID sorts last;
+- or its current pointer still exists.
+
+## 29.6 Authorization-limited state
+
+An authorization-limited Actor scan must declare:
+
+```text
+coverage = authorization_limited
+```
+
+with explicit limitation codes.
+
+It must not produce:
+
+- an empty-directory claim;
+- a complete incoming-reference claim;
+- a complete duplicate-candidate claim;
+- or an exceptional-removal eligibility claim.
+
+## 29.7 Privacy classes
+
+Issue #14 establishes these operational privacy classes:
+
+### Opaque identity
+
+Examples:
+
+```text
+actor_id
+contact_point_id
+relationship_id
+collision_id
+transition_id
+operation_id
+quarantine_id
+```
+
+Opaque identity may appear where exact targeting is required.
+
+It remains sensitive operational metadata when combined with other records.
+
+### Low-sensitivity domain metadata
+
+Examples:
+
+```text
+status token
+contract version
+record kind
+broad Actor category
+bounded reason code
+path kind
+byte length
+```
+
+These values may appear in diagnostics when necessary.
+
+### Privacy-sensitive domain payload
+
+Examples:
+
+```text
+display name
+organization
+title
+email address
+phone number
+relationship detail
+relationship source detail
+verification detail
+roster student identity
+```
+
+These values remain canonical only where the domain contract requires them.
+
+They are not copied into ordinary operation facts.
+
+### Prohibited operational duplication
+
+The following must not appear in:
+
+```text
+lock files
+finding keys
+evaluation keys
+intent digests as cleartext facts
+Quarantine titles
+nonsensitive derived summaries
+removal certificates
+```
+
+unless a future explicit contract and threat analysis requires a safe
+representation.
+
+## 29.8 Digests do not declassify payload
+
+A SHA-256 content fingerprint may be retained for integrity and recovery.
+
+A deterministic unsalted digest of only a low-entropy contact value is not an
+approved privacy-safe substitute.
+
+Portia does not persist standalone email or phone hashes for cross-Actor lookup
+in version 1.
+
+Whole-file fingerprints remain permitted because they bind exact representations
+and are not advertised as contact-value indexes.
+
+## 29.9 Derived search
+
+Teacher-facing Actor search may consider current canonical:
+
+- display name;
+- organization;
+- title;
+- category;
+- lifecycle;
+- and authorized Contact Point values.
+
+The initial implementation may normalize those values in memory.
+
+Search results must still resolve exact Actor identity.
+
+Search similarity does not alter lifecycle, replacement, or duplicate status.
+
+## 29.10 Current pointer meaning
+
+A derived current pointer selects one generation.
+
+It does not claim:
+
+- freshness;
+- complete authorization;
+- Actor identity truth;
+- duplicate equivalence;
+- contact validity;
+- or relationship authority.
+
+Every consequential consumer verifies generation metadata and current sources
+according to Issue #13.
+
+## 29.11 Operational integration inventory
+
+The pre-ADR public-contract result is:
+
+| Contract | Issue #14 result |
+| --- | --- |
+| `operation_ref@1` | Reuse unchanged |
+| `operation_journal_ref@1` | Reuse unchanged |
+| `operation_current_pointer@1` | Reuse unchanged |
+| `operation_journal@1` | Retain unchanged |
+| `operation_journal@2` | Add Actor-aware target branches |
+| `operation_lock@1` | Retain unchanged |
+| `operation_lock@2` | Add Actor collection and record scopes |
+| `quarantine_record@1` | Retain unchanged |
+| `quarantine_record@2` | Add Actor targets and write effect |
+| `quarantine_current_pointer@1` | Reuse unchanged |
+| `integrity_finding@1` | Retain unchanged |
+| `integrity_finding@2` | Add Actor record, set, and collection targets |
+| `finding_acknowledgement@1` | Reuse unchanged |
+| `finding_suppression@1` | Reuse unchanged |
+| `finding_suppression_current_pointer@1` | Reuse unchanged |
+| `source_snapshot@1` | Reuse unchanged |
+| `derived_index_metadata@1` | Reuse unchanged |
+| `derived_current_pointer@1` | Reuse unchanged |
+
+## 29.12 Derived and privacy invariants
+
+1. Existing derived contracts remain sufficient.
+2. Actor projections use workspace or graph scope.
+3. Missing or limited projections never imply empty state.
+4. Actor search is initially bounded and nonauthoritative.
+5. Duplicate candidates remain findings.
+6. Contact values are not operational facts.
+7. Whole-file fingerprints remain permitted.
+8. Standalone deterministic contact hashes are prohibited.
+9. Current pointers do not claim freshness.
+10. Consequential consumers revalidate current source evidence.
+
+---
+
+## 30. Consequences of Decisions 1–25
+
+The complete pre-ADR design requires these new version-1 Actor contracts:
 
 ```text
 actor@1
@@ -5416,15 +6997,18 @@ actor_roster_student_collision@1
 exact_actor_ref@1
 exact_actor_contact_point_ref@1
 exact_actor_student_relationship_ref@1
+exact_actor_roster_student_collision_ref@1
 exact_actor_directory_record_ref@1
 actor_target@1
 
 actor_directory_lifecycle_transition@1
 actor_directory_lifecycle_history_correction@1
 actor_directory_amendment@1
+actor_directory_record_migration@1
+actor_directory_exceptional_removal@1
 ```
 
-Required identifier additions now include:
+Required identifier additions include:
 
 ```text
 portia_actor_contact_point_id@1
@@ -5432,26 +7016,45 @@ portia_actor_student_relationship_id@1
 portia_actor_roster_student_collision_id@1
 ```
 
-The design does not require a separate canonical:
+Existing scope-neutral identifiers are reused where applicable:
 
 ```text
-Actor duplicate review
-Actor consolidation
-Actor split
+portia_actor_id@1
+portia_lifecycle_transition_id@1
+portia_lifecycle_history_correction_id@1
+portia_amendment_id@1
+portia_record_migration_id@1
+exceptional-removal identifier, subject to pre-ADR schema audit
 ```
 
-record.
-
-Those meanings are represented through:
+Issue #14 also requires these additive public versions:
 
 ```text
-derived Integrity Findings and finding administration
-+ successor-owned predecessor lineage
-+ predecessor lifecycle transitions
-+ complete Issue #13 operation journals
+integrity_finding@2
+operation_journal@2
+operation_lock@2
+quarantine_record@2
 ```
 
-The Actor replacement graph now explicitly supports:
+These contracts remain unchanged:
+
+```text
+actor_ref@1
+person_display_snapshot@1
+roster_student_ref@1
+operation_ref@1
+operation_journal_ref@1
+operation_current_pointer@1
+quarantine_current_pointer@1
+finding_acknowledgement@1
+finding_suppression@1
+finding_suppression_current_pointer@1
+source_snapshot@1
+derived_index_metadata@1
+derived_current_pointer@1
+```
+
+The accepted Actor replacement graph permits:
 
 ```text
 one Actor -> one Actor
@@ -5464,220 +7067,117 @@ It prohibits:
 ```text
 several Actors -> several Actors
 Actor -> roster student replacement edge
-silent successor substitution
+silent reference retargeting
+automatic child reassignment
 ```
 
-A confirmed Actor–roster student collision is preserved through:
+A confirmed Actor–roster collision uses:
 
 ```text
-actor_roster_student_collision
+Actor–Roster Student Collision record
 + Actor invalidation transition
-+ explicit consuming-record corrections
++ explicit consuming-record correction
 ```
 
-Later decisions must determine exact Actor-aware versions or companion contracts
-for:
+The operational model uses:
 
 ```text
-record migration
-exceptional removal
-integrity finding
-operation journal
-operation lock
-Quarantine
-source snapshot
-derived projection metadata
+workspace scope
++ exact Actor-directory targets
++ privacy-minimized paths and fingerprints
++ deterministic locks
++ recoverable journals
++ separate Quarantine
++ rebuildable derived state
 ```
-
-The existing workspace-scoped `incoming_reference_index` projection kind can
-support Actor incoming-reference discovery without a new projection kind.
 
 No existing public schema will be modified in place.
 
-## 25. Rejected alternatives through Decision 19
+## 31. Rejected alternatives through Decision 25
 
-### Flat Actor file with workspace-wide history collections
+### Actor migration through class/work `record_migration@1`
 
-Rejected because loading and validating one Actor would require broad scans and
-would separate the Actor from its bounded canonical child history.
+Rejected because that contract requires a class-owned work and would fabricate
+Actor ownership.
 
-### Actor stored beneath the first related class
+### Migration that changes Actor owner or contact value
 
-Rejected because recurring Actors may participate across several classes and no
-one class owns their identity.
+Rejected because those changes alter semantic identity or assertion.
 
-### Actor root containing all contact and student relationships
+### Ordinary hard deletion
 
-Rejected because contact and relationship data have independent lifecycle,
-sensitivity, provenance, and correction requirements.
+Rejected because it erases exact historical identity and incoming-reference
+context.
 
-### Actor category as a permanent role list
+### Removal certificate beneath the removable Actor root
 
-Rejected because person category, job title, student relationship, workflow role,
-and decision authority are distinct.
+Rejected because removing the root could remove its own surviving evidence.
 
-### Structured legal-person profile
+### Retaining removed contact values in a certificate
 
-Rejected because Portia is teacher-local, does not verify institutional identity,
-and should collect the least data necessary.
+Rejected because the certificate must not recreate prohibited payload.
 
-### Automatic Actor creation from names or communications
+### Reusing Integrity Finding v1 by placing Actor identity in a generic workspace target
 
-Rejected because similarity and recurrence do not establish identity.
+Rejected because exact diagnostic identity would be lost.
 
-### Existing duplicate selected as consolidation survivor
+### Separate Actor duplicate-review record
 
-Rejected because it would privilege one predecessor, mutate accepted history,
-and conflict with the accepted new-successor consolidation model.
+Rejected because Issue #13 finding administration already provides durable review
+and bounded presentation suppression.
 
-### Generic workspace target for exact Actor operations
+### New Actor-specific operation kinds
 
-Rejected because workspace scope does not identify the Actor being changed.
+Rejected because existing operation semantics already describe creation,
+correction, consolidation, migration, removal, scanning, and repair.
 
-### Contact arrays embedded in Actor
+### Generic workspace target as Actor primary target
 
-Rejected because Contact Points require independent provenance, lifecycle,
-privacy, and correction.
+Rejected because workspace scope does not identify the record being changed.
 
-### Contact value as identity
+### One lock for an opaque Actor set
 
-Rejected because values may change, be shared, and expose sensitive data.
+Rejected because deterministic per-record locks provide clearer ownership and
+ordering.
 
-### Full postal-address support in v1
+### Workspace-wide lock for every Actor update
 
-Rejected because no current accepted Portia workflow requires it and the privacy
-cost is substantial.
+Rejected because it unnecessarily blocks unrelated Actor operations.
 
-### Relationship labels embedded in Actor
+### Lock expiry or heartbeat
 
-Rejected because one Actor may have different relationships to several exact
-roster-qualified students.
+Rejected because time and process liveness do not prove safe takeover.
 
-### Relationship as legal authority
+### Quarantine encoded as Actor lifecycle
 
-Rejected because Portia records teacher-local context rather than institutional
-or legal identity authority.
+Rejected because operational safety and domain truth are separate.
 
-### Automatic cross-roster relationship propagation
+### New Actor-specific derived metadata family
 
-Rejected because Core does not provide workspace-wide student identity.
+Rejected because Issue #13 source snapshots, generations, and pointers are
+already scope-generic.
 
-### Automatic lifecycle cascade from Actor to children
+### Persisted Actor search index in version 1
 
-Rejected because each canonical child assertion requires independent review and
-historical preservation.
+Rejected because bounded scanning and an in-memory index are sufficient for the
+initial teacher-local directory.
 
-### Reusing class/work lifecycle envelopes
+### Standalone contact-value hashes
 
-Rejected because they require a containing class-owned work and would fabricate
-ownership for a workspace Actor.
+Rejected because low-entropy values may be guessed and the hash would become a
+privacy-sensitive correlation key.
 
-### One lifecycle contract per Actor child family
+## 32. Next slice
 
-Rejected because the three record families share the same structural lifecycle
-semantics and can use one closed typed target union with application-specific
-transition matrices.
-
-### Timestamp-selected current history
-
-Rejected because time does not provide reliable branch, replay, or correction
-identity.
-
-### Mutable lifecycle transition files
-
-Rejected because accepted lifecycle evidence must remain append-only.
-
-### History correction by deleting a transition
-
-Rejected because deletion would erase accepted provenance and make recovery
-ambiguous.
-
-### History correction that rewrites transition facts
-
-Rejected because incorrect facts require replacement transition evidence and
-explicit corrected history selection.
-
-### Generic JSON Patch amendments
-
-Rejected because arbitrary paths and values weaken semantic-equivalence,
-privacy, and compatibility validation.
-
-### Amending contact values
-
-Rejected because exact contact value is material to the Contact Point assertion
-and historical communication context.
-
-### Current-record replacement before history evidence
-
-Rejected because interruption could leave an unexplained accepted state change.
-
-### Canonical negative identity edges
-
-Rejected because a reviewed related-but-distinct conclusion may change as
-evidence changes and does not justify a permanent person-identity assertion.
-
-### Automatic duplicate consolidation
-
-Rejected because candidate signals do not establish identity.
-
-### Separate canonical Actor consolidation record
-
-Rejected because successor lineage and predecessor transitions already provide
-canonical consolidation topology.
-
-### Mixed consolidation and roster correction
-
-Rejected because Actor consolidation cannot replace an Actor with a Core
-roster-student identity.
-
-### Actor-to-roster supersession edge
-
-Rejected because replacement edges require one semantic family and Core roster
-identity is class-qualified rather than an Actor successor.
-
-### Automatic Contact Point migration during consolidation
-
-Rejected because contact values may be obsolete, shared, conflicting, or
-assigned to the wrong person.
-
-### Automatic Relationship migration during consolidation
-
-Rejected because relationship targets and authority claims require explicit
-review.
-
-### Invalidate a conflated Actor without preserving known successors
-
-Rejected when a complete reviewed successor set is available, because it would
-discard useful explicit lineage.
-
-### Guess child or incoming-reference assignment during Actor split
-
-Rejected because conflated identity means the original reference is precisely
-what cannot be resolved automatically.
-
-### Rewrite all current Actor references to the consolidation successor
-
-Rejected because exact references remain historical identity and consuming
-record families own material correction.
-
-### Treat a missing incoming-reference index as an empty graph
-
-Rejected because missing, stale, corrupt, or authorization-limited derived state
-cannot prove absence.
-
-## 26. Next design slice
-
-The next slice should decide:
+The next slice should perform the pre-ADR repository checkpoint and produce:
 
 ```text
-Actor-directory migration
-exceptional removal
-Actor-aware Integrity Finding versioning
-Actor-aware Operation Journal target versioning
-Actor-aware lock and Quarantine versioning
-source-snapshot roles and derived-index compatibility
-privacy-minimized operational evidence
+ADR 0010
+final accepted design status
+exact public-contract inventory
+implementation sequence
+schema dependency ordering
 ```
 
-Those decisions should complete the pre-ADR architecture and public-contract
-inventory before ADR 0010 and schema implementation begin.
+No public schema should be added until the pre-ADR checkpoint confirms that the
+accepted Core and Portia boundaries have not drifted.
