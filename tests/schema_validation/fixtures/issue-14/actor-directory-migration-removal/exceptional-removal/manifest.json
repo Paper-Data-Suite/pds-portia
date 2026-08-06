@@ -1,0 +1,90 @@
+{
+  "manifest_version": "1",
+  "issue": 14,
+  "contract": "actor_directory_exceptional_removal",
+  "version": "1",
+  "valid": {
+    "actor-prohibited-payload.json": "Structurally and application-valid synthetic record.",
+    "contact-prohibited-value.json": "Structurally and application-valid synthetic record.",
+    "synthetic-relationship.json": "Structurally and application-valid synthetic record.",
+    "corrupt-actor.json": "Structurally and application-valid synthetic record.",
+    "collision-legal-requirement.json": "Structurally and application-valid synthetic record.",
+    "other-exceptional-ground.json": "Structurally and application-valid synthetic record."
+  },
+  "invalid": {
+    "missing-target.json": "Structurally invalid record rejected by JSON Schema.",
+    "invalid-removal-id.json": "Structurally invalid record rejected by JSON Schema.",
+    "absolute-path.json": "Structurally invalid record rejected by JSON Schema.",
+    "traversal-path.json": "Structurally invalid record rejected by JSON Schema.",
+    "invalid-fingerprint.json": "Structurally invalid record rejected by JSON Schema.",
+    "negative-byte-length.json": "Structurally invalid record rejected by JSON Schema.",
+    "unknown-ground.json": "Structurally invalid record rejected by JSON Schema.",
+    "other-ground-missing-detail.json": "Structurally invalid record rejected by JSON Schema.",
+    "missing-authorization.json": "Structurally invalid record rejected by JSON Schema.",
+    "system-authorizer.json": "Structurally invalid record rejected by JSON Schema.",
+    "retained-kind-mismatch.json": "Structurally invalid record rejected by JSON Schema.",
+    "retained-contact-value.json": "Structurally invalid record rejected by JSON Schema.",
+    "extra-display-name.json": "Structurally invalid record rejected by JSON Schema.",
+    "extra-status.json": "Structurally invalid record rejected by JSON Schema.",
+    "extra-created-at.json": "Structurally invalid record rejected by JSON Schema.",
+    "timestamp-without-offset.json": "Structurally invalid record rejected by JSON Schema."
+  },
+  "application_invalid": {
+    "path-target-mismatch.json": {
+      "rule_id": "portia.actor_directory_removal.target_path_agreement",
+      "description": "Structurally valid record rejected by the named application invariant."
+    },
+    "contract-version-mismatch.json": {
+      "rule_id": "portia.actor_directory_removal.original_contract_agreement",
+      "description": "Structurally valid record rejected by the named application invariant."
+    },
+    "retained-identity-mismatch.json": {
+      "rule_id": "portia.actor_directory_removal.retained_identity_target_agreement",
+      "description": "Structurally valid record rejected by the named application invariant."
+    },
+    "unnecessary-roster-identity.json": {
+      "rule_id": "portia.actor_directory_removal.roster_identity_retention_necessary_authorized",
+      "description": "Structurally valid record rejected by the named application invariant."
+    },
+    "fingerprint-mismatch.json": {
+      "rule_id": "portia.actor_directory_removal.original_fingerprint_truth",
+      "description": "Structurally valid record rejected by the named application invariant."
+    },
+    "byte-length-mismatch.json": {
+      "rule_id": "portia.actor_directory_removal.original_byte_length_truth",
+      "description": "Structurally valid record rejected by the named application invariant."
+    },
+    "certificate-collection-target-path.json": {
+      "rule_id": "portia.actor_directory_removal.path_outside_certificate_collection",
+      "description": "Structurally valid record rejected by the named application invariant."
+    },
+    "ordinary-inactivity-removal.json": {
+      "rule_id": "portia.actor_directory_removal.ordinary_mechanism_insufficient",
+      "description": "Structurally valid record rejected by the named application invariant."
+    },
+    "unresolved-incoming-references.json": {
+      "rule_id": "portia.actor_directory_removal.incoming_reference_complete",
+      "description": "Structurally valid record rejected by the named application invariant."
+    },
+    "actor-root-inventory-incomplete.json": {
+      "rule_id": "portia.actor_directory_removal.actor_root_inventory_complete",
+      "description": "Structurally valid record rejected by the named application invariant."
+    },
+    "duplicate-certificate.json": {
+      "rule_id": "portia.actor_directory_removal.duplicate_certificate",
+      "description": "Structurally valid record rejected by the named application invariant."
+    },
+    "missing-operation.json": {
+      "rule_id": "portia.actor_directory_removal.operation_resolution",
+      "description": "Structurally valid record rejected by the named application invariant."
+    },
+    "privacy-unsafe-decision-reference.json": {
+      "rule_id": "portia.actor_directory_removal.contact_value_excluded",
+      "description": "Structurally valid record rejected by the named application invariant."
+    },
+    "unresolved-target-noncorruption-ground.json": {
+      "rule_id": "portia.actor_directory_removal.target_resolution",
+      "description": "Structurally valid record rejected by the named application invariant."
+    }
+  }
+}

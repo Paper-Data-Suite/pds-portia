@@ -81,6 +81,18 @@
         "path": "schemas/v1/actors/actor-directory-amendment.schema.json"
       }
     },
+    "actor_directory_record_migration": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/migrations/actor-directory-record-migration.schema.json",
+        "path": "schemas/v1/migrations/actor-directory-record-migration.schema.json"
+      }
+    },
+    "actor_directory_exceptional_removal": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/removals/actor-directory-exceptional-removal.schema.json",
+        "path": "schemas/v1/removals/actor-directory-exceptional-removal.schema.json"
+      }
+    },
     "portia_event_id": {
       "1": {
         "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-event-id.schema.json",

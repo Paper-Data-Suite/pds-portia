@@ -1,0 +1,325 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/migrations/actor-directory-record-migration.schema.json",
+  "title": "Portia Actor Directory Record Migration",
+  "description": "Immutable certificate for one completed representation-only migration of one exact Actor-directory record from one exact public contract version to another while preserving logical identity, Actor ownership, record family, lifecycle meaning, successor lineage, creation provenance, and domain semantics.",
+  "$comment": "Application validation remains responsible for destination Actor-root storage, source and destination resolution, contract support, same logical identity and Actor ownership, differing representation versions, source and destination fingerprint truth, approved procedure compatibility, semantic equivalence, lifecycle and lineage preservation, creation-provenance preservation, no hidden correction or removal, effective/created chronology, operation coherence, durable-before-replacement ordering, canonical-path preservation, historical-reference stability, and an acyclic unbranched migration chain.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "record_type",
+    "module_id",
+    "actor_id",
+    "migration_id",
+    "source",
+    "destination",
+    "reason",
+    "procedure",
+    "source_fingerprint",
+    "destination_fingerprint",
+    "effective_at",
+    "created_at",
+    "created_by",
+    "operation_ref"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1"
+    },
+    "record_type": {
+      "const": "actor_directory_record_migration"
+    },
+    "module_id": {
+      "const": "portia"
+    },
+    "actor_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-actor-id.schema.json"
+    },
+    "migration_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-record-migration-id.schema.json"
+    },
+    "source": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-actor-directory-record-ref.schema.json"
+    },
+    "destination": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-actor-directory-record-ref.schema.json"
+    },
+    "reason": {
+      "$ref": "#/$defs/reason"
+    },
+    "procedure": {
+      "$ref": "#/$defs/procedure"
+    },
+    "source_fingerprint": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/content-fingerprint.schema.json"
+    },
+    "destination_fingerprint": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/content-fingerprint.schema.json"
+    },
+    "effective_at": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+    },
+    "created_at": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+    },
+    "created_by": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/attribution/attribution-agent.schema.json"
+    },
+    "operation_ref": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/operation-ref.schema.json"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "source": {
+            "properties": {
+              "kind": {
+                "const": "actor"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          }
+        },
+        "required": [
+          "source"
+        ]
+      },
+      "then": {
+        "properties": {
+          "destination": {
+            "properties": {
+              "kind": {
+                "const": "actor"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "source": {
+            "properties": {
+              "kind": {
+                "const": "actor_contact_point"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          }
+        },
+        "required": [
+          "source"
+        ]
+      },
+      "then": {
+        "properties": {
+          "destination": {
+            "properties": {
+              "kind": {
+                "const": "actor_contact_point"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "source": {
+            "properties": {
+              "kind": {
+                "const": "actor_student_relationship"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          }
+        },
+        "required": [
+          "source"
+        ]
+      },
+      "then": {
+        "properties": {
+          "destination": {
+            "properties": {
+              "kind": {
+                "const": "actor_student_relationship"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "source": {
+            "properties": {
+              "kind": {
+                "const": "actor_roster_student_collision"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          }
+        },
+        "required": [
+          "source"
+        ]
+      },
+      "then": {
+        "properties": {
+          "destination": {
+            "properties": {
+              "kind": {
+                "const": "actor_roster_student_collision"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "reason": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/recognizedReason"
+        },
+        {
+          "$ref": "#/$defs/otherReason"
+        }
+      ]
+    },
+    "recognizedReason": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "category",
+        "code"
+      ],
+      "properties": {
+        "category": {
+          "enum": [
+            "contract_upgrade",
+            "contract_normalization",
+            "canonical_representation_change"
+          ]
+        },
+        "code": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/lowercase-token.schema.json"
+        },
+        "detail": {
+          "allOf": [
+            {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+            },
+            {
+              "maxLength": 500
+            }
+          ]
+        }
+      }
+    },
+    "otherReason": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "category",
+        "code",
+        "detail"
+      ],
+      "properties": {
+        "category": {
+          "const": "other"
+        },
+        "code": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/lowercase-token.schema.json"
+        },
+        "detail": {
+          "allOf": [
+            {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+            },
+            {
+              "maxLength": 500
+            }
+          ]
+        }
+      }
+    },
+    "procedure": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "procedure_id",
+        "procedure_version"
+      ],
+      "properties": {
+        "procedure_id": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/lowercase-token.schema.json"
+        },
+        "procedure_version": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+        }
+      },
+      "description": "Versioned deterministic representation-only procedure. Its identity must not encode names, contact values, or student information."
+    }
+  },
+  "x-portia-application-invariants": [
+    "portia.actor_directory_migration.canonical_storage_scope",
+    "portia.actor_directory_migration.owner_agreement",
+    "portia.actor_directory_migration.source_resolution",
+    "portia.actor_directory_migration.destination_validation",
+    "portia.actor_directory_migration.source_contract_supported",
+    "portia.actor_directory_migration.destination_contract_supported",
+    "portia.actor_directory_migration.record_family_preserved",
+    "portia.actor_directory_migration.logical_identity_preserved",
+    "portia.actor_directory_migration.actor_ownership_preserved",
+    "portia.actor_directory_migration.contract_version_changed",
+    "portia.actor_directory_migration.source_fingerprint_truth",
+    "portia.actor_directory_migration.destination_fingerprint_truth",
+    "portia.actor_directory_migration.fingerprints_differ",
+    "portia.actor_directory_migration.procedure_registered_compatible",
+    "portia.actor_directory_migration.semantic_identity_preserved",
+    "portia.actor_directory_migration.lifecycle_preserved",
+    "portia.actor_directory_migration.successor_lineage_preserved",
+    "portia.actor_directory_migration.creation_provenance_preserved",
+    "portia.actor_directory_migration.collision_semantics_preserved",
+    "portia.actor_directory_migration.no_substantive_correction",
+    "portia.actor_directory_migration.no_exceptional_removal",
+    "portia.actor_directory_migration.effective_created_chronology",
+    "portia.actor_directory_migration.operation_resolution",
+    "portia.actor_directory_migration.operation_intent",
+    "portia.actor_directory_migration.durable_before_replacement",
+    "portia.actor_directory_migration.canonical_path_preserved",
+    "portia.actor_directory_migration.historical_reference_stability",
+    "portia.actor_directory_migration.chain_linear",
+    "portia.actor_directory_migration.chain_acyclic",
+    "portia.actor_directory_migration.privacy_safe_operation_facts"
+  ]
+}

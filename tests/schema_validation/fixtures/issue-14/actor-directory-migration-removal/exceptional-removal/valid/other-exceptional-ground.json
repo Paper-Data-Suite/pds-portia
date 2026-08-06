@@ -1,0 +1,45 @@
+{
+  "schema_version": "1",
+  "record_type": "actor_directory_exceptional_removal",
+  "module_id": "portia",
+  "removal_id": "rmv_other_exceptional",
+  "target": {
+    "kind": "actor_contact_point",
+    "contact_point_ref": {
+      "actor_id": "actr_other",
+      "contact_point_id": "acp_other",
+      "contract_version": "1"
+    }
+  },
+  "original_workspace_relative_path": "portia/actors/actr_other/records/actor_contact_point/acp_other.json",
+  "original_contract_version": "1",
+  "original_fingerprint": "1612b4b58c0f50df49df30168c3f534457e620c677941fcd039a132c855da682",
+  "original_byte_length": 480,
+  "ground": {
+    "code": "other_exceptional_ground",
+    "detail": "Synthetic independently authorized exceptional basis"
+  },
+  "authorization": {
+    "decision_reference": "Synthetic administrative removal decision AR-2026-001",
+    "authorized_by": {
+      "type": "local_operator",
+      "display_label": "Synthetic Teacher"
+    }
+  },
+  "removed_at": "2026-08-06T18:20:00-04:00",
+  "removed_by": {
+    "type": "local_operator",
+    "display_label": "Synthetic Teacher"
+  },
+  "operation_ref": {
+    "operation_id": "op_other_removal_1"
+  },
+  "retained_identity_evidence": {
+    "kind": "actor_contact_point",
+    "contact_point_ref": {
+      "actor_id": "actr_other",
+      "contact_point_id": "acp_other",
+      "contract_version": "1"
+    }
+  }
+}

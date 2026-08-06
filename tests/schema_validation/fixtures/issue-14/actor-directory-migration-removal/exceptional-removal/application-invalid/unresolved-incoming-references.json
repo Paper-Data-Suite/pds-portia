@@ -1,0 +1,43 @@
+{
+  "schema_version": "1",
+  "record_type": "actor_directory_exceptional_removal",
+  "module_id": "portia",
+  "removal_id": "rmv_incoming_refs_incomplete",
+  "target": {
+    "kind": "actor",
+    "actor_ref": {
+      "actor_id": "actr_family_1",
+      "contract_version": "1"
+    }
+  },
+  "original_workspace_relative_path": "portia/actors/actr_family_1/actor.json",
+  "original_contract_version": "1",
+  "original_fingerprint": "9b984ac96c20923d98d753832893bad0c9898fe4043f564cadc587d4dc97b949",
+  "original_byte_length": 900,
+  "ground": {
+    "code": "prohibited_sensitive_payload",
+    "detail": "Synthetic payload prohibited from continued local retention"
+  },
+  "authorization": {
+    "decision_reference": "Synthetic administrative removal decision AR-2026-001",
+    "authorized_by": {
+      "type": "local_operator",
+      "display_label": "Synthetic Teacher"
+    }
+  },
+  "removed_at": "2026-08-06T18:20:00-04:00",
+  "removed_by": {
+    "type": "local_operator",
+    "display_label": "Synthetic Teacher"
+  },
+  "operation_ref": {
+    "operation_id": "op_actor_removal_1"
+  },
+  "retained_identity_evidence": {
+    "kind": "actor",
+    "actor_ref": {
+      "actor_id": "actr_family_1",
+      "contract_version": "1"
+    }
+  }
+}

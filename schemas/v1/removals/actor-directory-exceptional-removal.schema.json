@@ -1,0 +1,434 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/removals/actor-directory-exceptional-removal.schema.json",
+  "title": "Portia Actor Directory Exceptional Removal",
+  "description": "Minimal immutable workspace-level certificate that one exact Actor-directory payload was intentionally removed under a narrowly authorized exceptional ground. The certificate survives outside the Actor root and retains only exact opaque identity, canonical path, contract, fingerprint, byte-length, authorization, execution, and operation evidence.",
+  "$comment": "Application validation remains responsible for canonical certificate storage outside Actor roots, exact target and path agreement, prior canonical acceptance or the narrow corruption exception, supported contract version, exact digest and byte-length truth, exceptional ground sufficiency, local authorization, governance clearance, fresh complete incoming-reference discovery, Actor-root child inventory, dependent review, retained-identity agreement and necessity, no substantive payload retention, certificate-before-removal ordering, one certificate per exact representation, recoverable execution, post-removal absence and containment, derived regeneration, Quarantine/findings for affected references, and exact resolution as exceptionally_removed.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "record_type",
+    "module_id",
+    "removal_id",
+    "target",
+    "original_workspace_relative_path",
+    "original_contract_version",
+    "original_fingerprint",
+    "original_byte_length",
+    "ground",
+    "authorization",
+    "removed_at",
+    "removed_by",
+    "operation_ref",
+    "retained_identity_evidence"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1"
+    },
+    "record_type": {
+      "const": "actor_directory_exceptional_removal"
+    },
+    "module_id": {
+      "const": "portia"
+    },
+    "removal_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-exceptional-removal-id.schema.json"
+    },
+    "target": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-actor-directory-record-ref.schema.json"
+    },
+    "original_workspace_relative_path": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/workspace-relative-path.schema.json"
+    },
+    "original_contract_version": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+    },
+    "original_fingerprint": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/sha256-digest.schema.json"
+    },
+    "original_byte_length": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "ground": {
+      "$ref": "#/$defs/ground"
+    },
+    "authorization": {
+      "$ref": "#/$defs/authorization"
+    },
+    "removed_at": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+    },
+    "removed_by": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/attribution/attribution-agent.schema.json"
+    },
+    "operation_ref": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/operation-ref.schema.json"
+    },
+    "retained_identity_evidence": {
+      "$ref": "#/$defs/retainedIdentityEvidence"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "target": {
+            "properties": {
+              "kind": {
+                "const": "actor"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          }
+        },
+        "required": [
+          "target"
+        ]
+      },
+      "then": {
+        "properties": {
+          "retained_identity_evidence": {
+            "properties": {
+              "kind": {
+                "const": "actor"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "target": {
+            "properties": {
+              "kind": {
+                "const": "actor_contact_point"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          }
+        },
+        "required": [
+          "target"
+        ]
+      },
+      "then": {
+        "properties": {
+          "retained_identity_evidence": {
+            "properties": {
+              "kind": {
+                "const": "actor_contact_point"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "target": {
+            "properties": {
+              "kind": {
+                "const": "actor_student_relationship"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          }
+        },
+        "required": [
+          "target"
+        ]
+      },
+      "then": {
+        "properties": {
+          "retained_identity_evidence": {
+            "properties": {
+              "kind": {
+                "const": "actor_student_relationship"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "target": {
+            "properties": {
+              "kind": {
+                "const": "actor_roster_student_collision"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          }
+        },
+        "required": [
+          "target"
+        ]
+      },
+      "then": {
+        "properties": {
+          "retained_identity_evidence": {
+            "properties": {
+              "kind": {
+                "const": "actor_roster_student_collision"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "ground": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/recognizedGround"
+        },
+        {
+          "$ref": "#/$defs/otherGround"
+        }
+      ]
+    },
+    "recognizedGround": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "code"
+      ],
+      "properties": {
+        "code": {
+          "enum": [
+            "prohibited_sensitive_payload",
+            "synthetic_or_test_record",
+            "unrecoverable_corruption",
+            "binding_legal_or_administrative_requirement"
+          ]
+        },
+        "detail": {
+          "allOf": [
+            {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+            },
+            {
+              "maxLength": 500
+            }
+          ]
+        }
+      }
+    },
+    "otherGround": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "code",
+        "detail"
+      ],
+      "properties": {
+        "code": {
+          "const": "other_exceptional_ground"
+        },
+        "detail": {
+          "allOf": [
+            {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+            },
+            {
+              "maxLength": 500
+            }
+          ]
+        }
+      }
+    },
+    "authorization": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "decision_reference",
+        "authorized_by"
+      ],
+      "properties": {
+        "decision_reference": {
+          "allOf": [
+            {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+            },
+            {
+              "maxLength": 500
+            }
+          ]
+        },
+        "authorized_by": {
+          "$ref": "#/$defs/localOperator"
+        }
+      }
+    },
+    "localOperator": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "display_label"
+      ],
+      "properties": {
+        "type": {
+          "const": "local_operator"
+        },
+        "display_label": {
+          "allOf": [
+            {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+            },
+            {
+              "maxLength": 200
+            }
+          ]
+        }
+      }
+    },
+    "retainedIdentityEvidence": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/actorIdentityEvidence"
+        },
+        {
+          "$ref": "#/$defs/contactIdentityEvidence"
+        },
+        {
+          "$ref": "#/$defs/relationshipIdentityEvidence"
+        },
+        {
+          "$ref": "#/$defs/collisionIdentityEvidence"
+        }
+      ]
+    },
+    "actorIdentityEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "actor_ref"
+      ],
+      "properties": {
+        "kind": {
+          "const": "actor"
+        },
+        "actor_ref": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-actor-ref.schema.json"
+        }
+      }
+    },
+    "contactIdentityEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "contact_point_ref"
+      ],
+      "properties": {
+        "kind": {
+          "const": "actor_contact_point"
+        },
+        "contact_point_ref": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-actor-contact-point-ref.schema.json"
+        }
+      }
+    },
+    "relationshipIdentityEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "relationship_ref"
+      ],
+      "properties": {
+        "kind": {
+          "const": "actor_student_relationship"
+        },
+        "relationship_ref": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-actor-student-relationship-ref.schema.json"
+        },
+        "student_ref": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/roster-student-ref.schema.json"
+        }
+      }
+    },
+    "collisionIdentityEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "collision_ref"
+      ],
+      "properties": {
+        "kind": {
+          "const": "actor_roster_student_collision"
+        },
+        "collision_ref": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-actor-roster-student-collision-ref.schema.json"
+        },
+        "student_ref": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/roster-student-ref.schema.json"
+        }
+      }
+    }
+  },
+  "x-portia-application-invariants": [
+    "portia.actor_directory_removal.canonical_certificate_scope",
+    "portia.actor_directory_removal.target_resolution",
+    "portia.actor_directory_removal.target_contract_supported",
+    "portia.actor_directory_removal.target_path_agreement",
+    "portia.actor_directory_removal.path_outside_certificate_collection",
+    "portia.actor_directory_removal.original_contract_agreement",
+    "portia.actor_directory_removal.original_fingerprint_truth",
+    "portia.actor_directory_removal.original_byte_length_truth",
+    "portia.actor_directory_removal.exceptional_ground_sufficient",
+    "portia.actor_directory_removal.ordinary_mechanism_insufficient",
+    "portia.actor_directory_removal.authorization_valid",
+    "portia.actor_directory_removal.governance_blocks_resolved",
+    "portia.actor_directory_removal.incoming_reference_complete",
+    "portia.actor_directory_removal.actor_root_inventory_complete",
+    "portia.actor_directory_removal.dependent_review_complete",
+    "portia.actor_directory_removal.retained_identity_target_agreement",
+    "portia.actor_directory_removal.roster_identity_retention_necessary_authorized",
+    "portia.actor_directory_removal.substantive_payload_excluded",
+    "portia.actor_directory_removal.contact_value_excluded",
+    "portia.actor_directory_removal.duplicate_certificate",
+    "portia.actor_directory_removal.operation_resolution",
+    "portia.actor_directory_removal.operation_intent",
+    "portia.actor_directory_removal.certificate_precedes_removal",
+    "portia.actor_directory_removal.execution_recoverable",
+    "portia.actor_directory_removal.payload_absent_after_execution",
+    "portia.actor_directory_removal.derived_state_regenerated",
+    "portia.actor_directory_removal.affected_references_reviewed",
+    "portia.actor_directory_removal.historical_reference_stability",
+    "portia.actor_directory_removal.resolution_exceptionally_removed",
+    "portia.actor_directory_removal.no_lifecycle_masquerade"
+  ]
+}

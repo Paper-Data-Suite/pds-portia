@@ -1,0 +1,48 @@
+{
+  "schema_version": "1",
+  "record_type": "actor_directory_record_migration",
+  "module_id": "portia",
+  "actor_id": "actr_family_1",
+  "migration_id": "mig_actor_v1_v2",
+  "source": {
+    "kind": "actor",
+    "actor_ref": {
+      "actor_id": "actr_family_1",
+      "contract_version": "1"
+    }
+  },
+  "destination": {
+    "kind": "actor",
+    "actor_ref": {
+      "actor_id": "actr_family_1",
+      "contract_version": "2"
+    }
+  },
+  "reason": {
+    "category": "contract_upgrade",
+    "code": "actor_v2_upgrade"
+  },
+  "procedure": {
+    "procedure_id": "unregistered_procedure",
+    "procedure_version": "1"
+  },
+  "source_fingerprint": {
+    "algorithm": "sha256",
+    "digest": "742bd9136b6fb6a2df9d78cefa7ea616e5311461acef655717cd40c782a1d2bc",
+    "byte_length": 900
+  },
+  "destination_fingerprint": {
+    "algorithm": "sha256",
+    "digest": "bd78a937114d5e992178f8ca95414d51b7d03bb2acd7e44da7958dcef6aa6952",
+    "byte_length": 940
+  },
+  "effective_at": "2026-08-06T18:00:00-04:00",
+  "created_at": "2026-08-06T18:01:00-04:00",
+  "created_by": {
+    "type": "local_operator",
+    "display_label": "Synthetic Teacher"
+  },
+  "operation_ref": {
+    "operation_id": "op_actor_migration_1"
+  }
+}
