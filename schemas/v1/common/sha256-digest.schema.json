@@ -1,0 +1,10 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/sha256-digest.schema.json",
+  "title": "Lowercase SHA-256 Digest",
+  "description": "Exactly 64 lowercase hexadecimal characters representing a SHA-256 digest. Structural validity does not prove which bytes were hashed, that the bytes remain unchanged, semantic equivalence, authorization, or privacy safety.",
+  "type": "string",
+  "minLength": 64,
+  "maxLength": 64,
+  "pattern": "^[a-f0-9]{64}$"
+}

@@ -1,0 +1,10 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-finding-suppression-id.schema.json",
+  "title": "Portia Finding Suppression Identifier",
+  "description": "Opaque workspace-scoped identifier for one revisioned Finding Suppression series. The fsup_ prefix is part of the public contract. The identifier does not encode the finding, policy, state, audience, expiry, or path.",
+  "type": "string",
+  "minLength": 6,
+  "maxLength": 128,
+  "pattern": "^fsup_[A-Za-z0-9][A-Za-z0-9_-]*$"
+}

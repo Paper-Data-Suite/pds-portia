@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/derived-generation-ref.schema.json",
+  "title": "Portia Derived Generation Reference",
+  "description": "Exact reference to one immutable workspace-unique derived projection generation and its expected generation metadata contract. The reference does not select the generation as current or establish projection kind, scope, source freshness, authorization coverage, compatibility, or completeness.",
+  "$comment": "Application validation must resolve the generation through the identity-derived projection scope, verify metadata and data fingerprints, contract and builder compatibility, source snapshot, authorization scope, complete state, and explicit current pointer when current use is requested.",
+  "type": "object",
+  "required": [
+    "generation_id",
+    "contract_version"
+  ],
+  "properties": {
+    "generation_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-derived-generation-id.schema.json"
+    },
+    "contract_version": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,10 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-derived-generation-id.schema.json",
+  "title": "Portia Derived Generation Identifier",
+  "description": "Opaque workspace-scoped identifier for one immutable complete derived-projection generation. The dgen_ prefix is part of the public contract. The identifier does not encode projection kind, scope, source count, builder version, timestamp, or result.",
+  "type": "string",
+  "minLength": 6,
+  "maxLength": 128,
+  "pattern": "^dgen_[A-Za-z0-9][A-Za-z0-9_-]*$"
+}

@@ -1,0 +1,10 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-operation-id.schema.json",
+  "title": "Portia Operation Identifier",
+  "description": "Opaque workspace-scoped identifier for one coordinated Portia operation series. The op_ prefix is part of the public contract. The suffix begins with an alphanumeric character and may continue with letters, digits, underscores, or hyphens. Case and leading zeros are preserved. The identifier must not encode a student, class, work, operation kind, result, timestamp, or path.",
+  "type": "string",
+  "minLength": 4,
+  "maxLength": 128,
+  "pattern": "^op_[A-Za-z0-9][A-Za-z0-9_-]*$"
+}

@@ -1,0 +1,10 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-finding-acknowledgement-id.schema.json",
+  "title": "Portia Finding Acknowledgement Identifier",
+  "description": "Opaque workspace-scoped identifier for one append-only Finding Acknowledgement record. The fack_ prefix is part of the public contract. The identifier does not encode the finding, actor, acknowledgement category, time, or result.",
+  "type": "string",
+  "minLength": 6,
+  "maxLength": 128,
+  "pattern": "^fack_[A-Za-z0-9][A-Za-z0-9_-]*$"
+}

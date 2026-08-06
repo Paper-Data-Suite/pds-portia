@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/quarantine-ref.schema.json",
+  "title": "Portia Quarantine Reference",
+  "description": "Exact reference to one immutable revision of a workspace-scoped Portia Quarantine series. The reference does not imply that the revision is selected, active, released, authorized, or applicable to a particular caller.",
+  "$comment": "Application validation must establish the exact selected workspace, series and revision existence, contract support, target applicability, current-pointer state, and authorization.",
+  "type": "object",
+  "required": [
+    "quarantine_id",
+    "quarantine_revision",
+    "contract_version"
+  ],
+  "properties": {
+    "quarantine_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-quarantine-id.schema.json"
+    },
+    "quarantine_revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "contract_version": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+    }
+  },
+  "additionalProperties": false
+}

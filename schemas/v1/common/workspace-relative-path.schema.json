@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/workspace-relative-path.schema.json",
+  "title": "Workspace-Relative Path",
+  "description": "Lexically safe POSIX-form path relative to the selected Paper Data Suite workspace. The path is diagnostic location evidence, not canonical identity. Passing this schema does not establish actual workspace containment, symlink safety, file kind, existence, identity/path agreement, or filesystem compatibility.",
+  "$comment": "Application validation must resolve the path beneath the exact selected workspace, reject symlink, junction, reparse-point, or mount escape as applicable, verify identity-derived canonical location, and revalidate immediately before mutation.",
+  "type": "string",
+  "minLength": 1,
+  "maxLength": 2048,
+  "pattern": "^[^/\\\\\\u0000]+(?:/[^/\\\\\\u0000]+)*$",
+  "not": {
+    "anyOf": [
+      {
+        "pattern": "^[A-Za-z][A-Za-z0-9+.-]*:"
+      },
+      {
+        "pattern": "(^|/)\\.{1,2}(/|$)"
+      }
+    ]
+  }
+}

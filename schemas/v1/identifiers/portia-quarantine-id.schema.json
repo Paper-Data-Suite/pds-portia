@@ -1,0 +1,10 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-quarantine-id.schema.json",
+  "title": "Portia Quarantine Identifier",
+  "description": "Opaque workspace-scoped identifier for one revisioned Quarantine series. The qnt_ prefix is part of the public contract. The identifier does not encode target identity, reason, lifecycle, severity, timestamp, or path.",
+  "type": "string",
+  "minLength": 5,
+  "maxLength": 128,
+  "pattern": "^qnt_[A-Za-z0-9][A-Za-z0-9_-]*$"
+}
