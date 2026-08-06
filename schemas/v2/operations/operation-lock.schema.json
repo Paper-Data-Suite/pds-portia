@@ -1,0 +1,537 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v2/operations/operation-lock.schema.json",
+  "title": "Portia Operation Lock v2",
+  "description": "Exclusive privacy-minimized lock record for one deterministic Portia lock key. The stable lock identifier is the lowercase SHA-256 digest of the canonical lock-scope and protected-target encoding. The record does not prove process liveness, authorize mutation, or permit age-based clearing. Version 2 adds Actor-directory collection and exact Actor-directory record lock scopes without changing deterministic lock identity or evidence-based release.",
+  "$comment": "Application validation must recompute the lock ID from the accepted canonical lock-key algorithm, establish scope/target agreement, verify owning-operation identity and journal state, acquire by exclusive creation, preserve the exact file fingerprint externally, detect conflicting ancestor and descendant locks, and require external no-active-writer evidence before exact fingerprint-protected clearing. Lock age or filesystem modification time is never sufficient. Actor multi-record operations acquire deterministic per-record locks rather than Actor-set locks. Application validation enforces the accepted total ordering and excludes sensitive Actor payload from protected targets.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "record_type",
+    "module_id",
+    "lock_id",
+    "lock_scope",
+    "protected_target",
+    "owning_operation",
+    "acquired_at",
+    "deployment_instance_id",
+    "process_instance_id"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "2"
+    },
+    "record_type": {
+      "const": "operation_lock"
+    },
+    "module_id": {
+      "const": "portia"
+    },
+    "lock_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-lock-id.schema.json"
+    },
+    "lock_scope": {
+      "enum": [
+        "operation",
+        "workspace",
+        "class",
+        "work",
+        "record",
+        "derived_projection",
+        "actor_directory_collection",
+        "actor_directory_record"
+      ]
+    },
+    "protected_target": {
+      "$ref": "#/$defs/lockTarget"
+    },
+    "owning_operation": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/operation-ref.schema.json"
+    },
+    "acquired_at": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+    },
+    "deployment_instance_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+    },
+    "process_instance_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "lock_scope": {
+            "const": "operation"
+          }
+        },
+        "required": [
+          "lock_scope"
+        ]
+      },
+      "then": {
+        "properties": {
+          "protected_target": {
+            "$ref": "#/$defs/operationLockTarget"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "lock_scope": {
+            "const": "workspace"
+          }
+        },
+        "required": [
+          "lock_scope"
+        ]
+      },
+      "then": {
+        "properties": {
+          "protected_target": {
+            "$ref": "#/$defs/workspaceLockTarget"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "lock_scope": {
+            "const": "class"
+          }
+        },
+        "required": [
+          "lock_scope"
+        ]
+      },
+      "then": {
+        "properties": {
+          "protected_target": {
+            "$ref": "#/$defs/classLockTarget"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "lock_scope": {
+            "const": "work"
+          }
+        },
+        "required": [
+          "lock_scope"
+        ]
+      },
+      "then": {
+        "properties": {
+          "protected_target": {
+            "$ref": "#/$defs/workLockTarget"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "lock_scope": {
+            "const": "record"
+          }
+        },
+        "required": [
+          "lock_scope"
+        ]
+      },
+      "then": {
+        "properties": {
+          "protected_target": {
+            "$ref": "#/$defs/recordLockTarget"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "lock_scope": {
+            "const": "derived_projection"
+          }
+        },
+        "required": [
+          "lock_scope"
+        ]
+      },
+      "then": {
+        "properties": {
+          "protected_target": {
+            "$ref": "#/$defs/derivedProjectionLockTarget"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "lock_scope": {
+            "const": "actor_directory_collection"
+          }
+        },
+        "required": [
+          "lock_scope"
+        ]
+      },
+      "then": {
+        "properties": {
+          "protected_target": {
+            "$ref": "#/$defs/actorDirectoryCollectionLockTarget"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "lock_scope": {
+            "const": "actor_directory_record"
+          }
+        },
+        "required": [
+          "lock_scope"
+        ]
+      },
+      "then": {
+        "properties": {
+          "protected_target": {
+            "$ref": "#/$defs/actorDirectoryRecordLockTarget"
+          }
+        }
+      }
+    }
+  ],
+  "additionalProperties": false,
+  "$defs": {
+    "projectionScope": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": [
+            "scope",
+            "work_ref"
+          ],
+          "properties": {
+            "scope": {
+              "const": "work"
+            },
+            "work_ref": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-portia-work-ref.schema.json"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "scope",
+            "class_id"
+          ],
+          "properties": {
+            "scope": {
+              "const": "class"
+            },
+            "class_id": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "scope"
+          ],
+          "properties": {
+            "scope": {
+              "const": "workspace"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "scope",
+            "operation_ref"
+          ],
+          "properties": {
+            "scope": {
+              "const": "operation"
+            },
+            "operation_ref": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/operation-ref.schema.json"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "scope",
+            "graph_id"
+          ],
+          "properties": {
+            "scope": {
+              "const": "graph"
+            },
+            "graph_id": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+            }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "operationLockTarget": {
+      "type": "object",
+      "required": [
+        "kind",
+        "operation_ref"
+      ],
+      "properties": {
+        "kind": {
+          "const": "operation"
+        },
+        "operation_ref": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/operation-ref.schema.json"
+        }
+      },
+      "additionalProperties": false
+    },
+    "workspaceLockTarget": {
+      "type": "object",
+      "required": [
+        "kind"
+      ],
+      "properties": {
+        "kind": {
+          "const": "workspace"
+        }
+      },
+      "additionalProperties": false
+    },
+    "classLockTarget": {
+      "type": "object",
+      "required": [
+        "kind",
+        "class_id"
+      ],
+      "properties": {
+        "kind": {
+          "const": "class"
+        },
+        "class_id": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+        }
+      },
+      "additionalProperties": false
+    },
+    "workLockTarget": {
+      "type": "object",
+      "required": [
+        "kind",
+        "work_ref"
+      ],
+      "properties": {
+        "kind": {
+          "const": "work"
+        },
+        "work_ref": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-portia-work-ref.schema.json"
+        }
+      },
+      "additionalProperties": false
+    },
+    "recordLockTarget": {
+      "type": "object",
+      "required": [
+        "kind",
+        "work_record_ref"
+      ],
+      "properties": {
+        "kind": {
+          "const": "record"
+        },
+        "work_record_ref": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-portia-work-record-ref.schema.json"
+        }
+      },
+      "additionalProperties": false
+    },
+    "derivedProjectionLockTarget": {
+      "type": "object",
+      "required": [
+        "kind",
+        "projection_kind",
+        "projection_scope"
+      ],
+      "properties": {
+        "kind": {
+          "const": "derived_projection"
+        },
+        "projection_kind": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/lowercase-token.schema.json"
+        },
+        "projection_scope": {
+          "$ref": "#/$defs/projectionScope"
+        }
+      },
+      "additionalProperties": false
+    },
+    "lockTarget": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": [
+            "kind",
+            "operation_ref"
+          ],
+          "properties": {
+            "kind": {
+              "const": "operation"
+            },
+            "operation_ref": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/operation-ref.schema.json"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "kind"
+          ],
+          "properties": {
+            "kind": {
+              "const": "workspace"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "kind",
+            "class_id"
+          ],
+          "properties": {
+            "kind": {
+              "const": "class"
+            },
+            "class_id": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "kind",
+            "work_ref"
+          ],
+          "properties": {
+            "kind": {
+              "const": "work"
+            },
+            "work_ref": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-portia-work-ref.schema.json"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "kind",
+            "work_record_ref"
+          ],
+          "properties": {
+            "kind": {
+              "const": "record"
+            },
+            "work_record_ref": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-portia-work-record-ref.schema.json"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "kind",
+            "projection_kind",
+            "projection_scope"
+          ],
+          "properties": {
+            "kind": {
+              "const": "derived_projection"
+            },
+            "projection_kind": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/lowercase-token.schema.json"
+            },
+            "projection_scope": {
+              "$ref": "#/$defs/projectionScope"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "$ref": "#/$defs/actorDirectoryCollectionLockTarget"
+        },
+        {
+          "$ref": "#/$defs/actorDirectoryRecordLockTarget"
+        }
+      ]
+    },
+    "actorDirectoryCollectionLockTarget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind"
+      ],
+      "properties": {
+        "kind": {
+          "const": "actor_directory_collection"
+        }
+      }
+    },
+    "actorDirectoryRecordLockTarget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "actor_directory_record_ref"
+      ],
+      "properties": {
+        "kind": {
+          "const": "actor_directory_record"
+        },
+        "actor_directory_record_ref": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-actor-directory-record-ref.schema.json"
+        }
+      }
+    }
+  },
+  "x-portia-application-invariants": [
+    "portia.operation_lock.actor_target_contract_supported",
+    "portia.operation_lock.actor_collection_scope_necessary",
+    "portia.operation_lock.actor_record_scope_exact",
+    "portia.operation_lock.actor_set_lock_prohibited",
+    "portia.operation_lock.actor_lock_order",
+    "portia.operation_lock.actor_sensitive_payload_prohibited",
+    "portia.operation_lock.age_not_release_evidence"
+  ]
+}

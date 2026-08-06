@@ -1,0 +1,36 @@
+{
+  "finding_key": "fnd_sensitive_evidence",
+  "evaluation_key": "evl_sensitive_evidence_r1",
+  "rule_id": "portia.actor.path_identity_mismatch",
+  "rule_version": "1",
+  "category": "identity_scope",
+  "code": "actor_path_identity_mismatch",
+  "severity": "error",
+  "assessment": {
+    "result": "confirmed"
+  },
+  "effects": [
+    "block_current_use",
+    "review_required"
+  ],
+  "scope": "logical_record",
+  "primary_target": {
+    "kind": "actor_directory_record",
+    "actor_directory_record_ref": {
+      "kind": "actor",
+      "actor_ref": {
+        "actor_id": "actr_family_1",
+        "contract_version": "1"
+      }
+    }
+  },
+  "related_targets": [],
+  "evidence": [
+    {
+      "name": "contact_value",
+      "kind": "identifier",
+      "value": "synthetic_email"
+    }
+  ],
+  "observed_at": "2026-08-06T19:00:00-04:00"
+}

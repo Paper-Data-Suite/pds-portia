@@ -1,0 +1,1030 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v2/projections/integrity-finding.schema.json",
+  "title": "Portia Integrity Finding v2",
+  "description": "Closed version-1 shape for a deterministic, rebuildable Portia integrity-finding projection. An integrity finding is a derived diagnostic, not a canonical Portia record: it has no canonical record identifier, lifecycle, attribution envelope, or canonical storage location, and it may be deleted and rebuilt without altering domain history. Version 2 adds exact Actor-directory record, bounded Actor-set, and workspace Actor-directory collection targets while preserving version-1 finding semantics.",
+  "$comment": "JSON Schema validates projection shape and closed vocabularies only. Finding-generation logic must establish whether a finding should exist, deterministic keys, exact target normalization, category/code compatibility beyond structural branches, severity/effect compatibility, bounded nonsensitive evidence, conservative authorization-limited handling, and reproducibility from canonical state and accepted operational evidence. Actor target application validation additionally enforces sorted Actor sets, logical Actor identity uniqueness across contract versions, collection-target necessity, duplicate-candidate nonconfirmation, and privacy-minimized evidence.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "finding_key",
+    "evaluation_key",
+    "rule_id",
+    "rule_version",
+    "category",
+    "code",
+    "severity",
+    "assessment",
+    "effects",
+    "scope",
+    "primary_target",
+    "related_targets",
+    "evidence",
+    "observed_at"
+  ],
+  "properties": {
+    "finding_key": {
+      "$ref": "#/$defs/deterministicKey"
+    },
+    "evaluation_key": {
+      "$ref": "#/$defs/deterministicKey"
+    },
+    "rule_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "pattern": "^[a-z][a-z0-9_]*(?:\\.[a-z][a-z0-9_]*){2,}$"
+    },
+    "rule_version": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+    },
+    "category": {
+      "enum": [
+        "structure",
+        "identity_scope",
+        "reference",
+        "lifecycle",
+        "replacement",
+        "dependency",
+        "migration",
+        "ownership_correction",
+        "removal",
+        "chronology_provenance",
+        "uniqueness_graph",
+        "authorization_compatibility",
+        "persistence_recovery",
+        "derived_state",
+        "privacy"
+      ]
+    },
+    "code": {
+      "enum": [
+        "active_uniqueness_violation",
+        "attribution_invalid",
+        "authorization_limited_resolution",
+        "canonical_path_mismatch",
+        "canonical_write_partial",
+        "conflicting_exact_identity",
+        "content_digest_mismatch",
+        "creation_provenance_inconsistent",
+        "cross_workspace_ownership_correction",
+        "dependency_cycle",
+        "dependency_declaration_conflict",
+        "dependency_target_resolution_ambiguous",
+        "derived_index_drift",
+        "derived_payload_policy_violation",
+        "derived_payload_retained_after_removal",
+        "derived_reverse_link_mismatch",
+        "destination_graph_invalid",
+        "duplicate_current_identity",
+        "duplicate_intrinsic_dependency",
+        "duplicate_removal_certificate",
+        "effective_time_mismatch",
+        "envelope_scope_mismatch",
+        "exact_target_missing",
+        "graph_cycle",
+        "history_chain_broken",
+        "history_correction_invalid",
+        "identifier_collision",
+        "illegal_transition",
+        "logical_identity_conflict",
+        "migration_branch",
+        "migration_cycle",
+        "migration_identity_mismatch",
+        "migration_lifecycle_mismatch",
+        "migration_reconciliation_broken",
+        "migration_semantic_mismatch",
+        "multiple_current_representations",
+        "observed_revision_mismatch",
+        "operation_incomplete",
+        "orphaned_canonical_artifact",
+        "ownership_reconciliation_broken",
+        "ownership_scope_mismatch",
+        "partial_consolidation",
+        "partial_event_split",
+        "payload_present_after_removal",
+        "policy_version_unavailable",
+        "producer_contract_unavailable",
+        "projection_stale",
+        "record_family_mismatch",
+        "recovery_required",
+        "reference_kind_mismatch",
+        "reference_scope_mismatch",
+        "removal_certificate_without_target_history",
+        "removal_reconciliation_broken",
+        "removed_target_in_current_use",
+        "removed_target_resolved_as_not_found",
+        "replacement_cycle",
+        "replacement_frontier_ambiguous",
+        "required_dependency_gate_violation",
+        "roster_identity_unresolved",
+        "roster_mapping_unverified",
+        "schema_invalid",
+        "selected_history_ambiguous",
+        "silent_retarget_detected",
+        "status_history_mismatch",
+        "supersession_reconciliation_broken",
+        "terminal_state_violation",
+        "timestamp_order_invalid",
+        "unresolved_source_child",
+        "unsupported_contract_version",
+        "unsupported_cross_module_semantics",
+        "unsupported_replacement_topology",
+        "actor_path_identity_mismatch",
+        "actor_replacement_broken",
+        "actor_duplicate_candidate",
+        "actor_roster_collision_candidate",
+        "actor_roster_collision_incomplete",
+        "actor_split_incomplete",
+        "actor_contact_owner_mismatch",
+        "actor_contact_preference_conflict",
+        "actor_relationship_owner_mismatch",
+        "actor_relationship_target_unavailable",
+        "actor_relationship_authority_overclaim",
+        "actor_incoming_reference_indeterminate",
+        "actor_privacy_payload_leak"
+      ]
+    },
+    "severity": {
+      "enum": [
+        "advisory",
+        "warning",
+        "error",
+        "critical"
+      ]
+    },
+    "assessment": {
+      "$ref": "#/$defs/assessment"
+    },
+    "effects": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 8,
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "attention",
+          "review_required",
+          "block_current_use",
+          "block_lifecycle_writes",
+          "block_operation_completion",
+          "block_work_writes",
+          "block_class_writes",
+          "quarantine_target"
+        ]
+      }
+    },
+    "scope": {
+      "enum": [
+        "representation",
+        "logical_record",
+        "work",
+        "class",
+        "workspace",
+        "operation",
+        "graph"
+      ]
+    },
+    "primary_target": {
+      "$ref": "#/$defs/findingTarget"
+    },
+    "related_targets": {
+      "type": "array",
+      "maxItems": 64,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/findingTarget"
+      }
+    },
+    "evidence": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 64,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/evidenceFact"
+      },
+      "description": "Minimal machine-readable facts needed to explain detection. Narrative payloads, names, Statements of Disagreement, removed content, credentials, and secrets are prohibited by application validation."
+    },
+    "observed_at": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "category": {
+            "const": "structure"
+          }
+        },
+        "required": [
+          "category"
+        ]
+      },
+      "then": {
+        "properties": {
+          "code": {
+            "enum": [
+              "schema_invalid",
+              "unsupported_contract_version",
+              "canonical_path_mismatch",
+              "envelope_scope_mismatch",
+              "identifier_collision"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "category": {
+            "const": "identity_scope"
+          }
+        },
+        "required": [
+          "category"
+        ]
+      },
+      "then": {
+        "properties": {
+          "code": {
+            "enum": [
+              "logical_identity_conflict",
+              "ownership_scope_mismatch",
+              "roster_identity_unresolved",
+              "record_family_mismatch",
+              "actor_path_identity_mismatch",
+              "actor_roster_collision_candidate",
+              "actor_roster_collision_incomplete"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "category": {
+            "const": "reference"
+          }
+        },
+        "required": [
+          "category"
+        ]
+      },
+      "then": {
+        "properties": {
+          "code": {
+            "enum": [
+              "exact_target_missing",
+              "reference_kind_mismatch",
+              "reference_scope_mismatch",
+              "silent_retarget_detected",
+              "removed_target_in_current_use",
+              "actor_relationship_target_unavailable"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "category": {
+            "const": "lifecycle"
+          }
+        },
+        "required": [
+          "category"
+        ]
+      },
+      "then": {
+        "properties": {
+          "code": {
+            "enum": [
+              "status_history_mismatch",
+              "illegal_transition",
+              "history_chain_broken",
+              "selected_history_ambiguous",
+              "history_correction_invalid",
+              "terminal_state_violation"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "category": {
+            "const": "replacement"
+          }
+        },
+        "required": [
+          "category"
+        ]
+      },
+      "then": {
+        "properties": {
+          "code": {
+            "enum": [
+              "supersession_reconciliation_broken",
+              "replacement_cycle",
+              "unsupported_replacement_topology",
+              "multiple_current_representations",
+              "replacement_frontier_ambiguous",
+              "partial_consolidation",
+              "partial_event_split",
+              "actor_replacement_broken",
+              "actor_split_incomplete"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "category": {
+            "const": "dependency"
+          }
+        },
+        "required": [
+          "category"
+        ]
+      },
+      "then": {
+        "properties": {
+          "code": {
+            "enum": [
+              "dependency_cycle",
+              "duplicate_intrinsic_dependency",
+              "dependency_declaration_conflict",
+              "required_dependency_gate_violation",
+              "dependency_target_resolution_ambiguous"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "category": {
+            "const": "migration"
+          }
+        },
+        "required": [
+          "category"
+        ]
+      },
+      "then": {
+        "properties": {
+          "code": {
+            "enum": [
+              "migration_reconciliation_broken",
+              "migration_identity_mismatch",
+              "migration_semantic_mismatch",
+              "migration_branch",
+              "migration_cycle",
+              "migration_lifecycle_mismatch"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "category": {
+            "const": "ownership_correction"
+          }
+        },
+        "required": [
+          "category"
+        ]
+      },
+      "then": {
+        "properties": {
+          "code": {
+            "enum": [
+              "ownership_reconciliation_broken",
+              "unresolved_source_child",
+              "destination_graph_invalid",
+              "cross_workspace_ownership_correction",
+              "roster_mapping_unverified",
+              "actor_contact_owner_mismatch",
+              "actor_relationship_owner_mismatch"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "category": {
+            "const": "removal"
+          }
+        },
+        "required": [
+          "category"
+        ]
+      },
+      "then": {
+        "properties": {
+          "code": {
+            "enum": [
+              "removal_reconciliation_broken",
+              "payload_present_after_removal",
+              "removal_certificate_without_target_history",
+              "derived_payload_retained_after_removal",
+              "duplicate_removal_certificate",
+              "removed_target_resolved_as_not_found"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "category": {
+            "const": "chronology_provenance"
+          }
+        },
+        "required": [
+          "category"
+        ]
+      },
+      "then": {
+        "properties": {
+          "code": {
+            "enum": [
+              "timestamp_order_invalid",
+              "observed_revision_mismatch",
+              "creation_provenance_inconsistent",
+              "attribution_invalid",
+              "effective_time_mismatch"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "category": {
+            "const": "uniqueness_graph"
+          }
+        },
+        "required": [
+          "category"
+        ]
+      },
+      "then": {
+        "properties": {
+          "code": {
+            "enum": [
+              "active_uniqueness_violation",
+              "graph_cycle",
+              "duplicate_current_identity",
+              "conflicting_exact_identity",
+              "actor_duplicate_candidate",
+              "actor_contact_preference_conflict"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "category": {
+            "const": "authorization_compatibility"
+          }
+        },
+        "required": [
+          "category"
+        ]
+      },
+      "then": {
+        "properties": {
+          "code": {
+            "enum": [
+              "authorization_limited_resolution",
+              "producer_contract_unavailable",
+              "unsupported_cross_module_semantics",
+              "policy_version_unavailable",
+              "actor_incoming_reference_indeterminate",
+              "actor_relationship_authority_overclaim"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "category": {
+            "const": "persistence_recovery"
+          }
+        },
+        "required": [
+          "category"
+        ]
+      },
+      "then": {
+        "properties": {
+          "code": {
+            "enum": [
+              "operation_incomplete",
+              "canonical_write_partial",
+              "orphaned_canonical_artifact",
+              "content_digest_mismatch",
+              "recovery_required"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "category": {
+            "const": "derived_state"
+          }
+        },
+        "required": [
+          "category"
+        ]
+      },
+      "then": {
+        "properties": {
+          "code": {
+            "enum": [
+              "derived_index_drift",
+              "projection_stale",
+              "derived_reverse_link_mismatch",
+              "derived_payload_policy_violation"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "category": {
+            "const": "privacy"
+          }
+        },
+        "required": [
+          "category"
+        ]
+      },
+      "then": {
+        "properties": {
+          "code": {
+            "enum": [
+              "actor_privacy_payload_leak"
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "deterministicKey": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$",
+      "description": "Stable externally comparable key. Structural validity does not prove deterministic construction or collision resistance."
+    },
+    "assessment": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/confirmedAssessment"
+        },
+        {
+          "$ref": "#/$defs/indeterminateAssessment"
+        }
+      ]
+    },
+    "confirmedAssessment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "result"
+      ],
+      "properties": {
+        "result": {
+          "const": "confirmed"
+        }
+      }
+    },
+    "indeterminateAssessment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "result",
+        "limitation"
+      ],
+      "properties": {
+        "result": {
+          "const": "indeterminate"
+        },
+        "limitation": {
+          "enum": [
+            "authorization_limited",
+            "unsupported_contract",
+            "external_module_unavailable",
+            "incomplete_canonical_state",
+            "recovery_in_progress",
+            "insufficient_evidence"
+          ]
+        }
+      }
+    },
+    "findingTarget": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/portiaWorkTarget"
+        },
+        {
+          "$ref": "#/$defs/portiaWorkRecordTarget"
+        },
+        {
+          "$ref": "#/$defs/exceptionalRemovalTarget"
+        },
+        {
+          "$ref": "#/$defs/classTarget"
+        },
+        {
+          "$ref": "#/$defs/workspaceTarget"
+        },
+        {
+          "$ref": "#/$defs/operationTarget"
+        },
+        {
+          "$ref": "#/$defs/actorDirectoryRecordTarget"
+        },
+        {
+          "$ref": "#/$defs/actorSetTarget"
+        },
+        {
+          "$ref": "#/$defs/actorDirectoryCollectionTarget"
+        }
+      ]
+    },
+    "portiaWorkTarget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "work_ref"
+      ],
+      "properties": {
+        "kind": {
+          "const": "portia_work"
+        },
+        "work_ref": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-portia-work-ref.schema.json"
+        }
+      }
+    },
+    "portiaWorkRecordTarget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "work_record_ref"
+      ],
+      "properties": {
+        "kind": {
+          "const": "portia_work_record"
+        },
+        "work_record_ref": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-portia-work-record-ref.schema.json"
+        }
+      }
+    },
+    "exceptionalRemovalTarget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "removal_ref"
+      ],
+      "properties": {
+        "kind": {
+          "const": "exceptional_removal"
+        },
+        "removal_ref": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exceptional-removal-ref.schema.json"
+        }
+      }
+    },
+    "classTarget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "class_id"
+      ],
+      "properties": {
+        "kind": {
+          "const": "class"
+        },
+        "class_id": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+        }
+      }
+    },
+    "workspaceTarget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "workspace_id"
+      ],
+      "properties": {
+        "kind": {
+          "const": "workspace"
+        },
+        "workspace_id": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+        }
+      },
+      "$comment": "Issue #13 may replace the fallback workspace identifier with an authoritative operational reference contract in a later projection version."
+    },
+    "operationTarget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "operation_id"
+      ],
+      "properties": {
+        "kind": {
+          "const": "operation"
+        },
+        "operation_id": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+        }
+      },
+      "$comment": "Issue #13 owns the authoritative operation-reference contract. Version 1 uses a structurally safe opaque identifier without claiming registration or resolution."
+    },
+    "evidenceFact": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/tokenEvidence"
+        },
+        {
+          "$ref": "#/$defs/identifierEvidence"
+        },
+        {
+          "$ref": "#/$defs/integerEvidence"
+        },
+        {
+          "$ref": "#/$defs/booleanEvidence"
+        },
+        {
+          "$ref": "#/$defs/timestampEvidence"
+        },
+        {
+          "$ref": "#/$defs/pathEvidence"
+        },
+        {
+          "$ref": "#/$defs/targetEvidence"
+        }
+      ]
+    },
+    "evidenceName": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/lowercase-token.schema.json"
+    },
+    "tokenEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "kind",
+        "value"
+      ],
+      "properties": {
+        "name": {
+          "$ref": "#/$defs/evidenceName"
+        },
+        "kind": {
+          "const": "token"
+        },
+        "value": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/lowercase-token.schema.json"
+        }
+      }
+    },
+    "identifierEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "kind",
+        "value"
+      ],
+      "properties": {
+        "name": {
+          "$ref": "#/$defs/evidenceName"
+        },
+        "kind": {
+          "const": "identifier"
+        },
+        "value": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+        }
+      }
+    },
+    "integerEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "kind",
+        "value"
+      ],
+      "properties": {
+        "name": {
+          "$ref": "#/$defs/evidenceName"
+        },
+        "kind": {
+          "const": "integer"
+        },
+        "value": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "booleanEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "kind",
+        "value"
+      ],
+      "properties": {
+        "name": {
+          "$ref": "#/$defs/evidenceName"
+        },
+        "kind": {
+          "const": "boolean"
+        },
+        "value": {
+          "type": "boolean"
+        }
+      }
+    },
+    "timestampEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "kind",
+        "value"
+      ],
+      "properties": {
+        "name": {
+          "$ref": "#/$defs/evidenceName"
+        },
+        "kind": {
+          "const": "timestamp"
+        },
+        "value": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+        }
+      }
+    },
+    "pathEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "kind",
+        "value"
+      ],
+      "properties": {
+        "name": {
+          "$ref": "#/$defs/evidenceName"
+        },
+        "kind": {
+          "const": "path"
+        },
+        "value": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512,
+          "pattern": "\\S"
+        }
+      },
+      "description": "Bounded machine path or location evidence. Application validation must reject narrative or sensitive content disguised as a path."
+    },
+    "targetEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "kind",
+        "value"
+      ],
+      "properties": {
+        "name": {
+          "$ref": "#/$defs/evidenceName"
+        },
+        "kind": {
+          "const": "target"
+        },
+        "value": {
+          "$ref": "#/$defs/findingTarget"
+        }
+      }
+    },
+    "actorDirectoryRecordTarget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "actor_directory_record_ref"
+      ],
+      "properties": {
+        "kind": {
+          "const": "actor_directory_record"
+        },
+        "actor_directory_record_ref": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-actor-directory-record-ref.schema.json"
+        }
+      }
+    },
+    "actorSetTarget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "actor_refs"
+      ],
+      "properties": {
+        "kind": {
+          "const": "actor_set"
+        },
+        "actor_refs": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 100,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-actor-ref.schema.json"
+          }
+        }
+      }
+    },
+    "actorDirectoryCollectionTarget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind"
+      ],
+      "properties": {
+        "kind": {
+          "const": "actor_directory_collection"
+        }
+      }
+    }
+  },
+  "x-portia-application-invariants": [
+    "portia.integrity_finding.deterministic_finding_key",
+    "portia.integrity_finding.deterministic_evaluation_key",
+    "portia.integrity_finding.stable_rule_identity",
+    "portia.integrity_finding.exact_target_normalization",
+    "portia.integrity_finding.primary_related_target_roles",
+    "portia.integrity_finding.severity_effect_compatibility",
+    "portia.integrity_finding.sensitive_evidence_prohibited",
+    "portia.integrity_finding.authorization_limited_conservative_effects",
+    "portia.integrity_finding.review_condition_not_integrity_finding",
+    "portia.integrity_finding.domain_condition_not_integrity_finding",
+    "portia.integrity_finding.pre_acceptance_validation_not_workspace_finding",
+    "portia.integrity_finding.required_dependency_gate_violation_only",
+    "portia.integrity_finding.possible_duplicate_not_confirmed_violation",
+    "portia.integrity_finding.removed_historical_target_not_current_use_finding",
+    "portia.integrity_finding.reproducible_from_canonical_state",
+    "portia.integrity_finding.actor_target_contract_supported",
+    "portia.integrity_finding.actor_set_sorted",
+    "portia.integrity_finding.actor_set_logical_identity_unique",
+    "portia.integrity_finding.actor_collection_target_necessary",
+    "portia.integrity_finding.actor_duplicate_candidate_indeterminate",
+    "portia.integrity_finding.actor_duplicate_candidate_nonblocking",
+    "portia.integrity_finding.actor_sensitive_context_prohibited",
+    "portia.integrity_finding.actor_targets_do_not_mutate_lifecycle"
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "schema_version": "2",
+  "record_type": "operation_lock",
+  "module_id": "portia",
+  "lock_id": "lock_0000000000000000000000000000000000000000000000000000000000000000",
+  "lock_scope": "actor_directory_record",
+  "protected_target": {
+    "kind": "actor_directory_record",
+    "actor_directory_record_ref": {
+      "kind": "actor",
+      "actor_ref": {
+        "actor_id": "actr_family_1",
+        "contract_version": "1"
+      }
+    }
+  },
+  "owning_operation": {
+    "operation_id": "op_update_actor"
+  },
+  "acquired_at": "2026-08-06T19:05:00-04:00",
+  "deployment_instance_id": "desktop_local_01",
+  "process_instance_id": "process_9001"
+}
