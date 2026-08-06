@@ -63,6 +63,24 @@
         "path": "schemas/v1/actors/actor-roster-student-collision.schema.json"
       }
     },
+    "actor_directory_lifecycle_transition": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/actors/actor-directory-lifecycle-transition.schema.json",
+        "path": "schemas/v1/actors/actor-directory-lifecycle-transition.schema.json"
+      }
+    },
+    "actor_directory_lifecycle_history_correction": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/actors/actor-directory-lifecycle-history-correction.schema.json",
+        "path": "schemas/v1/actors/actor-directory-lifecycle-history-correction.schema.json"
+      }
+    },
+    "actor_directory_amendment": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/actors/actor-directory-amendment.schema.json",
+        "path": "schemas/v1/actors/actor-directory-amendment.schema.json"
+      }
+    },
     "portia_event_id": {
       "1": {
         "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-event-id.schema.json",

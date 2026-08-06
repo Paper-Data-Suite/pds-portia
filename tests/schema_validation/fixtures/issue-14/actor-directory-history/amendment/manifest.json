@@ -1,0 +1,72 @@
+{
+  "manifest_version": "1",
+  "issue": 14,
+  "contract": "actor_directory_amendment",
+  "version": "1",
+  "valid": {
+    "actor-display-name.json": "Structurally and application-valid synthetic record.",
+    "actor-add-organization.json": "Structurally and application-valid synthetic record.",
+    "actor-category.json": "Structurally and application-valid synthetic record.",
+    "contact-preference.json": "Structurally and application-valid synthetic record.",
+    "contact-verification.json": "Structurally and application-valid synthetic record.",
+    "relationship-review.json": "Structurally and application-valid synthetic record.",
+    "relationship-effective-period.json": "Structurally and application-valid synthetic record.",
+    "later-amendment.json": "Structurally and application-valid synthetic record."
+  },
+  "invalid": {
+    "missing-changes.json": "Structurally invalid record rejected by JSON Schema.",
+    "empty-changes.json": "Structurally invalid record rejected by JSON Schema.",
+    "arbitrary-path.json": "Structurally invalid record rejected by JSON Schema.",
+    "contact-address-path.json": "Structurally invalid record rejected by JSON Schema.",
+    "status-path.json": "Structurally invalid record rejected by JSON Schema.",
+    "wrong-value-kind.json": "Structurally invalid record rejected by JSON Schema.",
+    "display-name-absent.json": "Structurally invalid record rejected by JSON Schema.",
+    "invalid-fingerprint.json": "Structurally invalid record rejected by JSON Schema.",
+    "invalid-previous-id.json": "Structurally invalid record rejected by JSON Schema.",
+    "collision-target.json": "Structurally invalid record rejected by JSON Schema.",
+    "timestamp-without-offset.json": "Structurally invalid record rejected by JSON Schema.",
+    "extra-reason.json": "Structurally invalid record rejected by JSON Schema."
+  },
+  "application_invalid": {
+    "owner-mismatch.json": {
+      "rule_id": "portia.actor_directory_amendment.owner_agreement",
+      "description": "Structurally valid record rejected by the named application invariant."
+    },
+    "path-target-mismatch.json": {
+      "rule_id": "portia.actor_directory_amendment.path_target_compatibility",
+      "description": "Structurally valid record rejected by the named application invariant."
+    },
+    "duplicate-paths.json": {
+      "rule_id": "portia.actor_directory_amendment.change_paths_unique",
+      "description": "Structurally valid record rejected by the named application invariant."
+    },
+    "equal-before-after.json": {
+      "rule_id": "portia.actor_directory_amendment.before_after_differ",
+      "description": "Structurally valid record rejected by the named application invariant."
+    },
+    "same-fingerprints.json": {
+      "rule_id": "portia.actor_directory_amendment.fingerprints_differ",
+      "description": "Structurally valid record rejected by the named application invariant."
+    },
+    "effective-after-recorded.json": {
+      "rule_id": "portia.actor_directory_amendment.effective_recorded_chronology",
+      "description": "Structurally valid record rejected by the named application invariant."
+    },
+    "self-previous-amendment.json": {
+      "rule_id": "portia.actor_directory_amendment.previous_amendment_not_self",
+      "description": "Structurally valid record rejected by the named application invariant."
+    },
+    "missing-previous-amendment.json": {
+      "rule_id": "portia.actor_directory_amendment.previous_amendment_resolution",
+      "description": "Structurally valid record rejected by the named application invariant."
+    },
+    "missing-operation.json": {
+      "rule_id": "portia.actor_directory_amendment.operation_resolution",
+      "description": "Structurally valid record rejected by the named application invariant."
+    },
+    "privacy-unsafe-detail.json": {
+      "rule_id": "portia.actor_directory_amendment.privacy_safe_payload",
+      "description": "Structurally valid record rejected by the named application invariant."
+    }
+  }
+}
