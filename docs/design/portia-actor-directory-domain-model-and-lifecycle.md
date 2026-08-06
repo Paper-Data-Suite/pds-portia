@@ -1,6 +1,6 @@
 # Portia Actor Directory Domain Model and Lifecycle
 
-**Status:** Working design — Decisions 1–10 adopted
+**Status:** Working design — Decisions 1–14 adopted
 **Project:** Paper Data Suite
 **Module:** `pds-portia`
 **Issue:** `#14 — Define the Actor Directory domain model and lifecycle`
@@ -2795,46 +2795,1239 @@ A missing or malformed Actor record does not authorize reconstruction from:
 
 ---
 
-## 15. Consequences of Decisions 1–10
+# 15. Approved Decision 11: Exact Actor-Directory Targets and History Ownership
 
-The accepted direction now requires Issue #14 to introduce at least:
+## 15.1 Shared exact target
+
+Actor, Contact Point, and Actor-to-Student Relationship history will use one
+closed exact target union:
+
+```text
+exact_actor_directory_record_ref@1
+```
+
+The union has exactly three branches:
+
+```text
+actor
+actor_contact_point
+actor_student_relationship
+```
+
+Conceptually:
+
+```json
+{
+  "kind": "actor",
+  "actor_ref": {
+    "actor_ref": {
+      "actor_id": "actr_example"
+    },
+    "contract_version": "1"
+  }
+}
+```
+
+```json
+{
+  "kind": "actor_contact_point",
+  "contact_point_ref": {
+    "actor_ref": {
+      "actor_id": "actr_example"
+    },
+    "contact_point_id": "acp_example",
+    "contract_version": "1"
+  }
+}
+```
+
+```json
+{
+  "kind": "actor_student_relationship",
+  "relationship_ref": {
+    "actor_ref": {
+      "actor_id": "actr_example"
+    },
+    "relationship_id": "asrel_example",
+    "contract_version": "1"
+  }
+}
+```
+
+The final schema names may remove one redundant nested `actor_ref` label while
+preserving the same semantics.
+
+The union does not include:
+
+- a class-owned Portia work;
+- a generic local record;
+- a workspace;
+- an operation;
+- an organization;
+- or a roster student by itself.
+
+A roster student is the target of an Actor-to-Student Relationship. It is not an
+Actor-directory record owned by Portia.
+
+## 15.2 Exact ownership
+
+Every branch contains the owning Actor identity.
+
+This permits application validation to establish:
+
+- the expected Actor root;
+- the expected record-family directory;
+- the expected canonical filename;
+- the expected public contract version;
+- and the bounded history location.
+
+A child-record target whose embedded Actor differs from the containing Actor root
+is invalid.
+
+## 15.3 Stable identity versus observed representation
+
+An exact Actor-directory reference identifies:
+
+```text
+stable record identity
++ expected public contract version
+```
+
+It does not contain:
+
+- a filesystem path;
+- content bytes;
+- content digest;
+- byte length;
+- `updated_at`;
+- lifecycle status;
+- display data;
+- contact data;
+- relationship data;
+- or Quarantine state.
+
+An operation that changes a current representation must separately preserve its
+observed expected prior state, including an exact content fingerprint and
+validated workspace-relative path.
+
+This maintains the accepted separation among:
+
+```text
+identity
+path
+observed representation
+```
+
+## 15.4 History ownership
+
+Every lifecycle transition, lifecycle-history correction, and amendment is
+stored beneath the Actor root that owns its target.
+
+The canonical history topology is:
+
+```text
+portia/actors/<actor_id>/
+  records/
+    actor_directory_lifecycle_transition/
+      <transition_id>.json
+    actor_directory_lifecycle_history_correction/
+      <correction_id>.json
+    actor_directory_amendment/
+      <amendment_id>.json
+```
+
+All three target families share these history collections.
+
+Application validation must not assume that a transition or amendment applies to
+the Actor root merely because it is stored beneath the Actor root. The contained
+typed target remains authoritative.
+
+## 15.5 Identifier reuse
+
+Issue #14 will reuse the existing scope-neutral identifier contracts:
+
+```text
+portia_lifecycle_transition_id@1
+portia_lifecycle_history_correction_id@1
+portia_amendment_id@1
+```
+
+Therefore Actor-directory records use:
+
+```text
+lct_<opaque-id>
+lhc_<opaque-id>
+amd_<opaque-id>
+```
+
+New Actor-specific identifier prefixes are unnecessary.
+
+The record envelopes, typed targets, canonical paths, and public contract names
+distinguish the Actor-directory history families from the existing class/work
+history families.
+
+Identifier reuse does not permit one history record to exist in two canonical
+locations.
+
+## 15.6 Exact history references
+
+Within one Actor root:
+
+- a lifecycle transition may identify one prior transition by
+  `previous_transition_id`;
+- a lifecycle-history correction may identify one prior correction by
+  `previous_correction_id`;
+- and an amendment may identify one prior amendment for the same target by
+  `previous_amendment_id`.
+
+The owning `actor_id` and target are inherited from the containing history
+record and must agree across each predecessor chain.
+
+Predecessor identifiers are not globally resolved without the containing Actor
+root and record-family context.
+
+## 15.7 No generic workspace substitute
+
+An exact Actor-directory record target must be used whenever one Actor,
+Contact Point, or Actor-to-Student Relationship is:
+
+- transitioned;
+- amended;
+- corrected;
+- migrated;
+- removed;
+- quarantined;
+- locked;
+- scanned;
+- or changed through a coordinated operation.
+
+A workspace target may additionally describe the broad operation scope. It
+cannot replace the exact primary target.
+
+## 15.8 Target invariants
+
+1. The target union is closed.
+2. Every target contains exact Actor ownership.
+3. Contract version is explicit.
+4. Paths and fingerprints are operation evidence, not target identity.
+5. History is stored beneath the owning Actor root.
+6. Existing lifecycle, history-correction, and amendment identifier contracts
+   are reused.
+7. Predecessor IDs resolve within one Actor root and history family.
+8. A generic workspace target cannot stand in for an exact Actor-directory
+   record.
+
+---
+
+# 16. Approved Decision 12: Actor-Directory Lifecycle Transition and Selected History
+
+## 16.1 Public contract
+
+The shared lifecycle-transition contract will be:
+
+```text
+actor_directory_lifecycle_transition@1
+```
+
+Schema path:
+
+```text
+schemas/v1/actors/actor-directory-lifecycle-transition.schema.json
+```
+
+Record type:
+
+```text
+actor_directory_lifecycle_transition
+```
+
+## 16.2 Required envelope
+
+The record contains exactly:
+
+```text
+schema_version
+record_type
+module_id
+actor_id
+transition_id
+target
+prior_status
+new_status
+reason
+previous_transition_id
+effective_at
+recorded_at
+recorded_by
+operation_ref
+```
+
+Constants are:
+
+```text
+schema_version = "1"
+record_type = "actor_directory_lifecycle_transition"
+module_id = "portia"
+```
+
+`actor_id` must equal the Actor owner embedded in `target`.
+
+`operation_ref` uses the accepted identity-only operation reference. The
+referenced Operation Journal remains operational evidence and does not replace
+the lifecycle transition as the canonical domain assertion.
+
+## 16.3 Status vocabulary
+
+The shared structural status vocabulary is:
+
+```text
+proposed
+active
+inactive
+invalidated
+superseded
+```
+
+All three initial Actor-directory record families use that vocabulary.
+
+JSON Schema validates only vocabulary membership and that:
+
+```text
+prior_status != new_status
+```
+
+Application validation enforces the record-family transition matrix and all
+required reason compatibility.
+
+## 16.4 Creation baseline
+
+Initial creation does not create a synthetic lifecycle transition.
+
+The canonical record establishes its creation baseline through:
+
+```text
+status
+creation_source
+created_at
+created_by
+```
+
+The first lifecycle transition has:
+
+```text
+previous_transition_id = null
+```
+
+Its `prior_status` must equal the canonical creation status.
+
+Every later transition identifies exactly one immediate predecessor transition.
+
+## 16.5 Predecessor-selected order
+
+Lifecycle order is determined only by the explicit predecessor chain.
+
+It is not inferred from:
+
+- `effective_at`;
+- `recorded_at`;
+- filename;
+- directory order;
+- lexical identifier order;
+- modification time;
+- or the greatest identifier.
+
+A valid selected transition chain must:
+
+1. start with a transition whose predecessor is null;
+2. begin at the canonical creation status;
+3. have exactly one immediate predecessor for each later entry;
+4. contain no repeated transition;
+5. contain no branch in the selected chain;
+6. obey the record-family transition matrix;
+7. end at the current canonical status;
+8. and remain compatible with accepted lifecycle-history corrections.
+
+## 16.6 Effective and recorded time
+
+`effective_at` states when the lifecycle change took effect in the teacher-local
+Portia workflow.
+
+`recorded_at` states when the transition record was accepted.
+
+Version 1 requires:
+
+```text
+effective_at <= recorded_at
+```
+
+Future-dated automatic transitions are not supported.
+
+A later workflow may record a transition whose effect began earlier than its
+entry, provided the actor is authorized and the reason and surrounding evidence
+support that chronology.
+
+Time never changes status automatically.
+
+## 16.7 Shared reason vocabulary
+
+The structural reason vocabulary is:
+
+```text
+review_completed
+made_inactive
+reactivated
+identity_invalidated
+assertion_invalidated
+contact_obsolete
+relationship_ended
+corrected_by_successor
+duplicate_consolidated
+wrong_actor_corrected
+wrong_student_corrected
+roster_student_collision
+contract_migrated
+prohibited_payload
+source_disproved
+other
+```
+
+`other` requires bounded non-sensitive detail.
+
+Application validation restricts reasons by:
+
+- target record family;
+- prior status;
+- new status;
+- successor topology;
+- and operation kind.
+
+## 16.8 Actor transition rules
+
+Actor transitions use:
+
+| From | Permitted destinations |
+| --- | --- |
+| `proposed` | `active`, `inactive`, `invalidated`, `superseded` |
+| `active` | `inactive`, `invalidated`, `superseded` |
+| `inactive` | `active`, `invalidated`, `superseded` |
+| `invalidated` | `superseded` |
+| `superseded` | none |
+
+Representative reason compatibility includes:
+
+```text
+proposed -> active: review_completed
+active -> inactive: made_inactive
+inactive -> active: reactivated
+any nonterminal -> invalidated: identity_invalidated,
+                                      roster_student_collision,
+                                      prohibited_payload,
+                                      source_disproved,
+                                      other
+any eligible predecessor -> superseded: corrected_by_successor,
+                                       duplicate_consolidated,
+                                       contract_migrated,
+                                       other
+```
+
+`roster_student_collision` is Actor-only.
+
+## 16.9 Contact Point transition rules
+
+Contact Point uses the same matrix.
+
+Representative reason compatibility includes:
+
+```text
+proposed -> active: review_completed
+active -> inactive: contact_obsolete
+inactive -> active: reactivated
+any nonterminal -> invalidated: assertion_invalidated,
+                                      wrong_actor_corrected,
+                                      prohibited_payload,
+                                      source_disproved,
+                                      other
+any eligible predecessor -> superseded: corrected_by_successor,
+                                       duplicate_consolidated,
+                                       wrong_actor_corrected,
+                                       contract_migrated,
+                                       other
+```
+
+A delivery failure alone does not change lifecycle.
+
+## 16.10 Actor-to-Student Relationship transition rules
+
+Actor-to-Student Relationship uses the same matrix.
+
+Representative reason compatibility includes:
+
+```text
+proposed -> active: review_completed
+active -> inactive: relationship_ended
+inactive -> active: reactivated
+any nonterminal -> invalidated: assertion_invalidated,
+                                      wrong_actor_corrected,
+                                      wrong_student_corrected,
+                                      source_disproved,
+                                      other
+any eligible predecessor -> superseded: corrected_by_successor,
+                                       duplicate_consolidated,
+                                       wrong_actor_corrected,
+                                       wrong_student_corrected,
+                                       contract_migrated,
+                                       other
+```
+
+A target student leaving the current roster does not automatically end or
+invalidate the historical relationship.
+
+## 16.11 Supersession prerequisites
+
+A transition to `superseded` is valid only when:
+
+- the current record contains compatible exact predecessor lineage;
+- every named successor exists and validates;
+- the successor record was accepted through the coordinated operation;
+- the predecessor and successor topology is supported;
+- no self-reference or replacement cycle exists;
+- and the transition reason agrees with the successor's supersession reason.
+
+The transition does not itself identify the successor. The successor-owned
+predecessor lineage remains canonical for replacement topology.
+
+## 16.12 Persisted current status
+
+The mutable canonical Actor-directory record stores its current status.
+
+A lifecycle change requires one recoverable operation that:
+
+1. completes preflight;
+2. stages and validates the transition;
+3. exclusively creates and read-back verifies the transition;
+4. revalidates the exact expected prior current representation;
+5. atomically replaces the mutable current record with `status = new_status`;
+6. read-back verifies the replacement;
+7. reconciles the selected transition chain and current status;
+8. and completes any required derived regeneration.
+
+Writing only the transition or only the mutable current status is partial
+success requiring recovery.
+
+## 16.13 Persistence ordering
+
+The transition is made durable before the mutable current record is replaced.
+
+This ordering ensures that interruption cannot leave an unexplained accepted
+status change.
+
+An interruption after transition acceptance but before current-record
+replacement leaves:
+
+```text
+durable intended lifecycle evidence
++ unchanged prior current status
++ incomplete operation journal
+```
+
+Recovery may:
+
+- complete the current-record replacement;
+- determine that an exact replay already completed;
+- quarantine contradictory state;
+- compensate through explicit accepted history;
+- or require review.
+
+It must not delete the accepted transition merely to hide the interruption.
+
+## 16.14 Child independence
+
+Changing Actor lifecycle does not automatically transition:
+
+- Contact Points;
+- Actor-to-Student Relationships;
+- Events;
+- Accounts;
+- Communications;
+- Supports;
+- Determinations;
+- or other referencing records.
+
+Those records remain independently canonical.
+
+An Actor becoming inactive or superseded may affect eligibility for future use
+and may generate review findings. It does not rewrite child history.
+
+## 16.15 Selected lifecycle state
+
+Without an accepted lifecycle-history correction, the selected history is the
+unique valid predecessor chain that:
+
+- begins at the creation baseline;
+- contains all accepted nonexcluded transitions required to reach current
+  status;
+- and terminates at current status.
+
+When an accepted lifecycle-history correction exists, the correction identifies
+the selected terminal transition and excluded history evidence.
+
+If selection is:
+
+- branched;
+- cyclic;
+- missing;
+- inconsistent with current status;
+- or dependent on an unavailable contract,
+
+the Actor-directory record is not silently resolved.
+
+It produces an integrity result and may require Quarantine.
+
+## 16.16 Lifecycle invariants
+
+1. Creation status is the baseline.
+2. Every later status change has one transition.
+3. Transition order comes from predecessor identity.
+4. Effective time does not select history.
+5. Future automatic transitions are unsupported.
+6. Reason legality is record-family-specific.
+7. Supersession requires accepted successor topology.
+8. Transition acceptance precedes current-record replacement.
+9. Current status and selected history must reconcile.
+10. Actor lifecycle never cascades automatically to child or consuming records.
+
+---
+
+# 17. Approved Decision 13: Actor-Directory Lifecycle-History Correction
+
+## 17.1 Public contract
+
+The shared history-correction contract will be:
+
+```text
+actor_directory_lifecycle_history_correction@1
+```
+
+Schema path:
+
+```text
+schemas/v1/actors/
+  actor-directory-lifecycle-history-correction.schema.json
+```
+
+Record type:
+
+```text
+actor_directory_lifecycle_history_correction
+```
+
+## 17.2 Purpose
+
+A lifecycle-history correction records a reviewed replacement selection over
+existing append-only transition evidence.
+
+It is used when accepted transition records contain:
+
+- an accidental branch;
+- an incorrect transition that must be excluded;
+- a superseded prior correction;
+- an invalid predecessor choice;
+- or another history-selection defect that cannot be solved by deleting or
+  rewriting accepted transition files.
+
+A correction does not mutate or delete a transition.
+
+## 17.3 Required envelope
+
+The correction contains exactly:
+
+```text
+schema_version
+record_type
+module_id
+actor_id
+correction_id
+target
+selected_terminal_transition_id
+excluded_transition_ids
+replacement_transition_ids
+previous_correction_id
+rationale
+recorded_at
+recorded_by
+operation_ref
+```
+
+Constants are:
+
+```text
+schema_version = "1"
+record_type = "actor_directory_lifecycle_history_correction"
+module_id = "portia"
+```
+
+## 17.4 Selected terminal transition
+
+`selected_terminal_transition_id` identifies the terminal transition of the
+complete corrected selected chain.
+
+It may be null only when the corrected selected history intentionally returns to
+the creation baseline and the current canonical status equals that baseline.
+
+The complete selected chain is reconstructed by following predecessor links from
+the terminal transition to the null predecessor.
+
+The correction does not copy a second mutable transition sequence.
+
+## 17.5 Excluded transitions
+
+`excluded_transition_ids` is a nonempty unique array.
+
+Each excluded transition must:
+
+- exist beneath the same Actor root;
+- target the same exact Actor-directory record;
+- be outside the corrected selected chain;
+- and be materially relevant to the defect being corrected.
+
+A correction must not list unrelated transitions merely to create a complete
+inventory.
+
+Excluded transitions remain canonical evidence and historically inspectable.
+
+## 17.6 Replacement transitions
+
+`replacement_transition_ids` identifies newly accepted transition records that
+replace incorrect transition assertions.
+
+It may be empty when correction only selects among already accepted branches.
+
+When nonempty, each replacement transition must:
+
+- target the same record;
+- be created before the correction;
+- participate in the selected corrected chain;
+- be accepted through the same coordinated repair operation or a documented
+  prerequisite operation;
+- and preserve the intended legal state progression.
+
+A correction does not alter the effective time, reason, status, or predecessor
+of an existing transition.
+
+Incorrect facts require a new replacement transition.
+
+## 17.7 Correction predecessor chain
+
+The first correction has:
+
+```text
+previous_correction_id = null
+```
+
+Every later correction identifies exactly one immediately preceding selected
+correction for the same target.
+
+Correction order is determined by predecessor identity, not timestamp or
+identifier order.
+
+The current correction is the unique valid terminal correction in the
+correction predecessor graph.
+
+A branch, cycle, or missing predecessor makes current history selection
+indeterminate.
+
+## 17.8 Current-status reconciliation
+
+A history correction does not directly change the mutable current status field.
+
+The corrected selected transition chain must end at the current canonical status.
+
+When the repaired selected history requires a different current status, the
+repair operation must also perform an explicit current-record replacement and,
+where domain meaning changed, create the required new lifecycle transition.
+
+The correction cannot silently relabel current status.
+
+## 17.9 Correction chronology
+
+`recorded_at` is the correction acceptance time.
+
+The rationale may explain a historical defect, but the correction does not
+pretend it existed at the earlier transition time.
+
+Application validation must ensure:
+
+- every referenced transition was accepted before the correction;
+- every referenced prior correction was accepted before the correction;
+- and the operation chronology is coherent.
+
+## 17.10 Correction rationale
+
+`rationale` is bounded nonempty text.
+
+It may describe:
+
+- the invalid branch;
+- the selected valid chain;
+- why replacement transitions were required;
+- and the reviewed correction basis.
+
+It must not duplicate:
+
+- contact values;
+- unrestricted family or student narratives;
+- credentials;
+- removed payload;
+- or unrelated sensitive information.
+
+Machine-readable transition identities carry the exact evidence.
+
+## 17.11 Persistence ordering
+
+A repair operation orders writes as follows:
+
+1. create any required replacement transition records;
+2. create the new history-correction record;
+3. replace the mutable current record only if required for reconciliation;
+4. verify the corrected selected history and current state;
+5. regenerate affected derived views.
+
+Accepted old transitions and corrections remain unchanged.
+
+## 17.12 History-correction invariants
+
+1. A correction selects history; it does not rewrite history.
+2. Excluded transitions remain canonical evidence.
+3. Incorrect transition facts require replacement transitions.
+4. The selected chain is reconstructed from one terminal transition.
+5. Correction order is predecessor-selected.
+6. Correction branches and cycles are invalid.
+7. Corrected history must reconcile with current status.
+8. Correction rationale is privacy-minimized.
+9. Repair writes preserve all prior transition and correction evidence.
+10. Current history is never selected from the newest timestamp or greatest
+    identifier.
+
+---
+
+# 18. Approved Decision 14: Actor-Directory Amendment and Nonmaterial Correction
+
+## 18.1 Public contract
+
+The shared amendment contract will be:
+
+```text
+actor_directory_amendment@1
+```
+
+Schema path:
+
+```text
+schemas/v1/actors/actor-directory-amendment.schema.json
+```
+
+Record type:
+
+```text
+actor_directory_amendment
+```
+
+## 18.2 Purpose
+
+An Actor-directory amendment records a reviewed nonmaterial correction to one
+mutable current Actor-directory record while preserving the same represented
+identity or assertion.
+
+An amendment is valid only when the before and after records remain semantically
+the same:
+
+- Actor person;
+- Contact Point assertion;
+- or Actor-to-Student Relationship assertion.
+
+Material identity or assertion changes require a new successor record.
+
+## 18.3 Required envelope
+
+The amendment contains exactly:
+
+```text
+schema_version
+record_type
+module_id
+actor_id
+amendment_id
+target
+changes
+prior_fingerprint
+resulting_fingerprint
+previous_amendment_id
+effective_at
+recorded_at
+recorded_by
+operation_ref
+```
+
+Constants are:
+
+```text
+schema_version = "1"
+record_type = "actor_directory_amendment"
+module_id = "portia"
+```
+
+## 18.4 Exact representation binding
+
+`prior_fingerprint` and `resulting_fingerprint` use the accepted content
+fingerprint contract.
+
+Application validation must establish that:
+
+- `prior_fingerprint` matches the exact accepted current bytes observed during
+  preflight;
+- applying the declared changes to the prior logical value produces the
+  resulting logical value;
+- `resulting_fingerprint` matches the exact replacement bytes;
+- and no unlisted domain field changed.
+
+Mechanical `updated_at` and `updated_by` changes are expected and are not
+separate amendment change entries.
+
+## 18.5 Change entries
+
+`changes` is a nonempty bounded array of typed change entries.
+
+Each entry contains:
+
+```text
+path
+value_kind
+before
+after
+```
+
+Supported value kinds are limited to:
+
+```text
+text
+nullable_text
+token
+timestamp
+nullable_timestamp
+attribution
+verification
+source
+```
+
+The final schema may use record-family-specific branches instead of one universal
+value union where that produces safer validation.
+
+Arbitrary JSON values and unrestricted JSON Patch are prohibited.
+
+## 18.6 Actor amendable paths
+
+Actor v1 permits nonmaterial amendment of:
+
+```text
+/display/display_name
+/display/organization
+/display/title
+/actor_category
+```
+
+Application validation must establish that the represented person remains the
+same.
+
+A category change does not establish a new authority or relationship.
+
+These paths are not amendable:
+
+```text
+/actor_id
+/status
+/supersedes
+/creation_source
+/created_at
+/created_by
+```
+
+Status changes use lifecycle transition.
+
+Supersession uses material replacement.
+
+Creation provenance is immutable.
+
+## 18.7 Contact Point amendable paths
+
+Contact Point v1 permits nonmaterial amendment of:
+
+```text
+/contact/label
+/contact/other_label
+/use_preference
+/source
+/verification
+```
+
+These paths are not amendable:
+
+```text
+/actor_id
+/contact_point_id
+/status
+/contact/kind
+/contact/address
+/contact/number
+/supersedes
+/creation_source
+/created_at
+/created_by
+```
+
+Changing contact kind or exact value requires a successor Contact Point.
+
+Correcting the owning Actor requires material replacement.
+
+## 18.8 Actor-to-Student Relationship amendable paths
+
+Relationship v1 permits nonmaterial amendment of:
+
+```text
+/relationship/other_detail
+/basis/detail
+/review
+/effective_period/start
+/effective_period/end
+```
+
+The final schema will permit only fields actually present in the accepted
+relationship contract.
+
+These semantic dimensions are not amendable:
+
+```text
+/actor_id
+/relationship_id
+/status
+/student_ref
+/relationship/type
+/basis/kind
+/basis/source_person
+/supersedes
+/creation_source
+/created_at
+/created_by
+```
+
+Changing Actor owner, student target, relationship type, basis kind, or
+source-person identity requires a successor Relationship.
+
+## 18.9 Sensitive prior-value treatment
+
+Contact values are never amendment paths.
+
+Therefore the amendment record never copies a prior or resulting email address
+or phone number.
+
+Other before and after values must be bounded to the minimum needed to explain
+the correction.
+
+Application validation must reject:
+
+- contact values disguised as rationale or labels;
+- credentials;
+- unrestricted narratives;
+- removed payload;
+- and unrelated student information.
+
+When a permitted field is itself sensitive under a future contract version, that
+version must define an explicit safe amendment representation rather than
+falling back to arbitrary JSON.
+
+## 18.10 Historical snapshots
+
+Amending a current Actor display, Contact Point, or Relationship does not rewrite
+historical consuming records.
+
+For example, correcting the current Actor display name does not alter:
+
+```text
+person_display_snapshot@1
+```
+
+already stored in an Event Participant or later domain record.
+
+A consumer may display the recorded snapshot and current Actor metadata
+together.
+
+## 18.11 Amendment predecessor chain
+
+The first amendment for one exact target has:
+
+```text
+previous_amendment_id = null
+```
+
+Every later amendment identifies the immediately preceding accepted amendment
+for the same target.
+
+Amendment order is determined by predecessor identity.
+
+A branch, cycle, target mismatch, or missing predecessor is an integrity defect.
+
+An amendment predecessor chain is independent of lifecycle-transition order.
+
+## 18.12 Effective and recorded time
+
+`effective_at` states when the corrected current value should be understood to
+apply in Portia.
+
+`recorded_at` states when the amendment was accepted.
+
+Version 1 requires:
+
+```text
+effective_at <= recorded_at
+```
+
+The amendment does not rewrite historical consuming-record snapshots as of the
+earlier effective time.
+
+## 18.13 Persistence ordering
+
+The amendment record is made durable before the mutable current record is
+replaced.
+
+The coordinated operation:
+
+1. observes and fingerprints the exact prior current record;
+2. validates semantic equivalence and allowed paths;
+3. stages the amendment and replacement current record;
+4. exclusively creates and verifies the amendment;
+5. revalidates the prior fingerprint;
+6. atomically replaces and verifies the current record;
+7. validates the amendment chain and resulting fingerprint;
+8. and regenerates affected derived views.
+
+An accepted amendment with an unchanged current record is incomplete recoverable
+state.
+
+The amendment is not deleted to conceal interruption.
+
+## 18.14 Amendment versus lifecycle
+
+An amendment must not change lifecycle status.
+
+A lifecycle transition must not be used to change profile fields.
+
+When one teacher action requires both:
+
+- a nonmaterial profile correction; and
+- a lifecycle transition,
+
+the coordinated operation creates both canonical evidence records and performs
+one expected-prior current-record replacement containing both accepted effects.
+
+Each record retains its own semantic purpose.
+
+## 18.15 Amendment versus material replacement
+
+An amendment is prohibited when the requested change alters:
+
+- represented Actor person;
+- Contact Point exact value or owner;
+- Relationship Actor, student, type, or material basis;
+- canonical identity;
+- record family;
+- or contract-significant replacement lineage.
+
+Those changes require:
+
+```text
+new successor record
++ predecessor supersession
++ exact reviewed lineage
++ coordinated operation
+```
+
+## 18.16 Amendment invariants
+
+1. Amendments preserve semantic identity.
+2. Arbitrary JSON Patch is prohibited.
+3. Every changed path is explicitly allowed for the target family.
+4. Before and after representations are exact and bounded.
+5. Fingerprints bind the prior and resulting files.
+6. Contact values cannot appear in amendment changes.
+7. Status cannot be amended.
+8. Historical snapshots are not rewritten.
+9. Amendment order is predecessor-selected.
+10. Amendment evidence becomes durable before current-record replacement.
+
+---
+
+## 19. Consequences of Decisions 1–14
+
+The accepted design now requires Issue #14 to introduce:
 
 ```text
 actor@1
-portia_actor_contact_point_id@1
-portia_actor_student_relationship_id@1
+actor_contact_point@1
+actor_student_relationship@1
+
 exact_actor_ref@1
 exact_actor_contact_point_ref@1
 exact_actor_student_relationship_ref@1
+exact_actor_directory_record_ref@1
 actor_target@1
-actor_contact_point_target@1
-actor_student_relationship_target@1
-actor_contact_point@1
-actor_student_relationship@1
-actor_student_relationship_snapshot@1
+
 actor_directory_lifecycle_transition@1
 actor_directory_lifecycle_history_correction@1
 actor_directory_amendment@1
 ```
 
-The design has also fixed these implementation boundaries:
+Required identifier additions remain:
 
-- `actor_ref@1` remains unchanged;
-- `person_display_snapshot@1` remains unchanged;
-- Actor Contact Points are canonical child records;
-- Actor-to-Student Relationships are canonical child records;
-- email and phone are the only initial contact kinds;
-- contact values are replacement-significant;
-- relationship source is explicit;
-- relationship status is not institutional authority;
-- contextual workflow roles remain consumer-owned;
-- and Actor, Contact Point, and Relationship share workspace-scoped lifecycle and
-  amendment history.
+```text
+portia_actor_contact_point_id@1
+portia_actor_student_relationship_id@1
+```
+
+The following existing identifier contracts are reused:
+
+```text
+portia_actor_id@1
+portia_lifecycle_transition_id@1
+portia_lifecycle_history_correction_id@1
+portia_amendment_id@1
+```
+
+The history design establishes:
+
+```text
+creation baseline
++ predecessor-selected transition chain
++ optional predecessor-selected history correction
++ persisted current status
+= validated current lifecycle
+```
+
+and:
+
+```text
+expected prior current representation
++ append-only amendment
++ revision-aware current replacement
+= validated nonmaterial correction
+```
 
 Later decisions must determine whether new versions or Actor-specific forms are
 required for:
 
 ```text
+duplicate candidate disposition
+Actor consolidation
+roster-student collision correction
+conflated-person correction
 record migration
 exceptional removal
 integrity finding
@@ -2845,22 +4038,9 @@ source snapshot
 derived projection metadata
 ```
 
-Existing public schemas will not be modified in place.
+No existing public schema will be modified in place.
 
-The design must next resolve:
-
-1. the exact Actor-directory lifecycle-transition envelope;
-2. transition reason vocabularies and record-family legality;
-3. Actor-directory lifecycle-history correction;
-4. Actor-directory amendment paths and sensitive-value restrictions;
-5. duplicate candidates and Actor consolidation;
-6. roster-student collision and conflated-person correction;
-7. migration and exceptional removal;
-8. operational target versioning;
-9. Actor-specific integrity rules;
-10. and persisted versus in-memory Actor projections.
-
-## 16. Rejected alternatives through Decision 10
+## 20. Rejected alternatives through Decision 14
 
 ### Flat Actor file with workspace-wide history collections
 
@@ -2933,19 +4113,63 @@ Rejected because Core does not provide workspace-wide student identity.
 Rejected because each canonical child assertion requires independent review and
 historical preservation.
 
-## 17. Next design slice
+### Reusing class/work lifecycle envelopes
+
+Rejected because they require a containing class-owned work and would fabricate
+ownership for a workspace Actor.
+
+### One lifecycle contract per Actor child family
+
+Rejected because the three record families share the same structural lifecycle
+semantics and can use one closed typed target union with application-specific
+transition matrices.
+
+### Timestamp-selected current history
+
+Rejected because time does not provide reliable branch, replay, or correction
+identity.
+
+### Mutable lifecycle transition files
+
+Rejected because accepted lifecycle evidence must remain append-only.
+
+### History correction by deleting a transition
+
+Rejected because deletion would erase accepted provenance and make recovery
+ambiguous.
+
+### History correction that rewrites transition facts
+
+Rejected because incorrect facts require replacement transition evidence and
+explicit corrected history selection.
+
+### Generic JSON Patch amendments
+
+Rejected because arbitrary paths and values weaken semantic-equivalence,
+privacy, and compatibility validation.
+
+### Amending contact values
+
+Rejected because exact contact value is material to the Contact Point assertion
+and historical communication context.
+
+### Current-record replacement before history evidence
+
+Rejected because interruption could leave an unexplained accepted state change.
+
+## 21. Next design slice
 
 The next slice should decide:
 
 ```text
-Actor-directory lifecycle-transition envelope
-Actor-directory lifecycle-history correction
-Actor-directory amendment
-chronology and predecessor chains
-record-family state-machine enforcement
-sensitive prior-value treatment
+duplicate-candidate generation and disposition
+Actor duplicate consolidation
+Contact Point and Relationship reconciliation during consolidation
+roster-student collision correction
+conflated-person correction
+incoming-reference behavior
 ```
 
-Those decisions should precede schema implementation and ADR acceptance because
-duplicate consolidation, roster collision, migration, and operational recovery
-all depend on exact workspace-scoped history semantics.
+Those decisions should precede ADR 0010 and schema implementation because they
+determine Actor supersession topology and the operational contracts that must
+receive Actor-aware versions.
