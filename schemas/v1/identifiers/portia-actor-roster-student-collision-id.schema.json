@@ -1,0 +1,10 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-actor-roster-student-collision-id.schema.json",
+  "title": "Portia Actor–Roster Student Collision Identifier",
+  "description": "Opaque canonical identifier for one immutable reviewed Actor–Roster Student Collision record. The arsc_ prefix is part of the public identifier contract. The identifier does not encode either identity, evidence, resolution, or lifecycle.",
+  "type": "string",
+  "minLength": 6,
+  "maxLength": 128,
+  "pattern": "^arsc_[A-Za-z0-9][A-Za-z0-9_-]*$"
+}

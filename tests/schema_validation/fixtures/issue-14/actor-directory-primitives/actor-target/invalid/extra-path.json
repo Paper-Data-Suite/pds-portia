@@ -1,0 +1,11 @@
+{
+  "kind": "actor_directory_record",
+  "record_ref": {
+    "kind": "actor",
+    "actor_ref": {
+      "actor_id": "actr_family_1",
+      "contract_version": "1"
+    }
+  },
+  "workspace_relative_path": "portia/actors/actr_family_1/actor.json"
+}

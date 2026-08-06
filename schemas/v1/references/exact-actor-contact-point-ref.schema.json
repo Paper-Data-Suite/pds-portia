@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-actor-contact-point-ref.schema.json",
+  "title": "Exact Portia Actor Contact Point Reference",
+  "description": "Complete reference to one exact expected Contact Point contract beneath one Portia Actor. Actor ownership, Contact Point identity, and contract version are explicit. Contact values, status, paths, and fingerprints are not reference identity.",
+  "type": "object",
+  "required": [
+    "actor_id",
+    "contact_point_id",
+    "contract_version"
+  ],
+  "properties": {
+    "actor_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-actor-id.schema.json"
+    },
+    "contact_point_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-actor-contact-point-id.schema.json"
+    },
+    "contract_version": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-actor-student-relationship-ref.schema.json",
+  "title": "Exact Portia Actor-to-Student Relationship Reference",
+  "description": "Complete reference to one exact expected Actor-to-Student Relationship contract beneath one Portia Actor. The reference identifies the Portia-owned relationship record, not the relationship's Core roster-student target or any legal authority.",
+  "type": "object",
+  "required": [
+    "actor_id",
+    "relationship_id",
+    "contract_version"
+  ],
+  "properties": {
+    "actor_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-actor-id.schema.json"
+    },
+    "relationship_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-actor-student-relationship-id.schema.json"
+    },
+    "contract_version": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+    }
+  },
+  "additionalProperties": false
+}

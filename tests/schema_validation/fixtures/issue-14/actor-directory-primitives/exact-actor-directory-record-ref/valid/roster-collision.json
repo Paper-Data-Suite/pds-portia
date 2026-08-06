@@ -1,0 +1,8 @@
+{
+  "kind": "actor_roster_student_collision",
+  "collision_ref": {
+    "actor_id": "actr_student_collision",
+    "collision_id": "arsc_review_1",
+    "contract_version": "1"
+  }
+}

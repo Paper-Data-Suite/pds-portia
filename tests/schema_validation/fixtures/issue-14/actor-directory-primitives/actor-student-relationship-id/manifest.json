@@ -1,0 +1,17 @@
+{
+  "manifest_version": "1",
+  "issue": 14,
+  "contract": "portia_actor_student_relationship_id",
+  "version": "1",
+  "valid": {
+    "minimum.json": "Structurally valid accepted example.",
+    "mixed-suffix.json": "Structurally valid accepted example."
+  },
+  "invalid": {
+    "empty-suffix.json": "Structurally invalid example rejected by JSON Schema.",
+    "wrong-prefix.json": "Structurally invalid example rejected by JSON Schema.",
+    "dot.json": "Structurally invalid example rejected by JSON Schema.",
+    "lowercase-prefix-required.json": "Structurally invalid example rejected by JSON Schema."
+  },
+  "application_invalid": {}
+}

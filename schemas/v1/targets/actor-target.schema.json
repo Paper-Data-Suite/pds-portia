@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/targets/actor-target.schema.json",
+  "title": "Portia Actor Directory Target",
+  "description": "Closed typed target for one exact Actor Directory record. The outer kind permits additive composition into operational and diagnostic target unions while record_ref preserves the exact Actor-owned record family and expected contract version. A generic workspace target is not a substitute for this exact target.",
+  "type": "object",
+  "required": [
+    "kind",
+    "record_ref"
+  ],
+  "properties": {
+    "kind": {
+      "const": "actor_directory_record"
+    },
+    "record_ref": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-actor-directory-record-ref.schema.json"
+    }
+  },
+  "additionalProperties": false
+}

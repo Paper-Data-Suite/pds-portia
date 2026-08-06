@@ -1,0 +1,20 @@
+{
+  "manifest_version": "1",
+  "issue": 14,
+  "contract": "exact_actor_roster_student_collision_ref",
+  "version": "1",
+  "valid": {
+    "collision-v1.json": "Structurally valid accepted example."
+  },
+  "invalid": {
+    "missing-collision.json": "Structurally invalid example rejected by JSON Schema.",
+    "wrong-collision-prefix.json": "Structurally invalid example rejected by JSON Schema.",
+    "roster-ref-not-reference-identity.json": "Structurally invalid example rejected by JSON Schema."
+  },
+  "application_invalid": {
+    "unsupported-contract-version.json": {
+      "rule_id": "portia.actor.reference.contract_version_supported",
+      "description": "A structurally safe contract version must be supported for Actor–Roster Student Collision."
+    }
+  }
+}

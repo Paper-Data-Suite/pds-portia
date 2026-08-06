@@ -1,0 +1,86 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-actor-directory-record-ref.schema.json",
+  "title": "Exact Portia Actor Directory Record Reference",
+  "description": "Closed discriminated reference family for one exact expected Actor Directory record contract: Actor, Contact Point, Actor-to-Student Relationship, or Actor–Roster Student Collision. The union preserves Actor ownership and contract version and must not silently follow migration, correction, consolidation, split, roster collision, exceptional removal, or successor identity.",
+  "oneOf": [
+    {
+      "$ref": "#/$defs/actor"
+    },
+    {
+      "$ref": "#/$defs/actorContactPoint"
+    },
+    {
+      "$ref": "#/$defs/actorStudentRelationship"
+    },
+    {
+      "$ref": "#/$defs/actorRosterStudentCollision"
+    }
+  ],
+  "$defs": {
+    "actor": {
+      "type": "object",
+      "required": [
+        "kind",
+        "actor_ref"
+      ],
+      "properties": {
+        "kind": {
+          "const": "actor"
+        },
+        "actor_ref": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-actor-ref.schema.json"
+        }
+      },
+      "additionalProperties": false
+    },
+    "actorContactPoint": {
+      "type": "object",
+      "required": [
+        "kind",
+        "contact_point_ref"
+      ],
+      "properties": {
+        "kind": {
+          "const": "actor_contact_point"
+        },
+        "contact_point_ref": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-actor-contact-point-ref.schema.json"
+        }
+      },
+      "additionalProperties": false
+    },
+    "actorStudentRelationship": {
+      "type": "object",
+      "required": [
+        "kind",
+        "relationship_ref"
+      ],
+      "properties": {
+        "kind": {
+          "const": "actor_student_relationship"
+        },
+        "relationship_ref": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-actor-student-relationship-ref.schema.json"
+        }
+      },
+      "additionalProperties": false
+    },
+    "actorRosterStudentCollision": {
+      "type": "object",
+      "required": [
+        "kind",
+        "collision_ref"
+      ],
+      "properties": {
+        "kind": {
+          "const": "actor_roster_student_collision"
+        },
+        "collision_ref": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-actor-roster-student-collision-ref.schema.json"
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

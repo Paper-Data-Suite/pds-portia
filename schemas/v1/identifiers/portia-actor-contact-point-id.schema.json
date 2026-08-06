@@ -1,0 +1,10 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-actor-contact-point-id.schema.json",
+  "title": "Portia Actor Contact Point Identifier",
+  "description": "Opaque canonical identifier for one Contact Point beneath one teacher-workspace Portia Actor. The acp_ prefix is part of the public identifier contract. The identifier does not encode the Actor, contact kind, contact value, preference, lifecycle, or other sensitive meaning.",
+  "type": "string",
+  "minLength": 5,
+  "maxLength": 128,
+  "pattern": "^acp_[A-Za-z0-9][A-Za-z0-9_-]*$"
+}

@@ -1,0 +1,21 @@
+{
+  "manifest_version": "1",
+  "issue": 14,
+  "contract": "actor_target",
+  "version": "1",
+  "valid": {
+    "actor.json": "Structurally valid accepted example.",
+    "relationship.json": "Structurally valid accepted example."
+  },
+  "invalid": {
+    "direct-actor-ref.json": "Structurally invalid example rejected by JSON Schema.",
+    "workspace-not-exact.json": "Structurally invalid example rejected by JSON Schema.",
+    "extra-path.json": "Structurally invalid example rejected by JSON Schema."
+  },
+  "application_invalid": {
+    "unsupported-nested-version.json": {
+      "rule_id": "portia.actor.reference.contract_version_supported",
+      "description": "A typed Actor target remains application-invalid when its exact representation version is unsupported."
+    }
+  }
+}

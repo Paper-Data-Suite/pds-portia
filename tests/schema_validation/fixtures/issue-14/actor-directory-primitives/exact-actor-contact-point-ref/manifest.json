@@ -1,0 +1,20 @@
+{
+  "manifest_version": "1",
+  "issue": 14,
+  "contract": "exact_actor_contact_point_ref",
+  "version": "1",
+  "valid": {
+    "contact-v1.json": "Structurally valid accepted example."
+  },
+  "invalid": {
+    "missing-actor.json": "Structurally invalid example rejected by JSON Schema.",
+    "wrong-contact-prefix.json": "Structurally invalid example rejected by JSON Schema.",
+    "contact-value-not-reference.json": "Structurally invalid example rejected by JSON Schema."
+  },
+  "application_invalid": {
+    "unsupported-contract-version.json": {
+      "rule_id": "portia.actor.reference.contract_version_supported",
+      "description": "A structurally safe contract version must be supported for Contact Point."
+    }
+  }
+}

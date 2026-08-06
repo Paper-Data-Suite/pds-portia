@@ -1,0 +1,12 @@
+{
+  "kind": "actor",
+  "actor_ref": {
+    "actor_id": "actr_family_1",
+    "contract_version": "1"
+  },
+  "contact_point_ref": {
+    "actor_id": "actr_family_1",
+    "contact_point_id": "acp_primary",
+    "contract_version": "1"
+  }
+}
