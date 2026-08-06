@@ -1,6 +1,6 @@
 # Portia Actor Directory Domain Model and Lifecycle
 
-**Status:** Working design — Decisions 1–25 adopted
+**Status:** Accepted — ADR 0010 recorded; implementation pending
 **Project:** Paper Data Suite
 **Module:** `pds-portia`
 **Issue:** `#14 — Define the Actor Directory domain model and lifecycle`
@@ -6984,23 +6984,33 @@ The pre-ADR public-contract result is:
 
 ---
 
-## 30. Consequences of Decisions 1–25
+## 30. Final Public-Contract Inventory
 
-The complete pre-ADR design requires these new version-1 Actor contracts:
+The accepted Actor Directory architecture requires these new version-1 domain
+contracts:
 
 ```text
 actor@1
 actor_contact_point@1
 actor_student_relationship@1
 actor_roster_student_collision@1
+```
 
+It requires these new exact-reference and target contracts:
+
+```text
 exact_actor_ref@1
 exact_actor_contact_point_ref@1
 exact_actor_student_relationship_ref@1
 exact_actor_roster_student_collision_ref@1
 exact_actor_directory_record_ref@1
 actor_target@1
+```
 
+It requires these new workspace-scoped history, correction, migration, and
+removal contracts:
+
+```text
 actor_directory_lifecycle_transition@1
 actor_directory_lifecycle_history_correction@1
 actor_directory_amendment@1
@@ -7008,26 +7018,7 @@ actor_directory_record_migration@1
 actor_directory_exceptional_removal@1
 ```
 
-Required identifier additions include:
-
-```text
-portia_actor_contact_point_id@1
-portia_actor_student_relationship_id@1
-portia_actor_roster_student_collision_id@1
-```
-
-Existing scope-neutral identifiers are reused where applicable:
-
-```text
-portia_actor_id@1
-portia_lifecycle_transition_id@1
-portia_lifecycle_history_correction_id@1
-portia_amendment_id@1
-portia_record_migration_id@1
-exceptional-removal identifier, subject to pre-ADR schema audit
-```
-
-Issue #14 also requires these additive public versions:
+It requires these additive versions of Issue #13 contracts:
 
 ```text
 integrity_finding@2
@@ -7036,25 +7027,75 @@ operation_lock@2
 quarantine_record@2
 ```
 
-These contracts remain unchanged:
+## 30.1 New identifiers
+
+Issue #14 adds:
+
+```text
+portia_actor_contact_point_id@1
+portia_actor_student_relationship_id@1
+portia_actor_roster_student_collision_id@1
+```
+
+with opaque prefixes:
+
+```text
+acp_
+asrel_
+arsc_
+```
+
+## 30.2 Reused identifiers
+
+The accepted scope-neutral identifier contracts remain reusable:
+
+```text
+portia_actor_id@1                         actr_
+portia_lifecycle_transition_id@1          lct_
+portia_lifecycle_history_correction_id@1  lhc_
+portia_amendment_id@1                     amd_
+portia_record_migration_id@1              mig_
+portia_exceptional_removal_id@1           rmv_
+```
+
+The pre-ADR audit confirmed that
+`portia-exceptional-removal-id.schema.json` defines one opaque immutable removal
+certificate identifier without class/work ownership in the identifier shape.
+
+Actor-directory removal certificates therefore reuse `rmv_`.
+
+No Actor-specific removal-ID prefix is introduced.
+
+## 30.3 Unchanged contracts
+
+These public contracts remain unchanged:
 
 ```text
 actor_ref@1
 person_display_snapshot@1
 roster_student_ref@1
+
 operation_ref@1
 operation_journal_ref@1
 operation_current_pointer@1
+
 quarantine_current_pointer@1
+
 finding_acknowledgement@1
 finding_suppression@1
 finding_suppression_current_pointer@1
+
 source_snapshot@1
 derived_index_metadata@1
 derived_current_pointer@1
 ```
 
-The accepted Actor replacement graph permits:
+Existing version-1 operation, lock, Quarantine, and Integrity Finding contracts
+remain valid and immutable for their existing targets.
+
+## 30.4 Replacement topology
+
+The Actor replacement graph permits:
 
 ```text
 one Actor -> one Actor
@@ -7067,11 +7108,12 @@ It prohibits:
 ```text
 several Actors -> several Actors
 Actor -> roster student replacement edge
-silent reference retargeting
+silent successor substitution
 automatic child reassignment
+automatic incoming-reference retargeting
 ```
 
-A confirmed Actor–roster collision uses:
+A confirmed Actor–roster collision is represented through:
 
 ```text
 Actor–Roster Student Collision record
@@ -7079,105 +7121,539 @@ Actor–Roster Student Collision record
 + explicit consuming-record correction
 ```
 
-The operational model uses:
+It is not an Actor replacement edge.
+
+---
+
+# 31. Pre-ADR Repository Checkpoint
+
+The required pre-ADR drift review was completed on 2026-08-06.
+
+## 31.1 Immutable anchors
+
+| Repository or ref | Reviewed commit | Classification |
+| --- | --- | --- |
+| `pds-portia/main` | `d60966f8486bf93fb0185e3662b76d3b79ce9dcb` | Governing merged Issues #11–#13 baseline |
+| `pds-portia/14-actor-directory-domain-model-lifecycle` | `f8bd98c09f9702058563db84d4b1d8a962597721` | Five design commits ahead of `main`; zero behind |
+| `pds-core/main` | `6c507213618b68a6dd3ea096e1a898201ff029e6` | Governing Core v0.6 workspace, class, roster, and exact roster-student boundary |
+
+## 31.2 Portia result
+
+No Portia change after Issue #13 alters the accepted Actor design.
+
+The merged baseline still establishes:
+
+- opaque Actor identity;
+- identity-only `actor_ref`;
+- exact roster-qualified student identity;
+- class-owned Events and work records;
+- workspace-scoped operational journals;
+- immutable public schemas;
+- append-only lifecycle and correction evidence;
+- and nonauthoritative derived projections.
+
+Classification:
 
 ```text
-workspace scope
-+ exact Actor-directory targets
-+ privacy-minimized paths and fingerprints
-+ deterministic locks
-+ recoverable journals
-+ separate Quarantine
-+ rebuildable derived state
+required Actor contract change:
+  Issue #14 contracts listed in Section 30
+
+documentation reconciliation:
+  final Actor path supersedes the earlier provisional flat-file example
+  Issue #12 and #13 design documents must later link Actor-specific contracts
+
+future integration concern:
+  later consuming-domain schemas must compose Actor bindings
+
+no immediate implication:
+  no existing Event-family wire shape changes
 ```
 
-No existing public schema will be modified in place.
+## 31.3 Core result
 
-## 31. Rejected alternatives through Decision 25
+Core remains at its accepted v0.6 release anchor.
 
-### Actor migration through class/work `record_migration@1`
-
-Rejected because that contract requires a class-owned work and would fabricate
-Actor ownership.
-
-### Migration that changes Actor owner or contact value
-
-Rejected because those changes alter semantic identity or assertion.
-
-### Ordinary hard deletion
-
-Rejected because it erases exact historical identity and incoming-reference
-context.
-
-### Removal certificate beneath the removable Actor root
-
-Rejected because removing the root could remove its own surviving evidence.
-
-### Retaining removed contact values in a certificate
-
-Rejected because the certificate must not recreate prohibited payload.
-
-### Reusing Integrity Finding v1 by placing Actor identity in a generic workspace target
-
-Rejected because exact diagnostic identity would be lost.
-
-### Separate Actor duplicate-review record
-
-Rejected because Issue #13 finding administration already provides durable review
-and bounded presentation suppression.
-
-### New Actor-specific operation kinds
-
-Rejected because existing operation semantics already describe creation,
-correction, consolidation, migration, removal, scanning, and repair.
-
-### Generic workspace target as Actor primary target
-
-Rejected because workspace scope does not identify the record being changed.
-
-### One lock for an opaque Actor set
-
-Rejected because deterministic per-record locks provide clearer ownership and
-ordering.
-
-### Workspace-wide lock for every Actor update
-
-Rejected because it unnecessarily blocks unrelated Actor operations.
-
-### Lock expiry or heartbeat
-
-Rejected because time and process liveness do not prove safe takeover.
-
-### Quarantine encoded as Actor lifecycle
-
-Rejected because operational safety and domain truth are separate.
-
-### New Actor-specific derived metadata family
-
-Rejected because Issue #13 source snapshots, generations, and pointers are
-already scope-generic.
-
-### Persisted Actor search index in version 1
-
-Rejected because bounded scanning and an in-memory index are sufficient for the
-initial teacher-local directory.
-
-### Standalone contact-value hashes
-
-Rejected because low-entropy values may be guessed and the hash would become a
-privacy-sensitive correlation key.
-
-## 32. Next slice
-
-The next slice should perform the pre-ADR repository checkpoint and produce:
+Core continues to own:
 
 ```text
-ADR 0010
-final accepted design status
-exact public-contract inventory
-implementation sequence
-schema dependency ordering
+workspace resolution
+safe shared path construction
+class_id
+class metadata
+rosters
+student_id within one source roster
+class-qualified roster-student identity
 ```
 
-No public schema should be added until the pre-ADR checkpoint confirms that the
-accepted Core and Portia boundaries have not drifted.
+Core still does not establish:
+
+```text
+workspace-wide person identity
+cross-roster student equivalence
+guardian identity
+staff identity
+legal relationship status
+teacher-local Actor identity
+```
+
+Classification:
+
+```text
+required Actor contract change:
+  none in Core
+
+documentation reconciliation:
+  Portia documentation must state the exact Core v0.6 roster boundary
+
+future integration concern:
+  later Portia executable code will consume Core workspace and roster services
+
+no immediate implication:
+  no Core schema or API change is required
+```
+
+## 31.4 Sibling repositories
+
+No reviewed sibling repository introduced a concrete public contract that changes:
+
+- Actor identity;
+- Actor contact or relationship semantics;
+- roster-student authority;
+- Actor privacy;
+- or Actor consumer eligibility.
+
+Per Issue #14, no broader sibling review was forced.
+
+Classification:
+
+```text
+future integration concern only
+```
+
+## 31.5 Exceptional-removal identifier result
+
+The audit inspected:
+
+```text
+schemas/v1/identifiers/portia-exceptional-removal-id.schema.json
+schemas/v1/removals/exceptional-removal.schema.json
+```
+
+The identifier contract is scope-neutral:
+
+```text
+rmv_<opaque-id>
+```
+
+The existing domain certificate is class/work-scoped because of its envelope and
+target, not because of `removal_id`.
+
+Decision:
+
+```text
+reuse portia_exceptional_removal_id@1 unchanged
+add actor_directory_exceptional_removal@1
+do not create an Actor-specific removal identifier
+```
+
+## 31.6 Checkpoint conclusion
+
+The accepted Decisions 1–25 remain valid.
+
+No drift requires reopening:
+
+- Actor semantic unit;
+- canonical path;
+- aggregate decomposition;
+- lifecycle;
+- contact and relationship architecture;
+- duplicate consolidation;
+- split correction;
+- roster collision;
+- incoming-reference behavior;
+- migration;
+- exceptional removal;
+- or Issue #13 operational integration.
+
+ADR 0010 may be accepted.
+
+A final Core and Portia checkpoint remains required immediately before repository
+acceptance.
+
+---
+
+# 32. Accepted Schema Dependency Order
+
+Schema implementation must proceed in dependency order.
+
+## 32.1 Foundation identifiers
+
+First add:
+
+```text
+portia_actor_contact_point_id@1
+portia_actor_student_relationship_id@1
+portia_actor_roster_student_collision_id@1
+```
+
+Validate:
+
+- opaque prefix;
+- bounded syntax;
+- no semantic payload;
+- and negative-prefix cases.
+
+## 32.2 Exact references and targets
+
+Then add:
+
+```text
+exact_actor_ref@1
+exact_actor_contact_point_ref@1
+exact_actor_student_relationship_ref@1
+exact_actor_roster_student_collision_ref@1
+exact_actor_directory_record_ref@1
+actor_target@1
+```
+
+These contracts establish the shared target vocabulary required by every later
+history and operational contract.
+
+## 32.3 Canonical domain records
+
+Then add:
+
+```text
+actor@1
+actor_contact_point@1
+actor_student_relationship@1
+actor_roster_student_collision@1
+```
+
+Implementation order within this group is:
+
+1. Actor;
+2. Contact Point;
+3. Actor-to-Student Relationship;
+4. Actor–Roster Student Collision.
+
+The collision record depends on exact Actor, roster-student, operation, and
+lifecycle-transition references.
+
+## 32.4 History and nonmaterial correction
+
+Then add:
+
+```text
+actor_directory_lifecycle_transition@1
+actor_directory_lifecycle_history_correction@1
+actor_directory_amendment@1
+```
+
+The implementation must include:
+
+- record-family transition matrices;
+- reason compatibility;
+- predecessor-selected history;
+- status/history reconciliation;
+- amendable-path restrictions;
+- semantic-equivalence application fixtures;
+- and privacy-safe before/after evidence.
+
+## 32.5 Migration and exceptional removal
+
+Then add:
+
+```text
+actor_directory_record_migration@1
+actor_directory_exceptional_removal@1
+```
+
+Migration reuses `mig_`.
+
+Exceptional removal reuses `rmv_`.
+
+The removal certificate is stored outside the Actor root and excludes removed
+substantive payload.
+
+## 32.6 Additive operational versions
+
+Then add:
+
+```text
+integrity_finding@2
+operation_journal@2
+operation_lock@2
+quarantine_record@2
+```
+
+Each version must:
+
+- retain every version-1 branch and meaning;
+- add only the accepted Actor branches or effects;
+- include backward-compatibility tests;
+- and leave version-1 files unchanged.
+
+## 32.7 Examples, matrices, and documentation
+
+After public schemas stabilize, add:
+
+```text
+docs/examples/portia-actor-directory-examples.md
+docs/examples/issue-14/
+docs/validation/issue-14-application-invalid-matrix.json
+docs/validation/issue-14-actor-directory-validation.md
+```
+
+Then reconcile:
+
+```text
+README.md
+schemas/README.md
+schemas/schema-catalog.json
+Issue #11 design
+Issue #12 design
+Issue #13 design
+```
+
+---
+
+# 33. Implementation Slices
+
+The accepted implementation sequence is:
+
+## Slice A — Identifier and exact-reference primitives
+
+Deliver:
+
+- three identifiers;
+- five exact references;
+- one closed Actor target;
+- catalog entries;
+- focused fixtures and tests.
+
+## Slice B — Actor root
+
+Deliver:
+
+- `actor@1`;
+- lifecycle creation constraints;
+- display and category branches;
+- supersession lineage;
+- valid, invalid, and application-invalid fixtures;
+- focused tests.
+
+## Slice C — Contact Point
+
+Deliver:
+
+- `actor_contact_point@1`;
+- email and phone discriminated union;
+- source, verification, use preference, lifecycle, and supersession;
+- privacy and owner-consistency fixtures;
+- focused tests.
+
+## Slice D — Actor-to-Student Relationship
+
+Deliver:
+
+- `actor_student_relationship@1`;
+- exact roster target;
+- relationship type, basis, review, effective period, lifecycle, and lineage;
+- authority-overclaim and cross-roster fixtures;
+- focused tests.
+
+## Slice E — Roster collision
+
+Deliver:
+
+- collision identifier and exact reference if not already added;
+- `actor_roster_student_collision@1`;
+- exact Actor and roster target;
+- reviewed evidence kinds;
+- linked invalidation transition;
+- no workspace-person-authority fixtures;
+- focused tests.
+
+## Slice F — Lifecycle and amendment
+
+Deliver:
+
+- shared lifecycle transition;
+- history correction;
+- amendment;
+- state-machine and predecessor-chain tests;
+- privacy-safe amendment tests.
+
+## Slice G — Migration and removal
+
+Deliver:
+
+- Actor-directory migration;
+- Actor-directory exceptional removal;
+- representation-preservation tests;
+- removal-certificate privacy tests.
+
+## Slice H — Operational version 2
+
+Deliver:
+
+- Integrity Finding v2;
+- Operation Journal v2;
+- Operation Lock v2;
+- Quarantine Record v2;
+- version-1 compatibility tests;
+- Actor-target application-invalid fixtures.
+
+## Slice I — ADR checkpoint and examples
+
+ADR 0010 is recorded in the current slice.
+
+After schemas are complete, add narrative and machine-readable examples plus
+intermediate documentation reconciliation.
+
+## Slice J — Final integration
+
+Deliver:
+
+- complete application-invalid matrix;
+- final validation record;
+- final Core and Portia checkpoint;
+- complete schema-guide and README reconciliation;
+- complete suite validation;
+- Issue #14 repository-acceptance evidence.
+
+Each implementation slice must be independently reviewable and must not combine
+unrelated future consuming-domain work.
+
+---
+
+# 34. Structural and Application Validation Boundary
+
+## 34.1 JSON Schema responsibility
+
+JSON Schema validates:
+
+- record constants;
+- identifier syntax;
+- closed envelopes;
+- required fields;
+- discriminated unions;
+- status and reason vocabulary;
+- bounded text and arrays;
+- reference shape;
+- timestamp syntax;
+- target branch shape;
+- lifecycle local distinctions;
+- and rejection of unknown properties.
+
+## 34.2 Application validation responsibility
+
+Application validation establishes:
+
+- workspace containment;
+- identity-derived canonical paths;
+- Actor-root and child-owner agreement;
+- exact Core roster resolution;
+- roster-student prohibition;
+- current-use eligibility;
+- lifecycle/history reconciliation;
+- legal record-family transitions;
+- immediate predecessor selection;
+- amendment semantic equivalence;
+- migration meaning preservation;
+- complete replacement topology;
+- duplicate equivalence;
+- consolidation purity;
+- split completeness;
+- roster-collision review;
+- incoming-reference completeness;
+- authorization coverage;
+- contact privacy;
+- operation-journal coherence;
+- lock identity;
+- Quarantine effects;
+- exceptional-removal execution;
+- and derived-state freshness.
+
+## 34.3 Required fixture classes
+
+Every public contract must include:
+
+```text
+valid
+invalid
+application-invalid
+```
+
+fixtures where application-level invariants apply.
+
+Application-invalid fixtures must:
+
+- pass JSON Schema;
+- fail one named Actor invariant;
+- be listed in the final matrix;
+- use only synthetic data;
+- and avoid real student, family, staff, or contact information.
+
+---
+
+# 35. Accepted Decision Summary
+
+Portia adopts a teacher-local workspace Actor Directory in which:
+
+- one Actor represents one recurring non-roster human person;
+- Actor identity is opaque and stable;
+- roster students remain Core roster-qualified identities;
+- the canonical root is `portia/actors/<actor_id>/actor.json`;
+- Contact Points and Actor-to-Student Relationships are separate canonical
+  children;
+- display, contact, relationship, workflow role, and authority remain distinct;
+- current lifecycle is persisted and reconciled with append-only history;
+- nonmaterial correction uses bounded amendments;
+- material correction creates successors;
+- confirmed duplicates create one new successor;
+- conflated Actors may split into several new successors;
+- roster collisions invalidate the Actor without creating a cross-family
+  replacement edge;
+- exact historical references never silently follow successors;
+- migration preserves semantic identity;
+- exceptional removal preserves a minimum external certificate;
+- Actor operations use workspace scope plus exact Actor-directory targets;
+- operational evidence excludes contact and other unnecessary sensitive payload;
+- Quarantine remains separate from lifecycle;
+- and derived state remains rebuildable and nonauthoritative.
+
+ADR 0010 records this decision.
+
+## 35.1 Production boundary
+
+Issue #14 defines public contracts and validation architecture.
+
+It does not implement:
+
+- Python repositories;
+- filesystem services;
+- search interfaces;
+- duplicate-review interfaces;
+- teacher-facing Actor management;
+- communication delivery;
+- automatic imports;
+- or executable repair tools.
+
+Those remain future implementation work.
+
+## 35.2 Immediate next slice
+
+The next slice should implement:
+
+```text
+foundation identifiers
+exact Actor-directory references
+closed Actor target
+catalog entries
+focused fixtures and tests
+```
+
+No canonical Actor schema should be added until those primitives pass the
+complete existing schema-validation suite.
