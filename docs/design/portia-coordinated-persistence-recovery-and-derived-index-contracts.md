@@ -1,6 +1,6 @@
 # Portia Coordinated Persistence, Recovery, and Derived-Index Contracts
 
-**Status:** In development — through Decision 13
+**Status:** Accepted design — through Decision 18
 **Project:** Paper Data Suite
 **Module:** `pds-portia`
 **Issue:** `#13 — Define coordinated persistence, recovery, and derived-index contracts`
@@ -4793,47 +4793,684 @@ A canonical record receives an operation field only if a later record-family con
 
 ---
 
-# 18. Decisions Remaining
+# 18. Approved Decision 14: Integrity Findings, Acknowledgement, and Suppression
 
-Later design slices must resolve:
+## 18.1 Decision
 
-1. Integrity Finding operational code vocabulary and version audit;
-2. acknowledgement and suppression records;
-3. derived-index families and common metadata;
-4. deterministic source inventories and source snapshots;
-5. complete candidate build, verification, and atomic installation;
-6. missing, stale, corrupt, and incompatible derived-state behavior;
-7. current-view regeneration;
-8. privacy-minimized diagnostics;
-9. public schema organization;
-10. Issue #12 contract reconciliation;
-11. ADR 0009;
-12. synthetic example strategy;
-13. validation and fixture strategy;
-14. and final cross-repository drift checks.
+Portia continues to use the Issue #12 Integrity Finding projection as its single diagnostic model for canonical, operational, recovery, Quarantine, and derived-state defects.
 
-## 19. Current implementation boundary
+Issue #13 adds separate durable operational records for acknowledgement and narrowly permitted presentation suppression. Neither changes the finding, repairs state, alters severity or effects, or creates finding lifecycle.
 
-No production filesystem mutation is introduced by Decisions 1–13.
+## 18.2 Integrity Finding v1 compatibility
 
-The current design now establishes:
+The accepted v1 operation target is:
+
+```json
+{
+  "kind": "operation",
+  "operation_id": "op_example"
+}
+```
+
+Every valid Issue #13 `op_` identifier is valid under the existing structurally safe external-ID property. The shape is compatible with the accepted Operation Reference, so Issue #13 does not require Integrity Finding v2 merely to identify operations.
+
+Integrity Finding v1 already includes:
+
+```text
+persistence_recovery
+derived_state
+```
+
+and codes including:
+
+```text
+operation_incomplete
+canonical_write_partial
+orphaned_canonical_artifact
+content_digest_mismatch
+recovery_required
+derived_index_drift
+projection_stale
+derived_reverse_link_mismatch
+derived_payload_policy_violation
+```
+
+These are sufficient for the initial operation contracts. Stable rule IDs provide more specific diagnosis, for example:
+
+```text
+portia.operation.journal_branch
+portia.operation.pointer_missing
+portia.operation.lock_unreleased
+portia.operation.step_unjournaled
+portia.operation.quarantine_incomplete
+portia.derived.source_changed
+portia.derived.current_pointer_invalid
+portia.derived.removed_payload_retained
+```
+
+A future new code or target shape requires a new projection version. Version 1 remains immutable.
+
+## 18.3 Finding generation boundary
+
+A rejected request that produced no durable inconsistency normally returns direct validation, authorization, compatibility, or conflict output without creating workspace integrity noise.
+
+A finding is appropriate when a partial, contradictory, unsafe, unavailable, or authorization-limited condition persists after the request ends.
+
+Operational findings remain deterministic from exact rules, versions, targets, source fingerprints, authorization context, and policy inputs.
+
+## 18.4 Finding Acknowledgement
+
+One Finding Acknowledgement records that one actor or system process reviewed one exact:
+
+```text
+finding_key + evaluation_key
+```
+
+Acknowledgement identifiers use:
+
+```text
+fack_<opaque-id>
+```
+
+Records are append-only under:
+
+```text
+portia/finding_acknowledgements/<acknowledgement_id>.json
+```
+
+The record contains the finding and evaluation keys, time, attribution, bounded category, optional bounded rationale, and creating Operation Journal Reference when applicable.
+
+Initial categories are:
+
+```text
+reviewed
+assigned_for_follow_up
+known_limitation
+awaiting_external_evidence
+```
+
+Acknowledgement does not mean fixed, waived, suppressed, nonblocking, or resolved. A changed evaluation requires a new acknowledgement.
+
+## 18.5 Finding Suppression
+
+One Finding Suppression is a presentation-only rule for one exact finding evaluation under one exact policy.
+
+Identifiers use:
+
+```text
+fsup_<opaque-id>
+```
+
+Suppressions use immutable revisions plus an explicit pointer:
+
+```text
+portia/finding_suppressions/<suppression_id>/
+  revisions/<revision>.json
+  current.json
+```
+
+Initial states are:
+
+```text
+active
+released
+expired
+superseded
+```
+
+A suppression binds:
+
+```text
+finding_key
+evaluation_key
+rule_id
+rule_version
+severity
+effects
+policy reference
+presentation and audience scope
+```
+
+It never removes the finding from validation, recovery, audit, or authorized unsuppressed diagnostics.
+
+## 18.6 Suppression eligibility and expiry
+
+Suppression is prohibited when a finding:
+
+- is `critical`;
+- has any `block_*` effect;
+- has `quarantine_target`;
+- represents retained removed payload;
+- or would conceal authorization limitation as apparent absence.
+
+The initial eligible set is advisory or warning findings whose effects are limited to:
+
+```text
+attention
+review_required
+```
+
+Every suppression expires through a fixed time or a change in target evaluation, rule version, target revision or fingerprint, policy, severity, effects, or explicit release. Indefinite suppression is prohibited.
+
+Release creates a new immutable revision and does not resolve the finding.
+
+## 18.7 Public contract direction
+
+Add:
+
+```text
+schemas/v1/identifiers/portia-finding-acknowledgement-id.schema.json
+schemas/v1/identifiers/portia-finding-suppression-id.schema.json
+schemas/v1/operations/finding-acknowledgement.schema.json
+schemas/v1/operations/finding-suppression.schema.json
+schemas/v1/operations/finding-suppression-current-pointer.schema.json
+```
+
+---
+
+# 19. Approved Decision 15: Derived Projection Families, Generations, and Metadata
+
+## 19.1 Decision
+
+Portia derived state uses immutable complete generations plus explicit current selection.
+
+One generation represents:
+
+```text
+one projection kind
++ one exact scope
++ one exact source snapshot
++ one projection contract
++ one builder version
+```
+
+A generation is rebuildable and nonauthoritative.
+
+## 19.2 Initial projection families
+
+The common infrastructure must support:
+
+```text
+incoming_reference_index
+work_relationship_reverse_index
+replacement_frontier_index
+dependency_graph
+lifecycle_timeline
+current_state_view
+migration_logical_identity_index
+ownership_correction_index
+exceptional_removal_index
+active_integrity_finding_index
+active_quarantine_index
+operation_recovery_queue
+finding_acknowledgement_index
+finding_suppression_index
+work_summary
+class_summary
+```
+
+This issue need not implement every family. Later record families add closed versioned projection schemas as needed.
+
+## 19.3 Generation identity, scope, and storage
+
+Generation IDs use:
+
+```text
+dgen_<opaque-id>
+```
+
+Initial scopes are:
+
+```text
+work
+class
+workspace
+operation
+graph
+```
+
+Conceptual storage is:
+
+```text
+<scope-derived Portia derived root>/<projection_kind>/
+  generations/<generation_id>/
+    metadata.json
+    data.json
+  current.json
+```
+
+Work-scoped state remains under the accepted work `derived/` boundary. Class- and workspace-scoped projections use bounded Portia-owned derived namespaces.
+
+## 19.4 Metadata
+
+Every generation records:
+
+```text
+schema_version
+record_type
+generation_id
+projection_kind
+projection_contract_version
+scope
+source_snapshot
+source_file_count
+source_record_count
+built_at
+builder_id
+builder_version
+authorization_scope
+complete
+data_path
+data_fingerprint
+```
+
+Only `complete: true` generations may be selected.
+
+Each projection family owns its data schema. Common metadata does not make entries interchangeable.
+
+## 19.5 Current pointer
+
+Each projection kind and exact scope has one explicit `current.json` selecting one verified generation.
+
+The pointer records minimum exact selection data, including projection kind, scope, generation ID, contract version, and source-snapshot digest.
+
+Current generation is never inferred from greatest ID, newest timestamp, directory order, or modification time.
+
+## 19.6 Authority and minimization
+
+Derived rows cannot create relationships, establish lifecycle or ownership, authorize writes, prove absence, or repair canonical state.
+
+Projection data should use typed references, bounded status tokens, fingerprints, counts, and explicitly allowed display data. It must not become a broad duplicate narrative store or reconstruct removed payload.
+
+Completed generations are immutable. Rebuilding creates a new generation; manual row repair is prohibited.
+
+## 19.7 Compatibility and locks
+
+Consumers verify projection kind, contract, scope, completeness, builder compatibility where required, data fingerprint, source snapshot, authorization scope, and Quarantine.
+
+Unsupported or unreadable projection state is unavailable, not empty.
+
+Build and installation use the `derived_projection` lock scope. Canonical writers normally remain unblocked during candidate construction; source-snapshot recheck detects concurrent changes.
+
+## 19.8 Public contract direction
+
+Add:
+
+```text
+schemas/v1/identifiers/portia-derived-generation-id.schema.json
+schemas/v1/projections/source-snapshot.schema.json
+schemas/v1/projections/derived-index-metadata.schema.json
+schemas/v1/projections/derived-current-pointer.schema.json
+schemas/v1/references/derived-generation-ref.schema.json
+```
+
+---
+
+# 20. Approved Decision 16: Deterministic Source Snapshots and Complete Rebuilding
+
+## 20.1 Decision
+
+Every rebuild is bound to one deterministic source inventory and digest.
+
+The sequence is:
+
+```text
+discover bounded inputs
+-> validate and inventory exact bytes
+-> compute source snapshot
+-> build complete candidate
+-> verify candidate
+-> recompute required source snapshot
+-> install only if unchanged
+-> verify current selection
+```
+
+Partial candidates never become current.
+
+## 20.2 Bounded source discovery
+
+Each builder defines exact allowed canonical and operational namespaces. It must not recursively crawl the entire workspace, sibling private work trees, backups, exports, arbitrary temporary directories, or unrelated files.
+
+One source entry contains:
+
+```text
+workspace_relative_path
+byte_length
+sha256_digest
+source_role
+contract_or_artifact_kind
+```
+
+Entries are unique and deterministically sorted by normalized UTF-8 path and role data.
+
+## 20.3 Snapshot digest
+
+The snapshot digest is SHA-256 over an unambiguous deterministic encoding of:
+
+- snapshot algorithm version;
+- projection kind and scope;
+- authorization-scope identifier;
+- supported contracts;
+- sorted source entries;
+- and policy references that affect output.
+
+Build time and filesystem modification times are excluded.
+
+Changing normalization, ordering, encoding, included fields, or digest rules requires a new snapshot-algorithm version.
+
+## 20.4 Missing and authorization-limited sources
+
+A source required by an exact pointer, reference, operation, or projection policy cannot be omitted silently.
+
+Missing required sources prevent installation and produce typed validation or findings.
+
+Authorization-limited sources remain explicit. A projection complete for a narrow authorized scope must not support broader absence claims.
+
+## 20.5 Candidate construction and validation
+
+The candidate is separate transient state. Before installation, validate:
+
+- metadata and projection schemas;
+- generation and scope identity;
+- complete flag;
+- entry identity and duplicates;
+- internal references;
+- source binding;
+- data fingerprint;
+- privacy allowlists;
+- and projection-specific invariants.
+
+Validation remains offline.
+
+## 20.6 Changed during rebuild
+
+Immediately before installation, recompute the required inventory and snapshot.
+
+If they differ:
+
+- do not install;
+- leave the current generation unchanged;
+- report changed-during-rebuild;
+- and require a fresh complete rebuild.
+
+Do not patch only changed rows.
+
+## 20.7 Installation
+
+For multi-file projections:
+
+1. exclusively create immutable generation files;
+2. verify the complete generation;
+3. guarded-replace the explicit current pointer;
+4. reread the pointer and selected generation.
+
+A complete single-file projection may use the accepted one-file replacement protocol.
+
+If generation files verify but pointer publication fails, the generation is unselected derived state. It is not current merely because it is newest.
+
+## 20.8 Rebuild idempotency and source validity
+
+The same snapshot, builder version, contract, policy, and authorization scope must produce semantically identical data and deterministic bytes where the writer guarantees them.
+
+Builders do not repair invalid canonical sources. They emit typed unavailable or indeterminate state, findings, or rebuild failure according to the projection contract.
+
+Removal-aware rebuilds must not reintroduce prohibited payload from old projections, staging, logs, or unrelated backups.
+
+## 20.9 Rebuild operation
+
+A `rebuild_projection` journal records prior current generation, source snapshot, builder, candidate generation, validation, recheck, installation, and cleanup.
+
+Rebuilding changes no canonical domain meaning.
+
+---
+
+# 21. Approved Decision 17: Missing, Stale, Corrupt, and Current-View Behavior
+
+## 21.1 Decision
+
+Derived availability is explicit. Initial conditions are:
+
+```text
+current
+missing
+stale
+changed_during_evaluation
+malformed
+corrupt
+incompatible
+authorization_limited
+quarantined
+rebuild_in_progress
+```
+
+No unavailable condition is collapsed into an authoritative empty result.
+
+## 21.2 Current, missing, and stale
+
+A projection is current only when its pointer and generation validate, contracts are supported, the source snapshot satisfies the requested use, authorization is sufficient, and no applicable Quarantine blocks use.
+
+A missing projection permits canonical direct loading only where a bounded exact evaluation is available.
+
+A stale projection cannot authorize canonical mutation. Presentation may use it only when explicitly labeled and policy permits.
+
+## 21.3 Malformed, corrupt, and incompatible
+
+Malformed metadata or data, fingerprint disagreement, internal-reference failure, or unsupported contracts prevent authoritative use but do not invalidate independently valid canonical records.
+
+The selected generation may be quarantined and replaced through a full rebuild. It is not manually patched.
+
+## 21.4 Safety-sensitive absence
+
+Claims such as:
+
+```text
+no incoming references
+no required Dependencies
+no active Quarantine
+no competing successor
+```
+
+require a verified complete projection for the exact authorized scope or an accepted bounded canonical scan. Otherwise the result is indeterminate.
+
+A read operation does not rebuild implicitly; it may recommend an explicit rebuild operation.
+
+## 21.5 Current-state views
+
+A current-state view derives one bounded interpretation from canonical and operational sources, including status, selected lifecycle history, corrections, successor frontier, Dependencies, migration, ownership correction, removal, Quarantine, and relevant operation state.
+
+Initial output states include:
+
+```text
+verified_current
+historical
+superseded
+invalidated
+removed
+quarantined
+operation_in_progress
+unverified
+indeterminate
+authorization_limited
+unsupported
+```
+
+## 21.6 No silent repair or successor following
+
+When canonical inputs disagree, the view reports exact conflicting sources, findings, blocked effects, and recovery requirements.
+
+It does not choose a status, lifecycle head, newest successor, migration destination, ownership interpretation, or removal state.
+
+An exact predecessor query returns that predecessor. A separate verified replacement-frontier query may identify a current replacement for a defined purpose.
+
+## 21.7 Regeneration and completion
+
+Current views use the complete generation protocol rather than row-by-row mutation.
+
+Ordinary view regeneration is post-commit. An operation may complete with a stale or missing ordinary view only when canonical state is valid, deferred rebuild is permitted, availability is explicit, and no privacy- or safety-critical projection remains unresolved.
+
+A view containing removed or newly unauthorized payload must be quarantined or purged before the responsible operation completes.
+
+## 21.8 Dashboards and queues
+
+Dashboards, timelines, summaries, recovery queues, and acknowledgement or suppression lists are convenience projections.
+
+They may be rebuilt and cannot be the sole mechanism for enforcing active operations, Quarantine, removal, or write authorization.
+
+---
+
+# 22. Approved Decision 18: Public Contract Organization and Issue #12 Reconciliation
+
+## 22.1 Decision
+
+Issue #13 publishes independently versioned contracts under semantic directories and adds no new unversioned root schemas.
+
+The architecture is complete enough to begin public schema implementation.
+
+## 22.2 Identifier contracts
+
+Add:
+
+```text
+schemas/v1/identifiers/portia-operation-id.schema.json
+schemas/v1/identifiers/portia-operation-step-id.schema.json
+schemas/v1/identifiers/portia-lock-id.schema.json
+schemas/v1/identifiers/portia-quarantine-id.schema.json
+schemas/v1/identifiers/portia-finding-acknowledgement-id.schema.json
+schemas/v1/identifiers/portia-finding-suppression-id.schema.json
+schemas/v1/identifiers/portia-derived-generation-id.schema.json
+```
+
+## 22.3 Common and reference contracts
+
+Add:
+
+```text
+schemas/v1/common/workspace-relative-path.schema.json
+schemas/v1/common/sha256-digest.schema.json
+schemas/v1/common/content-fingerprint.schema.json
+schemas/v1/references/operation-ref.schema.json
+schemas/v1/references/operation-journal-ref.schema.json
+schemas/v1/references/quarantine-ref.schema.json
+schemas/v1/references/derived-generation-ref.schema.json
+```
+
+## 22.4 Operation contracts
+
+Add:
+
+```text
+schemas/v1/operations/operation-journal.schema.json
+schemas/v1/operations/operation-current-pointer.schema.json
+schemas/v1/operations/operation-lock.schema.json
+schemas/v1/operations/quarantine-record.schema.json
+schemas/v1/operations/quarantine-current-pointer.schema.json
+schemas/v1/operations/finding-acknowledgement.schema.json
+schemas/v1/operations/finding-suppression.schema.json
+schemas/v1/operations/finding-suppression-current-pointer.schema.json
+```
+
+Operation Journal should own reusable preflight, write-step, staged-artifact, partial-state, recovery, and compensation structures through `$defs` unless independent reuse proves necessary.
+
+A separate durable `operation_result` record is not required; the journal contains durable partial and terminal state. A later API response schema may compose journal structures without duplicating vocabularies.
+
+## 22.5 Projection contracts
+
+Add:
+
+```text
+schemas/v1/projections/source-snapshot.schema.json
+schemas/v1/projections/derived-index-metadata.schema.json
+schemas/v1/projections/derived-current-pointer.schema.json
+```
+
+Projection-family data schemas are added only as actually implemented or needed for representative Issue #13 examples.
+
+## 22.6 Issue #12 compatibility table
+
+| Contract | Issue #13 coordination | Wire-shape result |
+| --- | --- | --- |
+| Event v2 | Exclusive creation, guarded replacement, operation journal | unchanged; no Event v3 |
+| Event Participant v3 | Lifecycle, successor, migration, ownership operations | unchanged; no v4 |
+| Event Participant Role v3 | Lifecycle, successor, migration, ownership operations | unchanged; no v4 |
+| Work Relationship v2 | Exclusive creation, lifecycle, successor and migration recovery | unchanged; no v3 |
+| Lifecycle Transition v1 | Created before guarded target-status replacement | unchanged |
+| Lifecycle History Correction v1 | Created through repair-capable coordinated operation | unchanged |
+| Amendment v1 | Created before guarded target replacement | unchanged |
+| Statement of Disagreement v1 | Coordinated exclusive creation; target unchanged | unchanged |
+| Dependency v1 | Canonical creation plus operation-specific dispositions | unchanged |
+| Record Migration v1 | Coordinates source, destination, certificate, lifecycle, selection | unchanged |
+| Ownership Correction v1 | Coordinates destination graph, mappings, source lifecycle | unchanged |
+| Exceptional Removal v1 | Coordinates Quarantine, certificate, payload unavailability, purge | unchanged |
+| Integrity Finding v1 | Reused for operational and derived diagnostics | unchanged; no v2 initially |
+
+Issue #13 does not add `operation_id` to every canonical domain record. The journal write set and exact references provide correlation.
+
+## 22.7 Validation boundary
+
+JSON Schema validates closed envelopes, identifiers, paths, digests, operation and step vocabularies, mutually exclusive expected-state branches, journal and pointer shapes, lock and Quarantine structures, acknowledgement and suppression records, source inventories, projection metadata, timestamps, and local conditionals.
+
+Application validation establishes filesystem containment, exact bytes, replay, state transitions, journal linearity, lock conflicts, expected state, operation ordering, authorization, Dependency effects, source-snapshot truth, projection completeness, suppression eligibility, and recovery safety.
+
+Schema-valid does not mean operation-safe.
+
+## 22.8 Catalog, examples, and fixtures
+
+Every schema must be cataloged in `schemas/schema-catalog.json`, documented in `schemas/README.md`, use a path-matching immutable `$id`, and resolve offline.
+
+Implementation must add synthetic valid and invalid examples for journals, partial success, recovery, locks, Quarantine, acknowledgement, suppression, source snapshots, derived metadata, pointers, and unavailable current views.
+
+One application-invalid matrix must identify fixture, contract/version, structural validity, violated invariant, and operation family. Each fixture appears exactly once.
+
+## 22.9 ADR and production handoff
+
+ADR 0009 will summarize Decisions 1–18 after the required pre-ADR Core, Meridian, and Vitrine drift check.
+
+The later executable milestone owns Python models, path services, writers, locks, journals, staging, orchestration, recovery, Quarantine enforcement, projection builders, integrity scans, and teacher-facing maintenance workflows. It must implement these contracts rather than redefine them.
+
+---
+
+# 23. Design Completion and Remaining Issue Work
+
+The Issue #13 design is accepted through Decision 18.
+
+Remaining issue work is:
+
+1. perform and record the pre-ADR sibling-repository drift check;
+2. add ADR 0009;
+3. implement identifier, common, and reference primitives;
+4. implement journal and pointer contracts;
+5. implement lock and Quarantine contracts;
+6. implement acknowledgement and suppression contracts;
+7. implement source-snapshot and derived metadata contracts;
+8. update the catalog and schema guide;
+9. add valid, invalid, and application-invalid fixtures;
+10. add machine-readable and narrative examples;
+11. add schema, state-machine, compatibility, and documentation tests;
+12. reconcile README and active designs;
+13. produce the Issue #13 validation record;
+14. perform the final sibling-repository drift check;
+15. and accept the final repository state.
+
+## 24. Current implementation boundary
+
+No production filesystem mutation is introduced by Decisions 1–18.
+
+The accepted design now establishes:
 
 ```text
 durable state categories and authority
 operation identity, intent, scope, and replay
-immutable journal revisions and explicit current selection
-complete preflight and exact observation boundaries
-relative-path and byte-fingerprint evidence
-exclusive-create and guarded-replacement preconditions
-ordered write sets and staged candidates
-stable lock identity, conflicts, ordering, and clearing
-one-file durability and recoverable multi-record commit
-structured partial success, cleanup, and compensation
-evidence-based recovery and journal reconciliation
-narrow repair mode
-independent revisioned Quarantine
-lifecycle, Amendment, successor, and Dependency operation plans
-migration, ownership-correction, and Exceptional Removal plans
+immutable journals and explicit current selection
+preflight, exact paths, fingerprints, write sets, and staging
+lock identity, ordering, commit, partial success, and compensation
+recovery, repair mode, and revisioned Quarantine
+coordinated lifecycle, successor, dependency, migration, ownership, and removal operations
+Integrity Finding compatibility
+acknowledgement and narrowly permitted suppression
+immutable complete derived generations
+deterministic source snapshots and verified replacement
+explicit unavailable and current-view behavior
+public schema organization and Issue #12 reconciliation
 ```
 
-Later design work will define integrity administration, complete derived-state rebuilding, current views, schema organization, ADR 0009, and the final validation strategy before public operational schemas are implemented.
+The next slice should add ADR 0009 after the required drift checkpoint and then begin the public schema implementation in bounded groups.
