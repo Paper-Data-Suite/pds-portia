@@ -1,6 +1,6 @@
 # Portia Coordinated Persistence, Recovery, and Derived-Index Contracts
 
-**Status:** Accepted design — through Decision 18
+**Status:** Accepted — ADR 0009 adopted
 **Project:** Paper Data Suite
 **Module:** `pds-portia`
 **Issue:** `#13 — Define coordinated persistence, recovery, and derived-index contracts`
@@ -109,7 +109,19 @@ pds-meridian: future integration concern; no immediate contract change
 pds-vitrine: future integration concern; no immediate contract change
 ```
 
-The baseline must be checked again before accepting ADR 0009 and immediately before closing Issue #13.
+## 3.1 Pre-ADR cross-repository checkpoint
+
+The required pre-ADR checkpoint was completed on 2026-08-05 before accepting ADR 0009.
+
+| Repository | Reviewed commit | Change since initial checkpoint | Classification and response |
+| --- | --- | --- | --- |
+| `pds-core` | `6c507213618b68a6dd3ea096e1a898201ff029e6` | No change. Core remains at the accepted v0.6.0 explicit-current-pointer, expected-revision, conservative recovery, and complete derived-catalog baseline. | Documentation reconciliation only. Portia reuses the principles without importing Core-private storage code. |
+| `pds-meridian` | `0c1f57e41da225079df1cb14ece3fe8c0522b744` | Meridian added an installable `0.1.1.dev0` package foundation, strict typing and CI, a read-only CLI, an authenticated `pds-core>=0.6,<0.7` dependency boundary, and public Core-contract probes. It still implements no producer adapters, workspace ingestion, evidence projection, grading, reporting, or persistence. | Future integration concern; no immediate Portia contract change. The package foundation reinforces public-contract consumption and side-effect-free baseline behavior. |
+| `pds-vitrine` | `cea3a9b66bb31ebc7d6511bcf287d4e42c58f7d7` | No change. Vitrine remains at its immutable curation-record, complete revision, explicit-current-pointer, optimistic-concurrency, and rebuildable-view baseline. | Future integration concern; no immediate Portia contract change. |
+
+The checkpoint found no sibling change requiring a revision to Decisions 1–18.
+
+The final checkpoint remains required immediately before Issue #13 completion.
 
 ## 4. Governing principles
 
@@ -5433,23 +5445,23 @@ The later executable milestone owns Python models, path services, writers, locks
 
 The Issue #13 design is accepted through Decision 18.
 
+The pre-ADR sibling-repository checkpoint is recorded above, and ADR 0009 now adopts Decisions 1–18.
+
 Remaining issue work is:
 
-1. perform and record the pre-ADR sibling-repository drift check;
-2. add ADR 0009;
-3. implement identifier, common, and reference primitives;
-4. implement journal and pointer contracts;
-5. implement lock and Quarantine contracts;
-6. implement acknowledgement and suppression contracts;
-7. implement source-snapshot and derived metadata contracts;
-8. update the catalog and schema guide;
-9. add valid, invalid, and application-invalid fixtures;
-10. add machine-readable and narrative examples;
-11. add schema, state-machine, compatibility, and documentation tests;
-12. reconcile README and active designs;
-13. produce the Issue #13 validation record;
-14. perform the final sibling-repository drift check;
-15. and accept the final repository state.
+1. implement identifier, common, and reference primitives;
+2. implement journal and pointer contracts;
+3. implement lock and Quarantine contracts;
+4. implement acknowledgement and suppression contracts;
+5. implement source-snapshot and derived metadata contracts;
+6. update the catalog and schema guide;
+7. add valid, invalid, and application-invalid fixtures;
+8. add machine-readable and narrative examples;
+9. add schema, state-machine, compatibility, and documentation tests;
+10. reconcile README and active designs;
+11. produce the Issue #13 validation record;
+12. perform the final sibling-repository drift check;
+13. and accept the final repository state.
 
 ## 24. Current implementation boundary
 
@@ -5473,4 +5485,4 @@ explicit unavailable and current-view behavior
 public schema organization and Issue #12 reconciliation
 ```
 
-The next slice should add ADR 0009 after the required drift checkpoint and then begin the public schema implementation in bounded groups.
+The next slice should begin the public schema implementation with identifier, common, and reference primitives.
