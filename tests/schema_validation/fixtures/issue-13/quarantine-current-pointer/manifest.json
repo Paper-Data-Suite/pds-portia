@@ -1,0 +1,15 @@
+{
+  "manifest_version": "1",
+  "issue": 13,
+  "contract": "quarantine_current_pointer",
+  "version": "1",
+  "valid": {
+    "current-released.json": "Minimal explicit selection of Quarantine revision two."
+  },
+  "invalid": {
+    "missing-revision.json": "The selected Quarantine revision is required.",
+    "zero-revision.json": "Quarantine revisions begin at one.",
+    "unexpected-state.json": "Current state is loaded from the selected immutable revision."
+  },
+  "application_invalid": {}
+}

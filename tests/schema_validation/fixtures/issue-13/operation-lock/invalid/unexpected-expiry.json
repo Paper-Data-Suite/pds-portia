@@ -1,0 +1,24 @@
+{
+  "schema_version": "1",
+  "record_type": "operation_lock",
+  "module_id": "portia",
+  "lock_id": "lock_fa7db2eeed2ed3dc58cb12f945306b0a3311a22c54ed10fda0c9cecc35cb6fa2",
+  "lock_scope": "work",
+  "protected_target": {
+    "kind": "work",
+    "work_ref": {
+      "module_id": "portia",
+      "class_id": "class_english10_p2",
+      "work_id": "evt_example",
+      "work_kind": "event",
+      "contract_version": "2"
+    }
+  },
+  "owning_operation": {
+    "operation_id": "op_repair_example"
+  },
+  "acquired_at": "2026-08-05T22:00:00-04:00",
+  "deployment_instance_id": "desktop_local_01",
+  "process_instance_id": "process_4217",
+  "expires_at": "2026-08-05T23:00:00-04:00"
+}

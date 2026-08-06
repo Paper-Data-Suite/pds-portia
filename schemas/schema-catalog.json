@@ -414,6 +414,24 @@
         "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/operations/operation-current-pointer.schema.json",
         "path": "schemas/v1/operations/operation-current-pointer.schema.json"
       }
+    },
+    "operation_lock": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/operations/operation-lock.schema.json",
+        "path": "schemas/v1/operations/operation-lock.schema.json"
+      }
+    },
+    "quarantine_record": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/operations/quarantine-record.schema.json",
+        "path": "schemas/v1/operations/quarantine-record.schema.json"
+      }
+    },
+    "quarantine_current_pointer": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/operations/quarantine-current-pointer.schema.json",
+        "path": "schemas/v1/operations/quarantine-current-pointer.schema.json"
+      }
     }
   }
 }
