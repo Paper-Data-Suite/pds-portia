@@ -1,0 +1,292 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/actors/actor-roster-student-collision.schema.json",
+  "title": "Portia Actor–Roster Student Collision",
+  "description": "Immutable version-1 reviewed correction evidence that one exact Portia Actor and one exact Core roster-qualified student represent the same human person for the selected class-qualified context. The record links the exact Actor representation, exact roster student, bounded reviewed evidence, coordinated operation, and Actor invalidation transition. It does not create an Actor successor, a workspace-wide student identity, cross-roster equivalence, or a general person registry.",
+  "$comment": "Application validation remains responsible for canonical storage and Actor-root ownership, actor_id and actor_ref agreement, exact Actor resolution, exact Core class and roster resolution, authorized human review, evidence sufficiency, review and creation chronology, exact class-qualified scope, no cross-roster inference, tuple uniqueness, linked operation existence and intent, linked Actor-directory transition existence, contract support, target agreement, prior/new status, reason roster_student_collision, coordinated persistence, incoming-reference completeness, child review, contact nonconversion, historical reference stability, privacy-safe diagnostics, Quarantine, exceptional removal, and no workspace-wide person authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "record_type",
+    "module_id",
+    "actor_id",
+    "collision_id",
+    "actor_ref",
+    "student_ref",
+    "resolution",
+    "evidence",
+    "reviewed_at",
+    "reviewed_by",
+    "operation_ref",
+    "actor_invalidation_transition_ref",
+    "created_at",
+    "created_by"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1"
+    },
+    "record_type": {
+      "const": "actor_roster_student_collision"
+    },
+    "module_id": {
+      "const": "portia"
+    },
+    "actor_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-actor-id.schema.json"
+    },
+    "collision_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-actor-roster-student-collision-id.schema.json"
+    },
+    "actor_ref": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-actor-ref.schema.json",
+      "description": "Exact Actor representation reviewed in the collision. The Actor remains historically resolvable after invalidation."
+    },
+    "student_ref": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/roster-student-ref.schema.json",
+      "description": "Exact Core class-qualified roster-student identity. The record applies only to this exact class_id and student_id pair and establishes no cross-roster person equivalence."
+    },
+    "resolution": {
+      "const": "confirmed_same_person"
+    },
+    "evidence": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 20,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/evidenceItem"
+      },
+      "description": "Bounded evidence kinds reviewed by an authorized local operator. Evidence does not copy names, contact values, student display data, credentials, or source documents."
+    },
+    "reviewed_at": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+    },
+    "reviewed_by": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/attribution/attribution-agent.schema.json"
+    },
+    "operation_ref": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/operation-ref.schema.json"
+    },
+    "actor_invalidation_transition_ref": {
+      "$ref": "#/$defs/actorInvalidationTransitionRef",
+      "description": "Exact expected Actor-directory lifecycle transition that invalidates the Actor for reason roster_student_collision. The transition remains canonical lifecycle authority."
+    },
+    "created_at": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+    },
+    "created_by": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/attribution/attribution-agent.schema.json"
+    }
+  },
+  "$defs": {
+    "evidenceItem": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/localOperatorKnowledgeEvidence"
+        },
+        {
+          "$ref": "#/$defs/actorStatementEvidence"
+        },
+        {
+          "$ref": "#/$defs/rosterStudentStatementEvidence"
+        },
+        {
+          "$ref": "#/$defs/schoolRecordEvidence"
+        },
+        {
+          "$ref": "#/$defs/importIdentityEvidence"
+        },
+        {
+          "$ref": "#/$defs/otherEvidence"
+        }
+      ]
+    },
+    "localOperatorKnowledgeEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind"
+      ],
+      "properties": {
+        "kind": {
+          "const": "local_operator_knowledge"
+        }
+      }
+    },
+    "actorStatementEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "source_actor_ref"
+      ],
+      "properties": {
+        "kind": {
+          "const": "actor_statement"
+        },
+        "source_actor_ref": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-actor-ref.schema.json"
+        }
+      },
+      "description": "The exact Actor identity was part of the reviewed statement evidence. This is not independent institutional verification."
+    },
+    "rosterStudentStatementEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "source_student_ref"
+      ],
+      "properties": {
+        "kind": {
+          "const": "roster_student_statement"
+        },
+        "source_student_ref": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/roster-student-ref.schema.json"
+        }
+      },
+      "description": "The exact class-qualified roster student was part of the reviewed statement evidence."
+    },
+    "schoolRecordEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "source_label"
+      ],
+      "properties": {
+        "kind": {
+          "const": "school_record"
+        },
+        "source_label": {
+          "allOf": [
+            {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+            },
+            {
+              "maxLength": 200
+            }
+          ]
+        },
+        "external_reference": {
+          "allOf": [
+            {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+            },
+            {
+              "maxLength": 200
+            }
+          ]
+        }
+      }
+    },
+    "importIdentityEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "source_label"
+      ],
+      "properties": {
+        "kind": {
+          "const": "import_identity"
+        },
+        "source_label": {
+          "allOf": [
+            {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+            },
+            {
+              "maxLength": 200
+            }
+          ]
+        },
+        "external_reference": {
+          "allOf": [
+            {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+            },
+            {
+              "maxLength": 200
+            }
+          ]
+        }
+      }
+    },
+    "otherEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "detail"
+      ],
+      "properties": {
+        "kind": {
+          "const": "other"
+        },
+        "detail": {
+          "allOf": [
+            {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+            },
+            {
+              "maxLength": 300
+            }
+          ]
+        }
+      }
+    },
+    "actorInvalidationTransitionRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "actor_id",
+        "transition_id",
+        "contract_version"
+      ],
+      "properties": {
+        "actor_id": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-actor-id.schema.json"
+        },
+        "transition_id": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-lifecycle-transition-id.schema.json"
+        },
+        "contract_version": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+        }
+      }
+    }
+  },
+  "x-portia-application-invariants": [
+    "portia.actor_roster_collision.canonical_storage_scope",
+    "portia.actor_roster_collision.owner_agreement",
+    "portia.actor_roster_collision.actor_ref_owner_agreement",
+    "portia.actor_roster_collision.actor_resolution",
+    "portia.actor_roster_collision.actor_contract_supported",
+    "portia.actor_roster_collision.student_resolution",
+    "portia.actor_roster_collision.exact_class_qualified_scope",
+    "portia.actor_roster_collision.no_cross_roster_inference",
+    "portia.actor_roster_collision.authorized_human_review",
+    "portia.actor_roster_collision.evidence_sufficiency",
+    "portia.actor_roster_collision.review_creation_chronology",
+    "portia.actor_roster_collision.tuple_uniqueness",
+    "portia.actor_roster_collision.operation_resolution",
+    "portia.actor_roster_collision.operation_intent",
+    "portia.actor_roster_collision.transition_resolution",
+    "portia.actor_roster_collision.transition_contract_supported",
+    "portia.actor_roster_collision.transition_actor_agreement",
+    "portia.actor_roster_collision.transition_target_actor",
+    "portia.actor_roster_collision.transition_prior_status",
+    "portia.actor_roster_collision.transition_new_status_invalidated",
+    "portia.actor_roster_collision.transition_reason_roster_student_collision",
+    "portia.actor_roster_collision.coordinated_persistence",
+    "portia.actor_roster_collision.incoming_reference_complete",
+    "portia.actor_roster_collision.child_review_complete",
+    "portia.actor_roster_collision.contact_nonconversion",
+    "portia.actor_roster_collision.historical_reference_stability",
+    "portia.actor_roster_collision.privacy_safe_payload",
+    "portia.actor_roster_collision.no_workspace_person_identity"
+  ]
+}
