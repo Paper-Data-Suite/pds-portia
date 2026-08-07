@@ -1,0 +1,132 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/provenance/source-artifact-ref.schema.json",
+  "title": "Portia Source Artifact Reference",
+  "description": "Closed reference family for material associated with an Account or Observation. References preserve location and provenance context without embedding binary payloads or asserting authenticity, accuracy, authorization, credibility, or evidentiary weight. External locators are inert and must not be dereferenced automatically.",
+  "oneOf": [
+    {
+      "$ref": "#/$defs/paperCapture"
+    },
+    {
+      "$ref": "#/$defs/workspaceFile"
+    },
+    {
+      "$ref": "#/$defs/portiaWorkRecord"
+    },
+    {
+      "$ref": "#/$defs/moduleWorkRecord"
+    },
+    {
+      "$ref": "#/$defs/externalRecord"
+    }
+  ],
+  "$defs": {
+    "paperCapture": {
+      "type": "object",
+      "required": [
+        "kind",
+        "route_id",
+        "page_record_id"
+      ],
+      "properties": {
+        "kind": {
+          "const": "paper_capture"
+        },
+        "route_id": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+        },
+        "page_record_id": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+        },
+        "source_page_number": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "additionalProperties": false
+    },
+    "workspaceFile": {
+      "type": "object",
+      "required": [
+        "kind",
+        "path",
+        "fingerprint"
+      ],
+      "properties": {
+        "kind": {
+          "const": "workspace_file"
+        },
+        "path": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/workspace-relative-path.schema.json"
+        },
+        "fingerprint": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/content-fingerprint.schema.json"
+        }
+      },
+      "additionalProperties": false
+    },
+    "portiaWorkRecord": {
+      "type": "object",
+      "required": [
+        "kind",
+        "work_record_ref"
+      ],
+      "properties": {
+        "kind": {
+          "const": "portia_work_record"
+        },
+        "work_record_ref": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-portia-work-record-ref.schema.json"
+        }
+      },
+      "additionalProperties": false
+    },
+    "moduleWorkRecord": {
+      "type": "object",
+      "required": [
+        "kind",
+        "module_work_record_ref"
+      ],
+      "properties": {
+        "kind": {
+          "const": "module_work_record"
+        },
+        "module_work_record_ref": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/module-work-record-ref.schema.json"
+        }
+      },
+      "additionalProperties": false
+    },
+    "externalRecord": {
+      "type": "object",
+      "required": [
+        "kind",
+        "system_label",
+        "external_reference"
+      ],
+      "properties": {
+        "kind": {
+          "const": "external_record"
+        },
+        "system_label": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+        },
+        "external_reference": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+        },
+        "record_label": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "x-portia-application-invariants": [
+    "paper_capture_must_resolve_through_core_provenance",
+    "workspace_file_must_resolve_within_selected_workspace",
+    "workspace_file_fingerprint_must_match_bytes",
+    "portia_work_record_must_resolve_exactly",
+    "module_work_record_must_resolve_under_supported_contract",
+    "external_record_must_remain_inert_and_authorization_checked"
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "kind": "workspace_file",
+  "path": "scans/source/example.pdf",
+  "fingerprint": {
+    "algorithm": "sha256",
+    "digest": "0000000000000000000000000000000000000000000000000000000000000000",
+    "byte_length": 42
+  }
+}

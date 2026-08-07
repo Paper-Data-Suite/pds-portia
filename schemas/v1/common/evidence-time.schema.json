@@ -1,0 +1,117 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/evidence-time.schema.json",
+  "title": "Portia Evidence Time",
+  "description": "Temporal precision contract shared by Account contribution time and Observation time. It records what is known without inventing precision. Application validation checks chronology for range values and record-specific temporal relationships.",
+  "oneOf": [
+    {
+      "$ref": "#/$defs/exact"
+    },
+    {
+      "$ref": "#/$defs/approximate"
+    },
+    {
+      "$ref": "#/$defs/dateOnly"
+    },
+    {
+      "$ref": "#/$defs/range"
+    },
+    {
+      "$ref": "#/$defs/unknown"
+    }
+  ],
+  "$defs": {
+    "exact": {
+      "type": "object",
+      "required": [
+        "precision",
+        "at"
+      ],
+      "properties": {
+        "precision": {
+          "const": "exact"
+        },
+        "at": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+        }
+      },
+      "additionalProperties": false
+    },
+    "approximate": {
+      "type": "object",
+      "required": [
+        "precision",
+        "at",
+        "approximation"
+      ],
+      "properties": {
+        "precision": {
+          "const": "approximate"
+        },
+        "at": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+        },
+        "approximation": {
+          "enum": [
+            "about",
+            "before",
+            "after"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "dateOnly": {
+      "type": "object",
+      "required": [
+        "precision",
+        "date"
+      ],
+      "properties": {
+        "precision": {
+          "const": "date_only"
+        },
+        "date": {
+          "type": "string",
+          "format": "date"
+        }
+      },
+      "additionalProperties": false
+    },
+    "range": {
+      "type": "object",
+      "required": [
+        "precision",
+        "started_at",
+        "ended_at"
+      ],
+      "properties": {
+        "precision": {
+          "const": "range"
+        },
+        "started_at": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+        },
+        "ended_at": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+        }
+      },
+      "additionalProperties": false
+    },
+    "unknown": {
+      "type": "object",
+      "required": [
+        "precision"
+      ],
+      "properties": {
+        "precision": {
+          "const": "unknown"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "x-portia-application-invariants": [
+    "range_started_at_must_not_follow_ended_at"
+  ]
+}

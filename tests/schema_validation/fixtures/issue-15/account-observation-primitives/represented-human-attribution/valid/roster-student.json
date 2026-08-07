@@ -1,0 +1,10 @@
+{
+  "kind": "roster_student",
+  "roster_student_ref": {
+    "class_id": "english10_p2",
+    "student_id": "1001"
+  },
+  "display_snapshot": {
+    "display_name": "Jordan Lee"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "kind": "module_work_record",
+  "module_work_record_ref": {
+    "work_ref": {
+      "module_id": "quillan",
+      "class_id": "english10_p2",
+      "work_id": "essay_1"
+    },
+    "record_ref": {
+      "module_id": "quillan",
+      "record_kind": "response",
+      "record_id": "response_1",
+      "contract_version": "1"
+    }
+  }
+}

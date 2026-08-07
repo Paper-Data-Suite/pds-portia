@@ -1,0 +1,23 @@
+{
+  "manifest_version": "1",
+  "issue": 15,
+  "contract": "source_artifact_ref",
+  "version": "1",
+  "valid": {
+    "paper-capture.json": "Valid closed artifact-reference branch.",
+    "workspace-file.json": "Valid closed artifact-reference branch.",
+    "portia-work-record.json": "Valid closed artifact-reference branch.",
+    "module-work-record.json": "Valid closed artifact-reference branch.",
+    "external-record.json": "Valid closed artifact-reference branch."
+  },
+  "invalid": {
+    "unknown-kind.json": "Structurally invalid artifact-reference shape.",
+    "paper-missing-page.json": "Structurally invalid artifact-reference shape.",
+    "paper-preallocated-stage.json": "Structurally invalid artifact-reference shape.",
+    "workspace-missing-fingerprint.json": "Structurally invalid artifact-reference shape.",
+    "workspace-traversal.json": "Structurally invalid artifact-reference shape.",
+    "external-missing-system.json": "Structurally invalid artifact-reference shape.",
+    "embedded-payload.json": "Structurally invalid artifact-reference shape."
+  },
+  "application_invalid": {}
+}

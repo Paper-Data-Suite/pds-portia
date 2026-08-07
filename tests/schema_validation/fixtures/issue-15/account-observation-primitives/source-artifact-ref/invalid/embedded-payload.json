@@ -1,0 +1,6 @@
+{
+  "kind": "external_record",
+  "system_label": "External",
+  "external_reference": "record-1",
+  "payload": "sensitive bytes"
+}
