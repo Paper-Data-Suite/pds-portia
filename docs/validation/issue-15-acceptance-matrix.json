@@ -1,0 +1,277 @@
+{
+  "matrix_version": "1",
+  "issue": 15,
+  "title": "Account and Observation acceptance matrix",
+  "status": "accepted",
+  "criteria_count": 32,
+  "criteria": [
+    {
+      "criterion_id": "semantic.account_unit",
+      "status": "pass",
+      "statement": "One Account preserves one coherent attributed source contribution.",
+      "evidence": [
+        "schemas/v1/accounts/account.schema.json"
+      ]
+    },
+    {
+      "criterion_id": "semantic.observation_unit",
+      "status": "pass",
+      "statement": "One Observation preserves one coherent directly observable/measurable context.",
+      "evidence": [
+        "schemas/v1/observations/observation.schema.json"
+      ]
+    },
+    {
+      "criterion_id": "boundary.no_automatic_finding",
+      "status": "pass",
+      "statement": "Neither root schema embeds credibility, risk, diagnosis, policy violation, valence, or automatic finding fields.",
+      "evidence": [
+        "schemas/v1/accounts/account.schema.json",
+        "schemas/v1/observations/observation.schema.json"
+      ]
+    },
+    {
+      "criterion_id": "identity.ids",
+      "status": "pass",
+      "statement": "Opaque acct_ and obs_ identifiers are public contracts.",
+      "evidence": [
+        "schemas/v1/identifiers/portia-account-id.schema.json",
+        "schemas/v1/identifiers/portia-observation-id.schema.json"
+      ]
+    },
+    {
+      "criterion_id": "ownership.event_local",
+      "status": "pass",
+      "statement": "Both roots are owned by one Event work root.",
+      "evidence": [
+        "schemas/v1/accounts/account.schema.json",
+        "schemas/v1/observations/observation.schema.json"
+      ]
+    },
+    {
+      "criterion_id": "target.shared",
+      "status": "pass",
+      "statement": "Both roots reuse portia_target_ref@1.",
+      "evidence": [
+        "schemas/v1/accounts/account.schema.json",
+        "schemas/v1/observations/observation.schema.json"
+      ]
+    },
+    {
+      "criterion_id": "attribution.shared",
+      "status": "pass",
+      "statement": "Account source and human Observation observer reuse represented_human_attribution@1.",
+      "evidence": [
+        "schemas/v1/attribution/represented-human-attribution.schema.json"
+      ]
+    },
+    {
+      "criterion_id": "account.origin",
+      "status": "pass",
+      "statement": "Account distinguishes firsthand, secondhand, mixed, and unknown origin.",
+      "evidence": [
+        "schemas/v1/accounts/account.schema.json"
+      ]
+    },
+    {
+      "criterion_id": "account.quote_summary",
+      "status": "pass",
+      "statement": "Verbatim quote and recorded summary are structurally distinct.",
+      "evidence": [
+        "tests/schema_validation/fixtures/issue-15/account/valid/quote-and-summary.json"
+      ]
+    },
+    {
+      "criterion_id": "account.conflict",
+      "status": "pass",
+      "statement": "Conflicting Accounts coexist without automatic adjudication.",
+      "evidence": [
+        "tests/schema_validation/fixtures/issue-15/account/valid/conflicting-account-a.json",
+        "tests/schema_validation/fixtures/issue-15/account/valid/conflicting-account-b.json"
+      ]
+    },
+    {
+      "criterion_id": "account.retraction",
+      "status": "pass",
+      "statement": "Retraction is source-evidenced and lifecycle-coordinated.",
+      "evidence": [
+        "tests/schema_validation/fixtures/issue-15/account/retraction/valid/same-source-active-retraction.json"
+      ]
+    },
+    {
+      "criterion_id": "observation.observer",
+      "status": "pass",
+      "statement": "Human and instrument observers are distinct branches.",
+      "evidence": [
+        "schemas/v1/observations/observation.schema.json"
+      ]
+    },
+    {
+      "criterion_id": "observation.measurement",
+      "status": "pass",
+      "statement": "Structured count, duration, latency, percentage, and other numeric measurements are supported.",
+      "evidence": [
+        "schemas/v1/observations/observation.schema.json"
+      ]
+    },
+    {
+      "criterion_id": "observation.neutral",
+      "status": "pass",
+      "statement": "Positive, neutral, and potentially concerning examples use one neutral model.",
+      "evidence": [
+        "tests/schema_validation/fixtures/issue-15/observation/valid/positive-narrative.json",
+        "tests/schema_validation/fixtures/issue-15/observation/valid/neutral-narrative.json",
+        "tests/schema_validation/fixtures/issue-15/observation/valid/potentially-concerning-narrative.json"
+      ]
+    },
+    {
+      "criterion_id": "time.shared",
+      "status": "pass",
+      "statement": "Both roots reuse evidence_time@1.",
+      "evidence": [
+        "schemas/v1/common/evidence-time.schema.json"
+      ]
+    },
+    {
+      "criterion_id": "artifact.shared",
+      "status": "pass",
+      "statement": "Both roots reuse source_artifact_ref@1 without binary embedding.",
+      "evidence": [
+        "schemas/v1/provenance/source-artifact-ref.schema.json"
+      ]
+    },
+    {
+      "criterion_id": "paper.import_review",
+      "status": "pass",
+      "statement": "Paper/import evidence uses proposed-before-review gates.",
+      "evidence": [
+        "tests/schema_validation/fixtures/issue-15/account/valid/paper-proposed.json",
+        "tests/schema_validation/fixtures/issue-15/observation/valid/import-proposed.json"
+      ]
+    },
+    {
+      "criterion_id": "role.reported_involved",
+      "status": "pass",
+      "statement": "Active reported_involved requires a qualifying aligned Account; Observation alone is structurally insufficient.",
+      "evidence": [
+        "tests/schema_validation/fixtures/issue-15/account/role-compatibility/valid/aligned-singular.json",
+        "tests/schema_validation/fixtures/issue-15/observation/role-compatibility/structural-invalid/reported-involved-observation-only.json"
+      ]
+    },
+    {
+      "criterion_id": "lifecycle.account",
+      "status": "pass",
+      "statement": "Account lifecycle includes proposed, active, retracted, invalidated, superseded.",
+      "evidence": [
+        "schemas/v1/accounts/account.schema.json"
+      ]
+    },
+    {
+      "criterion_id": "lifecycle.observation",
+      "status": "pass",
+      "statement": "Observation lifecycle includes proposed, active, invalidated, superseded and excludes retracted.",
+      "evidence": [
+        "schemas/v1/observations/observation.schema.json"
+      ]
+    },
+    {
+      "criterion_id": "correction.no_amendment",
+      "status": "pass",
+      "statement": "Account/Observation v1 primary evidence has no in-place Amendment surface.",
+      "evidence": [
+        "tests/schema_validation/fixtures/issue-15/shared-lifecycle-correction-dependency/application-invalid/amendment-account-prohibited.json",
+        "tests/schema_validation/fixtures/issue-15/shared-lifecycle-correction-dependency/application-invalid/amendment-observation-prohibited.json"
+      ]
+    },
+    {
+      "criterion_id": "shared.disagreement",
+      "status": "pass",
+      "statement": "Statement of Disagreement targets exact Account/Observation without rewriting them.",
+      "evidence": [
+        "tests/schema_validation/fixtures/issue-15/shared-lifecycle-correction-dependency/valid/disagreement-targets-account.json"
+      ]
+    },
+    {
+      "criterion_id": "shared.dependency",
+      "status": "pass",
+      "statement": "Generic Dependency references both evidence families exactly.",
+      "evidence": [
+        "tests/schema_validation/fixtures/issue-15/shared-lifecycle-correction-dependency/valid/dependency-references-account.json",
+        "tests/schema_validation/fixtures/issue-15/shared-lifecycle-correction-dependency/valid/dependency-references-observation.json"
+      ]
+    },
+    {
+      "criterion_id": "shared.migration",
+      "status": "pass",
+      "statement": "record_migration@1 supports representation-only migration for both families.",
+      "evidence": [
+        "tests/schema_validation/fixtures/issue-15/migration-removal-compatibility"
+      ]
+    },
+    {
+      "criterion_id": "shared.removal",
+      "status": "pass",
+      "statement": "exceptional_removal@1 supports exact removal without silent successor following.",
+      "evidence": [
+        "tests/schema_validation/fixtures/issue-15/migration-removal-compatibility"
+      ]
+    },
+    {
+      "criterion_id": "operations.reuse",
+      "status": "pass",
+      "statement": "Existing v2 operation/lock/quarantine/finding contracts accept exact Account/Observation targets.",
+      "evidence": [
+        "tests/schema_validation/fixtures/issue-15/operational-derived-privacy"
+      ]
+    },
+    {
+      "criterion_id": "derived.reuse",
+      "status": "pass",
+      "statement": "Existing source-snapshot/generation/current-pointer contracts include Account/Observation as nonauthoritative derived sources.",
+      "evidence": [
+        "tests/schema_validation/fixtures/issue-15/operational-derived-privacy/valid/source-snapshot.json"
+      ]
+    },
+    {
+      "criterion_id": "privacy",
+      "status": "pass",
+      "statement": "Operational/derived metadata rejects or flags substantive evidence leakage.",
+      "evidence": [
+        "tests/schema_validation/fixtures/issue-15/operational-derived-privacy/application-invalid"
+      ]
+    },
+    {
+      "criterion_id": "role.v3_immutable",
+      "status": "pass",
+      "statement": "Role v3 required no wire-shape version bump.",
+      "evidence": [
+        "tests/schema_validation/test_issue_15_account_contract.py",
+        "tests/schema_validation/test_issue_15_observation_contract.py"
+      ]
+    },
+    {
+      "criterion_id": "core.no_change",
+      "status": "pass",
+      "statement": "Core PDS2/retained-source boundary remains unchanged.",
+      "evidence": [
+        "docs/validation/issue-15-final-repository-checkpoint.md"
+      ]
+    },
+    {
+      "criterion_id": "examples.minimum",
+      "status": "pass",
+      "statement": "Twenty required representative examples are documented and backed by synthetic fixtures.",
+      "evidence": [
+        "docs/examples/portia-account-and-observation-examples.md"
+      ]
+    },
+    {
+      "criterion_id": "validation.matrix",
+      "status": "pass",
+      "statement": "All 76 application-invalid scenarios are indexed.",
+      "evidence": [
+        "docs/validation/issue-15-application-invalid-matrix.json"
+      ]
+    }
+  ]
+}

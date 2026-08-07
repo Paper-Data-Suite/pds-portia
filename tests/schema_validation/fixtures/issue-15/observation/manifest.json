@@ -19,7 +19,10 @@
     "correction-successor.json",
     "duplicate-consolidation-successor.json",
     "other-method.json",
-    "other-numeric.json"
+    "other-numeric.json",
+    "bounded-interval.json",
+    "invalidated-observation.json",
+    "external-pds-record-artifact.json"
   ],
   "invalid": [
     "missing-observation-id.json",

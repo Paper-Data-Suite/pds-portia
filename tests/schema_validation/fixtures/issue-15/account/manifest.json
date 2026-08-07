@@ -13,7 +13,9 @@
     "import-proposed.json",
     "participant-set-target.json",
     "correction-successor.json",
-    "duplicate-consolidation-successor.json"
+    "duplicate-consolidation-successor.json",
+    "conflicting-account-a.json",
+    "conflicting-account-b.json"
   ],
   "invalid": [
     "missing-account-id.json",
