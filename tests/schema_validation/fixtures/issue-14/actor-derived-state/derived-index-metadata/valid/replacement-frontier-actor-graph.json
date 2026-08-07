@@ -1,0 +1,126 @@
+{
+  "schema_version": "1",
+  "record_type": "derived_index_metadata",
+  "module_id": "portia",
+  "generation_id": "dgen_actor_replacement_frontier_01",
+  "generation_state": "complete",
+  "projection_kind": "replacement_frontier_index",
+  "projection_scope": {
+    "scope": "graph",
+    "graph_id": "actor_replacement_graph_1"
+  },
+  "projection_contract_version": "1",
+  "builder": {
+    "builder_id": "portia_actor_replacement_frontier_builder",
+    "builder_version": "1"
+  },
+  "authorization_scope": {
+    "authorization_scope_id": "local_teacher_full",
+    "coverage": "complete",
+    "limitation_codes": []
+  },
+  "source_snapshot": {
+    "schema_version": "1",
+    "record_type": "source_snapshot",
+    "module_id": "portia",
+    "snapshot_algorithm": "portia_source_snapshot_v1",
+    "projection_kind": "replacement_frontier_index",
+    "projection_scope": {
+      "scope": "graph",
+      "graph_id": "actor_replacement_graph_1"
+    },
+    "authorization_scope": {
+      "authorization_scope_id": "local_teacher_full",
+      "coverage": "complete",
+      "limitation_codes": []
+    },
+    "discovery_roots": [
+      "portia/actors"
+    ],
+    "source_contracts": [
+      {
+        "contract_name": "actor",
+        "contract_version": "1"
+      },
+      {
+        "contract_name": "actor_directory_lifecycle_transition",
+        "contract_version": "1"
+      }
+    ],
+    "entries": [
+      {
+        "workspace_relative_path": "portia/actors/actr_conflated/actor.json",
+        "byte_length": 870,
+        "sha256_digest": "5888d3126951940369fe802fde9c16d30d3f8a539b500ef289c08195067b3be2",
+        "source_role": "canonical_domain",
+        "contract_or_artifact_kind": "actor"
+      },
+      {
+        "workspace_relative_path": "portia/actors/actr_consolidated/actor.json",
+        "byte_length": 890,
+        "sha256_digest": "fa55b76ca0a82554a4b5b8006123e63cf9e0d3b5febea5f2a66f84d414b4b619",
+        "source_role": "canonical_domain",
+        "contract_or_artifact_kind": "actor"
+      },
+      {
+        "workspace_relative_path": "portia/actors/actr_duplicate_a/actor.json",
+        "byte_length": 850,
+        "sha256_digest": "4856f5f11b634063a6ee8b31c2ad7eed2ebe9f1f7f4c5d720fe15bcdc54ebb14",
+        "source_role": "canonical_domain",
+        "contract_or_artifact_kind": "actor"
+      },
+      {
+        "workspace_relative_path": "portia/actors/actr_duplicate_a/records/actor_directory_lifecycle_transition/lct_duplicate_a_superseded.json",
+        "byte_length": 430,
+        "sha256_digest": "88b466641e884b322b6d8fe19ee53fd995976ef0d51e64894519b47778eef28f",
+        "source_role": "canonical_domain",
+        "contract_or_artifact_kind": "actor_directory_lifecycle_transition"
+      },
+      {
+        "workspace_relative_path": "portia/actors/actr_duplicate_b/actor.json",
+        "byte_length": 850,
+        "sha256_digest": "10709a8b936361e5d0d35a9dd131a4186f93176f5bafcc0d0a56666d013089a8",
+        "source_role": "canonical_domain",
+        "contract_or_artifact_kind": "actor"
+      },
+      {
+        "workspace_relative_path": "portia/actors/actr_split_a/actor.json",
+        "byte_length": 860,
+        "sha256_digest": "e34bbe13b84a9d24cbc12e70b921fb70ef921affe86806072e4c3a91d5063462",
+        "source_role": "canonical_domain",
+        "contract_or_artifact_kind": "actor"
+      },
+      {
+        "workspace_relative_path": "portia/actors/actr_split_b/actor.json",
+        "byte_length": 860,
+        "sha256_digest": "588cfc6f45ee7cddb66c87c4b5531c815cd8a6602a7f5eccab9c457acc1b9d3d",
+        "source_role": "canonical_domain",
+        "contract_or_artifact_kind": "actor"
+      }
+    ],
+    "source_snapshot_digest": "ac203def931a6ad1babd202dc589bceec9c06557c6a0ac1f3d13ce70562bf1b7",
+    "observed_at": "2026-08-06T19:02:00-04:00"
+  },
+  "data_artifact": {
+    "workspace_relative_path": "portia/derived/replacement_frontier_index/graph_actor_replacement_graph_1/generations/dgen_actor_replacement_frontier_01/data.json",
+    "contract_version": "1",
+    "fingerprint": {
+      "algorithm": "sha256",
+      "digest": "f794b1f7b0cee288a373ddb0770b157d49d3fd5a7acf475edfe15ddf6de319a4",
+      "byte_length": 2396
+    }
+  },
+  "validation": {
+    "schema_validation": "passed",
+    "identity_validation": "passed",
+    "reference_validation": "passed",
+    "privacy_validation": "passed",
+    "invariant_validation": "passed"
+  },
+  "generating_operation": {
+    "operation_id": "op_rebuild_actor_frontier",
+    "journal_revision": 1,
+    "contract_version": "2"
+  },
+  "generated_at": "2026-08-06T19:02:05-04:00"
+}

@@ -1,0 +1,39 @@
+{
+  "manifest_version": "1",
+  "issue": 14,
+  "contract": "source_snapshot",
+  "version": "1",
+  "valid": {
+    "incoming-reference-complete.json": "Structurally and application-valid Actor-derived compatibility fixture.",
+    "incoming-reference-authorization-limited.json": "Structurally and application-valid Actor-derived compatibility fixture.",
+    "replacement-frontier-actor-graph.json": "Structurally and application-valid Actor-derived compatibility fixture.",
+    "lifecycle-timeline-actor.json": "Structurally and application-valid Actor-derived compatibility fixture."
+  },
+  "invalid": {
+    "unknown-actor-source-role.json": "Structurally invalid fixture rejected by the reused version-1 public contract.",
+    "unexpected-actor-payload.json": "Structurally invalid fixture rejected by the reused version-1 public contract.",
+    "unknown-actor-projection-kind.json": "Structurally invalid fixture rejected by the reused version-1 public contract."
+  },
+  "application_invalid": {
+    "digest-mismatch.json": {
+      "rule_id": "portia.actor_derived_state.source_snapshot.digest_mismatch",
+      "description": "Structurally valid fixture rejected by Actor-derived application invariants."
+    },
+    "entries-unsorted.json": {
+      "rule_id": "portia.actor_derived_state.source_snapshot.entries_unsorted",
+      "description": "Structurally valid fixture rejected by Actor-derived application invariants."
+    },
+    "source-contracts-unsorted.json": {
+      "rule_id": "portia.actor_derived_state.source_snapshot.source_contracts_unsorted",
+      "description": "Structurally valid fixture rejected by Actor-derived application invariants."
+    },
+    "complete-incoming-missing-class-root.json": {
+      "rule_id": "portia.actor_derived_state.source_snapshot.complete_incoming_missing_class_root",
+      "description": "Structurally valid fixture rejected by Actor-derived application invariants."
+    },
+    "actor-projection-work-scoped.json": {
+      "rule_id": "portia.actor_derived_state.source_snapshot.actor_projection_work_scoped",
+      "description": "Structurally valid fixture rejected by Actor-derived application invariants."
+    }
+  }
+}

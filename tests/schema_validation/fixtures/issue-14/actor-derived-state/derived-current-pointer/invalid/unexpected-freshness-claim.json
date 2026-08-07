@@ -1,0 +1,15 @@
+{
+  "schema_version": "1",
+  "record_type": "derived_current_pointer",
+  "module_id": "portia",
+  "projection_kind": "incoming_reference_index",
+  "projection_scope": {
+    "scope": "workspace",
+    "workspace_id": "local_workspace"
+  },
+  "generation_ref": {
+    "generation_id": "dgen_actor_incoming_complete_01",
+    "contract_version": "1"
+  },
+  "fresh": true
+}

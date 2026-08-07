@@ -1,0 +1,102 @@
+{
+  "schema_version": "1",
+  "record_type": "derived_index_metadata",
+  "module_id": "portia",
+  "generation_id": "dgen_actor_lifecycle_timeline_01",
+  "generation_state": "complete",
+  "projection_kind": "lifecycle_timeline",
+  "projection_scope": {
+    "scope": "graph",
+    "graph_id": "actor_lifecycle_actr_family_1"
+  },
+  "projection_contract_version": "1",
+  "builder": {
+    "builder_id": "portia_actor_lifecycle_timeline_builder",
+    "builder_version": "1"
+  },
+  "authorization_scope": {
+    "authorization_scope_id": "local_teacher_full",
+    "coverage": "complete",
+    "limitation_codes": []
+  },
+  "source_snapshot": {
+    "schema_version": "1",
+    "record_type": "source_snapshot",
+    "module_id": "portia",
+    "snapshot_algorithm": "portia_source_snapshot_v1",
+    "projection_kind": "lifecycle_timeline",
+    "projection_scope": {
+      "scope": "graph",
+      "graph_id": "actor_lifecycle_actr_family_1"
+    },
+    "authorization_scope": {
+      "authorization_scope_id": "local_teacher_full",
+      "coverage": "complete",
+      "limitation_codes": []
+    },
+    "discovery_roots": [
+      "portia/actors/actr_family_1"
+    ],
+    "source_contracts": [
+      {
+        "contract_name": "actor",
+        "contract_version": "1"
+      },
+      {
+        "contract_name": "actor_directory_lifecycle_history_correction",
+        "contract_version": "1"
+      },
+      {
+        "contract_name": "actor_directory_lifecycle_transition",
+        "contract_version": "1"
+      }
+    ],
+    "entries": [
+      {
+        "workspace_relative_path": "portia/actors/actr_family_1/actor.json",
+        "byte_length": 850,
+        "sha256_digest": "2005ed266d752e14bcd23a946d90819247e200d7c8cae4eccc07755958b6f775",
+        "source_role": "canonical_domain",
+        "contract_or_artifact_kind": "actor"
+      },
+      {
+        "workspace_relative_path": "portia/actors/actr_family_1/records/actor_directory_lifecycle_transition/lct_actor_active.json",
+        "byte_length": 420,
+        "sha256_digest": "3e7b4216061b282f16d2fd0e822e42f55893f398dd182f283b593de36d29f581",
+        "source_role": "canonical_domain",
+        "contract_or_artifact_kind": "actor_directory_lifecycle_transition"
+      },
+      {
+        "workspace_relative_path": "portia/actors/actr_family_1/records/actor_directory_lifecycle_transition/lct_actor_inactive.json",
+        "byte_length": 430,
+        "sha256_digest": "984d0cab6ed25abe3fe2a1d7d99e06580a1a4064078c3bc8a7f032d277a1cbd9",
+        "source_role": "canonical_domain",
+        "contract_or_artifact_kind": "actor_directory_lifecycle_transition"
+      }
+    ],
+    "source_snapshot_digest": "1e957c1c07054341aa5def6011316e8f2f90945a0610f464adeba3369ea7e9f4",
+    "observed_at": "2026-08-06T19:03:00-04:00"
+  },
+  "data_artifact": {
+    "workspace_relative_path": "portia/derived/lifecycle_timeline/graph_actor_lifecycle_actr_family_1/generations/dgen_actor_lifecycle_timeline_01/data.json",
+    "contract_version": "1",
+    "fingerprint": {
+      "algorithm": "sha256",
+      "digest": "b5fb4918101f72fb12104f0d9a067d75053da83d23a42ba560d1567a56c5530f",
+      "byte_length": 1325
+    }
+  },
+  "validation": {
+    "schema_validation": "passed",
+    "identity_validation": "passed",
+    "reference_validation": "passed",
+    "privacy_validation": "passed",
+    "invariant_validation": "passed"
+  },
+  "generating_operation": {
+    "operation_id": "op_rebuild_actor_lifecycle",
+    "journal_revision": 1,
+    "contract_version": "2"
+  },
+  "generated_at": "2026-08-06T19:03:05-04:00"
+}

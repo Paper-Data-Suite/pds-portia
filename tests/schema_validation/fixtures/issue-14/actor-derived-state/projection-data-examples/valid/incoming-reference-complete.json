@@ -1,0 +1,93 @@
+{
+  "schema_version": "1",
+  "record_type": "incoming_reference_index_data",
+  "projection_kind": "incoming_reference_index",
+  "projection_scope": {
+    "scope": "workspace",
+    "workspace_id": "local_workspace"
+  },
+  "authorization_scope": {
+    "authorization_scope_id": "local_teacher_full",
+    "coverage": "complete",
+    "limitation_codes": []
+  },
+  "source_snapshot_digest": "1b33d8a3fda83fc562380d22f43691534d343ad499152f699ca6afb36bd8a0a7",
+  "completeness": "complete",
+  "limitations": [],
+  "entries": [
+    {
+      "target": {
+        "kind": "actor",
+        "actor_ref": {
+          "actor_id": "actr_family_1",
+          "contract_version": "1"
+        }
+      },
+      "incoming_references": [
+        {
+          "source_record": {
+            "contract_name": "event_participant",
+            "contract_version": "3",
+            "workspace_relative_path": "classes/class_english10_p2/modules/portia/work/evt_example/records/event_participant/ept_actor_family_1.json"
+          },
+          "reference_path": "/participant/actor_ref",
+          "reference_class": "immutable_historical",
+          "current_use_disposition": "historical_only"
+        },
+        {
+          "source_record": {
+            "contract_name": "actor_contact_point",
+            "contract_version": "1",
+            "workspace_relative_path": "portia/actors/actr_family_1/records/actor_contact_point/acp_primary.json"
+          },
+          "reference_path": "/actor_id",
+          "reference_class": "mutable_current_canonical",
+          "current_use_disposition": "eligible"
+        },
+        {
+          "source_record": {
+            "contract_name": "actor_student_relationship",
+            "contract_version": "1",
+            "workspace_relative_path": "portia/actors/actr_family_1/records/actor_student_relationship/asrel_student_1001.json"
+          },
+          "reference_path": "/actor_id",
+          "reference_class": "mutable_current_canonical",
+          "current_use_disposition": "eligible"
+        }
+      ]
+    },
+    {
+      "target": {
+        "kind": "actor_contact_point",
+        "contact_point_ref": {
+          "actor_id": "actr_family_1",
+          "contact_point_id": "acp_primary",
+          "contract_version": "1"
+        }
+      },
+      "incoming_references": [
+        {
+          "source_record": {
+            "contract_name": "operation_journal",
+            "contract_version": "2",
+            "workspace_relative_path": "portia/operations/op_rebuild_actor_incoming/revisions/1.json"
+          },
+          "reference_path": "/preflight_snapshot/0/target/actor_directory_record_ref",
+          "reference_class": "operational",
+          "current_use_disposition": "historical_only"
+        }
+      ]
+    },
+    {
+      "target": {
+        "kind": "actor_student_relationship",
+        "relationship_ref": {
+          "actor_id": "actr_family_1",
+          "relationship_id": "asrel_student_1001",
+          "contract_version": "1"
+        }
+      },
+      "incoming_references": []
+    }
+  ]
+}

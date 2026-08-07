@@ -1,0 +1,30 @@
+{
+  "manifest_version": "1",
+  "issue": 14,
+  "contract": "derived_current_pointer",
+  "version": "1",
+  "valid": {
+    "incoming-reference-complete.json": "Structurally and application-valid Actor-derived compatibility fixture.",
+    "incoming-reference-authorization-limited.json": "Structurally and application-valid Actor-derived compatibility fixture.",
+    "replacement-frontier-actor-graph.json": "Structurally and application-valid Actor-derived compatibility fixture.",
+    "lifecycle-timeline-actor.json": "Structurally and application-valid Actor-derived compatibility fixture."
+  },
+  "invalid": {
+    "unknown-actor-projection-kind.json": "Structurally invalid fixture rejected by the reused version-1 public contract.",
+    "unexpected-freshness-claim.json": "Structurally invalid fixture rejected by the reused version-1 public contract."
+  },
+  "application_invalid": {
+    "unknown-generation.json": {
+      "rule_id": "portia.actor_derived_state.derived_current_pointer.unknown_generation",
+      "description": "Structurally valid fixture rejected by Actor-derived application invariants."
+    },
+    "projection-kind-mismatch.json": {
+      "rule_id": "portia.actor_derived_state.derived_current_pointer.projection_kind_mismatch",
+      "description": "Structurally valid fixture rejected by Actor-derived application invariants."
+    },
+    "scope-mismatch.json": {
+      "rule_id": "portia.actor_derived_state.derived_current_pointer.scope_mismatch",
+      "description": "Structurally valid fixture rejected by Actor-derived application invariants."
+    }
+  }
+}

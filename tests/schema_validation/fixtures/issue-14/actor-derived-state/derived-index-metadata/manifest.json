@@ -1,0 +1,39 @@
+{
+  "manifest_version": "1",
+  "issue": 14,
+  "contract": "derived_index_metadata",
+  "version": "1",
+  "valid": {
+    "incoming-reference-complete.json": "Structurally and application-valid Actor-derived compatibility fixture.",
+    "incoming-reference-authorization-limited.json": "Structurally and application-valid Actor-derived compatibility fixture.",
+    "replacement-frontier-actor-graph.json": "Structurally and application-valid Actor-derived compatibility fixture.",
+    "lifecycle-timeline-actor.json": "Structurally and application-valid Actor-derived compatibility fixture."
+  },
+  "invalid": {
+    "generation-not-complete.json": "Structurally invalid fixture rejected by the reused version-1 public contract.",
+    "privacy-validation-not-passed.json": "Structurally invalid fixture rejected by the reused version-1 public contract.",
+    "unexpected-actor-payload.json": "Structurally invalid fixture rejected by the reused version-1 public contract."
+  },
+  "application_invalid": {
+    "projection-kind-mismatch.json": {
+      "rule_id": "portia.actor_derived_state.derived_index_metadata.projection_kind_mismatch",
+      "description": "Structurally valid fixture rejected by Actor-derived application invariants."
+    },
+    "scope-mismatch.json": {
+      "rule_id": "portia.actor_derived_state.derived_index_metadata.scope_mismatch",
+      "description": "Structurally valid fixture rejected by Actor-derived application invariants."
+    },
+    "authorization-mismatch.json": {
+      "rule_id": "portia.actor_derived_state.derived_index_metadata.authorization_mismatch",
+      "description": "Structurally valid fixture rejected by Actor-derived application invariants."
+    },
+    "generated-before-observation.json": {
+      "rule_id": "portia.actor_derived_state.derived_index_metadata.generated_before_observation",
+      "description": "Structurally valid fixture rejected by Actor-derived application invariants."
+    },
+    "data-fingerprint-mismatch.json": {
+      "rule_id": "portia.actor_derived_state.derived_index_metadata.data_fingerprint_mismatch",
+      "description": "Structurally valid fixture rejected by Actor-derived application invariants."
+    }
+  }
+}

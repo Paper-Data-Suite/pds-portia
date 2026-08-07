@@ -1,0 +1,101 @@
+{
+  "schema_version": "1",
+  "record_type": "replacement_frontier_index_data",
+  "projection_kind": "replacement_frontier_index",
+  "projection_scope": {
+    "scope": "graph",
+    "graph_id": "actor_replacement_graph_1"
+  },
+  "authorization_scope": {
+    "authorization_scope_id": "local_teacher_full",
+    "coverage": "complete",
+    "limitation_codes": []
+  },
+  "source_snapshot_digest": "ac203def931a6ad1babd202dc589bceec9c06557c6a0ac1f3d13ce70562bf1b7",
+  "selection_policy": "explicit_only",
+  "entries": [
+    {
+      "source": {
+        "actor_id": "actr_conflated",
+        "contract_version": "1"
+      },
+      "direct_successors": [
+        {
+          "actor_id": "actr_split_a",
+          "contract_version": "1"
+        },
+        {
+          "actor_id": "actr_split_b",
+          "contract_version": "1"
+        }
+      ],
+      "frontier": [
+        {
+          "actor_id": "actr_split_a",
+          "contract_version": "1"
+        },
+        {
+          "actor_id": "actr_split_b",
+          "contract_version": "1"
+        }
+      ],
+      "resolution_state": "superseded_split",
+      "automatic_follow": false
+    },
+    {
+      "source": {
+        "actor_id": "actr_consolidated",
+        "contract_version": "1"
+      },
+      "direct_successors": [],
+      "frontier": [
+        {
+          "actor_id": "actr_consolidated",
+          "contract_version": "1"
+        }
+      ],
+      "resolution_state": "terminal_current",
+      "automatic_follow": false
+    },
+    {
+      "source": {
+        "actor_id": "actr_duplicate_a",
+        "contract_version": "1"
+      },
+      "direct_successors": [
+        {
+          "actor_id": "actr_consolidated",
+          "contract_version": "1"
+        }
+      ],
+      "frontier": [
+        {
+          "actor_id": "actr_consolidated",
+          "contract_version": "1"
+        }
+      ],
+      "resolution_state": "superseded_single",
+      "automatic_follow": false
+    },
+    {
+      "source": {
+        "actor_id": "actr_duplicate_b",
+        "contract_version": "1"
+      },
+      "direct_successors": [
+        {
+          "actor_id": "actr_consolidated",
+          "contract_version": "1"
+        }
+      ],
+      "frontier": [
+        {
+          "actor_id": "actr_consolidated",
+          "contract_version": "1"
+        }
+      ],
+      "resolution_state": "superseded_single",
+      "automatic_follow": false
+    }
+  ]
+}

@@ -1,0 +1,82 @@
+{
+  "schema_version": "1",
+  "record_type": "source_snapshot",
+  "module_id": "portia",
+  "snapshot_algorithm": "portia_source_snapshot_v1",
+  "projection_kind": "actor_search_index",
+  "projection_scope": {
+    "scope": "workspace",
+    "workspace_id": "local_workspace"
+  },
+  "authorization_scope": {
+    "authorization_scope_id": "local_teacher_full",
+    "coverage": "complete",
+    "limitation_codes": []
+  },
+  "discovery_roots": [
+    "classes",
+    "portia/actors",
+    "portia/operations"
+  ],
+  "source_contracts": [
+    {
+      "contract_name": "actor",
+      "contract_version": "1"
+    },
+    {
+      "contract_name": "actor_contact_point",
+      "contract_version": "1"
+    },
+    {
+      "contract_name": "actor_student_relationship",
+      "contract_version": "1"
+    },
+    {
+      "contract_name": "event_participant",
+      "contract_version": "3"
+    },
+    {
+      "contract_name": "operation_journal",
+      "contract_version": "2"
+    }
+  ],
+  "entries": [
+    {
+      "workspace_relative_path": "classes/class_english10_p2/modules/portia/work/evt_example/records/event_participant/ept_actor_family_1.json",
+      "byte_length": 620,
+      "sha256_digest": "8ef73deae6e5eb343c4a5a8053bee34637b0ce3efbeb70537a0132139e27878b",
+      "source_role": "canonical_domain",
+      "contract_or_artifact_kind": "event_participant"
+    },
+    {
+      "workspace_relative_path": "portia/actors/actr_family_1/actor.json",
+      "byte_length": 850,
+      "sha256_digest": "2005ed266d752e14bcd23a946d90819247e200d7c8cae4eccc07755958b6f775",
+      "source_role": "canonical_domain",
+      "contract_or_artifact_kind": "actor"
+    },
+    {
+      "workspace_relative_path": "portia/actors/actr_family_1/records/actor_contact_point/acp_primary.json",
+      "byte_length": 500,
+      "sha256_digest": "f087bd37201508c3e04e37f5fac5c889cf2706b65f853699152dee82ab0b890c",
+      "source_role": "canonical_domain",
+      "contract_or_artifact_kind": "actor_contact_point"
+    },
+    {
+      "workspace_relative_path": "portia/actors/actr_family_1/records/actor_student_relationship/asrel_student_1001.json",
+      "byte_length": 750,
+      "sha256_digest": "b677bb40dcb659f03dbd6d2c5dcfbbb1585dbdc644bf3c67da13139511ceaa24",
+      "source_role": "canonical_domain",
+      "contract_or_artifact_kind": "actor_student_relationship"
+    },
+    {
+      "workspace_relative_path": "portia/operations/op_rebuild_actor_incoming/revisions/1.json",
+      "byte_length": 2900,
+      "sha256_digest": "5227db4e1db6ae5efb25dd09b66103055f0481fb5f22c816fec85d0b9e10af9b",
+      "source_role": "operational_revision",
+      "contract_or_artifact_kind": "operation_journal"
+    }
+  ],
+  "source_snapshot_digest": "1b33d8a3fda83fc562380d22f43691534d343ad499152f699ca6afb36bd8a0a7",
+  "observed_at": "2026-08-06T19:00:00-04:00"
+}
