@@ -1,0 +1,63 @@
+{
+  "manifest_version": "1",
+  "issue": 15,
+  "scope": "shared_lifecycle_correction_dependency_compatibility",
+  "public_contracts_added": [],
+  "valid": [
+    "dependency-references-account.json",
+    "dependency-references-observation.json",
+    "disagreement-targets-account.json",
+    "disagreement-targets-observation.json",
+    "history-account-select-replacement.json",
+    "history-observation-select-replacement.json",
+    "lifecycle-account-active-retracted.json",
+    "lifecycle-account-proposed-active.json",
+    "lifecycle-observation-proposed-active.json"
+  ],
+  "application_invalid": [
+    {
+      "file": "amendment-account-prohibited.json",
+      "rule_id": "portia.account.amendment_prohibited_v1"
+    },
+    {
+      "file": "amendment-observation-prohibited.json",
+      "rule_id": "portia.observation.amendment_prohibited_v1"
+    },
+    {
+      "file": "dependency-account-wrong-contract-version.json",
+      "rule_id": "dependency_exact_contract_version_mismatch"
+    },
+    {
+      "file": "dependency-invalidated-account-current-use.json",
+      "rule_id": "dependency_target_current_use_ineligible"
+    },
+    {
+      "file": "dependency-superseded-observation-no-silent-follow.json",
+      "rule_id": "no_silent_successor_following"
+    },
+    {
+      "file": "disagreement-account-target-mismatch.json",
+      "rule_id": "target_must_resolve_exactly_in_containing_work"
+    },
+    {
+      "file": "history-account-replacement-target-mismatch.json",
+      "rule_id": "replacement_branch_must_target_same_record"
+    },
+    {
+      "file": "history-observation-replacement-target-mismatch.json",
+      "rule_id": "replacement_branch_must_target_same_record"
+    },
+    {
+      "file": "lifecycle-account-retracted-active.json",
+      "rule_id": "portia.account.lifecycle_matrix"
+    },
+    {
+      "file": "lifecycle-account-unrecognized-family-reason.json",
+      "rule_id": "portia.account.lifecycle_reason"
+    },
+    {
+      "file": "lifecycle-observation-active-retracted.json",
+      "rule_id": "portia.observation.lifecycle_matrix"
+    }
+  ]
+}

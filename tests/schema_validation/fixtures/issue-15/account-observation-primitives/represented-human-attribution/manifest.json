@@ -1,0 +1,22 @@
+{
+  "manifest_version": "1",
+  "issue": 15,
+  "contract": "represented_human_attribution",
+  "version": "1",
+  "valid": {
+    "roster-student.json": "Valid represented-human attribution branch.",
+    "actor.json": "Valid represented-human attribution branch.",
+    "local-operator.json": "Valid represented-human attribution branch.",
+    "descriptive-person.json": "Valid represented-human attribution branch.",
+    "unidentified-person.json": "Valid represented-human attribution branch."
+  },
+  "invalid": {
+    "missing-kind.json": "Structurally invalid attribution shape.",
+    "embedded-contact.json": "Structurally invalid attribution shape.",
+    "actor-missing-snapshot.json": "Structurally invalid attribution shape.",
+    "descriptive-other-missing-detail.json": "Structurally invalid attribution shape.",
+    "unknown-kind.json": "Structurally invalid attribution shape.",
+    "unidentified-with-actor-ref.json": "Structurally invalid attribution shape."
+  },
+  "application_invalid": {}
+}

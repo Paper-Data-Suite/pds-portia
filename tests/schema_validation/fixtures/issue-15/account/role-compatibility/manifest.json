@@ -1,0 +1,17 @@
+{
+  "manifest_version": "1",
+  "issue": 15,
+  "scenario": "reported_involved_account_compatibility",
+  "valid": [
+    "aligned-singular.json",
+    "aligned-participant-set.json"
+  ],
+  "application_invalid": [
+    "event-wide-account.json",
+    "wrong-participant.json",
+    "unidentified-source.json",
+    "retracted-account.json",
+    "proposed-account.json",
+    "different-event.json"
+  ]
+}

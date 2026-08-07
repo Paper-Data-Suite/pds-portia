@@ -11,14 +11,14 @@ Portia is in its initial research and architecture phase.
 The repository currently contains:
 
 * evidence-based research on responsible K–12 behavior documentation and management;
-* accepted design analyses defining Portia’s role, identity model, ownership rules, canonical storage, references, lifecycle, correction, migration, removal, integrity diagnostics, coordinated persistence, recovery, Quarantine, finding administration, derived rebuilding, the initial Event family, and the teacher-local Actor Directory;
-* Architecture Decision Records through ADR 0009, plus accepted ADR 0010 for the Actor Directory;
-* independently versioned Draft 2020-12 identifier, reference, target, Actor, lifecycle, correction, disagreement, dependency, migration, ownership-correction, removal, relationship, operational, and derived-projection schemas;
-* retained historical Event-family version-1 schemas, Event version 2, Event Participant and Role version 3, Work Relationship version 2, Actor Directory version-1 contracts, and Actor-aware operational version-2 contracts;
-* validated synthetic examples, migration fixtures, and comprehensive Issue #12, Issue #13, and Issue #14 application-invalid matrices;
+* accepted design analyses defining Portia’s role, identity model, ownership rules, canonical storage, references, lifecycle, correction, migration, removal, integrity diagnostics, coordinated persistence, recovery, Quarantine, finding administration, derived rebuilding, the initial Event family, the teacher-local Actor Directory, and the Account/Observation source-evidence layer;
+* Architecture Decision Records through ADR 0009, plus accepted ADR 0010 for the Actor Directory and ADR 0011 for Accounts and Observations;
+* independently versioned Draft 2020-12 identifier, reference, target, Actor, Account, Observation, attribution, provenance, lifecycle, correction, disagreement, dependency, migration, ownership-correction, removal, relationship, operational, and derived-projection schemas;
+* retained historical Event-family version-1 schemas, Event version 2, Event Participant and Role version 3, Work Relationship version 2, Actor Directory version-1 contracts, Account and Observation version-1 contracts, and Actor-aware operational version-2 contracts;
+* validated synthetic examples, migration fixtures, and comprehensive Issue #12, Issue #13, Issue #14, and Issue #15 application-invalid matrices;
 * and automated offline schema-validation, state-machine, compatibility, privacy, example, and documentation-consistency tests.
 
-Portia does not yet contain an executable application. The current domain implementation targets are Event v2, Event Participant v3, Event Participant Role v3, Work Relationship v2, and the Actor Directory version-1 record family. Issue #14 completes the public teacher-local Actor identity, contact, relationship, lifecycle, correction, collision, migration, removal, operational-targeting, and derived-compatibility contracts. Production filesystem services and teacher-facing Actor workflows remain assigned to a later executable milestone.
+Portia does not yet contain an executable application. The current domain implementation targets are Event v2, Event Participant v3, Event Participant Role v3, Work Relationship v2, the Actor Directory version-1 record family, Account v1, and Observation v1. Issue #14 completes the public teacher-local Actor identity family. Issue #15 completes attributed Account and direct/instrumented Observation identity, targeting, attribution, provenance, lifecycle, correction, retraction, migration/removal compatibility, operational/derived reuse, and privacy contracts. Production filesystem services and teacher-facing workflows remain assigned to a later executable milestone.
 
 ## Product Position
 
@@ -83,8 +83,7 @@ Portia owns behavior-support concepts and workflows such as:
 * Events;
 * Event Participants;
 * Event Participant Roles;
-* Accounts and Observations;
-* Positive Observations;
+* Accounts and Observations, including positive, neutral, and potentially concerning observable information through one neutral Observation model;
 * Concerns and Referrals;
 * Classifications;
 * Hypotheses;
@@ -182,7 +181,7 @@ evt_<opaque-id>
 sup_<opaque-id>
 ```
 
-Child records such as Event Participants, Event Participant Roles, Accounts, Responses, Follow-Ups, Outcomes, Communications, and work relationships receive their own durable identifiers.
+Child records such as Event Participants, Event Participant Roles, Accounts, Observations, Responses, Follow-Ups, Outcomes, Communications, and work relationships receive their own durable identifiers.
 
 A Portia `work_id` does not represent:
 
@@ -349,6 +348,7 @@ Portia will use existing Core class, roster, work-path, and routing contracts wh
 * Event and Support Process identifiers;
 * child-record identifiers;
 * Actor identifiers;
+* Account and Observation identifiers;
 * canonical schemas;
 * cross-class participant lookup;
 * work relationships;
@@ -486,6 +486,59 @@ Actor-derived incoming-reference, replacement-frontier, and lifecycle projection
 
 JSON Schema validates local wire shape. Application validation remains responsible for exact storage and owner agreement, Core roster resolution, current-use eligibility, lifecycle history, duplicate review, correction topology, operation ordering, incoming-reference completeness, privacy, authorization, digest truth, recovery, and derived freshness.
 
+## Accepted Account and Observation Contracts
+
+ADR 0011 defines the Event-local source-evidence layer without collapsing evidence into interpretation or formal judgment.
+
+The principal public contracts are:
+
+```text
+account
+observation
+portia_account_id
+portia_observation_id
+represented_human_attribution
+evidence_time
+source_artifact_ref
+```
+
+One Account preserves one coherent attributed statement, report, response, recollection, or perspective from one represented human source. One Observation preserves one coherent human or instrumented record of directly observable, counted, timed, recorded, or measured information. Neither contract establishes credibility, corroboration, intent, severity, policy violation, diagnosis, behavioral function, risk, Classification, Hypothesis, Determination, or another finding.
+
+Accounts use opaque `acct_` identifiers and Observations use opaque `obs_` identifiers. Both are canonical children of one Event and reuse `portia_target_ref` to target the Event, one Event Participant, or an explicit Participant set. Source or observer attribution remains separate from target and from persistence-operation `created_by` / `updated_by` attribution.
+
+Account content distinguishes `verbatim_quote` from `recorded_summary`, preserves `firsthand`, `secondhand`, `mixed`, or `unknown` information origin, and may preserve source-expressed uncertainty without treating it as credibility. Conflicting Accounts may coexist. Source retraction is source-evidenced through a later same-source Account plus a coordinated transition of the predecessor to `retracted`; teacher disbelief is not retraction.
+
+Observations use one neutral model for positive, neutral, and potentially concerning observable information. Human and instrument observers remain explicit. Narrative observations stay observable rather than interpretive, and structured measurement supports count, duration, latency, percentage, and bounded other numeric measurements.
+
+Account lifecycle is:
+
+```text
+proposed
+active
+retracted
+invalidated
+superseded
+```
+
+Observation lifecycle is:
+
+```text
+proposed
+active
+invalidated
+superseded
+```
+
+Account and Observation v1 expose no in-place Amendment surface. Material evidence correction creates an explicit successor and preserves exact historical references. Paper- and import-derived evidence begins proposed and requires accepted local review before activation.
+
+An active `reported_involved` Event Participant Role requires a qualifying active same-Event Account whose target is the Role Participant or a Participant set containing that Participant. An Event-wide Account is insufficient for that participant-specific assertion. Observation, paper provenance, import provenance, free text, or teacher confirmation alone does not replace the Account requirement already present in Role v3.
+
+Accounts and Observations reuse the existing lifecycle-history, disagreement, dependency, migration, exceptional-removal, Operation Journal, Operation Lock, Quarantine, Integrity Finding, source-snapshot, generation-metadata, and current-pointer contracts through exact generic work-record references. No Account- or Observation-specific copies of those shared contracts are required. Operational and derived records remain privacy-minimized and must not copy substantive Account or Observation prose merely for diagnostics or coordination.
+
+JSON Schema validates local wire shape. Application validation remains responsible for Event and target resolution, represented-source and observer resolution, review gates, chronology, measurement/method compatibility, source-evidenced retraction, Role-basis eligibility and target alignment, lifecycle history, replacement topology, exact-reference behavior, provenance truth, authorization, privacy, operational recovery, and derived freshness.
+
+The earlier Event/Participant/Role design and Role example documents predate the concrete Account and Observation contracts and several later Event-family schema revisions. They remain useful historical foundation material, but ADR 0011, `account@1`, `observation@1`, and `event_participant_role@3` govern current Account/Observation integration. In particular, older conceptual examples that show an unversioned `account_ref` or only a same-Event Account requirement must not be read as weakening the current rule: an active `reported_involved` Role requires a qualifying active Account targeted to that Participant or a Participant set containing that Participant, and exact historical references never silently follow replacement.
+
 ## Initial Event, Event Participant, and Role Model
 
 Portia now defines an initial canonical model for Events, Event Participants, and Event Participant Roles.
@@ -612,7 +665,7 @@ The application must reject duplicate active Role types and incompatible active 
 
 A Role does not itself establish blame, guilt, fault, intent, credibility, severity, policy violation, institutional responsibility, or a formal Determination.
 
-Every active `reported_involved` Role must reference a same-Event attributed Account.
+Every active `reported_involved` Role must reference a qualifying active same-Event attributed Account whose target is that Participant or a Participant set containing that Participant.
 
 Top-level Role `detail` is permitted only for `contextual`. An active or superseded contextual Role must retain concise, neutral, nonempty detail.
 
@@ -734,7 +787,7 @@ Application validation remains responsible for cross-record and contextual invar
 * route and page-record existence;
 * exact matching paper provenance and basis references;
 * Account and Observation existence, Event scope, and lifecycle eligibility;
-* Account attribution for active `reported_involved`;
+* Account attribution, lifecycle eligibility, and Participant-target alignment for active `reported_involved`;
 * timestamp chronology;
 * lifecycle-transition legality;
 * Event activation requiring an active participant;
@@ -788,7 +841,7 @@ Portia should expose data quality, denominators, missingness, and institutional 
 
 ### Source-preserving
 
-Original Accounts and historical values should remain auditable while inaccurate active records can be corrected through explicit amendment and supersession workflows.
+Original Accounts, Observations, and historical values should remain auditable. Account and Observation v1 corrections use explicit successor/supersession workflows rather than in-place Amendment of substantive evidence.
 
 ### Modular
 
@@ -814,7 +867,7 @@ Portia should use Core infrastructure and public cross-module contracts rather t
 
 * [Portia Event, Event Participant, and Event Participant Role Domain Model](docs/design/portia-event-and-participant-domain-model.md)
 
-  Defines Event meaning and boundaries, Event root fields, occurrence precision, location and instructional context, participant identity variants, separate Event Participant Roles, neutral Role vocabulary, Role compatibility, basis, creation source, lifecycle transitions, dependency resolution, correction and supersession, paper capture, validation boundaries, and teacher-workflow constraints.
+  Foundational historical design for Event, Participant, and Role semantics. Current persisted contracts are Event v2, Event Participant v3, and Event Participant Role v3; ADR 0011 refines its Account/Observation basis semantics, including qualifying active Account lifecycle and Participant-target alignment for `reported_involved`.
 
 * [Portia Reference, Targeting, and Relationship Contracts](docs/design/portia-reference-targeting-and-relationship-contracts.md)
 
@@ -831,6 +884,10 @@ Portia should use Core infrastructure and public cross-module contracts rather t
 * [Portia Actor Directory Domain Model and Lifecycle](docs/design/portia-actor-directory-domain-model-and-lifecycle.md)
 
   Defines the semantic unit of one Actor, eligibility and roster boundaries, canonical storage, Actor roots, Contact Points, Actor-to-Student Relationships, Actor–Roster Student Collisions, lifecycle and history, amendment, consolidation, splitting, migration, exceptional removal, operational targeting, derived views, privacy, and the production implementation boundary.
+
+* [Portia Account and Observation Domain Models](docs/design/portia-account-and-observation-domain-models.md)
+
+  Defines attributed Accounts, direct and instrumented Observations, Event-local targeting, source and observer attribution, quote/summary representation, information origin, measurement, lifecycle, source-evidenced retraction, correction, provenance, Role integration, shared infrastructure reuse, and privacy boundaries.
 
 ### Schemas
 
@@ -857,6 +914,26 @@ Portia should use Core infrastructure and public cross-module contracts rather t
 * [Actor-Aware Operation Journal v2](schemas/v2/operations/operation-journal.schema.json)
 
   Version-2 coordinated-operation journal with exact Actor record, Actor set, and Actor Directory collection targets.
+
+* [Account v1 Schema](schemas/v1/accounts/account.schema.json)
+
+  Canonical Event-local attributed source contribution with explicit quote/summary representation, information origin, lifecycle, source lineage, provenance, and replacement semantics.
+
+* [Observation v1 Schema](schemas/v1/observations/observation.schema.json)
+
+  Canonical Event-local human or instrumented observation with neutral observable narrative, structured measurements, timing, provenance, lifecycle, and replacement semantics.
+
+* [Represented Human Attribution Schema](schemas/v1/attribution/represented-human-attribution.schema.json)
+
+  Shared represented-source/observer attribution for roster students, Actors, local operators, descriptive people, and unidentified people, distinct from persistence-operation attribution.
+
+* [Evidence Time Schema](schemas/v1/common/evidence-time.schema.json)
+
+  Shared evidence-time precision for exact, approximate, date-only, bounded-range, and unknown times.
+
+* [Source Artifact Reference Schema](schemas/v1/provenance/source-artifact-ref.schema.json)
+
+  Typed references to paper captures, workspace files, exact Portia records, sibling-module records, and inert external records without embedding source binaries.
 
 * [Event v2 Schema](schemas/v2/event.schema.json)
 
@@ -904,6 +981,10 @@ Portia should use Core infrastructure and public cross-module contracts rather t
 
 ### Examples
 
+* [Portia Account and Observation Examples](docs/examples/portia-account-and-observation-examples.md)
+
+  Accepted synthetic and machine-validated examples for source attribution, quotation and summary, conflicting Accounts, retraction, correction, paper/import provenance, neutral Observation content, structured measurement, Role integration, source artifacts, disagreement, migration/removal, and operational compatibility.
+
 * [Portia Actor Directory Examples](docs/examples/portia-actor-directory-examples.md)
 
   Accepted synthetic and machine-validated examples for Actor roots, Contact Points, Relationships, roster collisions, lifecycle, correction, amendment, migration, exceptional removal, Actor-aware operations, and derived compatibility.
@@ -926,9 +1007,13 @@ Portia should use Core infrastructure and public cross-module contracts rather t
 
 * [Portia Event Participant Role Examples](docs/examples/portia-event-participant-role-examples.md)
 
-  Historical validated examples covering direct digital Role creation, compatible Role assignments, contextual detail, paper-derived and imported reported involvement, basis correction, and supersession.
+  Historical version-1 Role examples covering direct digital creation, compatible assignments, contextual detail, paper/import reported involvement, basis correction, and supersession. Their conceptual Account/Observation references are superseded for current use by Role v3 plus ADR 0011 and the Issue #15 compatibility examples.
 
 ### Validation
+
+* [Issue #15 Validation: Account and Observation Domain Models](docs/validation/issue-15-account-observation-validation.md)
+
+  Records the Account/Observation public-contract inventory, 245 manifest scenarios, complete 76-case application-invalid matrix, 32-criterion acceptance matrix, representative examples, final Core and Portia drift anchors, validation boundary, and repository acceptance commands.
 
 * [Issue #14 Validation: Actor Directory Domain Model and Lifecycle](docs/validation/issue-14-actor-directory-validation.md)
 
@@ -988,6 +1073,10 @@ Portia should use Core infrastructure and public cross-module contracts rather t
 
   Establishes one recurring non-roster person per Actor, workspace-scoped canonical storage, separate Contact Points and Relationships, roster-student collision handling, lifecycle and correction, reviewed consolidation and splitting, migration and removal, Actor-aware operational targeting, derived compatibility, and privacy boundaries.
 
+* [ADR 0011: Define Account and Observation Domain Models](docs/decisions/0011-define-account-and-observation-domain-models.md)
+
+  Establishes Event-local Account and Observation evidence records, source and observer attribution, quote/summary and firsthand/secondhand semantics, observable measurement, lifecycle and source-evidenced retraction, replacement-based correction, paper/import review gates, `reported_involved` Account alignment, shared infrastructure reuse, and no-automatic-finding semantics.
+
 ## Explicit Product Prohibitions
 
 Portia must not provide:
@@ -1035,10 +1124,10 @@ Local-first storage does not make student records inherently non-sensitive. Port
 
 Likely next work includes:
 
-* implementing the accepted ADR 0009 and ADR 0010 persistence, Actor Directory, recovery, Quarantine, integrity, and derived-generation contracts as strictly typed production services in a later executable milestone;
-* building teacher-facing Actor selection, creation, correction, consolidation, splitting, collision-review, and privacy-maintenance workflows;
+* implementing the accepted ADR 0009, ADR 0010, and ADR 0011 persistence, Actor Directory, Account/Observation evidence, recovery, Quarantine, integrity, and derived-generation contracts as strictly typed production services in a later executable milestone;
+* building teacher-facing Actor selection plus Account/Observation capture, review, correction, retraction, and privacy-maintenance workflows;
 * defining the minimal Support Process root and status contract, followed by the broader Support, Intervention, implementation, and fidelity model;
-* defining Account, Observation, Classification, Hypothesis, Determination, Response, Follow-Up, Outcome, and Communication schemas that consume exact Actor references and preserve their own contextual roles and authority evidence;
+* defining Classification, Hypothesis, Determination, Response, Follow-Up, Outcome, and Communication schemas that consume Account/Observation evidence and exact Actor references while preserving their own contextual roles, review, and authority evidence;
 * defining how teacher schedules assist Event ownership selection;
 * implementing and performance-testing the minimum viable teacher workflow;
 * establishing privacy projections and redaction for multi-student Events;

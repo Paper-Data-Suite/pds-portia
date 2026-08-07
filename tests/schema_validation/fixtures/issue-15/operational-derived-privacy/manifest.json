@@ -1,0 +1,137 @@
+{
+  "manifest_version": "1",
+  "issue": 15,
+  "slice": "operational-derived-privacy-compatibility",
+  "valid": [
+    {
+      "filename": "operation-journal-account.json",
+      "contract": "operation_journal",
+      "version": "2"
+    },
+    {
+      "filename": "operation-journal-observation.json",
+      "contract": "operation_journal",
+      "version": "2"
+    },
+    {
+      "filename": "operation-lock-account.json",
+      "contract": "operation_lock",
+      "version": "2"
+    },
+    {
+      "filename": "operation-lock-observation.json",
+      "contract": "operation_lock",
+      "version": "2"
+    },
+    {
+      "filename": "quarantine-account.json",
+      "contract": "quarantine_record",
+      "version": "2"
+    },
+    {
+      "filename": "quarantine-observation.json",
+      "contract": "quarantine_record",
+      "version": "2"
+    },
+    {
+      "filename": "integrity-account.json",
+      "contract": "integrity_finding",
+      "version": "2"
+    },
+    {
+      "filename": "integrity-observation.json",
+      "contract": "integrity_finding",
+      "version": "2"
+    },
+    {
+      "filename": "source-snapshot.json",
+      "contract": "source_snapshot",
+      "version": "1"
+    },
+    {
+      "filename": "derived-index-metadata.json",
+      "contract": "derived_index_metadata",
+      "version": "1"
+    },
+    {
+      "filename": "derived-current-pointer.json",
+      "contract": "derived_current_pointer",
+      "version": "1"
+    }
+  ],
+  "invalid": [
+    {
+      "filename": "operation-journal-extra-top-level.json",
+      "contract": "operation_journal",
+      "version": "2"
+    },
+    {
+      "filename": "operation-lock-extra-top-level.json",
+      "contract": "operation_lock",
+      "version": "2"
+    },
+    {
+      "filename": "quarantine-record-extra-top-level.json",
+      "contract": "quarantine_record",
+      "version": "2"
+    },
+    {
+      "filename": "integrity-finding-extra-top-level.json",
+      "contract": "integrity_finding",
+      "version": "2"
+    },
+    {
+      "filename": "source-snapshot-entry-extra-content.json",
+      "contract": "source_snapshot",
+      "version": "1"
+    },
+    {
+      "filename": "derived-index-metadata-extra-top-level.json",
+      "contract": "derived_index_metadata",
+      "version": "1"
+    },
+    {
+      "filename": "derived-current-pointer-extra-top-level.json",
+      "contract": "derived_current_pointer",
+      "version": "1"
+    }
+  ],
+  "application_invalid": [
+    {
+      "filename": "quarantine-account-reason-leaks-quote.json",
+      "contract": "quarantine_record",
+      "version": "2",
+      "expected_rule": "portia.issue15.operational_privacy.substantive_text_leak"
+    },
+    {
+      "filename": "quarantine-observation-reason-leaks-narrative.json",
+      "contract": "quarantine_record",
+      "version": "2",
+      "expected_rule": "portia.issue15.operational_privacy.substantive_text_leak"
+    },
+    {
+      "filename": "integrity-account-sensitive-evidence-name.json",
+      "contract": "integrity_finding",
+      "version": "2",
+      "expected_rule": "portia.issue15.operational_privacy.sensitive_evidence_name"
+    },
+    {
+      "filename": "integrity-observation-sensitive-evidence-name.json",
+      "contract": "integrity_finding",
+      "version": "2",
+      "expected_rule": "portia.issue15.operational_privacy.sensitive_evidence_name"
+    },
+    {
+      "filename": "source-snapshot-substantive-path.json",
+      "contract": "source_snapshot",
+      "version": "1",
+      "expected_rule": "portia.issue15.derived_privacy.substantive_path_leak"
+    },
+    {
+      "filename": "operation-journal-silent-successor-retarget.json",
+      "contract": "operation_journal",
+      "version": "2",
+      "expected_rule": "portia.issue15.operations.silent_successor_retarget"
+    }
+  ]
+}

@@ -1,0 +1,54 @@
+{
+  "schema_version": "2",
+  "record_type": "quarantine_record",
+  "module_id": "portia",
+  "quarantine_id": "qnt_issue15_account",
+  "quarantine_revision": 1,
+  "previous_quarantine_revision": null,
+  "state": "active",
+  "target": {
+    "kind": "work_record",
+    "work_record_ref": {
+      "work_ref": {
+        "module_id": "portia",
+        "class_id": "eng10_p2_2026",
+        "work_id": "evt_issue15_ops",
+        "work_kind": "event",
+        "contract_version": "2"
+      },
+      "record_ref": {
+        "record_kind": "account",
+        "record_id": "acct_ops_1",
+        "contract_version": "1"
+      }
+    }
+  },
+  "reason": "lifecycle_reconciliation",
+  "reason_detail": "Synthetic structural reconciliation control; substantive evidence intentionally omitted.",
+  "effects": [
+    "block_current_use",
+    "review_required"
+  ],
+  "origin": {
+    "applying_operation": {
+      "operation_id": "op_quarantine_account",
+      "journal_revision": 1,
+      "contract_version": "2"
+    },
+    "supporting_finding_keys": [
+      "finding:account:reconciliation:acct_ops_1"
+    ],
+    "applied_at": "2026-08-07T14:10:00-04:00",
+    "applied_by": {
+      "type": "local_operator",
+      "display_label": "Synthetic teacher"
+    },
+    "release_requirements": [
+      "canonical_state_reconciled",
+      "integrity_scan_clean"
+    ],
+    "review_deadline": null
+  },
+  "resolution": null,
+  "created_at": "2026-08-07T14:10:01-04:00"
+}

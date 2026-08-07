@@ -1,0 +1,52 @@
+{
+  "finding_key": "fnd_account_attribution_invalid",
+  "evaluation_key": "evl_account_attribution_invalid_r1",
+  "rule_id": "portia.account.attribution_invalid",
+  "rule_version": "1",
+  "category": "chronology_provenance",
+  "code": "attribution_invalid",
+  "severity": "warning",
+  "assessment": {
+    "result": "confirmed"
+  },
+  "effects": [
+    "review_required"
+  ],
+  "scope": "representation",
+  "primary_target": {
+    "kind": "portia_work_record",
+    "work_record_ref": {
+      "work_ref": {
+        "module_id": "portia",
+        "class_id": "eng10_p2_2026",
+        "work_id": "evt_issue15_ops",
+        "work_kind": "event",
+        "contract_version": "2"
+      },
+      "record_ref": {
+        "record_kind": "account",
+        "record_id": "acct_ops_1",
+        "contract_version": "1"
+      }
+    }
+  },
+  "related_targets": [],
+  "evidence": [
+    {
+      "name": "record_kind",
+      "kind": "token",
+      "value": "account"
+    },
+    {
+      "name": "contract_version",
+      "kind": "identifier",
+      "value": "1"
+    },
+    {
+      "name": "account_quote",
+      "kind": "identifier",
+      "value": "source_text_redacted"
+    }
+  ],
+  "observed_at": "2026-08-07T14:15:00-04:00"
+}

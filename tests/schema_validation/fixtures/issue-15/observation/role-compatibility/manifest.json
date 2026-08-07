@@ -1,0 +1,21 @@
+{
+  "manifest_version": "1",
+  "issue": 15,
+  "scenario": "observation_role_basis_compatibility",
+  "valid": [
+    "present-aligned-singular.json",
+    "directly-involved-aligned-set.json",
+    "contextual-aligned.json",
+    "reported-involved-supplemental.json"
+  ],
+  "application_invalid": [
+    "wrong-participant.json",
+    "different-event.json",
+    "event-wide-observation.json",
+    "proposed-observation.json",
+    "invalidated-observation.json"
+  ],
+  "structural_invalid": [
+    "reported-involved-observation-only.json"
+  ]
+}

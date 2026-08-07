@@ -27,8 +27,9 @@ conceptual contract name and schema version to the canonical schema `$id` and
 the repository-relative source path.
 
 The catalog contains the retained Event-family contracts, versioned shared
-contracts, the Actor Directory record family, and additive Actor-aware
-operational version-2 contracts implemented by Portia.
+contracts, the Actor Directory record family, the Account and Observation
+version-1 evidence contracts, and additive Actor-aware operational version-2
+contracts implemented by Portia.
 
 ## Identifier contracts
 
@@ -45,6 +46,8 @@ The initial prefixes are:
 - Actor–Roster Student Collision: `arsc_`
 - Event Participant: `ep_`
 - Event Participant Role: `epr_`
+- Account: `acct_`
+- Observation: `obs_`
 - Work Relationship: `rel_`
 - Lifecycle Transition: `lct_`
 - Lifecycle-History Correction: `lhc_`
@@ -179,6 +182,13 @@ operational and diagnostic target composition. The immutable Collision record
 is included in exact operational targeting but is excluded from lifecycle and
 amendment target subsets.
 
+Issue #15 does not add redundant Account- or Observation-specific exact-reference
+families. Event-local relations may constrain `exact_local_record_ref`, while
+cross-work operational, dependency, migration, removal, and diagnostic surfaces
+reuse `exact_portia_work_record_ref`. Exact Account and Observation references
+therefore preserve the containing work, record family, opaque record ID, and
+required contract version without creating a second reference vocabulary.
+
 ## Shared snapshots and target contracts
 
 The initial reusable historical snapshot is:
@@ -198,6 +208,11 @@ Event-local and Support Process-local target families are stored beneath:
 
 `portia_target_ref` supports exactly the containing Event, one Event
 Participant, or a selected set of at least two Event Participants.
+
+Account v1 and Observation v1 reuse this target contract unchanged. Their
+represented source or observer is modeled separately from the Event-local target;
+a source or observer does not become an Event Participant merely by supplying or
+observing information.
 
 `support_process_target_ref` supports exactly the containing Support Process,
 one Support Process Participant, or a selected set of at least two Support
@@ -245,6 +260,32 @@ example, a Work Relationship created from paper must use an ingested page.
 `system_process` identifier. It records local persistence-operation
 attribution and is not interchangeable with `actor_ref` or institutional
 identity and authorization.
+
+Issue #15 adds three reusable evidence primitives:
+
+```text
+schemas/v1/attribution/represented-human-attribution.schema.json
+schemas/v1/common/evidence-time.schema.json
+schemas/v1/provenance/source-artifact-ref.schema.json
+```
+
+`represented_human_attribution` identifies the human whose statement or direct
+observation is represented. Its closed branches are `roster_student`, `actor`,
+`local_operator`, `descriptive_person`, and `unidentified_person`. It remains
+distinct from `attribution_agent`: the represented source/observer and the local
+operator or system process that persisted a record are separate facts.
+
+`evidence_time` preserves honest source-evidence timing through `exact`,
+`approximate`, `date_only`, `range`, and `unknown` variants. Application
+validation establishes range chronology and record-specific timing consistency;
+record creation time is never substituted for unknown evidence time.
+
+`source_artifact_ref` provides closed typed references to `paper_capture`,
+`workspace_file`, `portia_work_record`, `module_work_record`, and
+`external_record` sources. It does not embed binary content, make external
+locators authoritative, or prove authenticity, accuracy, authorization, or
+consumer eligibility. Core remains authoritative for PDS2 routing and retained
+paper-source provenance.
 
 The retained Event-family version-1 schemas keep their private historical
 `$defs` unchanged. New record contracts compose these public shared schemas so
@@ -328,6 +369,98 @@ responsible for canonical path and owner agreement, Core roster resolution,
 lifecycle history, local review, duplicate and split topology, incoming
 reference completeness, operation ordering, authorization, fingerprint truth,
 privacy, recovery, and current-use eligibility.
+
+## Account and Observation contracts
+
+ADR 0011 defines two Event-local canonical evidence families:
+
+```text
+schemas/v1/accounts/account.schema.json
+schemas/v1/observations/observation.schema.json
+```
+
+Account identity uses `acct_<opaque-id>` and Observation identity uses
+`obs_<opaque-id>`. Canonical paths are:
+
+```text
+classes/<class_id>/modules/portia/work/<event_id>/records/account/<account_id>.json
+classes/<class_id>/modules/portia/work/<event_id>/records/observation/<observation_id>.json
+```
+
+One Account preserves one coherent attributed source contribution. The record
+keeps represented source separate from persistence attribution, distinguishes
+`verbatim_quote` from `recorded_summary`, records information origin as
+`firsthand`, `secondhand`, `mixed`, or `unknown`, and preserves source-expressed
+certainty without treating it as credibility. Optional exact same-Event Account
+relations support `reports_from`, `clarifies`, and source-evidenced `retracts`.
+Conflicting Accounts may coexist without automatic adjudication.
+
+Account lifecycle is:
+
+```text
+proposed
+active
+retracted
+invalidated
+superseded
+```
+
+Retraction requires source evidence: a later qualifying same-source Account
+references the exact predecessor with `retracts`, coordinated with the
+predecessor's transition to `retracted`. Retraction does not assert that the
+prior Account was false.
+
+One Observation preserves one coherent human or instrumented direct observation
+context. Its method vocabulary is `live_direct`, `artifact_review`,
+`manual_count`, `manual_timing`, `instrumented`, or `other`. Content may contain
+observable narrative, structured measurements, or both. Structured measurement
+supports count, duration, latency, percentage, and bounded other numeric values.
+The contract contains no positive/neutral/concerning valence, severity, policy,
+intent, diagnosis, risk, or finding field.
+
+Observation lifecycle is:
+
+```text
+proposed
+active
+invalidated
+superseded
+```
+
+Both records reuse `portia_target_ref`. Application validation resolves all
+Participant targets within the containing Event and preserves exact historical
+targets. Active `reported_involved` Role v3 use requires a qualifying active
+same-Event Account targeted to that Participant or a set containing that
+Participant. Observation alone cannot satisfy the Account requirement.
+
+Paper and import provenance reuse `creation_source`. Paper preallocation does
+not create canonical evidence; paper- and import-derived Account/Observation
+records begin proposed and require accepted review before activation. OCR,
+handwriting recognition, imported prose, names, or external-system provenance do
+not silently establish source identity, firsthand status, target, or a finding.
+
+Account and Observation v1 intentionally expose no in-place Amendment paths.
+Material correction creates a successor and preserves exact predecessor history.
+The generic lifecycle, history-correction, Statement of Disagreement, Dependency,
+Record Migration, Exceptional Removal, Operation Journal, Operation Lock,
+Quarantine, Integrity Finding, source-snapshot, derived-generation metadata, and
+current-pointer contracts already accept exact generic work-record references and
+are reused without Account/Observation-specific versions.
+
+Operational and derived records are privacy-minimized. They may retain opaque
+IDs, exact references, paths, contract versions, fingerprints, byte lengths,
+status tokens, counts, and machine-readable diagnostic facts, but they must not
+copy Account quotations/summaries or Observation narrative merely for
+coordination or diagnostics.
+
+JSON Schema establishes local record shape, closed vocabularies, identifier and
+reference shape, measurement branches, provenance shape, and structural
+conditionals. Application validation remains responsible for canonical path and
+Event agreement, represented-source/observer resolution, target resolution,
+chronology, review gates, method/measurement compatibility, source-evidenced
+retraction, Role eligibility and target alignment, correction topology, exact
+reference behavior, authorization, privacy, operational recovery, and derived
+freshness.
 
 ## Work Relationship contract
 
@@ -524,6 +657,10 @@ The correction contracts are:
 
 An Amendment records a bounded nonmaterial change with explicit before-and-after presence and value, JSON Pointer path, target-revision precondition, reason, chronology, and attribution. Application validation determines materiality and protects identity, ownership, subject, target, source, basis, status, and substantive meaning.
 
+Account v1 and Observation v1 define no permitted Amendment paths. Their
+substantive evidence remains immutable in place; corrections create explicit
+successor records and preserve exact historical representations.
+
 A Statement of Disagreement preserves an attributable dispute, qualification, objection, or withdrawal position. It does not mutate, invalidate, supersede, or adjudicate its target.
 
 ## Dependency contract
@@ -687,6 +824,13 @@ incoming-reference discovery, and privacy leaks. Duplicate candidates remain
 human-review findings and cannot confirm identity or automatically merge
 records.
 
+Issue #15 reuses these version-2 operational target shapes unchanged for
+Account and Observation because their generic exact Portia work-record branches
+already accept `record_kind = "account"` and `record_kind = "observation"`.
+No Role v4, Operation Journal v3, Operation Lock v3, Quarantine v3, or Integrity
+Finding v3 is introduced. Application validation keeps Account/Observation prose
+out of privacy-minimized operational facts and reason detail.
+
 ## Deterministic source snapshots and derived generations
 
 The shared derived-generation contracts are:
@@ -698,6 +842,10 @@ The shared derived-generation contracts are:
 A Source Snapshot is a deterministic bounded inventory of exact source paths,
 byte lengths, SHA-256 digests, roles, contracts, scope, and authorization
 coverage. Observation time is recorded but is not a digest input.
+
+Account v1 and Observation v1 participate as ordinary `canonical_domain` source
+contracts. The snapshot records their paths, byte lengths, digests, roles, and
+contract identities; it does not copy their substantive source-evidence text.
 
 Derived Index Metadata describes one immutable `complete` generation. It binds
 projection kind and scope, contract version, builder identity, authorization
@@ -731,7 +879,12 @@ workspace containment, exact byte and digest truth, replay, journal linearity,
 lock conflicts and conservative clearing, expected prior state, operation
 ordering, compensation and recovery safety, suppression eligibility, source
 snapshot truth, generation completeness, freshness, authorization compatibility,
-and verified atomic installation of complete derived replacements.
+and verified atomic installation of complete derived replacements. For Account
+and Observation this also includes represented-source/observer resolution,
+Event-local target resolution, paper/import review gates, information-origin
+consistency, source-evidenced retraction, observation method/measurement
+compatibility, `reported_involved` Account target alignment, no silent successor
+following, and privacy minimization of operational and derived evidence.
 
 Issue #13 defines those public operational and derived contracts but does not
 implement production filesystem writers, orchestration, recovery execution,

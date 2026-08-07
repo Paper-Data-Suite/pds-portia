@@ -1,0 +1,464 @@
+{
+  "matrix_version": "1",
+  "issue": 15,
+  "title": "Account and Observation application-invalid matrix",
+  "total_application_invalid_scenarios": 76,
+  "entries": [
+    {
+      "group": "account-observation-primitives/evidence-time",
+      "fixture": "tests/schema_validation/fixtures/issue-15/account-observation-primitives/evidence-time/application-invalid/range-reversed.json",
+      "expected_rule": "portia.evidence_time.range_order",
+      "expectation": "started_at must not follow ended_at."
+    },
+    {
+      "group": "account",
+      "fixture": "tests/schema_validation/fixtures/issue-15/account/application-invalid/updated-before-created.json",
+      "expected_rule": "portia.account.updated_before_created",
+      "expectation": "updated_at must not precede created_at."
+    },
+    {
+      "group": "account",
+      "fixture": "tests/schema_validation/fixtures/issue-15/account/application-invalid/active-import-without-review-history.json",
+      "expected_rule": "portia.account.import_review_required",
+      "expectation": "Imported Account must remain proposed before accepted local review."
+    },
+    {
+      "group": "account",
+      "fixture": "tests/schema_validation/fixtures/issue-15/account/application-invalid/active-paper-without-review-history.json",
+      "expected_rule": "portia.account.paper_review_required",
+      "expectation": "Paper-derived Account must remain proposed before accepted local review."
+    },
+    {
+      "group": "account",
+      "fixture": "tests/schema_validation/fixtures/issue-15/account/application-invalid/provided-after-created.json",
+      "expected_rule": "portia.account.provided_time_after_created",
+      "expectation": "Source-contribution time cannot follow record creation in this scenario."
+    },
+    {
+      "group": "account",
+      "fixture": "tests/schema_validation/fixtures/issue-15/account/application-invalid/firsthand-reports-from.json",
+      "expected_rule": "portia.account.reports_from_origin_mismatch",
+      "expectation": "reports_from requires secondhand or mixed information origin."
+    },
+    {
+      "group": "account",
+      "fixture": "tests/schema_validation/fixtures/issue-15/account/application-invalid/self-related-account.json",
+      "expected_rule": "portia.account.related_account_self_reference",
+      "expectation": "Account relation cannot reference itself."
+    },
+    {
+      "group": "account",
+      "fixture": "tests/schema_validation/fixtures/issue-15/account/application-invalid/related-account-identity-repeated.json",
+      "expected_rule": "portia.account.related_account_identity_repeated",
+      "expectation": "Related Account logical identity must not repeat."
+    },
+    {
+      "group": "account",
+      "fixture": "tests/schema_validation/fixtures/issue-15/account/application-invalid/duplicate-predecessor-identity.json",
+      "expected_rule": "portia.account.supersession_predecessor_repeated",
+      "expectation": "Supersession predecessor identities must be unique."
+    },
+    {
+      "group": "account",
+      "fixture": "tests/schema_validation/fixtures/issue-15/account/application-invalid/mixed-supersession-reasons.json",
+      "expected_rule": "portia.account.supersession_reason_mixed",
+      "expectation": "One replacement operation cannot mix supersession reasons."
+    },
+    {
+      "group": "account",
+      "fixture": "tests/schema_validation/fixtures/issue-15/account/application-invalid/ordinary-correction-cross-work.json",
+      "expected_rule": "portia.account.ordinary_correction_cross_work",
+      "expectation": "Ordinary Account correction cannot cross work roots."
+    },
+    {
+      "group": "account",
+      "fixture": "tests/schema_validation/fixtures/issue-15/account/application-invalid/work-root-correction-same-work.json",
+      "expected_rule": "portia.account.work_root_correction_requires_different_work",
+      "expectation": "work_root_corrected must move to a different work root."
+    },
+    {
+      "group": "account",
+      "fixture": "tests/schema_validation/fixtures/issue-15/account/application-invalid/self-supersession.json",
+      "expected_rule": "portia.account.supersession_self_reference",
+      "expectation": "Account cannot replace itself."
+    },
+    {
+      "group": "account",
+      "fixture": "tests/schema_validation/fixtures/issue-15/account/application-invalid/single-predecessor-duplicate-consolidation.json",
+      "expected_rule": "portia.account.duplicate_consolidation_requires_multiple_predecessors",
+      "expectation": "duplicate_consolidated requires at least two predecessors."
+    },
+    {
+      "group": "account",
+      "fixture": "tests/schema_validation/fixtures/issue-15/account/application-invalid/multiple-predecessor-correction.json",
+      "expected_rule": "portia.account.nonconsolidation_requires_one_predecessor",
+      "expectation": "Non-consolidation Account correction is one-to-one."
+    },
+    {
+      "group": "account/role-compatibility",
+      "fixture": "tests/schema_validation/fixtures/issue-15/account/role-compatibility/application-invalid/event-wide-account.json",
+      "expected_rule": "portia.reported_involved.account_target_alignment",
+      "expectation": "Event-wide Account cannot justify a participant-specific Role."
+    },
+    {
+      "group": "account/role-compatibility",
+      "fixture": "tests/schema_validation/fixtures/issue-15/account/role-compatibility/application-invalid/wrong-participant.json",
+      "expected_rule": "portia.reported_involved.account_target_alignment",
+      "expectation": "Account target must include the Role Participant."
+    },
+    {
+      "group": "account/role-compatibility",
+      "fixture": "tests/schema_validation/fixtures/issue-15/account/role-compatibility/application-invalid/unidentified-source.json",
+      "expected_rule": "portia.reported_involved.account_source_eligibility",
+      "expectation": "Unidentified source does not qualify active reported_involved attribution."
+    },
+    {
+      "group": "account/role-compatibility",
+      "fixture": "tests/schema_validation/fixtures/issue-15/account/role-compatibility/application-invalid/retracted-account.json",
+      "expected_rule": "portia.reported_involved.account_current_use_eligibility",
+      "expectation": "Retracted Account is ineligible for current Role basis."
+    },
+    {
+      "group": "account/role-compatibility",
+      "fixture": "tests/schema_validation/fixtures/issue-15/account/role-compatibility/application-invalid/proposed-account.json",
+      "expected_rule": "portia.reported_involved.account_current_use_eligibility",
+      "expectation": "Proposed Account is ineligible for active Role basis."
+    },
+    {
+      "group": "account/role-compatibility",
+      "fixture": "tests/schema_validation/fixtures/issue-15/account/role-compatibility/application-invalid/different-event.json",
+      "expected_rule": "portia.reported_involved.same_event",
+      "expectation": "Role and qualifying Account must belong to the same Event."
+    },
+    {
+      "group": "account/retraction",
+      "fixture": "tests/schema_validation/fixtures/issue-15/account/retraction/application-invalid/different-source.json",
+      "expected_rule": "portia.account.retraction.same_source",
+      "expectation": "Retraction evidence must use the same represented source."
+    },
+    {
+      "group": "account/retraction",
+      "fixture": "tests/schema_validation/fixtures/issue-15/account/retraction/application-invalid/retraction-account-not-active.json",
+      "expected_rule": "portia.account.retraction.retraction_account_active",
+      "expectation": "Retraction Account must be active."
+    },
+    {
+      "group": "account/retraction",
+      "fixture": "tests/schema_validation/fixtures/issue-15/account/retraction/application-invalid/predecessor-not-active.json",
+      "expected_rule": "portia.account.retraction.predecessor_active",
+      "expectation": "Predecessor must be active when retracted."
+    },
+    {
+      "group": "account/retraction",
+      "fixture": "tests/schema_validation/fixtures/issue-15/account/retraction/application-invalid/wrong-transition-reason.json",
+      "expected_rule": "portia.account.retraction.transition_semantics",
+      "expectation": "Coordinated transition must express source retraction."
+    },
+    {
+      "group": "account/retraction",
+      "fixture": "tests/schema_validation/fixtures/issue-15/account/retraction/application-invalid/different-event.json",
+      "expected_rule": "portia.account.retraction.same_event",
+      "expectation": "Retraction and predecessor must belong to the same Event."
+    },
+    {
+      "group": "observation",
+      "fixture": "tests/schema_validation/fixtures/issue-15/observation/application-invalid/updated-before-created.json",
+      "expected_rule": "portia.observation.updated_before_created",
+      "expectation": "updated_at must not precede created_at."
+    },
+    {
+      "group": "observation",
+      "fixture": "tests/schema_validation/fixtures/issue-15/observation/application-invalid/observation-after-created.json",
+      "expected_rule": "portia.observation.observation_time_after_created",
+      "expectation": "Observation time cannot follow record creation in this scenario."
+    },
+    {
+      "group": "observation",
+      "fixture": "tests/schema_validation/fixtures/issue-15/observation/application-invalid/active-paper-without-review-history.json",
+      "expected_rule": "portia.observation.paper_review_required",
+      "expectation": "Paper-derived Observation must remain proposed before review."
+    },
+    {
+      "group": "observation",
+      "fixture": "tests/schema_validation/fixtures/issue-15/observation/application-invalid/active-import-without-review-history.json",
+      "expected_rule": "portia.observation.import_review_required",
+      "expectation": "Imported Observation must remain proposed before review."
+    },
+    {
+      "group": "observation",
+      "fixture": "tests/schema_validation/fixtures/issue-15/observation/application-invalid/instrument-observer-noninstrumented-method.json",
+      "expected_rule": "portia.observation.instrument_method_required",
+      "expectation": "Instrument observer requires instrumented method."
+    },
+    {
+      "group": "observation",
+      "fixture": "tests/schema_validation/fixtures/issue-15/observation/application-invalid/human-observer-instrumented-method.json",
+      "expected_rule": "portia.observation.instrumented_method_requires_instrument",
+      "expectation": "instrumented method requires an instrument observer."
+    },
+    {
+      "group": "observation",
+      "fixture": "tests/schema_validation/fixtures/issue-15/observation/application-invalid/manual-count-without-count-or-percentage.json",
+      "expected_rule": "portia.observation.manual_count_measurement_required",
+      "expectation": "manual_count requires count or percentage."
+    },
+    {
+      "group": "observation",
+      "fixture": "tests/schema_validation/fixtures/issue-15/observation/application-invalid/manual-timing-without-duration-or-latency.json",
+      "expected_rule": "portia.observation.manual_timing_measurement_required",
+      "expectation": "manual_timing requires duration or latency."
+    },
+    {
+      "group": "observation",
+      "fixture": "tests/schema_validation/fixtures/issue-15/observation/application-invalid/artifact-review-missing-source-artifact.json",
+      "expected_rule": "portia.observation.artifact_review_source_required",
+      "expectation": "artifact_review requires source artifact provenance."
+    },
+    {
+      "group": "observation",
+      "fixture": "tests/schema_validation/fixtures/issue-15/observation/application-invalid/duplicate-predecessor-identity.json",
+      "expected_rule": "portia.observation.supersession_predecessor_repeated",
+      "expectation": "Supersession predecessor identities must be unique."
+    },
+    {
+      "group": "observation",
+      "fixture": "tests/schema_validation/fixtures/issue-15/observation/application-invalid/mixed-supersession-reasons.json",
+      "expected_rule": "portia.observation.supersession_reason_mixed",
+      "expectation": "One replacement operation cannot mix supersession reasons."
+    },
+    {
+      "group": "observation",
+      "fixture": "tests/schema_validation/fixtures/issue-15/observation/application-invalid/ordinary-correction-cross-work.json",
+      "expected_rule": "portia.observation.ordinary_correction_cross_work",
+      "expectation": "Ordinary Observation correction cannot cross work roots."
+    },
+    {
+      "group": "observation",
+      "fixture": "tests/schema_validation/fixtures/issue-15/observation/application-invalid/work-root-correction-same-work.json",
+      "expected_rule": "portia.observation.work_root_correction_requires_different_work",
+      "expectation": "work_root_corrected must move to a different work root."
+    },
+    {
+      "group": "observation",
+      "fixture": "tests/schema_validation/fixtures/issue-15/observation/application-invalid/self-supersession.json",
+      "expected_rule": "portia.observation.supersession_self_reference",
+      "expectation": "Observation cannot replace itself."
+    },
+    {
+      "group": "observation",
+      "fixture": "tests/schema_validation/fixtures/issue-15/observation/application-invalid/single-predecessor-duplicate-consolidation.json",
+      "expected_rule": "portia.observation.duplicate_consolidation_requires_multiple_predecessors",
+      "expectation": "duplicate_consolidated requires at least two predecessors."
+    },
+    {
+      "group": "observation",
+      "fixture": "tests/schema_validation/fixtures/issue-15/observation/application-invalid/multiple-predecessor-correction.json",
+      "expected_rule": "portia.observation.nonconsolidation_requires_one_predecessor",
+      "expectation": "Non-consolidation Observation correction is one-to-one."
+    },
+    {
+      "group": "observation/role-compatibility",
+      "fixture": "tests/schema_validation/fixtures/issue-15/observation/role-compatibility/application-invalid/wrong-participant.json",
+      "expected_rule": "portia.observation_role.target_alignment",
+      "expectation": "Observation target must include Role Participant."
+    },
+    {
+      "group": "observation/role-compatibility",
+      "fixture": "tests/schema_validation/fixtures/issue-15/observation/role-compatibility/application-invalid/different-event.json",
+      "expected_rule": "portia.observation_role.same_event",
+      "expectation": "Observation and Role must belong to same Event."
+    },
+    {
+      "group": "observation/role-compatibility",
+      "fixture": "tests/schema_validation/fixtures/issue-15/observation/role-compatibility/application-invalid/event-wide-observation.json",
+      "expected_rule": "portia.observation_role.target_alignment",
+      "expectation": "Event-wide Observation cannot support participant-specific Role."
+    },
+    {
+      "group": "observation/role-compatibility",
+      "fixture": "tests/schema_validation/fixtures/issue-15/observation/role-compatibility/application-invalid/proposed-observation.json",
+      "expected_rule": "portia.observation_role.current_use_eligibility",
+      "expectation": "Proposed Observation is ineligible for current Role basis."
+    },
+    {
+      "group": "observation/role-compatibility",
+      "fixture": "tests/schema_validation/fixtures/issue-15/observation/role-compatibility/application-invalid/invalidated-observation.json",
+      "expected_rule": "portia.observation_role.current_use_eligibility",
+      "expectation": "Invalidated Observation is ineligible for current Role basis."
+    },
+    {
+      "group": "shared-lifecycle-correction-dependency",
+      "fixture": "tests/schema_validation/fixtures/issue-15/shared-lifecycle-correction-dependency/application-invalid/amendment-account-prohibited.json",
+      "expected_rule": "portia.account.amendment_prohibited_v1",
+      "expectation": "Focused compatibility invariant."
+    },
+    {
+      "group": "shared-lifecycle-correction-dependency",
+      "fixture": "tests/schema_validation/fixtures/issue-15/shared-lifecycle-correction-dependency/application-invalid/amendment-observation-prohibited.json",
+      "expected_rule": "portia.observation.amendment_prohibited_v1",
+      "expectation": "Focused compatibility invariant."
+    },
+    {
+      "group": "shared-lifecycle-correction-dependency",
+      "fixture": "tests/schema_validation/fixtures/issue-15/shared-lifecycle-correction-dependency/application-invalid/dependency-account-wrong-contract-version.json",
+      "expected_rule": "dependency_exact_contract_version_mismatch",
+      "expectation": "Focused compatibility invariant."
+    },
+    {
+      "group": "shared-lifecycle-correction-dependency",
+      "fixture": "tests/schema_validation/fixtures/issue-15/shared-lifecycle-correction-dependency/application-invalid/dependency-invalidated-account-current-use.json",
+      "expected_rule": "dependency_target_current_use_ineligible",
+      "expectation": "Focused compatibility invariant."
+    },
+    {
+      "group": "shared-lifecycle-correction-dependency",
+      "fixture": "tests/schema_validation/fixtures/issue-15/shared-lifecycle-correction-dependency/application-invalid/dependency-superseded-observation-no-silent-follow.json",
+      "expected_rule": "no_silent_successor_following",
+      "expectation": "Focused compatibility invariant."
+    },
+    {
+      "group": "shared-lifecycle-correction-dependency",
+      "fixture": "tests/schema_validation/fixtures/issue-15/shared-lifecycle-correction-dependency/application-invalid/disagreement-account-target-mismatch.json",
+      "expected_rule": "target_must_resolve_exactly_in_containing_work",
+      "expectation": "Focused compatibility invariant."
+    },
+    {
+      "group": "shared-lifecycle-correction-dependency",
+      "fixture": "tests/schema_validation/fixtures/issue-15/shared-lifecycle-correction-dependency/application-invalid/history-account-replacement-target-mismatch.json",
+      "expected_rule": "replacement_branch_must_target_same_record",
+      "expectation": "Focused compatibility invariant."
+    },
+    {
+      "group": "shared-lifecycle-correction-dependency",
+      "fixture": "tests/schema_validation/fixtures/issue-15/shared-lifecycle-correction-dependency/application-invalid/history-observation-replacement-target-mismatch.json",
+      "expected_rule": "replacement_branch_must_target_same_record",
+      "expectation": "Focused compatibility invariant."
+    },
+    {
+      "group": "shared-lifecycle-correction-dependency",
+      "fixture": "tests/schema_validation/fixtures/issue-15/shared-lifecycle-correction-dependency/application-invalid/lifecycle-account-retracted-active.json",
+      "expected_rule": "portia.account.lifecycle_matrix",
+      "expectation": "Focused compatibility invariant."
+    },
+    {
+      "group": "shared-lifecycle-correction-dependency",
+      "fixture": "tests/schema_validation/fixtures/issue-15/shared-lifecycle-correction-dependency/application-invalid/lifecycle-account-unrecognized-family-reason.json",
+      "expected_rule": "portia.account.lifecycle_reason",
+      "expectation": "Focused compatibility invariant."
+    },
+    {
+      "group": "shared-lifecycle-correction-dependency",
+      "fixture": "tests/schema_validation/fixtures/issue-15/shared-lifecycle-correction-dependency/application-invalid/lifecycle-observation-active-retracted.json",
+      "expected_rule": "portia.observation.lifecycle_matrix",
+      "expectation": "Focused compatibility invariant."
+    },
+    {
+      "group": "migration-removal-compatibility",
+      "fixture": "tests/schema_validation/fixtures/issue-15/migration-removal-compatibility/application-invalid/migration-account-same-contract-version.json",
+      "expected_rule": "portia.migration.same_contract_version",
+      "expectation": "Focused compatibility invariant."
+    },
+    {
+      "group": "migration-removal-compatibility",
+      "fixture": "tests/schema_validation/fixtures/issue-15/migration-removal-compatibility/application-invalid/migration-account-logical-identity-changed.json",
+      "expected_rule": "portia.migration.logical_identity_mismatch",
+      "expectation": "Focused compatibility invariant."
+    },
+    {
+      "group": "migration-removal-compatibility",
+      "fixture": "tests/schema_validation/fixtures/issue-15/migration-removal-compatibility/application-invalid/migration-observation-work-root-changed.json",
+      "expected_rule": "portia.migration.work_root_changed",
+      "expectation": "Focused compatibility invariant."
+    },
+    {
+      "group": "migration-removal-compatibility",
+      "fixture": "tests/schema_validation/fixtures/issue-15/migration-removal-compatibility/application-invalid/migration-observation-source-revision-mismatch.json",
+      "expected_rule": "portia.migration.observed_revision_mismatch",
+      "expectation": "Focused compatibility invariant."
+    },
+    {
+      "group": "migration-removal-compatibility",
+      "fixture": "tests/schema_validation/fixtures/issue-15/migration-removal-compatibility/application-invalid/migration-account-semantic-mismatch.json",
+      "expected_rule": "portia.migration.semantic_mismatch",
+      "expectation": "Focused compatibility invariant."
+    },
+    {
+      "group": "migration-removal-compatibility",
+      "fixture": "tests/schema_validation/fixtures/issue-15/migration-removal-compatibility/application-invalid/migration-observation-lifecycle-not-preserved.json",
+      "expected_rule": "portia.migration.lifecycle_not_preserved",
+      "expectation": "Focused compatibility invariant."
+    },
+    {
+      "group": "migration-removal-compatibility",
+      "fixture": "tests/schema_validation/fixtures/issue-15/migration-removal-compatibility/application-invalid/removal-account-target-mismatch.json",
+      "expected_rule": "portia.removal.target_not_exactly_resolved",
+      "expectation": "Focused compatibility invariant."
+    },
+    {
+      "group": "migration-removal-compatibility",
+      "fixture": "tests/schema_validation/fixtures/issue-15/migration-removal-compatibility/application-invalid/removal-observation-lifecycle-snapshot-mismatch.json",
+      "expected_rule": "portia.removal.lifecycle_snapshot_mismatch",
+      "expectation": "Focused compatibility invariant."
+    },
+    {
+      "group": "migration-removal-compatibility",
+      "fixture": "tests/schema_validation/fixtures/issue-15/migration-removal-compatibility/application-invalid/removal-account-substantive-content-retained.json",
+      "expected_rule": "portia.removal.substantive_content_retained",
+      "expectation": "Focused compatibility invariant."
+    },
+    {
+      "group": "migration-removal-compatibility",
+      "fixture": "tests/schema_validation/fixtures/issue-15/migration-removal-compatibility/application-invalid/removal-observation-substantive-content-retained.json",
+      "expected_rule": "portia.removal.substantive_content_retained",
+      "expectation": "Focused compatibility invariant."
+    },
+    {
+      "group": "migration-removal-compatibility",
+      "fixture": "tests/schema_validation/fixtures/issue-15/migration-removal-compatibility/application-invalid/removal-account-dependency-review-missing.json",
+      "expected_rule": "portia.removal.dependency_review_missing",
+      "expectation": "Focused compatibility invariant."
+    },
+    {
+      "group": "migration-removal-compatibility",
+      "fixture": "tests/schema_validation/fixtures/issue-15/migration-removal-compatibility/application-invalid/removal-account-silent-successor-follow.json",
+      "expected_rule": "portia.removal.silent_successor_follow",
+      "expectation": "Focused compatibility invariant."
+    },
+    {
+      "group": "operational-derived-privacy",
+      "fixture": "tests/schema_validation/fixtures/issue-15/operational-derived-privacy/application-invalid/quarantine-account-reason-leaks-quote.json",
+      "expected_rule": "portia.issue15.operational_privacy.substantive_text_leak",
+      "expectation": "Operational/derived exact-reference or privacy invariant."
+    },
+    {
+      "group": "operational-derived-privacy",
+      "fixture": "tests/schema_validation/fixtures/issue-15/operational-derived-privacy/application-invalid/quarantine-observation-reason-leaks-narrative.json",
+      "expected_rule": "portia.issue15.operational_privacy.substantive_text_leak",
+      "expectation": "Operational/derived exact-reference or privacy invariant."
+    },
+    {
+      "group": "operational-derived-privacy",
+      "fixture": "tests/schema_validation/fixtures/issue-15/operational-derived-privacy/application-invalid/integrity-account-sensitive-evidence-name.json",
+      "expected_rule": "portia.issue15.operational_privacy.sensitive_evidence_name",
+      "expectation": "Operational/derived exact-reference or privacy invariant."
+    },
+    {
+      "group": "operational-derived-privacy",
+      "fixture": "tests/schema_validation/fixtures/issue-15/operational-derived-privacy/application-invalid/integrity-observation-sensitive-evidence-name.json",
+      "expected_rule": "portia.issue15.operational_privacy.sensitive_evidence_name",
+      "expectation": "Operational/derived exact-reference or privacy invariant."
+    },
+    {
+      "group": "operational-derived-privacy",
+      "fixture": "tests/schema_validation/fixtures/issue-15/operational-derived-privacy/application-invalid/source-snapshot-substantive-path.json",
+      "expected_rule": "portia.issue15.derived_privacy.substantive_path_leak",
+      "expectation": "Operational/derived exact-reference or privacy invariant."
+    },
+    {
+      "group": "operational-derived-privacy",
+      "fixture": "tests/schema_validation/fixtures/issue-15/operational-derived-privacy/application-invalid/operation-journal-silent-successor-retarget.json",
+      "expected_rule": "portia.issue15.operations.silent_successor_retarget",
+      "expectation": "Operational/derived exact-reference or privacy invariant."
+    }
+  ]
+}

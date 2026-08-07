@@ -1,0 +1,53 @@
+{
+  "schema_version": "1",
+  "record_type": "source_snapshot",
+  "module_id": "portia",
+  "snapshot_algorithm": "portia_source_snapshot_v1",
+  "projection_kind": "current_state_view",
+  "projection_scope": {
+    "scope": "work",
+    "work_ref": {
+      "module_id": "portia",
+      "class_id": "eng10_p2_2026",
+      "work_id": "evt_issue15_ops",
+      "work_kind": "event",
+      "contract_version": "2"
+    }
+  },
+  "authorization_scope": {
+    "authorization_scope_id": "local_teacher_event_access",
+    "coverage": "complete",
+    "limitation_codes": []
+  },
+  "discovery_roots": [
+    "classes/eng10_p2_2026/modules/portia/work/evt_issue15_ops"
+  ],
+  "source_contracts": [
+    {
+      "contract_name": "account",
+      "contract_version": "1"
+    },
+    {
+      "contract_name": "observation",
+      "contract_version": "1"
+    }
+  ],
+  "entries": [
+    {
+      "workspace_relative_path": "classes/eng10_p2_2026/modules/portia/work/evt_issue15_ops/records/account/acct_ops_1.json",
+      "byte_length": 900,
+      "sha256_digest": "4444444444444444444444444444444444444444444444444444444444444444",
+      "source_role": "canonical_domain",
+      "contract_or_artifact_kind": "account"
+    },
+    {
+      "workspace_relative_path": "classes/eng10_p2_2026/modules/portia/work/evt_issue15_ops/records/observation/obs_ops_1.json",
+      "byte_length": 850,
+      "sha256_digest": "5555555555555555555555555555555555555555555555555555555555555555",
+      "source_role": "canonical_domain",
+      "contract_or_artifact_kind": "observation"
+    }
+  ],
+  "source_snapshot_digest": "72833a5bffdfaf92cc91a3a91284d091525f3a5fa1385cc7a0bc8b0b83af84d2",
+  "observed_at": "2026-08-07T14:20:00-04:00"
+}

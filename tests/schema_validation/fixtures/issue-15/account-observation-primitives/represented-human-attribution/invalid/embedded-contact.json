@@ -1,0 +1,10 @@
+{
+  "kind": "actor",
+  "actor_ref": {
+    "actor_id": "actr_family1"
+  },
+  "display_snapshot": {
+    "display_name": "Morgan Lee"
+  },
+  "email": "morgan@example.test"
+}

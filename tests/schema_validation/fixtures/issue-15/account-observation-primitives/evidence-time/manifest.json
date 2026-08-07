@@ -1,0 +1,24 @@
+{
+  "manifest_version": "1",
+  "issue": 15,
+  "contract": "evidence_time",
+  "version": "1",
+  "valid": {
+    "exact.json": "Structurally valid temporal precision branch.",
+    "approximate.json": "Structurally valid temporal precision branch.",
+    "date-only.json": "Structurally valid temporal precision branch.",
+    "range.json": "Structurally valid temporal precision branch.",
+    "unknown.json": "Structurally valid temporal precision branch."
+  },
+  "invalid": {
+    "exact-missing-at.json": "Structurally invalid temporal shape.",
+    "approximate-missing-qualifier.json": "Structurally invalid temporal shape.",
+    "date-only-has-time.json": "Structurally invalid temporal shape.",
+    "range-missing-end.json": "Structurally invalid temporal shape.",
+    "unknown-extra-time.json": "Structurally invalid temporal shape.",
+    "unsupported-precision.json": "Structurally invalid temporal shape."
+  },
+  "application_invalid": {
+    "range-reversed.json": "Structurally valid but application-invalid reversed range."
+  }
+}

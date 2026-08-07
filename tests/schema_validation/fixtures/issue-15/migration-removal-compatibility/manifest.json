@@ -1,0 +1,63 @@
+{
+  "manifest_version": "1",
+  "issue": 15,
+  "scope": "migration_removal_compatibility",
+  "public_contracts_added": [],
+  "valid": [
+    "migration-account-v1-v2.json",
+    "migration-observation-v1-v2.json",
+    "removal-account-exact.json",
+    "removal-observation-exact.json",
+    "removal-superseded-account-exact-predecessor.json"
+  ],
+  "application_invalid": [
+    {
+      "file": "migration-account-same-contract-version.json",
+      "rule_id": "portia.migration.same_contract_version"
+    },
+    {
+      "file": "migration-account-logical-identity-changed.json",
+      "rule_id": "portia.migration.logical_identity_mismatch"
+    },
+    {
+      "file": "migration-observation-work-root-changed.json",
+      "rule_id": "portia.migration.work_root_changed"
+    },
+    {
+      "file": "migration-observation-source-revision-mismatch.json",
+      "rule_id": "portia.migration.observed_revision_mismatch"
+    },
+    {
+      "file": "migration-account-semantic-mismatch.json",
+      "rule_id": "portia.migration.semantic_mismatch"
+    },
+    {
+      "file": "migration-observation-lifecycle-not-preserved.json",
+      "rule_id": "portia.migration.lifecycle_not_preserved"
+    },
+    {
+      "file": "removal-account-target-mismatch.json",
+      "rule_id": "portia.removal.target_not_exactly_resolved"
+    },
+    {
+      "file": "removal-observation-lifecycle-snapshot-mismatch.json",
+      "rule_id": "portia.removal.lifecycle_snapshot_mismatch"
+    },
+    {
+      "file": "removal-account-substantive-content-retained.json",
+      "rule_id": "portia.removal.substantive_content_retained"
+    },
+    {
+      "file": "removal-observation-substantive-content-retained.json",
+      "rule_id": "portia.removal.substantive_content_retained"
+    },
+    {
+      "file": "removal-account-dependency-review-missing.json",
+      "rule_id": "portia.removal.dependency_review_missing"
+    },
+    {
+      "file": "removal-account-silent-successor-follow.json",
+      "rule_id": "portia.removal.silent_successor_follow"
+    }
+  ]
+}

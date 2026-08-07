@@ -1,0 +1,157 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/attribution/represented-human-attribution.schema.json",
+  "title": "Portia Represented Human Attribution",
+  "description": "Closed attribution union for the represented human source of an Account or represented human observer of an Observation. It identifies who the record represents, not who created the JSON record. Roster and Actor branches preserve bounded display snapshots for historical readability. Attribution does not establish credibility, authority, guardianship, employment, consent, or Event participation.",
+  "oneOf": [
+    {
+      "$ref": "#/$defs/rosterStudent"
+    },
+    {
+      "$ref": "#/$defs/actor"
+    },
+    {
+      "$ref": "#/$defs/localOperator"
+    },
+    {
+      "$ref": "#/$defs/descriptivePerson"
+    },
+    {
+      "$ref": "#/$defs/unidentifiedPerson"
+    }
+  ],
+  "$defs": {
+    "rosterStudent": {
+      "type": "object",
+      "required": [
+        "kind",
+        "roster_student_ref",
+        "display_snapshot"
+      ],
+      "properties": {
+        "kind": {
+          "const": "roster_student"
+        },
+        "roster_student_ref": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/roster-student-ref.schema.json"
+        },
+        "display_snapshot": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/snapshots/person-display-snapshot.schema.json"
+        }
+      },
+      "additionalProperties": false
+    },
+    "actor": {
+      "type": "object",
+      "required": [
+        "kind",
+        "actor_ref",
+        "display_snapshot"
+      ],
+      "properties": {
+        "kind": {
+          "const": "actor"
+        },
+        "actor_ref": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/actor-ref.schema.json"
+        },
+        "display_snapshot": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/snapshots/person-display-snapshot.schema.json"
+        }
+      },
+      "additionalProperties": false
+    },
+    "localOperator": {
+      "type": "object",
+      "required": [
+        "kind",
+        "display_label"
+      ],
+      "properties": {
+        "kind": {
+          "const": "local_operator"
+        },
+        "display_label": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+        }
+      },
+      "additionalProperties": false
+    },
+    "descriptivePerson": {
+      "type": "object",
+      "required": [
+        "kind",
+        "description_type",
+        "display_label"
+      ],
+      "properties": {
+        "kind": {
+          "const": "descriptive_person"
+        },
+        "description_type": {
+          "enum": [
+            "outside_student",
+            "family_member",
+            "school_staff",
+            "visitor",
+            "community_member",
+            "other"
+          ]
+        },
+        "display_label": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+        },
+        "detail": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+        }
+      },
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "description_type": {
+                "const": "other"
+              }
+            },
+            "required": [
+              "description_type"
+            ]
+          },
+          "then": {
+            "required": [
+              "detail"
+            ]
+          }
+        }
+      ]
+    },
+    "unidentifiedPerson": {
+      "type": "object",
+      "required": [
+        "kind",
+        "identity_status"
+      ],
+      "properties": {
+        "kind": {
+          "const": "unidentified_person"
+        },
+        "identity_status": {
+          "enum": [
+            "anonymous",
+            "withheld",
+            "uncertain",
+            "not_recorded"
+          ]
+        },
+        "display_label": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+        },
+        "detail": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}
