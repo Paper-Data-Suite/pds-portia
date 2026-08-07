@@ -1,0 +1,157 @@
+{
+  "kind": "history",
+  "record": {
+    "schema_version": "1",
+    "record_type": "observation",
+    "module_id": "portia",
+    "class_id": "eng10_p2_2026",
+    "work_id": "evt_alpha",
+    "observation_id": "obs_history_mismatch",
+    "status": "active",
+    "target": {
+      "kind": "event_participant",
+      "record_ref": {
+        "record_kind": "event_participant",
+        "record_id": "ep_alpha",
+        "contract_version": "3"
+      }
+    },
+    "observer": {
+      "kind": "human",
+      "human_attribution": {
+        "kind": "roster_student",
+        "roster_student_ref": {
+          "class_id": "eng10_p2_2026",
+          "student_id": "stu_001"
+        },
+        "display_snapshot": {
+          "display_name": "Jordan Lee"
+        }
+      }
+    },
+    "method": "live_direct",
+    "content": {
+      "narrative": "The student raised a hand before speaking."
+    },
+    "observation_time": {
+      "precision": "exact",
+      "at": "2026-08-07T08:10:00-04:00"
+    },
+    "creation_source": {
+      "type": "digital_entry"
+    },
+    "created_at": "2026-08-07T08:15:00-04:00",
+    "created_by": {
+      "type": "local_operator",
+      "display_label": "Synthetic Teacher"
+    },
+    "updated_at": "2026-08-07T08:30:00-04:00",
+    "updated_by": {
+      "type": "local_operator",
+      "display_label": "Synthetic Teacher"
+    }
+  },
+  "replaced_transition": {
+    "schema_version": "1",
+    "record_type": "lifecycle_transition",
+    "module_id": "portia",
+    "class_id": "eng10_p2_2026",
+    "work_id": "evt_alpha",
+    "transition_id": "lct_obs_hist_replaced",
+    "target": {
+      "kind": "local_record",
+      "record_ref": {
+        "record_kind": "observation",
+        "record_id": "obs_history_mismatch",
+        "contract_version": "1"
+      }
+    },
+    "previous_transition": null,
+    "from_status": "proposed",
+    "to_status": "invalidated",
+    "reason": {
+      "category": "record_validity",
+      "code": "recording_error"
+    },
+    "effective_at": "2026-08-07T08:20:00-04:00",
+    "creation_source": {
+      "type": "digital_entry"
+    },
+    "created_at": "2026-08-07T08:21:00-04:00",
+    "created_by": {
+      "type": "local_operator",
+      "display_label": "Synthetic Teacher"
+    }
+  },
+  "replacement_transition": {
+    "schema_version": "1",
+    "record_type": "lifecycle_transition",
+    "module_id": "portia",
+    "class_id": "eng10_p2_2026",
+    "work_id": "evt_alpha",
+    "transition_id": "lct_obs_hist_replacement",
+    "target": {
+      "kind": "local_record",
+      "record_ref": {
+        "record_kind": "observation",
+        "record_id": "obs_other_record",
+        "contract_version": "1"
+      }
+    },
+    "previous_transition": null,
+    "from_status": "proposed",
+    "to_status": "active",
+    "reason": {
+      "category": "workflow",
+      "code": "review_completed"
+    },
+    "effective_at": "2026-08-07T08:20:00-04:00",
+    "creation_source": {
+      "type": "digital_entry"
+    },
+    "created_at": "2026-08-07T08:21:00-04:00",
+    "created_by": {
+      "type": "local_operator",
+      "display_label": "Synthetic Teacher"
+    }
+  },
+  "correction": {
+    "schema_version": "1",
+    "record_type": "lifecycle_history_correction",
+    "module_id": "portia",
+    "class_id": "eng10_p2_2026",
+    "work_id": "evt_alpha",
+    "correction_id": "lhc_obs_bad_target",
+    "target": {
+      "kind": "local_record",
+      "record_ref": {
+        "record_kind": "observation",
+        "record_id": "obs_history_mismatch",
+        "contract_version": "1"
+      }
+    },
+    "previous_correction": null,
+    "replaced_head": {
+      "record_kind": "lifecycle_transition",
+      "record_id": "lct_obs_hist_replaced",
+      "contract_version": "1"
+    },
+    "replacement_head": {
+      "record_kind": "lifecycle_transition",
+      "record_id": "lct_obs_hist_replacement",
+      "contract_version": "1"
+    },
+    "reason": {
+      "code": "wrong_to_status"
+    },
+    "creation_source": {
+      "type": "digital_entry"
+    },
+    "created_at": "2026-08-07T08:30:00-04:00",
+    "created_by": {
+      "type": "local_operator",
+      "display_label": "Synthetic Teacher"
+    }
+  },
+  "expected_rule": "replacement_branch_must_target_same_record"
+}
