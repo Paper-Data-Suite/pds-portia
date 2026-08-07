@@ -1,0 +1,108 @@
+{
+  "kind": "removal",
+  "target_record": {
+    "schema_version": "1",
+    "record_type": "observation",
+    "module_id": "portia",
+    "class_id": "eng10_p2_2026",
+    "work_id": "evt_alpha",
+    "observation_id": "obs_direct_1",
+    "status": "active",
+    "target": {
+      "kind": "event_participant",
+      "record_ref": {
+        "record_kind": "event_participant",
+        "record_id": "ep_alpha",
+        "contract_version": "3"
+      }
+    },
+    "observer": {
+      "kind": "human",
+      "human_attribution": {
+        "kind": "roster_student",
+        "roster_student_ref": {
+          "class_id": "eng10_p2_2026",
+          "student_id": "stu_001"
+        },
+        "display_snapshot": {
+          "display_name": "Jordan Lee"
+        }
+      }
+    },
+    "method": "live_direct",
+    "content": {
+      "narrative": "The student raised a hand before speaking."
+    },
+    "observation_time": {
+      "precision": "exact",
+      "at": "2026-08-07T08:10:00-04:00"
+    },
+    "creation_source": {
+      "type": "digital_entry"
+    },
+    "created_at": "2026-08-07T08:15:00-04:00",
+    "created_by": {
+      "type": "local_operator",
+      "display_label": "Synthetic Teacher"
+    },
+    "updated_at": "2026-08-07T08:15:00-04:00",
+    "updated_by": {
+      "type": "local_operator",
+      "display_label": "Synthetic Teacher"
+    }
+  },
+  "removal": {
+    "schema_version": "1",
+    "record_type": "exceptional_removal",
+    "module_id": "portia",
+    "class_id": "eng10_p2_2026",
+    "removal_id": "rmv_obs_leak",
+    "target": {
+      "kind": "work_record",
+      "work_record_ref": {
+        "work_ref": {
+          "module_id": "portia",
+          "class_id": "eng10_p2_2026",
+          "work_id": "evt_alpha",
+          "work_kind": "event",
+          "contract_version": "2"
+        },
+        "record_ref": {
+          "record_kind": "observation",
+          "record_id": "obs_direct_1",
+          "contract_version": "1"
+        }
+      }
+    },
+    "reason": {
+      "category": "privacy_requirement",
+      "code": "prohibited_sensitive_payload"
+    },
+    "authorization": {
+      "decision_reference": "The student raised a hand before speaking.",
+      "authorized_by": {
+        "type": "local_operator",
+        "display_label": "Synthetic Teacher"
+      }
+    },
+    "content_evidence": {
+      "kind": "salted_sha256",
+      "salt": "c2FsdA==",
+      "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "byte_length": 512
+    },
+    "lifecycle_snapshot": {
+      "status": "active"
+    },
+    "effective_at": "2026-08-07T09:00:00-04:00",
+    "creation_source": {
+      "type": "digital_entry"
+    },
+    "created_at": "2026-08-07T09:05:00-04:00",
+    "created_by": {
+      "type": "local_operator",
+      "display_label": "Synthetic Teacher"
+    }
+  },
+  "dependency_review_complete": true
+}

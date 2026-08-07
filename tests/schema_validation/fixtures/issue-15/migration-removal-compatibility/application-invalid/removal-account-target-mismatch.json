@@ -1,0 +1,109 @@
+{
+  "kind": "removal",
+  "target_record": {
+    "schema_version": "1",
+    "record_type": "account",
+    "module_id": "portia",
+    "class_id": "eng10_p2_2026",
+    "work_id": "evt_alpha",
+    "account_id": "acct_student_report_1",
+    "status": "active",
+    "target": {
+      "kind": "event_participant",
+      "record_ref": {
+        "record_kind": "event_participant",
+        "record_id": "ep_alpha",
+        "contract_version": "3"
+      }
+    },
+    "source": {
+      "kind": "roster_student",
+      "roster_student_ref": {
+        "class_id": "eng10_p2_2026",
+        "student_id": "stu_001"
+      },
+      "display_snapshot": {
+        "display_name": "Jordan Lee"
+      }
+    },
+    "information_origin": "firsthand",
+    "source_certainty": "stated_certain",
+    "content": [
+      {
+        "representation": "recorded_summary",
+        "text": "The student reported being seated by the window."
+      }
+    ],
+    "provided_time": {
+      "precision": "exact",
+      "at": "2026-08-07T08:10:00-04:00"
+    },
+    "creation_source": {
+      "type": "digital_entry"
+    },
+    "created_at": "2026-08-07T08:15:00-04:00",
+    "created_by": {
+      "type": "local_operator",
+      "display_label": "Synthetic Teacher"
+    },
+    "updated_at": "2026-08-07T08:15:00-04:00",
+    "updated_by": {
+      "type": "local_operator",
+      "display_label": "Synthetic Teacher"
+    }
+  },
+  "removal": {
+    "schema_version": "1",
+    "record_type": "exceptional_removal",
+    "module_id": "portia",
+    "class_id": "eng10_p2_2026",
+    "removal_id": "rmv_bad_target",
+    "target": {
+      "kind": "work_record",
+      "work_record_ref": {
+        "work_ref": {
+          "module_id": "portia",
+          "class_id": "eng10_p2_2026",
+          "work_id": "evt_alpha",
+          "work_kind": "event",
+          "contract_version": "2"
+        },
+        "record_ref": {
+          "record_kind": "account",
+          "record_id": "acct_other_1",
+          "contract_version": "1"
+        }
+      }
+    },
+    "reason": {
+      "category": "privacy_requirement",
+      "code": "prohibited_sensitive_payload"
+    },
+    "authorization": {
+      "decision_reference": "synthetic-privacy-review-001",
+      "authorized_by": {
+        "type": "local_operator",
+        "display_label": "Synthetic Teacher"
+      }
+    },
+    "content_evidence": {
+      "kind": "salted_sha256",
+      "salt": "c2FsdA==",
+      "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "byte_length": 512
+    },
+    "lifecycle_snapshot": {
+      "status": "active"
+    },
+    "effective_at": "2026-08-07T09:00:00-04:00",
+    "creation_source": {
+      "type": "digital_entry"
+    },
+    "created_at": "2026-08-07T09:05:00-04:00",
+    "created_by": {
+      "type": "local_operator",
+      "display_label": "Synthetic Teacher"
+    }
+  },
+  "dependency_review_complete": true
+}
