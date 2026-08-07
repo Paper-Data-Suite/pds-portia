@@ -1,0 +1,546 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/observations/observation.schema.json",
+  "title": "Portia Observation",
+  "description": "Canonical version-1 Portia Observation record preserving one coherent attributed or instrumented record of directly observable, counted, timed, recorded, or measured information concerning one target inside the containing Event. An Observation preserves observable evidence; it does not establish interpretation, credibility, a finding, Classification, Hypothesis, Determination, policy violation, severity, diagnosis, intent, behavioral function, guilt, or risk.",
+  "$comment": "Application validation remains responsible for canonical path and Event ownership, target and observer resolution, observer/recorder distinction, human/instrument method compatibility, observable-content discipline, paper/import review history, evidence-time chronology, measurement semantics, lifecycle legality, supersession topology, incoming-reference reconciliation, Event Participant Role basis compatibility, no silent successor following, authorization, privacy, and recoverable coordinated writes.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "record_type",
+    "module_id",
+    "class_id",
+    "work_id",
+    "observation_id",
+    "status",
+    "target",
+    "observer",
+    "method",
+    "content",
+    "observation_time",
+    "creation_source",
+    "created_at",
+    "created_by",
+    "updated_at",
+    "updated_by"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1"
+    },
+    "record_type": {
+      "const": "observation"
+    },
+    "module_id": {
+      "const": "portia"
+    },
+    "class_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+    },
+    "work_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-event-id.schema.json"
+    },
+    "observation_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-observation-id.schema.json"
+    },
+    "status": {
+      "enum": [
+        "proposed",
+        "active",
+        "invalidated",
+        "superseded"
+      ]
+    },
+    "target": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/targets/portia-target-ref.schema.json"
+    },
+    "observer": {
+      "$ref": "#/$defs/observer"
+    },
+    "method": {
+      "enum": [
+        "live_direct",
+        "artifact_review",
+        "manual_count",
+        "manual_timing",
+        "instrumented",
+        "other"
+      ]
+    },
+    "method_detail": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json",
+      "description": "Required only when method is other."
+    },
+    "content": {
+      "$ref": "#/$defs/observationContent"
+    },
+    "observation_time": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/evidence-time.schema.json"
+    },
+    "source_artifacts": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/provenance/source-artifact-ref.schema.json"
+      }
+    },
+    "supersedes": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/supersessionEntry"
+      }
+    },
+    "creation_source": {
+      "allOf": [
+        {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/provenance/creation-source.schema.json"
+        },
+        {
+          "not": {
+            "type": "object",
+            "properties": {
+              "type": {
+                "const": "paper_capture"
+              },
+              "stage": {
+                "const": "preallocated"
+              }
+            },
+            "required": [
+              "type",
+              "stage"
+            ]
+          }
+        }
+      ]
+    },
+    "created_at": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+    },
+    "created_by": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/attribution/attribution-agent.schema.json"
+    },
+    "updated_at": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+    },
+    "updated_by": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/attribution/attribution-agent.schema.json"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "method": {
+            "const": "other"
+          }
+        },
+        "required": [
+          "method"
+        ]
+      },
+      "then": {
+        "required": [
+          "method_detail"
+        ]
+      },
+      "else": {
+        "not": {
+          "required": [
+            "method_detail"
+          ]
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "observer": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/humanObserver"
+        },
+        {
+          "$ref": "#/$defs/instrumentObserver"
+        }
+      ]
+    },
+    "humanObserver": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "human_attribution"
+      ],
+      "properties": {
+        "kind": {
+          "const": "human"
+        },
+        "human_attribution": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/attribution/represented-human-attribution.schema.json"
+        }
+      }
+    },
+    "instrumentObserver": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "instrument_type",
+        "instrument_label"
+      ],
+      "properties": {
+        "kind": {
+          "const": "instrument"
+        },
+        "instrument_type": {
+          "enum": [
+            "timer",
+            "counter",
+            "software",
+            "sensor",
+            "other"
+          ]
+        },
+        "instrument_label": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+        },
+        "process_id": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+        },
+        "other_type": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+        },
+        "known_limitation": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "instrument_type": {
+                "const": "other"
+              }
+            },
+            "required": [
+              "instrument_type"
+            ]
+          },
+          "then": {
+            "required": [
+              "other_type"
+            ]
+          },
+          "else": {
+            "not": {
+              "required": [
+                "other_type"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "observationContent": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "narrative": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+        },
+        "measurements": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/measurement"
+          }
+        }
+      },
+      "anyOf": [
+        {
+          "required": [
+            "narrative"
+          ]
+        },
+        {
+          "required": [
+            "measurements"
+          ]
+        }
+      ]
+    },
+    "measurement": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/countMeasurement"
+        },
+        {
+          "$ref": "#/$defs/durationMeasurement"
+        },
+        {
+          "$ref": "#/$defs/latencyMeasurement"
+        },
+        {
+          "$ref": "#/$defs/percentageMeasurement"
+        },
+        {
+          "$ref": "#/$defs/otherNumericMeasurement"
+        }
+      ]
+    },
+    "countMeasurement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "measure_type",
+        "value",
+        "unit"
+      ],
+      "properties": {
+        "measure_type": {
+          "const": "count"
+        },
+        "value": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "unit": {
+          "const": "count"
+        }
+      }
+    },
+    "durationMeasurement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "measure_type",
+        "value",
+        "unit"
+      ],
+      "properties": {
+        "measure_type": {
+          "const": "duration"
+        },
+        "value": {
+          "type": "number",
+          "minimum": 0
+        },
+        "unit": {
+          "enum": [
+            "milliseconds",
+            "seconds",
+            "minutes",
+            "hours"
+          ]
+        }
+      }
+    },
+    "latencyMeasurement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "measure_type",
+        "value",
+        "unit"
+      ],
+      "properties": {
+        "measure_type": {
+          "const": "latency"
+        },
+        "value": {
+          "type": "number",
+          "minimum": 0
+        },
+        "unit": {
+          "enum": [
+            "milliseconds",
+            "seconds",
+            "minutes",
+            "hours"
+          ]
+        }
+      }
+    },
+    "percentageMeasurement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "measure_type",
+        "value",
+        "unit"
+      ],
+      "properties": {
+        "measure_type": {
+          "const": "percentage"
+        },
+        "value": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "unit": {
+          "const": "percent"
+        }
+      }
+    },
+    "otherNumericMeasurement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "measure_type",
+        "measure_label",
+        "value",
+        "unit"
+      ],
+      "properties": {
+        "measure_type": {
+          "const": "other_numeric"
+        },
+        "measure_label": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+        },
+        "value": {
+          "type": "number"
+        },
+        "unit": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+        }
+      }
+    },
+    "observationWorkRecordRef": {
+      "allOf": [
+        {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-portia-work-record-ref.schema.json"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "record_ref": {
+              "allOf": [
+                {
+                  "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-local-record-ref.schema.json"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "record_kind": {
+                      "const": "observation"
+                    },
+                    "record_id": {
+                      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-observation-id.schema.json"
+                    },
+                    "contract_version": {
+                      "const": "1"
+                    }
+                  },
+                  "required": [
+                    "record_kind",
+                    "record_id",
+                    "contract_version"
+                  ]
+                }
+              ]
+            }
+          },
+          "required": [
+            "work_ref",
+            "record_ref"
+          ]
+        }
+      ]
+    },
+    "supersessionEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "work_record_ref",
+        "reason"
+      ],
+      "properties": {
+        "work_record_ref": {
+          "$ref": "#/$defs/observationWorkRecordRef"
+        },
+        "reason": {
+          "enum": [
+            "observer_corrected",
+            "instrument_corrected",
+            "target_corrected",
+            "observation_content_corrected",
+            "measurement_corrected",
+            "timing_corrected",
+            "method_corrected",
+            "provenance_corrected",
+            "duplicate_consolidated",
+            "work_root_corrected",
+            "contract_migrated",
+            "other"
+          ]
+        },
+        "detail": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "reason": {
+                "const": "other"
+              }
+            },
+            "required": [
+              "reason"
+            ]
+          },
+          "then": {
+            "required": [
+              "detail"
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "x-portia-application-invariants": [
+    "portia.observation.canonical_storage_scope",
+    "portia.observation.path_identity_agreement",
+    "portia.observation.parent_event_resolution",
+    "portia.observation.target_resolution",
+    "portia.observation.target_same_event",
+    "portia.observation.observer_resolution",
+    "portia.observation.observer_recorder_distinction",
+    "portia.observation.instrument_method_compatibility",
+    "portia.observation.method_content_compatibility",
+    "portia.observation.timestamp_chronology",
+    "portia.observation.observation_time_chronology",
+    "portia.observation.creation_provenance_immutable",
+    "portia.observation.paper_provenance_agreement",
+    "portia.observation.paper_activation_requires_review_history",
+    "portia.observation.import_activation_requires_review_history",
+    "portia.observation.measurement_value_unit_compatibility",
+    "portia.observation.source_artifact_resolution",
+    "portia.observation.external_reference_inert",
+    "portia.observation.lifecycle_matrix",
+    "portia.observation.lifecycle_history_reconciliation",
+    "portia.observation.current_use_eligibility",
+    "portia.observation.amendment_prohibited_v1",
+    "portia.observation.predecessor_resolution",
+    "portia.observation.predecessor_identity_unique",
+    "portia.observation.self_supersession",
+    "portia.observation.supersession_reason_uniform",
+    "portia.observation.replacement_topology",
+    "portia.observation.supersession_cycle",
+    "portia.observation.ownership_reconciliation",
+    "portia.observation.successor_effectiveness",
+    "portia.observation.incoming_reference_complete",
+    "portia.observation.no_silent_successor_following",
+    "portia.observation.role_basis_target_alignment",
+    "portia.observation.no_automatic_interpretation",
+    "portia.observation.no_automatic_finding"
+  ]
+}

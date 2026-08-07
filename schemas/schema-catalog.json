@@ -628,6 +628,12 @@
         "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/accounts/account.schema.json",
         "path": "schemas/v1/accounts/account.schema.json"
       }
+    },
+    "observation": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/observations/observation.schema.json",
+        "path": "schemas/v1/observations/observation.schema.json"
+      }
     }
   }
 }

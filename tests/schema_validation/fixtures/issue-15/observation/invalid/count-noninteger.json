@@ -1,0 +1,57 @@
+{
+  "schema_version": "1",
+  "record_type": "observation",
+  "module_id": "portia",
+  "class_id": "eng10_p2_2026",
+  "work_id": "evt_alpha",
+  "observation_id": "obs_direct_1",
+  "status": "active",
+  "target": {
+    "kind": "event_participant",
+    "record_ref": {
+      "record_kind": "event_participant",
+      "record_id": "ep_alpha",
+      "contract_version": "3"
+    }
+  },
+  "observer": {
+    "kind": "human",
+    "human_attribution": {
+      "kind": "roster_student",
+      "roster_student_ref": {
+        "class_id": "eng10_p2_2026",
+        "student_id": "stu_001"
+      },
+      "display_snapshot": {
+        "display_name": "Jordan Lee"
+      }
+    }
+  },
+  "method": "live_direct",
+  "content": {
+    "measurements": [
+      {
+        "measure_type": "count",
+        "value": 1.5,
+        "unit": "count"
+      }
+    ]
+  },
+  "observation_time": {
+    "precision": "exact",
+    "at": "2026-08-07T08:10:00-04:00"
+  },
+  "creation_source": {
+    "type": "digital_entry"
+  },
+  "created_at": "2026-08-07T08:15:00-04:00",
+  "created_by": {
+    "type": "local_operator",
+    "display_label": "Synthetic Teacher"
+  },
+  "updated_at": "2026-08-07T08:15:00-04:00",
+  "updated_by": {
+    "type": "local_operator",
+    "display_label": "Synthetic Teacher"
+  }
+}
