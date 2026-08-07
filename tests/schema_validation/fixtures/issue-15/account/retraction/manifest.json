@@ -1,0 +1,15 @@
+{
+  "manifest_version": "1",
+  "issue": 15,
+  "scenario": "source_evidenced_account_retraction",
+  "valid": [
+    "same-source-active-retraction.json"
+  ],
+  "application_invalid": [
+    "different-source.json",
+    "retraction-account-not-active.json",
+    "predecessor-not-active.json",
+    "wrong-transition-reason.json",
+    "different-event.json"
+  ]
+}

@@ -622,6 +622,12 @@
         "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/provenance/source-artifact-ref.schema.json",
         "path": "schemas/v1/provenance/source-artifact-ref.schema.json"
       }
+    },
+    "account": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/accounts/account.schema.json",
+        "path": "schemas/v1/accounts/account.schema.json"
+      }
     }
   }
 }
