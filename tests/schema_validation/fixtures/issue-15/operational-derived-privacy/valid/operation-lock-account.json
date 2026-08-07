@@ -1,0 +1,30 @@
+{
+  "schema_version": "2",
+  "record_type": "operation_lock",
+  "module_id": "portia",
+  "lock_id": "lock_390d3864c46ce12e6a085368c924511ba13cf31b47d22babb67322f9b98b8fbb",
+  "lock_scope": "record",
+  "protected_target": {
+    "kind": "record",
+    "work_record_ref": {
+      "work_ref": {
+        "module_id": "portia",
+        "class_id": "eng10_p2_2026",
+        "work_id": "evt_issue15_ops",
+        "work_kind": "event",
+        "contract_version": "2"
+      },
+      "record_ref": {
+        "record_kind": "account",
+        "record_id": "acct_ops_1",
+        "contract_version": "1"
+      }
+    }
+  },
+  "owning_operation": {
+    "operation_id": "op_create_account_ops"
+  },
+  "acquired_at": "2026-08-07T14:00:03-04:00",
+  "deployment_instance_id": "desktop_local_01",
+  "process_instance_id": "process_4217"
+}

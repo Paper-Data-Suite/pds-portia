@@ -1,0 +1,47 @@
+{
+  "finding_key": "fnd_observation_canonical_path_mismatch",
+  "evaluation_key": "evl_observation_canonical_path_mismatch_r1",
+  "rule_id": "portia.observation.canonical_path_mismatch",
+  "rule_version": "1",
+  "category": "structure",
+  "code": "canonical_path_mismatch",
+  "severity": "error",
+  "assessment": {
+    "result": "confirmed"
+  },
+  "effects": [
+    "review_required"
+  ],
+  "scope": "representation",
+  "primary_target": {
+    "kind": "portia_work_record",
+    "work_record_ref": {
+      "work_ref": {
+        "module_id": "portia",
+        "class_id": "eng10_p2_2026",
+        "work_id": "evt_issue15_ops",
+        "work_kind": "event",
+        "contract_version": "2"
+      },
+      "record_ref": {
+        "record_kind": "observation",
+        "record_id": "obs_ops_1",
+        "contract_version": "1"
+      }
+    }
+  },
+  "related_targets": [],
+  "evidence": [
+    {
+      "name": "record_kind",
+      "kind": "token",
+      "value": "observation"
+    },
+    {
+      "name": "contract_version",
+      "kind": "identifier",
+      "value": "1"
+    }
+  ],
+  "observed_at": "2026-08-07T14:15:00-04:00"
+}
