@@ -1,0 +1,381 @@
+{
+  "matrix_version": "1",
+  "issue": 14,
+  "criterion_count": 41,
+  "criteria": [
+    {
+      "id": "AC-01",
+      "status": "complete",
+      "criterion": "One Actor represents one recurring non-roster human person.",
+      "evidence": [
+        "docs/design/portia-actor-directory-domain-model-and-lifecycle.md",
+        "schemas/v1/actors/actor.schema.json"
+      ]
+    },
+    {
+      "id": "AC-02",
+      "status": "complete",
+      "criterion": "Actor eligibility and deliberate creation boundaries are explicit.",
+      "evidence": [
+        "docs/design/portia-actor-directory-domain-model-and-lifecycle.md",
+        "README.md"
+      ]
+    },
+    {
+      "id": "AC-03",
+      "status": "complete",
+      "criterion": "Roster students are prohibited from Actor duplication.",
+      "evidence": [
+        "schemas/v1/actors/actor.schema.json",
+        "schemas/v1/actors/actor-roster-student-collision.schema.json"
+      ]
+    },
+    {
+      "id": "AC-04",
+      "status": "complete",
+      "criterion": "Descriptive, unidentified, and one-time people may remain non-Actor representations.",
+      "evidence": [
+        "docs/design/portia-actor-directory-domain-model-and-lifecycle.md",
+        "README.md"
+      ]
+    },
+    {
+      "id": "AC-05",
+      "status": "complete",
+      "criterion": "Opaque stable actr_ identity is preserved.",
+      "evidence": [
+        "schemas/v1/identifiers/portia-actor-id.schema.json",
+        "schemas/v1/references/actor-ref.schema.json"
+      ]
+    },
+    {
+      "id": "AC-06",
+      "status": "complete",
+      "criterion": "Canonical Actor root and child storage are explicit.",
+      "evidence": [
+        "docs/design/portia-actor-directory-domain-model-and-lifecycle.md",
+        "README.md"
+      ]
+    },
+    {
+      "id": "AC-07",
+      "status": "complete",
+      "criterion": "The canonical Actor root envelope is public and closed.",
+      "evidence": [
+        "schemas/v1/actors/actor.schema.json"
+      ]
+    },
+    {
+      "id": "AC-08",
+      "status": "complete",
+      "criterion": "Broad Actor category vocabulary is bounded and nonidentifying.",
+      "evidence": [
+        "schemas/v1/actors/actor.schema.json"
+      ]
+    },
+    {
+      "id": "AC-09",
+      "status": "complete",
+      "criterion": "Current display data is separated from durable identity.",
+      "evidence": [
+        "schemas/v1/actors/actor.schema.json",
+        "schemas/v1/snapshots/person-display-snapshot.schema.json"
+      ]
+    },
+    {
+      "id": "AC-10",
+      "status": "complete",
+      "criterion": "Historical display snapshots remain nonauthoritative and unchanged.",
+      "evidence": [
+        "docs/design/portia-actor-directory-domain-model-and-lifecycle.md",
+        "schemas/v1/snapshots/person-display-snapshot.schema.json"
+      ]
+    },
+    {
+      "id": "AC-11",
+      "status": "complete",
+      "criterion": "Organization and title boundaries are explicit.",
+      "evidence": [
+        "schemas/v1/actors/actor.schema.json",
+        "schemas/v1/actors/actor-directory-amendment.schema.json"
+      ]
+    },
+    {
+      "id": "AC-12",
+      "status": "complete",
+      "criterion": "Workflow and contextual roles remain outside Actor identity.",
+      "evidence": [
+        "docs/design/portia-actor-directory-domain-model-and-lifecycle.md",
+        "README.md"
+      ]
+    },
+    {
+      "id": "AC-13",
+      "status": "complete",
+      "criterion": "Contact information uses separate canonical Contact Points.",
+      "evidence": [
+        "schemas/v1/actors/actor-contact-point.schema.json"
+      ]
+    },
+    {
+      "id": "AC-14",
+      "status": "complete",
+      "criterion": "Contact sensitivity, source, verification, lifecycle, preference, and correction are defined.",
+      "evidence": [
+        "schemas/v1/actors/actor-contact-point.schema.json",
+        "docs/examples/issue-14/actor-contact-point.json"
+      ]
+    },
+    {
+      "id": "AC-15",
+      "status": "complete",
+      "criterion": "Reusable Actor-to-Student Relationships are separate canonical records.",
+      "evidence": [
+        "schemas/v1/actors/actor-student-relationship.schema.json"
+      ]
+    },
+    {
+      "id": "AC-16",
+      "status": "complete",
+      "criterion": "Relationship basis, review, effective scope, lifecycle, and authority limits are defined.",
+      "evidence": [
+        "schemas/v1/actors/actor-student-relationship.schema.json",
+        "docs/examples/issue-14/actor-student-relationship.json"
+      ]
+    },
+    {
+      "id": "AC-17",
+      "status": "complete",
+      "criterion": "Actor Directory lifecycle and current-use eligibility are explicit.",
+      "evidence": [
+        "schemas/v1/actors/actor-directory-lifecycle-transition.schema.json",
+        "docs/design/portia-actor-directory-domain-model-and-lifecycle.md"
+      ]
+    },
+    {
+      "id": "AC-18",
+      "status": "complete",
+      "criterion": "Proposed, active, inactive, invalidated, and superseded states are represented.",
+      "evidence": [
+        "schemas/v1/actors/actor.schema.json",
+        "schemas/v1/actors/actor-contact-point.schema.json",
+        "schemas/v1/actors/actor-student-relationship.schema.json"
+      ]
+    },
+    {
+      "id": "AC-19",
+      "status": "complete",
+      "criterion": "Reactivation and legal transition matrices are application validated.",
+      "evidence": [
+        "schemas/v1/actors/actor-directory-lifecycle-transition.schema.json",
+        "docs/validation/issue-14-application-invalid-matrix.json"
+      ]
+    },
+    {
+      "id": "AC-20",
+      "status": "complete",
+      "criterion": "Nonmaterial correction uses bounded typed amendments.",
+      "evidence": [
+        "schemas/v1/actors/actor-directory-amendment.schema.json",
+        "docs/examples/issue-14/actor-directory-amendment.json"
+      ]
+    },
+    {
+      "id": "AC-21",
+      "status": "complete",
+      "criterion": "Material Actor identity correction creates successors.",
+      "evidence": [
+        "schemas/v1/actors/actor.schema.json",
+        "docs/examples/issue-14/actor-duplicate-consolidation.json"
+      ]
+    },
+    {
+      "id": "AC-22",
+      "status": "complete",
+      "criterion": "Duplicate candidates are derived Integrity Findings rather than identity truth.",
+      "evidence": [
+        "schemas/v2/projections/integrity-finding.schema.json",
+        "docs/examples/issue-14/integrity-finding-v2.json"
+      ]
+    },
+    {
+      "id": "AC-23",
+      "status": "complete",
+      "criterion": "Duplicate consolidation requires human confirmation.",
+      "evidence": [
+        "docs/design/portia-actor-directory-domain-model-and-lifecycle.md",
+        "docs/examples/issue-14/operation-journal-v2.json"
+      ]
+    },
+    {
+      "id": "AC-24",
+      "status": "complete",
+      "criterion": "Confirmed duplicate consolidation uses several predecessors to one new successor.",
+      "evidence": [
+        "schemas/v1/actors/actor.schema.json",
+        "docs/examples/issue-14/actor-duplicate-consolidation.json"
+      ]
+    },
+    {
+      "id": "AC-25",
+      "status": "complete",
+      "criterion": "Conflated-person correction uses one predecessor to several new successors.",
+      "evidence": [
+        "schemas/v1/actors/actor.schema.json",
+        "docs/examples/issue-14/actor-conflated-split.json"
+      ]
+    },
+    {
+      "id": "AC-26",
+      "status": "complete",
+      "criterion": "Actor duplication of a roster student uses immutable collision evidence and Actor invalidation.",
+      "evidence": [
+        "schemas/v1/actors/actor-roster-student-collision.schema.json",
+        "docs/examples/issue-14/actor-roster-student-collision.json"
+      ]
+    },
+    {
+      "id": "AC-27",
+      "status": "complete",
+      "criterion": "Historical incoming references remain exact and resolvable.",
+      "evidence": [
+        "schemas/v1/references/exact-actor-directory-record-ref.schema.json",
+        "docs/examples/issue-14/source-snapshot.json"
+      ]
+    },
+    {
+      "id": "AC-28",
+      "status": "complete",
+      "criterion": "References never silently follow successors or retarget.",
+      "evidence": [
+        "schemas/v1/references/exact-actor-ref.schema.json",
+        "docs/examples/issue-14/derived-current-pointer.json"
+      ]
+    },
+    {
+      "id": "AC-29",
+      "status": "complete",
+      "criterion": "Actor discovery and search are defined as derived, review-oriented behavior.",
+      "evidence": [
+        "docs/design/portia-actor-directory-domain-model-and-lifecycle.md",
+        "tests/schema_validation/test_issue_14_actor_derived_state_compatibility.py"
+      ]
+    },
+    {
+      "id": "AC-30",
+      "status": "complete",
+      "criterion": "Incoming-reference, replacement-frontier, and lifecycle views are rebuildable projections.",
+      "evidence": [
+        "docs/examples/issue-14/source-snapshot.json",
+        "docs/examples/issue-14/derived-index-metadata.json",
+        "docs/examples/issue-14/derived-current-pointer.json"
+      ]
+    },
+    {
+      "id": "AC-31",
+      "status": "complete",
+      "criterion": "Workspace-scoped lifecycle, history correction, and amendment contracts are implemented.",
+      "evidence": [
+        "schemas/v1/actors/actor-directory-lifecycle-transition.schema.json",
+        "schemas/v1/actors/actor-directory-lifecycle-history-correction.schema.json",
+        "schemas/v1/actors/actor-directory-amendment.schema.json"
+      ]
+    },
+    {
+      "id": "AC-32",
+      "status": "complete",
+      "criterion": "Actor records, sets, and collections are typed for findings, journals, locks, and Quarantine.",
+      "evidence": [
+        "schemas/v1/targets/actor-target.schema.json",
+        "schemas/v2/projections/integrity-finding.schema.json",
+        "schemas/v2/operations/operation-journal.schema.json",
+        "schemas/v2/operations/operation-lock.schema.json",
+        "schemas/v2/operations/quarantine-record.schema.json"
+      ]
+    },
+    {
+      "id": "AC-33",
+      "status": "complete",
+      "criterion": "Representation migration and schema-version behavior preserve logical identity.",
+      "evidence": [
+        "schemas/v1/migrations/actor-directory-record-migration.schema.json",
+        "docs/examples/issue-14/actor-directory-record-migration.json"
+      ]
+    },
+    {
+      "id": "AC-34",
+      "status": "complete",
+      "criterion": "Exceptional removal is narrow, authorized, external, and privacy preserving.",
+      "evidence": [
+        "schemas/v1/removals/actor-directory-exceptional-removal.schema.json",
+        "docs/examples/issue-14/actor-directory-exceptional-removal.json"
+      ]
+    },
+    {
+      "id": "AC-35",
+      "status": "complete",
+      "criterion": "Actor operations and diagnostics exclude unnecessary sensitive payload.",
+      "evidence": [
+        "schemas/v2/operations/operation-journal.schema.json",
+        "tests/schema_validation/test_issue_14_actor_aware_operational_contracts.py",
+        "tests/schema_validation/test_issue_14_actor_derived_state_compatibility.py"
+      ]
+    },
+    {
+      "id": "AC-36",
+      "status": "complete",
+      "criterion": "Structural and application validation boundaries are explicit.",
+      "evidence": [
+        "docs/validation/issue-14-actor-directory-validation.md",
+        "docs/validation/issue-14-application-invalid-matrix.json"
+      ]
+    },
+    {
+      "id": "AC-37",
+      "status": "complete",
+      "criterion": "ADR 0010 records the accepted architecture.",
+      "evidence": [
+        "docs/decisions/0010-define-actor-directory-domain-model-and-lifecycle.md"
+      ]
+    },
+    {
+      "id": "AC-38",
+      "status": "complete",
+      "criterion": "Schemas, fixtures, tests, examples, and validation documentation are present.",
+      "evidence": [
+        "schemas/schema-catalog.json",
+        "tests/schema_validation/fixtures/issue-14",
+        "docs/examples/issue-14/manifest.json",
+        "docs/validation/issue-14-actor-directory-validation.md"
+      ]
+    },
+    {
+      "id": "AC-39",
+      "status": "complete",
+      "criterion": "Active README, schema guide, design, examples, and validation documentation are reconciled.",
+      "evidence": [
+        "README.md",
+        "schemas/README.md",
+        "docs/design/portia-actor-directory-domain-model-and-lifecycle.md",
+        "docs/examples/portia-actor-directory-examples.md"
+      ]
+    },
+    {
+      "id": "AC-40",
+      "status": "complete",
+      "criterion": "Final pds-core and pds-portia drift anchors are recorded and classified.",
+      "evidence": [
+        "docs/validation/issue-14-actor-directory-validation.md"
+      ]
+    },
+    {
+      "id": "AC-41",
+      "status": "complete",
+      "criterion": "Production services and consuming-domain work are handed off explicitly.",
+      "evidence": [
+        "docs/design/portia-actor-directory-domain-model-and-lifecycle.md",
+        "docs/validation/issue-14-actor-directory-validation.md"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "kind": "actor_student_relationship",
+  "relationship_ref": {
+    "actor_id": "actr_family_1",
+    "relationship_id": "asrel_student_1",
+    "contract_version": "1"
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "schema_version": "1",
+  "record_type": "actor_directory_record_migration",
+  "module_id": "portia",
+  "actor_id": "actr_student_collision",
+  "migration_id": "mig_collision_v1_v2",
+  "source": {
+    "kind": "actor_roster_student_collision",
+    "collision_ref": {
+      "actor_id": "actr_student_collision",
+      "collision_id": "arsc_review_1",
+      "contract_version": "1"
+    }
+  },
+  "destination": {
+    "kind": "actor_roster_student_collision",
+    "collision_ref": {
+      "actor_id": "actr_student_collision",
+      "collision_id": "arsc_review_1",
+      "contract_version": "2"
+    }
+  },
+  "reason": {
+    "category": "contract_upgrade",
+    "code": "actor_v2_upgrade"
+  },
+  "procedure": {
+    "procedure_id": "collision_v1_to_v2",
+    "procedure_version": "1"
+  },
+  "source_fingerprint": {
+    "algorithm": "sha256",
+    "digest": "0a7a95254e0a18efd22ee0f465d5891820497ed1d0c58f73d8fa96b8e8dca898",
+    "byte_length": 650
+  },
+  "destination_fingerprint": {
+    "algorithm": "sha256",
+    "digest": "83aacbd7b641b89391bd07fd183af7ad9ba7704f1c31c38927e6afe62580708d",
+    "byte_length": 680
+  },
+  "effective_at": "2026-08-06T18:00:00-04:00",
+  "created_at": "2026-08-06T18:01:00-04:00",
+  "created_by": {
+    "type": "local_operator",
+    "display_label": "Synthetic Teacher"
+  },
+  "operation_ref": {
+    "operation_id": "op_collision_migration_1"
+  }
+}

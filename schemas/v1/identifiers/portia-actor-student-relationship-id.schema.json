@@ -1,0 +1,10 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-actor-student-relationship-id.schema.json",
+  "title": "Portia Actor-to-Student Relationship Identifier",
+  "description": "Opaque canonical identifier for one teacher-local Actor-to-Student Relationship beneath one Portia Actor. The asrel_ prefix is part of the public identifier contract. The identifier does not encode the Actor, roster student, relationship type, source, lifecycle, or authority.",
+  "type": "string",
+  "minLength": 7,
+  "maxLength": 128,
+  "pattern": "^asrel_[A-Za-z0-9][A-Za-z0-9_-]*$"
+}

@@ -1,0 +1,23 @@
+{
+  "manifest_version": "1",
+  "issue": 14,
+  "contract": "exact_actor_directory_record_ref",
+  "version": "1",
+  "valid": {
+    "actor.json": "Structurally valid accepted example.",
+    "contact-point.json": "Structurally valid accepted example.",
+    "student-relationship.json": "Structurally valid accepted example.",
+    "roster-collision.json": "Structurally valid accepted example."
+  },
+  "invalid": {
+    "unknown-kind.json": "Structurally invalid example rejected by JSON Schema.",
+    "mixed-branches.json": "Structurally invalid example rejected by JSON Schema.",
+    "kind-ref-mismatch.json": "Structurally invalid example rejected by JSON Schema."
+  },
+  "application_invalid": {
+    "unsupported-nested-version.json": {
+      "rule_id": "portia.actor.reference.contract_version_supported",
+      "description": "The selected record-family representation contract must be supported."
+    }
+  }
+}

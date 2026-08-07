@@ -1,0 +1,77 @@
+{
+  "manifest_version": "1",
+  "issue": 14,
+  "contract": "actor_directory_record_migration",
+  "version": "1",
+  "valid": {
+    "actor-v1-to-v2.json": "Structurally and application-valid synthetic record.",
+    "contact-v1-to-v2.json": "Structurally and application-valid synthetic record.",
+    "relationship-v1-to-v2.json": "Structurally and application-valid synthetic record.",
+    "collision-v1-to-v2.json": "Structurally and application-valid synthetic record.",
+    "normalization.json": "Structurally and application-valid synthetic record.",
+    "other-reviewed-procedure.json": "Structurally and application-valid synthetic record."
+  },
+  "invalid": {
+    "missing-destination.json": "Structurally invalid record rejected by JSON Schema.",
+    "mixed-record-family.json": "Structurally invalid record rejected by JSON Schema.",
+    "invalid-migration-id.json": "Structurally invalid record rejected by JSON Schema.",
+    "unknown-reason-category.json": "Structurally invalid record rejected by JSON Schema.",
+    "other-reason-missing-detail.json": "Structurally invalid record rejected by JSON Schema.",
+    "missing-procedure-version.json": "Structurally invalid record rejected by JSON Schema.",
+    "invalid-procedure-id.json": "Structurally invalid record rejected by JSON Schema.",
+    "invalid-source-fingerprint.json": "Structurally invalid record rejected by JSON Schema.",
+    "timestamp-without-offset.json": "Structurally invalid record rejected by JSON Schema.",
+    "extra-status.json": "Structurally invalid record rejected by JSON Schema.",
+    "extra-creation-source.json": "Structurally invalid record rejected by JSON Schema."
+  },
+  "application_invalid": {
+    "owner-mismatch.json": {
+      "rule_id": "portia.actor_directory_migration.owner_agreement",
+      "description": "Structurally valid record rejected by the named application invariant."
+    },
+    "logical-id-changed.json": {
+      "rule_id": "portia.actor_directory_migration.logical_identity_preserved",
+      "description": "Structurally valid record rejected by the named application invariant."
+    },
+    "same-contract-version.json": {
+      "rule_id": "portia.actor_directory_migration.contract_version_changed",
+      "description": "Structurally valid record rejected by the named application invariant."
+    },
+    "unsupported-destination-version.json": {
+      "rule_id": "portia.actor_directory_migration.destination_contract_supported",
+      "description": "Structurally valid record rejected by the named application invariant."
+    },
+    "identical-fingerprints.json": {
+      "rule_id": "portia.actor_directory_migration.fingerprints_differ",
+      "description": "Structurally valid record rejected by the named application invariant."
+    },
+    "effective-after-created.json": {
+      "rule_id": "portia.actor_directory_migration.effective_created_chronology",
+      "description": "Structurally valid record rejected by the named application invariant."
+    },
+    "unregistered-procedure.json": {
+      "rule_id": "portia.actor_directory_migration.procedure_registered_compatible",
+      "description": "Structurally valid record rejected by the named application invariant."
+    },
+    "substantive-correction-hidden.json": {
+      "rule_id": "portia.actor_directory_migration.no_substantive_correction",
+      "description": "Structurally valid record rejected by the named application invariant."
+    },
+    "lifecycle-change-hidden.json": {
+      "rule_id": "portia.actor_directory_migration.lifecycle_preserved",
+      "description": "Structurally valid record rejected by the named application invariant."
+    },
+    "collision-semantics-changed.json": {
+      "rule_id": "portia.actor_directory_migration.collision_semantics_preserved",
+      "description": "Structurally valid record rejected by the named application invariant."
+    },
+    "missing-operation.json": {
+      "rule_id": "portia.actor_directory_migration.operation_resolution",
+      "description": "Structurally valid record rejected by the named application invariant."
+    },
+    "branching-migration-chain.json": {
+      "rule_id": "portia.actor_directory_migration.chain_linear",
+      "description": "Structurally valid record rejected by the named application invariant."
+    }
+  }
+}

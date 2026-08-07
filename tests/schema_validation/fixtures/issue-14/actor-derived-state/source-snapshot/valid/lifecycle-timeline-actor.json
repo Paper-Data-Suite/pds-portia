@@ -1,0 +1,58 @@
+{
+  "schema_version": "1",
+  "record_type": "source_snapshot",
+  "module_id": "portia",
+  "snapshot_algorithm": "portia_source_snapshot_v1",
+  "projection_kind": "lifecycle_timeline",
+  "projection_scope": {
+    "scope": "graph",
+    "graph_id": "actor_lifecycle_actr_family_1"
+  },
+  "authorization_scope": {
+    "authorization_scope_id": "local_teacher_full",
+    "coverage": "complete",
+    "limitation_codes": []
+  },
+  "discovery_roots": [
+    "portia/actors/actr_family_1"
+  ],
+  "source_contracts": [
+    {
+      "contract_name": "actor",
+      "contract_version": "1"
+    },
+    {
+      "contract_name": "actor_directory_lifecycle_history_correction",
+      "contract_version": "1"
+    },
+    {
+      "contract_name": "actor_directory_lifecycle_transition",
+      "contract_version": "1"
+    }
+  ],
+  "entries": [
+    {
+      "workspace_relative_path": "portia/actors/actr_family_1/actor.json",
+      "byte_length": 850,
+      "sha256_digest": "2005ed266d752e14bcd23a946d90819247e200d7c8cae4eccc07755958b6f775",
+      "source_role": "canonical_domain",
+      "contract_or_artifact_kind": "actor"
+    },
+    {
+      "workspace_relative_path": "portia/actors/actr_family_1/records/actor_directory_lifecycle_transition/lct_actor_active.json",
+      "byte_length": 420,
+      "sha256_digest": "3e7b4216061b282f16d2fd0e822e42f55893f398dd182f283b593de36d29f581",
+      "source_role": "canonical_domain",
+      "contract_or_artifact_kind": "actor_directory_lifecycle_transition"
+    },
+    {
+      "workspace_relative_path": "portia/actors/actr_family_1/records/actor_directory_lifecycle_transition/lct_actor_inactive.json",
+      "byte_length": 430,
+      "sha256_digest": "984d0cab6ed25abe3fe2a1d7d99e06580a1a4064078c3bc8a7f032d277a1cbd9",
+      "source_role": "canonical_domain",
+      "contract_or_artifact_kind": "actor_directory_lifecycle_transition"
+    }
+  ],
+  "source_snapshot_digest": "1e957c1c07054341aa5def6011316e8f2f90945a0610f464adeba3369ea7e9f4",
+  "observed_at": "2026-08-06T19:03:00-04:00"
+}

@@ -1,0 +1,14 @@
+{
+  "schema_version": "1",
+  "record_type": "derived_current_pointer",
+  "module_id": "portia",
+  "projection_kind": "lifecycle_timeline",
+  "projection_scope": {
+    "scope": "graph",
+    "graph_id": "actor_lifecycle_actr_family_1"
+  },
+  "generation_ref": {
+    "generation_id": "dgen_actor_lifecycle_timeline_01",
+    "contract_version": "1"
+  }
+}

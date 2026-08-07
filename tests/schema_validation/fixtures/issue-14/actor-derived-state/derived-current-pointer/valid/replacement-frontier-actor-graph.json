@@ -1,0 +1,14 @@
+{
+  "schema_version": "1",
+  "record_type": "derived_current_pointer",
+  "module_id": "portia",
+  "projection_kind": "replacement_frontier_index",
+  "projection_scope": {
+    "scope": "graph",
+    "graph_id": "actor_replacement_graph_1"
+  },
+  "generation_ref": {
+    "generation_id": "dgen_actor_replacement_frontier_01",
+    "contract_version": "1"
+  }
+}

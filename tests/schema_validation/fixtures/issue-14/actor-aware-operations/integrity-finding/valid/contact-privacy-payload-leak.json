@@ -1,0 +1,38 @@
+{
+  "finding_key": "fnd_contact_privacy_leak",
+  "evaluation_key": "evl_contact_privacy_leak_r1",
+  "rule_id": "portia.actor.privacy_payload_leak",
+  "rule_version": "1",
+  "category": "privacy",
+  "code": "actor_privacy_payload_leak",
+  "severity": "critical",
+  "assessment": {
+    "result": "confirmed"
+  },
+  "effects": [
+    "block_current_use",
+    "quarantine_target",
+    "review_required"
+  ],
+  "scope": "logical_record",
+  "primary_target": {
+    "kind": "actor_directory_record",
+    "actor_directory_record_ref": {
+      "kind": "actor_contact_point",
+      "contact_point_ref": {
+        "actor_id": "actr_family_1",
+        "contact_point_id": "acp_primary",
+        "contract_version": "1"
+      }
+    }
+  },
+  "related_targets": [],
+  "evidence": [
+    {
+      "name": "leak_location",
+      "kind": "path",
+      "value": "portia/derived/actor-summary.json"
+    }
+  ],
+  "observed_at": "2026-08-06T19:00:00-04:00"
+}

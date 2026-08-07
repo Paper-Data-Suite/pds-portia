@@ -1,0 +1,1684 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v2/operations/operation-journal.schema.json",
+  "title": "Portia Operation Journal v2",
+  "description": "Immutable complete version-1 operational snapshot for one bounded Portia coordinated operation. The journal records intent, preflight, locks, planned writes, observed durability, recovery, compensation, and partial state. It coordinates but does not replace canonical domain records, establish authorization, or make several filesystem writes one transaction. Version 2 adds Actor-directory exact-record, Actor-set, and Actor-directory collection targets while preserving revision, replay, commit, compensation, and recovery semantics.",
+  "$comment": "Application validation must establish deterministic intent and preflight digests, workspace containment, exact target and path resolution, journal-chain linearity and monotonicity, operation-state transitions, contiguous unique step and lock sequences, lock-key digests and ownership, expected-prior-state truth, candidate and readback fingerprints, canonical acceptance, operation-specific ordering, dependency and authorization effects, compensation and recovery safety, and privacy minimization. Actor operations use workspace scope and exact Actor targets. Application validation enforces complete sorted Actor sets, target-role restrictions, privacy-minimized state facts, deterministic lock order, complete correction write families, and no partial-success subset acceptance for consolidation or split.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "record_type",
+    "module_id",
+    "operation_id",
+    "operation_kind",
+    "intent_digest",
+    "scope",
+    "primary_target",
+    "affected_targets",
+    "intent_facts",
+    "initiated_at",
+    "initiated_by",
+    "authorization_references",
+    "journal_revision",
+    "previous_journal_revision",
+    "state",
+    "preflight_snapshot_digest",
+    "preflight_snapshot",
+    "lock_set",
+    "write_set",
+    "staged_artifacts",
+    "commit_point",
+    "compensation_plan",
+    "recovery_plan",
+    "partial_state",
+    "created_at",
+    "updated_at"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "2"
+    },
+    "record_type": {
+      "const": "operation_journal"
+    },
+    "module_id": {
+      "const": "portia"
+    },
+    "operation_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-operation-id.schema.json"
+    },
+    "operation_kind": {
+      "enum": [
+        "create_work",
+        "create_record",
+        "update_record",
+        "apply_amendment",
+        "transition_lifecycle",
+        "correct_history",
+        "activate_successor",
+        "consolidate_duplicates",
+        "create_dependency",
+        "migrate_representation",
+        "correct_ownership",
+        "exceptionally_remove",
+        "rebuild_projection",
+        "regenerate_current_view",
+        "integrity_scan",
+        "repair_operation"
+      ]
+    },
+    "intent_digest": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/sha256-digest.schema.json"
+    },
+    "scope": {
+      "enum": [
+        "work",
+        "class",
+        "workspace",
+        "graph",
+        "operation"
+      ]
+    },
+    "primary_target": {
+      "$ref": "#/$defs/operationTarget"
+    },
+    "affected_targets": {
+      "type": "array",
+      "maxItems": 128,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/operationTarget"
+      }
+    },
+    "intent_facts": {
+      "type": "array",
+      "maxItems": 64,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/stateFact"
+      }
+    },
+    "initiated_at": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+    },
+    "initiated_by": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/attribution/attribution-agent.schema.json"
+    },
+    "authorization_references": {
+      "type": "array",
+      "maxItems": 16,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/authorizationReference"
+      }
+    },
+    "journal_revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "previous_journal_revision": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "integer",
+          "minimum": 1
+        }
+      ]
+    },
+    "state": {
+      "enum": [
+        "prepared",
+        "staged",
+        "committing",
+        "committed",
+        "recovering",
+        "compensating",
+        "quarantined",
+        "completed",
+        "compensated",
+        "aborted",
+        "failed"
+      ]
+    },
+    "preflight_snapshot_digest": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/sha256-digest.schema.json"
+    },
+    "preflight_snapshot": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 256,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/preflightEntry"
+      }
+    },
+    "lock_set": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 256,
+      "items": {
+        "$ref": "#/$defs/lockEntry"
+      }
+    },
+    "write_set": {
+      "type": "array",
+      "maxItems": 512,
+      "items": {
+        "$ref": "#/$defs/writeStep"
+      }
+    },
+    "staged_artifacts": {
+      "type": "array",
+      "maxItems": 512,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/stagedArtifact"
+      }
+    },
+    "commit_point": {
+      "$ref": "#/$defs/commitPoint"
+    },
+    "compensation_plan": {
+      "type": "array",
+      "maxItems": 64,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/compensationPlanEntry"
+      }
+    },
+    "recovery_plan": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 11,
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "retry_preflight",
+          "resume",
+          "reconcile_as_complete",
+          "complete_remaining_steps",
+          "compensate",
+          "restore_pointer",
+          "clear_lock_after_external_verification",
+          "quarantine",
+          "abandon_preacceptance_artifacts",
+          "rebuild_projection",
+          "require_manual_review"
+        ]
+      }
+    },
+    "partial_state": {
+      "$ref": "#/$defs/partialState"
+    },
+    "created_at": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+    },
+    "updated_at": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "journal_revision": {
+            "const": 1
+          }
+        },
+        "required": [
+          "journal_revision"
+        ]
+      },
+      "then": {
+        "properties": {
+          "previous_journal_revision": {
+            "type": "null"
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "previous_journal_revision": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "state": {
+            "enum": [
+              "prepared",
+              "staged",
+              "committing"
+            ]
+          }
+        },
+        "required": [
+          "state"
+        ]
+      },
+      "then": {
+        "properties": {
+          "commit_point": {
+            "allOf": [
+              {
+                "$ref": "#/$defs/commitPoint"
+              },
+              {
+                "properties": {
+                  "reached": {
+                    "const": false
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "state": {
+            "enum": [
+              "prepared",
+              "staged"
+            ]
+          }
+        },
+        "required": [
+          "state"
+        ]
+      },
+      "then": {
+        "properties": {
+          "partial_state": {
+            "allOf": [
+              {
+                "$ref": "#/$defs/partialState"
+              },
+              {
+                "properties": {
+                  "durability_assessment": {
+                    "const": "none"
+                  }
+                }
+              }
+            ]
+          },
+          "write_set": {
+            "items": {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/writeStep"
+                },
+                {
+                  "properties": {
+                    "disposition": {
+                      "not": {
+                        "enum": [
+                          "durable",
+                          "verified",
+                          "accepted",
+                          "compensated"
+                        ]
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "state": {
+            "enum": [
+              "committed",
+              "completed"
+            ]
+          }
+        },
+        "required": [
+          "state"
+        ]
+      },
+      "then": {
+        "properties": {
+          "commit_point": {
+            "allOf": [
+              {
+                "$ref": "#/$defs/commitPoint"
+              },
+              {
+                "properties": {
+                  "reached": {
+                    "const": true
+                  }
+                }
+              }
+            ]
+          },
+          "write_set": {
+            "items": {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/writeStep"
+                },
+                {
+                  "if": {
+                    "properties": {
+                      "phase": {
+                        "const": "canonical_gate"
+                      }
+                    },
+                    "required": [
+                      "phase"
+                    ]
+                  },
+                  "then": {
+                    "properties": {
+                      "disposition": {
+                        "const": "accepted"
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "partial_state": {
+            "allOf": [
+              {
+                "$ref": "#/$defs/partialState"
+              },
+              {
+                "properties": {
+                  "remaining_canonical_steps": {
+                    "maxItems": 0
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "state": {
+            "const": "completed"
+          }
+        },
+        "required": [
+          "state"
+        ]
+      },
+      "then": {
+        "properties": {
+          "partial_state": {
+            "allOf": [
+              {
+                "$ref": "#/$defs/partialState"
+              },
+              {
+                "properties": {
+                  "remaining_canonical_steps": {
+                    "maxItems": 0
+                  },
+                  "remaining_post_commit_steps": {
+                    "maxItems": 0
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "state": {
+            "const": "aborted"
+          }
+        },
+        "required": [
+          "state"
+        ]
+      },
+      "then": {
+        "properties": {
+          "commit_point": {
+            "allOf": [
+              {
+                "$ref": "#/$defs/commitPoint"
+              },
+              {
+                "properties": {
+                  "reached": {
+                    "const": false
+                  }
+                }
+              }
+            ]
+          },
+          "partial_state": {
+            "allOf": [
+              {
+                "$ref": "#/$defs/partialState"
+              },
+              {
+                "properties": {
+                  "durability_assessment": {
+                    "const": "none"
+                  },
+                  "accepted_steps": {
+                    "maxItems": 0
+                  },
+                  "verified_steps": {
+                    "maxItems": 0
+                  },
+                  "durable_unverified_steps": {
+                    "maxItems": 0
+                  },
+                  "indeterminate_steps": {
+                    "maxItems": 0
+                  },
+                  "remaining_canonical_steps": {
+                    "maxItems": 0
+                  },
+                  "remaining_post_commit_steps": {
+                    "maxItems": 0
+                  }
+                }
+              }
+            ]
+          },
+          "write_set": {
+            "items": {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/writeStep"
+                },
+                {
+                  "properties": {
+                    "disposition": {
+                      "not": {
+                        "enum": [
+                          "durable",
+                          "verified",
+                          "accepted",
+                          "compensated",
+                          "indeterminate"
+                        ]
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        }
+      }
+    }
+  ],
+  "additionalProperties": false,
+  "$defs": {
+    "stateFact": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": [
+            "name",
+            "kind",
+            "value"
+          ],
+          "properties": {
+            "name": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/lowercase-token.schema.json"
+            },
+            "kind": {
+              "const": "token"
+            },
+            "value": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/lowercase-token.schema.json"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "name",
+            "kind",
+            "value"
+          ],
+          "properties": {
+            "name": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/lowercase-token.schema.json"
+            },
+            "kind": {
+              "const": "identifier"
+            },
+            "value": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "name",
+            "kind",
+            "value"
+          ],
+          "properties": {
+            "name": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/lowercase-token.schema.json"
+            },
+            "kind": {
+              "const": "integer"
+            },
+            "value": {
+              "type": "integer"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "name",
+            "kind",
+            "value"
+          ],
+          "properties": {
+            "name": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/lowercase-token.schema.json"
+            },
+            "kind": {
+              "const": "boolean"
+            },
+            "value": {
+              "type": "boolean"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "name",
+            "kind",
+            "value"
+          ],
+          "properties": {
+            "name": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/lowercase-token.schema.json"
+            },
+            "kind": {
+              "const": "timestamp"
+            },
+            "value": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "name",
+            "kind",
+            "value"
+          ],
+          "properties": {
+            "name": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/lowercase-token.schema.json"
+            },
+            "kind": {
+              "const": "path"
+            },
+            "value": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/workspace-relative-path.schema.json"
+            }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "operationTarget": {
+      "oneOf": [
+        {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/targets/exact-portia-work-or-record-target.schema.json"
+        },
+        {
+          "type": "object",
+          "required": [
+            "kind",
+            "removal_ref"
+          ],
+          "properties": {
+            "kind": {
+              "const": "exceptional_removal"
+            },
+            "removal_ref": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exceptional-removal-ref.schema.json"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "kind",
+            "class_id"
+          ],
+          "properties": {
+            "kind": {
+              "const": "class"
+            },
+            "class_id": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "kind"
+          ],
+          "properties": {
+            "kind": {
+              "const": "workspace"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "kind",
+            "operation_ref"
+          ],
+          "properties": {
+            "kind": {
+              "const": "operation"
+            },
+            "operation_ref": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/operation-ref.schema.json"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "$ref": "#/$defs/actorDirectoryRecordTarget"
+        },
+        {
+          "$ref": "#/$defs/actorSetTarget"
+        },
+        {
+          "$ref": "#/$defs/actorDirectoryCollectionTarget"
+        }
+      ]
+    },
+    "authorizationReference": {
+      "type": "object",
+      "required": [
+        "kind",
+        "reference_id",
+        "contract_version"
+      ],
+      "properties": {
+        "kind": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/lowercase-token.schema.json"
+        },
+        "reference_id": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+        },
+        "contract_version": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+        }
+      },
+      "additionalProperties": false
+    },
+    "preflightExpectedState": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": [
+            "presence"
+          ],
+          "properties": {
+            "presence": {
+              "const": "must_be_absent"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "presence",
+            "fingerprint",
+            "semantic_checks"
+          ],
+          "properties": {
+            "presence": {
+              "const": "must_match"
+            },
+            "fingerprint": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/content-fingerprint.schema.json"
+            },
+            "semantic_checks": {
+              "type": "array",
+              "maxItems": 32,
+              "uniqueItems": true,
+              "items": {
+                "$ref": "#/$defs/stateFact"
+              }
+            }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "preflightEntry": {
+      "type": "object",
+      "required": [
+        "target",
+        "representation_role",
+        "expected_state",
+        "workspace_relative_path",
+        "contract_version",
+        "source_basis",
+        "source_projection",
+        "selected_state",
+        "observed_at"
+      ],
+      "properties": {
+        "target": {
+          "$ref": "#/$defs/operationTarget"
+        },
+        "representation_role": {
+          "enum": [
+            "canonical_domain",
+            "operational_revision",
+            "operational_pointer",
+            "derived_projection",
+            "transient_artifact",
+            "quarantine_state"
+          ]
+        },
+        "expected_state": {
+          "$ref": "#/$defs/preflightExpectedState"
+        },
+        "workspace_relative_path": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/workspace-relative-path.schema.json"
+        },
+        "contract_version": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+        },
+        "source_basis": {
+          "enum": [
+            "canonical",
+            "verified_projection",
+            "bounded_scan"
+          ]
+        },
+        "source_projection": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/derived-generation-ref.schema.json"
+            }
+          ]
+        },
+        "selected_state": {
+          "type": "array",
+          "maxItems": 32,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/stateFact"
+          }
+        },
+        "observed_at": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "source_basis": {
+                "const": "verified_projection"
+              }
+            },
+            "required": [
+              "source_basis"
+            ]
+          },
+          "then": {
+            "properties": {
+              "source_projection": {
+                "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/derived-generation-ref.schema.json"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "source_projection": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      ],
+      "additionalProperties": false
+    },
+    "stepPrecondition": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": [
+            "presence"
+          ],
+          "properties": {
+            "presence": {
+              "const": "must_be_absent"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "presence",
+            "fingerprint",
+            "contract_version",
+            "semantic_checks"
+          ],
+          "properties": {
+            "presence": {
+              "const": "must_match"
+            },
+            "fingerprint": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/content-fingerprint.schema.json"
+            },
+            "contract_version": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+            },
+            "semantic_checks": {
+              "type": "array",
+              "maxItems": 32,
+              "uniqueItems": true,
+              "items": {
+                "$ref": "#/$defs/stateFact"
+              }
+            }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "intendedResult": {
+      "type": "object",
+      "required": [
+        "contract_version",
+        "fingerprint",
+        "selected_state"
+      ],
+      "properties": {
+        "contract_version": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+        },
+        "fingerprint": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/content-fingerprint.schema.json"
+        },
+        "selected_state": {
+          "type": "array",
+          "maxItems": 32,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/stateFact"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "observedResult": {
+      "type": "object",
+      "required": [
+        "workspace_relative_path",
+        "fingerprint",
+        "observed_at"
+      ],
+      "properties": {
+        "workspace_relative_path": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/workspace-relative-path.schema.json"
+        },
+        "fingerprint": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/content-fingerprint.schema.json"
+        },
+        "observed_at": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+        }
+      },
+      "additionalProperties": false
+    },
+    "writeStep": {
+      "type": "object",
+      "required": [
+        "step_id",
+        "sequence",
+        "phase",
+        "action",
+        "target",
+        "representation_role",
+        "destination_path",
+        "precondition",
+        "intended_result",
+        "disposition",
+        "observed_result",
+        "compensation_step_id",
+        "reason_code"
+      ],
+      "properties": {
+        "step_id": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-operation-step-id.schema.json"
+        },
+        "sequence": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "phase": {
+          "enum": [
+            "canonical_gate",
+            "post_commit",
+            "cleanup"
+          ]
+        },
+        "action": {
+          "enum": [
+            "exclusive_create",
+            "revision_aware_replace",
+            "atomic_pointer_replace",
+            "install_derived_replacement",
+            "quarantine_artifact",
+            "remove_transient"
+          ]
+        },
+        "target": {
+          "$ref": "#/$defs/operationTarget"
+        },
+        "representation_role": {
+          "enum": [
+            "canonical_domain",
+            "operational_revision",
+            "operational_pointer",
+            "derived_projection",
+            "staged_candidate",
+            "transient_artifact",
+            "quarantine_state"
+          ]
+        },
+        "destination_path": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/workspace-relative-path.schema.json"
+        },
+        "precondition": {
+          "$ref": "#/$defs/stepPrecondition"
+        },
+        "intended_result": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/intendedResult"
+            }
+          ]
+        },
+        "disposition": {
+          "enum": [
+            "pending",
+            "staged",
+            "durable",
+            "verified",
+            "accepted",
+            "compensated",
+            "skipped",
+            "blocked",
+            "indeterminate"
+          ]
+        },
+        "observed_result": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/observedResult"
+            }
+          ]
+        },
+        "compensation_step_id": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-operation-step-id.schema.json"
+            }
+          ]
+        },
+        "reason_code": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/lowercase-token.schema.json"
+            }
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "action": {
+                "enum": [
+                  "exclusive_create",
+                  "revision_aware_replace",
+                  "atomic_pointer_replace",
+                  "install_derived_replacement"
+                ]
+              }
+            },
+            "required": [
+              "action"
+            ]
+          },
+          "then": {
+            "properties": {
+              "intended_result": {
+                "$ref": "#/$defs/intendedResult"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "disposition": {
+                "enum": [
+                  "durable",
+                  "verified",
+                  "accepted"
+                ]
+              }
+            },
+            "required": [
+              "disposition"
+            ]
+          },
+          "then": {
+            "properties": {
+              "observed_result": {
+                "$ref": "#/$defs/observedResult"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "disposition": {
+                "enum": [
+                  "pending",
+                  "staged"
+                ]
+              }
+            },
+            "required": [
+              "disposition"
+            ]
+          },
+          "then": {
+            "properties": {
+              "observed_result": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      ],
+      "additionalProperties": false
+    },
+    "stagedArtifact": {
+      "type": "object",
+      "required": [
+        "step_id",
+        "staging_path",
+        "destination_path",
+        "contract_version",
+        "fingerprint",
+        "staged_at",
+        "validation_disposition"
+      ],
+      "properties": {
+        "step_id": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-operation-step-id.schema.json"
+        },
+        "staging_path": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/workspace-relative-path.schema.json"
+        },
+        "destination_path": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/workspace-relative-path.schema.json"
+        },
+        "contract_version": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+        },
+        "fingerprint": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/content-fingerprint.schema.json"
+        },
+        "staged_at": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+        },
+        "validation_disposition": {
+          "enum": [
+            "pending",
+            "valid",
+            "invalid",
+            "indeterminate"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "lockEntry": {
+      "type": "object",
+      "required": [
+        "lock_id",
+        "sequence",
+        "lock_scope",
+        "protected_target",
+        "lock_path",
+        "disposition",
+        "fingerprint",
+        "acquired_at",
+        "released_at"
+      ],
+      "properties": {
+        "lock_id": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-lock-id.schema.json"
+        },
+        "sequence": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "lock_scope": {
+          "enum": [
+            "operation",
+            "workspace",
+            "class",
+            "work",
+            "record",
+            "derived_projection",
+            "actor_directory_collection",
+            "actor_directory_record"
+          ]
+        },
+        "protected_target": {
+          "$ref": "#/$defs/operationTarget"
+        },
+        "lock_path": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/workspace-relative-path.schema.json"
+        },
+        "disposition": {
+          "enum": [
+            "planned",
+            "acquired",
+            "released",
+            "lost",
+            "indeterminate"
+          ]
+        },
+        "fingerprint": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/content-fingerprint.schema.json"
+            }
+          ]
+        },
+        "acquired_at": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+            }
+          ]
+        },
+        "released_at": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+            }
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "disposition": {
+                "enum": [
+                  "acquired",
+                  "released",
+                  "lost"
+                ]
+              }
+            },
+            "required": [
+              "disposition"
+            ]
+          },
+          "then": {
+            "properties": {
+              "fingerprint": {
+                "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/content-fingerprint.schema.json"
+              },
+              "acquired_at": {
+                "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "disposition": {
+                "const": "released"
+              }
+            },
+            "required": [
+              "disposition"
+            ]
+          },
+          "then": {
+            "properties": {
+              "released_at": {
+                "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "disposition": {
+                "const": "planned"
+              }
+            },
+            "required": [
+              "disposition"
+            ]
+          },
+          "then": {
+            "properties": {
+              "fingerprint": {
+                "type": "null"
+              },
+              "acquired_at": {
+                "type": "null"
+              },
+              "released_at": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      ],
+      "additionalProperties": false
+    },
+    "commitPoint": {
+      "type": "object",
+      "required": [
+        "reached",
+        "reached_at"
+      ],
+      "properties": {
+        "reached": {
+          "type": "boolean"
+        },
+        "reached_at": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+            }
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "reached": {
+                "const": true
+              }
+            },
+            "required": [
+              "reached"
+            ]
+          },
+          "then": {
+            "properties": {
+              "reached_at": {
+                "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "reached_at": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      ],
+      "additionalProperties": false
+    },
+    "compensationPlanEntry": {
+      "type": "object",
+      "required": [
+        "trigger_code",
+        "affected_steps",
+        "disposition",
+        "required_authorization",
+        "planned_actions"
+      ],
+      "properties": {
+        "trigger_code": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/lowercase-token.schema.json"
+        },
+        "affected_steps": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 64,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-operation-step-id.schema.json"
+          }
+        },
+        "disposition": {
+          "enum": [
+            "complete_remaining_steps",
+            "compensate",
+            "restore_pointer",
+            "quarantine",
+            "require_manual_review"
+          ]
+        },
+        "required_authorization": {
+          "type": "array",
+          "maxItems": 16,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/authorizationReference"
+          }
+        },
+        "planned_actions": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 16,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "exclusive_create",
+              "revision_aware_replace",
+              "atomic_pointer_replace",
+              "install_derived_replacement",
+              "quarantine_artifact",
+              "remove_transient"
+            ]
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "pointerChange": {
+      "type": "object",
+      "required": [
+        "workspace_relative_path",
+        "before_fingerprint",
+        "after_fingerprint"
+      ],
+      "properties": {
+        "workspace_relative_path": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/workspace-relative-path.schema.json"
+        },
+        "before_fingerprint": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/content-fingerprint.schema.json"
+            }
+          ]
+        },
+        "after_fingerprint": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/content-fingerprint.schema.json"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "stepIdSet": {
+      "type": "array",
+      "maxItems": 512,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-operation-step-id.schema.json"
+      }
+    },
+    "partialState": {
+      "type": "object",
+      "required": [
+        "durability_assessment",
+        "accepted_steps",
+        "verified_steps",
+        "durable_unverified_steps",
+        "indeterminate_steps",
+        "remaining_canonical_steps",
+        "remaining_post_commit_steps",
+        "current_pointer_changes",
+        "held_or_possible_locks",
+        "quarantined_targets",
+        "active_finding_keys",
+        "recommended_disposition"
+      ],
+      "properties": {
+        "durability_assessment": {
+          "enum": [
+            "none",
+            "possible",
+            "confirmed"
+          ]
+        },
+        "accepted_steps": {
+          "$ref": "#/$defs/stepIdSet"
+        },
+        "verified_steps": {
+          "$ref": "#/$defs/stepIdSet"
+        },
+        "durable_unverified_steps": {
+          "$ref": "#/$defs/stepIdSet"
+        },
+        "indeterminate_steps": {
+          "$ref": "#/$defs/stepIdSet"
+        },
+        "remaining_canonical_steps": {
+          "$ref": "#/$defs/stepIdSet"
+        },
+        "remaining_post_commit_steps": {
+          "$ref": "#/$defs/stepIdSet"
+        },
+        "current_pointer_changes": {
+          "type": "array",
+          "maxItems": 64,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/pointerChange"
+          }
+        },
+        "held_or_possible_locks": {
+          "type": "array",
+          "maxItems": 64,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-lock-id.schema.json"
+          }
+        },
+        "quarantined_targets": {
+          "type": "array",
+          "maxItems": 64,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/quarantine-ref.schema.json"
+          }
+        },
+        "active_finding_keys": {
+          "type": "array",
+          "maxItems": 128,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          }
+        },
+        "recommended_disposition": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "enum": [
+                "retry_preflight",
+                "resume",
+                "reconcile_as_complete",
+                "complete_remaining_steps",
+                "compensate",
+                "restore_pointer",
+                "clear_lock_after_external_verification",
+                "quarantine",
+                "abandon_preacceptance_artifacts",
+                "rebuild_projection",
+                "require_manual_review"
+              ]
+            }
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "actorDirectoryRecordTarget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "actor_directory_record_ref"
+      ],
+      "properties": {
+        "kind": {
+          "const": "actor_directory_record"
+        },
+        "actor_directory_record_ref": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-actor-directory-record-ref.schema.json"
+        }
+      }
+    },
+    "actorSetTarget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "actor_refs"
+      ],
+      "properties": {
+        "kind": {
+          "const": "actor_set"
+        },
+        "actor_refs": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 100,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-actor-ref.schema.json"
+          }
+        }
+      }
+    },
+    "actorDirectoryCollectionTarget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind"
+      ],
+      "properties": {
+        "kind": {
+          "const": "actor_directory_collection"
+        }
+      }
+    }
+  },
+  "x-portia-application-invariants": [
+    "portia.operation_journal.actor_operation_requires_v2",
+    "portia.operation_journal.actor_scope_workspace",
+    "portia.operation_journal.actor_primary_target_exact",
+    "portia.operation_journal.actor_set_sorted",
+    "portia.operation_journal.actor_set_logical_identity_unique",
+    "portia.operation_journal.actor_set_complete",
+    "portia.operation_journal.actor_set_not_write_step_target",
+    "portia.operation_journal.actor_collection_target_necessary",
+    "portia.operation_journal.actor_sensitive_state_fact_prohibited",
+    "portia.operation_journal.actor_lock_order",
+    "portia.operation_journal.actor_write_family_complete",
+    "portia.operation_journal.actor_partial_subset_not_success"
+  ]
+}

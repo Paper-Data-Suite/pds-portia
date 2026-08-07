@@ -1,0 +1,114 @@
+{
+  "manifest_version": "1",
+  "issue": 14,
+  "examples": {
+    "actor-active.json": {
+      "contract": "actor",
+      "version": "1",
+      "schema_path": "schemas/v1/actors/actor.schema.json",
+      "source_fixture": "tests/schema_validation/fixtures/issue-14/actor/valid/minimum-active.json"
+    },
+    "actor-duplicate-consolidation.json": {
+      "contract": "actor",
+      "version": "1",
+      "schema_path": "schemas/v1/actors/actor.schema.json",
+      "source_fixture": "tests/schema_validation/fixtures/issue-14/actor/valid/duplicate-consolidation-successor.json"
+    },
+    "actor-conflated-split.json": {
+      "contract": "actor",
+      "version": "1",
+      "schema_path": "schemas/v1/actors/actor.schema.json",
+      "source_fixture": "tests/schema_validation/fixtures/issue-14/actor/valid/conflated-split-successor.json"
+    },
+    "actor-contact-point.json": {
+      "contract": "actor_contact_point",
+      "version": "1",
+      "schema_path": "schemas/v1/actors/actor-contact-point.schema.json",
+      "source_fixture": "tests/schema_validation/fixtures/issue-14/actor-contact-point/valid/preferred-confirmed-phone.json"
+    },
+    "actor-student-relationship.json": {
+      "contract": "actor_student_relationship",
+      "version": "1",
+      "schema_path": "schemas/v1/actors/actor-student-relationship.schema.json",
+      "source_fixture": "tests/schema_validation/fixtures/issue-14/actor-student-relationship/valid/bounded-effective-period.json"
+    },
+    "actor-roster-student-collision.json": {
+      "contract": "actor_roster_student_collision",
+      "version": "1",
+      "schema_path": "schemas/v1/actors/actor-roster-student-collision.schema.json",
+      "source_fixture": "tests/schema_validation/fixtures/issue-14/actor-roster-student-collision/valid/multiple-bounded-evidence.json"
+    },
+    "actor-directory-lifecycle-transition.json": {
+      "contract": "actor_directory_lifecycle_transition",
+      "version": "1",
+      "schema_path": "schemas/v1/actors/actor-directory-lifecycle-transition.schema.json",
+      "source_fixture": "tests/schema_validation/fixtures/issue-14/actor-directory-history/lifecycle-transition/valid/actor-roster-collision.json"
+    },
+    "actor-directory-lifecycle-history-correction.json": {
+      "contract": "actor_directory_lifecycle_history_correction",
+      "version": "1",
+      "schema_path": "schemas/v1/actors/actor-directory-lifecycle-history-correction.schema.json",
+      "source_fixture": "tests/schema_validation/fixtures/issue-14/actor-directory-history/lifecycle-history-correction/valid/actor-replacement-branch.json"
+    },
+    "actor-directory-amendment.json": {
+      "contract": "actor_directory_amendment",
+      "version": "1",
+      "schema_path": "schemas/v1/actors/actor-directory-amendment.schema.json",
+      "source_fixture": "tests/schema_validation/fixtures/issue-14/actor-directory-history/amendment/valid/contact-verification.json"
+    },
+    "actor-directory-record-migration.json": {
+      "contract": "actor_directory_record_migration",
+      "version": "1",
+      "schema_path": "schemas/v1/migrations/actor-directory-record-migration.schema.json",
+      "source_fixture": "tests/schema_validation/fixtures/issue-14/actor-directory-migration-removal/migration/valid/actor-v1-to-v2.json"
+    },
+    "actor-directory-exceptional-removal.json": {
+      "contract": "actor_directory_exceptional_removal",
+      "version": "1",
+      "schema_path": "schemas/v1/removals/actor-directory-exceptional-removal.schema.json",
+      "source_fixture": "tests/schema_validation/fixtures/issue-14/actor-directory-migration-removal/exceptional-removal/valid/contact-prohibited-value.json"
+    },
+    "integrity-finding-v2.json": {
+      "contract": "integrity_finding",
+      "version": "2",
+      "schema_path": "schemas/v2/projections/integrity-finding.schema.json",
+      "source_fixture": "tests/schema_validation/fixtures/issue-14/actor-aware-operations/integrity-finding/valid/actor-duplicate-candidate.json"
+    },
+    "operation-journal-v2.json": {
+      "contract": "operation_journal",
+      "version": "2",
+      "schema_path": "schemas/v2/operations/operation-journal.schema.json",
+      "source_fixture": "tests/schema_validation/fixtures/issue-14/actor-aware-operations/operation-journal/valid/consolidate-actor-set.json"
+    },
+    "operation-lock-v2.json": {
+      "contract": "operation_lock",
+      "version": "2",
+      "schema_path": "schemas/v2/operations/operation-lock.schema.json",
+      "source_fixture": "tests/schema_validation/fixtures/issue-14/actor-aware-operations/operation-lock/valid/actor-directory-collection.json"
+    },
+    "quarantine-record-v2.json": {
+      "contract": "quarantine_record",
+      "version": "2",
+      "schema_path": "schemas/v2/operations/quarantine-record.schema.json",
+      "source_fixture": "tests/schema_validation/fixtures/issue-14/actor-aware-operations/quarantine-record/valid/actor-set-split-reconciliation.json"
+    },
+    "source-snapshot.json": {
+      "contract": "source_snapshot",
+      "version": "1",
+      "schema_path": "schemas/v1/projections/source-snapshot.schema.json",
+      "source_fixture": "tests/schema_validation/fixtures/issue-14/actor-derived-state/source-snapshot/valid/incoming-reference-complete.json"
+    },
+    "derived-index-metadata.json": {
+      "contract": "derived_index_metadata",
+      "version": "1",
+      "schema_path": "schemas/v1/projections/derived-index-metadata.schema.json",
+      "source_fixture": "tests/schema_validation/fixtures/issue-14/actor-derived-state/derived-index-metadata/valid/incoming-reference-complete.json"
+    },
+    "derived-current-pointer.json": {
+      "contract": "derived_current_pointer",
+      "version": "1",
+      "schema_path": "schemas/v1/projections/derived-current-pointer.schema.json",
+      "source_fixture": "tests/schema_validation/fixtures/issue-14/actor-derived-state/derived-current-pointer/valid/incoming-reference-complete.json"
+    }
+  }
+}

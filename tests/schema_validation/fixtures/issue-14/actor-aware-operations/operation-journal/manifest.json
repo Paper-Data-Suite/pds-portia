@@ -1,0 +1,68 @@
+{
+  "manifest_version": "1",
+  "issue": 14,
+  "contract": "operation_journal",
+  "version": "2",
+  "valid": {
+    "create-actor.json": "Structurally and application-valid synthetic version-2 operational record.",
+    "create-contact-point.json": "Structurally and application-valid synthetic version-2 operational record.",
+    "correct-relationship.json": "Structurally and application-valid synthetic version-2 operational record.",
+    "integrity-scan-collection.json": "Structurally and application-valid synthetic version-2 operational record.",
+    "consolidate-actor-set.json": "Structurally and application-valid synthetic version-2 operational record.",
+    "roster-collision-correction.json": "Structurally and application-valid synthetic version-2 operational record.",
+    "v1-compatible-workspace-operation.json": "Structurally and application-valid synthetic version-2 operational record."
+  },
+  "invalid": {
+    "wrong-schema-version.json": "Structurally invalid version-2 operational record rejected by JSON Schema.",
+    "actor-set-too-small.json": "Structurally invalid version-2 operational record rejected by JSON Schema.",
+    "actor-record-missing-ref.json": "Structurally invalid version-2 operational record rejected by JSON Schema.",
+    "collection-extra-identity.json": "Structurally invalid version-2 operational record rejected by JSON Schema.",
+    "unknown-operation-kind.json": "Structurally invalid version-2 operational record rejected by JSON Schema.",
+    "unknown-actor-target.json": "Structurally invalid version-2 operational record rejected by JSON Schema.",
+    "actor-set-exact-duplicate.json": "Structurally invalid version-2 operational record rejected by JSON Schema.",
+    "actor-target-display-payload.json": "Structurally invalid version-2 operational record rejected by JSON Schema.",
+    "unknown-actor-lock-scope.json": "Structurally invalid version-2 operational record rejected by JSON Schema."
+  },
+  "application_invalid": {
+    "actor-operation-nonworkspace-scope.json": {
+      "rule_id": "portia.operation_journal.actor_scope_workspace",
+      "description": "Structurally valid record rejected by the named Actor-aware application invariant."
+    },
+    "actor-set-unsorted.json": {
+      "rule_id": "portia.operation_journal.actor_set_sorted",
+      "description": "Structurally valid record rejected by the named Actor-aware application invariant."
+    },
+    "actor-set-logical-duplicate.json": {
+      "rule_id": "portia.operation_journal.actor_set_logical_identity_unique",
+      "description": "Structurally valid record rejected by the named Actor-aware application invariant."
+    },
+    "actor-set-used-as-write-target.json": {
+      "rule_id": "portia.operation_journal.actor_set_not_write_step_target",
+      "description": "Structurally valid record rejected by the named Actor-aware application invariant."
+    },
+    "collection-primary-for-single-record.json": {
+      "rule_id": "portia.operation_journal.actor_collection_target_necessary",
+      "description": "Structurally valid record rejected by the named Actor-aware application invariant."
+    },
+    "sensitive-intent-fact.json": {
+      "rule_id": "portia.operation_journal.actor_sensitive_state_fact_prohibited",
+      "description": "Structurally valid record rejected by the named Actor-aware application invariant."
+    },
+    "consolidation-without-actor-set.json": {
+      "rule_id": "portia.operation_journal.actor_primary_target_exact",
+      "description": "Structurally valid record rejected by the named Actor-aware application invariant."
+    },
+    "partial-consolidation-subset.json": {
+      "rule_id": "portia.operation_journal.actor_partial_subset_not_success",
+      "description": "Structurally valid record rejected by the named Actor-aware application invariant."
+    },
+    "actor-lock-order-wrong.json": {
+      "rule_id": "portia.operation_journal.actor_lock_order",
+      "description": "Structurally valid record rejected by the named Actor-aware application invariant."
+    },
+    "generic-workspace-primary.json": {
+      "rule_id": "portia.operation_journal.actor_primary_target_exact",
+      "description": "Structurally valid record rejected by the named Actor-aware application invariant."
+    }
+  }
+}

@@ -1,0 +1,69 @@
+{
+  "manifest_version": "1",
+  "issue": 14,
+  "contract": "actor_directory_lifecycle_transition",
+  "version": "1",
+  "valid": {
+    "actor-activation.json": "Structurally and application-valid synthetic record.",
+    "actor-inactivation.json": "Structurally and application-valid synthetic record.",
+    "contact-obsolete.json": "Structurally and application-valid synthetic record.",
+    "relationship-ended.json": "Structurally and application-valid synthetic record.",
+    "actor-roster-collision.json": "Structurally and application-valid synthetic record.",
+    "other-reason.json": "Structurally and application-valid synthetic record."
+  },
+  "invalid": {
+    "missing-target.json": "Structurally invalid record rejected by JSON Schema.",
+    "collision-target.json": "Structurally invalid record rejected by JSON Schema.",
+    "same-status.json": "Structurally invalid record rejected by JSON Schema.",
+    "unknown-status.json": "Structurally invalid record rejected by JSON Schema.",
+    "unknown-reason.json": "Structurally invalid record rejected by JSON Schema.",
+    "other-reason-missing-detail.json": "Structurally invalid record rejected by JSON Schema.",
+    "invalid-transition-id.json": "Structurally invalid record rejected by JSON Schema.",
+    "invalid-previous-id.json": "Structurally invalid record rejected by JSON Schema.",
+    "timestamp-without-offset.json": "Structurally invalid record rejected by JSON Schema.",
+    "extra-creation-source.json": "Structurally invalid record rejected by JSON Schema.",
+    "extra-created-at.json": "Structurally invalid record rejected by JSON Schema."
+  },
+  "application_invalid": {
+    "owner-mismatch.json": {
+      "rule_id": "portia.actor_directory_transition.owner_agreement",
+      "description": "Structurally valid record rejected by the named application invariant."
+    },
+    "unsupported-target-version.json": {
+      "rule_id": "portia.actor_directory_transition.target_contract_supported",
+      "description": "Structurally valid record rejected by the named application invariant."
+    },
+    "effective-after-recorded.json": {
+      "rule_id": "portia.actor_directory_transition.effective_recorded_chronology",
+      "description": "Structurally valid record rejected by the named application invariant."
+    },
+    "self-predecessor.json": {
+      "rule_id": "portia.actor_directory_transition.predecessor_not_self",
+      "description": "Structurally valid record rejected by the named application invariant."
+    },
+    "missing-predecessor.json": {
+      "rule_id": "portia.actor_directory_transition.predecessor_resolution",
+      "description": "Structurally valid record rejected by the named application invariant."
+    },
+    "predecessor-status-mismatch.json": {
+      "rule_id": "portia.actor_directory_transition.predecessor_status_agreement",
+      "description": "Structurally valid record rejected by the named application invariant."
+    },
+    "illegal-transition.json": {
+      "rule_id": "portia.actor_directory_transition.transition_matrix",
+      "description": "Structurally valid record rejected by the named application invariant."
+    },
+    "wrong-reason.json": {
+      "rule_id": "portia.actor_directory_transition.reason_compatibility",
+      "description": "Structurally valid record rejected by the named application invariant."
+    },
+    "missing-operation.json": {
+      "rule_id": "portia.actor_directory_transition.operation_resolution",
+      "description": "Structurally valid record rejected by the named application invariant."
+    },
+    "branching-selected-head.json": {
+      "rule_id": "portia.actor_directory_transition.selected_head_unique",
+      "description": "Structurally valid record rejected by the named application invariant."
+    }
+  }
+}

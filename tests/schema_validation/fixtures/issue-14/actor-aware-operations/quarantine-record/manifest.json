@@ -1,0 +1,59 @@
+{
+  "manifest_version": "1",
+  "issue": 14,
+  "contract": "quarantine_record",
+  "version": "2",
+  "valid": {
+    "actor-identity-contradiction.json": "Structurally and application-valid synthetic version-2 operational record.",
+    "contact-privacy.json": "Structurally and application-valid synthetic version-2 operational record.",
+    "actor-set-split-reconciliation.json": "Structurally and application-valid synthetic version-2 operational record.",
+    "actor-collection-authorization.json": "Structurally and application-valid synthetic version-2 operational record.",
+    "actor-roster-collision.json": "Structurally and application-valid synthetic version-2 operational record.",
+    "v1-compatible-workspace.json": "Structurally and application-valid synthetic version-2 operational record."
+  },
+  "invalid": {
+    "wrong-schema-version.json": "Structurally invalid version-2 operational record rejected by JSON Schema.",
+    "actor-set-too-small.json": "Structurally invalid version-2 operational record rejected by JSON Schema.",
+    "actor-set-exact-duplicate.json": "Structurally invalid version-2 operational record rejected by JSON Schema.",
+    "actor-target-display-payload.json": "Structurally invalid version-2 operational record rejected by JSON Schema.",
+    "collection-extra-identity.json": "Structurally invalid version-2 operational record rejected by JSON Schema.",
+    "unknown-actor-reason.json": "Structurally invalid version-2 operational record rejected by JSON Schema.",
+    "unknown-actor-effect.json": "Structurally invalid version-2 operational record rejected by JSON Schema.",
+    "active-with-resolution.json": "Structurally invalid version-2 operational record rejected by JSON Schema.",
+    "target-copies-contact-value.json": "Structurally invalid version-2 operational record rejected by JSON Schema."
+  },
+  "application_invalid": {
+    "actor-set-unsorted.json": {
+      "rule_id": "portia.quarantine.actor_set_sorted",
+      "description": "Structurally valid record rejected by the named Actor-aware application invariant."
+    },
+    "actor-set-logical-duplicate.json": {
+      "rule_id": "portia.quarantine.actor_set_logical_identity_unique",
+      "description": "Structurally valid record rejected by the named Actor-aware application invariant."
+    },
+    "actor-set-unnecessary.json": {
+      "rule_id": "portia.quarantine.actor_set_scope_necessary",
+      "description": "Structurally valid record rejected by the named Actor-aware application invariant."
+    },
+    "collection-missing-actor-write-block.json": {
+      "rule_id": "portia.quarantine.actor_write_effect_proportional",
+      "description": "Structurally valid record rejected by the named Actor-aware application invariant."
+    },
+    "reason-target-mismatch.json": {
+      "rule_id": "portia.quarantine.actor_reason_target_compatible",
+      "description": "Structurally valid record rejected by the named Actor-aware application invariant."
+    },
+    "privacy-unsafe-reason-detail.json": {
+      "rule_id": "portia.quarantine.actor_sensitive_payload_prohibited",
+      "description": "Structurally valid record rejected by the named Actor-aware application invariant."
+    },
+    "actor-target-unsupported-version.json": {
+      "rule_id": "portia.quarantine.actor_target_contract_supported",
+      "description": "Structurally valid record rejected by the named Actor-aware application invariant."
+    },
+    "missing-applying-operation.json": {
+      "rule_id": "portia.quarantine.origin_operation_resolution",
+      "description": "Structurally valid record rejected by the named Actor-aware application invariant."
+    }
+  }
+}

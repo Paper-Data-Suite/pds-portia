@@ -1,0 +1,49 @@
+{
+  "schema_version": "1",
+  "record_type": "actor_directory_exceptional_removal",
+  "module_id": "portia",
+  "removal_id": "rmv_collision_legal",
+  "target": {
+    "kind": "actor_roster_student_collision",
+    "collision_ref": {
+      "actor_id": "actr_student_collision",
+      "collision_id": "arsc_review_1",
+      "contract_version": "1"
+    }
+  },
+  "original_workspace_relative_path": "portia/actors/actr_student_collision/records/actor_roster_student_collision/arsc_review_1.json",
+  "original_contract_version": "1",
+  "original_fingerprint": "1854963a47d7aa8d8e98c68267b6d460dad77966287281abd9b0cb76e59c0ed2",
+  "original_byte_length": 650,
+  "ground": {
+    "code": "binding_legal_or_administrative_requirement",
+    "detail": "Synthetic binding administrative decision requires removal"
+  },
+  "authorization": {
+    "decision_reference": "Synthetic administrative removal decision AR-2026-001",
+    "authorized_by": {
+      "type": "local_operator",
+      "display_label": "Synthetic Teacher"
+    }
+  },
+  "removed_at": "2026-08-06T18:20:00-04:00",
+  "removed_by": {
+    "type": "system_process",
+    "process_id": "actor_directory_removal"
+  },
+  "operation_ref": {
+    "operation_id": "op_collision_removal_1"
+  },
+  "retained_identity_evidence": {
+    "kind": "actor_roster_student_collision",
+    "collision_ref": {
+      "actor_id": "actr_student_collision",
+      "collision_id": "arsc_review_1",
+      "contract_version": "1"
+    },
+    "student_ref": {
+      "class_id": "english10_p2",
+      "student_id": "synthetic_student_1001"
+    }
+  }
+}

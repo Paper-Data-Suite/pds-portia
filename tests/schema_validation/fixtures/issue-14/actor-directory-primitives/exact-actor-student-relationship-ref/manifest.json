@@ -1,0 +1,20 @@
+{
+  "manifest_version": "1",
+  "issue": 14,
+  "contract": "exact_actor_student_relationship_ref",
+  "version": "1",
+  "valid": {
+    "relationship-v1.json": "Structurally valid accepted example."
+  },
+  "invalid": {
+    "missing-relationship.json": "Structurally invalid example rejected by JSON Schema.",
+    "wrong-relationship-prefix.json": "Structurally invalid example rejected by JSON Schema.",
+    "student-not-reference-identity.json": "Structurally invalid example rejected by JSON Schema."
+  },
+  "application_invalid": {
+    "unsupported-contract-version.json": {
+      "rule_id": "portia.actor.reference.contract_version_supported",
+      "description": "A structurally safe contract version must be supported for Actor-to-Student Relationship."
+    }
+  }
+}

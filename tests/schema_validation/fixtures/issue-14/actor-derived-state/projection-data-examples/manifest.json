@@ -1,0 +1,46 @@
+{
+  "manifest_version": "1",
+  "issue": 14,
+  "example_kind": "actor_derived_projection_data",
+  "public_contract": null,
+  "valid": {
+    "incoming-reference-complete.json": "Illustrative nonauthoritative Actor-derived data payload validated by bounded application checks.",
+    "incoming-reference-authorization-limited.json": "Illustrative nonauthoritative Actor-derived data payload validated by bounded application checks.",
+    "replacement-frontier-actor-graph.json": "Illustrative nonauthoritative Actor-derived data payload validated by bounded application checks.",
+    "lifecycle-timeline-actor.json": "Illustrative nonauthoritative Actor-derived data payload validated by bounded application checks."
+  },
+  "application_invalid": {
+    "incoming-copies-display-name.json": {
+      "rule_id": "portia.actor_derived_state.projection_data.incoming_copies_display_name",
+      "description": "Illustrative payload rejected by privacy, completeness, identity, ordering, or no-silent-following invariants."
+    },
+    "incoming-copies-contact-value.json": {
+      "rule_id": "portia.actor_derived_state.projection_data.incoming_copies_contact_value",
+      "description": "Illustrative payload rejected by privacy, completeness, identity, ordering, or no-silent-following invariants."
+    },
+    "limited-claims-complete.json": {
+      "rule_id": "portia.actor_derived_state.projection_data.limited_claims_complete",
+      "description": "Illustrative payload rejected by privacy, completeness, identity, ordering, or no-silent-following invariants."
+    },
+    "limited-claims-removal-eligibility.json": {
+      "rule_id": "portia.actor_derived_state.projection_data.limited_claims_removal_eligibility",
+      "description": "Illustrative payload rejected by privacy, completeness, identity, ordering, or no-silent-following invariants."
+    },
+    "frontier-automatic-follow.json": {
+      "rule_id": "portia.actor_derived_state.projection_data.frontier_automatic_follow",
+      "description": "Illustrative payload rejected by privacy, completeness, identity, ordering, or no-silent-following invariants."
+    },
+    "frontier-logical-duplicate.json": {
+      "rule_id": "portia.actor_derived_state.projection_data.frontier_logical_duplicate",
+      "description": "Illustrative payload rejected by privacy, completeness, identity, ordering, or no-silent-following invariants."
+    },
+    "frontier-cycle.json": {
+      "rule_id": "portia.actor_derived_state.projection_data.frontier_cycle",
+      "description": "Illustrative payload rejected by privacy, completeness, identity, ordering, or no-silent-following invariants."
+    },
+    "lifecycle-copies-organization.json": {
+      "rule_id": "portia.actor_derived_state.projection_data.lifecycle_copies_organization",
+      "description": "Illustrative payload rejected by privacy, completeness, identity, ordering, or no-silent-following invariants."
+    }
+  }
+}

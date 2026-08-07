@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-actor-roster-student-collision-ref.schema.json",
+  "title": "Exact Portia Actor–Roster Student Collision Reference",
+  "description": "Complete reference to one exact immutable reviewed Actor–Roster Student Collision record beneath one Portia Actor. The reference does not contain student display data, contact data, evidence, or a workspace-wide person identity.",
+  "type": "object",
+  "required": [
+    "actor_id",
+    "collision_id",
+    "contract_version"
+  ],
+  "properties": {
+    "actor_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-actor-id.schema.json"
+    },
+    "collision_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-actor-roster-student-collision-id.schema.json"
+    },
+    "contract_version": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+    }
+  },
+  "additionalProperties": false
+}

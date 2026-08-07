@@ -1,0 +1,29 @@
+{
+  "schema_version": "1",
+  "record_type": "actor_directory_lifecycle_transition",
+  "module_id": "portia",
+  "actor_id": "actr_student_collision",
+  "transition_id": "lct_roster_collision",
+  "target": {
+    "kind": "actor",
+    "actor_ref": {
+      "actor_id": "actr_student_collision",
+      "contract_version": "1"
+    }
+  },
+  "prior_status": "active",
+  "new_status": "invalidated",
+  "reason": {
+    "code": "roster_student_collision"
+  },
+  "previous_transition_id": "lct_activate_collision_actor",
+  "effective_at": "2026-08-06T17:30:00-04:00",
+  "recorded_at": "2026-08-06T17:31:00-04:00",
+  "recorded_by": {
+    "type": "local_operator",
+    "display_label": "Synthetic Teacher"
+  },
+  "operation_ref": {
+    "operation_id": "op_roster_collision_1"
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "schema_version": "1",
+  "record_type": "lifecycle_timeline_data",
+  "projection_kind": "lifecycle_timeline",
+  "projection_scope": {
+    "scope": "graph",
+    "graph_id": "actor_lifecycle_actr_family_1"
+  },
+  "authorization_scope": {
+    "authorization_scope_id": "local_teacher_full",
+    "coverage": "complete",
+    "limitation_codes": []
+  },
+  "source_snapshot_digest": "1e957c1c07054341aa5def6011316e8f2f90945a0610f464adeba3369ea7e9f4",
+  "target": {
+    "kind": "actor",
+    "actor_ref": {
+      "actor_id": "actr_family_1",
+      "contract_version": "1"
+    }
+  },
+  "creation_status": "proposed",
+  "selected_terminal_transition_id": "lct_actor_inactive",
+  "selected_status": "inactive",
+  "transitions": [
+    {
+      "transition_id": "lct_actor_active",
+      "prior_status": "proposed",
+      "new_status": "active",
+      "reason_code": "review_completed",
+      "effective_at": "2026-08-06T17:30:00-04:00",
+      "recorded_at": "2026-08-06T17:31:00-04:00",
+      "selected": true
+    },
+    {
+      "transition_id": "lct_actor_inactive",
+      "prior_status": "active",
+      "new_status": "inactive",
+      "reason_code": "made_inactive",
+      "effective_at": "2026-08-06T17:40:00-04:00",
+      "recorded_at": "2026-08-06T17:41:00-04:00",
+      "selected": true
+    }
+  ],
+  "history_corrections": []
+}

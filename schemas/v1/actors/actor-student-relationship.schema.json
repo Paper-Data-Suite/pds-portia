@@ -1,0 +1,486 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/actors/actor-student-relationship.schema.json",
+  "title": "Portia Actor-to-Student Relationship",
+  "description": "Canonical version-1 teacher-local relationship assertion between one exact Portia Actor and one exact Core roster-qualified student. The record preserves relationship type, basis, local review state, an optional effective date range, lifecycle, provenance, and exact replacement lineage. It does not establish legal parentage, guardianship, custody, employment, disclosure permission, consent, decision authority, or workspace-wide student identity.",
+  "$comment": "Application validation remains responsible for canonical child path and Actor-owner agreement, exact Actor and Core roster resolution, current activation eligibility, historical unresolved behavior, timestamp, review, and effective-period chronology, creation provenance immutability, imported review gates, source Actor or source student resolution, lifecycle/history reconciliation, active tuple uniqueness, independently meaningful source assertions, material-field replacement, exact predecessor resolution, predecessor contract support, self-supersession, predecessor identity uniqueness, replacement reason and topology, Actor and student correction semantics, replacement cycles, successor effectiveness, authority limitation, privacy-safe diagnostics, Quarantine, typed operations, recoverable persistence, and no automatic cross-roster propagation or silent successor following.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "record_type",
+    "module_id",
+    "actor_id",
+    "relationship_id",
+    "status",
+    "student_ref",
+    "relationship",
+    "basis",
+    "review",
+    "creation_source",
+    "created_at",
+    "created_by",
+    "updated_at",
+    "updated_by"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1"
+    },
+    "record_type": {
+      "const": "actor_student_relationship"
+    },
+    "module_id": {
+      "const": "portia"
+    },
+    "actor_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-actor-id.schema.json"
+    },
+    "relationship_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-actor-student-relationship-id.schema.json"
+    },
+    "status": {
+      "enum": [
+        "proposed",
+        "active",
+        "inactive",
+        "invalidated",
+        "superseded"
+      ]
+    },
+    "student_ref": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/roster-student-ref.schema.json",
+      "description": "Exact Core roster-qualified student identity. Portia does not infer equivalence across different class_id and student_id pairs."
+    },
+    "relationship": {
+      "$ref": "#/$defs/relationship"
+    },
+    "basis": {
+      "$ref": "#/$defs/basis"
+    },
+    "review": {
+      "$ref": "#/$defs/review"
+    },
+    "effective_period": {
+      "$ref": "#/$defs/effectivePeriod",
+      "description": "Optional teacher-local date range for the asserted relationship. Dates do not automatically change lifecycle."
+    },
+    "supersedes": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 100,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/supersessionEntry"
+      },
+      "description": "Exact predecessor Relationship representations replaced by this record. Application validation establishes correction, duplicate consolidation, Actor-owner correction, target student correction, basis correction, migration compatibility, and coordinated predecessor lifecycle."
+    },
+    "creation_source": {
+      "allOf": [
+        {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/provenance/creation-source.schema.json"
+        },
+        {
+          "not": {
+            "properties": {
+              "type": {
+                "const": "paper_capture"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          }
+        }
+      ],
+      "description": "Immutable Relationship creation provenance. Version 1 accepts deliberate digital entry or import. A reviewed paper or school record may be identified through the bounded basis branch without turning paper capture into relationship identity."
+    },
+    "created_at": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+    },
+    "created_by": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/attribution/attribution-agent.schema.json"
+    },
+    "updated_at": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+    },
+    "updated_by": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/attribution/attribution-agent.schema.json"
+    }
+  },
+  "$defs": {
+    "relationship": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/standardRelationship"
+        },
+        {
+          "$ref": "#/$defs/otherRelationship"
+        }
+      ]
+    },
+    "standardRelationship": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "type": {
+          "enum": [
+            "parent",
+            "guardian",
+            "caregiver",
+            "family_contact",
+            "counselor",
+            "case_manager",
+            "administrator",
+            "support_staff",
+            "external_support_provider"
+          ]
+        }
+      }
+    },
+    "otherRelationship": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "detail"
+      ],
+      "properties": {
+        "type": {
+          "const": "other"
+        },
+        "detail": {
+          "allOf": [
+            {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+            },
+            {
+              "maxLength": 200
+            }
+          ],
+          "description": "Concise relationship-type detail. It must not become an unrestricted narrative or authority claim."
+        }
+      }
+    },
+    "basis": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/localOperatorKnowledgeBasis"
+        },
+        {
+          "$ref": "#/$defs/actorStatementBasis"
+        },
+        {
+          "$ref": "#/$defs/rosterStudentStatementBasis"
+        },
+        {
+          "$ref": "#/$defs/schoolRecordBasis"
+        },
+        {
+          "$ref": "#/$defs/importBasis"
+        },
+        {
+          "$ref": "#/$defs/otherBasis"
+        }
+      ]
+    },
+    "localOperatorKnowledgeBasis": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind"
+      ],
+      "properties": {
+        "kind": {
+          "const": "local_operator_knowledge"
+        }
+      }
+    },
+    "actorStatementBasis": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "source_actor_ref"
+      ],
+      "properties": {
+        "kind": {
+          "const": "actor_statement"
+        },
+        "source_actor_ref": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-actor-ref.schema.json"
+        }
+      },
+      "description": "The identified Actor reported the relationship. The statement is basis evidence, not proof of legal status or authority."
+    },
+    "rosterStudentStatementBasis": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "source_student_ref"
+      ],
+      "properties": {
+        "kind": {
+          "const": "roster_student_statement"
+        },
+        "source_student_ref": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/roster-student-ref.schema.json"
+        }
+      },
+      "description": "The exact roster-qualified student reported the relationship. The statement is not institutional verification."
+    },
+    "schoolRecordBasis": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "source_label"
+      ],
+      "properties": {
+        "kind": {
+          "const": "school_record"
+        },
+        "source_label": {
+          "allOf": [
+            {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+            },
+            {
+              "maxLength": 200
+            }
+          ]
+        },
+        "external_reference": {
+          "allOf": [
+            {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+            },
+            {
+              "maxLength": 200
+            }
+          ]
+        }
+      },
+      "description": "Locally reviewed school-record basis identified sufficiently for audit without copying the source record into Portia."
+    },
+    "importBasis": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "source_label"
+      ],
+      "properties": {
+        "kind": {
+          "const": "import"
+        },
+        "source_label": {
+          "allOf": [
+            {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+            },
+            {
+              "maxLength": 200
+            }
+          ]
+        },
+        "external_reference": {
+          "allOf": [
+            {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+            },
+            {
+              "maxLength": 200
+            }
+          ]
+        }
+      }
+    },
+    "otherBasis": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "detail"
+      ],
+      "properties": {
+        "kind": {
+          "const": "other"
+        },
+        "detail": {
+          "allOf": [
+            {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+            },
+            {
+              "maxLength": 300
+            }
+          ]
+        }
+      }
+    },
+    "review": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/unreviewed"
+        },
+        {
+          "$ref": "#/$defs/locallyReviewed"
+        }
+      ]
+    },
+    "unreviewed": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind"
+      ],
+      "properties": {
+        "kind": {
+          "const": "unreviewed"
+        }
+      },
+      "description": "The assertion has not completed local human review and is not eligible for active current use."
+    },
+    "locallyReviewed": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "reviewed_at",
+        "reviewed_by"
+      ],
+      "properties": {
+        "kind": {
+          "const": "locally_reviewed"
+        },
+        "reviewed_at": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+        },
+        "reviewed_by": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/attribution/attribution-agent.schema.json"
+        }
+      },
+      "description": "A local operator reviewed the assertion for teacher-local Portia use. This does not establish legal or institutional verification, disclosure permission, consent, custody, or decision authority."
+    },
+    "effectivePeriod": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "starts_on": {
+          "type": "string",
+          "format": "date"
+        },
+        "ends_on": {
+          "type": "string",
+          "format": "date"
+        }
+      },
+      "anyOf": [
+        {
+          "required": [
+            "starts_on"
+          ]
+        },
+        {
+          "required": [
+            "ends_on"
+          ]
+        }
+      ]
+    },
+    "supersessionEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "relationship_ref",
+        "reason"
+      ],
+      "properties": {
+        "relationship_ref": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-actor-student-relationship-ref.schema.json"
+        },
+        "reason": {
+          "enum": [
+            "relationship_corrected",
+            "wrong_actor_corrected",
+            "wrong_student_corrected",
+            "basis_corrected",
+            "duplicate_consolidated",
+            "contract_migrated",
+            "other"
+          ]
+        },
+        "detail": {
+          "allOf": [
+            {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+            },
+            {
+              "maxLength": 500
+            }
+          ],
+          "description": "Bounded replacement detail. It must not copy contact credentials, student narratives, source documents, or other unnecessary sensitive payload."
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "reason": {
+                "const": "other"
+              }
+            },
+            "required": [
+              "reason"
+            ]
+          },
+          "then": {
+            "required": [
+              "detail"
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "x-portia-application-invariants": [
+    "portia.actor_student_relationship.canonical_storage_scope",
+    "portia.actor_student_relationship.owner_agreement",
+    "portia.actor_student_relationship.actor_resolution",
+    "portia.actor_student_relationship.actor_lifecycle_eligibility",
+    "portia.actor_student_relationship.student_resolution",
+    "portia.actor_student_relationship.historical_student_resolution",
+    "portia.actor_student_relationship.no_cross_roster_inference",
+    "portia.actor_student_relationship.timestamp_chronology",
+    "portia.actor_student_relationship.review_chronology",
+    "portia.actor_student_relationship.active_requires_review",
+    "portia.actor_student_relationship.effective_period_chronology",
+    "portia.actor_student_relationship.creation_provenance_immutable",
+    "portia.actor_student_relationship.imported_status_requires_review_history",
+    "portia.actor_student_relationship.source_actor_resolution",
+    "portia.actor_student_relationship.source_student_resolution",
+    "portia.actor_student_relationship.basis_semantics",
+    "portia.actor_student_relationship.lifecycle_history_reconciliation",
+    "portia.actor_student_relationship.active_tuple_uniqueness",
+    "portia.actor_student_relationship.independent_source_assertion",
+    "portia.actor_student_relationship.material_field_replacement",
+    "portia.actor_student_relationship.predecessor_resolution",
+    "portia.actor_student_relationship.predecessor_contract_supported",
+    "portia.actor_student_relationship.self_supersession",
+    "portia.actor_student_relationship.predecessor_identity_unique",
+    "portia.actor_student_relationship.supersession_reason_uniform",
+    "portia.actor_student_relationship.replacement_topology",
+    "portia.actor_student_relationship.actor_correction",
+    "portia.actor_student_relationship.student_correction",
+    "portia.actor_student_relationship.supersession_cycle",
+    "portia.actor_student_relationship.successor_effectiveness",
+    "portia.actor_student_relationship.authority_limitation",
+    "portia.actor_student_relationship.privacy_safe_diagnostics",
+    "portia.actor_student_relationship.no_silent_successor_following"
+  ]
+}

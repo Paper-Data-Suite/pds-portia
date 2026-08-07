@@ -1,0 +1,36 @@
+{
+  "finding_key": "fnd_actor_path_mismatch",
+  "evaluation_key": "evl_actor_path_mismatch_r1",
+  "rule_id": "portia.actor.path_identity_mismatch",
+  "rule_version": "1",
+  "category": "identity_scope",
+  "code": "actor_unknown_problem",
+  "severity": "error",
+  "assessment": {
+    "result": "confirmed"
+  },
+  "effects": [
+    "block_current_use",
+    "review_required"
+  ],
+  "scope": "logical_record",
+  "primary_target": {
+    "kind": "actor_directory_record",
+    "actor_directory_record_ref": {
+      "kind": "actor",
+      "actor_ref": {
+        "actor_id": "actr_family_1",
+        "contract_version": "1"
+      }
+    }
+  },
+  "related_targets": [],
+  "evidence": [
+    {
+      "name": "expected_path",
+      "kind": "path",
+      "value": "portia/actors/actr_family_1/actor.json"
+    }
+  ],
+  "observed_at": "2026-08-06T19:00:00-04:00"
+}

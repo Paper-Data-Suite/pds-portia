@@ -1,0 +1,44 @@
+{
+  "schema_version": "1",
+  "record_type": "incoming_reference_index_data",
+  "projection_kind": "incoming_reference_index",
+  "projection_scope": {
+    "scope": "workspace",
+    "workspace_id": "local_workspace"
+  },
+  "authorization_scope": {
+    "authorization_scope_id": "local_teacher_actor_only",
+    "coverage": "authorization_limited",
+    "limitation_codes": [
+      "class_tree_unavailable"
+    ]
+  },
+  "source_snapshot_digest": "cae2050270d382cdb1c11fefde5042ae671316e676601b3d4e7118495261fe55",
+  "completeness": "indeterminate",
+  "limitations": [
+    "class_tree_unavailable"
+  ],
+  "entries": [
+    {
+      "target": {
+        "kind": "actor",
+        "actor_ref": {
+          "actor_id": "actr_family_1",
+          "contract_version": "1"
+        }
+      },
+      "incoming_references": [
+        {
+          "source_record": {
+            "contract_name": "actor_contact_point",
+            "contract_version": "1",
+            "workspace_relative_path": "portia/actors/actr_family_1/records/actor_contact_point/acp_primary.json"
+          },
+          "reference_path": "/actor_id",
+          "reference_class": "mutable_current_canonical",
+          "current_use_disposition": "indeterminate"
+        }
+      ]
+    }
+  ]
+}

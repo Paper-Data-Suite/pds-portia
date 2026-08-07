@@ -1,0 +1,1577 @@
+{
+  "matrix_version": "1",
+  "issue": 14,
+  "entry_count": 157,
+  "entries": [
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-aware-operations/integrity-finding/application-invalid/actor-set-logical-duplicate.json",
+      "contract": "integrity_finding",
+      "version": "2",
+      "schema_path": "schemas/v2/projections/integrity-finding.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.integrity_finding.actor_set_logical_identity_unique",
+      "operation_family": "actor-aware-operations/integrity-finding",
+      "description": "Structurally valid record rejected by the named Actor-aware application invariant."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-aware-operations/integrity-finding/application-invalid/actor-set-unsorted.json",
+      "contract": "integrity_finding",
+      "version": "2",
+      "schema_path": "schemas/v2/projections/integrity-finding.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.integrity_finding.actor_set_sorted",
+      "operation_family": "actor-aware-operations/integrity-finding",
+      "description": "Structurally valid record rejected by the named Actor-aware application invariant."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-aware-operations/integrity-finding/application-invalid/actor-target-unsupported-version.json",
+      "contract": "integrity_finding",
+      "version": "2",
+      "schema_path": "schemas/v2/projections/integrity-finding.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.integrity_finding.actor_target_contract_supported",
+      "operation_family": "actor-aware-operations/integrity-finding",
+      "description": "Structurally valid record rejected by the named Actor-aware application invariant."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-aware-operations/integrity-finding/application-invalid/collection-used-when-exact-known.json",
+      "contract": "integrity_finding",
+      "version": "2",
+      "schema_path": "schemas/v2/projections/integrity-finding.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.integrity_finding.actor_collection_target_necessary",
+      "operation_family": "actor-aware-operations/integrity-finding",
+      "description": "Structurally valid record rejected by the named Actor-aware application invariant."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-aware-operations/integrity-finding/application-invalid/duplicate-candidate-blocking.json",
+      "contract": "integrity_finding",
+      "version": "2",
+      "schema_path": "schemas/v2/projections/integrity-finding.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.integrity_finding.actor_duplicate_candidate_nonblocking",
+      "operation_family": "actor-aware-operations/integrity-finding",
+      "description": "Structurally valid record rejected by the named Actor-aware application invariant."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-aware-operations/integrity-finding/application-invalid/duplicate-candidate-confirmed.json",
+      "contract": "integrity_finding",
+      "version": "2",
+      "schema_path": "schemas/v2/projections/integrity-finding.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.integrity_finding.actor_duplicate_candidate_indeterminate",
+      "operation_family": "actor-aware-operations/integrity-finding",
+      "description": "Structurally valid record rejected by the named Actor-aware application invariant."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-aware-operations/integrity-finding/application-invalid/sensitive-evidence-name.json",
+      "contract": "integrity_finding",
+      "version": "2",
+      "schema_path": "schemas/v2/projections/integrity-finding.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.integrity_finding.actor_sensitive_context_prohibited",
+      "operation_family": "actor-aware-operations/integrity-finding",
+      "description": "Structurally valid record rejected by the named Actor-aware application invariant."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-aware-operations/integrity-finding/application-invalid/silent-actor-retarget.json",
+      "contract": "integrity_finding",
+      "version": "2",
+      "schema_path": "schemas/v2/projections/integrity-finding.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.integrity_finding.exact_target_normalization",
+      "operation_family": "actor-aware-operations/integrity-finding",
+      "description": "Structurally valid record rejected by the named Actor-aware application invariant."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-aware-operations/operation-journal/application-invalid/actor-lock-order-wrong.json",
+      "contract": "operation_journal",
+      "version": "2",
+      "schema_path": "schemas/v2/operations/operation-journal.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.operation_journal.actor_lock_order",
+      "operation_family": "actor-aware-operations/operation-journal",
+      "description": "Structurally valid record rejected by the named Actor-aware application invariant."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-aware-operations/operation-journal/application-invalid/actor-operation-nonworkspace-scope.json",
+      "contract": "operation_journal",
+      "version": "2",
+      "schema_path": "schemas/v2/operations/operation-journal.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.operation_journal.actor_scope_workspace",
+      "operation_family": "actor-aware-operations/operation-journal",
+      "description": "Structurally valid record rejected by the named Actor-aware application invariant."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-aware-operations/operation-journal/application-invalid/actor-set-logical-duplicate.json",
+      "contract": "operation_journal",
+      "version": "2",
+      "schema_path": "schemas/v2/operations/operation-journal.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.operation_journal.actor_set_logical_identity_unique",
+      "operation_family": "actor-aware-operations/operation-journal",
+      "description": "Structurally valid record rejected by the named Actor-aware application invariant."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-aware-operations/operation-journal/application-invalid/actor-set-unsorted.json",
+      "contract": "operation_journal",
+      "version": "2",
+      "schema_path": "schemas/v2/operations/operation-journal.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.operation_journal.actor_set_sorted",
+      "operation_family": "actor-aware-operations/operation-journal",
+      "description": "Structurally valid record rejected by the named Actor-aware application invariant."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-aware-operations/operation-journal/application-invalid/actor-set-used-as-write-target.json",
+      "contract": "operation_journal",
+      "version": "2",
+      "schema_path": "schemas/v2/operations/operation-journal.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.operation_journal.actor_set_not_write_step_target",
+      "operation_family": "actor-aware-operations/operation-journal",
+      "description": "Structurally valid record rejected by the named Actor-aware application invariant."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-aware-operations/operation-journal/application-invalid/collection-primary-for-single-record.json",
+      "contract": "operation_journal",
+      "version": "2",
+      "schema_path": "schemas/v2/operations/operation-journal.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.operation_journal.actor_collection_target_necessary",
+      "operation_family": "actor-aware-operations/operation-journal",
+      "description": "Structurally valid record rejected by the named Actor-aware application invariant."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-aware-operations/operation-journal/application-invalid/consolidation-without-actor-set.json",
+      "contract": "operation_journal",
+      "version": "2",
+      "schema_path": "schemas/v2/operations/operation-journal.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.operation_journal.actor_primary_target_exact",
+      "operation_family": "actor-aware-operations/operation-journal",
+      "description": "Structurally valid record rejected by the named Actor-aware application invariant."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-aware-operations/operation-journal/application-invalid/generic-workspace-primary.json",
+      "contract": "operation_journal",
+      "version": "2",
+      "schema_path": "schemas/v2/operations/operation-journal.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.operation_journal.actor_primary_target_exact",
+      "operation_family": "actor-aware-operations/operation-journal",
+      "description": "Structurally valid record rejected by the named Actor-aware application invariant."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-aware-operations/operation-journal/application-invalid/partial-consolidation-subset.json",
+      "contract": "operation_journal",
+      "version": "2",
+      "schema_path": "schemas/v2/operations/operation-journal.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.operation_journal.actor_partial_subset_not_success",
+      "operation_family": "actor-aware-operations/operation-journal",
+      "description": "Structurally valid record rejected by the named Actor-aware application invariant."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-aware-operations/operation-journal/application-invalid/sensitive-intent-fact.json",
+      "contract": "operation_journal",
+      "version": "2",
+      "schema_path": "schemas/v2/operations/operation-journal.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.operation_journal.actor_sensitive_state_fact_prohibited",
+      "operation_family": "actor-aware-operations/operation-journal",
+      "description": "Structurally valid record rejected by the named Actor-aware application invariant."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-aware-operations/operation-lock/application-invalid/lock-id-digest-mismatch.json",
+      "contract": "operation_lock",
+      "version": "2",
+      "schema_path": "schemas/v2/operations/operation-lock.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.operation_lock.deterministic_lock_id",
+      "operation_family": "actor-aware-operations/operation-lock",
+      "description": "Structurally valid record rejected by the named Actor-aware application invariant."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-aware-operations/operation-lock/application-invalid/missing-owning-operation.json",
+      "contract": "operation_lock",
+      "version": "2",
+      "schema_path": "schemas/v2/operations/operation-lock.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.operation_lock.operation_resolution",
+      "operation_family": "actor-aware-operations/operation-lock",
+      "description": "Structurally valid record rejected by the named Actor-aware application invariant."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-aware-operations/operation-lock/application-invalid/operation-target-owner-mismatch.json",
+      "contract": "operation_lock",
+      "version": "2",
+      "schema_path": "schemas/v2/operations/operation-lock.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.operation_lock.operation_owner_agreement",
+      "operation_family": "actor-aware-operations/operation-lock",
+      "description": "Structurally valid record rejected by the named Actor-aware application invariant."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-aware-operations/operation-lock/application-invalid/unnecessary-collection-lock.json",
+      "contract": "operation_lock",
+      "version": "2",
+      "schema_path": "schemas/v2/operations/operation-lock.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.operation_lock.actor_collection_scope_necessary",
+      "operation_family": "actor-aware-operations/operation-lock",
+      "description": "Structurally valid record rejected by the named Actor-aware application invariant."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-aware-operations/operation-lock/application-invalid/unsupported-actor-version.json",
+      "contract": "operation_lock",
+      "version": "2",
+      "schema_path": "schemas/v2/operations/operation-lock.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.operation_lock.actor_target_contract_supported",
+      "operation_family": "actor-aware-operations/operation-lock",
+      "description": "Structurally valid record rejected by the named Actor-aware application invariant."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-aware-operations/quarantine-record/application-invalid/actor-set-logical-duplicate.json",
+      "contract": "quarantine_record",
+      "version": "2",
+      "schema_path": "schemas/v2/operations/quarantine-record.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.quarantine.actor_set_logical_identity_unique",
+      "operation_family": "actor-aware-operations/quarantine-record",
+      "description": "Structurally valid record rejected by the named Actor-aware application invariant."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-aware-operations/quarantine-record/application-invalid/actor-set-unnecessary.json",
+      "contract": "quarantine_record",
+      "version": "2",
+      "schema_path": "schemas/v2/operations/quarantine-record.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.quarantine.actor_set_scope_necessary",
+      "operation_family": "actor-aware-operations/quarantine-record",
+      "description": "Structurally valid record rejected by the named Actor-aware application invariant."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-aware-operations/quarantine-record/application-invalid/actor-set-unsorted.json",
+      "contract": "quarantine_record",
+      "version": "2",
+      "schema_path": "schemas/v2/operations/quarantine-record.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.quarantine.actor_set_sorted",
+      "operation_family": "actor-aware-operations/quarantine-record",
+      "description": "Structurally valid record rejected by the named Actor-aware application invariant."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-aware-operations/quarantine-record/application-invalid/actor-target-unsupported-version.json",
+      "contract": "quarantine_record",
+      "version": "2",
+      "schema_path": "schemas/v2/operations/quarantine-record.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.quarantine.actor_target_contract_supported",
+      "operation_family": "actor-aware-operations/quarantine-record",
+      "description": "Structurally valid record rejected by the named Actor-aware application invariant."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-aware-operations/quarantine-record/application-invalid/collection-missing-actor-write-block.json",
+      "contract": "quarantine_record",
+      "version": "2",
+      "schema_path": "schemas/v2/operations/quarantine-record.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.quarantine.actor_write_effect_proportional",
+      "operation_family": "actor-aware-operations/quarantine-record",
+      "description": "Structurally valid record rejected by the named Actor-aware application invariant."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-aware-operations/quarantine-record/application-invalid/missing-applying-operation.json",
+      "contract": "quarantine_record",
+      "version": "2",
+      "schema_path": "schemas/v2/operations/quarantine-record.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.quarantine.origin_operation_resolution",
+      "operation_family": "actor-aware-operations/quarantine-record",
+      "description": "Structurally valid record rejected by the named Actor-aware application invariant."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-aware-operations/quarantine-record/application-invalid/privacy-unsafe-reason-detail.json",
+      "contract": "quarantine_record",
+      "version": "2",
+      "schema_path": "schemas/v2/operations/quarantine-record.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.quarantine.actor_sensitive_payload_prohibited",
+      "operation_family": "actor-aware-operations/quarantine-record",
+      "description": "Structurally valid record rejected by the named Actor-aware application invariant."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-aware-operations/quarantine-record/application-invalid/reason-target-mismatch.json",
+      "contract": "quarantine_record",
+      "version": "2",
+      "schema_path": "schemas/v2/operations/quarantine-record.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.quarantine.actor_reason_target_compatible",
+      "operation_family": "actor-aware-operations/quarantine-record",
+      "description": "Structurally valid record rejected by the named Actor-aware application invariant."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-contact-point/application-invalid/active-import-without-review-history.json",
+      "contract": "actor_contact_point",
+      "version": "1",
+      "schema_path": "schemas/v1/actors/actor-contact-point.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor_contact_point.imported_status_requires_review_history",
+      "operation_family": "actor-contact-point",
+      "description": "An imported Contact Point cannot be active without accepted review and lifecycle history."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-contact-point/application-invalid/confirmation-after-updated.json",
+      "contract": "actor_contact_point",
+      "version": "1",
+      "schema_path": "schemas/v1/actors/actor-contact-point.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor_contact_point.verification_chronology",
+      "operation_family": "actor-contact-point",
+      "description": "Current verification cannot postdate the current record update."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-contact-point/application-invalid/confirmation-before-created.json",
+      "contract": "actor_contact_point",
+      "version": "1",
+      "schema_path": "schemas/v1/actors/actor-contact-point.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor_contact_point.verification_chronology",
+      "operation_family": "actor-contact-point",
+      "description": "Local confirmation cannot predate Contact Point creation."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-contact-point/application-invalid/contact-correction-crosses-actor.json",
+      "contract": "actor_contact_point",
+      "version": "1",
+      "schema_path": "schemas/v1/actors/actor-contact-point.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor_contact_point.ownership_correction",
+      "operation_family": "actor-contact-point",
+      "description": "contact_corrected preserves Actor ownership; cross-Actor replacement requires wrong_actor_corrected."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-contact-point/application-invalid/duplicate-predecessor-identity.json",
+      "contract": "actor_contact_point",
+      "version": "1",
+      "schema_path": "schemas/v1/actors/actor-contact-point.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor_contact_point.predecessor_identity_unique",
+      "operation_family": "actor-contact-point",
+      "description": "One successor cannot list the same Actor-owned Contact Point identity more than once."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-contact-point/application-invalid/mixed-supersession-reasons.json",
+      "contract": "actor_contact_point",
+      "version": "1",
+      "schema_path": "schemas/v1/actors/actor-contact-point.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor_contact_point.supersession_reason_uniform",
+      "operation_family": "actor-contact-point",
+      "description": "One replacement operation cannot mix incompatible predecessor reasons."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-contact-point/application-invalid/self-supersession.json",
+      "contract": "actor_contact_point",
+      "version": "1",
+      "schema_path": "schemas/v1/actors/actor-contact-point.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor_contact_point.self_supersession",
+      "operation_family": "actor-contact-point",
+      "description": "A nonmigration Contact Point replacement cannot list itself."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-contact-point/application-invalid/single-predecessor-duplicate-consolidation.json",
+      "contract": "actor_contact_point",
+      "version": "1",
+      "schema_path": "schemas/v1/actors/actor-contact-point.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor_contact_point.replacement_topology",
+      "operation_family": "actor-contact-point",
+      "description": "duplicate_consolidated requires at least two distinct predecessor Contact Points."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-contact-point/application-invalid/unsupported-predecessor-version.json",
+      "contract": "actor_contact_point",
+      "version": "1",
+      "schema_path": "schemas/v1/actors/actor-contact-point.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor_contact_point.predecessor_contract_supported",
+      "operation_family": "actor-contact-point",
+      "description": "Every exact predecessor contract version must be cataloged and supported."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-contact-point/application-invalid/updated-before-created.json",
+      "contract": "actor_contact_point",
+      "version": "1",
+      "schema_path": "schemas/v1/actors/actor-contact-point.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor_contact_point.timestamp_chronology",
+      "operation_family": "actor-contact-point",
+      "description": "updated_at must not precede created_at."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-contact-point/application-invalid/wrong-actor-reason-with-same-actor.json",
+      "contract": "actor_contact_point",
+      "version": "1",
+      "schema_path": "schemas/v1/actors/actor-contact-point.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor_contact_point.ownership_correction",
+      "operation_family": "actor-contact-point",
+      "description": "wrong_actor_corrected requires a different predecessor Actor."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-derived-state/derived-current-pointer/application-invalid/projection-kind-mismatch.json",
+      "contract": "derived_current_pointer",
+      "version": "1",
+      "schema_path": "schemas/v1/projections/derived-current-pointer.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor_derived_state.derived_current_pointer.projection_kind_mismatch",
+      "operation_family": "actor-derived-state/derived-current-pointer",
+      "description": "Structurally valid fixture rejected by Actor-derived application invariants."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-derived-state/derived-current-pointer/application-invalid/scope-mismatch.json",
+      "contract": "derived_current_pointer",
+      "version": "1",
+      "schema_path": "schemas/v1/projections/derived-current-pointer.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor_derived_state.derived_current_pointer.scope_mismatch",
+      "operation_family": "actor-derived-state/derived-current-pointer",
+      "description": "Structurally valid fixture rejected by Actor-derived application invariants."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-derived-state/derived-current-pointer/application-invalid/unknown-generation.json",
+      "contract": "derived_current_pointer",
+      "version": "1",
+      "schema_path": "schemas/v1/projections/derived-current-pointer.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor_derived_state.derived_current_pointer.unknown_generation",
+      "operation_family": "actor-derived-state/derived-current-pointer",
+      "description": "Structurally valid fixture rejected by Actor-derived application invariants."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-derived-state/derived-index-metadata/application-invalid/authorization-mismatch.json",
+      "contract": "derived_index_metadata",
+      "version": "1",
+      "schema_path": "schemas/v1/projections/derived-index-metadata.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor_derived_state.derived_index_metadata.authorization_mismatch",
+      "operation_family": "actor-derived-state/derived-index-metadata",
+      "description": "Structurally valid fixture rejected by Actor-derived application invariants."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-derived-state/derived-index-metadata/application-invalid/data-fingerprint-mismatch.json",
+      "contract": "derived_index_metadata",
+      "version": "1",
+      "schema_path": "schemas/v1/projections/derived-index-metadata.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor_derived_state.derived_index_metadata.data_fingerprint_mismatch",
+      "operation_family": "actor-derived-state/derived-index-metadata",
+      "description": "Structurally valid fixture rejected by Actor-derived application invariants."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-derived-state/derived-index-metadata/application-invalid/generated-before-observation.json",
+      "contract": "derived_index_metadata",
+      "version": "1",
+      "schema_path": "schemas/v1/projections/derived-index-metadata.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor_derived_state.derived_index_metadata.generated_before_observation",
+      "operation_family": "actor-derived-state/derived-index-metadata",
+      "description": "Structurally valid fixture rejected by Actor-derived application invariants."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-derived-state/derived-index-metadata/application-invalid/projection-kind-mismatch.json",
+      "contract": "derived_index_metadata",
+      "version": "1",
+      "schema_path": "schemas/v1/projections/derived-index-metadata.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor_derived_state.derived_index_metadata.projection_kind_mismatch",
+      "operation_family": "actor-derived-state/derived-index-metadata",
+      "description": "Structurally valid fixture rejected by Actor-derived application invariants."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-derived-state/derived-index-metadata/application-invalid/scope-mismatch.json",
+      "contract": "derived_index_metadata",
+      "version": "1",
+      "schema_path": "schemas/v1/projections/derived-index-metadata.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor_derived_state.derived_index_metadata.scope_mismatch",
+      "operation_family": "actor-derived-state/derived-index-metadata",
+      "description": "Structurally valid fixture rejected by Actor-derived application invariants."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-derived-state/projection-data-examples/application-invalid/frontier-automatic-follow.json",
+      "artifact_kind": "actor_derived_projection_data",
+      "public_contract": null,
+      "schema_path": null,
+      "structurally_valid": true,
+      "rule_id": "portia.actor_derived_state.projection_data.frontier_automatic_follow",
+      "operation_family": "actor-derived-state/projection-data-examples",
+      "description": "Illustrative payload rejected by privacy, completeness, identity, ordering, or no-silent-following invariants."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-derived-state/projection-data-examples/application-invalid/frontier-cycle.json",
+      "artifact_kind": "actor_derived_projection_data",
+      "public_contract": null,
+      "schema_path": null,
+      "structurally_valid": true,
+      "rule_id": "portia.actor_derived_state.projection_data.frontier_cycle",
+      "operation_family": "actor-derived-state/projection-data-examples",
+      "description": "Illustrative payload rejected by privacy, completeness, identity, ordering, or no-silent-following invariants."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-derived-state/projection-data-examples/application-invalid/frontier-logical-duplicate.json",
+      "artifact_kind": "actor_derived_projection_data",
+      "public_contract": null,
+      "schema_path": null,
+      "structurally_valid": true,
+      "rule_id": "portia.actor_derived_state.projection_data.frontier_logical_duplicate",
+      "operation_family": "actor-derived-state/projection-data-examples",
+      "description": "Illustrative payload rejected by privacy, completeness, identity, ordering, or no-silent-following invariants."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-derived-state/projection-data-examples/application-invalid/incoming-copies-contact-value.json",
+      "artifact_kind": "actor_derived_projection_data",
+      "public_contract": null,
+      "schema_path": null,
+      "structurally_valid": true,
+      "rule_id": "portia.actor_derived_state.projection_data.incoming_copies_contact_value",
+      "operation_family": "actor-derived-state/projection-data-examples",
+      "description": "Illustrative payload rejected by privacy, completeness, identity, ordering, or no-silent-following invariants."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-derived-state/projection-data-examples/application-invalid/incoming-copies-display-name.json",
+      "artifact_kind": "actor_derived_projection_data",
+      "public_contract": null,
+      "schema_path": null,
+      "structurally_valid": true,
+      "rule_id": "portia.actor_derived_state.projection_data.incoming_copies_display_name",
+      "operation_family": "actor-derived-state/projection-data-examples",
+      "description": "Illustrative payload rejected by privacy, completeness, identity, ordering, or no-silent-following invariants."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-derived-state/projection-data-examples/application-invalid/lifecycle-copies-organization.json",
+      "artifact_kind": "actor_derived_projection_data",
+      "public_contract": null,
+      "schema_path": null,
+      "structurally_valid": true,
+      "rule_id": "portia.actor_derived_state.projection_data.lifecycle_copies_organization",
+      "operation_family": "actor-derived-state/projection-data-examples",
+      "description": "Illustrative payload rejected by privacy, completeness, identity, ordering, or no-silent-following invariants."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-derived-state/projection-data-examples/application-invalid/limited-claims-complete.json",
+      "artifact_kind": "actor_derived_projection_data",
+      "public_contract": null,
+      "schema_path": null,
+      "structurally_valid": true,
+      "rule_id": "portia.actor_derived_state.projection_data.limited_claims_complete",
+      "operation_family": "actor-derived-state/projection-data-examples",
+      "description": "Illustrative payload rejected by privacy, completeness, identity, ordering, or no-silent-following invariants."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-derived-state/projection-data-examples/application-invalid/limited-claims-removal-eligibility.json",
+      "artifact_kind": "actor_derived_projection_data",
+      "public_contract": null,
+      "schema_path": null,
+      "structurally_valid": true,
+      "rule_id": "portia.actor_derived_state.projection_data.limited_claims_removal_eligibility",
+      "operation_family": "actor-derived-state/projection-data-examples",
+      "description": "Illustrative payload rejected by privacy, completeness, identity, ordering, or no-silent-following invariants."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-derived-state/source-snapshot/application-invalid/actor-projection-work-scoped.json",
+      "contract": "source_snapshot",
+      "version": "1",
+      "schema_path": "schemas/v1/projections/source-snapshot.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor_derived_state.source_snapshot.actor_projection_work_scoped",
+      "operation_family": "actor-derived-state/source-snapshot",
+      "description": "Structurally valid fixture rejected by Actor-derived application invariants."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-derived-state/source-snapshot/application-invalid/complete-incoming-missing-class-root.json",
+      "contract": "source_snapshot",
+      "version": "1",
+      "schema_path": "schemas/v1/projections/source-snapshot.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor_derived_state.source_snapshot.complete_incoming_missing_class_root",
+      "operation_family": "actor-derived-state/source-snapshot",
+      "description": "Structurally valid fixture rejected by Actor-derived application invariants."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-derived-state/source-snapshot/application-invalid/digest-mismatch.json",
+      "contract": "source_snapshot",
+      "version": "1",
+      "schema_path": "schemas/v1/projections/source-snapshot.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor_derived_state.source_snapshot.digest_mismatch",
+      "operation_family": "actor-derived-state/source-snapshot",
+      "description": "Structurally valid fixture rejected by Actor-derived application invariants."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-derived-state/source-snapshot/application-invalid/entries-unsorted.json",
+      "contract": "source_snapshot",
+      "version": "1",
+      "schema_path": "schemas/v1/projections/source-snapshot.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor_derived_state.source_snapshot.entries_unsorted",
+      "operation_family": "actor-derived-state/source-snapshot",
+      "description": "Structurally valid fixture rejected by Actor-derived application invariants."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-derived-state/source-snapshot/application-invalid/source-contracts-unsorted.json",
+      "contract": "source_snapshot",
+      "version": "1",
+      "schema_path": "schemas/v1/projections/source-snapshot.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor_derived_state.source_snapshot.source_contracts_unsorted",
+      "operation_family": "actor-derived-state/source-snapshot",
+      "description": "Structurally valid fixture rejected by Actor-derived application invariants."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-directory-history/amendment/application-invalid/duplicate-paths.json",
+      "contract": "actor_directory_amendment",
+      "version": "1",
+      "schema_path": "schemas/v1/actors/actor-directory-amendment.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor_directory_amendment.change_paths_unique",
+      "operation_family": "actor-directory-history/amendment",
+      "description": "Structurally valid record rejected by the named application invariant."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-directory-history/amendment/application-invalid/effective-after-recorded.json",
+      "contract": "actor_directory_amendment",
+      "version": "1",
+      "schema_path": "schemas/v1/actors/actor-directory-amendment.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor_directory_amendment.effective_recorded_chronology",
+      "operation_family": "actor-directory-history/amendment",
+      "description": "Structurally valid record rejected by the named application invariant."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-directory-history/amendment/application-invalid/equal-before-after.json",
+      "contract": "actor_directory_amendment",
+      "version": "1",
+      "schema_path": "schemas/v1/actors/actor-directory-amendment.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor_directory_amendment.before_after_differ",
+      "operation_family": "actor-directory-history/amendment",
+      "description": "Structurally valid record rejected by the named application invariant."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-directory-history/amendment/application-invalid/missing-operation.json",
+      "contract": "actor_directory_amendment",
+      "version": "1",
+      "schema_path": "schemas/v1/actors/actor-directory-amendment.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor_directory_amendment.operation_resolution",
+      "operation_family": "actor-directory-history/amendment",
+      "description": "Structurally valid record rejected by the named application invariant."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-directory-history/amendment/application-invalid/missing-previous-amendment.json",
+      "contract": "actor_directory_amendment",
+      "version": "1",
+      "schema_path": "schemas/v1/actors/actor-directory-amendment.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor_directory_amendment.previous_amendment_resolution",
+      "operation_family": "actor-directory-history/amendment",
+      "description": "Structurally valid record rejected by the named application invariant."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-directory-history/amendment/application-invalid/owner-mismatch.json",
+      "contract": "actor_directory_amendment",
+      "version": "1",
+      "schema_path": "schemas/v1/actors/actor-directory-amendment.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor_directory_amendment.owner_agreement",
+      "operation_family": "actor-directory-history/amendment",
+      "description": "Structurally valid record rejected by the named application invariant."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-directory-history/amendment/application-invalid/path-target-mismatch.json",
+      "contract": "actor_directory_amendment",
+      "version": "1",
+      "schema_path": "schemas/v1/actors/actor-directory-amendment.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor_directory_amendment.path_target_compatibility",
+      "operation_family": "actor-directory-history/amendment",
+      "description": "Structurally valid record rejected by the named application invariant."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-directory-history/amendment/application-invalid/privacy-unsafe-detail.json",
+      "contract": "actor_directory_amendment",
+      "version": "1",
+      "schema_path": "schemas/v1/actors/actor-directory-amendment.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor_directory_amendment.privacy_safe_payload",
+      "operation_family": "actor-directory-history/amendment",
+      "description": "Structurally valid record rejected by the named application invariant."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-directory-history/amendment/application-invalid/same-fingerprints.json",
+      "contract": "actor_directory_amendment",
+      "version": "1",
+      "schema_path": "schemas/v1/actors/actor-directory-amendment.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor_directory_amendment.fingerprints_differ",
+      "operation_family": "actor-directory-history/amendment",
+      "description": "Structurally valid record rejected by the named application invariant."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-directory-history/amendment/application-invalid/self-previous-amendment.json",
+      "contract": "actor_directory_amendment",
+      "version": "1",
+      "schema_path": "schemas/v1/actors/actor-directory-amendment.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor_directory_amendment.previous_amendment_not_self",
+      "operation_family": "actor-directory-history/amendment",
+      "description": "Structurally valid record rejected by the named application invariant."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-directory-history/lifecycle-history-correction/application-invalid/missing-operation.json",
+      "contract": "actor_directory_lifecycle_history_correction",
+      "version": "1",
+      "schema_path": "schemas/v1/actors/actor-directory-lifecycle-history-correction.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor_directory_history_correction.operation_resolution",
+      "operation_family": "actor-directory-history/lifecycle-history-correction",
+      "description": "Structurally valid record rejected by the named application invariant."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-directory-history/lifecycle-history-correction/application-invalid/missing-previous-correction.json",
+      "contract": "actor_directory_lifecycle_history_correction",
+      "version": "1",
+      "schema_path": "schemas/v1/actors/actor-directory-lifecycle-history-correction.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor_directory_history_correction.previous_correction_resolution",
+      "operation_family": "actor-directory-history/lifecycle-history-correction",
+      "description": "Structurally valid record rejected by the named application invariant."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-directory-history/lifecycle-history-correction/application-invalid/overlapping-excluded-replacement.json",
+      "contract": "actor_directory_lifecycle_history_correction",
+      "version": "1",
+      "schema_path": "schemas/v1/actors/actor-directory-lifecycle-history-correction.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor_directory_history_correction.transition_sets_disjoint",
+      "operation_family": "actor-directory-history/lifecycle-history-correction",
+      "description": "Structurally valid record rejected by the named application invariant."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-directory-history/lifecycle-history-correction/application-invalid/owner-mismatch.json",
+      "contract": "actor_directory_lifecycle_history_correction",
+      "version": "1",
+      "schema_path": "schemas/v1/actors/actor-directory-lifecycle-history-correction.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor_directory_history_correction.owner_agreement",
+      "operation_family": "actor-directory-history/lifecycle-history-correction",
+      "description": "Structurally valid record rejected by the named application invariant."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-directory-history/lifecycle-history-correction/application-invalid/privacy-unsafe-rationale.json",
+      "contract": "actor_directory_lifecycle_history_correction",
+      "version": "1",
+      "schema_path": "schemas/v1/actors/actor-directory-lifecycle-history-correction.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor_directory_history_correction.privacy_safe_rationale",
+      "operation_family": "actor-directory-history/lifecycle-history-correction",
+      "description": "Structurally valid record rejected by the named application invariant."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-directory-history/lifecycle-history-correction/application-invalid/replacement-not-selected.json",
+      "contract": "actor_directory_lifecycle_history_correction",
+      "version": "1",
+      "schema_path": "schemas/v1/actors/actor-directory-lifecycle-history-correction.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor_directory_history_correction.replacement_inside_selected_chain",
+      "operation_family": "actor-directory-history/lifecycle-history-correction",
+      "description": "Structurally valid record rejected by the named application invariant."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-directory-history/lifecycle-history-correction/application-invalid/selected-transition-excluded.json",
+      "contract": "actor_directory_lifecycle_history_correction",
+      "version": "1",
+      "schema_path": "schemas/v1/actors/actor-directory-lifecycle-history-correction.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor_directory_history_correction.excluded_outside_selected_chain",
+      "operation_family": "actor-directory-history/lifecycle-history-correction",
+      "description": "Structurally valid record rejected by the named application invariant."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-directory-history/lifecycle-history-correction/application-invalid/selected-transition-missing.json",
+      "contract": "actor_directory_lifecycle_history_correction",
+      "version": "1",
+      "schema_path": "schemas/v1/actors/actor-directory-lifecycle-history-correction.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor_directory_history_correction.selected_terminal_resolution",
+      "operation_family": "actor-directory-history/lifecycle-history-correction",
+      "description": "Structurally valid record rejected by the named application invariant."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-directory-history/lifecycle-history-correction/application-invalid/self-previous-correction.json",
+      "contract": "actor_directory_lifecycle_history_correction",
+      "version": "1",
+      "schema_path": "schemas/v1/actors/actor-directory-lifecycle-history-correction.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor_directory_history_correction.previous_correction_not_self",
+      "operation_family": "actor-directory-history/lifecycle-history-correction",
+      "description": "Structurally valid record rejected by the named application invariant."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-directory-history/lifecycle-transition/application-invalid/branching-selected-head.json",
+      "contract": "actor_directory_lifecycle_transition",
+      "version": "1",
+      "schema_path": "schemas/v1/actors/actor-directory-lifecycle-transition.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor_directory_transition.selected_head_unique",
+      "operation_family": "actor-directory-history/lifecycle-transition",
+      "description": "Structurally valid record rejected by the named application invariant."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-directory-history/lifecycle-transition/application-invalid/effective-after-recorded.json",
+      "contract": "actor_directory_lifecycle_transition",
+      "version": "1",
+      "schema_path": "schemas/v1/actors/actor-directory-lifecycle-transition.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor_directory_transition.effective_recorded_chronology",
+      "operation_family": "actor-directory-history/lifecycle-transition",
+      "description": "Structurally valid record rejected by the named application invariant."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-directory-history/lifecycle-transition/application-invalid/illegal-transition.json",
+      "contract": "actor_directory_lifecycle_transition",
+      "version": "1",
+      "schema_path": "schemas/v1/actors/actor-directory-lifecycle-transition.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor_directory_transition.transition_matrix",
+      "operation_family": "actor-directory-history/lifecycle-transition",
+      "description": "Structurally valid record rejected by the named application invariant."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-directory-history/lifecycle-transition/application-invalid/missing-operation.json",
+      "contract": "actor_directory_lifecycle_transition",
+      "version": "1",
+      "schema_path": "schemas/v1/actors/actor-directory-lifecycle-transition.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor_directory_transition.operation_resolution",
+      "operation_family": "actor-directory-history/lifecycle-transition",
+      "description": "Structurally valid record rejected by the named application invariant."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-directory-history/lifecycle-transition/application-invalid/missing-predecessor.json",
+      "contract": "actor_directory_lifecycle_transition",
+      "version": "1",
+      "schema_path": "schemas/v1/actors/actor-directory-lifecycle-transition.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor_directory_transition.predecessor_resolution",
+      "operation_family": "actor-directory-history/lifecycle-transition",
+      "description": "Structurally valid record rejected by the named application invariant."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-directory-history/lifecycle-transition/application-invalid/owner-mismatch.json",
+      "contract": "actor_directory_lifecycle_transition",
+      "version": "1",
+      "schema_path": "schemas/v1/actors/actor-directory-lifecycle-transition.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor_directory_transition.owner_agreement",
+      "operation_family": "actor-directory-history/lifecycle-transition",
+      "description": "Structurally valid record rejected by the named application invariant."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-directory-history/lifecycle-transition/application-invalid/predecessor-status-mismatch.json",
+      "contract": "actor_directory_lifecycle_transition",
+      "version": "1",
+      "schema_path": "schemas/v1/actors/actor-directory-lifecycle-transition.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor_directory_transition.predecessor_status_agreement",
+      "operation_family": "actor-directory-history/lifecycle-transition",
+      "description": "Structurally valid record rejected by the named application invariant."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-directory-history/lifecycle-transition/application-invalid/self-predecessor.json",
+      "contract": "actor_directory_lifecycle_transition",
+      "version": "1",
+      "schema_path": "schemas/v1/actors/actor-directory-lifecycle-transition.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor_directory_transition.predecessor_not_self",
+      "operation_family": "actor-directory-history/lifecycle-transition",
+      "description": "Structurally valid record rejected by the named application invariant."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-directory-history/lifecycle-transition/application-invalid/unsupported-target-version.json",
+      "contract": "actor_directory_lifecycle_transition",
+      "version": "1",
+      "schema_path": "schemas/v1/actors/actor-directory-lifecycle-transition.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor_directory_transition.target_contract_supported",
+      "operation_family": "actor-directory-history/lifecycle-transition",
+      "description": "Structurally valid record rejected by the named application invariant."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-directory-history/lifecycle-transition/application-invalid/wrong-reason.json",
+      "contract": "actor_directory_lifecycle_transition",
+      "version": "1",
+      "schema_path": "schemas/v1/actors/actor-directory-lifecycle-transition.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor_directory_transition.reason_compatibility",
+      "operation_family": "actor-directory-history/lifecycle-transition",
+      "description": "Structurally valid record rejected by the named application invariant."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-directory-migration-removal/exceptional-removal/application-invalid/actor-root-inventory-incomplete.json",
+      "contract": "actor_directory_exceptional_removal",
+      "version": "1",
+      "schema_path": "schemas/v1/removals/actor-directory-exceptional-removal.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor_directory_removal.actor_root_inventory_complete",
+      "operation_family": "actor-directory-migration-removal/exceptional-removal",
+      "description": "Structurally valid record rejected by the named application invariant."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-directory-migration-removal/exceptional-removal/application-invalid/byte-length-mismatch.json",
+      "contract": "actor_directory_exceptional_removal",
+      "version": "1",
+      "schema_path": "schemas/v1/removals/actor-directory-exceptional-removal.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor_directory_removal.original_byte_length_truth",
+      "operation_family": "actor-directory-migration-removal/exceptional-removal",
+      "description": "Structurally valid record rejected by the named application invariant."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-directory-migration-removal/exceptional-removal/application-invalid/certificate-collection-target-path.json",
+      "contract": "actor_directory_exceptional_removal",
+      "version": "1",
+      "schema_path": "schemas/v1/removals/actor-directory-exceptional-removal.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor_directory_removal.path_outside_certificate_collection",
+      "operation_family": "actor-directory-migration-removal/exceptional-removal",
+      "description": "Structurally valid record rejected by the named application invariant."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-directory-migration-removal/exceptional-removal/application-invalid/contract-version-mismatch.json",
+      "contract": "actor_directory_exceptional_removal",
+      "version": "1",
+      "schema_path": "schemas/v1/removals/actor-directory-exceptional-removal.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor_directory_removal.original_contract_agreement",
+      "operation_family": "actor-directory-migration-removal/exceptional-removal",
+      "description": "Structurally valid record rejected by the named application invariant."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-directory-migration-removal/exceptional-removal/application-invalid/duplicate-certificate.json",
+      "contract": "actor_directory_exceptional_removal",
+      "version": "1",
+      "schema_path": "schemas/v1/removals/actor-directory-exceptional-removal.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor_directory_removal.duplicate_certificate",
+      "operation_family": "actor-directory-migration-removal/exceptional-removal",
+      "description": "Structurally valid record rejected by the named application invariant."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-directory-migration-removal/exceptional-removal/application-invalid/fingerprint-mismatch.json",
+      "contract": "actor_directory_exceptional_removal",
+      "version": "1",
+      "schema_path": "schemas/v1/removals/actor-directory-exceptional-removal.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor_directory_removal.original_fingerprint_truth",
+      "operation_family": "actor-directory-migration-removal/exceptional-removal",
+      "description": "Structurally valid record rejected by the named application invariant."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-directory-migration-removal/exceptional-removal/application-invalid/missing-operation.json",
+      "contract": "actor_directory_exceptional_removal",
+      "version": "1",
+      "schema_path": "schemas/v1/removals/actor-directory-exceptional-removal.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor_directory_removal.operation_resolution",
+      "operation_family": "actor-directory-migration-removal/exceptional-removal",
+      "description": "Structurally valid record rejected by the named application invariant."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-directory-migration-removal/exceptional-removal/application-invalid/ordinary-inactivity-removal.json",
+      "contract": "actor_directory_exceptional_removal",
+      "version": "1",
+      "schema_path": "schemas/v1/removals/actor-directory-exceptional-removal.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor_directory_removal.ordinary_mechanism_insufficient",
+      "operation_family": "actor-directory-migration-removal/exceptional-removal",
+      "description": "Structurally valid record rejected by the named application invariant."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-directory-migration-removal/exceptional-removal/application-invalid/path-target-mismatch.json",
+      "contract": "actor_directory_exceptional_removal",
+      "version": "1",
+      "schema_path": "schemas/v1/removals/actor-directory-exceptional-removal.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor_directory_removal.target_path_agreement",
+      "operation_family": "actor-directory-migration-removal/exceptional-removal",
+      "description": "Structurally valid record rejected by the named application invariant."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-directory-migration-removal/exceptional-removal/application-invalid/privacy-unsafe-decision-reference.json",
+      "contract": "actor_directory_exceptional_removal",
+      "version": "1",
+      "schema_path": "schemas/v1/removals/actor-directory-exceptional-removal.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor_directory_removal.contact_value_excluded",
+      "operation_family": "actor-directory-migration-removal/exceptional-removal",
+      "description": "Structurally valid record rejected by the named application invariant."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-directory-migration-removal/exceptional-removal/application-invalid/retained-identity-mismatch.json",
+      "contract": "actor_directory_exceptional_removal",
+      "version": "1",
+      "schema_path": "schemas/v1/removals/actor-directory-exceptional-removal.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor_directory_removal.retained_identity_target_agreement",
+      "operation_family": "actor-directory-migration-removal/exceptional-removal",
+      "description": "Structurally valid record rejected by the named application invariant."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-directory-migration-removal/exceptional-removal/application-invalid/unnecessary-roster-identity.json",
+      "contract": "actor_directory_exceptional_removal",
+      "version": "1",
+      "schema_path": "schemas/v1/removals/actor-directory-exceptional-removal.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor_directory_removal.roster_identity_retention_necessary_authorized",
+      "operation_family": "actor-directory-migration-removal/exceptional-removal",
+      "description": "Structurally valid record rejected by the named application invariant."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-directory-migration-removal/exceptional-removal/application-invalid/unresolved-incoming-references.json",
+      "contract": "actor_directory_exceptional_removal",
+      "version": "1",
+      "schema_path": "schemas/v1/removals/actor-directory-exceptional-removal.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor_directory_removal.incoming_reference_complete",
+      "operation_family": "actor-directory-migration-removal/exceptional-removal",
+      "description": "Structurally valid record rejected by the named application invariant."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-directory-migration-removal/exceptional-removal/application-invalid/unresolved-target-noncorruption-ground.json",
+      "contract": "actor_directory_exceptional_removal",
+      "version": "1",
+      "schema_path": "schemas/v1/removals/actor-directory-exceptional-removal.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor_directory_removal.target_resolution",
+      "operation_family": "actor-directory-migration-removal/exceptional-removal",
+      "description": "Structurally valid record rejected by the named application invariant."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-directory-migration-removal/migration/application-invalid/branching-migration-chain.json",
+      "contract": "actor_directory_record_migration",
+      "version": "1",
+      "schema_path": "schemas/v1/migrations/actor-directory-record-migration.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor_directory_migration.chain_linear",
+      "operation_family": "actor-directory-migration-removal/migration",
+      "description": "Structurally valid record rejected by the named application invariant."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-directory-migration-removal/migration/application-invalid/collision-semantics-changed.json",
+      "contract": "actor_directory_record_migration",
+      "version": "1",
+      "schema_path": "schemas/v1/migrations/actor-directory-record-migration.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor_directory_migration.collision_semantics_preserved",
+      "operation_family": "actor-directory-migration-removal/migration",
+      "description": "Structurally valid record rejected by the named application invariant."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-directory-migration-removal/migration/application-invalid/effective-after-created.json",
+      "contract": "actor_directory_record_migration",
+      "version": "1",
+      "schema_path": "schemas/v1/migrations/actor-directory-record-migration.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor_directory_migration.effective_created_chronology",
+      "operation_family": "actor-directory-migration-removal/migration",
+      "description": "Structurally valid record rejected by the named application invariant."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-directory-migration-removal/migration/application-invalid/identical-fingerprints.json",
+      "contract": "actor_directory_record_migration",
+      "version": "1",
+      "schema_path": "schemas/v1/migrations/actor-directory-record-migration.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor_directory_migration.fingerprints_differ",
+      "operation_family": "actor-directory-migration-removal/migration",
+      "description": "Structurally valid record rejected by the named application invariant."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-directory-migration-removal/migration/application-invalid/lifecycle-change-hidden.json",
+      "contract": "actor_directory_record_migration",
+      "version": "1",
+      "schema_path": "schemas/v1/migrations/actor-directory-record-migration.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor_directory_migration.lifecycle_preserved",
+      "operation_family": "actor-directory-migration-removal/migration",
+      "description": "Structurally valid record rejected by the named application invariant."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-directory-migration-removal/migration/application-invalid/logical-id-changed.json",
+      "contract": "actor_directory_record_migration",
+      "version": "1",
+      "schema_path": "schemas/v1/migrations/actor-directory-record-migration.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor_directory_migration.logical_identity_preserved",
+      "operation_family": "actor-directory-migration-removal/migration",
+      "description": "Structurally valid record rejected by the named application invariant."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-directory-migration-removal/migration/application-invalid/missing-operation.json",
+      "contract": "actor_directory_record_migration",
+      "version": "1",
+      "schema_path": "schemas/v1/migrations/actor-directory-record-migration.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor_directory_migration.operation_resolution",
+      "operation_family": "actor-directory-migration-removal/migration",
+      "description": "Structurally valid record rejected by the named application invariant."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-directory-migration-removal/migration/application-invalid/owner-mismatch.json",
+      "contract": "actor_directory_record_migration",
+      "version": "1",
+      "schema_path": "schemas/v1/migrations/actor-directory-record-migration.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor_directory_migration.owner_agreement",
+      "operation_family": "actor-directory-migration-removal/migration",
+      "description": "Structurally valid record rejected by the named application invariant."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-directory-migration-removal/migration/application-invalid/same-contract-version.json",
+      "contract": "actor_directory_record_migration",
+      "version": "1",
+      "schema_path": "schemas/v1/migrations/actor-directory-record-migration.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor_directory_migration.contract_version_changed",
+      "operation_family": "actor-directory-migration-removal/migration",
+      "description": "Structurally valid record rejected by the named application invariant."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-directory-migration-removal/migration/application-invalid/substantive-correction-hidden.json",
+      "contract": "actor_directory_record_migration",
+      "version": "1",
+      "schema_path": "schemas/v1/migrations/actor-directory-record-migration.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor_directory_migration.no_substantive_correction",
+      "operation_family": "actor-directory-migration-removal/migration",
+      "description": "Structurally valid record rejected by the named application invariant."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-directory-migration-removal/migration/application-invalid/unregistered-procedure.json",
+      "contract": "actor_directory_record_migration",
+      "version": "1",
+      "schema_path": "schemas/v1/migrations/actor-directory-record-migration.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor_directory_migration.procedure_registered_compatible",
+      "operation_family": "actor-directory-migration-removal/migration",
+      "description": "Structurally valid record rejected by the named application invariant."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-directory-migration-removal/migration/application-invalid/unsupported-destination-version.json",
+      "contract": "actor_directory_record_migration",
+      "version": "1",
+      "schema_path": "schemas/v1/migrations/actor-directory-record-migration.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor_directory_migration.destination_contract_supported",
+      "operation_family": "actor-directory-migration-removal/migration",
+      "description": "Structurally valid record rejected by the named application invariant."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-directory-primitives/actor-target/application-invalid/unsupported-nested-version.json",
+      "contract": "actor_target",
+      "version": "1",
+      "schema_path": "schemas/v1/targets/actor-target.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor.reference.contract_version_supported",
+      "operation_family": "actor-directory-primitives/actor-target",
+      "description": "A typed Actor target remains application-invalid when its exact representation version is unsupported."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-directory-primitives/exact-actor-contact-point-ref/application-invalid/unsupported-contract-version.json",
+      "contract": "exact_actor_contact_point_ref",
+      "version": "1",
+      "schema_path": "schemas/v1/references/exact-actor-contact-point-ref.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor.reference.contract_version_supported",
+      "operation_family": "actor-directory-primitives/exact-actor-contact-point-ref",
+      "description": "A structurally safe contract version must be supported for Contact Point."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-directory-primitives/exact-actor-directory-record-ref/application-invalid/unsupported-nested-version.json",
+      "contract": "exact_actor_directory_record_ref",
+      "version": "1",
+      "schema_path": "schemas/v1/references/exact-actor-directory-record-ref.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor.reference.contract_version_supported",
+      "operation_family": "actor-directory-primitives/exact-actor-directory-record-ref",
+      "description": "The selected record-family representation contract must be supported."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-directory-primitives/exact-actor-ref/application-invalid/unsupported-contract-version.json",
+      "contract": "exact_actor_ref",
+      "version": "1",
+      "schema_path": "schemas/v1/references/exact-actor-ref.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor.reference.contract_version_supported",
+      "operation_family": "actor-directory-primitives/exact-actor-ref",
+      "description": "A structurally safe contract version must be supported for the referenced Actor record family."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-directory-primitives/exact-actor-roster-student-collision-ref/application-invalid/unsupported-contract-version.json",
+      "contract": "exact_actor_roster_student_collision_ref",
+      "version": "1",
+      "schema_path": "schemas/v1/references/exact-actor-roster-student-collision-ref.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor.reference.contract_version_supported",
+      "operation_family": "actor-directory-primitives/exact-actor-roster-student-collision-ref",
+      "description": "A structurally safe contract version must be supported for Actor\u2013Roster Student Collision."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-directory-primitives/exact-actor-student-relationship-ref/application-invalid/unsupported-contract-version.json",
+      "contract": "exact_actor_student_relationship_ref",
+      "version": "1",
+      "schema_path": "schemas/v1/references/exact-actor-student-relationship-ref.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor.reference.contract_version_supported",
+      "operation_family": "actor-directory-primitives/exact-actor-student-relationship-ref",
+      "description": "A structurally safe contract version must be supported for Actor-to-Student Relationship."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-roster-student-collision/application-invalid/actor-owner-mismatch.json",
+      "contract": "actor_roster_student_collision",
+      "version": "1",
+      "schema_path": "schemas/v1/actors/actor-roster-student-collision.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor_roster_collision.actor_ref_owner_agreement",
+      "operation_family": "actor-roster-student-collision",
+      "description": "Top-level actor_id and exact actor_ref must identify the same Actor."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-roster-student-collision/application-invalid/cross-roster-overclaim.json",
+      "contract": "actor_roster_student_collision",
+      "version": "1",
+      "schema_path": "schemas/v1/actors/actor-roster-student-collision.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor_roster_collision.no_cross_roster_inference",
+      "operation_family": "actor-roster-student-collision",
+      "description": "A collision reviewed for one exact roster cannot rely on unreviewed equivalence to another roster."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-roster-student-collision/application-invalid/duplicate-collision-tuple.json",
+      "contract": "actor_roster_student_collision",
+      "version": "1",
+      "schema_path": "schemas/v1/actors/actor-roster-student-collision.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor_roster_collision.tuple_uniqueness",
+      "operation_family": "actor-roster-student-collision",
+      "description": "One exact Actor and roster-student pair must not have two independent current collision assertions."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-roster-student-collision/application-invalid/missing-operation.json",
+      "contract": "actor_roster_student_collision",
+      "version": "1",
+      "schema_path": "schemas/v1/actors/actor-roster-student-collision.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor_roster_collision.operation_resolution",
+      "operation_family": "actor-roster-student-collision",
+      "description": "The coordinated correction operation must resolve exactly."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-roster-student-collision/application-invalid/missing-transition.json",
+      "contract": "actor_roster_student_collision",
+      "version": "1",
+      "schema_path": "schemas/v1/actors/actor-roster-student-collision.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor_roster_collision.transition_resolution",
+      "operation_family": "actor-roster-student-collision",
+      "description": "The linked Actor invalidation transition must exist."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-roster-student-collision/application-invalid/review-after-created.json",
+      "contract": "actor_roster_student_collision",
+      "version": "1",
+      "schema_path": "schemas/v1/actors/actor-roster-student-collision.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor_roster_collision.review_creation_chronology",
+      "operation_family": "actor-roster-student-collision",
+      "description": "The immutable collision record cannot be created before its human review was completed."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-roster-student-collision/application-invalid/student-not-found.json",
+      "contract": "actor_roster_student_collision",
+      "version": "1",
+      "schema_path": "schemas/v1/actors/actor-roster-student-collision.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor_roster_collision.student_resolution",
+      "operation_family": "actor-roster-student-collision",
+      "description": "Core must resolve the exact class-qualified roster student."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-roster-student-collision/application-invalid/transition-actor-mismatch.json",
+      "contract": "actor_roster_student_collision",
+      "version": "1",
+      "schema_path": "schemas/v1/actors/actor-roster-student-collision.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor_roster_collision.transition_actor_agreement",
+      "operation_family": "actor-roster-student-collision",
+      "description": "The linked invalidation transition must belong to the same Actor."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-roster-student-collision/application-invalid/unsupported-actor-contract.json",
+      "contract": "actor_roster_student_collision",
+      "version": "1",
+      "schema_path": "schemas/v1/actors/actor-roster-student-collision.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor_roster_collision.actor_contract_supported",
+      "operation_family": "actor-roster-student-collision",
+      "description": "The exact Actor contract version must be cataloged and supported."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-roster-student-collision/application-invalid/unsupported-transition-contract.json",
+      "contract": "actor_roster_student_collision",
+      "version": "1",
+      "schema_path": "schemas/v1/actors/actor-roster-student-collision.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor_roster_collision.transition_contract_supported",
+      "operation_family": "actor-roster-student-collision",
+      "description": "The linked Actor-directory transition contract version must be supported."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-student-relationship/application-invalid/active-import-without-review-history.json",
+      "contract": "actor_student_relationship",
+      "version": "1",
+      "schema_path": "schemas/v1/actors/actor-student-relationship.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor_student_relationship.imported_status_requires_review_history",
+      "operation_family": "actor-student-relationship",
+      "description": "An imported Relationship cannot be active without accepted review and lifecycle history."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-student-relationship/application-invalid/active-unreviewed.json",
+      "contract": "actor_student_relationship",
+      "version": "1",
+      "schema_path": "schemas/v1/actors/actor-student-relationship.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor_student_relationship.active_requires_review",
+      "operation_family": "actor-student-relationship",
+      "description": "An active current relationship requires completed local review."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-student-relationship/application-invalid/duplicate-predecessor-identity.json",
+      "contract": "actor_student_relationship",
+      "version": "1",
+      "schema_path": "schemas/v1/actors/actor-student-relationship.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor_student_relationship.predecessor_identity_unique",
+      "operation_family": "actor-student-relationship",
+      "description": "One successor cannot list the same Actor-owned Relationship identity more than once."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-student-relationship/application-invalid/mixed-supersession-reasons.json",
+      "contract": "actor_student_relationship",
+      "version": "1",
+      "schema_path": "schemas/v1/actors/actor-student-relationship.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor_student_relationship.supersession_reason_uniform",
+      "operation_family": "actor-student-relationship",
+      "description": "One replacement operation cannot mix incompatible reasons."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-student-relationship/application-invalid/multiple-relationship-correction-predecessors.json",
+      "contract": "actor_student_relationship",
+      "version": "1",
+      "schema_path": "schemas/v1/actors/actor-student-relationship.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor_student_relationship.replacement_topology",
+      "operation_family": "actor-student-relationship",
+      "description": "Ordinary relationship correction is one-to-one."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-student-relationship/application-invalid/relationship-correction-crosses-actor.json",
+      "contract": "actor_student_relationship",
+      "version": "1",
+      "schema_path": "schemas/v1/actors/actor-student-relationship.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor_student_relationship.actor_correction",
+      "operation_family": "actor-student-relationship",
+      "description": "relationship_corrected preserves Actor ownership."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-student-relationship/application-invalid/reversed-effective-period.json",
+      "contract": "actor_student_relationship",
+      "version": "1",
+      "schema_path": "schemas/v1/actors/actor-student-relationship.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor_student_relationship.effective_period_chronology",
+      "operation_family": "actor-student-relationship",
+      "description": "ends_on must not precede starts_on."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-student-relationship/application-invalid/review-after-updated.json",
+      "contract": "actor_student_relationship",
+      "version": "1",
+      "schema_path": "schemas/v1/actors/actor-student-relationship.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor_student_relationship.review_chronology",
+      "operation_family": "actor-student-relationship",
+      "description": "Current local review cannot postdate the current record update."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-student-relationship/application-invalid/review-before-created.json",
+      "contract": "actor_student_relationship",
+      "version": "1",
+      "schema_path": "schemas/v1/actors/actor-student-relationship.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor_student_relationship.review_chronology",
+      "operation_family": "actor-student-relationship",
+      "description": "Local review cannot predate record creation."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-student-relationship/application-invalid/self-supersession.json",
+      "contract": "actor_student_relationship",
+      "version": "1",
+      "schema_path": "schemas/v1/actors/actor-student-relationship.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor_student_relationship.self_supersession",
+      "operation_family": "actor-student-relationship",
+      "description": "A nonmigration Relationship replacement cannot list itself."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-student-relationship/application-invalid/single-predecessor-duplicate-consolidation.json",
+      "contract": "actor_student_relationship",
+      "version": "1",
+      "schema_path": "schemas/v1/actors/actor-student-relationship.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor_student_relationship.replacement_topology",
+      "operation_family": "actor-student-relationship",
+      "description": "duplicate_consolidated requires at least two distinct predecessor Relationships."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-student-relationship/application-invalid/unsupported-predecessor-version.json",
+      "contract": "actor_student_relationship",
+      "version": "1",
+      "schema_path": "schemas/v1/actors/actor-student-relationship.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor_student_relationship.predecessor_contract_supported",
+      "operation_family": "actor-student-relationship",
+      "description": "Every exact predecessor contract version must be cataloged and supported."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-student-relationship/application-invalid/updated-before-created.json",
+      "contract": "actor_student_relationship",
+      "version": "1",
+      "schema_path": "schemas/v1/actors/actor-student-relationship.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor_student_relationship.timestamp_chronology",
+      "operation_family": "actor-student-relationship",
+      "description": "updated_at must not precede created_at."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-student-relationship/application-invalid/wrong-actor-reason-same-actor.json",
+      "contract": "actor_student_relationship",
+      "version": "1",
+      "schema_path": "schemas/v1/actors/actor-student-relationship.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor_student_relationship.actor_correction",
+      "operation_family": "actor-student-relationship",
+      "description": "wrong_actor_corrected requires a different predecessor Actor."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor-student-relationship/application-invalid/wrong-student-correction-crosses-actor.json",
+      "contract": "actor_student_relationship",
+      "version": "1",
+      "schema_path": "schemas/v1/actors/actor-student-relationship.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor_student_relationship.student_correction",
+      "operation_family": "actor-student-relationship",
+      "description": "wrong_student_corrected preserves Actor ownership."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor/application-invalid/active-import-without-review-history.json",
+      "contract": "actor",
+      "version": "1",
+      "schema_path": "schemas/v1/actors/actor.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor.imported_status_requires_review_history",
+      "operation_family": "actor",
+      "description": "An imported Actor cannot be active without accepted review and lifecycle history."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor/application-invalid/duplicate-predecessor-identity.json",
+      "contract": "actor",
+      "version": "1",
+      "schema_path": "schemas/v1/actors/actor.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor.predecessor_identity_unique",
+      "operation_family": "actor",
+      "description": "One successor cannot list the same predecessor Actor identity more than once under different entries."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor/application-invalid/mixed-supersession-reasons.json",
+      "contract": "actor",
+      "version": "1",
+      "schema_path": "schemas/v1/actors/actor.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor.supersession_reason_uniform",
+      "operation_family": "actor",
+      "description": "One Actor replacement operation cannot mix incompatible predecessor reasons."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor/application-invalid/multiple-identity-correction-predecessors.json",
+      "contract": "actor",
+      "version": "1",
+      "schema_path": "schemas/v1/actors/actor.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor.replacement_topology",
+      "operation_family": "actor",
+      "description": "identity_corrected is a one-to-one Actor replacement."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor/application-invalid/self-supersession.json",
+      "contract": "actor",
+      "version": "1",
+      "schema_path": "schemas/v1/actors/actor.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor.self_supersession",
+      "operation_family": "actor",
+      "description": "An Actor identity-correction replacement cannot list itself as predecessor."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor/application-invalid/single-predecessor-duplicate-consolidation.json",
+      "contract": "actor",
+      "version": "1",
+      "schema_path": "schemas/v1/actors/actor.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor.replacement_topology",
+      "operation_family": "actor",
+      "description": "duplicate_consolidated requires at least two distinct predecessor Actors."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor/application-invalid/unsupported-predecessor-version.json",
+      "contract": "actor",
+      "version": "1",
+      "schema_path": "schemas/v1/actors/actor.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor.predecessor_contract_supported",
+      "operation_family": "actor",
+      "description": "Every exact predecessor contract version must be cataloged and supported."
+    },
+    {
+      "fixture": "tests/schema_validation/fixtures/issue-14/actor/application-invalid/updated-before-created.json",
+      "contract": "actor",
+      "version": "1",
+      "schema_path": "schemas/v1/actors/actor.schema.json",
+      "structurally_valid": true,
+      "rule_id": "portia.actor.timestamp_chronology",
+      "operation_family": "actor",
+      "description": "updated_at must not precede created_at."
+    }
+  ]
+}

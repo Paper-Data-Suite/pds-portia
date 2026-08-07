@@ -1,0 +1,30 @@
+{
+  "finding_key": "fnd_actor_collection_auth_limited",
+  "evaluation_key": "evl_actor_collection_auth_limited_r1",
+  "rule_id": "portia.actor.incoming_reference_indeterminate",
+  "rule_version": "1",
+  "category": "authorization_compatibility",
+  "code": "actor_incoming_reference_indeterminate",
+  "severity": "warning",
+  "assessment": {
+    "result": "indeterminate",
+    "limitation": "authorization_limited"
+  },
+  "effects": [
+    "block_current_use",
+    "review_required"
+  ],
+  "scope": "workspace",
+  "primary_target": {
+    "kind": "actor_directory_collection"
+  },
+  "related_targets": [],
+  "evidence": [
+    {
+      "name": "coverage_state",
+      "kind": "token",
+      "value": "authorization_limited"
+    }
+  ],
+  "observed_at": "2026-08-06T19:00:00-04:00"
+}

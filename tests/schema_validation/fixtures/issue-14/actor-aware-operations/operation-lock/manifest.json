@@ -1,0 +1,45 @@
+{
+  "manifest_version": "1",
+  "issue": 14,
+  "contract": "operation_lock",
+  "version": "2",
+  "valid": {
+    "v1-compatible-operation-lock.json": "Structurally and application-valid synthetic version-2 operational record.",
+    "actor-directory-collection.json": "Structurally and application-valid synthetic version-2 operational record.",
+    "actor-record.json": "Structurally and application-valid synthetic version-2 operational record.",
+    "contact-record.json": "Structurally and application-valid synthetic version-2 operational record.",
+    "relationship-record.json": "Structurally and application-valid synthetic version-2 operational record.",
+    "collision-record.json": "Structurally and application-valid synthetic version-2 operational record."
+  },
+  "invalid": {
+    "wrong-schema-version.json": "Structurally invalid version-2 operational record rejected by JSON Schema.",
+    "scope-target-mismatch.json": "Structurally invalid version-2 operational record rejected by JSON Schema.",
+    "actor-set-lock-target.json": "Structurally invalid version-2 operational record rejected by JSON Schema.",
+    "actor-record-missing-ref.json": "Structurally invalid version-2 operational record rejected by JSON Schema.",
+    "target-copies-contact-value.json": "Structurally invalid version-2 operational record rejected by JSON Schema.",
+    "unknown-actor-lock-scope.json": "Structurally invalid version-2 operational record rejected by JSON Schema.",
+    "unexpected-expiry.json": "Structurally invalid version-2 operational record rejected by JSON Schema."
+  },
+  "application_invalid": {
+    "lock-id-digest-mismatch.json": {
+      "rule_id": "portia.operation_lock.deterministic_lock_id",
+      "description": "Structurally valid record rejected by the named Actor-aware application invariant."
+    },
+    "unsupported-actor-version.json": {
+      "rule_id": "portia.operation_lock.actor_target_contract_supported",
+      "description": "Structurally valid record rejected by the named Actor-aware application invariant."
+    },
+    "unnecessary-collection-lock.json": {
+      "rule_id": "portia.operation_lock.actor_collection_scope_necessary",
+      "description": "Structurally valid record rejected by the named Actor-aware application invariant."
+    },
+    "missing-owning-operation.json": {
+      "rule_id": "portia.operation_lock.operation_resolution",
+      "description": "Structurally valid record rejected by the named Actor-aware application invariant."
+    },
+    "operation-target-owner-mismatch.json": {
+      "rule_id": "portia.operation_lock.operation_owner_agreement",
+      "description": "Structurally valid record rejected by the named Actor-aware application invariant."
+    }
+  }
+}

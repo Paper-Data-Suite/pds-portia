@@ -1,0 +1,50 @@
+{
+  "finding_key": "fnd_roster_collision_incomplete",
+  "evaluation_key": "evl_roster_collision_incomplete_r1",
+  "rule_id": "portia.actor.roster_collision_incomplete",
+  "rule_version": "1",
+  "category": "identity_scope",
+  "code": "actor_roster_collision_incomplete",
+  "severity": "critical",
+  "assessment": {
+    "result": "confirmed"
+  },
+  "effects": [
+    "block_current_use",
+    "block_operation_completion",
+    "quarantine_target",
+    "review_required"
+  ],
+  "scope": "logical_record",
+  "primary_target": {
+    "kind": "actor_directory_record",
+    "actor_directory_record_ref": {
+      "kind": "actor",
+      "actor_ref": {
+        "actor_id": "actr_student_collision",
+        "contract_version": "1"
+      }
+    }
+  },
+  "related_targets": [
+    {
+      "kind": "actor_directory_record",
+      "actor_directory_record_ref": {
+        "kind": "actor_roster_student_collision",
+        "collision_ref": {
+          "actor_id": "actr_student_collision",
+          "collision_id": "arsc_review_1",
+          "contract_version": "1"
+        }
+      }
+    }
+  ],
+  "evidence": [
+    {
+      "name": "missing_transition",
+      "kind": "boolean",
+      "value": true
+    }
+  ],
+  "observed_at": "2026-08-06T19:00:00-04:00"
+}

@@ -1,0 +1,144 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/actors/actor-directory-lifecycle-history-correction.schema.json",
+  "title": "Portia Actor Directory Lifecycle History Correction",
+  "description": "Immutable append-only selection of one corrected lifecycle branch for one exact mutable Actor-directory record. Existing transition and correction files remain unchanged and historically inspectable.",
+  "$comment": "Application validation remains responsible for Actor-root storage, owner agreement, exact target and transition resolution, prior correction selection, correction-chain linearity, selected terminal branch completeness, excluded and replacement membership, operation coherence, chronology, current-status reconciliation, privacy-safe rationale, and no timestamp- or identifier-based current selection.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "record_type",
+    "module_id",
+    "actor_id",
+    "correction_id",
+    "target",
+    "selected_terminal_transition_id",
+    "excluded_transition_ids",
+    "replacement_transition_ids",
+    "previous_correction_id",
+    "rationale",
+    "recorded_at",
+    "recorded_by",
+    "operation_ref"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1"
+    },
+    "record_type": {
+      "const": "actor_directory_lifecycle_history_correction"
+    },
+    "module_id": {
+      "const": "portia"
+    },
+    "actor_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-actor-id.schema.json"
+    },
+    "correction_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-lifecycle-history-correction-id.schema.json"
+    },
+    "target": {
+      "allOf": [
+        {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-actor-directory-record-ref.schema.json"
+        },
+        {
+          "not": {
+            "type": "object",
+            "properties": {
+              "kind": {
+                "const": "actor_roster_student_collision"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          }
+        }
+      ],
+      "description": "Exact Actor, Contact Point, or Actor-to-Student Relationship representation. Immutable collision records are excluded."
+    },
+    "selected_terminal_transition_id": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-lifecycle-transition-id.schema.json"
+        }
+      ]
+    },
+    "excluded_transition_ids": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 100,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-lifecycle-transition-id.schema.json"
+      }
+    },
+    "replacement_transition_ids": {
+      "type": "array",
+      "maxItems": 100,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-lifecycle-transition-id.schema.json"
+      }
+    },
+    "previous_correction_id": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-lifecycle-history-correction-id.schema.json"
+        }
+      ]
+    },
+    "rationale": {
+      "allOf": [
+        {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+        },
+        {
+          "maxLength": 2000
+        }
+      ],
+      "description": "Privacy-minimized explanation of the history-selection defect and reviewed repair."
+    },
+    "recorded_at": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+    },
+    "recorded_by": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/attribution/attribution-agent.schema.json"
+    },
+    "operation_ref": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/operation-ref.schema.json"
+    }
+  },
+  "x-portia-application-invariants": [
+    "portia.actor_directory_history_correction.canonical_storage_scope",
+    "portia.actor_directory_history_correction.owner_agreement",
+    "portia.actor_directory_history_correction.target_resolution",
+    "portia.actor_directory_history_correction.target_contract_supported",
+    "portia.actor_directory_history_correction.previous_correction_resolution",
+    "portia.actor_directory_history_correction.previous_correction_not_self",
+    "portia.actor_directory_history_correction.correction_chain_linear",
+    "portia.actor_directory_history_correction.correction_chain_acyclic",
+    "portia.actor_directory_history_correction.selected_terminal_resolution",
+    "portia.actor_directory_history_correction.selected_chain_complete",
+    "portia.actor_directory_history_correction.selected_chain_target_agreement",
+    "portia.actor_directory_history_correction.excluded_transition_resolution",
+    "portia.actor_directory_history_correction.excluded_outside_selected_chain",
+    "portia.actor_directory_history_correction.replacement_transition_resolution",
+    "portia.actor_directory_history_correction.replacement_inside_selected_chain",
+    "portia.actor_directory_history_correction.transition_sets_disjoint",
+    "portia.actor_directory_history_correction.referenced_history_precedes_correction",
+    "portia.actor_directory_history_correction.operation_resolution",
+    "portia.actor_directory_history_correction.operation_intent",
+    "portia.actor_directory_history_correction.current_status_reconciliation",
+    "portia.actor_directory_history_correction.privacy_safe_rationale",
+    "portia.actor_directory_history_correction.no_timestamp_selection"
+  ]
+}

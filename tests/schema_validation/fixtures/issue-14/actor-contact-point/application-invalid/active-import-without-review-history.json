@@ -1,0 +1,35 @@
+{
+  "schema_version": "1",
+  "record_type": "actor_contact_point",
+  "module_id": "portia",
+  "actor_id": "actr_import_candidate",
+  "contact_point_id": "acp_unreviewed_import",
+  "status": "active",
+  "contact": {
+    "kind": "email",
+    "address": "synthetic.family@example.invalid",
+    "label": "personal"
+  },
+  "use_preference": "unspecified",
+  "source": {
+    "kind": "import",
+    "source_label": "Synthetic local directory export"
+  },
+  "verification": {
+    "kind": "unverified"
+  },
+  "creation_source": {
+    "type": "import",
+    "source_label": "Synthetic local directory export"
+  },
+  "created_at": "2026-08-06T15:00:00-04:00",
+  "created_by": {
+    "type": "system_process",
+    "process_id": "actor_contact_import"
+  },
+  "updated_at": "2026-08-06T15:00:00-04:00",
+  "updated_by": {
+    "type": "system_process",
+    "process_id": "actor_contact_import"
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "schema_version": "1",
+  "record_type": "actor_contact_point",
+  "module_id": "portia",
+  "actor_id": "actr_correct_person",
+  "contact_point_id": "acp_reassigned_phone",
+  "status": "active",
+  "contact": {
+    "kind": "phone",
+    "number": "+1 555 010 0500",
+    "label": "home"
+  },
+  "use_preference": "unspecified",
+  "source": {
+    "kind": "local_operator_knowledge"
+  },
+  "verification": {
+    "kind": "unverified"
+  },
+  "creation_source": {
+    "type": "digital_entry"
+  },
+  "created_at": "2026-08-06T15:00:00-04:00",
+  "created_by": {
+    "type": "local_operator",
+    "display_label": "Synthetic Teacher"
+  },
+  "updated_at": "2026-08-06T15:00:00-04:00",
+  "updated_by": {
+    "type": "local_operator",
+    "display_label": "Synthetic Teacher"
+  },
+  "supersedes": [
+    {
+      "contact_point_ref": {
+        "actor_id": "actr_wrong_person",
+        "contact_point_id": "acp_wrong_owner_phone",
+        "contract_version": "1"
+      },
+      "reason": "wrong_actor_corrected"
+    }
+  ]
+}

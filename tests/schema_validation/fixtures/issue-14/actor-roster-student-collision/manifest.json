@@ -1,0 +1,82 @@
+{
+  "manifest_version": "1",
+  "issue": 14,
+  "contract": "actor_roster_student_collision",
+  "version": "1",
+  "valid": {
+    "local-review.json": "Structurally and application-valid synthetic Actor–Roster Student Collision.",
+    "actor-statement.json": "Structurally and application-valid synthetic Actor–Roster Student Collision.",
+    "student-statement.json": "Structurally and application-valid synthetic Actor–Roster Student Collision.",
+    "school-record.json": "Structurally and application-valid synthetic Actor–Roster Student Collision.",
+    "import-identity.json": "Structurally and application-valid synthetic Actor–Roster Student Collision.",
+    "multiple-bounded-evidence.json": "Structurally and application-valid synthetic Actor–Roster Student Collision."
+  },
+  "invalid": {
+    "missing-actor-ref.json": "Structurally invalid Actor–Roster Student Collision rejected by JSON Schema.",
+    "actor-ref-missing-version.json": "Structurally invalid Actor–Roster Student Collision rejected by JSON Schema.",
+    "missing-student-ref.json": "Structurally invalid Actor–Roster Student Collision rejected by JSON Schema.",
+    "student-ref-extra-name.json": "Structurally invalid Actor–Roster Student Collision rejected by JSON Schema.",
+    "wrong-resolution.json": "Structurally invalid Actor–Roster Student Collision rejected by JSON Schema.",
+    "missing-evidence.json": "Structurally invalid Actor–Roster Student Collision rejected by JSON Schema.",
+    "empty-evidence.json": "Structurally invalid Actor–Roster Student Collision rejected by JSON Schema.",
+    "unknown-evidence-kind.json": "Structurally invalid Actor–Roster Student Collision rejected by JSON Schema.",
+    "actor-statement-missing-source.json": "Structurally invalid Actor–Roster Student Collision rejected by JSON Schema.",
+    "student-statement-missing-source.json": "Structurally invalid Actor–Roster Student Collision rejected by JSON Schema.",
+    "school-record-missing-label.json": "Structurally invalid Actor–Roster Student Collision rejected by JSON Schema.",
+    "import-identity-missing-label.json": "Structurally invalid Actor–Roster Student Collision rejected by JSON Schema.",
+    "other-evidence-missing-detail.json": "Structurally invalid Actor–Roster Student Collision rejected by JSON Schema.",
+    "evidence-copies-contact-value.json": "Structurally invalid Actor–Roster Student Collision rejected by JSON Schema.",
+    "missing-operation-ref.json": "Structurally invalid Actor–Roster Student Collision rejected by JSON Schema.",
+    "operation-ref-extra-revision.json": "Structurally invalid Actor–Roster Student Collision rejected by JSON Schema.",
+    "missing-transition-ref.json": "Structurally invalid Actor–Roster Student Collision rejected by JSON Schema.",
+    "transition-ref-missing-version.json": "Structurally invalid Actor–Roster Student Collision rejected by JSON Schema.",
+    "transition-ref-wrong-prefix.json": "Structurally invalid Actor–Roster Student Collision rejected by JSON Schema.",
+    "transition-ref-extra-status.json": "Structurally invalid Actor–Roster Student Collision rejected by JSON Schema.",
+    "embedded-actor-name.json": "Structurally invalid Actor–Roster Student Collision rejected by JSON Schema.",
+    "workspace-person-id.json": "Structurally invalid Actor–Roster Student Collision rejected by JSON Schema.",
+    "contact-value.json": "Structurally invalid Actor–Roster Student Collision rejected by JSON Schema.",
+    "updated-at.json": "Structurally invalid Actor–Roster Student Collision rejected by JSON Schema."
+  },
+  "application_invalid": {
+    "actor-owner-mismatch.json": {
+      "rule_id": "portia.actor_roster_collision.actor_ref_owner_agreement",
+      "description": "Top-level actor_id and exact actor_ref must identify the same Actor."
+    },
+    "unsupported-actor-contract.json": {
+      "rule_id": "portia.actor_roster_collision.actor_contract_supported",
+      "description": "The exact Actor contract version must be cataloged and supported."
+    },
+    "student-not-found.json": {
+      "rule_id": "portia.actor_roster_collision.student_resolution",
+      "description": "Core must resolve the exact class-qualified roster student."
+    },
+    "review-after-created.json": {
+      "rule_id": "portia.actor_roster_collision.review_creation_chronology",
+      "description": "The immutable collision record cannot be created before its human review was completed."
+    },
+    "missing-operation.json": {
+      "rule_id": "portia.actor_roster_collision.operation_resolution",
+      "description": "The coordinated correction operation must resolve exactly."
+    },
+    "transition-actor-mismatch.json": {
+      "rule_id": "portia.actor_roster_collision.transition_actor_agreement",
+      "description": "The linked invalidation transition must belong to the same Actor."
+    },
+    "unsupported-transition-contract.json": {
+      "rule_id": "portia.actor_roster_collision.transition_contract_supported",
+      "description": "The linked Actor-directory transition contract version must be supported."
+    },
+    "missing-transition.json": {
+      "rule_id": "portia.actor_roster_collision.transition_resolution",
+      "description": "The linked Actor invalidation transition must exist."
+    },
+    "duplicate-collision-tuple.json": {
+      "rule_id": "portia.actor_roster_collision.tuple_uniqueness",
+      "description": "One exact Actor and roster-student pair must not have two independent current collision assertions."
+    },
+    "cross-roster-overclaim.json": {
+      "rule_id": "portia.actor_roster_collision.no_cross_roster_inference",
+      "description": "A collision reviewed for one exact roster cannot rely on unreviewed equivalence to another roster."
+    }
+  }
+}

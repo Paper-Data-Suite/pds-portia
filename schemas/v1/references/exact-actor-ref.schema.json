@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-actor-ref.schema.json",
+  "title": "Exact Portia Actor Reference",
+  "description": "Complete reference to one exact expected Portia Actor root record contract. Actor identity remains actor_id; contract_version identifies the expected representation. Resolution must not silently select another contract version or follow migration, correction, consolidation, split, roster collision, or another successor.",
+  "type": "object",
+  "required": [
+    "actor_id",
+    "contract_version"
+  ],
+  "properties": {
+    "actor_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-actor-id.schema.json"
+    },
+    "contract_version": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+    }
+  },
+  "additionalProperties": false
+}

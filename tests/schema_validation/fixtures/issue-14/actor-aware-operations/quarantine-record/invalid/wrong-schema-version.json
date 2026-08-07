@@ -1,0 +1,48 @@
+{
+  "schema_version": "1",
+  "record_type": "quarantine_record",
+  "module_id": "portia",
+  "quarantine_id": "qnt_actor_1",
+  "quarantine_revision": 1,
+  "previous_quarantine_revision": null,
+  "state": "active",
+  "target": {
+    "kind": "actor_directory_record",
+    "actor_directory_record_ref": {
+      "kind": "actor",
+      "actor_ref": {
+        "actor_id": "actr_family_1",
+        "contract_version": "1"
+      }
+    }
+  },
+  "reason": "actor_identity_contradiction",
+  "reason_detail": "Synthetic Actor identity evidence is contradictory.",
+  "effects": [
+    "block_current_use",
+    "block_actor_directory_writes",
+    "review_required"
+  ],
+  "origin": {
+    "applying_operation": {
+      "operation_id": "op_actor_quarantine",
+      "journal_revision": 1,
+      "contract_version": "2"
+    },
+    "supporting_finding_keys": [
+      "finding:actor:identity:actr_family_1"
+    ],
+    "applied_at": "2026-08-06T19:10:00-04:00",
+    "applied_by": {
+      "type": "local_operator",
+      "display_label": "Synthetic teacher"
+    },
+    "release_requirements": [
+      "actor_state_reconciled",
+      "integrity_scan_clean"
+    ],
+    "review_deadline": null
+  },
+  "resolution": null,
+  "created_at": "2026-08-06T19:10:01-04:00"
+}

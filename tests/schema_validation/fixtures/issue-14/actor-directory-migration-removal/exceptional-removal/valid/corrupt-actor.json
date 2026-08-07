@@ -1,0 +1,43 @@
+{
+  "schema_version": "1",
+  "record_type": "actor_directory_exceptional_removal",
+  "module_id": "portia",
+  "removal_id": "rmv_corrupt_actor",
+  "target": {
+    "kind": "actor",
+    "actor_ref": {
+      "actor_id": "actr_corrupt",
+      "contract_version": "1"
+    }
+  },
+  "original_workspace_relative_path": "portia/actors/actr_corrupt/actor.json",
+  "original_contract_version": "1",
+  "original_fingerprint": "16434ae29a827d2c36f4ca4fa9d337496bbd1aff7a18d7542f60348ee139dc5c",
+  "original_byte_length": 317,
+  "ground": {
+    "code": "unrecoverable_corruption",
+    "detail": "Synthetic canonical bytes cannot be parsed or repaired"
+  },
+  "authorization": {
+    "decision_reference": "Synthetic administrative removal decision AR-2026-001",
+    "authorized_by": {
+      "type": "local_operator",
+      "display_label": "Synthetic Teacher"
+    }
+  },
+  "removed_at": "2026-08-06T18:20:00-04:00",
+  "removed_by": {
+    "type": "local_operator",
+    "display_label": "Synthetic Teacher"
+  },
+  "operation_ref": {
+    "operation_id": "op_corrupt_actor_removal"
+  },
+  "retained_identity_evidence": {
+    "kind": "actor",
+    "actor_ref": {
+      "actor_id": "actr_corrupt",
+      "contract_version": "1"
+    }
+  }
+}

@@ -1,0 +1,533 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/actors/actor-contact-point.schema.json",
+  "title": "Portia Actor Contact Point",
+  "description": "Canonical version-1 privacy-sensitive Contact Point assertion beneath one teacher-workspace Portia Actor. The record supports email and phone only. The exact contact value, source, local verification, use preference, lifecycle, provenance, and replacement lineage are explicit. A Contact Point is not Actor identity, institutional verification, communication authorization, or proof of exclusive control by the represented person.",
+  "$comment": "Application validation remains responsible for canonical child path and owner agreement, exact Actor resolution and eligibility, contact syntax and normalization, timestamp and verification chronology, creation-provenance immutability, imported review gates, lifecycle history reconciliation, active normalized-assertion uniqueness, preferred-current uniqueness, source semantics, purpose and authorization eligibility, exact predecessor resolution, predecessor contract support, self-supersession, predecessor identity uniqueness, replacement reason and topology, ownership correction, successor effectiveness, replacement cycles, privacy handling, Quarantine, and no silent successor following.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "record_type",
+    "module_id",
+    "actor_id",
+    "contact_point_id",
+    "status",
+    "contact",
+    "use_preference",
+    "source",
+    "verification",
+    "creation_source",
+    "created_at",
+    "created_by",
+    "updated_at",
+    "updated_by"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1"
+    },
+    "record_type": {
+      "const": "actor_contact_point"
+    },
+    "module_id": {
+      "const": "portia"
+    },
+    "actor_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-actor-id.schema.json"
+    },
+    "contact_point_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-actor-contact-point-id.schema.json"
+    },
+    "status": {
+      "enum": [
+        "proposed",
+        "active",
+        "inactive",
+        "invalidated",
+        "superseded"
+      ]
+    },
+    "contact": {
+      "$ref": "#/$defs/contact"
+    },
+    "use_preference": {
+      "enum": [
+        "preferred",
+        "alternate",
+        "unspecified"
+      ],
+      "description": "Teacher-local current-use preference among this Actor's otherwise eligible Contact Points. It is not communication consent, authorization, or delivery assurance."
+    },
+    "source": {
+      "$ref": "#/$defs/source"
+    },
+    "verification": {
+      "$ref": "#/$defs/verification"
+    },
+    "supersedes": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 100,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/supersessionEntry"
+      },
+      "description": "Exact predecessor Contact Point representations replaced by this record. Application validation establishes value correction, duplicate consolidation, Actor ownership correction, migration compatibility, and coordinated predecessor lifecycle transitions."
+    },
+    "creation_source": {
+      "allOf": [
+        {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/provenance/creation-source.schema.json"
+        },
+        {
+          "not": {
+            "properties": {
+              "type": {
+                "const": "paper_capture"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          }
+        }
+      ],
+      "description": "Immutable record-creation provenance. Contact Point v1 accepts deliberate digital entry or import. Information learned from a paper or school record is represented through the bounded source assertion rather than direct paper-capture identity."
+    },
+    "created_at": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+    },
+    "created_by": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/attribution/attribution-agent.schema.json"
+    },
+    "updated_at": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+    },
+    "updated_by": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/attribution/attribution-agent.schema.json"
+    }
+  },
+  "$defs": {
+    "contact": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/emailContact"
+        },
+        {
+          "$ref": "#/$defs/phoneContact"
+        }
+      ]
+    },
+    "emailContact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "address",
+        "label"
+      ],
+      "properties": {
+        "kind": {
+          "const": "email"
+        },
+        "address": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 320,
+          "pattern": "^[^\\s@]+@[^\\s@]+$",
+          "description": "Exact recorded email address. Application validation performs contract-versioned syntax and normalization without replacing the stored original value."
+        },
+        "label": {
+          "enum": [
+            "personal",
+            "work",
+            "school",
+            "other",
+            "unspecified"
+          ]
+        },
+        "other_label": {
+          "allOf": [
+            {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+            },
+            {
+              "maxLength": 100
+            }
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "label": {
+                "const": "other"
+              }
+            },
+            "required": [
+              "label"
+            ]
+          },
+          "then": {
+            "required": [
+              "other_label"
+            ]
+          },
+          "else": {
+            "not": {
+              "required": [
+                "other_label"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "phoneContact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "number",
+        "label"
+      ],
+      "properties": {
+        "kind": {
+          "const": "phone"
+        },
+        "number": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 64,
+          "pattern": "^[0-9+().#xX -]+$",
+          "description": "Exact recorded phone number text. Application validation performs contract-versioned syntax and normalization without replacing the stored original value."
+        },
+        "label": {
+          "enum": [
+            "mobile",
+            "home",
+            "work",
+            "school",
+            "office",
+            "other",
+            "unspecified"
+          ]
+        },
+        "other_label": {
+          "allOf": [
+            {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+            },
+            {
+              "maxLength": 100
+            }
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "label": {
+                "const": "other"
+              }
+            },
+            "required": [
+              "label"
+            ]
+          },
+          "then": {
+            "required": [
+              "other_label"
+            ]
+          },
+          "else": {
+            "not": {
+              "required": [
+                "other_label"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "source": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/localOperatorKnowledgeSource"
+        },
+        {
+          "$ref": "#/$defs/actorStatementSource"
+        },
+        {
+          "$ref": "#/$defs/rosterStudentStatementSource"
+        },
+        {
+          "$ref": "#/$defs/schoolRecordSource"
+        },
+        {
+          "$ref": "#/$defs/importSource"
+        },
+        {
+          "$ref": "#/$defs/otherSource"
+        }
+      ]
+    },
+    "localOperatorKnowledgeSource": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind"
+      ],
+      "properties": {
+        "kind": {
+          "const": "local_operator_knowledge"
+        }
+      }
+    },
+    "actorStatementSource": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind"
+      ],
+      "properties": {
+        "kind": {
+          "const": "actor_statement"
+        }
+      }
+    },
+    "rosterStudentStatementSource": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind"
+      ],
+      "properties": {
+        "kind": {
+          "const": "roster_student_statement"
+        }
+      }
+    },
+    "schoolRecordSource": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "source_label"
+      ],
+      "properties": {
+        "kind": {
+          "const": "school_record"
+        },
+        "source_label": {
+          "allOf": [
+            {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+            },
+            {
+              "maxLength": 200
+            }
+          ]
+        }
+      }
+    },
+    "importSource": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "source_label"
+      ],
+      "properties": {
+        "kind": {
+          "const": "import"
+        },
+        "source_label": {
+          "allOf": [
+            {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+            },
+            {
+              "maxLength": 200
+            }
+          ]
+        },
+        "external_reference": {
+          "allOf": [
+            {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+            },
+            {
+              "maxLength": 200
+            }
+          ]
+        }
+      }
+    },
+    "otherSource": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "detail"
+      ],
+      "properties": {
+        "kind": {
+          "const": "other"
+        },
+        "detail": {
+          "allOf": [
+            {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+            },
+            {
+              "maxLength": 200
+            }
+          ]
+        }
+      }
+    },
+    "verification": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/unverified"
+        },
+        {
+          "$ref": "#/$defs/sourceAsserted"
+        },
+        {
+          "$ref": "#/$defs/locallyConfirmed"
+        }
+      ]
+    },
+    "unverified": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind"
+      ],
+      "properties": {
+        "kind": {
+          "const": "unverified"
+        }
+      }
+    },
+    "sourceAsserted": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind"
+      ],
+      "properties": {
+        "kind": {
+          "const": "source_asserted"
+        }
+      },
+      "description": "The recorded source asserted the value. Portia has not independently confirmed it."
+    },
+    "locallyConfirmed": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "verified_at",
+        "verified_by"
+      ],
+      "properties": {
+        "kind": {
+          "const": "locally_confirmed"
+        },
+        "verified_at": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+        },
+        "verified_by": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/attribution/attribution-agent.schema.json"
+        }
+      },
+      "description": "A local operator confirmed the value for teacher-local use. This does not establish institutional verification, legal identity, exclusive control, delivery, consent, or current authorization."
+    },
+    "supersessionEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "contact_point_ref",
+        "reason"
+      ],
+      "properties": {
+        "contact_point_ref": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-actor-contact-point-ref.schema.json"
+        },
+        "reason": {
+          "enum": [
+            "contact_corrected",
+            "duplicate_consolidated",
+            "wrong_actor_corrected",
+            "contract_migrated",
+            "other"
+          ]
+        },
+        "detail": {
+          "allOf": [
+            {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+            },
+            {
+              "maxLength": 500
+            }
+          ],
+          "description": "Bounded replacement detail. It must not copy the contact value, credentials, student narratives, or other unnecessary sensitive payload."
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "reason": {
+                "const": "other"
+              }
+            },
+            "required": [
+              "reason"
+            ]
+          },
+          "then": {
+            "required": [
+              "detail"
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "x-portia-application-invariants": [
+    "portia.actor_contact_point.canonical_storage_scope",
+    "portia.actor_contact_point.owner_agreement",
+    "portia.actor_contact_point.actor_resolution",
+    "portia.actor_contact_point.actor_lifecycle_eligibility",
+    "portia.actor_contact_point.timestamp_chronology",
+    "portia.actor_contact_point.verification_chronology",
+    "portia.actor_contact_point.contact_syntax",
+    "portia.actor_contact_point.contact_normalization",
+    "portia.actor_contact_point.active_assertion_uniqueness",
+    "portia.actor_contact_point.preferred_current_uniqueness",
+    "portia.actor_contact_point.creation_provenance_immutable",
+    "portia.actor_contact_point.imported_status_requires_review_history",
+    "portia.actor_contact_point.lifecycle_history_reconciliation",
+    "portia.actor_contact_point.source_semantics",
+    "portia.actor_contact_point.purpose_authorization_eligibility",
+    "portia.actor_contact_point.predecessor_resolution",
+    "portia.actor_contact_point.predecessor_contract_supported",
+    "portia.actor_contact_point.self_supersession",
+    "portia.actor_contact_point.predecessor_identity_unique",
+    "portia.actor_contact_point.supersession_reason_uniform",
+    "portia.actor_contact_point.replacement_topology",
+    "portia.actor_contact_point.ownership_correction",
+    "portia.actor_contact_point.supersession_cycle",
+    "portia.actor_contact_point.successor_effectiveness",
+    "portia.actor_contact_point.privacy_sensitive_payload",
+    "portia.actor_contact_point.no_silent_successor_following"
+  ]
+}

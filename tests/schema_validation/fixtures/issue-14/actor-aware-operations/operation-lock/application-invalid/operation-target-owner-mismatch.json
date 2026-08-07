@@ -1,0 +1,19 @@
+{
+  "schema_version": "2",
+  "record_type": "operation_lock",
+  "module_id": "portia",
+  "lock_id": "lock_7bf301e0ca59f1a54e84135034ce6d5669a7ce289d317c66b238d1c3c321aac7",
+  "lock_scope": "operation",
+  "protected_target": {
+    "kind": "operation",
+    "operation_ref": {
+      "operation_id": "op_repair_example"
+    }
+  },
+  "owning_operation": {
+    "operation_id": "op_other"
+  },
+  "acquired_at": "2026-08-05T22:00:01-04:00",
+  "deployment_instance_id": "desktop_local_01",
+  "process_instance_id": "process_4217"
+}

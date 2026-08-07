@@ -39,6 +39,60 @@
         "path": "schemas/v3/event-participant-role.schema.json"
       }
     },
+    "actor": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/actors/actor.schema.json",
+        "path": "schemas/v1/actors/actor.schema.json"
+      }
+    },
+    "actor_contact_point": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/actors/actor-contact-point.schema.json",
+        "path": "schemas/v1/actors/actor-contact-point.schema.json"
+      }
+    },
+    "actor_student_relationship": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/actors/actor-student-relationship.schema.json",
+        "path": "schemas/v1/actors/actor-student-relationship.schema.json"
+      }
+    },
+    "actor_roster_student_collision": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/actors/actor-roster-student-collision.schema.json",
+        "path": "schemas/v1/actors/actor-roster-student-collision.schema.json"
+      }
+    },
+    "actor_directory_lifecycle_transition": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/actors/actor-directory-lifecycle-transition.schema.json",
+        "path": "schemas/v1/actors/actor-directory-lifecycle-transition.schema.json"
+      }
+    },
+    "actor_directory_lifecycle_history_correction": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/actors/actor-directory-lifecycle-history-correction.schema.json",
+        "path": "schemas/v1/actors/actor-directory-lifecycle-history-correction.schema.json"
+      }
+    },
+    "actor_directory_amendment": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/actors/actor-directory-amendment.schema.json",
+        "path": "schemas/v1/actors/actor-directory-amendment.schema.json"
+      }
+    },
+    "actor_directory_record_migration": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/migrations/actor-directory-record-migration.schema.json",
+        "path": "schemas/v1/migrations/actor-directory-record-migration.schema.json"
+      }
+    },
+    "actor_directory_exceptional_removal": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/removals/actor-directory-exceptional-removal.schema.json",
+        "path": "schemas/v1/removals/actor-directory-exceptional-removal.schema.json"
+      }
+    },
     "portia_event_id": {
       "1": {
         "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-event-id.schema.json",
@@ -55,6 +109,24 @@
       "1": {
         "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-actor-id.schema.json",
         "path": "schemas/v1/identifiers/portia-actor-id.schema.json"
+      }
+    },
+    "portia_actor_contact_point_id": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-actor-contact-point-id.schema.json",
+        "path": "schemas/v1/identifiers/portia-actor-contact-point-id.schema.json"
+      }
+    },
+    "portia_actor_student_relationship_id": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-actor-student-relationship-id.schema.json",
+        "path": "schemas/v1/identifiers/portia-actor-student-relationship-id.schema.json"
+      }
+    },
+    "portia_actor_roster_student_collision_id": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-actor-roster-student-collision-id.schema.json",
+        "path": "schemas/v1/identifiers/portia-actor-roster-student-collision-id.schema.json"
       }
     },
     "portia_event_participant_id": {
@@ -141,6 +213,36 @@
         "path": "schemas/v1/references/actor-ref.schema.json"
       }
     },
+    "exact_actor_ref": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-actor-ref.schema.json",
+        "path": "schemas/v1/references/exact-actor-ref.schema.json"
+      }
+    },
+    "exact_actor_contact_point_ref": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-actor-contact-point-ref.schema.json",
+        "path": "schemas/v1/references/exact-actor-contact-point-ref.schema.json"
+      }
+    },
+    "exact_actor_student_relationship_ref": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-actor-student-relationship-ref.schema.json",
+        "path": "schemas/v1/references/exact-actor-student-relationship-ref.schema.json"
+      }
+    },
+    "exact_actor_roster_student_collision_ref": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-actor-roster-student-collision-ref.schema.json",
+        "path": "schemas/v1/references/exact-actor-roster-student-collision-ref.schema.json"
+      }
+    },
+    "exact_actor_directory_record_ref": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-actor-directory-record-ref.schema.json",
+        "path": "schemas/v1/references/exact-actor-directory-record-ref.schema.json"
+      }
+    },
     "local_record_ref": {
       "1": {
         "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/local-record-ref.schema.json",
@@ -217,6 +319,12 @@
       "1": {
         "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/targets/exact-portia-work-or-record-target.schema.json",
         "path": "schemas/v1/targets/exact-portia-work-or-record-target.schema.json"
+      }
+    },
+    "actor_target": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/targets/actor-target.schema.json",
+        "path": "schemas/v1/targets/actor-target.schema.json"
       }
     },
     "lifecycle_transition": {
@@ -317,6 +425,10 @@
       "1": {
         "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/projections/integrity-finding.schema.json",
         "path": "schemas/v1/projections/integrity-finding.schema.json"
+      },
+      "2": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v2/projections/integrity-finding.schema.json",
+        "path": "schemas/v2/projections/integrity-finding.schema.json"
       }
     },
     "portia_operation_id": {
@@ -407,6 +519,10 @@
       "1": {
         "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/operations/operation-journal.schema.json",
         "path": "schemas/v1/operations/operation-journal.schema.json"
+      },
+      "2": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v2/operations/operation-journal.schema.json",
+        "path": "schemas/v2/operations/operation-journal.schema.json"
       }
     },
     "operation_current_pointer": {
@@ -419,12 +535,20 @@
       "1": {
         "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/operations/operation-lock.schema.json",
         "path": "schemas/v1/operations/operation-lock.schema.json"
+      },
+      "2": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v2/operations/operation-lock.schema.json",
+        "path": "schemas/v2/operations/operation-lock.schema.json"
       }
     },
     "quarantine_record": {
       "1": {
         "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/operations/quarantine-record.schema.json",
         "path": "schemas/v1/operations/quarantine-record.schema.json"
+      },
+      "2": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v2/operations/quarantine-record.schema.json",
+        "path": "schemas/v2/operations/quarantine-record.schema.json"
       }
     },
     "quarantine_current_pointer": {

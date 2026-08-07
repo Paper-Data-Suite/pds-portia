@@ -1,0 +1,89 @@
+{
+  "manifest_version": "1",
+  "issue": 14,
+  "contract": "actor_contact_point",
+  "version": "1",
+  "valid": {
+    "minimum-email.json": "Structurally and application-valid synthetic Actor Contact Point.",
+    "preferred-confirmed-phone.json": "Structurally and application-valid synthetic Actor Contact Point.",
+    "proposed-import-email.json": "Structurally and application-valid synthetic Actor Contact Point.",
+    "inactive-obsolete-phone.json": "Structurally and application-valid synthetic Actor Contact Point.",
+    "other-label-and-source.json": "Structurally and application-valid synthetic Actor Contact Point.",
+    "corrected-contact-successor.json": "Structurally and application-valid synthetic Actor Contact Point.",
+    "duplicate-contact-consolidation.json": "Structurally and application-valid synthetic Actor Contact Point.",
+    "wrong-actor-correction.json": "Structurally and application-valid synthetic Actor Contact Point.",
+    "invalidated-contact.json": "Structurally and application-valid synthetic Actor Contact Point."
+  },
+  "invalid": {
+    "missing-contact.json": "Structurally invalid Actor Contact Point rejected by JSON Schema.",
+    "unknown-status.json": "Structurally invalid Actor Contact Point rejected by JSON Schema.",
+    "email-missing-address.json": "Structurally invalid Actor Contact Point rejected by JSON Schema.",
+    "email-with-number.json": "Structurally invalid Actor Contact Point rejected by JSON Schema.",
+    "email-invalid-shape.json": "Structurally invalid Actor Contact Point rejected by JSON Schema.",
+    "phone-missing-number.json": "Structurally invalid Actor Contact Point rejected by JSON Schema.",
+    "phone-with-address.json": "Structurally invalid Actor Contact Point rejected by JSON Schema.",
+    "phone-invalid-characters.json": "Structurally invalid Actor Contact Point rejected by JSON Schema.",
+    "unknown-contact-kind.json": "Structurally invalid Actor Contact Point rejected by JSON Schema.",
+    "other-label-missing-detail.json": "Structurally invalid Actor Contact Point rejected by JSON Schema.",
+    "unexpected-other-label.json": "Structurally invalid Actor Contact Point rejected by JSON Schema.",
+    "unknown-use-preference.json": "Structurally invalid Actor Contact Point rejected by JSON Schema.",
+    "unknown-source.json": "Structurally invalid Actor Contact Point rejected by JSON Schema.",
+    "school-record-missing-label.json": "Structurally invalid Actor Contact Point rejected by JSON Schema.",
+    "import-source-missing-label.json": "Structurally invalid Actor Contact Point rejected by JSON Schema.",
+    "other-source-missing-detail.json": "Structurally invalid Actor Contact Point rejected by JSON Schema.",
+    "unknown-verification.json": "Structurally invalid Actor Contact Point rejected by JSON Schema.",
+    "local-confirmation-missing-attribution.json": "Structurally invalid Actor Contact Point rejected by JSON Schema.",
+    "paper-capture-source.json": "Structurally invalid Actor Contact Point rejected by JSON Schema.",
+    "embedded-actor-display.json": "Structurally invalid Actor Contact Point rejected by JSON Schema.",
+    "empty-supersedes.json": "Structurally invalid Actor Contact Point rejected by JSON Schema.",
+    "unknown-supersession-reason.json": "Structurally invalid Actor Contact Point rejected by JSON Schema.",
+    "other-reason-missing-detail.json": "Structurally invalid Actor Contact Point rejected by JSON Schema.",
+    "predecessor-missing-contract-version.json": "Structurally invalid Actor Contact Point rejected by JSON Schema."
+  },
+  "application_invalid": {
+    "updated-before-created.json": {
+      "rule_id": "portia.actor_contact_point.timestamp_chronology",
+      "description": "updated_at must not precede created_at."
+    },
+    "confirmation-before-created.json": {
+      "rule_id": "portia.actor_contact_point.verification_chronology",
+      "description": "Local confirmation cannot predate Contact Point creation."
+    },
+    "confirmation-after-updated.json": {
+      "rule_id": "portia.actor_contact_point.verification_chronology",
+      "description": "Current verification cannot postdate the current record update."
+    },
+    "active-import-without-review-history.json": {
+      "rule_id": "portia.actor_contact_point.imported_status_requires_review_history",
+      "description": "An imported Contact Point cannot be active without accepted review and lifecycle history."
+    },
+    "self-supersession.json": {
+      "rule_id": "portia.actor_contact_point.self_supersession",
+      "description": "A nonmigration Contact Point replacement cannot list itself."
+    },
+    "duplicate-predecessor-identity.json": {
+      "rule_id": "portia.actor_contact_point.predecessor_identity_unique",
+      "description": "One successor cannot list the same Actor-owned Contact Point identity more than once."
+    },
+    "unsupported-predecessor-version.json": {
+      "rule_id": "portia.actor_contact_point.predecessor_contract_supported",
+      "description": "Every exact predecessor contract version must be cataloged and supported."
+    },
+    "single-predecessor-duplicate-consolidation.json": {
+      "rule_id": "portia.actor_contact_point.replacement_topology",
+      "description": "duplicate_consolidated requires at least two distinct predecessor Contact Points."
+    },
+    "mixed-supersession-reasons.json": {
+      "rule_id": "portia.actor_contact_point.supersession_reason_uniform",
+      "description": "One replacement operation cannot mix incompatible predecessor reasons."
+    },
+    "contact-correction-crosses-actor.json": {
+      "rule_id": "portia.actor_contact_point.ownership_correction",
+      "description": "contact_corrected preserves Actor ownership; cross-Actor replacement requires wrong_actor_corrected."
+    },
+    "wrong-actor-reason-with-same-actor.json": {
+      "rule_id": "portia.actor_contact_point.ownership_correction",
+      "description": "wrong_actor_corrected requires a different predecessor Actor."
+    }
+  }
+}

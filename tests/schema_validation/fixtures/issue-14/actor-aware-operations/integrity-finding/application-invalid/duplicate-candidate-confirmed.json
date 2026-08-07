@@ -1,0 +1,44 @@
+{
+  "finding_key": "fnd_actor_candidate_confirmed",
+  "evaluation_key": "evl_actor_candidate_confirmed_r1",
+  "rule_id": "portia.actor.duplicate_candidate",
+  "rule_version": "1",
+  "category": "uniqueness_graph",
+  "code": "actor_duplicate_candidate",
+  "severity": "warning",
+  "assessment": {
+    "result": "confirmed"
+  },
+  "effects": [
+    "attention",
+    "review_required"
+  ],
+  "scope": "graph",
+  "primary_target": {
+    "kind": "actor_set",
+    "actor_refs": [
+      {
+        "actor_id": "actr_duplicate_a",
+        "contract_version": "1"
+      },
+      {
+        "actor_id": "actr_duplicate_b",
+        "contract_version": "1"
+      }
+    ]
+  },
+  "related_targets": [],
+  "evidence": [
+    {
+      "name": "evidence_kind",
+      "kind": "token",
+      "value": "shared_contact_value"
+    },
+    {
+      "name": "candidate_count",
+      "kind": "integer",
+      "value": 2
+    }
+  ],
+  "observed_at": "2026-08-06T19:00:00-04:00"
+}

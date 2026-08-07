@@ -1,0 +1,290 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/actors/actor-directory-lifecycle-transition.schema.json",
+  "title": "Portia Actor Directory Lifecycle Transition",
+  "description": "Immutable append-only status change for one exact mutable Actor-directory record. The explicit predecessor chain establishes order. Timestamps do not select history, and Actor lifecycle does not cascade automatically to child or consuming records.",
+  "$comment": "Application validation remains responsible for Actor-root storage, owner agreement, exact target resolution, contract support, creation baseline agreement, predecessor resolution and target agreement, selected-head uniqueness, chain completeness, cycle and branch detection, record-family transition legality, reason compatibility, successor topology, operation intent and completion, effective and recorded chronology, current-status reconciliation, Quarantine, and no timestamp-based history selection.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "record_type",
+    "module_id",
+    "actor_id",
+    "transition_id",
+    "target",
+    "prior_status",
+    "new_status",
+    "reason",
+    "previous_transition_id",
+    "effective_at",
+    "recorded_at",
+    "recorded_by",
+    "operation_ref"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1"
+    },
+    "record_type": {
+      "const": "actor_directory_lifecycle_transition"
+    },
+    "module_id": {
+      "const": "portia"
+    },
+    "actor_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-actor-id.schema.json"
+    },
+    "transition_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-lifecycle-transition-id.schema.json"
+    },
+    "target": {
+      "allOf": [
+        {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-actor-directory-record-ref.schema.json"
+        },
+        {
+          "not": {
+            "type": "object",
+            "properties": {
+              "kind": {
+                "const": "actor_roster_student_collision"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          }
+        }
+      ],
+      "description": "Exact Actor, Contact Point, or Actor-to-Student Relationship representation. Immutable collision records are excluded."
+    },
+    "prior_status": {
+      "enum": [
+        "proposed",
+        "active",
+        "inactive",
+        "invalidated",
+        "superseded"
+      ]
+    },
+    "new_status": {
+      "enum": [
+        "proposed",
+        "active",
+        "inactive",
+        "invalidated",
+        "superseded"
+      ]
+    },
+    "reason": {
+      "$ref": "#/$defs/reason"
+    },
+    "previous_transition_id": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-lifecycle-transition-id.schema.json"
+        }
+      ]
+    },
+    "effective_at": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+    },
+    "recorded_at": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+    },
+    "recorded_by": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/attribution/attribution-agent.schema.json"
+    },
+    "operation_ref": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/operation-ref.schema.json"
+    }
+  },
+  "allOf": [
+    {
+      "not": {
+        "type": "object",
+        "properties": {
+          "prior_status": {
+            "const": "proposed"
+          },
+          "new_status": {
+            "const": "proposed"
+          }
+        },
+        "required": [
+          "prior_status",
+          "new_status"
+        ]
+      }
+    },
+    {
+      "not": {
+        "type": "object",
+        "properties": {
+          "prior_status": {
+            "const": "active"
+          },
+          "new_status": {
+            "const": "active"
+          }
+        },
+        "required": [
+          "prior_status",
+          "new_status"
+        ]
+      }
+    },
+    {
+      "not": {
+        "type": "object",
+        "properties": {
+          "prior_status": {
+            "const": "inactive"
+          },
+          "new_status": {
+            "const": "inactive"
+          }
+        },
+        "required": [
+          "prior_status",
+          "new_status"
+        ]
+      }
+    },
+    {
+      "not": {
+        "type": "object",
+        "properties": {
+          "prior_status": {
+            "const": "invalidated"
+          },
+          "new_status": {
+            "const": "invalidated"
+          }
+        },
+        "required": [
+          "prior_status",
+          "new_status"
+        ]
+      }
+    },
+    {
+      "not": {
+        "type": "object",
+        "properties": {
+          "prior_status": {
+            "const": "superseded"
+          },
+          "new_status": {
+            "const": "superseded"
+          }
+        },
+        "required": [
+          "prior_status",
+          "new_status"
+        ]
+      }
+    }
+  ],
+  "$defs": {
+    "recognizedReason": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "code"
+      ],
+      "properties": {
+        "code": {
+          "enum": [
+            "review_completed",
+            "made_inactive",
+            "reactivated",
+            "identity_invalidated",
+            "assertion_invalidated",
+            "contact_obsolete",
+            "relationship_ended",
+            "corrected_by_successor",
+            "duplicate_consolidated",
+            "wrong_actor_corrected",
+            "wrong_student_corrected",
+            "roster_student_collision",
+            "contract_migrated",
+            "prohibited_payload",
+            "source_disproved"
+          ]
+        },
+        "detail": {
+          "allOf": [
+            {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+            },
+            {
+              "maxLength": 500
+            }
+          ]
+        }
+      }
+    },
+    "otherReason": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "code",
+        "detail"
+      ],
+      "properties": {
+        "code": {
+          "const": "other"
+        },
+        "detail": {
+          "allOf": [
+            {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+            },
+            {
+              "maxLength": 500
+            }
+          ]
+        }
+      }
+    },
+    "reason": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/recognizedReason"
+        },
+        {
+          "$ref": "#/$defs/otherReason"
+        }
+      ]
+    }
+  },
+  "x-portia-application-invariants": [
+    "portia.actor_directory_transition.canonical_storage_scope",
+    "portia.actor_directory_transition.owner_agreement",
+    "portia.actor_directory_transition.target_resolution",
+    "portia.actor_directory_transition.target_contract_supported",
+    "portia.actor_directory_transition.creation_baseline_agreement",
+    "portia.actor_directory_transition.predecessor_resolution",
+    "portia.actor_directory_transition.predecessor_target_agreement",
+    "portia.actor_directory_transition.predecessor_status_agreement",
+    "portia.actor_directory_transition.predecessor_not_self",
+    "portia.actor_directory_transition.selected_head_unique",
+    "portia.actor_directory_transition.chain_complete",
+    "portia.actor_directory_transition.chain_acyclic",
+    "portia.actor_directory_transition.chain_unbranched",
+    "portia.actor_directory_transition.transition_matrix",
+    "portia.actor_directory_transition.reason_compatibility",
+    "portia.actor_directory_transition.successor_topology",
+    "portia.actor_directory_transition.effective_recorded_chronology",
+    "portia.actor_directory_transition.operation_resolution",
+    "portia.actor_directory_transition.operation_intent",
+    "portia.actor_directory_transition.current_status_reconciliation",
+    "portia.actor_directory_transition.no_automatic_cascade",
+    "portia.actor_directory_transition.no_timestamp_selection"
+  ]
+}

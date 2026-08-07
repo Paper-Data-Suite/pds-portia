@@ -1,0 +1,1116 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/actors/actor-directory-amendment.schema.json",
+  "title": "Portia Actor Directory Amendment",
+  "description": "Immutable append-only evidence for one atomic nonmaterial update to one exact mutable Actor-directory record. Typed path-specific changes bind bounded prior and resulting values without permitting arbitrary JSON Patch, identity changes, lifecycle changes, contact-value changes, or historical snapshot rewriting.",
+  "$comment": "Application validation remains responsible for Actor-root storage, owner agreement, exact target resolution and eligibility, target-kind path compatibility, predecessor resolution and linearity, fingerprint truth, complete before/after agreement, unique nonoverlapping paths, semantic nonmateriality, effective and recorded chronology, operation intent and completion, durable-before-replacement ordering, current record timestamp and attribution effects, privacy review, derived regeneration, and recovery of incomplete accepted amendments.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "record_type",
+    "module_id",
+    "actor_id",
+    "amendment_id",
+    "target",
+    "changes",
+    "prior_fingerprint",
+    "resulting_fingerprint",
+    "previous_amendment_id",
+    "effective_at",
+    "recorded_at",
+    "recorded_by",
+    "operation_ref"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1"
+    },
+    "record_type": {
+      "const": "actor_directory_amendment"
+    },
+    "module_id": {
+      "const": "portia"
+    },
+    "actor_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-actor-id.schema.json"
+    },
+    "amendment_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-amendment-id.schema.json"
+    },
+    "target": {
+      "allOf": [
+        {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-actor-directory-record-ref.schema.json"
+        },
+        {
+          "not": {
+            "type": "object",
+            "properties": {
+              "kind": {
+                "const": "actor_roster_student_collision"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          }
+        }
+      ],
+      "description": "Exact Actor, Contact Point, or Actor-to-Student Relationship representation. Immutable collision records are excluded."
+    },
+    "changes": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 20,
+      "items": {
+        "$ref": "#/$defs/change"
+      }
+    },
+    "prior_fingerprint": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/content-fingerprint.schema.json"
+    },
+    "resulting_fingerprint": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/content-fingerprint.schema.json"
+    },
+    "previous_amendment_id": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-amendment-id.schema.json"
+        }
+      ]
+    },
+    "effective_at": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+    },
+    "recorded_at": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+    },
+    "recorded_by": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/attribution/attribution-agent.schema.json"
+    },
+    "operation_ref": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/operation-ref.schema.json"
+    }
+  },
+  "$defs": {
+    "absentState": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "present"
+      ],
+      "properties": {
+        "present": {
+          "const": false
+        }
+      }
+    },
+    "change": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "path",
+            "value_kind",
+            "before",
+            "after"
+          ],
+          "properties": {
+            "path": {
+              "const": "/display/display_name"
+            },
+            "value_kind": {
+              "const": "text"
+            },
+            "before": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "present",
+                "value"
+              ],
+              "properties": {
+                "present": {
+                  "const": true
+                },
+                "value": {
+                  "allOf": [
+                    {
+                      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+                    },
+                    {
+                      "maxLength": 200
+                    }
+                  ]
+                }
+              }
+            },
+            "after": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "present",
+                "value"
+              ],
+              "properties": {
+                "present": {
+                  "const": true
+                },
+                "value": {
+                  "allOf": [
+                    {
+                      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+                    },
+                    {
+                      "maxLength": 200
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "path",
+            "value_kind",
+            "before",
+            "after"
+          ],
+          "properties": {
+            "path": {
+              "const": "/display/organization"
+            },
+            "value_kind": {
+              "const": "optional_text"
+            },
+            "before": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "present",
+                    "value"
+                  ],
+                  "properties": {
+                    "present": {
+                      "const": true
+                    },
+                    "value": {
+                      "allOf": [
+                        {
+                          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+                        },
+                        {
+                          "maxLength": 200
+                        }
+                      ]
+                    }
+                  }
+                },
+                {
+                  "$ref": "#/$defs/absentState"
+                }
+              ]
+            },
+            "after": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "present",
+                    "value"
+                  ],
+                  "properties": {
+                    "present": {
+                      "const": true
+                    },
+                    "value": {
+                      "allOf": [
+                        {
+                          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+                        },
+                        {
+                          "maxLength": 200
+                        }
+                      ]
+                    }
+                  }
+                },
+                {
+                  "$ref": "#/$defs/absentState"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "path",
+            "value_kind",
+            "before",
+            "after"
+          ],
+          "properties": {
+            "path": {
+              "const": "/display/title"
+            },
+            "value_kind": {
+              "const": "optional_text"
+            },
+            "before": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "present",
+                    "value"
+                  ],
+                  "properties": {
+                    "present": {
+                      "const": true
+                    },
+                    "value": {
+                      "allOf": [
+                        {
+                          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+                        },
+                        {
+                          "maxLength": 200
+                        }
+                      ]
+                    }
+                  }
+                },
+                {
+                  "$ref": "#/$defs/absentState"
+                }
+              ]
+            },
+            "after": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "present",
+                    "value"
+                  ],
+                  "properties": {
+                    "present": {
+                      "const": true
+                    },
+                    "value": {
+                      "allOf": [
+                        {
+                          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+                        },
+                        {
+                          "maxLength": 200
+                        }
+                      ]
+                    }
+                  }
+                },
+                {
+                  "$ref": "#/$defs/absentState"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "path",
+            "value_kind",
+            "before",
+            "after"
+          ],
+          "properties": {
+            "path": {
+              "const": "/actor_category"
+            },
+            "value_kind": {
+              "const": "actor_category"
+            },
+            "before": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "present",
+                "value"
+              ],
+              "properties": {
+                "present": {
+                  "const": true
+                },
+                "value": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "enum": [
+                            "family_or_caregiver",
+                            "school_staff",
+                            "external_support_provider",
+                            "community_collaborator"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "detail"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "const": "other"
+                        },
+                        "detail": {
+                          "allOf": [
+                            {
+                              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+                            },
+                            {
+                              "maxLength": 200
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "after": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "present",
+                "value"
+              ],
+              "properties": {
+                "present": {
+                  "const": true
+                },
+                "value": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "enum": [
+                            "family_or_caregiver",
+                            "school_staff",
+                            "external_support_provider",
+                            "community_collaborator"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "detail"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "const": "other"
+                        },
+                        "detail": {
+                          "allOf": [
+                            {
+                              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+                            },
+                            {
+                              "maxLength": 200
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "path",
+            "value_kind",
+            "before",
+            "after"
+          ],
+          "properties": {
+            "path": {
+              "const": "/contact/label"
+            },
+            "value_kind": {
+              "const": "contact_label"
+            },
+            "before": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "present",
+                "value"
+              ],
+              "properties": {
+                "present": {
+                  "const": true
+                },
+                "value": {
+                  "enum": [
+                    "personal",
+                    "work",
+                    "school",
+                    "mobile",
+                    "home",
+                    "office",
+                    "other",
+                    "unspecified"
+                  ]
+                }
+              }
+            },
+            "after": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "present",
+                "value"
+              ],
+              "properties": {
+                "present": {
+                  "const": true
+                },
+                "value": {
+                  "enum": [
+                    "personal",
+                    "work",
+                    "school",
+                    "mobile",
+                    "home",
+                    "office",
+                    "other",
+                    "unspecified"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "path",
+            "value_kind",
+            "before",
+            "after"
+          ],
+          "properties": {
+            "path": {
+              "const": "/contact/other_label"
+            },
+            "value_kind": {
+              "const": "optional_text"
+            },
+            "before": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "present",
+                    "value"
+                  ],
+                  "properties": {
+                    "present": {
+                      "const": true
+                    },
+                    "value": {
+                      "allOf": [
+                        {
+                          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+                        },
+                        {
+                          "maxLength": 100
+                        }
+                      ]
+                    }
+                  }
+                },
+                {
+                  "$ref": "#/$defs/absentState"
+                }
+              ]
+            },
+            "after": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "present",
+                    "value"
+                  ],
+                  "properties": {
+                    "present": {
+                      "const": true
+                    },
+                    "value": {
+                      "allOf": [
+                        {
+                          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+                        },
+                        {
+                          "maxLength": 100
+                        }
+                      ]
+                    }
+                  }
+                },
+                {
+                  "$ref": "#/$defs/absentState"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "path",
+            "value_kind",
+            "before",
+            "after"
+          ],
+          "properties": {
+            "path": {
+              "const": "/use_preference"
+            },
+            "value_kind": {
+              "const": "use_preference"
+            },
+            "before": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "present",
+                "value"
+              ],
+              "properties": {
+                "present": {
+                  "const": true
+                },
+                "value": {
+                  "enum": [
+                    "preferred",
+                    "alternate",
+                    "unspecified"
+                  ]
+                }
+              }
+            },
+            "after": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "present",
+                "value"
+              ],
+              "properties": {
+                "present": {
+                  "const": true
+                },
+                "value": {
+                  "enum": [
+                    "preferred",
+                    "alternate",
+                    "unspecified"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "path",
+            "value_kind",
+            "before",
+            "after"
+          ],
+          "properties": {
+            "path": {
+              "const": "/source"
+            },
+            "value_kind": {
+              "const": "contact_source"
+            },
+            "before": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "present",
+                "value"
+              ],
+              "properties": {
+                "present": {
+                  "const": true
+                },
+                "value": {
+                  "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/actors/actor-contact-point.schema.json#/$defs/source"
+                }
+              }
+            },
+            "after": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "present",
+                "value"
+              ],
+              "properties": {
+                "present": {
+                  "const": true
+                },
+                "value": {
+                  "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/actors/actor-contact-point.schema.json#/$defs/source"
+                }
+              }
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "path",
+            "value_kind",
+            "before",
+            "after"
+          ],
+          "properties": {
+            "path": {
+              "const": "/verification"
+            },
+            "value_kind": {
+              "const": "contact_verification"
+            },
+            "before": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "present",
+                "value"
+              ],
+              "properties": {
+                "present": {
+                  "const": true
+                },
+                "value": {
+                  "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/actors/actor-contact-point.schema.json#/$defs/verification"
+                }
+              }
+            },
+            "after": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "present",
+                "value"
+              ],
+              "properties": {
+                "present": {
+                  "const": true
+                },
+                "value": {
+                  "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/actors/actor-contact-point.schema.json#/$defs/verification"
+                }
+              }
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "path",
+            "value_kind",
+            "before",
+            "after"
+          ],
+          "properties": {
+            "path": {
+              "const": "/relationship/detail"
+            },
+            "value_kind": {
+              "const": "text"
+            },
+            "before": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "present",
+                "value"
+              ],
+              "properties": {
+                "present": {
+                  "const": true
+                },
+                "value": {
+                  "allOf": [
+                    {
+                      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+                    },
+                    {
+                      "maxLength": 200
+                    }
+                  ]
+                }
+              }
+            },
+            "after": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "present",
+                "value"
+              ],
+              "properties": {
+                "present": {
+                  "const": true
+                },
+                "value": {
+                  "allOf": [
+                    {
+                      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+                    },
+                    {
+                      "maxLength": 200
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "path",
+            "value_kind",
+            "before",
+            "after"
+          ],
+          "properties": {
+            "path": {
+              "const": "/basis/detail"
+            },
+            "value_kind": {
+              "const": "text"
+            },
+            "before": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "present",
+                "value"
+              ],
+              "properties": {
+                "present": {
+                  "const": true
+                },
+                "value": {
+                  "allOf": [
+                    {
+                      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+                    },
+                    {
+                      "maxLength": 300
+                    }
+                  ]
+                }
+              }
+            },
+            "after": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "present",
+                "value"
+              ],
+              "properties": {
+                "present": {
+                  "const": true
+                },
+                "value": {
+                  "allOf": [
+                    {
+                      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+                    },
+                    {
+                      "maxLength": 300
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "path",
+            "value_kind",
+            "before",
+            "after"
+          ],
+          "properties": {
+            "path": {
+              "const": "/review"
+            },
+            "value_kind": {
+              "const": "relationship_review"
+            },
+            "before": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "present",
+                "value"
+              ],
+              "properties": {
+                "present": {
+                  "const": true
+                },
+                "value": {
+                  "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/actors/actor-student-relationship.schema.json#/$defs/review"
+                }
+              }
+            },
+            "after": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "present",
+                "value"
+              ],
+              "properties": {
+                "present": {
+                  "const": true
+                },
+                "value": {
+                  "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/actors/actor-student-relationship.schema.json#/$defs/review"
+                }
+              }
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "path",
+            "value_kind",
+            "before",
+            "after"
+          ],
+          "properties": {
+            "path": {
+              "const": "/effective_period/starts_on"
+            },
+            "value_kind": {
+              "const": "optional_date"
+            },
+            "before": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "present",
+                    "value"
+                  ],
+                  "properties": {
+                    "present": {
+                      "const": true
+                    },
+                    "value": {
+                      "type": "string",
+                      "format": "date"
+                    }
+                  }
+                },
+                {
+                  "$ref": "#/$defs/absentState"
+                }
+              ]
+            },
+            "after": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "present",
+                    "value"
+                  ],
+                  "properties": {
+                    "present": {
+                      "const": true
+                    },
+                    "value": {
+                      "type": "string",
+                      "format": "date"
+                    }
+                  }
+                },
+                {
+                  "$ref": "#/$defs/absentState"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "path",
+            "value_kind",
+            "before",
+            "after"
+          ],
+          "properties": {
+            "path": {
+              "const": "/effective_period/ends_on"
+            },
+            "value_kind": {
+              "const": "optional_date"
+            },
+            "before": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "present",
+                    "value"
+                  ],
+                  "properties": {
+                    "present": {
+                      "const": true
+                    },
+                    "value": {
+                      "type": "string",
+                      "format": "date"
+                    }
+                  }
+                },
+                {
+                  "$ref": "#/$defs/absentState"
+                }
+              ]
+            },
+            "after": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "present",
+                    "value"
+                  ],
+                  "properties": {
+                    "present": {
+                      "const": true
+                    },
+                    "value": {
+                      "type": "string",
+                      "format": "date"
+                    }
+                  }
+                },
+                {
+                  "$ref": "#/$defs/absentState"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  },
+  "x-portia-application-invariants": [
+    "portia.actor_directory_amendment.canonical_storage_scope",
+    "portia.actor_directory_amendment.owner_agreement",
+    "portia.actor_directory_amendment.target_resolution",
+    "portia.actor_directory_amendment.target_contract_supported",
+    "portia.actor_directory_amendment.target_current_and_amendable",
+    "portia.actor_directory_amendment.path_target_compatibility",
+    "portia.actor_directory_amendment.change_paths_unique",
+    "portia.actor_directory_amendment.change_paths_nonoverlapping",
+    "portia.actor_directory_amendment.before_after_differ",
+    "portia.actor_directory_amendment.before_state_agreement",
+    "portia.actor_directory_amendment.after_state_agreement",
+    "portia.actor_directory_amendment.no_unlisted_domain_change",
+    "portia.actor_directory_amendment.semantic_identity_preserved",
+    "portia.actor_directory_amendment.contact_value_prohibited",
+    "portia.actor_directory_amendment.lifecycle_change_prohibited",
+    "portia.actor_directory_amendment.identity_change_prohibited",
+    "portia.actor_directory_amendment.provenance_change_prohibited",
+    "portia.actor_directory_amendment.supersession_change_prohibited",
+    "portia.actor_directory_amendment.prior_fingerprint_truth",
+    "portia.actor_directory_amendment.resulting_fingerprint_truth",
+    "portia.actor_directory_amendment.fingerprints_differ",
+    "portia.actor_directory_amendment.previous_amendment_resolution",
+    "portia.actor_directory_amendment.previous_amendment_not_self",
+    "portia.actor_directory_amendment.amendment_chain_linear",
+    "portia.actor_directory_amendment.amendment_chain_acyclic",
+    "portia.actor_directory_amendment.effective_recorded_chronology",
+    "portia.actor_directory_amendment.operation_resolution",
+    "portia.actor_directory_amendment.operation_intent",
+    "portia.actor_directory_amendment.durable_before_replacement",
+    "portia.actor_directory_amendment.historical_snapshots_unchanged",
+    "portia.actor_directory_amendment.privacy_safe_payload"
+  ]
+}

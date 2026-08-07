@@ -1,0 +1,43 @@
+{
+  "schema_version": "1",
+  "record_type": "actor_contact_point",
+  "module_id": "portia",
+  "actor_id": "actr_consolidated",
+  "contact_point_id": "acp_bad_consolidation",
+  "status": "active",
+  "contact": {
+    "kind": "email",
+    "address": "synthetic.family@example.invalid",
+    "label": "personal"
+  },
+  "use_preference": "unspecified",
+  "source": {
+    "kind": "local_operator_knowledge"
+  },
+  "verification": {
+    "kind": "unverified"
+  },
+  "creation_source": {
+    "type": "digital_entry"
+  },
+  "created_at": "2026-08-06T15:00:00-04:00",
+  "created_by": {
+    "type": "local_operator",
+    "display_label": "Synthetic Teacher"
+  },
+  "updated_at": "2026-08-06T15:00:00-04:00",
+  "updated_by": {
+    "type": "local_operator",
+    "display_label": "Synthetic Teacher"
+  },
+  "supersedes": [
+    {
+      "contact_point_ref": {
+        "actor_id": "actr_duplicate_a",
+        "contact_point_id": "acp_email_a",
+        "contract_version": "1"
+      },
+      "reason": "duplicate_consolidated"
+    }
+  ]
+}

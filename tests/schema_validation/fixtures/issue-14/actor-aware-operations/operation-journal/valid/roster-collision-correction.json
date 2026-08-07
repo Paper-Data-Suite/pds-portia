@@ -1,0 +1,217 @@
+{
+  "schema_version": "2",
+  "record_type": "operation_journal",
+  "module_id": "portia",
+  "operation_id": "op_correct_roster_collision",
+  "operation_kind": "correct_history",
+  "intent_digest": "1111111111111111111111111111111111111111111111111111111111111111",
+  "scope": "workspace",
+  "primary_target": {
+    "kind": "actor_directory_record",
+    "actor_directory_record_ref": {
+      "kind": "actor",
+      "actor_ref": {
+        "actor_id": "actr_student_collision",
+        "contract_version": "1"
+      }
+    }
+  },
+  "affected_targets": [
+    {
+      "kind": "actor_directory_record",
+      "actor_directory_record_ref": {
+        "kind": "actor_roster_student_collision",
+        "collision_ref": {
+          "actor_id": "actr_student_collision",
+          "collision_id": "arsc_review_1",
+          "contract_version": "1"
+        }
+      }
+    }
+  ],
+  "intent_facts": [
+    {
+      "name": "correction_kind",
+      "kind": "token",
+      "value": "roster_student_collision"
+    },
+    {
+      "name": "target_class_id",
+      "kind": "identifier",
+      "value": "english10_p2"
+    },
+    {
+      "name": "target_student_id",
+      "kind": "identifier",
+      "value": "synthetic_student_1001"
+    }
+  ],
+  "initiated_at": "2026-08-05T20:00:00-04:00",
+  "initiated_by": {
+    "type": "local_operator",
+    "display_label": "Synthetic teacher"
+  },
+  "authorization_references": [],
+  "journal_revision": 1,
+  "previous_journal_revision": null,
+  "state": "prepared",
+  "preflight_snapshot_digest": "2222222222222222222222222222222222222222222222222222222222222222",
+  "preflight_snapshot": [
+    {
+      "target": {
+        "kind": "actor_directory_record",
+        "actor_directory_record_ref": {
+          "kind": "actor",
+          "actor_ref": {
+            "actor_id": "actr_student_collision",
+            "contract_version": "1"
+          }
+        }
+      },
+      "representation_role": "canonical_domain",
+      "expected_state": {
+        "presence": "must_be_absent"
+      },
+      "workspace_relative_path": "portia/actors/actr_student_collision/records/actor_roster_student_collision/arsc_review_1.json",
+      "contract_version": "1",
+      "source_basis": "canonical",
+      "source_projection": null,
+      "selected_state": [],
+      "observed_at": "2026-08-05T20:00:01-04:00"
+    }
+  ],
+  "lock_set": [
+    {
+      "lock_id": "lock_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "sequence": 1,
+      "lock_scope": "actor_directory_collection",
+      "protected_target": {
+        "kind": "actor_directory_collection"
+      },
+      "lock_path": "portia/locks/lock_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.json",
+      "disposition": "planned",
+      "fingerprint": null,
+      "acquired_at": null,
+      "released_at": null
+    },
+    {
+      "lock_id": "lock_bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "sequence": 2,
+      "lock_scope": "actor_directory_record",
+      "protected_target": {
+        "kind": "actor_directory_record",
+        "actor_directory_record_ref": {
+          "kind": "actor",
+          "actor_ref": {
+            "actor_id": "actr_student_collision",
+            "contract_version": "1"
+          }
+        }
+      },
+      "lock_path": "portia/locks/lock_bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb.json",
+      "disposition": "planned",
+      "fingerprint": null,
+      "acquired_at": null,
+      "released_at": null
+    },
+    {
+      "lock_id": "lock_cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "sequence": 3,
+      "lock_scope": "operation",
+      "protected_target": {
+        "kind": "operation",
+        "operation_ref": {
+          "operation_id": "op_correct_roster_collision"
+        }
+      },
+      "lock_path": "portia/locks/lock_cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc.json",
+      "disposition": "planned",
+      "fingerprint": null,
+      "acquired_at": null,
+      "released_at": null
+    }
+  ],
+  "write_set": [
+    {
+      "step_id": "step_create_actor",
+      "sequence": 1,
+      "phase": "canonical_gate",
+      "action": "exclusive_create",
+      "target": {
+        "kind": "actor_directory_record",
+        "actor_directory_record_ref": {
+          "kind": "actor",
+          "actor_ref": {
+            "actor_id": "actr_student_collision",
+            "contract_version": "1"
+          }
+        }
+      },
+      "representation_role": "canonical_domain",
+      "destination_path": "portia/actors/actr_student_collision/records/actor_roster_student_collision/arsc_review_1.json",
+      "precondition": {
+        "presence": "must_be_absent"
+      },
+      "intended_result": {
+        "contract_version": "1",
+        "fingerprint": {
+          "algorithm": "sha256",
+          "digest": "3333333333333333333333333333333333333333333333333333333333333333",
+          "byte_length": 512
+        },
+        "selected_state": [
+          {
+            "name": "status",
+            "kind": "token",
+            "value": "active"
+          }
+        ]
+      },
+      "disposition": "pending",
+      "observed_result": null,
+      "compensation_step_id": null,
+      "reason_code": null
+    }
+  ],
+  "staged_artifacts": [],
+  "commit_point": {
+    "reached": false,
+    "reached_at": null
+  },
+  "compensation_plan": [
+    {
+      "trigger_code": "canonical_create_partial",
+      "affected_steps": [
+        "step_create_record"
+      ],
+      "disposition": "quarantine",
+      "required_authorization": [],
+      "planned_actions": [
+        "quarantine_artifact"
+      ]
+    }
+  ],
+  "recovery_plan": [
+    "resume",
+    "abandon_preacceptance_artifacts",
+    "require_manual_review"
+  ],
+  "partial_state": {
+    "durability_assessment": "none",
+    "accepted_steps": [],
+    "verified_steps": [],
+    "durable_unverified_steps": [],
+    "indeterminate_steps": [],
+    "remaining_canonical_steps": [
+      "step_create_actor"
+    ],
+    "remaining_post_commit_steps": [],
+    "current_pointer_changes": [],
+    "held_or_possible_locks": [],
+    "quarantined_targets": [],
+    "active_finding_keys": [],
+    "recommended_disposition": "resume"
+  },
+  "created_at": "2026-08-05T20:00:02-04:00",
+  "updated_at": "2026-08-05T20:00:02-04:00"
+}

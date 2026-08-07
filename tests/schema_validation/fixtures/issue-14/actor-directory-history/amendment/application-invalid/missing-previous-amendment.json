@@ -1,0 +1,48 @@
+{
+  "schema_version": "1",
+  "record_type": "actor_directory_amendment",
+  "module_id": "portia",
+  "actor_id": "actr_family_1",
+  "amendment_id": "amd_actor_display_1",
+  "target": {
+    "kind": "actor",
+    "actor_ref": {
+      "actor_id": "actr_family_1",
+      "contract_version": "1"
+    }
+  },
+  "changes": [
+    {
+      "path": "/display/display_name",
+      "value_kind": "text",
+      "before": {
+        "present": true,
+        "value": "Synthetic Collaboratr"
+      },
+      "after": {
+        "present": true,
+        "value": "Synthetic Collaborator"
+      }
+    }
+  ],
+  "prior_fingerprint": {
+    "algorithm": "sha256",
+    "digest": "e5bade0e979cb8cf6e53303dae696c6631a5c82ce60386d7a602f85fb249fcc0",
+    "byte_length": 100
+  },
+  "resulting_fingerprint": {
+    "algorithm": "sha256",
+    "digest": "ecd21b60cb8a80417a5284609a249ba31dda270d45fadc34c3e9d5e981d1f1e2",
+    "byte_length": 104
+  },
+  "previous_amendment_id": "amd_missing",
+  "effective_at": "2026-08-06T17:50:00-04:00",
+  "recorded_at": "2026-08-06T17:51:00-04:00",
+  "recorded_by": {
+    "type": "local_operator",
+    "display_label": "Synthetic Teacher"
+  },
+  "operation_ref": {
+    "operation_id": "op_actor_amendment_1"
+  }
+}
