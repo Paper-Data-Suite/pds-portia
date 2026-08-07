@@ -1,6 +1,6 @@
 # Portia Actor Directory Domain Model and Lifecycle
 
-**Status:** Accepted — ADR 0010 recorded; implementation pending
+**Status:** Accepted — implemented and validated
 **Project:** Paper Data Suite
 **Module:** `pds-portia`
 **Issue:** `#14 — Define the Actor Directory domain model and lifecycle`
@@ -2698,8 +2698,10 @@ It requires:
 - record-family transition legality;
 - and coordinated status-plus-transition persistence.
 
-The detailed envelope, reason vocabulary, chronology, and history-correction
-contract belong to the next slice.
+The implemented `actor_directory_lifecycle_transition@1` and
+`actor_directory_lifecycle_history_correction@1` contracts provide the final
+closed envelopes, reason vocabulary, chronology evidence, predecessor chains,
+and selected-history correction model.
 
 ## 14.9 Shared Actor-directory amendment family
 
@@ -2725,12 +2727,10 @@ The amendment must preserve:
 
 Sensitive Contact Point prior values require special handling.
 
-The next slice must decide whether a Contact Point amendment may retain a prior
-sensitive value or whether all value-affecting changes are categorically
-replacement-only.
-
-Decisions 6–7 currently require contact value changes to use replacement, which
-substantially limits sensitive prior-value exposure in amendments.
+The implemented amendment contract excludes email addresses and phone numbers
+from amendable paths. Contact-value changes are categorically replacement-only,
+so amendment history never retains a prior contact value merely to explain a
+correction.
 
 ## 14.10 Child-record behavior when Actor state changes
 
@@ -7643,17 +7643,26 @@ It does not implement:
 
 Those remain future implementation work.
 
-## 35.2 Immediate next slice
+## 35.2 Final implementation record
 
-The next slice should implement:
+Issue #14 implements and validates:
 
 ```text
-foundation identifiers
-exact Actor-directory references
-closed Actor target
-catalog entries
-focused fixtures and tests
+Actor Directory identifiers, exact references, and targets
+Actor root, Contact Point, Relationship, and roster-collision records
+Actor-directory lifecycle transitions and history correction
+bounded Actor-directory amendments
+representation migration and exceptional removal
+Actor-aware Integrity Finding, Operation Journal, Operation Lock, and Quarantine v2
+source-snapshot and derived-generation compatibility
+synthetic examples and comprehensive application-invalid coverage
 ```
 
-No canonical Actor schema should be added until those primitives pass the
-complete existing schema-validation suite.
+The complete public-contract, fixture, example, drift-check, and acceptance
+record is:
+
+[`docs/validation/issue-14-actor-directory-validation.md`](../validation/issue-14-actor-directory-validation.md)
+
+Production Python repositories, filesystem services, operation executors,
+projection builders, privacy enforcement, and teacher-facing workflows remain
+future executable-milestone work.

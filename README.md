@@ -11,14 +11,14 @@ Portia is in its initial research and architecture phase.
 The repository currently contains:
 
 * evidence-based research on responsible K–12 behavior documentation and management;
-* accepted design analyses defining Portia’s role, identity model, ownership rules, canonical storage, references, lifecycle, correction, migration, removal, integrity diagnostics, coordinated persistence, recovery, Quarantine, finding administration, derived rebuilding, and the initial Event family;
-* Architecture Decision Records through ADR 0009;
-* independently versioned Draft 2020-12 identifier, reference, target, lifecycle, correction, disagreement, dependency, migration, ownership-correction, removal, relationship, operational, and derived-projection schemas;
-* retained historical Event-family version-1 schemas, Event version 2, Event Participant and Role version 3, and Work Relationship version 2;
-* validated synthetic examples, migration fixtures, and comprehensive Issue #12 and Issue #13 application-invalid matrices;
-* and automated offline schema-validation, state-machine, compatibility, example, and documentation-consistency tests.
+* accepted design analyses defining Portia’s role, identity model, ownership rules, canonical storage, references, lifecycle, correction, migration, removal, integrity diagnostics, coordinated persistence, recovery, Quarantine, finding administration, derived rebuilding, the initial Event family, and the teacher-local Actor Directory;
+* Architecture Decision Records through ADR 0009, plus accepted ADR 0010 for the Actor Directory;
+* independently versioned Draft 2020-12 identifier, reference, target, Actor, lifecycle, correction, disagreement, dependency, migration, ownership-correction, removal, relationship, operational, and derived-projection schemas;
+* retained historical Event-family version-1 schemas, Event version 2, Event Participant and Role version 3, Work Relationship version 2, Actor Directory version-1 contracts, and Actor-aware operational version-2 contracts;
+* validated synthetic examples, migration fixtures, and comprehensive Issue #12, Issue #13, and Issue #14 application-invalid matrices;
+* and automated offline schema-validation, state-machine, compatibility, privacy, example, and documentation-consistency tests.
 
-Portia does not yet contain an executable application. The current domain implementation targets are Event v2, Event Participant v3, Event Participant Role v3, and Work Relationship v2; Support Process and later record families remain architectural work. Issue #13 completes the public coordinated-persistence, recovery, Quarantine, finding-administration, and derived-generation contracts, while production filesystem services remain assigned to a later executable milestone.
+Portia does not yet contain an executable application. The current domain implementation targets are Event v2, Event Participant v3, Event Participant Role v3, Work Relationship v2, and the Actor Directory version-1 record family. Issue #14 completes the public teacher-local Actor identity, contact, relationship, lifecycle, correction, collision, migration, removal, operational-targeting, and derived-compatibility contracts. Production filesystem services and teacher-facing Actor workflows remain assigned to a later executable milestone.
 
 ## Product Position
 
@@ -286,14 +286,31 @@ Actor records are stored in a limited workspace-scoped directory:
 <PDS workspace>/
   portia/
     actors/
-      <actor_id>.json
+      <actor_id>/
+        actor.json
+        records/
+          actor_contact_point/
+          actor_student_relationship/
+          actor_roster_student_collision/
+          actor_directory_lifecycle_transition/
+          actor_directory_lifecycle_history_correction/
+          actor_directory_amendment/
+          actor_directory_record_migration/
 ```
 
-The Actor Directory is local to one teacher’s workspace.
+The canonical root record is `portia/actors/<actor_id>/actor.json`.
 
-It is not a school directory, district directory, student-information system, authenticated user directory, or institutionally authoritative identity service.
+Exceptional-removal certificates survive outside Actor roots:
 
-Roster students continue to use Core roster-qualified references and are not duplicated as Actor records.
+```text
+<PDS workspace>/portia/actor-directory-removals/<removal_id>.json
+```
+
+One Actor represents one recurring non-roster human person. Contact Points and Actor-to-Student Relationships are separate canonical child records; work-specific roles remain on their containing records.
+
+The Actor Directory is local to one teacher’s workspace. It is not a school directory, district directory, student-information system, employee directory, authenticated user directory, legal guardianship registry, contact-management platform, or institutionally authoritative identity service.
+
+Roster students continue to use exact Core roster-qualified references and are never duplicated as Actors. A reviewed Actor–Roster Student Collision invalidates the Actor without converting its Contact Points into roster data or creating a workspace-wide student identity.
 
 Incidental, unidentified, or one-time people may remain descriptive without receiving Actor IDs.
 
@@ -424,6 +441,50 @@ Quarantine is revisioned operational protection rather than lifecycle. Acknowled
 Derived generations are immutable, complete, nonauthoritative, source-snapshot-bound replacements. A current pointer selects one generation explicitly but does not prove freshness, authorization compatibility, or absence. Reads do not silently rebuild derived state, and a missing index never proves an empty graph.
 
 JSON Schema validates local wire shape. Application validation remains responsible for exact filesystem containment, digest truth, journal linearity, replay, lock conflicts and clearing, operation-specific ordering, authorization, recovery safety, snapshot freshness, complete installation, and current-use eligibility.
+
+## Accepted Actor Directory Contracts
+
+ADR 0010 defines the teacher-local Actor Directory for recurring non-roster human collaborators.
+
+One Actor represents one recurring person, not a household, organization, role, contact method, authenticated user, or roster student. Identity remains the opaque stable `actr_` identifier. Current display data, category, organization, title, contact information, relationship assertions, and workflow roles do not participate in Actor equality.
+
+The principal canonical contracts are:
+
+```text
+actor
+actor_contact_point
+actor_student_relationship
+actor_roster_student_collision
+actor_directory_lifecycle_transition
+actor_directory_lifecycle_history_correction
+actor_directory_amendment
+actor_directory_record_migration
+actor_directory_exceptional_removal
+```
+
+Exact Actor Directory references include the expected public contract version and never silently follow migration, correction, consolidation, splitting, or supersession.
+
+Contact Points are privacy-sensitive child records with explicit source, local verification state, use preference, lifecycle, and replacement lineage. Actor-to-Student Relationships use exact `class_id + student_id` targets, explicit basis, local review, optional effective dates, and no implied guardianship, consent, custody, disclosure permission, employment, or decision authority.
+
+Duplicate detection remains a derived Integrity Finding. Human-confirmed consolidation creates one new successor Actor from several predecessors. Correction of a conflated person creates several new successor Actors from one predecessor. Historical references remain exact and are not silently retargeted.
+
+Actor lifecycle uses:
+
+```text
+proposed
+active
+inactive
+invalidated
+superseded
+```
+
+Inactive, invalidated, and superseded records remain historically resolvable. Quarantine remains operational protection rather than lifecycle, and exceptional removal remains a narrow authorized mechanism rather than ordinary retention behavior.
+
+Actor-aware version-2 operational contracts add exact Actor record, Actor set, and Actor Directory collection targets to Integrity Findings, Operation Journals, Operation Locks, and Quarantine while preserving their version-1 schemas unchanged.
+
+Actor-derived incoming-reference, replacement-frontier, and lifecycle projections reuse the existing version-1 source-snapshot, generation-metadata, and current-pointer contracts. Derived state is nonauthoritative, privacy-minimized, authorization-scoped, rebuildable, and unable to prove absence when discovery coverage is incomplete.
+
+JSON Schema validates local wire shape. Application validation remains responsible for exact storage and owner agreement, Core roster resolution, current-use eligibility, lifecycle history, duplicate review, correction topology, operation ordering, incoming-reference completeness, privacy, authorization, digest truth, recovery, and derived freshness.
 
 ## Initial Event, Event Participant, and Role Model
 
@@ -767,11 +828,35 @@ Portia should use Core infrastructure and public cross-module contracts rather t
 
   Defines operation identity and journaling, preflight, exact write sets, locks, recoverable commit, partial success, compensation, repair, Quarantine, finding administration, deterministic source snapshots, immutable derived generations, current pointers, unavailable-state behavior, and the production implementation boundary.
 
+* [Portia Actor Directory Domain Model and Lifecycle](docs/design/portia-actor-directory-domain-model-and-lifecycle.md)
+
+  Defines the semantic unit of one Actor, eligibility and roster boundaries, canonical storage, Actor roots, Contact Points, Actor-to-Student Relationships, Actor–Roster Student Collisions, lifecycle and history, amendment, consolidation, splitting, migration, exceptional removal, operational targeting, derived views, privacy, and the production implementation boundary.
+
 ### Schemas
 
 * [Schema Guide and Catalog](schemas/README.md)
 
   Documents immutable schema identity, offline resolution, shared references, lifecycle, correction, migration, removal, coordinated-operation records, Quarantine, finding administration, deterministic source snapshots, immutable derived generations, explicit current pointers, and structural-versus-application validation.
+
+* [Actor Schema](schemas/v1/actors/actor.schema.json)
+
+  Canonical teacher-local Actor root for one recurring non-roster human person.
+
+* [Actor Contact Point Schema](schemas/v1/actors/actor-contact-point.schema.json)
+
+  Privacy-sensitive email and phone child records with source, local verification, use preference, lifecycle, and exact replacement lineage.
+
+* [Actor-to-Student Relationship Schema](schemas/v1/actors/actor-student-relationship.schema.json)
+
+  Explicit locally reviewed relationship assertions to exact Core roster-qualified students without implied authority.
+
+* [Actor–Roster Student Collision Schema](schemas/v1/actors/actor-roster-student-collision.schema.json)
+
+  Immutable reviewed evidence that an Actor duplicates one exact roster student, linked to coordinated Actor invalidation.
+
+* [Actor-Aware Operation Journal v2](schemas/v2/operations/operation-journal.schema.json)
+
+  Version-2 coordinated-operation journal with exact Actor record, Actor set, and Actor Directory collection targets.
 
 * [Event v2 Schema](schemas/v2/event.schema.json)
 
@@ -819,6 +904,10 @@ Portia should use Core infrastructure and public cross-module contracts rather t
 
 ### Examples
 
+* [Portia Actor Directory Examples](docs/examples/portia-actor-directory-examples.md)
+
+  Accepted synthetic and machine-validated examples for Actor roots, Contact Points, Relationships, roster collisions, lifecycle, correction, amendment, migration, exceptional removal, Actor-aware operations, and derived compatibility.
+
 * [Portia Coordinated Persistence, Recovery, and Derived-Index Examples](docs/examples/portia-coordinated-persistence-recovery-and-derived-index-examples.md)
 
   Accepted synthetic and machine-validated examples for journals, pointers, locks, Quarantine, finding administration, source snapshots, immutable generations, and derived current selection.
@@ -840,6 +929,10 @@ Portia should use Core infrastructure and public cross-module contracts rather t
   Historical validated examples covering direct digital Role creation, compatible Role assignments, contextual detail, paper-derived and imported reported involvement, basis correction, and supersession.
 
 ### Validation
+
+* [Issue #14 Validation: Actor Directory Domain Model and Lifecycle](docs/validation/issue-14-actor-directory-validation.md)
+
+  Records the Actor Directory public-contract inventory, fixture totals, complete application-invalid matrix, acceptance matrix, final Core and Portia drift anchors, validation boundary, examples, and repository acceptance commands.
 
 * [Issue #13 Validation: Coordinated Persistence, Recovery, and Derived-Index Contracts](docs/validation/issue-13-coordinated-persistence-recovery-and-derived-index-validation.md)
 
@@ -891,6 +984,10 @@ Portia should use Core infrastructure and public cross-module contracts rather t
 
   Establishes durable state categories, immutable operation journals, exact preflight and write sets, lock identity and conservative clearing, recoverable multi-record completion, structured partial success, repair and Quarantine, finding acknowledgement and suppression, deterministic source snapshots, immutable derived generations, and explicit current selection.
 
+* [ADR 0010: Define the Actor Directory Domain Model and Lifecycle](docs/decisions/0010-define-actor-directory-domain-model-and-lifecycle.md)
+
+  Establishes one recurring non-roster person per Actor, workspace-scoped canonical storage, separate Contact Points and Relationships, roster-student collision handling, lifecycle and correction, reviewed consolidation and splitting, migration and removal, Actor-aware operational targeting, derived compatibility, and privacy boundaries.
+
 ## Explicit Product Prohibitions
 
 Portia must not provide:
@@ -938,10 +1035,10 @@ Local-first storage does not make student records inherently non-sensitive. Port
 
 Likely next work includes:
 
-* implementing the accepted ADR 0009 persistence, recovery, Quarantine, and derived-generation contracts as strictly typed production services in a later executable milestone;
+* implementing the accepted ADR 0009 and ADR 0010 persistence, Actor Directory, recovery, Quarantine, integrity, and derived-generation contracts as strictly typed production services in a later executable milestone;
+* building teacher-facing Actor selection, creation, correction, consolidation, splitting, collision-review, and privacy-maintenance workflows;
 * defining the minimal Support Process root and status contract, followed by the broader Support, Intervention, implementation, and fidelity model;
-* defining Account, Observation, Classification, Hypothesis, Determination, Response, Follow-Up, Outcome, and Communication schemas;
-* defining the Actor Directory schema and Actor lifecycle;
+* defining Account, Observation, Classification, Hypothesis, Determination, Response, Follow-Up, Outcome, and Communication schemas that consume exact Actor references and preserve their own contextual roles and authority evidence;
 * defining how teacher schedules assist Event ownership selection;
 * implementing and performance-testing the minimum viable teacher workflow;
 * establishing privacy projections and redaction for multi-student Events;

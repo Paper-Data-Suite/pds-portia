@@ -26,8 +26,9 @@ Canonical schemas do not use mutable `latest` or `current` identities.
 conceptual contract name and schema version to the canonical schema `$id` and
 the repository-relative source path.
 
-The catalog contains the retained Event-family contracts and the versioned
-shared contracts implemented by Portia.
+The catalog contains the retained Event-family contracts, versioned shared
+contracts, the Actor Directory record family, and additive Actor-aware
+operational version-2 contracts implemented by Portia.
 
 ## Identifier contracts
 
@@ -39,6 +40,9 @@ The initial prefixes are:
 - Event: `evt_`
 - Support Process: `sup_`
 - Actor: `actr_`
+- Actor Contact Point: `acp_`
+- Actor-to-Student Relationship: `asrel_`
+- Actor–Roster Student Collision: `arsc_`
 - Event Participant: `ep_`
 - Event Participant Role: `epr_`
 - Work Relationship: `rel_`
@@ -157,6 +161,24 @@ Stable references do not imply existence or currentness. Exact revision referenc
 must resolve the named revision and contract; consumers must not substitute the
 greatest revision, newest timestamp, filename order, or current pointer.
 
+Issue #14 adds exact Actor Directory representation references:
+
+- `exact-actor-ref.schema.json`;
+- `exact-actor-contact-point-ref.schema.json`;
+- `exact-actor-student-relationship-ref.schema.json`;
+- `exact-actor-roster-student-collision-ref.schema.json`;
+- and the closed `exact-actor-directory-record-ref.schema.json` union.
+
+Every exact reference carries the expected public contract version. Exact
+references remain bound to the named historical representation and never
+silently follow correction, consolidation, splitting, supersession, or
+migration.
+
+`actor-target.schema.json` wraps the exact Actor Directory record union for
+operational and diagnostic target composition. The immutable Collision record
+is included in exact operational targeting but is excluded from lifecycle and
+amendment target subsets.
+
 ## Shared snapshots and target contracts
 
 The initial reusable historical snapshot is:
@@ -240,6 +262,72 @@ Passing the schema does not prove actual containment, symlink safety, existence,
 file kind, or identity/path agreement. A content fingerprint binds exact SHA-256
 bytes and byte length; it does not prove semantic meaning, acceptance, or
 authorization.
+
+## Actor Directory contracts
+
+The canonical teacher-local Actor Directory record family is stored beneath:
+
+```text
+portia/actors/<actor_id>/
+  actor.json
+  records/
+```
+
+The public version-1 contracts are:
+
+```text
+schemas/v1/actors/actor.schema.json
+schemas/v1/actors/actor-contact-point.schema.json
+schemas/v1/actors/actor-student-relationship.schema.json
+schemas/v1/actors/actor-roster-student-collision.schema.json
+schemas/v1/actors/actor-directory-lifecycle-transition.schema.json
+schemas/v1/actors/actor-directory-lifecycle-history-correction.schema.json
+schemas/v1/actors/actor-directory-amendment.schema.json
+schemas/v1/migrations/actor-directory-record-migration.schema.json
+schemas/v1/removals/actor-directory-exceptional-removal.schema.json
+```
+
+One Actor represents one recurring non-roster human person in one selected
+teacher-local workspace. Actor identity is the opaque `actr_` identifier.
+Display name, category, organization, title, contact information, relationship
+assertions, and workflow roles do not participate in identity.
+
+The Actor root stores only current profile, category, lifecycle status,
+creation provenance, attribution, and reviewed predecessor lineage. Email and
+phone values are separate privacy-sensitive Contact Point children.
+Actor-to-Student Relationships are separate children using exact Core
+`class_id + student_id` identity, explicit basis, local review, and no implied
+legal, institutional, disclosure, consent, custody, employment, or
+decision-making authority.
+
+An Actor–Roster Student Collision is immutable reviewed correction evidence. It
+links one exact Actor, one exact class-qualified roster student, the coordinated
+operation, and the Actor invalidation transition. It creates no Actor successor,
+does not convert Contact Points into roster data, and establishes no
+workspace-wide student identity.
+
+Actor Directory lifecycle and amendment records are Actor-root-local and
+append-only. Immutable Collision records are structurally excluded from those
+mutable target families. Material identity, contact-value, relationship-target,
+or relationship-type correction creates successors rather than rewriting
+history.
+
+Representation migration preserves logical identity and meaning across explicit
+contract versions. Exceptional-removal certificates are stored outside Actor
+roots at:
+
+```text
+portia/actor-directory-removals/<removal_id>.json
+```
+
+Ordinary inactivity, historical status, duplication, or lack of current
+references does not justify removal.
+
+JSON Schema establishes closed local wire shapes. Application validation remains
+responsible for canonical path and owner agreement, Core roster resolution,
+lifecycle history, local review, duplicate and split topology, incoming
+reference completeness, operation ordering, authorization, fingerprint truth,
+privacy, recovery, and current-use eligibility.
 
 ## Work Relationship contract
 
@@ -551,6 +639,53 @@ Suppression is a bounded immutable revision series. It structurally permits only
 presentation surfaces and audiences, records policy and authorization evidence,
 and requires at least one explicit expiry condition. It never hides a finding
 from validation, recovery, audit, or authorized maintenance.
+
+## Actor-aware operational version 2
+
+Issue #14 adds new version-2 contracts without modifying the published
+version-1 operational schemas:
+
+```text
+schemas/v2/projections/integrity-finding.schema.json
+schemas/v2/operations/operation-journal.schema.json
+schemas/v2/operations/operation-lock.schema.json
+schemas/v2/operations/quarantine-record.schema.json
+```
+
+The additive target vocabulary supports:
+
+```text
+actor_directory_record
+actor_set
+actor_directory_collection
+```
+
+Actor sets are bounded, deterministically sorted, and unique by logical
+`actor_id`. They contain no names, contact values, relationship narratives, or
+student display data.
+
+Operation Journals retain immutable revisions, explicit current-pointer
+selection, preflight, deterministic lock ordering, exact write sets, commit
+points, structured partial state, and recovery semantics. Actor operations use
+workspace scope. Operation facts retain only privacy-minimized IDs, paths,
+contract versions, fingerprints, byte lengths, statuses, counts, and step
+results.
+
+Operation Locks add Actor Directory collection and exact Actor Directory record
+scopes. Multi-Actor operations acquire individual record locks in deterministic
+order; there is no Actor-set lock target. Lock identity remains SHA-256-derived,
+and no expiry or heartbeat implies safe takeover.
+
+Quarantine adds Actor record, set, and collection targets plus
+`block_actor_directory_writes`. Quarantine remains operational protection, not
+Actor lifecycle, and release does not reactivate an Actor.
+
+Integrity Finding v2 adds Actor-specific diagnostics for path/identity
+mismatch, replacement defects, duplicate candidates, roster collisions,
+ownership defects, preference conflicts, authority overclaim, incomplete
+incoming-reference discovery, and privacy leaks. Duplicate candidates remain
+human-review findings and cannot confirm identity or automatically merge
+records.
 
 ## Deterministic source snapshots and derived generations
 
