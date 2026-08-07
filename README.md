@@ -537,6 +537,8 @@ Accounts and Observations reuse the existing lifecycle-history, disagreement, de
 
 JSON Schema validates local wire shape. Application validation remains responsible for Event and target resolution, represented-source and observer resolution, review gates, chronology, measurement/method compatibility, source-evidenced retraction, Role-basis eligibility and target alignment, lifecycle history, replacement topology, exact-reference behavior, provenance truth, authorization, privacy, operational recovery, and derived freshness.
 
+The earlier Event/Participant/Role design and Role example documents predate the concrete Account and Observation contracts and several later Event-family schema revisions. They remain useful historical foundation material, but ADR 0011, `account@1`, `observation@1`, and `event_participant_role@3` govern current Account/Observation integration. In particular, older conceptual examples that show an unversioned `account_ref` or only a same-Event Account requirement must not be read as weakening the current rule: an active `reported_involved` Role requires a qualifying active Account targeted to that Participant or a Participant set containing that Participant, and exact historical references never silently follow replacement.
+
 ## Initial Event, Event Participant, and Role Model
 
 Portia now defines an initial canonical model for Events, Event Participants, and Event Participant Roles.
@@ -865,7 +867,7 @@ Portia should use Core infrastructure and public cross-module contracts rather t
 
 * [Portia Event, Event Participant, and Event Participant Role Domain Model](docs/design/portia-event-and-participant-domain-model.md)
 
-  Defines Event meaning and boundaries, Event root fields, occurrence precision, location and instructional context, participant identity variants, separate Event Participant Roles, neutral Role vocabulary, Role compatibility, basis, creation source, lifecycle transitions, dependency resolution, correction and supersession, paper capture, validation boundaries, and teacher-workflow constraints.
+  Foundational historical design for Event, Participant, and Role semantics. Current persisted contracts are Event v2, Event Participant v3, and Event Participant Role v3; ADR 0011 refines its Account/Observation basis semantics, including qualifying active Account lifecycle and Participant-target alignment for `reported_involved`.
 
 * [Portia Reference, Targeting, and Relationship Contracts](docs/design/portia-reference-targeting-and-relationship-contracts.md)
 
@@ -1005,7 +1007,7 @@ Portia should use Core infrastructure and public cross-module contracts rather t
 
 * [Portia Event Participant Role Examples](docs/examples/portia-event-participant-role-examples.md)
 
-  Historical validated examples covering direct digital Role creation, compatible Role assignments, contextual detail, paper-derived and imported reported involvement, basis correction, and supersession.
+  Historical version-1 Role examples covering direct digital creation, compatible assignments, contextual detail, paper/import reported involvement, basis correction, and supersession. Their conceptual Account/Observation references are superseded for current use by Role v3 plus ADR 0011 and the Issue #15 compatibility examples.
 
 ### Validation
 
