@@ -1,6 +1,6 @@
 # Portia Account and Observation Domain Models
 
-**Status:** Draft — pre-ADR design checkpoint
+**Status:** Accepted architecture — ADR 0011
 **Project:** Paper Data Suite
 **Module:** `pds-portia`
 **Issue:** `#15 — Define Account and Observation domain models`
@@ -10,7 +10,7 @@
 
 ## 1. Purpose
 
-This document defines the pre-ADR architecture for Portia Accounts and Observations.
+This document defines the accepted architecture for Portia Accounts and Observations under ADR 0011.
 
 The two record families preserve source-level evidence without collapsing:
 
@@ -127,7 +127,7 @@ other sibling repositories:
     no concrete initial public-contract implication
 ```
 
-A pre-ADR drift check and final pre-acceptance drift check remain required.
+The pre-ADR drift check is complete. A final pre-acceptance drift check remains required before Issue #15 closes.
 
 ## 4. Governing principles
 
@@ -154,7 +154,7 @@ A pre-ADR drift check and final pre-acceptance drift check remain required.
 
 ---
 
-# 5. Provisional Decision 1: Account Semantic Unit
+# 5. Approved Decision 1: Account Semantic Unit
 
 One Account represents:
 
@@ -174,7 +174,7 @@ A single Account may preserve several content segments from that same contributi
 
 Unrelated statements should not be grouped merely because they were captured during the same conversation.
 
-# 6. Provisional Decision 2: Observation Semantic Unit
+# 6. Approved Decision 2: Observation Semantic Unit
 
 One Observation represents:
 
@@ -201,7 +201,7 @@ When an accepted workflow directly preserves the student as the observer of the 
 
 This distinction depends on what the canonical record claims to preserve, not on whether the source says the underlying information was firsthand.
 
-# 7. Provisional Decision 3: Canonical Identity and Storage
+# 7. Approved Decision 3: Canonical Identity and Storage
 
 Account identity will use:
 
@@ -217,7 +217,7 @@ obs_<opaque-id>
 
 The diagnostic prefixes do not carry source, target, student, Actor, content, severity, or lifecycle meaning.
 
-Expected public identifier contracts:
+Accepted public identifier contracts:
 
 ```text
 portia_account_id@1
@@ -240,7 +240,7 @@ classes/<class_id>/modules/portia/work/<event_id>/
 
 Both records are owned by exactly one containing Event and are not workspace-global evidence records.
 
-# 8. Provisional Decision 4: Event-Local Targeting
+# 8. Approved Decision 4: Event-Local Targeting
 
 Both Account and Observation will reuse `portia_target_ref@1`.
 
@@ -250,11 +250,20 @@ The target answers what the source contribution or observation concerns. The sou
 
 Application validation must require Participant targets to resolve within the containing Event. Historical targets remain exact and are not silently retargeted after Participant replacement.
 
-# 9. Provisional Decision 5: Human Source and Observer Attribution
+# 9. Approved Decision 5: Represented Human Attribution
 
-Account source and human Observation observer require substantially the same human-attribution semantics. Schema implementation should therefore evaluate one small shared public primitive rather than copy two incompatible unions.
+Account source and human Observation observer use one shared public primitive:
 
-Provisional branches:
+```text
+represented_human_attribution@1
+schemas/v1/attribution/represented-human-attribution.schema.json
+```
+
+The primitive represents the human whose statement or observation is being
+preserved. It is distinct from `attribution_agent@1`, which attributes record
+creation and system operations.
+
+The closed branches are:
 
 ```text
 roster_student
@@ -264,11 +273,78 @@ descriptive_person
 unidentified_person
 ```
 
-Roster-student attribution preserves `roster_student_ref` plus a bounded display snapshot. Actor attribution preserves `actor_ref` plus a bounded display snapshot. Actor contact values are not copied into attribution.
+## 9.1 Roster student
 
-A descriptive person supports a human source who should not be promoted to Actor identity. Representative description types may reuse the established `outside_student`, `family_member`, `school_staff`, `visitor`, `community_member`, and `other` vocabulary.
+Preserves:
 
-The unidentified branch supports:
+```text
+kind = roster_student
+roster_student_ref
+display_snapshot
+```
+
+Roster identity remains `class_id + student_id` and must resolve through the
+relevant Core roster.
+
+## 9.2 Actor
+
+Preserves:
+
+```text
+kind = actor
+actor_ref
+display_snapshot
+```
+
+Actor Contact Point values are not copied into represented attribution.
+
+## 9.3 Local operator
+
+Preserves:
+
+```text
+kind = local_operator
+display_label
+```
+
+This identifies the represented local human for source/observer purposes. It
+does not establish institutional staff identity or authorization.
+
+## 9.4 Descriptive person
+
+Preserves:
+
+```text
+kind = descriptive_person
+description_type
+display_label
+detail, optional
+```
+
+The description-type vocabulary is:
+
+```text
+outside_student
+family_member
+school_staff
+visitor
+community_member
+other
+```
+
+A descriptive person is not promoted to Actor identity automatically.
+
+## 9.5 Unidentified person
+
+Preserves:
+
+```text
+kind = unidentified_person
+reason
+label, optional
+```
+
+Reason is one of:
 
 ```text
 anonymous
@@ -277,11 +353,26 @@ uncertain
 not_recorded
 ```
 
-without fabricating a canonical person reference.
+The optional label is a bounded descriptive label only. It is not a canonical
+person identity.
 
-An unidentified Account may be valid canonical evidence while remaining ineligible for a consequential consuming use.
+An unidentified Account may be valid canonical evidence but does not qualify as
+the attributed Account required to activate `reported_involved` in version 1.
 
-# 10. Provisional Decision 6: Recorder Attribution Is Separate
+## 9.6 Reuse boundary
+
+This primitive is justified because it has two immediate consumers:
+
+```text
+Account.source
+Observation.observer.kind = human
+```
+
+Later Portia records may adopt it only when they need the same represented-human
+semantics. Existing published contracts such as `statement_of_disagreement@1`
+remain immutable and are not rewritten merely to use the new primitive.
+
+# 10. Approved Decision 6: Recorder Attribution Is Separate
 
 Every Account distinguishes represented source from `created_by` / `updated_by`.
 
@@ -291,7 +382,7 @@ An OCR process, import process, or system process is not the represented source 
 
 The same teacher may be both observer and `created_by` for a directly entered teacher Observation, but the concepts remain separate in the wire model.
 
-# 11. Provisional Decision 7: Account Information Origin
+# 11. Approved Decision 7: Account Information Origin
 
 Every Account will preserve one source-origin classification:
 
@@ -308,9 +399,9 @@ Where an exact upstream Account is known, a secondhand or mixed Account may reta
 
 Two Accounts do not become independent corroboration merely because they are separate records.
 
-# 12. Provisional Decision 8: Source-Expressed Uncertainty
+# 12. Approved Decision 8: Source-Expressed Uncertainty
 
-Portia may preserve source-expressed certainty using a bounded nonnumeric vocabulary such as:
+Portia preserves source-expressed certainty using this bounded nonnumeric vocabulary:
 
 ```text
 stated_certain
@@ -323,7 +414,7 @@ This records how the source expressed the contribution. It is not credibility, r
 
 Automated prose analysis must not populate this field without explicit review.
 
-# 13. Provisional Decision 9: Account Content Representation
+# 13. Approved Decision 9: Account Content Representation
 
 Account content will preserve one or more typed content segments. Each segment is one of:
 
@@ -353,26 +444,66 @@ A verbatim segment represents preserved source wording. A summary segment repres
 
 An Account may also preserve bounded elicitation context when the meaning of the response depends on the prompt. Elicitation context remains separate from source wording.
 
-# 14. Provisional Decision 10: Account Timing
+# 14. Approved Decision 10: Evidence Time
 
-Account statement time is distinct from Event occurrence time, record creation time, paper scan time, and import time.
+Account source-contribution time and Observation time use one shared public
+primitive:
 
-At minimum, source-contribution time should support:
+```text
+evidence_time@1
+schemas/v1/common/evidence-time.schema.json
+```
+
+The primitive is deliberately evidence-oriented rather than Event-specific.
+Its closed precision branches are:
 
 ```text
 exact
 approximate
 date_only
+range
 unknown
 ```
 
-Observation timing additionally requires bounded ranges.
+Representative wire semantics:
 
-Schema implementation should determine whether one small shared temporal primitive can serve both records without importing Event-specific semantics.
+```text
+exact
+    precision = exact
+    at = explicit-offset timestamp
 
-No precise source-contribution timestamp may be invented from `created_at`.
+approximate
+    precision = approximate
+    at = explicit-offset timestamp
+    approximation = about | before | after
 
-# 15. Provisional Decision 11: Observation Attribution
+date_only
+    precision = date_only
+    date = YYYY-MM-DD
+
+range
+    precision = range
+    started_at = explicit-offset timestamp
+    ended_at = explicit-offset timestamp
+
+unknown
+    precision = unknown
+```
+
+Account uses this as `provided_time`.
+Observation uses it as `observation_time`.
+
+The same shape is appropriate for both because both need to preserve honest
+source/evidence timing independent of record creation. It does not inherit Event
+occurrence meaning.
+
+No precise evidence timestamp may be invented from `created_at`, paper scan
+time, import time, or Event occurrence time.
+
+Application validation must require range chronology and must permit legitimate
+post-Event artifact review.
+
+# 15. Approved Decision 11: Observation Attribution
 
 Observation observer is a closed union:
 
@@ -397,11 +528,11 @@ other
 
 Instrument identity does not prove calibration, accuracy, scientific validity, clinical validity, or institutional approval.
 
-# 16. Provisional Decision 12: Observation Method
+# 16. Approved Decision 12: Observation Method
 
 Observation method must distinguish how the information was directly obtained.
 
-Provisional vocabulary:
+Accepted vocabulary:
 
 ```text
 live_direct
@@ -414,13 +545,24 @@ other
 
 `artifact_review` means the observer directly examined a source artifact. It does not mean the observer was present for the original Event. The source artifact remains separately referenced when material to the Observation's meaning.
 
-# 17. Provisional Decision 13: Observation Content and Measurement
+# 17. Approved Decision 13: Observation Content and Measurement
 
-Observation content may contain narrative observable information, structured measurements, or both. At least one is required before activation.
+Observation content may contain:
 
-The canonical Observation model will not contain a positive/neutral/concerning valence field.
+```text
+narrative observable information
+structured measurements
+or both
+```
 
-Version 1 should support bounded common classroom measurement forms:
+At least one is required before activation.
+
+Observation v1 does not define a separate public measurement contract. The
+measurement shape remains nested inside `observation@1` because it has one
+immediate semantic owner and premature generalization would create a suite-wide
+measurement abstraction without evidence of another consumer.
+
+The closed v1 measurement forms are:
 
 ```text
 count
@@ -430,11 +572,57 @@ percentage
 other_numeric
 ```
 
-The final schema must bind measure type, value, and unit coherently. `other_numeric` requires an explicit measure label and unit.
+## 17.1 Count
 
-Measurement does not imply normative interpretation.
+```text
+measure_type = count
+value = integer >= 0
+unit = count
+```
 
-# 18. Provisional Decision 14: Observation Timing
+## 17.2 Duration
+
+```text
+measure_type = duration
+value = number >= 0
+unit = milliseconds | seconds | minutes | hours
+```
+
+## 17.3 Latency
+
+```text
+measure_type = latency
+value = number >= 0
+unit = milliseconds | seconds | minutes | hours
+```
+
+## 17.4 Percentage
+
+```text
+measure_type = percentage
+value = number from 0 through 100
+unit = percent
+```
+
+## 17.5 Other numeric
+
+```text
+measure_type = other_numeric
+measure_label = non-empty text
+value = number
+unit = non-empty text
+```
+
+`other_numeric` is an escape hatch for a bounded numeric observation, not an
+interpretive rating system.
+
+The canonical Observation model contains no positive/neutral/concerning,
+severity, violation, or risk field.
+
+Measurement does not establish normative interpretation, validity, calibration,
+or causation.
+
+# 18. Approved Decision 14: Observation Timing
 
 Observation time may represent an exact instant, approximate instant, date-only observation, bounded range, or unknown time.
 
@@ -442,7 +630,7 @@ A bounded observation period remains one Observation when the content and method
 
 Observation time is distinct from `created_at`. Artifact review may legitimately occur after the original Event.
 
-# 19. Provisional Decision 15: Positive, Neutral, and Potentially Concerning Use
+# 19. Approved Decision 15: Positive, Neutral, and Potentially Concerning Use
 
 All of these are Observations:
 
@@ -459,7 +647,7 @@ potentially concerning:
 
 Observation v1 will not encode `positive`, `neutral`, `concerning`, severity, violation, or risk as canonical truth fields.
 
-# 20. Provisional Decision 16: Conflicting Accounts
+# 20. Approved Decision 16: Conflicting Accounts
 
 Conflicting Accounts remain separate canonical records.
 
@@ -469,30 +657,49 @@ The existing Statement of Disagreement contract remains the preferred mechanism 
 
 Ordinary source disagreement does not require a Statement of Disagreement merely because two Accounts conflict.
 
-# 21. Provisional Decision 17: Account Retraction
+# 21. Approved Decision 17: Account Retraction
 
-Account retraction must be source-evidenced. A teacher must not mark an Account `retracted` merely because the teacher no longer believes it.
+Account retraction is source-evidenced and cannot be created by a teacher-only
+status toggle.
 
-Provisional architecture:
+Version 1 represents retraction with a new Account by the same represented
+source containing an exact Account relation:
 
 ```text
-original Account
-    <- exact retracts relation from
-new Account by the same represented source
-
-coordinated lifecycle transition:
-original Account -> retracted
+relation = retracts
+account_ref = exact predecessor Account
 ```
 
-The retraction Account preserves what the source said when retracting or withdrawing the earlier contribution.
+Once the retraction Account is reviewed and becomes active, one coordinated
+operation transitions the referenced predecessor Account from `active` to
+`retracted`.
 
-Application validation must require the same represented source, same Event, exact predecessor Account reference, eligible retraction Account lifecycle, and coordinated original-Account lifecycle transition.
+Application validation requires:
 
-Retraction does not establish that the earlier Account was false. A retracted Account remains historically resolvable. A later reaffirmation creates new source evidence rather than silently reactivating the same retracted representation.
+```text
+same represented source
+same containing Event
+exact predecessor Account reference
+active retraction Account
+relation target not self
+eligible predecessor lifecycle
+coordinated predecessor lifecycle transition
+```
 
-# 22. Provisional Decision 18: Account Lifecycle
+A `retracts` relation withdraws the predecessor Account as a whole.
 
-Provisional statuses:
+Partial qualification uses a new Account with `clarifies`. A materially
+corrected contribution uses canonical successor/supersession instead.
+
+Retraction means the source no longer stands behind the earlier Account. It does
+not establish that the earlier Account was false.
+
+A retracted Account remains historically resolvable. A later reaffirmation is
+new source evidence and does not reactivate the retracted representation.
+
+# 22. Approved Decision 18: Account Lifecycle
+
+Account statuses are:
 
 ```text
 proposed
@@ -502,21 +709,57 @@ invalidated
 superseded
 ```
 
-Provisional matrix:
+Transition matrix:
 
 ```text
-proposed -> active | invalidated | superseded
-active -> retracted | invalidated | superseded
-retracted -> superseded
-invalidated -> superseded
-superseded -> terminal
+proposed
+    -> active
+    -> invalidated
+    -> superseded
+
+active
+    -> retracted
+    -> invalidated
+    -> superseded
+
+retracted
+    -> superseded
+
+invalidated
+    -> superseded
+
+superseded
+    -> no later state
 ```
 
-Retraction and invalidation are intentionally distinct.
+Accepted Account lifecycle reason codes are:
 
-# 23. Provisional Decision 19: Observation Lifecycle
+```text
+review_completed
+source_retracted
+recording_error
+wrong_source
+wrong_target
+invalid_provenance
+prohibited_payload
+corrected_by_successor
+duplicate_consolidated
+work_root_corrected
+contract_migrated
+other
+```
 
-Provisional statuses:
+`source_retracted` is valid only for the coordinated source-evidenced retraction
+workflow defined by Decision 17.
+
+`wrong_source`, `wrong_target`, and `invalid_provenance` invalidate the canonical
+record; they do not claim the represented source was dishonest.
+
+`other` requires bounded detail.
+
+# 23. Approved Decision 19: Observation Lifecycle
+
+Observation statuses are:
 
 ```text
 proposed
@@ -525,18 +768,52 @@ invalidated
 superseded
 ```
 
-Provisional matrix:
+Transition matrix:
 
 ```text
-proposed -> active | invalidated | superseded
-active -> invalidated | superseded
-invalidated -> superseded
-superseded -> terminal
+proposed
+    -> active
+    -> invalidated
+    -> superseded
+
+active
+    -> invalidated
+    -> superseded
+
+invalidated
+    -> superseded
+
+superseded
+    -> no later state
+```
+
+Accepted Observation lifecycle reason codes are:
+
+```text
+review_completed
+recording_error
+wrong_observer
+wrong_target
+wrong_method
+measurement_error
+invalid_provenance
+prohibited_payload
+corrected_by_successor
+duplicate_consolidated
+work_root_corrected
+contract_migrated
+other
 ```
 
 Observation does not acquire `retracted` merely because Account uses it.
 
-# 24. Provisional Decision 20: Material Correction and Supersession
+A human observer's later statement disputing an Observation may itself be an
+Account or Statement of Disagreement while Observation correction remains a
+separate lifecycle/supersession workflow.
+
+`other` requires bounded detail.
+
+# 24. Approved Decision 20: Material Correction and Supersession
 
 Material Account changes include represented source, target, content, quote/summary representation, information origin, materially different source-expressed uncertainty, statement timing, and material source provenance.
 
@@ -546,11 +823,32 @@ The existing Amendment contract may be used only for a narrow set of nonmaterial
 
 Historical consumers do not silently follow successors.
 
-# 25. Provisional Decision 21: Account-to-Account Relations
+# 25. Approved Decision 21: Account-to-Account Relations
 
-Account needs a small typed relation set for source lineage and retraction.
+Account-to-Account relations remain nested in `account@1`; version 1 does not
+publish a separate relation contract.
 
-Provisional relation types:
+The field is:
+
+```text
+related_accounts
+```
+
+Each entry contains:
+
+```text
+relation
+account_ref
+```
+
+where `account_ref` is an exact same-Event Account reference constrained to:
+
+```text
+record_kind = account
+contract_version = 1
+```
+
+The closed relation vocabulary is:
 
 ```text
 reports_from
@@ -558,13 +856,27 @@ clarifies
 retracts
 ```
 
-`reports_from` may preserve known secondhand lineage. `clarifies` preserves an additional same-source contribution without declaring the predecessor invalid. `retracts` supports source-evidenced retraction.
+Semantics:
 
-Material correction remains represented through canonical supersession rather than a `corrects` relation.
+```text
+reports_from
+    known secondhand lineage to another Account
 
-Relations use exact same-Event Account references and establish neither credibility nor truth.
+clarifies
+    additional same-source context that does not replace or invalidate the
+    referenced Account
 
-# 26. Provisional Decision 22: `reported_involved` Integration
+retracts
+    same-source withdrawal of the referenced Account as a whole
+```
+
+Material correction remains canonical supersession and is not modeled with a
+`corrects` relation.
+
+Relations are directional from the current Account to the referenced earlier
+Account. They never establish truth, credibility, or corroboration.
+
+# 26. Approved Decision 22: `reported_involved` Integration
 
 Event Participant Role v3 remains immutable unless implementation discovers an actual wire-shape requirement.
 
@@ -596,11 +908,11 @@ teacher confirmation
 unidentified Account that does not meet the accepted attribution threshold
 ```
 
-Provisional qualifying source forms are `roster_student`, `actor`, `local_operator`, and `descriptive_person`. The `unidentified_person` branch does not qualify. This is a traceability requirement, not a credibility judgment.
+Qualifying source forms are `roster_student`, `actor`, `local_operator`, and `descriptive_person`. The `unidentified_person` branch does not qualify. This is a traceability requirement, not a credibility judgment.
 
 If a referenced Account later becomes retracted, invalidated, superseded, or exceptionally removed, the Role basis is not silently rewritten and no automatic lifecycle cascade occurs.
 
-# 27. Provisional Decision 23: Observation Basis and Roles
+# 27. Approved Decision 23: Observation Basis and Roles
 
 Observation may remain a Role basis where compatible with Role semantics, but Observation does not satisfy the Account requirement for active `reported_involved`.
 
@@ -608,7 +920,7 @@ If an Observation supports a `present`, `directly_involved`, or `contextual` Rol
 
 Observation does not automatically create or activate a Role.
 
-# 28. Provisional Decision 24: Paper Capture
+# 28. Approved Decision 24: Paper Capture
 
 Account and Observation will reuse `creation_source@1`.
 
@@ -633,7 +945,7 @@ Automated handwriting, OCR, checkbox, or mark interpretation may create a propos
 
 Paper-derived Account and Observation records begin `proposed`. Local review is required before activation.
 
-# 29. Provisional Decision 25: Import
+# 29. Approved Decision 25: Import
 
 Imported Accounts and Observations use `creation_source.type = import`.
 
@@ -648,28 +960,131 @@ Import does not infer Actor identity from name similarity or email, Participant 
 
 Import provenance remains distinct from source or observer attribution.
 
-# 30. Provisional Decision 26: Source Artifacts and External References
+# 30. Approved Decision 26: Source Artifacts and External References
 
-Account and Observation may need to refer to returned paper, written statements, images, audio, video, screenshots, documents, emails, instrument output, other PDS records, or external institutional records.
-
-Canonical Account and Observation JSON will not embed binary payloads.
-
-Schema implementation should evaluate one shared Portia-scoped source-artifact reference primitive with closed branches for:
+Account and Observation use one shared public source-artifact reference:
 
 ```text
-workspace artifact
-exact Portia record
-typed sibling-module record
-external record locator
+source_artifact_ref@1
+schemas/v1/references/source-artifact-ref.schema.json
 ```
 
-Core-retained paper provenance remains Core-owned and should be referenced through the accepted PDS2/retained-source boundary rather than copied into a new Portia attachment store.
+The primitive is justified because Account and Observation both need to refer to
+source material without embedding binary payloads.
 
-External references are inert locators. Portia must not fetch, execute, authenticate, or infer authority from an external reference merely because it exists.
+The closed branches are:
 
-Artifact references do not establish authenticity or truth.
+```text
+paper_capture
+workspace_file
+portia_work_record
+module_work_record
+external_record
+```
 
-# 31. Provisional Decision 27: Shared Infrastructure Reuse
+## 30.1 Paper capture
+
+```text
+kind = paper_capture
+route_id
+page_record_id
+```
+
+Core/PDS2 remains authoritative for routing and retained-source provenance.
+
+## 30.2 Workspace file
+
+```text
+kind = workspace_file
+workspace_relative_path
+fingerprint
+media_type, optional
+```
+
+`fingerprint` reuses `content_fingerprint@1`.
+
+Application validation establishes workspace containment, exact-file digest and
+byte-length truth, authorization, and readable availability.
+
+## 30.3 Exact Portia work record
+
+```text
+kind = portia_work_record
+work_record_ref = exact_portia_work_record_ref@1
+```
+
+## 30.4 Typed sibling-module work record
+
+```text
+kind = module_work_record
+module_work_record_ref = module_work_record_ref@1
+```
+
+Application validation requires a non-null supported `contract_version` for
+source-evidence use and exact module/work/record agreement.
+
+## 30.5 External record
+
+```text
+kind = external_record
+source_label
+external_reference
+```
+
+This branch preserves an inert locator supplied by the workflow. Portia does not
+fetch, execute, authenticate, dereference, or infer authority from it merely
+because it exists.
+
+## 30.6 Binary and authority boundary
+
+Account and Observation JSON do not embed base64 images, audio, video, or other
+binary payloads.
+
+A source-artifact reference establishes where related material may be found. It
+does not establish authenticity, accuracy, authorization, credibility, or proof.
+
+# 30A. Approved Decision 26A: Amendment Boundary
+
+Account and Observation v1 expose **no in-place amendable domain paths**.
+
+This is intentionally stricter than many Portia record families because their
+primary content is source evidence.
+
+The existing `amendment@1` contract remains reusable infrastructure, but
+application validation must reject Account and Observation as amendable targets
+in version 1.
+
+The following therefore require replacement/supersession rather than Amendment:
+
+```text
+source or observer
+source attribution
+Event/Participant target
+Account content
+quote/summary representation
+information origin
+source-expressed uncertainty
+provided time
+Account relations
+Observation narrative
+Observation measurement
+Observation method
+observation time
+source-artifact set when materially evidentiary
+```
+
+Spelling, punctuation, formatting, or transcription corrections to primary
+Account/Observation evidence are still evidence changes. They do not become
+nonmaterial merely because the change is small.
+
+Lifecycle status changes continue through lifecycle transitions rather than
+Amendment.
+
+A future contract version may introduce an amendable nonsemantic metadata field
+only after a concrete use case demonstrates that replacement is unnecessarily
+burdensome and does not rewrite evidence.
+
+# 31. Approved Decision 27: Shared Infrastructure Reuse
 
 Account and Observation are Event-local records and should fit the existing class/work-scoped shared infrastructure.
 
@@ -693,7 +1108,7 @@ No Account-specific or Observation-specific lifecycle-history family is expected
 
 Schema implementation must prove compatibility through fixtures and tests.
 
-# 32. Provisional Decision 28: Operational Privacy
+# 32. Approved Decision 28: Operational Privacy
 
 Operational and diagnostic records should prefer opaque IDs, record kinds, paths, contract versions, fingerprints, byte lengths, status tokens, counts, and step results.
 
@@ -701,7 +1116,7 @@ They should not copy Account quotation text, Account summary text, Observation n
 
 Integrity Findings may report structural defects such as source unresolved, target unresolved, paper provenance mismatch, successor chain broken, or privacy-unsafe payload. They must not become domain findings such as `credible report`, `concerning student`, `policy violation`, or `behavior finding`.
 
-# 33. Provisional Decision 29: No Automatic Finding
+# 33. Approved Decision 29: No Automatic Finding
 
 Persisting an Account or Observation creates source evidence only.
 
@@ -711,27 +1126,42 @@ Likewise, three Accounts do not automatically mean three independent confirmatio
 
 Later review and decision records may reference source evidence while preserving their own explicit human attribution and authority.
 
-# 34. Expected Public Contract Work
+# 34. Approved Public Contract Plan
 
-The schema phase should evaluate and likely add:
+The first schema slices will add:
 
 ```text
 portia_account_id@1
 portia_observation_id@1
+represented_human_attribution@1
+evidence_time@1
+source_artifact_ref@1
 account@1
 observation@1
 ```
 
-Likely shared primitives to evaluate:
+Expected paths:
 
 ```text
-human_source_attribution@1
-source_artifact_ref@1
+schemas/v1/identifiers/portia-account-id.schema.json
+schemas/v1/identifiers/portia-observation-id.schema.json
+schemas/v1/attribution/represented-human-attribution.schema.json
+schemas/v1/common/evidence-time.schema.json
+schemas/v1/references/source-artifact-ref.schema.json
+schemas/v1/accounts/account.schema.json
+schemas/v1/observations/observation.schema.json
 ```
 
-A shared temporal primitive should be added only if Account and Observation really need the same public wire shape.
+Dedicated public `account_ref` or `observation_ref` contracts are not added in
+version 1. Consumers should constrain the existing `local_record_ref@1` or
+`exact_local_record_ref@1` to the required record kind and contract version, as
+Event Participant Role v3 already does.
 
-Dedicated Account/Observation reference schemas should not be added merely for convenience if constrained `local_record_ref@1` and `exact_local_record_ref@1` already provide the correct semantics.
+Observation measurement remains nested in `observation@1`.
+
+Account-to-Account relations remain nested in `account@1`.
+
+Published Event Participant Role v3 remains unchanged.
 
 # 35. Expected Account Envelope
 
@@ -953,32 +1383,58 @@ shared infrastructure reuse
 no-automatic-finding rule
 ```
 
-# 43. Remaining Pre-ADR Questions
+# 43. Resolved Pre-ADR Questions
 
-The following are intentionally not frozen into public wire contracts by this checkpoint:
+The initial checkpoint left seven questions open. ADR 0011 freezes them as:
 
-1. Exact name and shape of the shared human-attribution schema.
-2. Exact name and shape of the source-artifact reference schema.
-3. Whether Account/Observation temporal precision should use one shared public schema or nested contract-specific definitions.
-4. Exact structured measurement vocabulary and unit rules.
-5. Whether retraction relation evidence lives directly in Account or in a small dedicated relation primitive.
-6. Exact nonmaterial Amendment paths.
-7. Exact lifecycle reason vocabularies.
+1. Shared represented-human attribution contract:
+   `represented_human_attribution@1`.
+2. Shared source-artifact reference contract:
+   `source_artifact_ref@1`.
+3. Shared evidence-time contract:
+   `evidence_time@1`.
+4. Observation measurement remains nested with the five bounded v1 measure
+   forms defined by Decision 13.
+5. Account relations remain nested in `account@1` with
+   `reports_from | clarifies | retracts`.
+6. Account and Observation v1 have no in-place Amendment paths.
+7. Lifecycle reason vocabularies are frozen by Decisions 18 and 19.
 
-These questions should be resolved in the next design/ADR slice before any Account or Observation public schema is published.
+No remaining architecture question blocks publication of the first Issue #15
+schemas.
 
-# 44. Pre-ADR Acceptance Gate
+# 44. ADR 0011 Acceptance Gate
 
-The design is ready for ADR 0011 only when:
+The pre-ADR gate is satisfied.
 
-- the Account/Observation boundary is accepted;
-- human source/observer attribution is settled;
-- Account retraction has source-evidenced semantics;
-- structured measurement is bounded enough for v1;
-- the `reported_involved` target-alignment rule is accepted;
-- paper/import activation gates are accepted;
-- artifact/reference semantics are bounded;
-- shared lifecycle and operational reuse is confirmed;
-- and no repository drift introduces a conflicting public contract.
+Accepted decisions now cover:
 
-No JSON Schema should be published before those decisions are frozen.
+```text
+Account/Observation semantic boundary
+represented-human attribution
+recorder separation
+firsthand/secondhand semantics
+source-expressed uncertainty
+quote/summary representation
+evidence timing
+human/instrument observation
+bounded measurement
+Event/Participant targeting
+source-evidenced Account retraction
+lifecycle matrices and reason vocabularies
+material correction and no-amendment v1 boundary
+Account relations
+reported_involved target alignment
+paper/import review gates
+source-artifact references
+shared lifecycle/operational reuse
+operational privacy
+no-automatic-finding rule
+```
+
+The pre-ADR drift check found no conflicting Core or Portia public contract.
+
+ADR 0011 therefore accepts this design as the implementation target for Issue
+#15. Subsequent schema slices must remain within these boundaries unless a
+concrete contradiction is discovered and documented through an explicit ADR
+amendment or superseding decision.
