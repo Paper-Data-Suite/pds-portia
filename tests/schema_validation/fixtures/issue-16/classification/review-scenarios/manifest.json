@@ -1,0 +1,23 @@
+{
+  "manifest_version": "1",
+  "issue": 16,
+  "scenario_family": "classification_review_semantics",
+  "valid": {
+    "reviewer-confirmed-same-category.json": "Reviewer confirmation matches exact earlier category identity and completed Review.",
+    "reviewer-selected-disagrees.json": "Reviewer may select a different category without superseding reporter assertion.",
+    "reviewer-selected-unable.json": "Reviewer may remain unable to determine without invalidating reporter category.",
+    "reviewer-confirmed-unable.json": "Reviewer confirmation may confirm unable-to-determine semantics.",
+    "disagreement-both-active.json": "Reporter and reviewer assertions may both remain active; disagreement is not supersession."
+  },
+  "application_invalid": {
+    "confirmed-category-mismatch.json": "Reviewer-confirmed category identity must match reviewed Classification.",
+    "confirmed-result-branch-mismatch.json": "Reviewer-confirmed result branch must match reviewed Classification.",
+    "review-ref-does-not-match-supplied-review.json": "Classification review_ref must resolve to supplied Review.",
+    "review-different-event.json": "Governing Review must belong to same Event.",
+    "selector-does-not-match-reviewer.json": "Reviewer-stage selector must match governing Review reviewer.",
+    "active-before-review-completed.json": "Active reviewer-stage Classification requires completed governing Review.",
+    "reviewed-classification-different-event.json": "Reviewed Classification must belong to same Event.",
+    "reviewed-classification-ref-does-not-match.json": "reviewed_classification ref must resolve to supplied predecessor.",
+    "review-target-mismatch.json": "Reviewer Classification target must align with governing Review target."
+  }
+}

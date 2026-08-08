@@ -1,0 +1,62 @@
+{
+  "schema_version": "1",
+  "record_type": "classification",
+  "module_id": "portia",
+  "class_id": "eng10_p2_2026",
+  "work_id": "evt_issue16_cls",
+  "classification_id": "cls_review_unable",
+  "status": "active",
+  "target": {
+    "kind": "event"
+  },
+  "selector": {
+    "kind": "local_operator",
+    "display_label": "Synthetic Teacher"
+  },
+  "stage": "reviewer_selected",
+  "result": {
+    "kind": "unable_to_determine",
+    "rationale": "Review did not support one category."
+  },
+  "creation_source": {
+    "type": "digital_entry"
+  },
+  "created_at": "2026-08-07T14:00:00-04:00",
+  "created_by": {
+    "type": "local_operator",
+    "display_label": "Synthetic Teacher"
+  },
+  "updated_at": "2026-08-07T14:00:00-04:00",
+  "updated_by": {
+    "type": "local_operator",
+    "display_label": "Synthetic Teacher"
+  },
+  "review_ref": {
+    "work_ref": {
+      "module_id": "portia",
+      "class_id": "eng10_p2_2026",
+      "work_id": "evt_issue16_cls",
+      "work_kind": "event",
+      "contract_version": "2"
+    },
+    "record_ref": {
+      "record_kind": "review",
+      "record_id": "rvw_cls_1",
+      "contract_version": "1"
+    }
+  },
+  "reviewed_classification": {
+    "work_ref": {
+      "module_id": "portia",
+      "class_id": "eng10_p2_2026",
+      "work_id": "evt_issue16_cls",
+      "work_kind": "event",
+      "contract_version": "2"
+    },
+    "record_ref": {
+      "record_kind": "classification",
+      "record_id": "cls_reporter_category",
+      "contract_version": "1"
+    }
+  }
+}
