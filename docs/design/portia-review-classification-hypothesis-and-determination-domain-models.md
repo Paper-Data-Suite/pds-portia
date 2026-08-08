@@ -1,6 +1,6 @@
 # Portia Review, Classification, Hypothesis, and Determination Domain Models
 
-**Status:** Working design — pre-ADR
+**Status:** Accepted architecture — ADR 0012
 **Project:** Paper Data Suite
 **Module:** `pds-portia`
 **Issue:** `#16 — Define review, Classification, Hypothesis, and Determination domain models`
@@ -10,7 +10,7 @@
 
 ## 1. Purpose
 
-This document defines the working pre-ADR architecture for Portia's human review, interpretation, and decision layer.
+This document defines the accepted ADR 0012 architecture for Portia's human review, interpretation, and decision layer.
 
 The accepted record progression remains:
 
@@ -116,7 +116,21 @@ sibling modules:
     no concrete initial contract change required
 ```
 
-A new drift check is required immediately before ADR 0012 is accepted.
+The pre-ADR drift check found no Portia-main or Core drift requiring a contract change. A final drift check remains required before Issue #16 closes.
+
+Pre-ADR checkpoint result:
+
+```text
+pds-portia/main = 35df69904cff3c696876f04e208bbe704bab3e97
+Issue #16 branch = 71372063da4aad9dc85a61927aa8b6aaa793b587
+                    1 commit ahead, 0 behind main
+pds-core/main = 6c507213618b68a6dd3ea096e1a898201ff029e6
+
+classification:
+    Portia main drift: none
+    Core drift: none
+    sibling contract change: none required
+```
 
 ## 4. Governing Principles
 
@@ -143,7 +157,7 @@ A new drift check is required immediately before ADR 0012 is accepted.
 
 ---
 
-# 5. Proposed Decision 1: Review Is a Canonical Event-Local Record
+# 5. Approved Decision 1: Review Is a Canonical Event-Local Record
 
 One Review represents:
 
@@ -188,18 +202,16 @@ Cross-Event or Support-Process review ownership is deferred until the Support Pr
 
 ---
 
-# 6. Proposed Decision 2: Concern and Referral Are Review-Initiation Context in v1
+# 6. Approved Decision 2: Concern and Referral Are Review-Initiation Context in v1
 
 Issue #16 does not introduce separate canonical Concern or Referral record families merely to drive navigation.
 
 For the initial Event-local judgment layer, concern/referral semantics are represented as bounded Review initiation context.
 
-Proposed trigger vocabulary:
+Accepted trigger vocabulary:
 
 ```text
-teacher_concern
-student_request
-family_request
+concern
 referral
 routine_review
 reconsideration
@@ -209,21 +221,23 @@ other
 
 `other` requires concise detail.
 
-The trigger may identify the represented human requester where the workflow genuinely records one.
+The trigger identifies why the Review was opened, not who requested it. When the workflow genuinely records a requester, Review may preserve an optional `requested_by` using `represented_human_attribution@1`.
 
-Review initiation context answers why this Review was opened. It does not answer what happened, whether a category is correct, whether a hypothesis is supported, whether a policy applies, or whether misconduct occurred.
+This avoids encoding the requester's relationship into the trigger vocabulary. A teacher, student, family member, Actor, descriptive person, or other represented human may initiate a concern/referral workflow without creating a parallel trigger taxonomy.
+
+Review initiation context does not answer what happened, whether a category is correct, whether a hypothesis is supported, whether a policy applies, or whether misconduct occurred.
+
+Paper or import provenance remains `creation_source`; capture medium is not a trigger kind.
 
 If later implementation demonstrates that Referral needs independent identity, provenance, lifecycle, routing history, or cross-work existence, that must be introduced through a later explicit contract rather than inferred from this navigation field.
 
----
-
-# 7. Proposed Decision 3: Review Lifecycle and Review Workflow State Are Separate
+# 7. Approved Decision 3: Review Lifecycle and Review Workflow State Are Separate
 
 Review has two distinct state dimensions.
 
 ## 7.1 Canonical record lifecycle
 
-Proposed lifecycle vocabulary:
+Accepted lifecycle vocabulary:
 
 ```text
 proposed
@@ -232,11 +246,11 @@ invalidated
 superseded
 ```
 
-This answers whether the canonical representation is valid and current.
+This answers whether the canonical Review representation is valid and current.
 
 ## 7.2 Review workflow state
 
-Proposed review-state vocabulary:
+Accepted review-state vocabulary:
 
 ```text
 open
@@ -263,17 +277,27 @@ without contradiction.
 
 ## 7.3 Workflow mutation boundary
 
-While a Review remains open, application workflows may append evidence considered and advance review workflow state through guarded revision-aware persistence.
+Review v1 uses a guarded current-workflow record while the review is still in progress.
 
-Once `review_state` is `completed` or `cancelled`, the substantive review snapshot is frozen.
+Before activation, a `proposed` Review may be revised within structural and application constraints.
 
-Later reconsideration should create a new Review linked to the prior Review rather than reopening or rewriting the completed record.
+After activation:
 
-Review v1 should expose no generic Amendment path for substantive question, target, reviewer, or completed evidence-set correction.
+- `target`, `question`, substantive reviewer identity, trigger semantics, and creation provenance are materially fixed;
+- `review_state` may advance through the permitted workflow-state matrix;
+- `evidence_considered` may append exact references as material is actually reviewed;
+- previously recorded evidence identities are not silently removed or rewritten;
+- revision-aware persistence and coordinated-operation rules apply to every in-place workflow update.
 
----
+Once `review_state` becomes `completed` or `cancelled`, the substantive Review snapshot is frozen.
 
-# 8. Proposed Decision 4: Reviewer and Recorder Are Separate
+Later reconsideration creates a new Review linked to the prior Review rather than reopening or rewriting the completed record.
+
+An erroneous active evidence entry, target, question, or reviewer is a material correction and requires successor/history handling rather than destructive editing.
+
+Review workflow progression is not an Amendment. Review v1 exposes no generic Amendment path.
+
+# 8. Approved Decision 4: Reviewer and Recorder Are Separate
 
 Review uses a represented human reviewer separate from persistence attribution.
 
@@ -295,11 +319,11 @@ Current-use application rules may require stronger reviewer identity than struct
 
 ---
 
-# 9. Proposed Decision 5: Review Question Is Explicit and Bounded
+# 9. Approved Decision 5: Review Question Is Explicit and Bounded
 
 Every Review must state the question being reviewed.
 
-Proposed structure:
+Accepted structure:
 
 ```text
 question:
@@ -307,19 +331,20 @@ question:
     text
 ```
 
-Initial `kind` vocabulary:
+Accepted `kind` vocabulary:
 
 ```text
 evidence_review
 classification_review
+hypothesis_review
 determination_review
 reconsideration
 other
 ```
 
-`other` requires concise detail or a sufficiently specific `text`.
+`text` is required for every branch and is the bounded human-readable question. Because the question text is always required, `other` does not require a second detail field.
 
-The question text is the bounded human-readable question. It must not become an unrestricted student-profile narrative.
+The question must not become an unrestricted student-profile narrative.
 
 Examples:
 
@@ -328,18 +353,18 @@ What information is available concerning the participant-specific report?
 
 Does the reporter-selected local category remain appropriate under the reviewed definition?
 
+What tentative explanations remain supported or contradicted by the reviewed evidence?
+
 Is there sufficient information to record a teacher-local conclusion?
 
 Should the prior Determination be reconsidered?
 ```
 
-A Review may also identify exact subject records under review, such as an earlier Classification or Determination.
+A Review may also identify exact subject records under review, such as an earlier Classification, Hypothesis, or Determination.
 
 The Event-local `target` still answers whom or what the Review concerns.
 
----
-
-# 10. Proposed Decision 6: Review Records What Was Actually Considered
+# 10. Approved Decision 6: Review Records What Was Actually Considered
 
 A Review should preserve exact references to evidence actually considered.
 
@@ -359,33 +384,31 @@ Evidence identity is exact where Portia owns exact reference semantics.
 
 ---
 
-# 11. Proposed Decision 7: Add One Shared Judgment-Evidence Reference Primitive
+# 11. Approved Decision 7: Add One Shared Judgment-Evidence Reference Primitive
 
-Review, Hypothesis, and Determination have an immediate shared need to reference material considered without embedding the source payload.
+Review, Classification where a basis is explicitly preserved, Hypothesis, and Determination have an immediate shared need to identify canonical material considered without embedding its payload.
 
-Proposed public primitive:
+Accepted public primitive:
 
 ```text
 judgment_evidence_ref@1
 ```
 
-Proposed branches:
+Accepted nonoverlapping branches:
 
 ```text
+portia_work
 portia_record
 module_record
-source_artifact
 ```
+
+`portia_work` wraps `exact_portia_work_ref@1`.
 
 `portia_record` wraps `exact_portia_work_record_ref@1`.
 
 `module_record` wraps `module_work_record_ref@1`.
 
-`source_artifact` wraps `source_artifact_ref@1`.
-
-The primitive does not carry evidence weight, credibility, truth, corroboration count, or decision outcome.
-
-It answers only which exact or typed material this judgment record refers to.
+The primitive does not carry evidence weight, credibility, truth, corroboration count, source independence, or decision outcome. It answers only which canonical Portia work, exact Portia record representation, or typed sibling-module record the consuming judgment record cites.
 
 Consumers add their own role semantics.
 
@@ -404,13 +427,23 @@ Determination:
         relation = supporting | contrary | contextual
 ```
 
-Classification may use the primitive for optional basis references but should not be forced to imply adjudicative evidence weight.
+Classification may use the primitive for optional basis references but is not required to imply adjudicative evidence weight.
 
-The ADR must confirm whether raw `source_artifact` references belong in the primitive or whether all substantive artifact interpretation should first become Account/Observation evidence.
+## 11.1 Raw source artifacts are intentionally excluded
 
----
+`judgment_evidence_ref@1` does **not** wrap `source_artifact_ref@1`.
 
-# 12. Proposed Decision 8: Classification Is One Attributed Category Selection
+This is intentional for two reasons.
+
+First, `source_artifact_ref@1` already contains Portia-record and sibling-module-record branches. Wrapping the complete source-artifact union alongside direct Portia/module branches would create overlapping logical reference forms for the same canonical record.
+
+Second, Issue #15 established Account and Observation as Portia's source-evidence layer. When the substantive contents of paper, an image, audio/video, a workspace file, email, screenshot, or another raw artifact matter to a Review or judgment, the relevant human statement or direct artifact-review observation should first be preserved through an Account or Observation and then referenced canonically.
+
+This prevents Review/Hypothesis/Determination from bypassing the source-evidence layer.
+
+Raw artifacts may still appear in record-specific provenance contexts, such as documented decision-authority or policy/process material, using `source_artifact_ref@1` where its locator-without-proof semantics are appropriate. Such provenance is not part of the judgment evidence set merely because it is attached to the same record.
+
+# 12. Approved Decision 8: Classification Is One Attributed Category Selection
 
 One Classification represents:
 
@@ -452,15 +485,24 @@ Classification must never target a roster student or Actor directly as a durable
 
 ---
 
-# 13. Proposed Decision 9: Reporter and Reviewer Classifications Are Separate Assertions
+# 13. Approved Decision 9: Reporter and Reviewer Classifications Are Separate Assertions
 
-The initial classification-stage vocabulary is:
+Accepted classification-stage vocabulary:
 
 ```text
 reporter_selected
 reviewer_selected
 reviewer_confirmed
+unknown
 ```
+
+`reporter_selected` preserves a category or inability-to-determine outcome selected by a reporting human before substantive reviewer adjudication.
+
+`reviewer_selected` preserves a reviewer's own category or inability-to-determine outcome. It may reference an earlier Classification under review, but it does not imply agreement with that Classification.
+
+`reviewer_confirmed` is an explicit reviewer assertion that the reviewed earlier Classification remains the selected category. Application validation requires an exact reviewed Classification and the same result semantics when this stage is used: matching result branch, and matching category identity when both results are `category_selected`.
+
+`unknown` exists for historical/imported material whose original review stage cannot be reconstructed honestly. It must not be treated as reviewer-confirmed for current-use eligibility.
 
 A reviewer-selected or reviewer-confirmed Classification may reference the exact earlier Classification it reviewed.
 
@@ -471,7 +513,7 @@ Example:
 ```text
 Classification A
 stage = reporter_selected
-result = disruption
+result = category_selected / disruption
 
 Classification B
 stage = reviewer_selected
@@ -485,53 +527,55 @@ Use invalidation only when a Classification record itself is incorrect as a reco
 
 Do not use correction semantics to erase a legitimate difference of judgment.
 
----
+# 14. Approved Decision 10: Classification Result Is a Closed Union
 
-# 14. Proposed Decision 10: Classification Result Is a Closed Union
+Classification does not force a category when the human cannot make one.
 
-Classification should not force a category when the human cannot make one.
-
-Proposed result branches:
+Accepted result branches:
 
 ```text
 category_selected
 unable_to_determine
 ```
 
-`category_selected` preserves:
+`category_selected` preserves one nested historical definition snapshot:
 
 ```text
-scheme_id
-category_code
-category_label
-definition_version
+definition:
+    scheme_id
+    scheme_version
+    category_code
+    category_label
+    definition_text
 ```
 
-These values identify what definition was used at the time.
+Canonical category identity for v1 comparison is:
 
-A mutable display label alone is not sufficient historical category identity.
+```text
+scheme_id + scheme_version + category_code
+```
+
+`category_label` and `definition_text` are required historical presentation/meaning snapshots. They do not replace the identity tuple and do not establish that the local definition was lawful, unbiased, institutionally approved, or correctly applied.
 
 The initial architecture does not define one suite-wide behavior taxonomy.
 
-Classification schemes remain Portia-scoped local configuration unless a later explicit shared contract is justified.
+Classification schemes remain Portia-scoped local or imported configuration context unless a later explicit configuration contract is justified.
 
-`unable_to_determine` is a real human review outcome, not a fake behavior category.
+`unable_to_determine` is a real human classification outcome, not a fake behavior category. A concise rationale may explain why no category was selected, but the absence of a category must not be encoded through a fabricated code such as `unknown_behavior`.
 
----
+# 15. Approved Decision 11: Classification Definition Identity Is Nested in v1
 
-# 15. Proposed Decision 11: Classification Definition Identity Is Nested in v1
+Issue #16 does not publish a classification-definition registry merely because Classification needs stable historical meaning.
 
-Issue #16 should not publish a classification-definition registry merely because Classification needs stable historical meaning.
+Classification v1 preserves the definition identity and bounded definition snapshot directly in the `category_selected` result branch.
 
-The first Classification contract may preserve the definition identity directly in a closed nested object.
+This keeps historical Classification meaning readable even when a separately managed local taxonomy does not yet exist as a canonical Portia contract.
 
-This keeps v1 honest without creating a configuration subsystem prematurely.
+The nested definition snapshot is not an authority registry and is not independently mutable.
 
-If a later workflow requires separately managed local taxonomies with their own identity, lifecycle, activation dates, examples, nonexamples, ownership, or migration, that should become a dedicated configuration contract.
+If a later workflow requires separately managed local taxonomies with their own identity, lifecycle, activation dates, examples, nonexamples, ownership, governance, or migration, that should become a dedicated configuration contract and a future Classification version may reference it explicitly.
 
----
-
-# 16. Proposed Decision 12: Hypothesis Is an Explicitly Tentative Human Interpretation
+# 16. Approved Decision 12: Hypothesis Is an Explicitly Tentative Human Interpretation
 
 One Hypothesis represents:
 
@@ -571,7 +615,7 @@ It must not become a durable characteristic of the underlying student or Actor.
 
 ---
 
-# 17. Proposed Decision 13: Hypothesis Proposition and Evidence Roles Are Explicit
+# 17. Approved Decision 13: Hypothesis Proposition and Evidence Roles Are Explicit
 
 Every Hypothesis contains one bounded human-authored proposition.
 
@@ -608,9 +652,9 @@ Neither validation layer computes evidentiary weight.
 
 ---
 
-# 18. Proposed Decision 14: Hypothesis Has No Numeric or Generic Confidence Score in v1
+# 18. Approved Decision 14: Hypothesis Has No Numeric or Generic Confidence Score in v1
 
-Issue #16 should not introduce:
+Issue #16 does not introduce:
 
 ```text
 confidence_percent
@@ -621,9 +665,9 @@ risk_score
 AI_confidence
 ```
 
-The v1 Hypothesis contract expresses uncertainty through its explicit Hypothesis record type, supporting and contrary evidence, consideration state, and bounded human rationale where needed.
+Hypothesis v1 expresses uncertainty through its explicit Hypothesis record type, supporting and contrary evidence, consideration state, and bounded human rationale where needed.
 
-Proposed consideration-state vocabulary:
+Accepted consideration-state vocabulary:
 
 ```text
 under_consideration
@@ -632,13 +676,13 @@ set_aside
 
 This is separate from canonical lifecycle status.
 
-A valid Hypothesis may be set aside without being invalidated.
+A valid Hypothesis may be set aside without being invalidated. `set_aside` means the human workflow is no longer actively considering that proposition in the current review context; it does not mean the proposition was proven false.
 
-If reconsidered later, a new or successor Hypothesis should preserve that later human act rather than silently reactivating the old record.
+If a later human reconsiders or materially refines the proposition, a new or successor Hypothesis preserves that later act rather than silently toggling the historical record back to `under_consideration`.
 
----
+No qualitative confidence enum is added in v1. The explicit tentativeness of the record family and its evidence/rationale are preferred to an underspecified `low` / `medium` / `high` scale.
 
-# 19. Proposed Decision 15: Routine Event Hypothesis Is Not an FBA
+# 19. Approved Decision 15: Routine Event Hypothesis Is Not an FBA
 
 Hypothesis v1 is Event-local.
 
@@ -652,7 +696,7 @@ Issue #16 must not fabricate a synthetic Event owner merely to model a future FB
 
 ---
 
-# 20. Proposed Decision 16: Determination Is One Bounded Human Decision
+# 20. Approved Decision 16: Determination Is One Bounded Human Decision
 
 One Determination represents:
 
@@ -694,7 +738,7 @@ What kind of student is this?
 
 ---
 
-# 21. Proposed Decision 17: Teacher-Local and Recorded Institutional Scope Are Explicit
+# 21. Approved Decision 17: Teacher-Local and Recorded Institutional Scope Are Explicit
 
 Determination v1 must distinguish at least:
 
@@ -715,25 +759,25 @@ This distinction is mandatory because current Core provides no institution-wide 
 
 ---
 
-# 22. Proposed Decision 18: Decision-Maker Identity and Authority Are Separate
+# 22. Approved Decision 18: Decision-Maker Identity and Authority Are Separate
 
 Determination uses a represented human decision-maker separate from persistence attribution.
 
-Proposed reuse:
+Accepted reuse:
 
 ```text
 represented_human_attribution@1
 ```
 
-The human attribution answers who is represented as making the decision.
+ADR 0011 explicitly permits later Portia records to adopt this primitive when they need the same represented-human semantics. Issue #16 uses it only to answer which human is represented as reviewer, selector, Hypothesis author, or decision-maker. It does not confer authority.
 
-A separate nested authority context answers what kind of authority or decision scope is being represented and what basis, if any, was recorded for that claim.
+A separate nested authority context answers what kind of decision scope is being represented and what authority provenance, if any, was recorded.
 
 Actor category, title, organization, email, display label, or local-operator status must not establish decision authority.
 
-## 22.1 Proposed authority-context branches
+## 22.1 Teacher-local authority context
 
-### Teacher-local
+Accepted shape:
 
 ```text
 kind = teacher_local
@@ -741,72 +785,124 @@ scope
 detail, optional
 ```
 
-Initial scope vocabulary should remain narrow:
+Accepted scope vocabulary:
 
 ```text
 classroom_management
-teacher_support_workflow
+teacher_review
+teacher_support_coordination
 other
 ```
 
 `other` requires detail.
 
-### Recorded institutional
+These values describe the bounded teacher-local workflow context. They do not claim institutional delegation.
+
+## 22.2 Recorded-institutional authority context
+
+Accepted shape:
 
 ```text
 kind = recorded_institutional
 authority_label
 authority_status
-authority_basis, optional
+authority_basis, conditional
 ```
 
-Proposed authority-status vocabulary:
+Accepted authority-status vocabulary:
 
 ```text
-source_evidenced
+documented_basis
 asserted
 unknown
 ```
 
-This is not a truth score.
+`documented_basis` requires at least one typed authority-basis reference. It means Portia retains material documenting the authority claim; it does **not** mean Portia authenticated the person or proved that the authority was legally sufficient.
 
-It states only what authority provenance Portia has recorded.
+`asserted` means the represented decision record states or was recorded as having institutional/external authority, but Portia retains no typed authority-basis material sufficient to use `documented_basis`.
 
-Active consequential use of a `recorded_institutional` Determination may require stronger application-level authority evidence than structural storage.
+`unknown` means the available historical/imported record does not permit an honest characterization of authority provenance.
 
-An imported historical Determination may remain structurally valid with `authority_status = unknown`.
+Authority-basis references are provenance, not judgment evidence. They may reuse `source_artifact_ref@1` when the reference means exactly "where the material documenting this claim can be found" without asserting authenticity, authorization, or evidentiary weight.
 
----
+Current PDS does not provide institutional staff authentication or RBAC. No authority-status value, including `documented_basis`, may be interpreted as Portia independently authenticating institutional authority.
 
-# 23. Proposed Decision 19: Process or Policy Basis Is Separate from Authority
+## 22.3 Role-specific human eligibility is application-level
+
+Reusing `represented_human_attribution@1` does not mean every attribution branch is eligible for every judgment role.
+
+For current-use v1 application validation:
+
+- a `teacher_local` Determination requires a `local_operator` decision-maker;
+- a `recorded_institutional` Determination may preserve an Actor, local operator, descriptive school-staff person, or unidentified historical decision-maker, subject to authority-status rules;
+- a roster student or non-staff descriptive person does not become an institutional decision-maker merely because the structural human-attribution union can represent that person;
+- `unidentified_person` may preserve historical/imported judgment attribution but cannot satisfy a workflow that requires a resolved current human decision-maker;
+- reviewer and reviewer-stage Classification eligibility is likewise workflow-dependent and must not be inferred from structural attribution alone.
+
+This keeps the reusable human identity shape separate from consumer-specific authority and role eligibility.
+
+# 23. Approved Decision 19: Process or Policy Basis Is Separate from Authority
 
 Decision authority and the policy/process applied are distinct.
 
-A person may be represented as an authorized decision-maker while the governing policy basis is missing, unsupported, or not applicable.
+A person may be represented as a decision-maker while the governing policy or process basis is missing, unsupported, unknown, or purely teacher-local.
 
-Determination should therefore have a separate process-basis union.
+Determination therefore uses a closed process-basis union.
 
-Proposed branches:
+Accepted branches:
 
 ```text
 teacher_local
-identified_policy_or_process
+identified
 unknown
 ```
 
-An identified policy/process basis should preserve bounded historical identity such as label, version when known, and source references when available.
+## 23.1 Teacher-local process basis
 
-Issue #16 should not create a universal district-policy registry.
+```text
+kind = teacher_local
+process_label
+```
 
-A source reference does not prove that the policy was correctly applied.
+`process_label` is a bounded human-readable description of the local teacher workflow or decision context. It is not a policy identifier and does not imply institutional authorization.
 
----
+## 23.2 Identified policy/process basis
 
-# 24. Proposed Decision 20: Determination Outcome Is a Closed Union
+```text
+kind = identified
+policy, optional
+process, optional
+```
 
-Determination v1 must permit honest uncertainty.
+At least one of `policy` or `process` is required.
 
-Proposed outcome branches:
+Each descriptor preserves:
+
+```text
+label
+version, optional
+source_artifacts, optional
+```
+
+A source artifact is a provenance locator only. It does not prove that the policy/process was current, applicable, lawful, or correctly applied.
+
+The design does not create a universal district-policy registry.
+
+## 23.3 Unknown process basis
+
+```text
+kind = unknown
+```
+
+This supports honest historical/import representation without fabricating a policy or process identity.
+
+Application validation determines whether a consuming workflow requires an identified policy/process basis. Structural validity alone does not establish applicability.
+
+# 24. Approved Decision 20: Determination Outcome Is a Closed Union
+
+Determination v1 permits honest uncertainty and does not hard-code one universal discipline vocabulary.
+
+Accepted outcome branches:
 
 ```text
 conclusion
@@ -816,19 +912,57 @@ unable_to_determine
 not_applicable
 ```
 
-`conclusion` preserves a bounded human decision statement.
+## 24.1 Conclusion
 
-`coded_conclusion` preserves a local or external controlled outcome with historical scheme/code/version identity.
+```text
+kind = conclusion
+text
+```
 
-The schema must not hard-code one universal discipline finding vocabulary.
+This preserves a bounded human decision statement.
 
-Terms such as `substantiated` and `not_substantiated` may appear only as identified local/external coded outcomes where that policy or process uses them.
+## 24.2 Coded conclusion
 
-`not_substantiated` must not automatically invalidate Accounts, Observations, Classifications, or Hypotheses.
+```text
+kind = coded_conclusion
+scheme_id
+scheme_version
+code
+label
+definition_text
+```
 
----
+Canonical coded-outcome identity for v1 comparison is:
 
-# 25. Proposed Decision 21: Determination Basis Preserves Supporting and Contrary References
+```text
+scheme_id + scheme_version + code
+```
+
+`label` and `definition_text` are historical meaning snapshots, not proof that the scheme was authoritative or correctly applied.
+
+Terms such as `substantiated` and `not_substantiated` may appear only as identified coded outcomes where the named local/external scheme uses them.
+
+## 24.3 Insufficient information
+
+`insufficient_information` means the decision-maker records that the available information is insufficient to answer the bounded determination question under the represented process or standard.
+
+It does not mean nothing occurred and does not invalidate source evidence.
+
+## 24.4 Unable to determine
+
+`unable_to_determine` records that no determination can be made, without asserting the specific evidentiary conclusion represented by `insufficient_information`.
+
+## 24.5 Not applicable
+
+`not_applicable` records that the bounded question/process does not apply to the target or reviewed circumstances.
+
+It does not erase the Event or its evidence.
+
+A bounded optional rationale may accompany any outcome. Rationale remains the decision-maker's explanation, not copied source evidence.
+
+`not_substantiated` must never automatically invalidate Accounts, Observations, Classifications, or Hypotheses.
+
+# 25. Approved Decision 21: Determination Basis Preserves Supporting and Contrary References
 
 Determination may preserve exact or typed basis references using `judgment_evidence_ref@1`.
 
@@ -850,7 +984,7 @@ The human-authored Determination basis is explicit.
 
 ---
 
-# 26. Proposed Decision 22: Repeated Reports Never Become Proof by Count
+# 26. Approved Decision 22: Repeated Reports Never Become Proof by Count
 
 Portia must not implement rules such as:
 
@@ -870,7 +1004,7 @@ It must not convert those facts into automatic credibility or proof.
 
 ---
 
-# 27. Proposed Decision 23: All Four New Families Reuse Event-Local Targeting
+# 27. Approved Decision 23: All Four New Families Reuse Event-Local Targeting
 
 Review, Classification, Hypothesis, and Determination v1 reuse:
 
@@ -894,9 +1028,9 @@ The consuming record must honestly support one shared judgment before multi-targ
 
 ---
 
-# 28. Proposed Decision 24: Judgment Records Use a Common Canonical Lifecycle
+# 28. Approved Decision 24: Judgment Records Use a Common Canonical Lifecycle
 
-Proposed canonical lifecycle for Classification, Hypothesis, and Determination:
+Review, Classification, Hypothesis, and Determination use the same canonical status vocabulary:
 
 ```text
 proposed
@@ -905,33 +1039,174 @@ invalidated
 superseded
 ```
 
-Review uses the same canonical lifecycle plus its separate review workflow state.
+Review additionally has the separate workflow state defined in Decision 3.
 
-## 28.1 Invalidation
-
-Invalidation means the record itself is not a valid current representation because of a defect such as:
+Accepted transition matrix for all four families:
 
 ```text
+proposed
+    -> active
+    -> invalidated
+    -> superseded
+
+active
+    -> invalidated
+    -> superseded
+
+invalidated
+    -> superseded
+
+superseded
+    -> no later state
+```
+
+A record may also be created directly active when a permitted human-reviewed digital workflow produces a complete canonical record. Paper/import proposals do not gain active status automatically.
+
+## 28.1 Lifecycle reason vocabularies
+
+### Review
+
+```text
+review_started
 recording_error
-wrong_human
+wrong_reviewer
 wrong_target
-wrong_definition
-wrong_authority
+wrong_question
 invalid_provenance
 prohibited_payload
+corrected_by_successor
+duplicate_consolidated
+work_root_corrected
+contract_migrated
+other
 ```
+
+### Classification
+
+```text
+judgment_recorded
+recording_error
+wrong_selector
+wrong_target
+wrong_definition
+invalid_provenance
+prohibited_payload
+corrected_by_successor
+duplicate_consolidated
+work_root_corrected
+contract_migrated
+other
+```
+
+### Hypothesis
+
+```text
+judgment_recorded
+recording_error
+wrong_author
+wrong_target
+invalid_provenance
+prohibited_payload
+corrected_by_successor
+duplicate_consolidated
+work_root_corrected
+contract_migrated
+other
+```
+
+### Determination
+
+```text
+judgment_recorded
+recording_error
+wrong_decision_maker
+wrong_target
+wrong_authority
+wrong_process_basis
+invalid_provenance
+prohibited_payload
+corrected_by_successor
+duplicate_consolidated
+work_root_corrected
+contract_migrated
+other
+```
+
+`other` requires bounded detail.
+
+`review_started` and `judgment_recorded` are the family-specific activation reasons when a proposed record is accepted into active canonical use through transition history. They do not authorize an automated judgment.
+
+## 28.2 Invalidation
+
+Invalidation means the record itself is not a valid current representation because of a defect such as wrong attribution, wrong target, wrong definition/authority/process basis, recording error, invalid provenance, or prohibited payload.
 
 Invalidation must not mean a later human disagreed, a later reviewer chose another Classification, a Hypothesis was set aside, or a valid Determination was later reversed.
 
-## 28.2 Supersession
+## 28.3 Supersession reasons
 
-Supersession preserves valid historical records when a new canonical representation replaces or evolves the prior one.
+### Review
 
-Examples include material correction, Hypothesis refinement, Determination reconsideration, Determination reversal, duplicate consolidation, work-root correction, and contract migration.
+```text
+review_corrected
+review_reframed
+reviewer_corrected
+target_corrected
+duplicate_consolidated
+work_root_corrected
+contract_migrated
+other
+```
 
----
+### Classification
 
-# 29. Proposed Decision 25: Reconsideration and Reversal Create New Records
+```text
+classification_corrected
+selector_corrected
+target_corrected
+definition_corrected
+duplicate_consolidated
+work_root_corrected
+contract_migrated
+other
+```
+
+### Hypothesis
+
+```text
+hypothesis_corrected
+hypothesis_refined
+hypothesis_reconsidered
+author_corrected
+target_corrected
+evidence_role_corrected
+duplicate_consolidated
+work_root_corrected
+contract_migrated
+other
+```
+
+### Determination
+
+```text
+outcome_corrected
+question_corrected
+decision_maker_corrected
+target_corrected
+authority_corrected
+process_basis_corrected
+reconsidered
+reversed_on_reconsideration
+duplicate_consolidated
+work_root_corrected
+contract_migrated
+other
+```
+
+Every predecessor in one successor operation must use the same logical supersession reason. `other` requires detail.
+
+Ordinary cross-human disagreement is not supersession.
+
+# 29. Approved Decision 25: Reconsideration and Reversal Create New Records
 
 A valid Determination later changed through reconsideration is not invalidated merely because the decision changed.
 
@@ -956,7 +1231,7 @@ No in-place rewrite changes the prior decision outcome.
 
 ---
 
-# 30. Proposed Decision 26: Classification Disagreement Is Not Supersession by Default
+# 30. Approved Decision 26: Classification Disagreement Is Not Supersession by Default
 
 If a reviewer selects a category different from a reporter:
 
@@ -975,7 +1250,7 @@ Supersession is reserved for replacement of the same logical human assertion or 
 
 ---
 
-# 31. Proposed Decision 27: Hypothesis Refinement May Use Supersession
+# 31. Approved Decision 27: Hypothesis Refinement May Use Supersession
 
 A later Hypothesis may genuinely refine an earlier Hypothesis from the same review lineage.
 
@@ -987,19 +1262,21 @@ Different competing Hypotheses do not supersede one another merely because they 
 
 ---
 
-# 32. Proposed Decision 28: No New Family Gets Broad In-Place Amendment in v1
+# 32. Approved Decision 28: No New Family Gets an In-Place Amendment Surface in v1
 
-Review, Classification, Hypothesis, and Determination v1 should expose no broad Amendment surface.
+Review, Classification, Hypothesis, and Determination v1 expose **no permitted Amendment paths**.
 
-Material changes to target, review question, reviewer, Classification selector, Classification result, definition identity, Hypothesis proposition, Hypothesis author, decision question, decision outcome, decision-maker, authority context, or policy/process basis require replacement or a new record.
+This is stricter than merely rejecting broad Amendment.
 
-Open Review workflow progression is not treated as correction.
+Material changes to target, Review question, reviewer, Classification selector, Classification result, definition identity, Hypothesis proposition, Hypothesis author, decision question, decision outcome, decision-maker, authority context, policy/process basis, or completed evidence/basis sets require replacement, a new judgment record, or a new reconsideration Review as appropriate.
 
-If implementation later identifies genuinely nonmaterial safe fields, they may be considered through a new contract version rather than inventing permissive v1 Amendment paths.
+Open Review workflow progression is not an Amendment. It is guarded revision-aware mutation of the still-active review process under Decision 3.
 
----
+A `proposed` record may be revised before activation because it is not yet an accepted current judgment representation.
 
-# 33. Proposed Decision 29: Statement of Disagreement Is Reused
+Once a Classification, Hypothesis, or Determination is active, substantive correction uses successor/history semantics. A future contract version may introduce specifically justified nonmaterial Amendment paths, but v1 does not guess at them.
+
+# 33. Approved Decision 29: Statement of Disagreement Is Reused
 
 The existing:
 
@@ -1017,7 +1294,7 @@ A reversal requires a new Determination and explicit lifecycle/reconsideration h
 
 ---
 
-# 34. Proposed Decision 30: Paper and Import Never Create Automatic Judgment
+# 34. Approved Decision 30: Paper and Import Never Create Automatic Judgment
 
 Reuse:
 
@@ -1042,15 +1319,23 @@ It must not establish human reviewer, Classification correctness, Hypothesis tru
 
 Imported historical categories and findings may have incomplete provenance.
 
-Portia must preserve uncertainty rather than fabricate reviewer-confirmed status, definition version, decision-maker identity, institutional authority, or policy version.
+Portia preserves uncertainty rather than fabricating reviewer-confirmed status, definition version, decision-maker identity, institutional authority, or policy version.
 
-An imported institutional record may be stored in a proposed or historical representation with unknown authority context until reviewed.
+Imported judgment records begin `proposed` unless they are created through an explicit governed migration of an already accepted Portia representation.
 
-Source-system prestige does not establish truth or current-use eligibility.
+Local human review may activate an imported historical representation even when some original metadata remains unknown, because canonical existence and consequential-use eligibility are separate concepts.
 
----
+After activation:
 
-# 35. Proposed Decision 31: Automation May Organize Review but Not Make Judgment
+- a Classification with `stage = unknown` remains ineligible to satisfy any consumer that specifically requires a reviewer-confirmed Classification;
+- a Review/Classification/Hypothesis whose represented human remains `unidentified_person` may be preserved historically but does not satisfy a consumer requiring resolved current human attribution;
+- a `recorded_institutional` Determination with `authority_status = unknown` or `asserted` may be preserved and displayed with that limitation but cannot be presented as authenticated institutional authority;
+- `authority_status = documented_basis` means Portia has typed material supporting the authority claim, not that current PDS authenticated the decision-maker or proved legal sufficiency;
+- no imported historical judgment automatically creates a Response, Support, lifecycle change, or other consequential downstream record.
+
+Source-system prestige does not establish truth, authority, or current-use eligibility.
+
+# 35. Approved Decision 31: Automation May Organize Review but Not Make Judgment
 
 Permitted automation includes:
 
@@ -1091,7 +1376,7 @@ It may not be represented as the substantive human selector, Hypothesis author, 
 
 ---
 
-# 36. Proposed Decision 32: Operational and Derived Records Remain Privacy-Minimized
+# 36. Approved Decision 32: Operational and Derived Records Remain Privacy-Minimized
 
 Operational infrastructure may retain:
 
@@ -1115,7 +1400,7 @@ Integrity Findings remain integrity diagnostics and must not become substantive 
 
 ---
 
-# 37. Proposed Decision 33: Shared Infrastructure Is Reused Without Parallel Families
+# 37. Approved Decision 33: Shared Infrastructure Is Reused Without Parallel Families
 
 The initial implementation should prove compatibility with:
 
@@ -1153,9 +1438,9 @@ Dedicated exact reference families are not expected. Existing exact generic work
 
 ---
 
-# 38. Proposed Public Contract Plan
+# 38. Accepted Public Contract Plan
 
-If ADR 0012 accepts this design, the expected new public contracts are:
+ADR 0012 accepts the following initial public-contract plan:
 
 ```text
 portia_review_id@1
@@ -1187,11 +1472,11 @@ schemas/v1/hypotheses/hypothesis.schema.json
 schemas/v1/determinations/determination.schema.json
 ```
 
-The exact schema organization remains pre-ADR until the design is frozen.
+No standalone public contract is introduced in v1 for Review trigger, Review question, Classification definition, Hypothesis confidence, decision authority, process/policy basis, or Determination outcome. Those structures currently have one immediate semantic owner or are not yet stable enough to justify independent public versioning.
 
-No standalone public contract is currently proposed for Review trigger, Classification definition, Hypothesis confidence, decision authority, policy/process basis, or Determination outcome because each currently has only one immediate semantic owner or does not yet justify independent versioning.
+`judgment_evidence_ref@1` is the only new shared value object because Review, optional Classification basis, Hypothesis, and Determination have multiple immediate consumers requiring the same canonical-reference semantics.
 
----
+Dedicated exact Review/Classification/Hypothesis/Determination reference families are not planned. Existing exact generic work-record references already provide the required identity and historical exactness.
 
 # 39. Structural Validation Boundary
 
@@ -1305,26 +1590,26 @@ Institutional authentication and authorization remain a future platform concern 
 
 ---
 
-# 42. Pre-ADR Questions to Freeze
+# 42. Frozen Pre-ADR Decisions
 
-The next design-freeze slice should explicitly confirm:
+The pre-ADR freeze resolved all twelve questions from Slice 1.
 
-1. whether `judgment_evidence_ref@1` should include raw `source_artifact_ref` or only canonical record references;
-2. the final Review trigger and Review question vocabularies;
-3. whether Review evidence may be appended in place until completion, as proposed;
-4. the exact Classification stage names;
-5. the exact Classification result and definition fields;
-6. whether Hypothesis `set_aside` remains a separate consideration state rather than lifecycle status;
-7. the exact teacher-local authority-scope vocabulary;
-8. the exact recorded-institutional authority-status vocabulary;
-9. the exact Determination process-basis and outcome unions;
-10. family-specific lifecycle reasons and supersession reasons;
-11. current-use rules for imported historical judgments with incomplete identity or authority;
-12. whether all four v1 families expose no Amendment paths.
+1. **Judgment evidence reference:** `judgment_evidence_ref@1` includes only `portia_work`, `portia_record`, and `module_record`; raw `source_artifact_ref` is excluded from judgment evidence.
+2. **Review trigger/question vocabularies:** trigger is `concern | referral | routine_review | reconsideration | support_related | other`; question kind is `evidence_review | classification_review | hypothesis_review | determination_review | reconsideration | other`, with required bounded question text.
+3. **Open Review mutation:** proposed Reviews may be edited before activation; active nonterminal Reviews may advance workflow state and append evidence under revision-aware persistence; substantive identity/question/target changes require successor handling; completed/cancelled Reviews are frozen.
+4. **Classification stage:** `reporter_selected | reviewer_selected | reviewer_confirmed | unknown`.
+5. **Classification result/definition:** `category_selected | unable_to_determine`; category identity is `scheme_id + scheme_version + category_code`, with required label and definition-text snapshot.
+6. **Hypothesis set-aside:** `set_aside` remains a consideration state, not lifecycle status; no confidence/probability field is added in v1.
+7. **Teacher-local authority scope:** `classroom_management | teacher_review | teacher_support_coordination | other`.
+8. **Recorded-institutional authority status:** `documented_basis | asserted | unknown`; none authenticates institutional authority.
+9. **Determination process/outcome:** process basis is `teacher_local | identified | unknown`; outcome is `conclusion | coded_conclusion | insufficient_information | unable_to_determine | not_applicable`.
+10. **Lifecycle/supersession reasons:** family-specific inventories in Decision 24 are accepted, with the common `proposed | active | invalidated | superseded` status matrix.
+11. **Imported historical judgments:** may be preserved and, after human review, activated despite bounded unknown metadata, but unresolved attribution/stage/authority limits consequential current-use eligibility and never becomes authenticated authority by implication.
+12. **Amendment:** Review, Classification, Hypothesis, and Determination v1 expose no permitted Amendment paths. Open Review workflow progression is not Amendment.
 
-No public schema should be published before these questions are frozen.
+No unresolved pre-ADR question remains that requires delaying the initial v1 public contracts.
 
----
+Cross-Event/FBA Hypothesis ownership and institution-wide authentication/authorization remain explicitly deferred rather than unresolved within Issue #16.
 
 # 43. Planned Implementation Sequence
 
