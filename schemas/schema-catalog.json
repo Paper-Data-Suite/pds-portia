@@ -664,6 +664,12 @@
         "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/judgment-evidence-ref.schema.json",
         "path": "schemas/v1/references/judgment-evidence-ref.schema.json"
       }
+    },
+    "review": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/reviews/review.schema.json",
+        "path": "schemas/v1/reviews/review.schema.json"
+      }
     }
   }
 }

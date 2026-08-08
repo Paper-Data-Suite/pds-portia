@@ -1,0 +1,483 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/reviews/review.schema.json",
+  "title": "Portia Review",
+  "description": "Canonical version-1 Event-local Portia Review record representing one bounded human review process concerning one explicit question, one Event-local target, and the canonical material actually considered. Review state organizes human review; it is not itself a finding, Classification, Hypothesis, Determination, policy conclusion, student identity label, or automated judgment.",
+  "$comment": "Application validation remains responsible for canonical path and Event ownership, target resolution, reviewer/requester resolution, subject resolution and same-Event scope, reconsideration linkage, evidence resolution and sibling-module agreement, chronology, guarded workflow evolution, completion/cancellation freezing, paper/import review history, lifecycle legality, supersession topology, incoming-reference reconciliation, no silent successor following, authorization, privacy, and recoverable coordinated writes.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "record_type",
+    "module_id",
+    "class_id",
+    "work_id",
+    "review_id",
+    "status",
+    "review_state",
+    "trigger",
+    "question",
+    "target",
+    "reviewer",
+    "evidence_considered",
+    "creation_source",
+    "created_at",
+    "created_by",
+    "updated_at",
+    "updated_by"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1"
+    },
+    "record_type": {
+      "const": "review"
+    },
+    "module_id": {
+      "const": "portia"
+    },
+    "class_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+    },
+    "work_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-event-id.schema.json"
+    },
+    "review_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-review-id.schema.json"
+    },
+    "status": {
+      "enum": [
+        "proposed",
+        "active",
+        "invalidated",
+        "superseded"
+      ]
+    },
+    "review_state": {
+      "enum": [
+        "open",
+        "in_review",
+        "awaiting_information",
+        "completed",
+        "cancelled"
+      ]
+    },
+    "trigger": {
+      "$ref": "#/$defs/reviewTrigger"
+    },
+    "question": {
+      "$ref": "#/$defs/reviewQuestion"
+    },
+    "target": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/targets/portia-target-ref.schema.json"
+    },
+    "reviewer": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/attribution/represented-human-attribution.schema.json"
+    },
+    "requested_by": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/attribution/represented-human-attribution.schema.json"
+    },
+    "review_subjects": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/reviewSubjectRef"
+      }
+    },
+    "evidence_considered": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/judgment-evidence-ref.schema.json"
+      }
+    },
+    "supersedes": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/supersessionEntry"
+      }
+    },
+    "creation_source": {
+      "allOf": [
+        {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/provenance/creation-source.schema.json"
+        },
+        {
+          "not": {
+            "type": "object",
+            "properties": {
+              "type": {
+                "const": "paper_capture"
+              },
+              "stage": {
+                "const": "preallocated"
+              }
+            },
+            "required": [
+              "type",
+              "stage"
+            ]
+          }
+        }
+      ]
+    },
+    "created_at": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+    },
+    "created_by": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/attribution/attribution-agent.schema.json"
+    },
+    "updated_at": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+    },
+    "updated_by": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/attribution/attribution-agent.schema.json"
+    }
+  },
+  "$defs": {
+    "reviewTrigger": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind"
+      ],
+      "properties": {
+        "kind": {
+          "enum": [
+            "concern",
+            "referral",
+            "routine_review",
+            "reconsideration",
+            "support_related",
+            "other"
+          ]
+        },
+        "detail": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "other"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "required": [
+              "detail"
+            ]
+          }
+        }
+      ]
+    },
+    "reviewQuestion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "text"
+      ],
+      "properties": {
+        "kind": {
+          "enum": [
+            "evidence_review",
+            "classification_review",
+            "hypothesis_review",
+            "determination_review",
+            "reconsideration",
+            "other"
+          ]
+        },
+        "text": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+        }
+      }
+    },
+    "reviewSubjectRef": {
+      "allOf": [
+        {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-portia-work-record-ref.schema.json"
+        },
+        {
+          "type": "object",
+          "required": [
+            "work_ref",
+            "record_ref"
+          ],
+          "properties": {
+            "work_ref": {
+              "allOf": [
+                {
+                  "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-portia-work-ref.schema.json"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "work_kind": {
+                      "const": "event"
+                    },
+                    "work_id": {
+                      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-event-id.schema.json"
+                    }
+                  },
+                  "required": [
+                    "work_kind",
+                    "work_id"
+                  ]
+                }
+              ]
+            },
+            "record_ref": {
+              "allOf": [
+                {
+                  "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-local-record-ref.schema.json"
+                },
+                {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "record_kind": {
+                          "const": "review"
+                        },
+                        "record_id": {
+                          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-review-id.schema.json"
+                        },
+                        "contract_version": {
+                          "const": "1"
+                        }
+                      },
+                      "required": [
+                        "record_kind",
+                        "record_id",
+                        "contract_version"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "record_kind": {
+                          "const": "classification"
+                        },
+                        "record_id": {
+                          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-classification-id.schema.json"
+                        },
+                        "contract_version": {
+                          "const": "1"
+                        }
+                      },
+                      "required": [
+                        "record_kind",
+                        "record_id",
+                        "contract_version"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "record_kind": {
+                          "const": "hypothesis"
+                        },
+                        "record_id": {
+                          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-hypothesis-id.schema.json"
+                        },
+                        "contract_version": {
+                          "const": "1"
+                        }
+                      },
+                      "required": [
+                        "record_kind",
+                        "record_id",
+                        "contract_version"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "record_kind": {
+                          "const": "determination"
+                        },
+                        "record_id": {
+                          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-determination-id.schema.json"
+                        },
+                        "contract_version": {
+                          "const": "1"
+                        }
+                      },
+                      "required": [
+                        "record_kind",
+                        "record_id",
+                        "contract_version"
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "reviewWorkRecordRef": {
+      "allOf": [
+        {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-portia-work-record-ref.schema.json"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "work_ref": {
+              "allOf": [
+                {
+                  "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-portia-work-ref.schema.json"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "work_kind": {
+                      "const": "event"
+                    },
+                    "work_id": {
+                      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-event-id.schema.json"
+                    }
+                  },
+                  "required": [
+                    "work_kind",
+                    "work_id"
+                  ]
+                }
+              ]
+            },
+            "record_ref": {
+              "allOf": [
+                {
+                  "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-local-record-ref.schema.json"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "record_kind": {
+                      "const": "review"
+                    },
+                    "record_id": {
+                      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-review-id.schema.json"
+                    },
+                    "contract_version": {
+                      "const": "1"
+                    }
+                  },
+                  "required": [
+                    "record_kind",
+                    "record_id",
+                    "contract_version"
+                  ]
+                }
+              ]
+            }
+          },
+          "required": [
+            "work_ref",
+            "record_ref"
+          ]
+        }
+      ]
+    },
+    "supersessionEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "work_record_ref",
+        "reason"
+      ],
+      "properties": {
+        "work_record_ref": {
+          "$ref": "#/$defs/reviewWorkRecordRef"
+        },
+        "reason": {
+          "enum": [
+            "review_corrected",
+            "review_reframed",
+            "reviewer_corrected",
+            "target_corrected",
+            "duplicate_consolidated",
+            "work_root_corrected",
+            "contract_migrated",
+            "other"
+          ]
+        },
+        "detail": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "reason": {
+                "const": "other"
+              }
+            },
+            "required": [
+              "reason"
+            ]
+          },
+          "then": {
+            "required": [
+              "detail"
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "x-portia-application-invariants": [
+    "portia.review.canonical_storage_scope",
+    "portia.review.path_identity_agreement",
+    "portia.review.parent_event_resolution",
+    "portia.review.target_resolution",
+    "portia.review.target_same_event",
+    "portia.review.reviewer_resolution",
+    "portia.review.reviewer_recorder_distinction",
+    "portia.review.requested_by_resolution",
+    "portia.review.review_subject_resolution",
+    "portia.review.review_subject_same_event",
+    "portia.review.review_subject_identity_unique",
+    "portia.review.review_subject_self_reference",
+    "portia.review.reconsideration_subject_required",
+    "portia.review.evidence_resolution",
+    "portia.review.evidence_contract_support",
+    "portia.review.module_evidence_module_id_agreement",
+    "portia.review.workflow_state_matrix",
+    "portia.review.active_evidence_append_only",
+    "portia.review.active_substantive_fields_fixed",
+    "portia.review.completed_cancelled_frozen",
+    "portia.review.timestamp_chronology",
+    "portia.review.creation_provenance_immutable",
+    "portia.review.paper_activation_requires_review_history",
+    "portia.review.import_activation_requires_review_history",
+    "portia.review.lifecycle_matrix",
+    "portia.review.lifecycle_history_reconciliation",
+    "portia.review.current_use_eligibility",
+    "portia.review.amendment_prohibited_v1",
+    "portia.review.predecessor_resolution",
+    "portia.review.predecessor_identity_unique",
+    "portia.review.self_supersession",
+    "portia.review.supersession_reason_uniform",
+    "portia.review.replacement_topology",
+    "portia.review.supersession_cycle",
+    "portia.review.ownership_reconciliation",
+    "portia.review.successor_effectiveness",
+    "portia.review.incoming_reference_complete",
+    "portia.review.no_silent_successor_following",
+    "portia.review.no_automatic_judgment"
+  ]
+}

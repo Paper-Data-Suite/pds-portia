@@ -1,0 +1,38 @@
+{
+  "schema_version": "1",
+  "record_type": "review",
+  "module_id": "portia",
+  "class_id": "eng10_p2_2026",
+  "work_id": "evt_issue16_1",
+  "review_id": "rvw_invalid",
+  "status": "active",
+  "review_state": "open",
+  "trigger": {
+    "kind": "routine_review"
+  },
+  "question": {
+    "kind": "evidence_review",
+    "text": "What information is available for this Event?"
+  },
+  "target": {
+    "kind": "event"
+  },
+  "reviewer": {
+    "type": "system_process",
+    "process_id": "review-bot"
+  },
+  "evidence_considered": [],
+  "creation_source": {
+    "type": "digital_entry"
+  },
+  "created_at": "2026-08-07T09:00:00-04:00",
+  "created_by": {
+    "type": "local_operator",
+    "display_label": "Synthetic Teacher"
+  },
+  "updated_at": "2026-08-07T09:00:00-04:00",
+  "updated_by": {
+    "type": "local_operator",
+    "display_label": "Synthetic Teacher"
+  }
+}

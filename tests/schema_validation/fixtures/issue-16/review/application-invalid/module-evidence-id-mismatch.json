@@ -1,0 +1,55 @@
+{
+  "schema_version": "1",
+  "record_type": "review",
+  "module_id": "portia",
+  "class_id": "eng10_p2_2026",
+  "work_id": "evt_issue16_1",
+  "review_id": "rvw_app_invalid",
+  "status": "active",
+  "review_state": "open",
+  "trigger": {
+    "kind": "routine_review"
+  },
+  "question": {
+    "kind": "evidence_review",
+    "text": "What information is available for this Event?"
+  },
+  "target": {
+    "kind": "event"
+  },
+  "reviewer": {
+    "kind": "local_operator",
+    "display_label": "Synthetic Teacher"
+  },
+  "evidence_considered": [
+    {
+      "kind": "module_record",
+      "module_work_record_ref": {
+        "work_ref": {
+          "module_id": "quillan",
+          "class_id": "eng10_p2_2026",
+          "work_id": "asg_issue16_context"
+        },
+        "record_ref": {
+          "module_id": "concord",
+          "record_kind": "artifact",
+          "record_id": "artifact_issue16_1",
+          "contract_version": "1"
+        }
+      }
+    }
+  ],
+  "creation_source": {
+    "type": "digital_entry"
+  },
+  "created_at": "2026-08-07T09:00:00-04:00",
+  "created_by": {
+    "type": "local_operator",
+    "display_label": "Synthetic Teacher"
+  },
+  "updated_at": "2026-08-07T09:00:00-04:00",
+  "updated_by": {
+    "type": "local_operator",
+    "display_label": "Synthetic Teacher"
+  }
+}
