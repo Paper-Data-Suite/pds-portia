@@ -634,6 +634,36 @@
         "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/observations/observation.schema.json",
         "path": "schemas/v1/observations/observation.schema.json"
       }
+    },
+    "portia_review_id": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-review-id.schema.json",
+        "path": "schemas/v1/identifiers/portia-review-id.schema.json"
+      }
+    },
+    "portia_classification_id": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-classification-id.schema.json",
+        "path": "schemas/v1/identifiers/portia-classification-id.schema.json"
+      }
+    },
+    "portia_hypothesis_id": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-hypothesis-id.schema.json",
+        "path": "schemas/v1/identifiers/portia-hypothesis-id.schema.json"
+      }
+    },
+    "portia_determination_id": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-determination-id.schema.json",
+        "path": "schemas/v1/identifiers/portia-determination-id.schema.json"
+      }
+    },
+    "judgment_evidence_ref": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/judgment-evidence-ref.schema.json",
+        "path": "schemas/v1/references/judgment-evidence-ref.schema.json"
+      }
     }
   }
 }

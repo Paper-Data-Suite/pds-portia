@@ -1,0 +1,10 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-review-id.schema.json",
+  "title": "Portia Review Identifier",
+  "description": "Opaque canonical identifier for one Review inside one Portia Event. The rvw_ prefix is part of the public identifier contract. The identifier does not encode question, target, participant, urgency, workflow state, lifecycle, or other sensitive meaning.",
+  "type": "string",
+  "minLength": 5,
+  "maxLength": 128,
+  "pattern": "^rvw_[A-Za-z0-9][A-Za-z0-9_-]*$"
+}

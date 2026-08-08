@@ -1,0 +1,25 @@
+{
+  "manifest_version": "1",
+  "issue": 16,
+  "contract": "judgment_evidence_ref",
+  "version": "1",
+  "valid": {
+    "portia-work-event.json": "Exact Portia Event representation used as judgment material.",
+    "portia-record-account.json": "Exact Account representation used as judgment evidence.",
+    "portia-record-observation.json": "Exact Observation representation used as judgment evidence.",
+    "module-record.json": "Typed sibling-module record with explicit supported contract version.",
+    "module-record-version-unknown.json": "Typed sibling-module record retains explicit null contract version without treating null as a wildcard."
+  },
+  "invalid": {
+    "unknown-kind.json": "Unknown judgment-evidence branch.",
+    "raw-source-artifact-branch.json": "Raw source artifacts are not direct judgment-evidence branches.",
+    "module-record-portia-overlap.json": "Portia records must use the exact Portia branch, not the sibling-module branch.",
+    "portia-work-null-version.json": "Exact Portia work references require a non-null contract version.",
+    "portia-record-null-record-version.json": "Exact Portia child-record references require a non-null record contract version.",
+    "module-record-missing-wrapper.json": "Module records require the complete module_work_record_ref wrapper.",
+    "embedded-payload.json": "Judgment evidence references cannot embed substantive evidence content."
+  },
+  "application_invalid": {
+    "module-id-mismatch.json": "The Core-shaped work and record references name different sibling modules."
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "kind": "portia_record",
+  "work_record_ref": {
+    "work_ref": {
+      "module_id": "portia",
+      "class_id": "eng10_p2_2026",
+      "work_id": "evt_issue16_1",
+      "work_kind": "event",
+      "contract_version": "2"
+    },
+    "record_ref": {
+      "record_kind": "account",
+      "record_id": "acct_issue16_1",
+      "contract_version": null
+    }
+  }
+}

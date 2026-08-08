@@ -1,0 +1,16 @@
+{
+  "kind": "module_record",
+  "module_work_record_ref": {
+    "work_ref": {
+      "module_id": "quillan",
+      "class_id": "eng10_p2_2026",
+      "work_id": "asg_issue16_context"
+    },
+    "record_ref": {
+      "module_id": "concord",
+      "record_kind": "artifact",
+      "record_id": "artifact_issue16_1",
+      "contract_version": "1"
+    }
+  }
+}

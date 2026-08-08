@@ -1,0 +1,17 @@
+{
+  "manifest_version": "1",
+  "issue": 16,
+  "contract": "portia_hypothesis_id",
+  "version": "1",
+  "valid": {
+    "minimum.json": "Minimum valid opaque identifier.",
+    "mixed-suffix.json": "Valid mixed-case opaque suffix."
+  },
+  "invalid": {
+    "empty-suffix.json": "Prefix requires a suffix.",
+    "wrong-prefix.json": "Wrong diagnostic prefix.",
+    "dot.json": "Dots are not allowed in the opaque suffix.",
+    "uppercase-prefix.json": "Diagnostic prefix is lowercase and exact."
+  },
+  "application_invalid": {}
+}
