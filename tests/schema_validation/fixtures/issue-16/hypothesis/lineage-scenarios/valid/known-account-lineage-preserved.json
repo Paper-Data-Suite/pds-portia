@@ -1,0 +1,171 @@
+{
+  "hypothesis": {
+    "schema_version": "1",
+    "record_type": "hypothesis",
+    "module_id": "portia",
+    "class_id": "eng10_p2_2026",
+    "work_id": "evt_issue16_hyp",
+    "hypothesis_id": "hyp_known_lineage",
+    "status": "active",
+    "target": {
+      "kind": "event"
+    },
+    "author": {
+      "kind": "local_operator",
+      "display_label": "Synthetic Teacher"
+    },
+    "proposition": "Task difficulty may be relevant to the observed Event context.",
+    "consideration_state": "under_consideration",
+    "evidence": [
+      {
+        "relation": "supporting",
+        "evidence_ref": {
+          "kind": "portia_record",
+          "work_record_ref": {
+            "work_ref": {
+              "module_id": "portia",
+              "class_id": "eng10_p2_2026",
+              "work_id": "evt_issue16_hyp",
+              "work_kind": "event",
+              "contract_version": "2"
+            },
+            "record_ref": {
+              "record_kind": "account",
+              "record_id": "acct_hyp_upstream",
+              "contract_version": "1"
+            }
+          }
+        }
+      },
+      {
+        "relation": "supporting",
+        "evidence_ref": {
+          "kind": "portia_record",
+          "work_record_ref": {
+            "work_ref": {
+              "module_id": "portia",
+              "class_id": "eng10_p2_2026",
+              "work_id": "evt_issue16_hyp",
+              "work_kind": "event",
+              "contract_version": "2"
+            },
+            "record_ref": {
+              "record_kind": "account",
+              "record_id": "acct_hyp_downstream",
+              "contract_version": "1"
+            }
+          }
+        }
+      }
+    ],
+    "creation_source": {
+      "type": "digital_entry"
+    },
+    "created_at": "2026-08-08T09:00:00-04:00",
+    "created_by": {
+      "type": "local_operator",
+      "display_label": "Synthetic Teacher"
+    },
+    "updated_at": "2026-08-08T09:00:00-04:00",
+    "updated_by": {
+      "type": "local_operator",
+      "display_label": "Synthetic Teacher"
+    }
+  },
+  "accounts": [
+    {
+      "schema_version": "1",
+      "record_type": "account",
+      "module_id": "portia",
+      "class_id": "eng10_p2_2026",
+      "work_id": "evt_issue16_hyp",
+      "account_id": "acct_hyp_upstream",
+      "status": "active",
+      "target": {
+        "kind": "event"
+      },
+      "source": {
+        "kind": "descriptive_person",
+        "description_type": "school_staff",
+        "display_label": "Synthetic Staff Source"
+      },
+      "information_origin": "firsthand",
+      "source_certainty": "stated_certain",
+      "content": [
+        {
+          "representation": "recorded_summary",
+          "text": "The source described what they directly saw before independent reading began."
+        }
+      ],
+      "provided_time": {
+        "precision": "exact",
+        "at": "2026-08-08T08:30:00-04:00"
+      },
+      "creation_source": {
+        "type": "digital_entry"
+      },
+      "created_at": "2026-08-08T08:35:00-04:00",
+      "created_by": {
+        "type": "local_operator",
+        "display_label": "Synthetic Teacher"
+      },
+      "updated_at": "2026-08-08T08:35:00-04:00",
+      "updated_by": {
+        "type": "local_operator",
+        "display_label": "Synthetic Teacher"
+      }
+    },
+    {
+      "schema_version": "1",
+      "record_type": "account",
+      "module_id": "portia",
+      "class_id": "eng10_p2_2026",
+      "work_id": "evt_issue16_hyp",
+      "account_id": "acct_hyp_downstream",
+      "status": "active",
+      "target": {
+        "kind": "event"
+      },
+      "source": {
+        "kind": "descriptive_person",
+        "description_type": "school_staff",
+        "display_label": "Synthetic Staff Source"
+      },
+      "information_origin": "secondhand",
+      "source_certainty": "stated_uncertain",
+      "content": [
+        {
+          "representation": "recorded_summary",
+          "text": "A second staff member summarized the upstream source's report."
+        }
+      ],
+      "provided_time": {
+        "precision": "exact",
+        "at": "2026-08-08T08:30:00-04:00"
+      },
+      "creation_source": {
+        "type": "digital_entry"
+      },
+      "created_at": "2026-08-08T08:35:00-04:00",
+      "created_by": {
+        "type": "local_operator",
+        "display_label": "Synthetic Teacher"
+      },
+      "updated_at": "2026-08-08T08:35:00-04:00",
+      "updated_by": {
+        "type": "local_operator",
+        "display_label": "Synthetic Teacher"
+      },
+      "related_accounts": [
+        {
+          "relation": "reports_from",
+          "account_ref": {
+            "record_kind": "account",
+            "record_id": "acct_hyp_upstream",
+            "contract_version": "1"
+          }
+        }
+      ]
+    }
+  ]
+}

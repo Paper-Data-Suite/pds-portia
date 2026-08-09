@@ -1,0 +1,10 @@
+{
+  "manifest_version": "1",
+  "issue": 16,
+  "scenario": "hypothesis_account_lineage",
+  "version": "1",
+  "valid": [
+    "known-account-lineage-preserved.json",
+    "independent-accounts.json"
+  ]
+}

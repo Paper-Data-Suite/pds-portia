@@ -1,0 +1,9 @@
+{
+  "manifest_version": "1",
+  "issue": 16,
+  "scenario": "competing_hypotheses",
+  "version": "1",
+  "valid": [
+    "two-active-competing-hypotheses.json"
+  ]
+}

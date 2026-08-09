@@ -1,0 +1,33 @@
+{
+  "schema_version": "1",
+  "record_type": "hypothesis",
+  "module_id": "portia",
+  "class_id": "eng10_p2_2026",
+  "work_id": "evt_issue16_hyp",
+  "hypothesis_id": "hyp_set_aside",
+  "status": "active",
+  "target": {
+    "kind": "event"
+  },
+  "author": {
+    "kind": "local_operator",
+    "display_label": "Synthetic Teacher"
+  },
+  "proposition": "Task difficulty may be relevant to the observed Event context.",
+  "consideration_state": "set_aside",
+  "evidence": [],
+  "creation_source": {
+    "type": "digital_entry"
+  },
+  "created_at": "2026-08-08T09:00:00-04:00",
+  "created_by": {
+    "type": "local_operator",
+    "display_label": "Synthetic Teacher"
+  },
+  "updated_at": "2026-08-08T09:00:00-04:00",
+  "updated_by": {
+    "type": "local_operator",
+    "display_label": "Synthetic Teacher"
+  },
+  "rationale": "The author set this tentative explanation aside after considering contrary information."
+}
