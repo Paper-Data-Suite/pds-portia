@@ -1,0 +1,701 @@
+{
+  "matrix_version": "1",
+  "issue": 16,
+  "title": "Review, Classification, Hypothesis, and Determination application-invalid matrix",
+  "fixture_application_invalid_scenarios": 92,
+  "programmatic_cross_record_invariants": 9,
+  "total_coverage_entries": 101,
+  "entries": [
+    {
+      "group": "review",
+      "fixture": "tests/schema_validation/fixtures/issue-16/review/application-invalid/updated-before-created.json",
+      "coverage_id": "portia.issue16.review.updated_before_created",
+      "expectation": "Structurally valid scenario is rejected by the Issue #16 application invariant documented by its source manifest and focused test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-16/review/manifest.json"
+    },
+    {
+      "group": "review",
+      "fixture": "tests/schema_validation/fixtures/issue-16/review/application-invalid/active-paper-without-review-history.json",
+      "coverage_id": "portia.issue16.review.active_paper_without_review_history",
+      "expectation": "Structurally valid scenario is rejected by the Issue #16 application invariant documented by its source manifest and focused test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-16/review/manifest.json"
+    },
+    {
+      "group": "review",
+      "fixture": "tests/schema_validation/fixtures/issue-16/review/application-invalid/active-import-without-review-history.json",
+      "coverage_id": "portia.issue16.review.active_import_without_review_history",
+      "expectation": "Structurally valid scenario is rejected by the Issue #16 application invariant documented by its source manifest and focused test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-16/review/manifest.json"
+    },
+    {
+      "group": "review",
+      "fixture": "tests/schema_validation/fixtures/issue-16/review/application-invalid/reconsideration-without-subject.json",
+      "coverage_id": "portia.issue16.review.reconsideration_without_subject",
+      "expectation": "Structurally valid scenario is rejected by the Issue #16 application invariant documented by its source manifest and focused test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-16/review/manifest.json"
+    },
+    {
+      "group": "review",
+      "fixture": "tests/schema_validation/fixtures/issue-16/review/application-invalid/reconsideration-subject-different-event.json",
+      "coverage_id": "portia.issue16.review.reconsideration_subject_different_event",
+      "expectation": "Structurally valid scenario is rejected by the Issue #16 application invariant documented by its source manifest and focused test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-16/review/manifest.json"
+    },
+    {
+      "group": "review",
+      "fixture": "tests/schema_validation/fixtures/issue-16/review/application-invalid/self-review-subject.json",
+      "coverage_id": "portia.issue16.review.self_review_subject",
+      "expectation": "Structurally valid scenario is rejected by the Issue #16 application invariant documented by its source manifest and focused test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-16/review/manifest.json"
+    },
+    {
+      "group": "review",
+      "fixture": "tests/schema_validation/fixtures/issue-16/review/application-invalid/duplicate-logical-review-subject.json",
+      "coverage_id": "portia.issue16.review.duplicate_logical_review_subject",
+      "expectation": "Structurally valid scenario is rejected by the Issue #16 application invariant documented by its source manifest and focused test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-16/review/manifest.json"
+    },
+    {
+      "group": "review",
+      "fixture": "tests/schema_validation/fixtures/issue-16/review/application-invalid/module-evidence-id-mismatch.json",
+      "coverage_id": "portia.issue16.review.module_evidence_id_mismatch",
+      "expectation": "Structurally valid scenario is rejected by the Issue #16 application invariant documented by its source manifest and focused test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-16/review/manifest.json"
+    },
+    {
+      "group": "review",
+      "fixture": "tests/schema_validation/fixtures/issue-16/review/application-invalid/self-supersession.json",
+      "coverage_id": "portia.issue16.review.self_supersession",
+      "expectation": "Structurally valid scenario is rejected by the Issue #16 application invariant documented by its source manifest and focused test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-16/review/manifest.json"
+    },
+    {
+      "group": "review",
+      "fixture": "tests/schema_validation/fixtures/issue-16/review/application-invalid/ordinary-correction-cross-work.json",
+      "coverage_id": "portia.issue16.review.ordinary_correction_cross_work",
+      "expectation": "Structurally valid scenario is rejected by the Issue #16 application invariant documented by its source manifest and focused test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-16/review/manifest.json"
+    },
+    {
+      "group": "review",
+      "fixture": "tests/schema_validation/fixtures/issue-16/review/application-invalid/work-root-correction-same-work.json",
+      "coverage_id": "portia.issue16.review.work_root_correction_same_work",
+      "expectation": "Structurally valid scenario is rejected by the Issue #16 application invariant documented by its source manifest and focused test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-16/review/manifest.json"
+    },
+    {
+      "group": "review",
+      "fixture": "tests/schema_validation/fixtures/issue-16/review/application-invalid/work-root-correction-id-changed.json",
+      "coverage_id": "portia.issue16.review.work_root_correction_id_changed",
+      "expectation": "Structurally valid scenario is rejected by the Issue #16 application invariant documented by its source manifest and focused test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-16/review/manifest.json"
+    },
+    {
+      "group": "review",
+      "fixture": "tests/schema_validation/fixtures/issue-16/review/application-invalid/duplicate-predecessor-identity.json",
+      "coverage_id": "portia.issue16.review.duplicate_predecessor_identity",
+      "expectation": "Structurally valid scenario is rejected by the Issue #16 application invariant documented by its source manifest and focused test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-16/review/manifest.json"
+    },
+    {
+      "group": "review",
+      "fixture": "tests/schema_validation/fixtures/issue-16/review/application-invalid/mixed-supersession-reasons.json",
+      "coverage_id": "portia.issue16.review.mixed_supersession_reasons",
+      "expectation": "Structurally valid scenario is rejected by the Issue #16 application invariant documented by its source manifest and focused test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-16/review/manifest.json"
+    },
+    {
+      "group": "review",
+      "fixture": "tests/schema_validation/fixtures/issue-16/review/application-invalid/single-predecessor-duplicate-consolidation.json",
+      "coverage_id": "portia.issue16.review.single_predecessor_duplicate_consolidation",
+      "expectation": "Structurally valid scenario is rejected by the Issue #16 application invariant documented by its source manifest and focused test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-16/review/manifest.json"
+    },
+    {
+      "group": "review",
+      "fixture": "tests/schema_validation/fixtures/issue-16/review/application-invalid/multiple-predecessor-ordinary-correction.json",
+      "coverage_id": "portia.issue16.review.multiple_predecessor_ordinary_correction",
+      "expectation": "Structurally valid scenario is rejected by the Issue #16 application invariant documented by its source manifest and focused test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-16/review/manifest.json"
+    },
+    {
+      "group": "classification",
+      "fixture": "tests/schema_validation/fixtures/issue-16/classification/application-invalid/updated-before-created.json",
+      "coverage_id": "portia.issue16.classification.updated_before_created",
+      "expectation": "Structurally valid scenario is rejected by the Issue #16 application invariant documented by its source manifest and focused test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-16/classification/manifest.json"
+    },
+    {
+      "group": "classification",
+      "fixture": "tests/schema_validation/fixtures/issue-16/classification/application-invalid/active-paper-without-review-history.json",
+      "coverage_id": "portia.issue16.classification.active_paper_without_review_history",
+      "expectation": "Structurally valid scenario is rejected by the Issue #16 application invariant documented by its source manifest and focused test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-16/classification/manifest.json"
+    },
+    {
+      "group": "classification",
+      "fixture": "tests/schema_validation/fixtures/issue-16/classification/application-invalid/active-import-without-review-history.json",
+      "coverage_id": "portia.issue16.classification.active_import_without_review_history",
+      "expectation": "Structurally valid scenario is rejected by the Issue #16 application invariant documented by its source manifest and focused test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-16/classification/manifest.json"
+    },
+    {
+      "group": "classification",
+      "fixture": "tests/schema_validation/fixtures/issue-16/classification/application-invalid/active-reviewer-selected-without-review.json",
+      "coverage_id": "portia.issue16.classification.active_reviewer_selected_without_review",
+      "expectation": "Structurally valid scenario is rejected by the Issue #16 application invariant documented by its source manifest and focused test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-16/classification/manifest.json"
+    },
+    {
+      "group": "classification",
+      "fixture": "tests/schema_validation/fixtures/issue-16/classification/application-invalid/active-reviewer-confirmed-without-review.json",
+      "coverage_id": "portia.issue16.classification.active_reviewer_confirmed_without_review",
+      "expectation": "Structurally valid scenario is rejected by the Issue #16 application invariant documented by its source manifest and focused test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-16/classification/manifest.json"
+    },
+    {
+      "group": "classification",
+      "fixture": "tests/schema_validation/fixtures/issue-16/classification/application-invalid/review-link-different-event.json",
+      "coverage_id": "portia.issue16.classification.review_link_different_event",
+      "expectation": "Structurally valid scenario is rejected by the Issue #16 application invariant documented by its source manifest and focused test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-16/classification/manifest.json"
+    },
+    {
+      "group": "classification",
+      "fixture": "tests/schema_validation/fixtures/issue-16/classification/application-invalid/reviewed-classification-different-event.json",
+      "coverage_id": "portia.issue16.classification.reviewed_classification_different_event",
+      "expectation": "Structurally valid scenario is rejected by the Issue #16 application invariant documented by its source manifest and focused test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-16/classification/manifest.json"
+    },
+    {
+      "group": "classification",
+      "fixture": "tests/schema_validation/fixtures/issue-16/classification/application-invalid/reviewed-classification-self-reference.json",
+      "coverage_id": "portia.issue16.classification.reviewed_classification_self_reference",
+      "expectation": "Structurally valid scenario is rejected by the Issue #16 application invariant documented by its source manifest and focused test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-16/classification/manifest.json"
+    },
+    {
+      "group": "classification",
+      "fixture": "tests/schema_validation/fixtures/issue-16/classification/application-invalid/module-basis-id-mismatch.json",
+      "coverage_id": "portia.issue16.classification.module_basis_id_mismatch",
+      "expectation": "Structurally valid scenario is rejected by the Issue #16 application invariant documented by its source manifest and focused test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-16/classification/manifest.json"
+    },
+    {
+      "group": "classification",
+      "fixture": "tests/schema_validation/fixtures/issue-16/classification/application-invalid/self-supersession.json",
+      "coverage_id": "portia.issue16.classification.self_supersession",
+      "expectation": "Structurally valid scenario is rejected by the Issue #16 application invariant documented by its source manifest and focused test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-16/classification/manifest.json"
+    },
+    {
+      "group": "classification",
+      "fixture": "tests/schema_validation/fixtures/issue-16/classification/application-invalid/duplicate-predecessor-identity.json",
+      "coverage_id": "portia.issue16.classification.duplicate_predecessor_identity",
+      "expectation": "Structurally valid scenario is rejected by the Issue #16 application invariant documented by its source manifest and focused test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-16/classification/manifest.json"
+    },
+    {
+      "group": "classification",
+      "fixture": "tests/schema_validation/fixtures/issue-16/classification/application-invalid/mixed-supersession-reasons.json",
+      "coverage_id": "portia.issue16.classification.mixed_supersession_reasons",
+      "expectation": "Structurally valid scenario is rejected by the Issue #16 application invariant documented by its source manifest and focused test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-16/classification/manifest.json"
+    },
+    {
+      "group": "classification",
+      "fixture": "tests/schema_validation/fixtures/issue-16/classification/application-invalid/single-predecessor-duplicate-consolidation.json",
+      "coverage_id": "portia.issue16.classification.single_predecessor_duplicate_consolidation",
+      "expectation": "Structurally valid scenario is rejected by the Issue #16 application invariant documented by its source manifest and focused test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-16/classification/manifest.json"
+    },
+    {
+      "group": "classification",
+      "fixture": "tests/schema_validation/fixtures/issue-16/classification/application-invalid/multiple-predecessor-ordinary-correction.json",
+      "coverage_id": "portia.issue16.classification.multiple_predecessor_ordinary_correction",
+      "expectation": "Structurally valid scenario is rejected by the Issue #16 application invariant documented by its source manifest and focused test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-16/classification/manifest.json"
+    },
+    {
+      "group": "classification",
+      "fixture": "tests/schema_validation/fixtures/issue-16/classification/application-invalid/ordinary-correction-cross-work.json",
+      "coverage_id": "portia.issue16.classification.ordinary_correction_cross_work",
+      "expectation": "Structurally valid scenario is rejected by the Issue #16 application invariant documented by its source manifest and focused test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-16/classification/manifest.json"
+    },
+    {
+      "group": "classification",
+      "fixture": "tests/schema_validation/fixtures/issue-16/classification/application-invalid/work-root-correction-same-work.json",
+      "coverage_id": "portia.issue16.classification.work_root_correction_same_work",
+      "expectation": "Structurally valid scenario is rejected by the Issue #16 application invariant documented by its source manifest and focused test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-16/classification/manifest.json"
+    },
+    {
+      "group": "classification",
+      "fixture": "tests/schema_validation/fixtures/issue-16/classification/application-invalid/work-root-correction-id-changed.json",
+      "coverage_id": "portia.issue16.classification.work_root_correction_id_changed",
+      "expectation": "Structurally valid scenario is rejected by the Issue #16 application invariant documented by its source manifest and focused test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-16/classification/manifest.json"
+    },
+    {
+      "group": "classification/review-scenarios",
+      "fixture": "tests/schema_validation/fixtures/issue-16/classification/review-scenarios/application-invalid/confirmed-category-mismatch.json",
+      "coverage_id": "portia.issue16.classification.review-scenarios.confirmed_category_mismatch",
+      "expectation": "Structurally valid scenario is rejected by the Issue #16 application invariant documented by its source manifest and focused test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-16/classification/review-scenarios/manifest.json"
+    },
+    {
+      "group": "classification/review-scenarios",
+      "fixture": "tests/schema_validation/fixtures/issue-16/classification/review-scenarios/application-invalid/confirmed-result-branch-mismatch.json",
+      "coverage_id": "portia.issue16.classification.review-scenarios.confirmed_result_branch_mismatch",
+      "expectation": "Structurally valid scenario is rejected by the Issue #16 application invariant documented by its source manifest and focused test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-16/classification/review-scenarios/manifest.json"
+    },
+    {
+      "group": "classification/review-scenarios",
+      "fixture": "tests/schema_validation/fixtures/issue-16/classification/review-scenarios/application-invalid/review-ref-does-not-match-supplied-review.json",
+      "coverage_id": "portia.issue16.classification.review-scenarios.review_ref_does_not_match_supplied_review",
+      "expectation": "Structurally valid scenario is rejected by the Issue #16 application invariant documented by its source manifest and focused test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-16/classification/review-scenarios/manifest.json"
+    },
+    {
+      "group": "classification/review-scenarios",
+      "fixture": "tests/schema_validation/fixtures/issue-16/classification/review-scenarios/application-invalid/review-different-event.json",
+      "coverage_id": "portia.issue16.classification.review-scenarios.review_different_event",
+      "expectation": "Structurally valid scenario is rejected by the Issue #16 application invariant documented by its source manifest and focused test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-16/classification/review-scenarios/manifest.json"
+    },
+    {
+      "group": "classification/review-scenarios",
+      "fixture": "tests/schema_validation/fixtures/issue-16/classification/review-scenarios/application-invalid/selector-does-not-match-reviewer.json",
+      "coverage_id": "portia.issue16.classification.review-scenarios.selector_does_not_match_reviewer",
+      "expectation": "Structurally valid scenario is rejected by the Issue #16 application invariant documented by its source manifest and focused test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-16/classification/review-scenarios/manifest.json"
+    },
+    {
+      "group": "classification/review-scenarios",
+      "fixture": "tests/schema_validation/fixtures/issue-16/classification/review-scenarios/application-invalid/active-before-review-completed.json",
+      "coverage_id": "portia.issue16.classification.review-scenarios.active_before_review_completed",
+      "expectation": "Structurally valid scenario is rejected by the Issue #16 application invariant documented by its source manifest and focused test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-16/classification/review-scenarios/manifest.json"
+    },
+    {
+      "group": "classification/review-scenarios",
+      "fixture": "tests/schema_validation/fixtures/issue-16/classification/review-scenarios/application-invalid/reviewed-classification-different-event.json",
+      "coverage_id": "portia.issue16.classification.review-scenarios.reviewed_classification_different_event",
+      "expectation": "Structurally valid scenario is rejected by the Issue #16 application invariant documented by its source manifest and focused test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-16/classification/review-scenarios/manifest.json"
+    },
+    {
+      "group": "classification/review-scenarios",
+      "fixture": "tests/schema_validation/fixtures/issue-16/classification/review-scenarios/application-invalid/reviewed-classification-ref-does-not-match.json",
+      "coverage_id": "portia.issue16.classification.review-scenarios.reviewed_classification_ref_does_not_match",
+      "expectation": "Structurally valid scenario is rejected by the Issue #16 application invariant documented by its source manifest and focused test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-16/classification/review-scenarios/manifest.json"
+    },
+    {
+      "group": "classification/review-scenarios",
+      "fixture": "tests/schema_validation/fixtures/issue-16/classification/review-scenarios/application-invalid/review-target-mismatch.json",
+      "coverage_id": "portia.issue16.classification.review-scenarios.review_target_mismatch",
+      "expectation": "Structurally valid scenario is rejected by the Issue #16 application invariant documented by its source manifest and focused test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-16/classification/review-scenarios/manifest.json"
+    },
+    {
+      "group": "hypothesis",
+      "fixture": "tests/schema_validation/fixtures/issue-16/hypothesis/application-invalid/active-import-without-review-history.json",
+      "coverage_id": "portia.issue16.hypothesis.active_import_without_review_history",
+      "expectation": "Structurally valid scenario is rejected by the Issue #16 application invariant documented by its source manifest and focused test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-16/hypothesis/manifest.json"
+    },
+    {
+      "group": "hypothesis",
+      "fixture": "tests/schema_validation/fixtures/issue-16/hypothesis/application-invalid/active-paper-without-review-history.json",
+      "coverage_id": "portia.issue16.hypothesis.active_paper_without_review_history",
+      "expectation": "Structurally valid scenario is rejected by the Issue #16 application invariant documented by its source manifest and focused test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-16/hypothesis/manifest.json"
+    },
+    {
+      "group": "hypothesis",
+      "fixture": "tests/schema_validation/fixtures/issue-16/hypothesis/application-invalid/duplicate-logical-evidence-across-roles.json",
+      "coverage_id": "portia.issue16.hypothesis.duplicate_logical_evidence_across_roles",
+      "expectation": "Structurally valid scenario is rejected by the Issue #16 application invariant documented by its source manifest and focused test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-16/hypothesis/manifest.json"
+    },
+    {
+      "group": "hypothesis",
+      "fixture": "tests/schema_validation/fixtures/issue-16/hypothesis/application-invalid/duplicate-predecessor-identity.json",
+      "coverage_id": "portia.issue16.hypothesis.duplicate_predecessor_identity",
+      "expectation": "Structurally valid scenario is rejected by the Issue #16 application invariant documented by its source manifest and focused test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-16/hypothesis/manifest.json"
+    },
+    {
+      "group": "hypothesis",
+      "fixture": "tests/schema_validation/fixtures/issue-16/hypothesis/application-invalid/mixed-supersession-reasons.json",
+      "coverage_id": "portia.issue16.hypothesis.mixed_supersession_reasons",
+      "expectation": "Structurally valid scenario is rejected by the Issue #16 application invariant documented by its source manifest and focused test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-16/hypothesis/manifest.json"
+    },
+    {
+      "group": "hypothesis",
+      "fixture": "tests/schema_validation/fixtures/issue-16/hypothesis/application-invalid/module-evidence-id-mismatch.json",
+      "coverage_id": "portia.issue16.hypothesis.module_evidence_id_mismatch",
+      "expectation": "Structurally valid scenario is rejected by the Issue #16 application invariant documented by its source manifest and focused test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-16/hypothesis/manifest.json"
+    },
+    {
+      "group": "hypothesis",
+      "fixture": "tests/schema_validation/fixtures/issue-16/hypothesis/application-invalid/multiple-predecessor-ordinary-correction.json",
+      "coverage_id": "portia.issue16.hypothesis.multiple_predecessor_ordinary_correction",
+      "expectation": "Structurally valid scenario is rejected by the Issue #16 application invariant documented by its source manifest and focused test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-16/hypothesis/manifest.json"
+    },
+    {
+      "group": "hypothesis",
+      "fixture": "tests/schema_validation/fixtures/issue-16/hypothesis/application-invalid/ordinary-correction-cross-work.json",
+      "coverage_id": "portia.issue16.hypothesis.ordinary_correction_cross_work",
+      "expectation": "Structurally valid scenario is rejected by the Issue #16 application invariant documented by its source manifest and focused test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-16/hypothesis/manifest.json"
+    },
+    {
+      "group": "hypothesis",
+      "fixture": "tests/schema_validation/fixtures/issue-16/hypothesis/application-invalid/review-link-different-event.json",
+      "coverage_id": "portia.issue16.hypothesis.review_link_different_event",
+      "expectation": "Structurally valid scenario is rejected by the Issue #16 application invariant documented by its source manifest and focused test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-16/hypothesis/manifest.json"
+    },
+    {
+      "group": "hypothesis",
+      "fixture": "tests/schema_validation/fixtures/issue-16/hypothesis/application-invalid/self-supersession.json",
+      "coverage_id": "portia.issue16.hypothesis.self_supersession",
+      "expectation": "Structurally valid scenario is rejected by the Issue #16 application invariant documented by its source manifest and focused test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-16/hypothesis/manifest.json"
+    },
+    {
+      "group": "hypothesis",
+      "fixture": "tests/schema_validation/fixtures/issue-16/hypothesis/application-invalid/single-predecessor-duplicate-consolidation.json",
+      "coverage_id": "portia.issue16.hypothesis.single_predecessor_duplicate_consolidation",
+      "expectation": "Structurally valid scenario is rejected by the Issue #16 application invariant documented by its source manifest and focused test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-16/hypothesis/manifest.json"
+    },
+    {
+      "group": "hypothesis",
+      "fixture": "tests/schema_validation/fixtures/issue-16/hypothesis/application-invalid/updated-before-created.json",
+      "coverage_id": "portia.issue16.hypothesis.updated_before_created",
+      "expectation": "Structurally valid scenario is rejected by the Issue #16 application invariant documented by its source manifest and focused test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-16/hypothesis/manifest.json"
+    },
+    {
+      "group": "hypothesis",
+      "fixture": "tests/schema_validation/fixtures/issue-16/hypothesis/application-invalid/work-root-correction-id-changed.json",
+      "coverage_id": "portia.issue16.hypothesis.work_root_correction_id_changed",
+      "expectation": "Structurally valid scenario is rejected by the Issue #16 application invariant documented by its source manifest and focused test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-16/hypothesis/manifest.json"
+    },
+    {
+      "group": "hypothesis",
+      "fixture": "tests/schema_validation/fixtures/issue-16/hypothesis/application-invalid/work-root-correction-same-work.json",
+      "coverage_id": "portia.issue16.hypothesis.work_root_correction_same_work",
+      "expectation": "Structurally valid scenario is rejected by the Issue #16 application invariant documented by its source manifest and focused test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-16/hypothesis/manifest.json"
+    },
+    {
+      "group": "hypothesis/review-scenarios",
+      "fixture": "tests/schema_validation/fixtures/issue-16/hypothesis/review-scenarios/application-invalid/review-different-event.json",
+      "coverage_id": "portia.issue16.hypothesis.review-scenarios.review_different_event",
+      "expectation": "Structurally valid scenario is rejected by the Issue #16 application invariant documented by its source manifest and focused test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-16/hypothesis/review-scenarios/manifest.json"
+    },
+    {
+      "group": "hypothesis/review-scenarios",
+      "fixture": "tests/schema_validation/fixtures/issue-16/hypothesis/review-scenarios/application-invalid/review-ref-does-not-match-supplied-review.json",
+      "coverage_id": "portia.issue16.hypothesis.review-scenarios.review_ref_does_not_match_supplied_review",
+      "expectation": "Structurally valid scenario is rejected by the Issue #16 application invariant documented by its source manifest and focused test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-16/hypothesis/review-scenarios/manifest.json"
+    },
+    {
+      "group": "hypothesis/review-scenarios",
+      "fixture": "tests/schema_validation/fixtures/issue-16/hypothesis/review-scenarios/application-invalid/review-target-mismatch.json",
+      "coverage_id": "portia.issue16.hypothesis.review-scenarios.review_target_mismatch",
+      "expectation": "Structurally valid scenario is rejected by the Issue #16 application invariant documented by its source manifest and focused test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-16/hypothesis/review-scenarios/manifest.json"
+    },
+    {
+      "group": "determination",
+      "fixture": "tests/schema_validation/fixtures/issue-16/determination/application-invalid/active-import-without-review-history.json",
+      "coverage_id": "portia.issue16.determination.active_import_without_review_history",
+      "expectation": "Structurally valid scenario is rejected by the Issue #16 application invariant documented by its source manifest and focused test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-16/determination/manifest.json"
+    },
+    {
+      "group": "determination",
+      "fixture": "tests/schema_validation/fixtures/issue-16/determination/application-invalid/active-paper-without-review-history.json",
+      "coverage_id": "portia.issue16.determination.active_paper_without_review_history",
+      "expectation": "Structurally valid scenario is rejected by the Issue #16 application invariant documented by its source manifest and focused test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-16/determination/manifest.json"
+    },
+    {
+      "group": "determination",
+      "fixture": "tests/schema_validation/fixtures/issue-16/determination/application-invalid/duplicate-logical-basis-across-roles.json",
+      "coverage_id": "portia.issue16.determination.duplicate_logical_basis_across_roles",
+      "expectation": "Structurally valid scenario is rejected by the Issue #16 application invariant documented by its source manifest and focused test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-16/determination/manifest.json"
+    },
+    {
+      "group": "determination",
+      "fixture": "tests/schema_validation/fixtures/issue-16/determination/application-invalid/duplicate-predecessor-identity.json",
+      "coverage_id": "portia.issue16.determination.duplicate_predecessor_identity",
+      "expectation": "Structurally valid scenario is rejected by the Issue #16 application invariant documented by its source manifest and focused test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-16/determination/manifest.json"
+    },
+    {
+      "group": "determination",
+      "fixture": "tests/schema_validation/fixtures/issue-16/determination/application-invalid/mixed-supersession-reasons.json",
+      "coverage_id": "portia.issue16.determination.mixed_supersession_reasons",
+      "expectation": "Structurally valid scenario is rejected by the Issue #16 application invariant documented by its source manifest and focused test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-16/determination/manifest.json"
+    },
+    {
+      "group": "determination",
+      "fixture": "tests/schema_validation/fixtures/issue-16/determination/application-invalid/module-basis-id-mismatch.json",
+      "coverage_id": "portia.issue16.determination.module_basis_id_mismatch",
+      "expectation": "Structurally valid scenario is rejected by the Issue #16 application invariant documented by its source manifest and focused test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-16/determination/manifest.json"
+    },
+    {
+      "group": "determination",
+      "fixture": "tests/schema_validation/fixtures/issue-16/determination/application-invalid/multiple-predecessor-ordinary-correction.json",
+      "coverage_id": "portia.issue16.determination.multiple_predecessor_ordinary_correction",
+      "expectation": "Structurally valid scenario is rejected by the Issue #16 application invariant documented by its source manifest and focused test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-16/determination/manifest.json"
+    },
+    {
+      "group": "determination",
+      "fixture": "tests/schema_validation/fixtures/issue-16/determination/application-invalid/ordinary-correction-cross-work.json",
+      "coverage_id": "portia.issue16.determination.ordinary_correction_cross_work",
+      "expectation": "Structurally valid scenario is rejected by the Issue #16 application invariant documented by its source manifest and focused test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-16/determination/manifest.json"
+    },
+    {
+      "group": "determination",
+      "fixture": "tests/schema_validation/fixtures/issue-16/determination/application-invalid/reconsidered-without-review.json",
+      "coverage_id": "portia.issue16.determination.reconsidered_without_review",
+      "expectation": "Structurally valid scenario is rejected by the Issue #16 application invariant documented by its source manifest and focused test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-16/determination/manifest.json"
+    },
+    {
+      "group": "determination",
+      "fixture": "tests/schema_validation/fixtures/issue-16/determination/application-invalid/recorded-institutional-family-member-decision-maker.json",
+      "coverage_id": "portia.issue16.determination.recorded_institutional_family_member_decision_maker",
+      "expectation": "Structurally valid scenario is rejected by the Issue #16 application invariant documented by its source manifest and focused test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-16/determination/manifest.json"
+    },
+    {
+      "group": "determination",
+      "fixture": "tests/schema_validation/fixtures/issue-16/determination/application-invalid/recorded-institutional-roster-student-decision-maker.json",
+      "coverage_id": "portia.issue16.determination.recorded_institutional_roster_student_decision_maker",
+      "expectation": "Structurally valid scenario is rejected by the Issue #16 application invariant documented by its source manifest and focused test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-16/determination/manifest.json"
+    },
+    {
+      "group": "determination",
+      "fixture": "tests/schema_validation/fixtures/issue-16/determination/application-invalid/reversed-without-review.json",
+      "coverage_id": "portia.issue16.determination.reversed_without_review",
+      "expectation": "Structurally valid scenario is rejected by the Issue #16 application invariant documented by its source manifest and focused test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-16/determination/manifest.json"
+    },
+    {
+      "group": "determination",
+      "fixture": "tests/schema_validation/fixtures/issue-16/determination/application-invalid/review-link-different-event.json",
+      "coverage_id": "portia.issue16.determination.review_link_different_event",
+      "expectation": "Structurally valid scenario is rejected by the Issue #16 application invariant documented by its source manifest and focused test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-16/determination/manifest.json"
+    },
+    {
+      "group": "determination",
+      "fixture": "tests/schema_validation/fixtures/issue-16/determination/application-invalid/self-supersession.json",
+      "coverage_id": "portia.issue16.determination.self_supersession",
+      "expectation": "Structurally valid scenario is rejected by the Issue #16 application invariant documented by its source manifest and focused test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-16/determination/manifest.json"
+    },
+    {
+      "group": "determination",
+      "fixture": "tests/schema_validation/fixtures/issue-16/determination/application-invalid/single-predecessor-duplicate-consolidation.json",
+      "coverage_id": "portia.issue16.determination.single_predecessor_duplicate_consolidation",
+      "expectation": "Structurally valid scenario is rejected by the Issue #16 application invariant documented by its source manifest and focused test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-16/determination/manifest.json"
+    },
+    {
+      "group": "determination",
+      "fixture": "tests/schema_validation/fixtures/issue-16/determination/application-invalid/teacher-local-actor-decision-maker.json",
+      "coverage_id": "portia.issue16.determination.teacher_local_actor_decision_maker",
+      "expectation": "Structurally valid scenario is rejected by the Issue #16 application invariant documented by its source manifest and focused test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-16/determination/manifest.json"
+    },
+    {
+      "group": "determination",
+      "fixture": "tests/schema_validation/fixtures/issue-16/determination/application-invalid/updated-before-created.json",
+      "coverage_id": "portia.issue16.determination.updated_before_created",
+      "expectation": "Structurally valid scenario is rejected by the Issue #16 application invariant documented by its source manifest and focused test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-16/determination/manifest.json"
+    },
+    {
+      "group": "determination",
+      "fixture": "tests/schema_validation/fixtures/issue-16/determination/application-invalid/work-root-correction-id-changed.json",
+      "coverage_id": "portia.issue16.determination.work_root_correction_id_changed",
+      "expectation": "Structurally valid scenario is rejected by the Issue #16 application invariant documented by its source manifest and focused test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-16/determination/manifest.json"
+    },
+    {
+      "group": "determination",
+      "fixture": "tests/schema_validation/fixtures/issue-16/determination/application-invalid/work-root-correction-same-work.json",
+      "coverage_id": "portia.issue16.determination.work_root_correction_same_work",
+      "expectation": "Structurally valid scenario is rejected by the Issue #16 application invariant documented by its source manifest and focused test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-16/determination/manifest.json"
+    },
+    {
+      "group": "determination/review-scenarios",
+      "fixture": "tests/schema_validation/fixtures/issue-16/determination/review-scenarios/application-invalid/active-determination-before-review-completed.json",
+      "coverage_id": "portia.issue16.determination.review-scenarios.active_determination_before_review_completed",
+      "expectation": "Structurally valid scenario is rejected by the Issue #16 application invariant documented by its source manifest and focused test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-16/determination/review-scenarios/manifest.json"
+    },
+    {
+      "group": "determination/review-scenarios",
+      "fixture": "tests/schema_validation/fixtures/issue-16/determination/review-scenarios/application-invalid/active-determination-with-nonactive-review.json",
+      "coverage_id": "portia.issue16.determination.review-scenarios.active_determination_with_nonactive_review",
+      "expectation": "Structurally valid scenario is rejected by the Issue #16 application invariant documented by its source manifest and focused test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-16/determination/review-scenarios/manifest.json"
+    },
+    {
+      "group": "determination/review-scenarios",
+      "fixture": "tests/schema_validation/fixtures/issue-16/determination/review-scenarios/application-invalid/review-different-event.json",
+      "coverage_id": "portia.issue16.determination.review-scenarios.review_different_event",
+      "expectation": "Structurally valid scenario is rejected by the Issue #16 application invariant documented by its source manifest and focused test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-16/determination/review-scenarios/manifest.json"
+    },
+    {
+      "group": "determination/review-scenarios",
+      "fixture": "tests/schema_validation/fixtures/issue-16/determination/review-scenarios/application-invalid/review-ref-does-not-match-supplied-review.json",
+      "coverage_id": "portia.issue16.determination.review-scenarios.review_ref_does_not_match_supplied_review",
+      "expectation": "Structurally valid scenario is rejected by the Issue #16 application invariant documented by its source manifest and focused test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-16/determination/review-scenarios/manifest.json"
+    },
+    {
+      "group": "determination/review-scenarios",
+      "fixture": "tests/schema_validation/fixtures/issue-16/determination/review-scenarios/application-invalid/review-target-mismatch.json",
+      "coverage_id": "portia.issue16.determination.review-scenarios.review_target_mismatch",
+      "expectation": "Structurally valid scenario is rejected by the Issue #16 application invariant documented by its source manifest and focused test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-16/determination/review-scenarios/manifest.json"
+    },
+    {
+      "group": "determination/reconsideration-scenarios",
+      "fixture": "tests/schema_validation/fixtures/issue-16/determination/reconsideration-scenarios/application-invalid/reconsideration-review-different-event.json",
+      "coverage_id": "portia.issue16.determination.reconsideration-scenarios.reconsideration_review_different_event",
+      "expectation": "Structurally valid scenario is rejected by the Issue #16 application invariant documented by its source manifest and focused test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-16/determination/reconsideration-scenarios/manifest.json"
+    },
+    {
+      "group": "determination/reconsideration-scenarios",
+      "fixture": "tests/schema_validation/fixtures/issue-16/determination/reconsideration-scenarios/application-invalid/reconsideration-review-not-completed.json",
+      "coverage_id": "portia.issue16.determination.reconsideration-scenarios.reconsideration_review_not_completed",
+      "expectation": "Structurally valid scenario is rejected by the Issue #16 application invariant documented by its source manifest and focused test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-16/determination/reconsideration-scenarios/manifest.json"
+    },
+    {
+      "group": "determination/reconsideration-scenarios",
+      "fixture": "tests/schema_validation/fixtures/issue-16/determination/reconsideration-scenarios/application-invalid/reconsideration-review-ref-mismatch.json",
+      "coverage_id": "portia.issue16.determination.reconsideration-scenarios.reconsideration_review_ref_mismatch",
+      "expectation": "Structurally valid scenario is rejected by the Issue #16 application invariant documented by its source manifest and focused test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-16/determination/reconsideration-scenarios/manifest.json"
+    },
+    {
+      "group": "determination/reconsideration-scenarios",
+      "fixture": "tests/schema_validation/fixtures/issue-16/determination/reconsideration-scenarios/application-invalid/reconsideration-target-mismatch.json",
+      "coverage_id": "portia.issue16.determination.reconsideration-scenarios.reconsideration_target_mismatch",
+      "expectation": "Structurally valid scenario is rejected by the Issue #16 application invariant documented by its source manifest and focused test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-16/determination/reconsideration-scenarios/manifest.json"
+    },
+    {
+      "group": "determination/reconsideration-scenarios",
+      "fixture": "tests/schema_validation/fixtures/issue-16/determination/reconsideration-scenarios/application-invalid/reversed-same-outcome.json",
+      "coverage_id": "portia.issue16.determination.reconsideration-scenarios.reversed_same_outcome",
+      "expectation": "Structurally valid scenario is rejected by the Issue #16 application invariant documented by its source manifest and focused test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-16/determination/reconsideration-scenarios/manifest.json"
+    },
+    {
+      "group": "determination/reconsideration-scenarios",
+      "fixture": "tests/schema_validation/fixtures/issue-16/determination/reconsideration-scenarios/application-invalid/review-question-not-reconsideration.json",
+      "coverage_id": "portia.issue16.determination.reconsideration-scenarios.review_question_not_reconsideration",
+      "expectation": "Structurally valid scenario is rejected by the Issue #16 application invariant documented by its source manifest and focused test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-16/determination/reconsideration-scenarios/manifest.json"
+    },
+    {
+      "group": "determination/reconsideration-scenarios",
+      "fixture": "tests/schema_validation/fixtures/issue-16/determination/reconsideration-scenarios/application-invalid/review-subject-does-not-match-predecessor.json",
+      "coverage_id": "portia.issue16.determination.reconsideration-scenarios.review_subject_does_not_match_predecessor",
+      "expectation": "Structurally valid scenario is rejected by the Issue #16 application invariant documented by its source manifest and focused test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-16/determination/reconsideration-scenarios/manifest.json"
+    },
+    {
+      "group": "determination/reconsideration-scenarios",
+      "fixture": "tests/schema_validation/fixtures/issue-16/determination/reconsideration-scenarios/application-invalid/review-trigger-not-reconsideration.json",
+      "coverage_id": "portia.issue16.determination.reconsideration-scenarios.review_trigger_not_reconsideration",
+      "expectation": "Structurally valid scenario is rejected by the Issue #16 application invariant documented by its source manifest and focused test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-16/determination/reconsideration-scenarios/manifest.json"
+    },
+    {
+      "group": "determination/reconsideration-scenarios",
+      "fixture": "tests/schema_validation/fixtures/issue-16/determination/reconsideration-scenarios/application-invalid/successor-predecessor-does-not-match-supplied-prior.json",
+      "coverage_id": "portia.issue16.determination.reconsideration-scenarios.successor_predecessor_does_not_match_supplied_prior",
+      "expectation": "Structurally valid scenario is rejected by the Issue #16 application invariant documented by its source manifest and focused test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-16/determination/reconsideration-scenarios/manifest.json"
+    }
+  ],
+  "programmatic_invariants": [
+    {
+      "coverage_id": "portia.issue16.shared.amendment_prohibited.review",
+      "test": "tests/schema_validation/test_issue_16_shared_infrastructure_compatibility.py::test_v1_amendment_is_structurally_reusable_but_application_prohibited",
+      "expectation": "Material Review amendment is application-prohibited in v1."
+    },
+    {
+      "coverage_id": "portia.issue16.shared.amendment_prohibited.classification",
+      "test": "tests/schema_validation/test_issue_16_shared_infrastructure_compatibility.py::test_v1_amendment_is_structurally_reusable_but_application_prohibited",
+      "expectation": "Material Classification amendment is application-prohibited in v1."
+    },
+    {
+      "coverage_id": "portia.issue16.shared.amendment_prohibited.hypothesis",
+      "test": "tests/schema_validation/test_issue_16_shared_infrastructure_compatibility.py::test_v1_amendment_is_structurally_reusable_but_application_prohibited",
+      "expectation": "Material Hypothesis amendment is application-prohibited in v1."
+    },
+    {
+      "coverage_id": "portia.issue16.shared.amendment_prohibited.determination",
+      "test": "tests/schema_validation/test_issue_16_shared_infrastructure_compatibility.py::test_v1_amendment_is_structurally_reusable_but_application_prohibited",
+      "expectation": "Material Determination amendment is application-prohibited in v1."
+    },
+    {
+      "coverage_id": "portia.issue16.shared.disagreement_nonadjudicating",
+      "test": "tests/schema_validation/test_issue_16_shared_infrastructure_compatibility.py::test_statement_of_disagreement_reuses_generic_exact_target",
+      "expectation": "Statement of Disagreement preserves its exact target and does not invalidate, supersede, or reverse it."
+    },
+    {
+      "coverage_id": "portia.issue16.shared.no_silent_successor_follow",
+      "test": "tests/schema_validation/test_issue_16_shared_infrastructure_compatibility.py::test_dependency_does_not_silently_follow_a_successor",
+      "expectation": "Exact dependency identity remains bound to the predecessor rather than silently following a successor."
+    },
+    {
+      "coverage_id": "portia.issue16.shared.migration_exact_identity",
+      "test": "tests/schema_validation/test_issue_16_shared_infrastructure_compatibility.py::test_record_migration_reuses_generic_exact_endpoints",
+      "expectation": "Migration uses exact work-record endpoints and preserves logical identity."
+    },
+    {
+      "coverage_id": "portia.issue16.shared.operational_privacy",
+      "test": "tests/schema_validation/test_issue_16_shared_infrastructure_compatibility.py::test_quarantine_and_integrity_remain_diagnostics_for_each_family",
+      "expectation": "Quarantine and Integrity Finding remain privacy-minimized diagnostics rather than substantive behavior findings."
+    },
+    {
+      "coverage_id": "portia.issue16.shared.derived_not_canonical",
+      "test": "tests/schema_validation/test_issue_16_shared_infrastructure_compatibility.py::test_current_pointer_is_navigation_not_canonical_judgment",
+      "expectation": "Derived current pointers are navigation metadata and never canonical judgments."
+    }
+  ]
+}

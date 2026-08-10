@@ -8,6 +8,14 @@
 **Date:** 2026-08-07
 **Branch:** `15-account-observation-domain-models`
 
+> **Current downstream authority (Issue #16, 2026-08-09):**
+> This accepted Issue #15 design remains authoritative for source evidence.
+> Accepted ADR 0012 begins after this layer and defines
+> `Review → Classification and/or Hypothesis → Determination`. Reuse of
+> `represented_human_attribution@1` for later reviewer/selector/author/
+> decision-maker identity does not change Account/Observation semantics and does
+> not make represented-human identity proof of institutional authority.
+
 ## 1. Purpose
 
 This document defines the accepted architecture for Portia Accounts and Observations under ADR 0011.

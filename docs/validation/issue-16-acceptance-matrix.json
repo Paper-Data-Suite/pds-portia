@@ -1,0 +1,1274 @@
+{
+  "matrix_version": "1",
+  "issue": 16,
+  "title": "Review, Classification, Hypothesis, and Determination acceptance matrix",
+  "status": "accepted",
+  "criteria_count": 108,
+  "criteria": [
+    {
+      "criterion_id": "domain_boundaries.001",
+      "group": "domain_boundaries",
+      "status": "pass",
+      "statement": "Review is defined as distinct from substantive judgment.",
+      "evidence": [
+        "docs/decisions/0012-define-review-classification-hypothesis-and-determination-domain-models.md",
+        "docs/design/portia-review-classification-hypothesis-and-determination-domain-models.md"
+      ]
+    },
+    {
+      "criterion_id": "domain_boundaries.002",
+      "group": "domain_boundaries",
+      "status": "pass",
+      "statement": "Concern/referral routing is distinct from evidence and findings.",
+      "evidence": [
+        "docs/decisions/0012-define-review-classification-hypothesis-and-determination-domain-models.md",
+        "docs/design/portia-review-classification-hypothesis-and-determination-domain-models.md"
+      ]
+    },
+    {
+      "criterion_id": "domain_boundaries.003",
+      "group": "domain_boundaries",
+      "status": "pass",
+      "statement": "Classification semantic unit is defined.",
+      "evidence": [
+        "docs/decisions/0012-define-review-classification-hypothesis-and-determination-domain-models.md",
+        "docs/design/portia-review-classification-hypothesis-and-determination-domain-models.md"
+      ]
+    },
+    {
+      "criterion_id": "domain_boundaries.004",
+      "group": "domain_boundaries",
+      "status": "pass",
+      "statement": "Hypothesis semantic unit is defined.",
+      "evidence": [
+        "docs/decisions/0012-define-review-classification-hypothesis-and-determination-domain-models.md",
+        "docs/design/portia-review-classification-hypothesis-and-determination-domain-models.md"
+      ]
+    },
+    {
+      "criterion_id": "domain_boundaries.005",
+      "group": "domain_boundaries",
+      "status": "pass",
+      "statement": "Determination semantic unit is defined.",
+      "evidence": [
+        "docs/decisions/0012-define-review-classification-hypothesis-and-determination-domain-models.md",
+        "docs/design/portia-review-classification-hypothesis-and-determination-domain-models.md"
+      ]
+    },
+    {
+      "criterion_id": "domain_boundaries.006",
+      "group": "domain_boundaries",
+      "status": "pass",
+      "statement": "Classification is distinct from Determination.",
+      "evidence": [
+        "docs/decisions/0012-define-review-classification-hypothesis-and-determination-domain-models.md",
+        "docs/design/portia-review-classification-hypothesis-and-determination-domain-models.md"
+      ]
+    },
+    {
+      "criterion_id": "domain_boundaries.007",
+      "group": "domain_boundaries",
+      "status": "pass",
+      "statement": "Hypothesis is distinct from Determination.",
+      "evidence": [
+        "docs/decisions/0012-define-review-classification-hypothesis-and-determination-domain-models.md",
+        "docs/design/portia-review-classification-hypothesis-and-determination-domain-models.md"
+      ]
+    },
+    {
+      "criterion_id": "domain_boundaries.008",
+      "group": "domain_boundaries",
+      "status": "pass",
+      "statement": "Determination is distinct from Response.",
+      "evidence": [
+        "docs/decisions/0012-define-review-classification-hypothesis-and-determination-domain-models.md",
+        "docs/design/portia-review-classification-hypothesis-and-determination-domain-models.md"
+      ]
+    },
+    {
+      "criterion_id": "domain_boundaries.009",
+      "group": "domain_boundaries",
+      "status": "pass",
+      "statement": "None of the new records becomes a student identity attribute.",
+      "evidence": [
+        "docs/decisions/0012-define-review-classification-hypothesis-and-determination-domain-models.md",
+        "docs/design/portia-review-classification-hypothesis-and-determination-domain-models.md"
+      ]
+    },
+    {
+      "criterion_id": "domain_boundaries.010",
+      "group": "domain_boundaries",
+      "status": "pass",
+      "statement": "No Event is required to produce a Classification, Hypothesis, or Determination.",
+      "evidence": [
+        "docs/decisions/0012-define-review-classification-hypothesis-and-determination-domain-models.md",
+        "docs/design/portia-review-classification-hypothesis-and-determination-domain-models.md"
+      ]
+    },
+    {
+      "criterion_id": "review.011",
+      "group": "review",
+      "status": "pass",
+      "statement": "The architecture decides whether Review is a canonical record.",
+      "evidence": [
+        "schemas/v1/reviews/review.schema.json",
+        "tests/schema_validation/test_issue_16_review_contract.py",
+        "tests/schema_validation/fixtures/issue-16/review"
+      ]
+    },
+    {
+      "criterion_id": "review.012",
+      "group": "review",
+      "status": "pass",
+      "statement": "Review identity and canonical storage are defined.",
+      "evidence": [
+        "schemas/v1/reviews/review.schema.json",
+        "tests/schema_validation/test_issue_16_review_contract.py",
+        "tests/schema_validation/fixtures/issue-16/review"
+      ]
+    },
+    {
+      "criterion_id": "review.013",
+      "group": "review",
+      "status": "pass",
+      "statement": "Review question/purpose is explicit.",
+      "evidence": [
+        "schemas/v1/reviews/review.schema.json",
+        "tests/schema_validation/test_issue_16_review_contract.py",
+        "tests/schema_validation/fixtures/issue-16/review"
+      ]
+    },
+    {
+      "criterion_id": "review.014",
+      "group": "review",
+      "status": "pass",
+      "statement": "Review target is explicit.",
+      "evidence": [
+        "schemas/v1/reviews/review.schema.json",
+        "tests/schema_validation/test_issue_16_review_contract.py",
+        "tests/schema_validation/fixtures/issue-16/review"
+      ]
+    },
+    {
+      "criterion_id": "review.015",
+      "group": "review",
+      "status": "pass",
+      "statement": "Review workflow state is defined.",
+      "evidence": [
+        "schemas/v1/reviews/review.schema.json",
+        "tests/schema_validation/test_issue_16_review_contract.py",
+        "tests/schema_validation/fixtures/issue-16/review"
+      ]
+    },
+    {
+      "criterion_id": "review.016",
+      "group": "review",
+      "status": "pass",
+      "statement": "Reviewer is distinct from recorder.",
+      "evidence": [
+        "schemas/v1/reviews/review.schema.json",
+        "tests/schema_validation/test_issue_16_review_contract.py",
+        "tests/schema_validation/fixtures/issue-16/review"
+      ]
+    },
+    {
+      "criterion_id": "review.017",
+      "group": "review",
+      "status": "pass",
+      "statement": "Evidence considered during Review can be represented.",
+      "evidence": [
+        "schemas/v1/reviews/review.schema.json",
+        "tests/schema_validation/test_issue_16_review_contract.py",
+        "tests/schema_validation/fixtures/issue-16/review"
+      ]
+    },
+    {
+      "criterion_id": "review.018",
+      "group": "review",
+      "status": "pass",
+      "statement": "Review may complete without a Determination.",
+      "evidence": [
+        "schemas/v1/reviews/review.schema.json",
+        "tests/schema_validation/test_issue_16_review_contract.py",
+        "tests/schema_validation/fixtures/issue-16/review"
+      ]
+    },
+    {
+      "criterion_id": "classification.019",
+      "group": "classification",
+      "status": "pass",
+      "statement": "Reporter-selected and reviewer-selected/confirmed classifications remain distinguishable.",
+      "evidence": [
+        "schemas/v1/classifications/classification.schema.json",
+        "tests/schema_validation/test_issue_16_classification_contract.py",
+        "tests/schema_validation/fixtures/issue-16/classification"
+      ]
+    },
+    {
+      "criterion_id": "classification.020",
+      "group": "classification",
+      "status": "pass",
+      "statement": "Reviewer action does not rewrite reporter authorship.",
+      "evidence": [
+        "schemas/v1/classifications/classification.schema.json",
+        "tests/schema_validation/test_issue_16_classification_contract.py",
+        "tests/schema_validation/fixtures/issue-16/classification"
+      ]
+    },
+    {
+      "criterion_id": "classification.021",
+      "group": "classification",
+      "status": "pass",
+      "statement": "Classification definition identity/version is preserved.",
+      "evidence": [
+        "schemas/v1/classifications/classification.schema.json",
+        "tests/schema_validation/test_issue_16_classification_contract.py",
+        "tests/schema_validation/fixtures/issue-16/classification"
+      ]
+    },
+    {
+      "criterion_id": "classification.022",
+      "group": "classification",
+      "status": "pass",
+      "statement": "A bare mutable category label is not sufficient historical identity.",
+      "evidence": [
+        "schemas/v1/classifications/classification.schema.json",
+        "tests/schema_validation/test_issue_16_classification_contract.py",
+        "tests/schema_validation/fixtures/issue-16/classification"
+      ]
+    },
+    {
+      "criterion_id": "classification.023",
+      "group": "classification",
+      "status": "pass",
+      "statement": "`unable to determine` or equivalent is supported.",
+      "evidence": [
+        "schemas/v1/classifications/classification.schema.json",
+        "tests/schema_validation/test_issue_16_classification_contract.py",
+        "tests/schema_validation/fixtures/issue-16/classification"
+      ]
+    },
+    {
+      "criterion_id": "classification.024",
+      "group": "classification",
+      "status": "pass",
+      "statement": "Classification does not establish credibility, fault, intent, policy violation, or behavioral function.",
+      "evidence": [
+        "schemas/v1/classifications/classification.schema.json",
+        "tests/schema_validation/test_issue_16_classification_contract.py",
+        "tests/schema_validation/fixtures/issue-16/classification"
+      ]
+    },
+    {
+      "criterion_id": "classification.025",
+      "group": "classification",
+      "status": "pass",
+      "statement": "Classification is Event/Participant contextual rather than a person label.",
+      "evidence": [
+        "schemas/v1/classifications/classification.schema.json",
+        "tests/schema_validation/test_issue_16_classification_contract.py",
+        "tests/schema_validation/fixtures/issue-16/classification"
+      ]
+    },
+    {
+      "criterion_id": "classification.026",
+      "group": "classification",
+      "status": "pass",
+      "statement": "Event-level Classification does not imply every Participant.",
+      "evidence": [
+        "schemas/v1/classifications/classification.schema.json",
+        "tests/schema_validation/test_issue_16_classification_contract.py",
+        "tests/schema_validation/fixtures/issue-16/classification"
+      ]
+    },
+    {
+      "criterion_id": "hypothesis.027",
+      "group": "hypothesis",
+      "status": "pass",
+      "statement": "Hypothesis is explicitly tentative.",
+      "evidence": [
+        "schemas/v1/hypotheses/hypothesis.schema.json",
+        "tests/schema_validation/test_issue_16_hypothesis_contract.py",
+        "tests/schema_validation/fixtures/issue-16/hypothesis"
+      ]
+    },
+    {
+      "criterion_id": "hypothesis.028",
+      "group": "hypothesis",
+      "status": "pass",
+      "statement": "Competing Hypotheses may coexist.",
+      "evidence": [
+        "schemas/v1/hypotheses/hypothesis.schema.json",
+        "tests/schema_validation/test_issue_16_hypothesis_contract.py",
+        "tests/schema_validation/fixtures/issue-16/hypothesis"
+      ]
+    },
+    {
+      "criterion_id": "hypothesis.029",
+      "group": "hypothesis",
+      "status": "pass",
+      "statement": "Supporting evidence is representable.",
+      "evidence": [
+        "schemas/v1/hypotheses/hypothesis.schema.json",
+        "tests/schema_validation/test_issue_16_hypothesis_contract.py",
+        "tests/schema_validation/fixtures/issue-16/hypothesis"
+      ]
+    },
+    {
+      "criterion_id": "hypothesis.030",
+      "group": "hypothesis",
+      "status": "pass",
+      "statement": "Contrary evidence is representable.",
+      "evidence": [
+        "schemas/v1/hypotheses/hypothesis.schema.json",
+        "tests/schema_validation/test_issue_16_hypothesis_contract.py",
+        "tests/schema_validation/fixtures/issue-16/hypothesis"
+      ]
+    },
+    {
+      "criterion_id": "hypothesis.031",
+      "group": "hypothesis",
+      "status": "pass",
+      "statement": "Evidence reference count does not equal evidentiary weight.",
+      "evidence": [
+        "schemas/v1/hypotheses/hypothesis.schema.json",
+        "tests/schema_validation/test_issue_16_hypothesis_contract.py",
+        "tests/schema_validation/fixtures/issue-16/hypothesis"
+      ]
+    },
+    {
+      "criterion_id": "hypothesis.032",
+      "group": "hypothesis",
+      "status": "pass",
+      "statement": "Repeated secondhand lineage does not become automatic corroboration.",
+      "evidence": [
+        "schemas/v1/hypotheses/hypothesis.schema.json",
+        "tests/schema_validation/test_issue_16_hypothesis_contract.py",
+        "tests/schema_validation/fixtures/issue-16/hypothesis"
+      ]
+    },
+    {
+      "criterion_id": "hypothesis.033",
+      "group": "hypothesis",
+      "status": "pass",
+      "statement": "Confidence/uncertainty semantics are explicitly decided.",
+      "evidence": [
+        "schemas/v1/hypotheses/hypothesis.schema.json",
+        "tests/schema_validation/test_issue_16_hypothesis_contract.py",
+        "tests/schema_validation/fixtures/issue-16/hypothesis"
+      ]
+    },
+    {
+      "criterion_id": "hypothesis.034",
+      "group": "hypothesis",
+      "status": "pass",
+      "statement": "No predictive probability or risk score is introduced.",
+      "evidence": [
+        "schemas/v1/hypotheses/hypothesis.schema.json",
+        "tests/schema_validation/test_issue_16_hypothesis_contract.py",
+        "tests/schema_validation/fixtures/issue-16/hypothesis"
+      ]
+    },
+    {
+      "criterion_id": "hypothesis.035",
+      "group": "hypothesis",
+      "status": "pass",
+      "statement": "Routine Event review is not represented as an FBA.",
+      "evidence": [
+        "schemas/v1/hypotheses/hypothesis.schema.json",
+        "tests/schema_validation/test_issue_16_hypothesis_contract.py",
+        "tests/schema_validation/fixtures/issue-16/hypothesis"
+      ]
+    },
+    {
+      "criterion_id": "hypothesis.036",
+      "group": "hypothesis",
+      "status": "pass",
+      "statement": "Cross-Event/FBA ownership is explicitly defined or deferred to #18.",
+      "evidence": [
+        "schemas/v1/hypotheses/hypothesis.schema.json",
+        "tests/schema_validation/test_issue_16_hypothesis_contract.py",
+        "tests/schema_validation/fixtures/issue-16/hypothesis"
+      ]
+    },
+    {
+      "criterion_id": "determination.037",
+      "group": "determination",
+      "status": "pass",
+      "statement": "Determination answers a bounded question.",
+      "evidence": [
+        "schemas/v1/determinations/determination.schema.json",
+        "tests/schema_validation/test_issue_16_determination_contract.py",
+        "tests/schema_validation/fixtures/issue-16/determination"
+      ]
+    },
+    {
+      "criterion_id": "determination.038",
+      "group": "determination",
+      "status": "pass",
+      "statement": "Decision-maker is distinct from recorder.",
+      "evidence": [
+        "schemas/v1/determinations/determination.schema.json",
+        "tests/schema_validation/test_issue_16_determination_contract.py",
+        "tests/schema_validation/fixtures/issue-16/determination"
+      ]
+    },
+    {
+      "criterion_id": "determination.039",
+      "group": "determination",
+      "status": "pass",
+      "statement": "Teacher-local and institutional/external decision scope are distinguishable.",
+      "evidence": [
+        "schemas/v1/determinations/determination.schema.json",
+        "tests/schema_validation/test_issue_16_determination_contract.py",
+        "tests/schema_validation/fixtures/issue-16/determination"
+      ]
+    },
+    {
+      "criterion_id": "determination.040",
+      "group": "determination",
+      "status": "pass",
+      "statement": "Actor role/title does not establish authority.",
+      "evidence": [
+        "schemas/v1/determinations/determination.schema.json",
+        "tests/schema_validation/test_issue_16_determination_contract.py",
+        "tests/schema_validation/fixtures/issue-16/determination"
+      ]
+    },
+    {
+      "criterion_id": "determination.041",
+      "group": "determination",
+      "status": "pass",
+      "statement": "Local-operator status does not establish institutional authority.",
+      "evidence": [
+        "schemas/v1/determinations/determination.schema.json",
+        "tests/schema_validation/test_issue_16_determination_contract.py",
+        "tests/schema_validation/fixtures/issue-16/determination"
+      ]
+    },
+    {
+      "criterion_id": "determination.042",
+      "group": "determination",
+      "status": "pass",
+      "statement": "Authority basis is represented where required.",
+      "evidence": [
+        "schemas/v1/determinations/determination.schema.json",
+        "tests/schema_validation/test_issue_16_determination_contract.py",
+        "tests/schema_validation/fixtures/issue-16/determination"
+      ]
+    },
+    {
+      "criterion_id": "determination.043",
+      "group": "determination",
+      "status": "pass",
+      "statement": "Policy/process basis is represented where required.",
+      "evidence": [
+        "schemas/v1/determinations/determination.schema.json",
+        "tests/schema_validation/test_issue_16_determination_contract.py",
+        "tests/schema_validation/fixtures/issue-16/determination"
+      ]
+    },
+    {
+      "criterion_id": "determination.044",
+      "group": "determination",
+      "status": "pass",
+      "statement": "Portia does not claim to authenticate institutional authority it cannot verify.",
+      "evidence": [
+        "schemas/v1/determinations/determination.schema.json",
+        "tests/schema_validation/test_issue_16_determination_contract.py",
+        "tests/schema_validation/fixtures/issue-16/determination"
+      ]
+    },
+    {
+      "criterion_id": "determination.045",
+      "group": "determination",
+      "status": "pass",
+      "statement": "Insufficient-information or unresolved outcomes are supported.",
+      "evidence": [
+        "schemas/v1/determinations/determination.schema.json",
+        "tests/schema_validation/test_issue_16_determination_contract.py",
+        "tests/schema_validation/fixtures/issue-16/determination"
+      ]
+    },
+    {
+      "criterion_id": "determination.046",
+      "group": "determination",
+      "status": "pass",
+      "statement": "`not substantiated` does not invalidate source evidence automatically.",
+      "evidence": [
+        "schemas/v1/determinations/determination.schema.json",
+        "tests/schema_validation/test_issue_16_determination_contract.py",
+        "tests/schema_validation/fixtures/issue-16/determination"
+      ]
+    },
+    {
+      "criterion_id": "determination.047",
+      "group": "determination",
+      "status": "pass",
+      "statement": "Participant-specific Determinations are explicitly targeted.",
+      "evidence": [
+        "schemas/v1/determinations/determination.schema.json",
+        "tests/schema_validation/test_issue_16_determination_contract.py",
+        "tests/schema_validation/fixtures/issue-16/determination"
+      ]
+    },
+    {
+      "criterion_id": "determination.048",
+      "group": "determination",
+      "status": "pass",
+      "statement": "Event-level Determination does not imply every Participant.",
+      "evidence": [
+        "schemas/v1/determinations/determination.schema.json",
+        "tests/schema_validation/test_issue_16_determination_contract.py",
+        "tests/schema_validation/fixtures/issue-16/determination"
+      ]
+    },
+    {
+      "criterion_id": "determination.049",
+      "group": "determination",
+      "status": "pass",
+      "statement": "Determination does not encode the Response or consequence.",
+      "evidence": [
+        "schemas/v1/determinations/determination.schema.json",
+        "tests/schema_validation/test_issue_16_determination_contract.py",
+        "tests/schema_validation/fixtures/issue-16/determination"
+      ]
+    },
+    {
+      "criterion_id": "automation.050",
+      "group": "automation",
+      "status": "pass",
+      "statement": "Observation cannot automatically become Classification.",
+      "evidence": [
+        "docs/decisions/0012-define-review-classification-hypothesis-and-determination-domain-models.md",
+        "tests/schema_validation/fixtures/issue-16/classification/invalid",
+        "tests/schema_validation/fixtures/issue-16/hypothesis/invalid",
+        "tests/schema_validation/fixtures/issue-16/determination/invalid"
+      ]
+    },
+    {
+      "criterion_id": "automation.051",
+      "group": "automation",
+      "status": "pass",
+      "statement": "Observation cannot automatically become Determination.",
+      "evidence": [
+        "docs/decisions/0012-define-review-classification-hypothesis-and-determination-domain-models.md",
+        "tests/schema_validation/fixtures/issue-16/classification/invalid",
+        "tests/schema_validation/fixtures/issue-16/hypothesis/invalid",
+        "tests/schema_validation/fixtures/issue-16/determination/invalid"
+      ]
+    },
+    {
+      "criterion_id": "automation.052",
+      "group": "automation",
+      "status": "pass",
+      "statement": "Account count cannot automatically become proof.",
+      "evidence": [
+        "docs/decisions/0012-define-review-classification-hypothesis-and-determination-domain-models.md",
+        "tests/schema_validation/fixtures/issue-16/classification/invalid",
+        "tests/schema_validation/fixtures/issue-16/hypothesis/invalid",
+        "tests/schema_validation/fixtures/issue-16/determination/invalid"
+      ]
+    },
+    {
+      "criterion_id": "automation.053",
+      "group": "automation",
+      "status": "pass",
+      "statement": "Classification cannot automatically become Determination.",
+      "evidence": [
+        "docs/decisions/0012-define-review-classification-hypothesis-and-determination-domain-models.md",
+        "tests/schema_validation/fixtures/issue-16/classification/invalid",
+        "tests/schema_validation/fixtures/issue-16/hypothesis/invalid",
+        "tests/schema_validation/fixtures/issue-16/determination/invalid"
+      ]
+    },
+    {
+      "criterion_id": "automation.054",
+      "group": "automation",
+      "status": "pass",
+      "statement": "Hypothesis cannot automatically become Determination.",
+      "evidence": [
+        "docs/decisions/0012-define-review-classification-hypothesis-and-determination-domain-models.md",
+        "tests/schema_validation/fixtures/issue-16/classification/invalid",
+        "tests/schema_validation/fixtures/issue-16/hypothesis/invalid",
+        "tests/schema_validation/fixtures/issue-16/determination/invalid"
+      ]
+    },
+    {
+      "criterion_id": "automation.055",
+      "group": "automation",
+      "status": "pass",
+      "statement": "No automatic credibility score is introduced.",
+      "evidence": [
+        "docs/decisions/0012-define-review-classification-hypothesis-and-determination-domain-models.md",
+        "tests/schema_validation/fixtures/issue-16/classification/invalid",
+        "tests/schema_validation/fixtures/issue-16/hypothesis/invalid",
+        "tests/schema_validation/fixtures/issue-16/determination/invalid"
+      ]
+    },
+    {
+      "criterion_id": "automation.056",
+      "group": "automation",
+      "status": "pass",
+      "statement": "No automatic risk score is introduced.",
+      "evidence": [
+        "docs/decisions/0012-define-review-classification-hypothesis-and-determination-domain-models.md",
+        "tests/schema_validation/fixtures/issue-16/classification/invalid",
+        "tests/schema_validation/fixtures/issue-16/hypothesis/invalid",
+        "tests/schema_validation/fixtures/issue-16/determination/invalid"
+      ]
+    },
+    {
+      "criterion_id": "automation.057",
+      "group": "automation",
+      "status": "pass",
+      "statement": "No automatic punishment recommendation is introduced.",
+      "evidence": [
+        "docs/decisions/0012-define-review-classification-hypothesis-and-determination-domain-models.md",
+        "tests/schema_validation/fixtures/issue-16/classification/invalid",
+        "tests/schema_validation/fixtures/issue-16/hypothesis/invalid",
+        "tests/schema_validation/fixtures/issue-16/determination/invalid"
+      ]
+    },
+    {
+      "criterion_id": "automation.058",
+      "group": "automation",
+      "status": "pass",
+      "statement": "System processes cannot masquerade as human decision-makers.",
+      "evidence": [
+        "docs/decisions/0012-define-review-classification-hypothesis-and-determination-domain-models.md",
+        "tests/schema_validation/fixtures/issue-16/classification/invalid",
+        "tests/schema_validation/fixtures/issue-16/hypothesis/invalid",
+        "tests/schema_validation/fixtures/issue-16/determination/invalid"
+      ]
+    },
+    {
+      "criterion_id": "lifecycle_correction.059",
+      "group": "lifecycle_correction",
+      "status": "pass",
+      "statement": "Exact lifecycle vocabularies are defined.",
+      "evidence": [
+        "docs/decisions/0012-define-review-classification-hypothesis-and-determination-domain-models.md",
+        "tests/schema_validation/test_issue_16_shared_infrastructure_compatibility.py",
+        "tests/schema_validation/fixtures/issue-16/determination/reconsideration-scenarios"
+      ]
+    },
+    {
+      "criterion_id": "lifecycle_correction.060",
+      "group": "lifecycle_correction",
+      "status": "pass",
+      "statement": "Transition matrices are defined.",
+      "evidence": [
+        "docs/decisions/0012-define-review-classification-hypothesis-and-determination-domain-models.md",
+        "tests/schema_validation/test_issue_16_shared_infrastructure_compatibility.py",
+        "tests/schema_validation/fixtures/issue-16/determination/reconsideration-scenarios"
+      ]
+    },
+    {
+      "criterion_id": "lifecycle_correction.061",
+      "group": "lifecycle_correction",
+      "status": "pass",
+      "statement": "Invalidation is distinct from later reconsideration/reversal.",
+      "evidence": [
+        "docs/decisions/0012-define-review-classification-hypothesis-and-determination-domain-models.md",
+        "tests/schema_validation/test_issue_16_shared_infrastructure_compatibility.py",
+        "tests/schema_validation/fixtures/issue-16/determination/reconsideration-scenarios"
+      ]
+    },
+    {
+      "criterion_id": "lifecycle_correction.062",
+      "group": "lifecycle_correction",
+      "status": "pass",
+      "statement": "Material Classification correction uses replacement where required.",
+      "evidence": [
+        "docs/decisions/0012-define-review-classification-hypothesis-and-determination-domain-models.md",
+        "tests/schema_validation/test_issue_16_shared_infrastructure_compatibility.py",
+        "tests/schema_validation/fixtures/issue-16/determination/reconsideration-scenarios"
+      ]
+    },
+    {
+      "criterion_id": "lifecycle_correction.063",
+      "group": "lifecycle_correction",
+      "status": "pass",
+      "statement": "Material Hypothesis correction uses replacement where required.",
+      "evidence": [
+        "docs/decisions/0012-define-review-classification-hypothesis-and-determination-domain-models.md",
+        "tests/schema_validation/test_issue_16_shared_infrastructure_compatibility.py",
+        "tests/schema_validation/fixtures/issue-16/determination/reconsideration-scenarios"
+      ]
+    },
+    {
+      "criterion_id": "lifecycle_correction.064",
+      "group": "lifecycle_correction",
+      "status": "pass",
+      "statement": "Material Determination correction uses replacement.",
+      "evidence": [
+        "docs/decisions/0012-define-review-classification-hypothesis-and-determination-domain-models.md",
+        "tests/schema_validation/test_issue_16_shared_infrastructure_compatibility.py",
+        "tests/schema_validation/fixtures/issue-16/determination/reconsideration-scenarios"
+      ]
+    },
+    {
+      "criterion_id": "lifecycle_correction.065",
+      "group": "lifecycle_correction",
+      "status": "pass",
+      "statement": "Nonmaterial Amendment paths are explicitly bounded or absent.",
+      "evidence": [
+        "docs/decisions/0012-define-review-classification-hypothesis-and-determination-domain-models.md",
+        "tests/schema_validation/test_issue_16_shared_infrastructure_compatibility.py",
+        "tests/schema_validation/fixtures/issue-16/determination/reconsideration-scenarios"
+      ]
+    },
+    {
+      "criterion_id": "lifecycle_correction.066",
+      "group": "lifecycle_correction",
+      "status": "pass",
+      "statement": "Reversal preserves the prior Determination.",
+      "evidence": [
+        "docs/decisions/0012-define-review-classification-hypothesis-and-determination-domain-models.md",
+        "tests/schema_validation/test_issue_16_shared_infrastructure_compatibility.py",
+        "tests/schema_validation/fixtures/issue-16/determination/reconsideration-scenarios"
+      ]
+    },
+    {
+      "criterion_id": "lifecycle_correction.067",
+      "group": "lifecycle_correction",
+      "status": "pass",
+      "statement": "Reconsideration does not silently rewrite history.",
+      "evidence": [
+        "docs/decisions/0012-define-review-classification-hypothesis-and-determination-domain-models.md",
+        "tests/schema_validation/test_issue_16_shared_infrastructure_compatibility.py",
+        "tests/schema_validation/fixtures/issue-16/determination/reconsideration-scenarios"
+      ]
+    },
+    {
+      "criterion_id": "lifecycle_correction.068",
+      "group": "lifecycle_correction",
+      "status": "pass",
+      "statement": "Statement of Disagreement behavior is defined.",
+      "evidence": [
+        "docs/decisions/0012-define-review-classification-hypothesis-and-determination-domain-models.md",
+        "tests/schema_validation/test_issue_16_shared_infrastructure_compatibility.py",
+        "tests/schema_validation/fixtures/issue-16/determination/reconsideration-scenarios"
+      ]
+    },
+    {
+      "criterion_id": "lifecycle_correction.069",
+      "group": "lifecycle_correction",
+      "status": "pass",
+      "statement": "Historical references never silently follow successors.",
+      "evidence": [
+        "docs/decisions/0012-define-review-classification-hypothesis-and-determination-domain-models.md",
+        "tests/schema_validation/test_issue_16_shared_infrastructure_compatibility.py",
+        "tests/schema_validation/fixtures/issue-16/determination/reconsideration-scenarios"
+      ]
+    },
+    {
+      "criterion_id": "references_evidence.070",
+      "group": "references_evidence",
+      "status": "pass",
+      "statement": "Existing exact Portia references are reused where sufficient.",
+      "evidence": [
+        "schemas/v1/references/judgment-evidence-ref.schema.json",
+        "tests/schema_validation/test_issue_16_shared_infrastructure_compatibility.py",
+        "tests/schema_validation/fixtures/issue-16/hypothesis/lineage-scenarios"
+      ]
+    },
+    {
+      "criterion_id": "references_evidence.071",
+      "group": "references_evidence",
+      "status": "pass",
+      "statement": "Existing sibling-module references are reused where sufficient.",
+      "evidence": [
+        "schemas/v1/references/judgment-evidence-ref.schema.json",
+        "tests/schema_validation/test_issue_16_shared_infrastructure_compatibility.py",
+        "tests/schema_validation/fixtures/issue-16/hypothesis/lineage-scenarios"
+      ]
+    },
+    {
+      "criterion_id": "references_evidence.072",
+      "group": "references_evidence",
+      "status": "pass",
+      "statement": "Evidence role semantics distinguish supporting, contrary, and contextual use.",
+      "evidence": [
+        "schemas/v1/references/judgment-evidence-ref.schema.json",
+        "tests/schema_validation/test_issue_16_shared_infrastructure_compatibility.py",
+        "tests/schema_validation/fixtures/issue-16/hypothesis/lineage-scenarios"
+      ]
+    },
+    {
+      "criterion_id": "references_evidence.073",
+      "group": "references_evidence",
+      "status": "pass",
+      "statement": "Referencing evidence does not copy its substantive payload unnecessarily.",
+      "evidence": [
+        "schemas/v1/references/judgment-evidence-ref.schema.json",
+        "tests/schema_validation/test_issue_16_shared_infrastructure_compatibility.py",
+        "tests/schema_validation/fixtures/issue-16/hypothesis/lineage-scenarios"
+      ]
+    },
+    {
+      "criterion_id": "references_evidence.074",
+      "group": "references_evidence",
+      "status": "pass",
+      "statement": "Duplicate references do not inflate evidence weight.",
+      "evidence": [
+        "schemas/v1/references/judgment-evidence-ref.schema.json",
+        "tests/schema_validation/test_issue_16_shared_infrastructure_compatibility.py",
+        "tests/schema_validation/fixtures/issue-16/hypothesis/lineage-scenarios"
+      ]
+    },
+    {
+      "criterion_id": "references_evidence.075",
+      "group": "references_evidence",
+      "status": "pass",
+      "statement": "Evidence availability is distinct from evidence truth.",
+      "evidence": [
+        "schemas/v1/references/judgment-evidence-ref.schema.json",
+        "tests/schema_validation/test_issue_16_shared_infrastructure_compatibility.py",
+        "tests/schema_validation/fixtures/issue-16/hypothesis/lineage-scenarios"
+      ]
+    },
+    {
+      "criterion_id": "paper_import.076",
+      "group": "paper_import",
+      "status": "pass",
+      "statement": "Paper preallocation does not fabricate judgment records.",
+      "evidence": [
+        "docs/design/portia-review-classification-hypothesis-and-determination-domain-models.md",
+        "tests/schema_validation/fixtures/issue-16/review",
+        "tests/schema_validation/fixtures/issue-16/classification",
+        "tests/schema_validation/fixtures/issue-16/hypothesis",
+        "tests/schema_validation/fixtures/issue-16/determination"
+      ]
+    },
+    {
+      "criterion_id": "paper_import.077",
+      "group": "paper_import",
+      "status": "pass",
+      "statement": "OCR does not establish human judgment.",
+      "evidence": [
+        "docs/design/portia-review-classification-hypothesis-and-determination-domain-models.md",
+        "tests/schema_validation/fixtures/issue-16/review",
+        "tests/schema_validation/fixtures/issue-16/classification",
+        "tests/schema_validation/fixtures/issue-16/hypothesis",
+        "tests/schema_validation/fixtures/issue-16/determination"
+      ]
+    },
+    {
+      "criterion_id": "paper_import.078",
+      "group": "paper_import",
+      "status": "pass",
+      "statement": "Imported categories preserve uncertain review provenance.",
+      "evidence": [
+        "docs/design/portia-review-classification-hypothesis-and-determination-domain-models.md",
+        "tests/schema_validation/fixtures/issue-16/review",
+        "tests/schema_validation/fixtures/issue-16/classification",
+        "tests/schema_validation/fixtures/issue-16/hypothesis",
+        "tests/schema_validation/fixtures/issue-16/determination"
+      ]
+    },
+    {
+      "criterion_id": "paper_import.079",
+      "group": "paper_import",
+      "status": "pass",
+      "statement": "Imported determinations preserve authority uncertainty where necessary.",
+      "evidence": [
+        "docs/design/portia-review-classification-hypothesis-and-determination-domain-models.md",
+        "tests/schema_validation/fixtures/issue-16/review",
+        "tests/schema_validation/fixtures/issue-16/classification",
+        "tests/schema_validation/fixtures/issue-16/hypothesis",
+        "tests/schema_validation/fixtures/issue-16/determination"
+      ]
+    },
+    {
+      "criterion_id": "paper_import.080",
+      "group": "paper_import",
+      "status": "pass",
+      "statement": "Import source system does not establish correctness or authority.",
+      "evidence": [
+        "docs/design/portia-review-classification-hypothesis-and-determination-domain-models.md",
+        "tests/schema_validation/fixtures/issue-16/review",
+        "tests/schema_validation/fixtures/issue-16/classification",
+        "tests/schema_validation/fixtures/issue-16/hypothesis",
+        "tests/schema_validation/fixtures/issue-16/determination"
+      ]
+    },
+    {
+      "criterion_id": "paper_import.081",
+      "group": "paper_import",
+      "status": "pass",
+      "statement": "Review gates before current use are defined.",
+      "evidence": [
+        "docs/design/portia-review-classification-hypothesis-and-determination-domain-models.md",
+        "tests/schema_validation/fixtures/issue-16/review",
+        "tests/schema_validation/fixtures/issue-16/classification",
+        "tests/schema_validation/fixtures/issue-16/hypothesis",
+        "tests/schema_validation/fixtures/issue-16/determination"
+      ]
+    },
+    {
+      "criterion_id": "shared_infrastructure.082",
+      "group": "shared_infrastructure",
+      "status": "pass",
+      "statement": "Existing lifecycle infrastructure is reused where possible.",
+      "evidence": [
+        "tests/schema_validation/test_issue_16_shared_infrastructure_compatibility.py"
+      ]
+    },
+    {
+      "criterion_id": "shared_infrastructure.083",
+      "group": "shared_infrastructure",
+      "status": "pass",
+      "statement": "Existing correction/disagreement infrastructure is reused where possible.",
+      "evidence": [
+        "tests/schema_validation/test_issue_16_shared_infrastructure_compatibility.py"
+      ]
+    },
+    {
+      "criterion_id": "shared_infrastructure.084",
+      "group": "shared_infrastructure",
+      "status": "pass",
+      "statement": "Existing dependency/migration/removal contracts are reused where possible.",
+      "evidence": [
+        "tests/schema_validation/test_issue_16_shared_infrastructure_compatibility.py"
+      ]
+    },
+    {
+      "criterion_id": "shared_infrastructure.085",
+      "group": "shared_infrastructure",
+      "status": "pass",
+      "statement": "Existing operational contracts can target the new families.",
+      "evidence": [
+        "tests/schema_validation/test_issue_16_shared_infrastructure_compatibility.py"
+      ]
+    },
+    {
+      "criterion_id": "shared_infrastructure.086",
+      "group": "shared_infrastructure",
+      "status": "pass",
+      "statement": "Existing derived contracts can include the new source records.",
+      "evidence": [
+        "tests/schema_validation/test_issue_16_shared_infrastructure_compatibility.py"
+      ]
+    },
+    {
+      "criterion_id": "shared_infrastructure.087",
+      "group": "shared_infrastructure",
+      "status": "pass",
+      "statement": "No unnecessary parallel shared contracts are introduced.",
+      "evidence": [
+        "tests/schema_validation/test_issue_16_shared_infrastructure_compatibility.py"
+      ]
+    },
+    {
+      "criterion_id": "shared_infrastructure.088",
+      "group": "shared_infrastructure",
+      "status": "pass",
+      "statement": "Operational diagnostics remain privacy-minimized.",
+      "evidence": [
+        "tests/schema_validation/test_issue_16_shared_infrastructure_compatibility.py"
+      ]
+    },
+    {
+      "criterion_id": "schemas_tests.089",
+      "group": "schemas_tests",
+      "status": "pass",
+      "statement": "All accepted public contracts use Draft 2020-12.",
+      "evidence": [
+        "schemas/schema-catalog.json",
+        "tests/schema_validation/test_issue_16_review_judgment_primitives.py",
+        "tests/schema_validation/test_issue_16_review_contract.py",
+        "tests/schema_validation/test_issue_16_classification_contract.py",
+        "tests/schema_validation/test_issue_16_hypothesis_contract.py",
+        "tests/schema_validation/test_issue_16_determination_contract.py",
+        "tests/schema_validation/test_issue_16_shared_infrastructure_compatibility.py"
+      ]
+    },
+    {
+      "criterion_id": "schemas_tests.090",
+      "group": "schemas_tests",
+      "status": "pass",
+      "statement": "All new schemas have immutable `$id` values.",
+      "evidence": [
+        "schemas/schema-catalog.json",
+        "tests/schema_validation/test_issue_16_review_judgment_primitives.py",
+        "tests/schema_validation/test_issue_16_review_contract.py",
+        "tests/schema_validation/test_issue_16_classification_contract.py",
+        "tests/schema_validation/test_issue_16_hypothesis_contract.py",
+        "tests/schema_validation/test_issue_16_determination_contract.py",
+        "tests/schema_validation/test_issue_16_shared_infrastructure_compatibility.py"
+      ]
+    },
+    {
+      "criterion_id": "schemas_tests.091",
+      "group": "schemas_tests",
+      "status": "pass",
+      "statement": "Schema catalog is updated.",
+      "evidence": [
+        "schemas/schema-catalog.json",
+        "tests/schema_validation/test_issue_16_review_judgment_primitives.py",
+        "tests/schema_validation/test_issue_16_review_contract.py",
+        "tests/schema_validation/test_issue_16_classification_contract.py",
+        "tests/schema_validation/test_issue_16_hypothesis_contract.py",
+        "tests/schema_validation/test_issue_16_determination_contract.py",
+        "tests/schema_validation/test_issue_16_shared_infrastructure_compatibility.py"
+      ]
+    },
+    {
+      "criterion_id": "schemas_tests.092",
+      "group": "schemas_tests",
+      "status": "pass",
+      "statement": "Valid fixtures pass.",
+      "evidence": [
+        "schemas/schema-catalog.json",
+        "tests/schema_validation/test_issue_16_review_judgment_primitives.py",
+        "tests/schema_validation/test_issue_16_review_contract.py",
+        "tests/schema_validation/test_issue_16_classification_contract.py",
+        "tests/schema_validation/test_issue_16_hypothesis_contract.py",
+        "tests/schema_validation/test_issue_16_determination_contract.py",
+        "tests/schema_validation/test_issue_16_shared_infrastructure_compatibility.py"
+      ]
+    },
+    {
+      "criterion_id": "schemas_tests.093",
+      "group": "schemas_tests",
+      "status": "pass",
+      "statement": "Structural-invalid fixtures fail.",
+      "evidence": [
+        "schemas/schema-catalog.json",
+        "tests/schema_validation/test_issue_16_review_judgment_primitives.py",
+        "tests/schema_validation/test_issue_16_review_contract.py",
+        "tests/schema_validation/test_issue_16_classification_contract.py",
+        "tests/schema_validation/test_issue_16_hypothesis_contract.py",
+        "tests/schema_validation/test_issue_16_determination_contract.py",
+        "tests/schema_validation/test_issue_16_shared_infrastructure_compatibility.py"
+      ]
+    },
+    {
+      "criterion_id": "schemas_tests.094",
+      "group": "schemas_tests",
+      "status": "pass",
+      "statement": "Application-invalid coverage is complete.",
+      "evidence": [
+        "schemas/schema-catalog.json",
+        "tests/schema_validation/test_issue_16_review_judgment_primitives.py",
+        "tests/schema_validation/test_issue_16_review_contract.py",
+        "tests/schema_validation/test_issue_16_classification_contract.py",
+        "tests/schema_validation/test_issue_16_hypothesis_contract.py",
+        "tests/schema_validation/test_issue_16_determination_contract.py",
+        "tests/schema_validation/test_issue_16_shared_infrastructure_compatibility.py"
+      ]
+    },
+    {
+      "criterion_id": "schemas_tests.095",
+      "group": "schemas_tests",
+      "status": "pass",
+      "statement": "Existing Account/Observation tests remain green.",
+      "evidence": [
+        "schemas/schema-catalog.json",
+        "tests/schema_validation/test_issue_16_review_judgment_primitives.py",
+        "tests/schema_validation/test_issue_16_review_contract.py",
+        "tests/schema_validation/test_issue_16_classification_contract.py",
+        "tests/schema_validation/test_issue_16_hypothesis_contract.py",
+        "tests/schema_validation/test_issue_16_determination_contract.py",
+        "tests/schema_validation/test_issue_16_shared_infrastructure_compatibility.py"
+      ]
+    },
+    {
+      "criterion_id": "schemas_tests.096",
+      "group": "schemas_tests",
+      "status": "pass",
+      "statement": "Existing Event/Participant/Role tests remain green.",
+      "evidence": [
+        "schemas/schema-catalog.json",
+        "tests/schema_validation/test_issue_16_review_judgment_primitives.py",
+        "tests/schema_validation/test_issue_16_review_contract.py",
+        "tests/schema_validation/test_issue_16_classification_contract.py",
+        "tests/schema_validation/test_issue_16_hypothesis_contract.py",
+        "tests/schema_validation/test_issue_16_determination_contract.py",
+        "tests/schema_validation/test_issue_16_shared_infrastructure_compatibility.py"
+      ]
+    },
+    {
+      "criterion_id": "schemas_tests.097",
+      "group": "schemas_tests",
+      "status": "pass",
+      "statement": "Complete schema-validation suite passes.",
+      "evidence": [
+        "schemas/schema-catalog.json",
+        "tests/schema_validation/test_issue_16_review_judgment_primitives.py",
+        "tests/schema_validation/test_issue_16_review_contract.py",
+        "tests/schema_validation/test_issue_16_classification_contract.py",
+        "tests/schema_validation/test_issue_16_hypothesis_contract.py",
+        "tests/schema_validation/test_issue_16_determination_contract.py",
+        "tests/schema_validation/test_issue_16_shared_infrastructure_compatibility.py"
+      ]
+    },
+    {
+      "criterion_id": "documentation.098",
+      "group": "documentation",
+      "status": "pass",
+      "statement": "Focused design document is complete.",
+      "evidence": [
+        "docs/examples/portia-review-classification-hypothesis-and-determination-examples.md",
+        "docs/validation/issue-16-application-invalid-matrix.json",
+        "docs/validation/issue-16-acceptance-matrix.json",
+        "docs/validation/issue-16-review-classification-hypothesis-determination-validation.md",
+        "docs/validation/issue-16-final-repository-checkpoint.md",
+        "README.md",
+        "schemas/README.md"
+      ]
+    },
+    {
+      "criterion_id": "documentation.099",
+      "group": "documentation",
+      "status": "pass",
+      "statement": "ADR 0012 is accepted.",
+      "evidence": [
+        "docs/examples/portia-review-classification-hypothesis-and-determination-examples.md",
+        "docs/validation/issue-16-application-invalid-matrix.json",
+        "docs/validation/issue-16-acceptance-matrix.json",
+        "docs/validation/issue-16-review-classification-hypothesis-determination-validation.md",
+        "docs/validation/issue-16-final-repository-checkpoint.md",
+        "README.md",
+        "schemas/README.md"
+      ]
+    },
+    {
+      "criterion_id": "documentation.100",
+      "group": "documentation",
+      "status": "pass",
+      "statement": "ADR 0001 relationship is reconciled explicitly.",
+      "evidence": [
+        "docs/examples/portia-review-classification-hypothesis-and-determination-examples.md",
+        "docs/validation/issue-16-application-invalid-matrix.json",
+        "docs/validation/issue-16-acceptance-matrix.json",
+        "docs/validation/issue-16-review-classification-hypothesis-determination-validation.md",
+        "docs/validation/issue-16-final-repository-checkpoint.md",
+        "README.md",
+        "schemas/README.md"
+      ]
+    },
+    {
+      "criterion_id": "documentation.101",
+      "group": "documentation",
+      "status": "pass",
+      "statement": "Synthetic examples are complete.",
+      "evidence": [
+        "docs/examples/portia-review-classification-hypothesis-and-determination-examples.md",
+        "docs/validation/issue-16-application-invalid-matrix.json",
+        "docs/validation/issue-16-acceptance-matrix.json",
+        "docs/validation/issue-16-review-classification-hypothesis-determination-validation.md",
+        "docs/validation/issue-16-final-repository-checkpoint.md",
+        "README.md",
+        "schemas/README.md"
+      ]
+    },
+    {
+      "criterion_id": "documentation.102",
+      "group": "documentation",
+      "status": "pass",
+      "statement": "Application-invalid matrix is complete.",
+      "evidence": [
+        "docs/examples/portia-review-classification-hypothesis-and-determination-examples.md",
+        "docs/validation/issue-16-application-invalid-matrix.json",
+        "docs/validation/issue-16-acceptance-matrix.json",
+        "docs/validation/issue-16-review-classification-hypothesis-determination-validation.md",
+        "docs/validation/issue-16-final-repository-checkpoint.md",
+        "README.md",
+        "schemas/README.md"
+      ]
+    },
+    {
+      "criterion_id": "documentation.103",
+      "group": "documentation",
+      "status": "pass",
+      "statement": "Acceptance matrix is complete.",
+      "evidence": [
+        "docs/examples/portia-review-classification-hypothesis-and-determination-examples.md",
+        "docs/validation/issue-16-application-invalid-matrix.json",
+        "docs/validation/issue-16-acceptance-matrix.json",
+        "docs/validation/issue-16-review-classification-hypothesis-determination-validation.md",
+        "docs/validation/issue-16-final-repository-checkpoint.md",
+        "README.md",
+        "schemas/README.md"
+      ]
+    },
+    {
+      "criterion_id": "documentation.104",
+      "group": "documentation",
+      "status": "pass",
+      "statement": "Validation note is complete.",
+      "evidence": [
+        "docs/examples/portia-review-classification-hypothesis-and-determination-examples.md",
+        "docs/validation/issue-16-application-invalid-matrix.json",
+        "docs/validation/issue-16-acceptance-matrix.json",
+        "docs/validation/issue-16-review-classification-hypothesis-determination-validation.md",
+        "docs/validation/issue-16-final-repository-checkpoint.md",
+        "README.md",
+        "schemas/README.md"
+      ]
+    },
+    {
+      "criterion_id": "documentation.105",
+      "group": "documentation",
+      "status": "pass",
+      "statement": "Initial, pre-ADR, and final drift checks are recorded.",
+      "evidence": [
+        "docs/examples/portia-review-classification-hypothesis-and-determination-examples.md",
+        "docs/validation/issue-16-application-invalid-matrix.json",
+        "docs/validation/issue-16-acceptance-matrix.json",
+        "docs/validation/issue-16-review-classification-hypothesis-determination-validation.md",
+        "docs/validation/issue-16-final-repository-checkpoint.md",
+        "README.md",
+        "schemas/README.md"
+      ]
+    },
+    {
+      "criterion_id": "documentation.106",
+      "group": "documentation",
+      "status": "pass",
+      "statement": "README and schema guide are reconciled.",
+      "evidence": [
+        "docs/examples/portia-review-classification-hypothesis-and-determination-examples.md",
+        "docs/validation/issue-16-application-invalid-matrix.json",
+        "docs/validation/issue-16-acceptance-matrix.json",
+        "docs/validation/issue-16-review-classification-hypothesis-determination-validation.md",
+        "docs/validation/issue-16-final-repository-checkpoint.md",
+        "README.md",
+        "schemas/README.md"
+      ]
+    },
+    {
+      "criterion_id": "documentation.107",
+      "group": "documentation",
+      "status": "pass",
+      "statement": "All examples and fixtures use synthetic data.",
+      "evidence": [
+        "docs/examples/portia-review-classification-hypothesis-and-determination-examples.md",
+        "docs/validation/issue-16-application-invalid-matrix.json",
+        "docs/validation/issue-16-acceptance-matrix.json",
+        "docs/validation/issue-16-review-classification-hypothesis-determination-validation.md",
+        "docs/validation/issue-16-final-repository-checkpoint.md",
+        "README.md",
+        "schemas/README.md"
+      ]
+    },
+    {
+      "criterion_id": "documentation.108",
+      "group": "documentation",
+      "status": "pass",
+      "statement": "No real student or sensitive real-world data is committed.",
+      "evidence": [
+        "docs/examples/portia-review-classification-hypothesis-and-determination-examples.md",
+        "docs/validation/issue-16-application-invalid-matrix.json",
+        "docs/validation/issue-16-acceptance-matrix.json",
+        "docs/validation/issue-16-review-classification-hypothesis-determination-validation.md",
+        "docs/validation/issue-16-final-repository-checkpoint.md",
+        "README.md",
+        "schemas/README.md"
+      ]
+    }
+  ]
+}

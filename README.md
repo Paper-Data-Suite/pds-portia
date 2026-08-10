@@ -11,14 +11,14 @@ Portia is in its initial research and architecture phase.
 The repository currently contains:
 
 * evidence-based research on responsible K–12 behavior documentation and management;
-* accepted design analyses defining Portia’s role, identity model, ownership rules, canonical storage, references, lifecycle, correction, migration, removal, integrity diagnostics, coordinated persistence, recovery, Quarantine, finding administration, derived rebuilding, the initial Event family, the teacher-local Actor Directory, and the Account/Observation source-evidence layer;
-* Architecture Decision Records through ADR 0009, plus accepted ADR 0010 for the Actor Directory and ADR 0011 for Accounts and Observations;
-* independently versioned Draft 2020-12 identifier, reference, target, Actor, Account, Observation, attribution, provenance, lifecycle, correction, disagreement, dependency, migration, ownership-correction, removal, relationship, operational, and derived-projection schemas;
-* retained historical Event-family version-1 schemas, Event version 2, Event Participant and Role version 3, Work Relationship version 2, Actor Directory version-1 contracts, Account and Observation version-1 contracts, and Actor-aware operational version-2 contracts;
-* validated synthetic examples, migration fixtures, and comprehensive Issue #12, Issue #13, Issue #14, and Issue #15 application-invalid matrices;
+* accepted design analyses defining Portia’s role, identity model, ownership rules, canonical storage, references, lifecycle, correction, migration, removal, integrity diagnostics, coordinated persistence, recovery, Quarantine, finding administration, derived rebuilding, the initial Event family, the teacher-local Actor Directory, and the Account/Observation source-evidence layer, and the Review/Classification/Hypothesis/Determination human-judgment layer;
+* Architecture Decision Records through ADR 0009, plus accepted ADR 0010 for the Actor Directory and ADR 0011 for Accounts and Observations, and accepted ADR 0012 for Review, Classification, Hypothesis, and Determination;
+* independently versioned Draft 2020-12 identifier, reference, target, Actor, Account, Observation, Review, Classification, Hypothesis, Determination, attribution, provenance, lifecycle, correction, disagreement, dependency, migration, ownership-correction, removal, relationship, operational, and derived-projection schemas;
+* retained historical Event-family version-1 schemas, Event version 2, Event Participant and Role version 3, Work Relationship version 2, Actor Directory version-1 contracts, Account and Observation version-1 contracts, Review/Classification/Hypothesis/Determination version-1 contracts, and Actor-aware operational version-2 contracts;
+* validated synthetic examples, migration fixtures, and comprehensive Issue #12, Issue #13, Issue #14, Issue #15, and Issue #16 application-invalid matrices;
 * and automated offline schema-validation, state-machine, compatibility, privacy, example, and documentation-consistency tests.
 
-Portia does not yet contain an executable application. The current domain implementation targets are Event v2, Event Participant v3, Event Participant Role v3, Work Relationship v2, the Actor Directory version-1 record family, Account v1, and Observation v1. Issue #14 completes the public teacher-local Actor identity family. Issue #15 completes attributed Account and direct/instrumented Observation identity, targeting, attribution, provenance, lifecycle, correction, retraction, migration/removal compatibility, operational/derived reuse, and privacy contracts. Production filesystem services and teacher-facing workflows remain assigned to a later executable milestone.
+Portia does not yet contain an executable application. The current domain implementation targets are Event v2, Event Participant v3, Event Participant Role v3, Work Relationship v2, the Actor Directory version-1 record family, Account v1, Observation v1, Review v1, Classification v1, Hypothesis v1, and Determination v1. Issue #14 completes the public teacher-local Actor identity family. Issue #15 completes attributed Account and direct/instrumented Observation identity, targeting, attribution, provenance, lifecycle, correction, retraction, migration/removal compatibility, operational/derived reuse, and privacy contracts. Issue #16 completes bounded Review, attributed Classification, tentative Hypothesis, and authority-scoped Determination contracts plus shared-infrastructure compatibility. Production filesystem services and teacher-facing workflows remain assigned to a later executable milestone.
 
 ## Product Position
 
@@ -33,7 +33,8 @@ The recommended conceptual workflow is:
 ```text
 Event
 → Accounts and Observations
-→ Review and Classification
+→ Review
+→ Classification and/or Hypothesis
 → Determination
 → Immediate Responses
 → Supports and Interventions
@@ -84,7 +85,8 @@ Portia owns behavior-support concepts and workflows such as:
 * Event Participants;
 * Event Participant Roles;
 * Accounts and Observations, including positive, neutral, and potentially concerning observable information through one neutral Observation model;
-* Concerns and Referrals;
+* Review initiation and routing for concerns, referrals, and requests;
+* Reviews;
 * Classifications;
 * Hypotheses;
 * authorized Determinations;
@@ -539,6 +541,59 @@ JSON Schema validates local wire shape. Application validation remains responsib
 
 The earlier Event/Participant/Role design and Role example documents predate the concrete Account and Observation contracts and several later Event-family schema revisions. They remain useful historical foundation material, but ADR 0011, `account@1`, `observation@1`, and `event_participant_role@3` govern current Account/Observation integration. In particular, older conceptual examples that show an unversioned `account_ref` or only a same-Event Account requirement must not be read as weakening the current rule: an active `reported_involved` Role requires a qualifying active Account targeted to that Participant or a Participant set containing that Participant, and exact historical references never silently follow replacement.
 
+## Accepted Review, Classification, Hypothesis, and Determination Contracts
+
+ADR 0012 defines Portia's Event-local human review and judgment layer.
+
+The principal public contracts are:
+
+```text
+portia_review_id
+portia_classification_id
+portia_hypothesis_id
+portia_determination_id
+judgment_evidence_ref
+review
+classification
+hypothesis
+determination
+```
+
+One Review preserves one bounded human review process, explicit question/purpose,
+Event-local target, represented reviewer, considered evidence, and workflow
+state. Review is not a finding, and concern/referral concepts remain routing or
+initiation context unless later work demonstrates an independent canonical
+lifecycle requirement.
+
+One Classification preserves one attributed category selection, confirmation, or
+inability-to-select under one identifiable versioned classification definition.
+Reporter and reviewer assertions remain distinct; Classification is contextual
+to an Event/Participant target and is never a durable student identity label.
+
+One Hypothesis preserves one attributable explicitly tentative proposition.
+Supporting, contrary, and contextual evidence are first-class, competing
+Hypotheses may coexist, and no probability, risk, credibility, diagnostic, or
+automatic behavioral-function field is introduced.
+
+One Determination preserves one bounded human decision, represented
+decision-maker, Event-local target, authority context, process/policy basis, and
+decision basis. Teacher-local and recorded-institutional scopes remain distinct.
+Portia may preserve authority evidence but does not itself authenticate
+institutional authority.
+
+All four families use explicit `proposed`, `active`, `invalidated`, and
+`superseded` lifecycle semantics; Review additionally preserves its separate
+workflow state and Hypothesis preserves `under_consideration` / `set_aside`
+consideration state. Material judgment changes use successors rather than
+in-place substantive Amendment. Reconsideration/reversal preserves prior
+Determinations, and exact references never silently follow successors.
+
+The existing lifecycle, disagreement, dependency, migration/removal,
+coordinated-operation, Quarantine, Integrity Finding, source-snapshot, derived
+generation, and current-pointer contracts are reused without judgment-specific
+forks. Response/Communication remains #17 and broader Support-Process/FBA
+ownership remains #18.
+
 ## Initial Event, Event Participant, and Role Model
 
 Portia now defines an initial canonical model for Events, Event Participants, and Event Participant Roles.
@@ -773,6 +828,10 @@ Close
 
 Internal lifecycle, provenance, and supersession operations should be generated automatically.
 
+* [Portia Review, Classification, Hypothesis, and Determination Examples](docs/examples/portia-review-classification-hypothesis-and-determination-examples.md)
+
+  Twenty-eight accepted synthetic examples covering bounded Review, reporter/reviewer Classification, competing and set-aside Hypotheses, authority-scoped and unresolved Determinations, reconsideration/reversal, disagreement, lineage, paper/import, sibling-PDS references, and exact historical reference behavior.
+
 ### Validation Boundary
 
 The Event, Event Participant, and Event Participant Role schemas use JSON Schema Draft 2020-12.
@@ -888,6 +947,14 @@ Portia should use Core infrastructure and public cross-module contracts rather t
 * [Portia Account and Observation Domain Models](docs/design/portia-account-and-observation-domain-models.md)
 
   Defines attributed Accounts, direct and instrumented Observations, Event-local targeting, source and observer attribution, quote/summary representation, information origin, measurement, lifecycle, source-evidenced retraction, correction, provenance, Role integration, shared infrastructure reuse, and privacy boundaries.
+
+* [Portia Review, Classification, Hypothesis, and Determination Domain Models](docs/design/portia-review-classification-hypothesis-and-determination-domain-models.md)
+
+  Defines canonical Review, Classification, Hypothesis, and Determination semantics, Event-local targeting, human attribution, evidence roles, authority/process context, lifecycle, correction, reconsideration/reversal, automation/privacy boundaries, and deferred Support-Process/FBA ownership.
+
+* [ADR 0012: Define Review, Classification, Hypothesis, and Determination Domain Models](docs/decisions/0012-define-review-classification-hypothesis-and-determination-domain-models.md)
+
+  Active implementation authority for Portia's human interpretation-and-decision layer; refines the research-era ADR 0001 model for the teacher-local deployment and current shared contracts.
 
 ### Schemas
 
@@ -1010,6 +1077,10 @@ Portia should use Core infrastructure and public cross-module contracts rather t
   Historical version-1 Role examples covering direct digital creation, compatible assignments, contextual detail, paper/import reported involvement, basis correction, and supersession. Their conceptual Account/Observation references are superseded for current use by Role v3 plus ADR 0011 and the Issue #15 compatibility examples.
 
 ### Validation
+
+* [Issue #16 Validation: Review, Classification, Hypothesis, and Determination](docs/validation/issue-16-review-classification-hypothesis-determination-validation.md)
+
+  Records the nine Issue #16 public contracts, 92 application-invalid fixture scenarios plus shared cross-record invariants, 108 acceptance criteria, 28 synthetic examples, final Core/Portia drift anchors, shared-infrastructure compatibility, and repository acceptance commands.
 
 * [Issue #15 Validation: Account and Observation Domain Models](docs/validation/issue-15-account-observation-validation.md)
 

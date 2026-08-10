@@ -6,6 +6,17 @@
 - **Related issue:** [#1 — Research best practices for tracking and managing student behavior](https://github.com/Paper-Data-Suite/pds-portia/issues/1)
 - **Related research:** [`docs/research/student-behavior-tracking-best-practices.md`](../research/student-behavior-tracking-best-practices.md)
 
+> **Current implementation authority (Issue #16, 2026-08-09):**
+> This ADR remains the research-era conceptual precursor for separating
+> observation, interpretation, classification, determination, action, and
+> outcome. ADR 0011 now governs concrete Account/Observation source-evidence
+> contracts, and accepted ADR 0012 governs concrete Review, Classification,
+> Hypothesis, and Determination serialization. ADR 0012 refines this document
+> where ADR 0001 assumed a formal institutional Determination, descriptive
+> confidence, or broader in-place amendment semantics. The historical decision
+> text below is retained rather than rewritten to appear as the final wire
+> contract.
+
 ## Context
 
 Behavior records commonly combine several different kinds of information in one narrative or mutable incident form:
