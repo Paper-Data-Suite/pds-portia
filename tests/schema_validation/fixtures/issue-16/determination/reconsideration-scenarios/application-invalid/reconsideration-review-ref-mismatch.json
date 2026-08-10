@@ -1,0 +1,181 @@
+{
+  "review": {
+    "schema_version": "1",
+    "record_type": "review",
+    "module_id": "portia",
+    "class_id": "eng10_p2_2026",
+    "work_id": "evt_issue16_det",
+    "review_id": "rvw_det_bad",
+    "status": "active",
+    "review_state": "completed",
+    "trigger": {
+      "kind": "reconsideration"
+    },
+    "question": {
+      "kind": "reconsideration",
+      "text": "What bounded determination should be recorded for this Event-local target?"
+    },
+    "target": {
+      "kind": "event"
+    },
+    "reviewer": {
+      "kind": "local_operator",
+      "display_label": "Synthetic Reviewer"
+    },
+    "evidence_considered": [],
+    "creation_source": {
+      "type": "digital_entry"
+    },
+    "created_at": "2026-08-08T09:00:00-04:00",
+    "created_by": {
+      "type": "local_operator",
+      "display_label": "Synthetic Teacher"
+    },
+    "updated_at": "2026-08-08T09:30:00-04:00",
+    "updated_by": {
+      "type": "local_operator",
+      "display_label": "Synthetic Teacher"
+    },
+    "review_subjects": [
+      {
+        "work_ref": {
+          "module_id": "portia",
+          "class_id": "eng10_p2_2026",
+          "work_id": "evt_issue16_det",
+          "work_kind": "event",
+          "contract_version": "2"
+        },
+        "record_ref": {
+          "record_kind": "determination",
+          "record_id": "det_prior_bad",
+          "contract_version": "1"
+        }
+      }
+    ]
+  },
+  "prior_determination": {
+    "schema_version": "1",
+    "record_type": "determination",
+    "module_id": "portia",
+    "class_id": "eng10_p2_2026",
+    "work_id": "evt_issue16_det",
+    "determination_id": "det_prior_bad",
+    "status": "active",
+    "target": {
+      "kind": "event"
+    },
+    "question": "What bounded conclusion is supported for this Event-local review?",
+    "decision_maker": {
+      "kind": "local_operator",
+      "display_label": "Synthetic Teacher"
+    },
+    "authority_context": {
+      "kind": "teacher_local",
+      "scope": "teacher_review"
+    },
+    "process_basis": {
+      "kind": "teacher_local",
+      "process_label": "Local teacher review"
+    },
+    "outcome": {
+      "kind": "coded_conclusion",
+      "scheme_id": "synthetic_discipline",
+      "scheme_version": "2026_1",
+      "code": "substantiated",
+      "label": "Substantiated",
+      "definition_text": "Synthetic prior coded decision."
+    },
+    "creation_source": {
+      "type": "digital_entry"
+    },
+    "created_at": "2026-08-08T10:00:00-04:00",
+    "created_by": {
+      "type": "local_operator",
+      "display_label": "Synthetic Teacher"
+    },
+    "updated_at": "2026-08-08T10:00:00-04:00",
+    "updated_by": {
+      "type": "local_operator",
+      "display_label": "Synthetic Teacher"
+    }
+  },
+  "determination": {
+    "schema_version": "1",
+    "record_type": "determination",
+    "module_id": "portia",
+    "class_id": "eng10_p2_2026",
+    "work_id": "evt_issue16_det",
+    "determination_id": "det_after_bad",
+    "status": "active",
+    "target": {
+      "kind": "event"
+    },
+    "question": "What bounded conclusion is supported for this Event-local review?",
+    "decision_maker": {
+      "kind": "local_operator",
+      "display_label": "Synthetic Teacher"
+    },
+    "authority_context": {
+      "kind": "teacher_local",
+      "scope": "teacher_review"
+    },
+    "process_basis": {
+      "kind": "teacher_local",
+      "process_label": "Local teacher review"
+    },
+    "outcome": {
+      "kind": "coded_conclusion",
+      "scheme_id": "synthetic_discipline",
+      "scheme_version": "2026_1",
+      "code": "substantiated",
+      "label": "Substantiated",
+      "definition_text": "Synthetic prior coded decision."
+    },
+    "creation_source": {
+      "type": "digital_entry"
+    },
+    "created_at": "2026-08-08T10:00:00-04:00",
+    "created_by": {
+      "type": "local_operator",
+      "display_label": "Synthetic Teacher"
+    },
+    "updated_at": "2026-08-08T10:00:00-04:00",
+    "updated_by": {
+      "type": "local_operator",
+      "display_label": "Synthetic Teacher"
+    },
+    "review_ref": {
+      "work_ref": {
+        "module_id": "portia",
+        "class_id": "eng10_p2_2026",
+        "work_id": "evt_issue16_det",
+        "work_kind": "event",
+        "contract_version": "2"
+      },
+      "record_ref": {
+        "record_kind": "review",
+        "record_id": "rvw_other",
+        "contract_version": "1"
+      }
+    },
+    "supersedes": [
+      {
+        "work_record_ref": {
+          "work_ref": {
+            "module_id": "portia",
+            "class_id": "eng10_p2_2026",
+            "work_id": "evt_issue16_det",
+            "work_kind": "event",
+            "contract_version": "2"
+          },
+          "record_ref": {
+            "record_kind": "determination",
+            "record_id": "det_prior_bad",
+            "contract_version": "1"
+          }
+        },
+        "reason": "reconsidered"
+      }
+    ]
+  }
+}

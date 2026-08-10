@@ -1,0 +1,17 @@
+{
+  "manifest_version": "1",
+  "issue": 16,
+  "scenario": "determination_review_linkage",
+  "valid": [
+    "decision-maker-different-from-reviewer.json",
+    "linked-completed-recorded-institutional.json",
+    "linked-completed-teacher-local.json"
+  ],
+  "application_invalid": [
+    "active-determination-before-review-completed.json",
+    "active-determination-with-nonactive-review.json",
+    "review-different-event.json",
+    "review-ref-does-not-match-supplied-review.json",
+    "review-target-mismatch.json"
+  ]
+}

@@ -682,6 +682,12 @@
         "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/hypotheses/hypothesis.schema.json",
         "path": "schemas/v1/hypotheses/hypothesis.schema.json"
       }
+    },
+    "determination": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/determinations/determination.schema.json",
+        "path": "schemas/v1/determinations/determination.schema.json"
+      }
     }
   }
 }

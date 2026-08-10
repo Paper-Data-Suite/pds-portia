@@ -1,0 +1,42 @@
+{
+  "schema_version": "1",
+  "record_type": "determination",
+  "module_id": "portia",
+  "class_id": "eng10_p2_2026",
+  "work_id": "evt_issue16_det",
+  "determination_id": "det_teacher_local",
+  "status": "active",
+  "target": {
+    "kind": "event"
+  },
+  "question": "What bounded conclusion is supported for this Event-local review?",
+  "decision_maker": {
+    "kind": "local_operator",
+    "display_label": "Synthetic Teacher"
+  },
+  "authority_context": {
+    "kind": "teacher_local",
+    "scope": "teacher_review"
+  },
+  "process_basis": {
+    "kind": "teacher_local",
+    "process_label": "Local teacher review"
+  },
+  "outcome": {
+    "kind": "conclusion",
+    "text": "Available information supports the bounded local classroom conclusion."
+  },
+  "creation_source": {
+    "type": "digital_entry"
+  },
+  "created_at": "2026-08-08T10:00:00-04:00",
+  "created_by": {
+    "type": "local_operator",
+    "display_label": "Synthetic Teacher"
+  },
+  "updated_at": "2026-08-08T10:00:00-04:00",
+  "updated_by": {
+    "type": "local_operator",
+    "display_label": "Synthetic Teacher"
+  }
+}
