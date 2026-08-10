@@ -1,0 +1,36 @@
+{
+  "schema_version": "1",
+  "record_type": "response",
+  "module_id": "portia",
+  "class_id": "class_ela10_p2",
+  "work_id": "evt_response_example",
+  "response_id": "rsp_redirect_001",
+  "status": "active",
+  "target": {
+    "kind": "event"
+  },
+  "provider": {
+    "kind": "local_operator",
+    "display_label": "Ms Rivera"
+  },
+  "action": {
+    "family": "classroom_management",
+    "description": "Restated the direction and redirected attention to the assigned task."
+  },
+  "execution_state": "in_progress",
+  "started_at": "2026-08-10T09:15:00-04:00",
+  "ended_at": "2026-08-10T09:16:00-04:00",
+  "creation_source": {
+    "type": "digital_entry"
+  },
+  "created_at": "2026-08-10T09:17:00-04:00",
+  "created_by": {
+    "type": "local_operator",
+    "display_label": "Ms Rivera"
+  },
+  "updated_at": "2026-08-10T09:17:00-04:00",
+  "updated_by": {
+    "type": "local_operator",
+    "display_label": "Ms Rivera"
+  }
+}

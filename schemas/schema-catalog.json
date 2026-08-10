@@ -700,6 +700,12 @@
         "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-communication-id.schema.json",
         "path": "schemas/v1/identifiers/portia-communication-id.schema.json"
       }
+    },
+    "response": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/responses/response.schema.json",
+        "path": "schemas/v1/responses/response.schema.json"
+      }
     }
   }
 }
