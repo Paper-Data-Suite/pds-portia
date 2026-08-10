@@ -1,0 +1,10 @@
+{
+  "kind": "portia_work",
+  "work_ref": {
+    "module_id": "portia",
+    "class_id": "eng10_p2_2026",
+    "work_id": "evt_issue16_1",
+    "work_kind": "event",
+    "contract_version": "2"
+  }
+}

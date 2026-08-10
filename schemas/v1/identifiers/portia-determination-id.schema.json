@@ -1,0 +1,10 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-determination-id.schema.json",
+  "title": "Portia Determination Identifier",
+  "description": "Opaque canonical identifier for one Determination inside one Portia Event. The det_ prefix is part of the public identifier contract. The identifier does not encode outcome, target, participant, student identity, authority, policy, finding, lifecycle, or other sensitive meaning.",
+  "type": "string",
+  "minLength": 5,
+  "maxLength": 128,
+  "pattern": "^det_[A-Za-z0-9][A-Za-z0-9_-]*$"
+}

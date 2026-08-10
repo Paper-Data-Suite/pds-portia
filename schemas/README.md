@@ -28,7 +28,8 @@ the repository-relative source path.
 
 The catalog contains the retained Event-family contracts, versioned shared
 contracts, the Actor Directory record family, the Account and Observation
-version-1 evidence contracts, and additive Actor-aware operational version-2
+version-1 evidence contracts, the Review/Classification/Hypothesis/Determination
+version-1 judgment contracts, and additive Actor-aware operational version-2
 contracts implemented by Portia.
 
 ## Identifier contracts
@@ -48,6 +49,10 @@ The initial prefixes are:
 - Event Participant Role: `epr_`
 - Account: `acct_`
 - Observation: `obs_`
+- Review: `rvw_`
+- Classification: `cls_`
+- Hypothesis: `hyp_`
+- Determination: `det_`
 - Work Relationship: `rel_`
 - Lifecycle Transition: `lct_`
 - Lifecycle-History Correction: `lhc_`
@@ -189,6 +194,13 @@ reuse `exact_portia_work_record_ref`. Exact Account and Observation references
 therefore preserve the containing work, record family, opaque record ID, and
 required contract version without creating a second reference vocabulary.
 
+Issue #16 likewise does not add dedicated exact Review-, Classification-,
+Hypothesis-, or Determination-reference families. Exact generic local/work-record
+references already preserve the required record kind, opaque ID, work scope, and
+contract version. `judgment_evidence_ref@1` is a narrow evidence-role locator
+union for Review/Hypothesis/Determination use; it does not change generic exact
+identity semantics or make a referenced record true, current, or authoritative.
+
 ## Shared snapshots and target contracts
 
 The initial reusable historical snapshot is:
@@ -209,7 +221,7 @@ Event-local and Support Process-local target families are stored beneath:
 `portia_target_ref` supports exactly the containing Event, one Event
 Participant, or a selected set of at least two Event Participants.
 
-Account v1 and Observation v1 reuse this target contract unchanged. Their
+Account v1, Observation v1, Review v1, Classification v1, Hypothesis v1, and Determination v1 reuse this target contract unchanged. Their
 represented source or observer is modeled separately from the Event-local target;
 a source or observer does not become an Event Participant merely by supplying or
 observing information.
@@ -274,6 +286,13 @@ observation is represented. Its closed branches are `roster_student`, `actor`,
 `local_operator`, `descriptive_person`, and `unidentified_person`. It remains
 distinct from `attribution_agent`: the represented source/observer and the local
 operator or system process that persisted a record are separate facts.
+
+Issue #16 reuses `represented_human_attribution@1` where the same
+represented-human semantics apply to reviewer, Classification selector,
+Hypothesis author, and Determination decision-maker identity. That reuse does
+not broaden the attribution contract into an authorization contract:
+represented human identity remains separate from institutional authority,
+process/policy basis, and persistence-operation `created_by` / `updated_by`.
 
 `evidence_time` preserves honest source-evidence timing through `exact`,
 `approximate`, `date_only`, `range`, and `unknown` variants. Application
@@ -634,6 +653,56 @@ Migration fixtures beneath
 `tests/schema_validation/fixtures/migrations/event_participant_role_v1_to_v2/`
 document explicit version-1 to version-2 transformations. Reading a historical
 version-1 Role does not silently mutate it or change its canonical identity.
+
+## Review, Classification, Hypothesis, and Determination contracts
+
+ADR 0012 defines four Event-local canonical human review/judgment families:
+
+```text
+schemas/v1/reviews/review.schema.json
+schemas/v1/classifications/classification.schema.json
+schemas/v1/hypotheses/hypothesis.schema.json
+schemas/v1/determinations/determination.schema.json
+```
+
+Their identifiers are opaque `rvw_`, `cls_`, `hyp_`, and `det_` values. Canonical
+records remain separately addressable children of the containing Event rather
+than being nested inside one Review directory.
+
+`review@1` preserves one bounded human review process. It separates canonical
+record lifecycle from Review workflow state and explicitly records the
+considered-evidence set, including the valid empty set.
+
+`classification@1` preserves one attributed category assertion under one
+versioned definition snapshot. Reporter-selected, reviewer-selected,
+reviewer-confirmed, and unknown historical stage remain distinguishable.
+`unable_to_determine` is a first-class result branch.
+
+`hypothesis@1` preserves one explicitly tentative proposition and
+`under_consideration` / `set_aside` consideration state. Supporting, contrary,
+and contextual evidence roles are explicit. The contract has no predictive
+probability, numeric confidence, credibility, risk, diagnosis, or FBA/function
+determination field.
+
+`determination@1` preserves one bounded decision question, represented
+decision-maker, authority context, process/policy basis, outcome, and exact
+decision basis. Teacher-local and recorded-institutional scope remain distinct.
+Authority evidence may be preserved, but the teacher-local deployment does not
+authenticate institutional authority.
+
+All four families reuse the existing shared lifecycle/history, disagreement,
+Dependency, migration/removal, operation/lock, Quarantine/Integrity Finding,
+source-snapshot, derived-generation, and current-pointer contracts. Material
+judgment changes have no v1 in-place Amendment surface; successor records and
+exact predecessor relationships preserve history. Reconsideration/reversal of a
+Determination creates a new record rather than editing the earlier decision.
+
+JSON Schema validates local wire shape. Application validation remains
+responsible for canonical path/Event resolution, represented-human resolution,
+Review linkage and chronology, definition support, evidence resolution and
+lineage, authority/process sufficiency, paper/import review gates, replacement
+topology, reconsideration/reversal semantics, authorization, privacy,
+operational recovery, and derived freshness.
 
 ## Lifecycle and lifecycle-history contracts
 

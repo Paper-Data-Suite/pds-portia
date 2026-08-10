@@ -1,0 +1,20 @@
+{
+  "manifest_version": "1",
+  "issue": 16,
+  "scenario": "determination_reconsideration",
+  "valid": [
+    "reconsidered-preserves-outcome.json",
+    "reversed-changes-outcome.json"
+  ],
+  "application_invalid": [
+    "reconsideration-review-different-event.json",
+    "reconsideration-review-not-completed.json",
+    "reconsideration-review-ref-mismatch.json",
+    "reconsideration-target-mismatch.json",
+    "reversed-same-outcome.json",
+    "review-question-not-reconsideration.json",
+    "review-subject-does-not-match-predecessor.json",
+    "review-trigger-not-reconsideration.json",
+    "successor-predecessor-does-not-match-supplied-prior.json"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-classification-id.schema.json",
+  "title": "Portia Classification Identifier",
+  "description": "Opaque canonical identifier for one Classification inside one Portia Event. The cls_ prefix is part of the public identifier contract. The identifier does not encode category, target, participant, student identity, selector, finding, lifecycle, or other sensitive meaning.",
+  "type": "string",
+  "minLength": 5,
+  "maxLength": 128,
+  "pattern": "^cls_[A-Za-z0-9][A-Za-z0-9_-]*$"
+}

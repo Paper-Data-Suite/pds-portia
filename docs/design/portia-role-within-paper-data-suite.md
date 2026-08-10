@@ -25,6 +25,17 @@ Portia should be **cross-cutting without becoming an integration hub**. It may r
 
 ---
 
+> **Current implementation reconciliation (Issue #16, 2026-08-09):**
+> This broad module-boundary analysis predates the accepted Actor,
+> Account/Observation, and Review/Classification/Hypothesis/Determination
+> contracts. ADR 0012 is now the active authority for the human
+> interpretation-and-decision layer. Current progression is
+> `Event → Accounts and Observations → Review → Classification and/or Hypothesis
+> → Determination`, with no mandatory progression and with teacher-local versus
+> recorded-institutional authority kept explicit. Concern/referral is primarily
+> Review initiation/routing rather than a finding, and a Hypothesis remains
+> tentative rather than becoming a Determination automatically.
+
 # 1. What Paper Data Suite currently is
 
 The repositories establish a consistent architectural identity for Paper Data Suite:

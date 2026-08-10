@@ -1,0 +1,17 @@
+{
+  "manifest_version": "1",
+  "issue": 16,
+  "scenario": "hypothesis_review_linkage",
+  "version": "1",
+  "valid": [
+    "author-different-from-reviewer.json",
+    "linked-completed.json",
+    "linked-in-review.json",
+    "linked-set-aside.json"
+  ],
+  "application_invalid": [
+    "review-different-event.json",
+    "review-ref-does-not-match-supplied-review.json",
+    "review-target-mismatch.json"
+  ]
+}

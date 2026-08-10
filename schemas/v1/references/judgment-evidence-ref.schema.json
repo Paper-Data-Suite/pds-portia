@@ -1,0 +1,101 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/judgment-evidence-ref.schema.json",
+  "title": "Portia Judgment Evidence Reference",
+  "description": "Closed reference family for canonical material explicitly considered or cited by a Portia Review, Classification, Hypothesis, or Determination. It can identify one exact Portia work representation, one exact Portia child-record representation, or one typed sibling-module work record. The reference carries no evidentiary weight, credibility, truth, corroboration, source-independence, or outcome semantics. Raw source-artifact references are intentionally excluded so substantive artifact interpretation passes through the Account or Observation evidence layer.",
+  "oneOf": [
+    {
+      "$ref": "#/$defs/portiaWork"
+    },
+    {
+      "$ref": "#/$defs/portiaRecord"
+    },
+    {
+      "$ref": "#/$defs/moduleRecord"
+    }
+  ],
+  "$defs": {
+    "portiaWork": {
+      "type": "object",
+      "required": [
+        "kind",
+        "work_ref"
+      ],
+      "properties": {
+        "kind": {
+          "const": "portia_work"
+        },
+        "work_ref": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-portia-work-ref.schema.json"
+        }
+      },
+      "additionalProperties": false
+    },
+    "portiaRecord": {
+      "type": "object",
+      "required": [
+        "kind",
+        "work_record_ref"
+      ],
+      "properties": {
+        "kind": {
+          "const": "portia_record"
+        },
+        "work_record_ref": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-portia-work-record-ref.schema.json"
+        }
+      },
+      "additionalProperties": false
+    },
+    "moduleRecord": {
+      "type": "object",
+      "required": [
+        "kind",
+        "module_work_record_ref"
+      ],
+      "properties": {
+        "kind": {
+          "const": "module_record"
+        },
+        "module_work_record_ref": {
+          "allOf": [
+            {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/module-work-record-ref.schema.json"
+            },
+            {
+              "properties": {
+                "work_ref": {
+                  "properties": {
+                    "module_id": {
+                      "not": {
+                        "const": "portia"
+                      }
+                    }
+                  }
+                },
+                "record_ref": {
+                  "properties": {
+                    "module_id": {
+                      "not": {
+                        "const": "portia"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "x-portia-application-invariants": [
+    "portia_work_must_resolve_exactly",
+    "portia_record_must_resolve_exactly",
+    "module_record_nested_module_ids_must_match",
+    "module_record_contract_support_and_authorization_required",
+    "references_do_not_establish_weight_truth_or_source_independence",
+    "historical_references_do_not_silently_follow_successors"
+  ]
+}

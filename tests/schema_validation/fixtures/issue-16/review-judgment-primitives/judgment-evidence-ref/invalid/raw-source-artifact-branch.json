@@ -1,0 +1,8 @@
+{
+  "kind": "source_artifact",
+  "source_artifact_ref": {
+    "kind": "external_record",
+    "system_label": "Legacy SIS",
+    "external_reference": "legacy-42"
+  }
+}

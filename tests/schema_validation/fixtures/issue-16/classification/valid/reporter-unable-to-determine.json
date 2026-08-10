@@ -1,0 +1,34 @@
+{
+  "schema_version": "1",
+  "record_type": "classification",
+  "module_id": "portia",
+  "class_id": "eng10_p2_2026",
+  "work_id": "evt_issue16_cls",
+  "classification_id": "cls_reporter_unable",
+  "status": "active",
+  "target": {
+    "kind": "event"
+  },
+  "selector": {
+    "kind": "local_operator",
+    "display_label": "Synthetic Teacher"
+  },
+  "stage": "reporter_selected",
+  "result": {
+    "kind": "unable_to_determine",
+    "rationale": "Available information did not support selecting one local category."
+  },
+  "creation_source": {
+    "type": "digital_entry"
+  },
+  "created_at": "2026-08-07T14:00:00-04:00",
+  "created_by": {
+    "type": "local_operator",
+    "display_label": "Synthetic Teacher"
+  },
+  "updated_at": "2026-08-07T14:00:00-04:00",
+  "updated_by": {
+    "type": "local_operator",
+    "display_label": "Synthetic Teacher"
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "manifest_version": "1",
+  "issue": 16,
+  "contract": "review_workflow",
+  "version": "1",
+  "valid": {
+    "open-append-evidence.json": "Active open Review may append actually-considered evidence without changing workflow state.",
+    "open-to-in-review.json": "Open Review may enter active review and append evidence.",
+    "in-review-to-awaiting.json": "In-review state may wait for additional information.",
+    "awaiting-to-in-review.json": "Awaiting-information Review may resume and append evidence.",
+    "in-review-to-completed.json": "In-review Review may complete without creating a finding.",
+    "open-to-cancelled.json": "Open Review may be cancelled as valid workflow history."
+  },
+  "application_invalid": {
+    "completed-reopened.json": "Completed Review is frozen and cannot reopen.",
+    "cancelled-reopened.json": "Cancelled Review is frozen and cannot reopen.",
+    "active-question-rewritten.json": "Active question is materially fixed.",
+    "active-target-rewritten.json": "Active target is materially fixed.",
+    "active-reviewer-rewritten.json": "Active represented reviewer is materially fixed.",
+    "active-trigger-rewritten.json": "Active initiation semantics are materially fixed.",
+    "evidence-removed.json": "Active Review evidence may append but not silently remove prior entries.",
+    "review-subject-rewritten.json": "Records under review are materially fixed after activation.",
+    "creation-source-rewritten.json": "Creation provenance is immutable.",
+    "awaiting-to-open-backward.json": "Workflow cannot move backward to open.",
+    "updated-at-not-advanced.json": "Guarded workflow update must advance updated_at."
+  }
+}
