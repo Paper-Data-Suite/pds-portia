@@ -1,0 +1,11 @@
+{
+  "manifest_version": "1",
+  "issue": 17,
+  "group": "cross_record",
+  "valid": [
+    "response-and-communication-distinct.json",
+    "failed-then-completed-contact.json",
+    "determination-communication-response.json",
+    "communication-account-boundary.json"
+  ]
+}

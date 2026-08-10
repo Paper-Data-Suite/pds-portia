@@ -1,0 +1,115 @@
+{
+  "scenario": "response_and_communication_distinct",
+  "response": {
+    "schema_version": "1",
+    "record_type": "response",
+    "module_id": "portia",
+    "class_id": "class_ela10_p2",
+    "work_id": "evt_issue17_cross",
+    "response_id": "rsp_cross_001",
+    "status": "active",
+    "target": {
+      "kind": "event"
+    },
+    "provider": {
+      "kind": "local_operator",
+      "display_label": "Synthetic Teacher"
+    },
+    "action": {
+      "family": "referral_or_handoff",
+      "description": "Requested a bounded counselor handoff related to the Event."
+    },
+    "execution_state": "completed",
+    "started_at": "2026-08-10T10:00:00-04:00",
+    "ended_at": "2026-08-10T10:01:00-04:00",
+    "creation_source": {
+      "type": "digital_entry"
+    },
+    "created_at": "2026-08-10T10:02:00-04:00",
+    "created_by": {
+      "type": "local_operator",
+      "display_label": "Synthetic Teacher"
+    },
+    "updated_at": "2026-08-10T10:02:00-04:00",
+    "updated_by": {
+      "type": "local_operator",
+      "display_label": "Synthetic Teacher"
+    }
+  },
+  "communication": {
+    "schema_version": "1",
+    "record_type": "communication",
+    "module_id": "portia",
+    "class_id": "class_ela10_p2",
+    "work_kind": "event",
+    "work_id": "evt_issue17_cross",
+    "communication_id": "comm_cross_001",
+    "status": "active",
+    "sender": {
+      "kind": "local_operator",
+      "display_label": "Synthetic Teacher"
+    },
+    "recipients": [
+      {
+        "person": {
+          "kind": "actor",
+          "actor_ref": {
+            "actor_id": "actr_family_001"
+          },
+          "display_snapshot": {
+            "display_name": "Synthetic Family Member"
+          }
+        },
+        "endpoint_ref": {
+          "actor_id": "actr_family_001",
+          "contact_point_id": "acp_family_phone_001",
+          "contract_version": "1"
+        },
+        "participation": "participated"
+      }
+    ],
+    "method": {
+      "kind": "phone_call"
+    },
+    "purpose": {
+      "kind": "referral_or_handoff"
+    },
+    "act_state": "completed",
+    "privacy_scope": "ordinary",
+    "started_at": "2026-08-10T10:03:00-04:00",
+    "ended_at": "2026-08-10T10:06:00-04:00",
+    "summary": "Coordinated the bounded handoff by phone.",
+    "creation_source": {
+      "type": "digital_entry"
+    },
+    "created_at": "2026-08-10T10:07:00-04:00",
+    "created_by": {
+      "type": "local_operator",
+      "display_label": "Synthetic Teacher"
+    },
+    "updated_at": "2026-08-10T10:07:00-04:00",
+    "updated_by": {
+      "type": "local_operator",
+      "display_label": "Synthetic Teacher"
+    },
+    "relations": [
+      {
+        "relation": "relates_to_response",
+        "record_ref": {
+          "work_ref": {
+            "module_id": "portia",
+            "class_id": "class_ela10_p2",
+            "work_id": "evt_issue17_cross",
+            "work_kind": "event",
+            "contract_version": "2"
+          },
+          "record_ref": {
+            "record_kind": "response",
+            "record_id": "rsp_cross_001",
+            "contract_version": "1"
+          }
+        }
+      }
+    ]
+  }
+}

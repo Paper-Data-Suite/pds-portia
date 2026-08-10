@@ -1,0 +1,144 @@
+{
+  "scenario": "determination_communication_response",
+  "determination_ref": {
+    "work_ref": {
+      "module_id": "portia",
+      "class_id": "class_ela10_p2",
+      "work_id": "evt_issue17_cross",
+      "work_kind": "event",
+      "contract_version": "2"
+    },
+    "record_ref": {
+      "record_kind": "determination",
+      "record_id": "det_cross_001",
+      "contract_version": "1"
+    }
+  },
+  "communication": {
+    "schema_version": "1",
+    "record_type": "communication",
+    "module_id": "portia",
+    "class_id": "class_ela10_p2",
+    "work_kind": "event",
+    "work_id": "evt_issue17_cross",
+    "communication_id": "comm_determination_cross",
+    "status": "active",
+    "sender": {
+      "kind": "local_operator",
+      "display_label": "Synthetic Teacher"
+    },
+    "recipients": [
+      {
+        "person": {
+          "kind": "actor",
+          "actor_ref": {
+            "actor_id": "actr_family_001"
+          },
+          "display_snapshot": {
+            "display_name": "Synthetic Family Member"
+          }
+        },
+        "endpoint_ref": {
+          "actor_id": "actr_family_001",
+          "contact_point_id": "acp_family_phone_001",
+          "contract_version": "1"
+        },
+        "participation": "participated"
+      }
+    ],
+    "method": {
+      "kind": "phone_call"
+    },
+    "purpose": {
+      "kind": "determination_notice"
+    },
+    "act_state": "completed",
+    "privacy_scope": "ordinary",
+    "started_at": "2026-08-10T10:03:00-04:00",
+    "ended_at": "2026-08-10T10:06:00-04:00",
+    "summary": "Conveyed the recorded Determination to the family contact.",
+    "creation_source": {
+      "type": "digital_entry"
+    },
+    "created_at": "2026-08-10T10:07:00-04:00",
+    "created_by": {
+      "type": "local_operator",
+      "display_label": "Synthetic Teacher"
+    },
+    "updated_at": "2026-08-10T10:07:00-04:00",
+    "updated_by": {
+      "type": "local_operator",
+      "display_label": "Synthetic Teacher"
+    },
+    "relations": [
+      {
+        "relation": "conveys_determination",
+        "record_ref": {
+          "work_ref": {
+            "module_id": "portia",
+            "class_id": "class_ela10_p2",
+            "work_id": "evt_issue17_cross",
+            "work_kind": "event",
+            "contract_version": "2"
+          },
+          "record_ref": {
+            "record_kind": "determination",
+            "record_id": "det_cross_001",
+            "contract_version": "1"
+          }
+        }
+      }
+    ]
+  },
+  "response": {
+    "schema_version": "1",
+    "record_type": "response",
+    "module_id": "portia",
+    "class_id": "class_ela10_p2",
+    "work_id": "evt_issue17_cross",
+    "response_id": "rsp_institutional_cross",
+    "status": "active",
+    "target": {
+      "kind": "event"
+    },
+    "provider": {
+      "kind": "local_operator",
+      "display_label": "Synthetic Teacher"
+    },
+    "action": {
+      "family": "consequence",
+      "description": "Recorded implementation of the institutionally documented consequence.",
+      "consequence_context": "recorded_institutional"
+    },
+    "execution_state": "completed",
+    "started_at": "2026-08-10T10:00:00-04:00",
+    "ended_at": "2026-08-10T10:01:00-04:00",
+    "creation_source": {
+      "type": "digital_entry"
+    },
+    "created_at": "2026-08-10T10:02:00-04:00",
+    "created_by": {
+      "type": "local_operator",
+      "display_label": "Synthetic Teacher"
+    },
+    "updated_at": "2026-08-10T10:02:00-04:00",
+    "updated_by": {
+      "type": "local_operator",
+      "display_label": "Synthetic Teacher"
+    },
+    "determination_ref": {
+      "work_ref": {
+        "module_id": "portia",
+        "class_id": "class_ela10_p2",
+        "work_id": "evt_issue17_cross",
+        "work_kind": "event",
+        "contract_version": "2"
+      },
+      "record_ref": {
+        "record_kind": "determination",
+        "record_id": "det_cross_001",
+        "contract_version": "1"
+      }
+    }
+  }
+}
