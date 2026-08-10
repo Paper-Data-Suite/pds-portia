@@ -688,6 +688,18 @@
         "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/determinations/determination.schema.json",
         "path": "schemas/v1/determinations/determination.schema.json"
       }
+    },
+    "portia_response_id": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-response-id.schema.json",
+        "path": "schemas/v1/identifiers/portia-response-id.schema.json"
+      }
+    },
+    "portia_communication_id": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-communication-id.schema.json",
+        "path": "schemas/v1/identifiers/portia-communication-id.schema.json"
+      }
     }
   }
 }

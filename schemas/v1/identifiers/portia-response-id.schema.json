@@ -1,0 +1,10 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-response-id.schema.json",
+  "title": "Portia Response Identifier",
+  "description": "Opaque canonical identifier for one Response inside one Portia Event. The rsp_ prefix is part of the public identifier contract. The identifier does not encode student, provider, target, action family, consequence context, timing, execution state, lifecycle, or other sensitive meaning.",
+  "type": "string",
+  "minLength": 5,
+  "maxLength": 128,
+  "pattern": "^rsp_[A-Za-z0-9][A-Za-z0-9_-]*$"
+}

@@ -1,0 +1,44 @@
+{
+  "manifest_version": "1",
+  "issue": 17,
+  "contracts": {
+    "portia_response_id": {
+      "version": "1",
+      "valid": [
+        "rsp_a",
+        "rsp_1",
+        "rsp_response-001",
+        "rsp_A_b-C9"
+      ],
+      "invalid": [
+        "",
+        "rsp_",
+        "response_1",
+        "RSP_1",
+        "rsp_-bad",
+        "rsp__bad",
+        "rsp_bad space",
+        "rsp_bad/segment"
+      ]
+    },
+    "portia_communication_id": {
+      "version": "1",
+      "valid": [
+        "comm_a",
+        "comm_1",
+        "comm_contact-001",
+        "comm_A_b-C9"
+      ],
+      "invalid": [
+        "",
+        "comm_",
+        "communication_1",
+        "COMM_1",
+        "comm_-bad",
+        "comm__bad",
+        "comm_bad space",
+        "comm_bad/segment"
+      ]
+    }
+  }
+}
