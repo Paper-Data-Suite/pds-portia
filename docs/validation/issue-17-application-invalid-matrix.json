@@ -1,0 +1,416 @@
+{
+  "matrix_version": "1",
+  "issue": 17,
+  "title": "Response and Communication application-invalid matrix",
+  "fixture_application_invalid_scenarios": 52,
+  "programmatic_cross_record_invariants": 8,
+  "total_coverage_entries": 60,
+  "entries": [
+    {
+      "group": "response",
+      "fixture": "tests/schema_validation/fixtures/issue-17/response/application-invalid/updated-before-created.json",
+      "coverage_id": "portia.issue17.response.updated_before_created",
+      "expectation": "Structurally valid scenario is rejected by the Issue #17 application invariant documented by its source manifest and focused contract test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-17/response/manifest.json"
+    },
+    {
+      "group": "response",
+      "fixture": "tests/schema_validation/fixtures/issue-17/response/application-invalid/started-after-updated.json",
+      "coverage_id": "portia.issue17.response.started_after_updated",
+      "expectation": "Structurally valid scenario is rejected by the Issue #17 application invariant documented by its source manifest and focused contract test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-17/response/manifest.json"
+    },
+    {
+      "group": "response",
+      "fixture": "tests/schema_validation/fixtures/issue-17/response/application-invalid/ended-before-started.json",
+      "coverage_id": "portia.issue17.response.ended_before_started",
+      "expectation": "Structurally valid scenario is rejected by the Issue #17 application invariant documented by its source manifest and focused contract test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-17/response/manifest.json"
+    },
+    {
+      "group": "response",
+      "fixture": "tests/schema_validation/fixtures/issue-17/response/application-invalid/ended-after-updated.json",
+      "coverage_id": "portia.issue17.response.ended_after_updated",
+      "expectation": "Structurally valid scenario is rejected by the Issue #17 application invariant documented by its source manifest and focused contract test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-17/response/manifest.json"
+    },
+    {
+      "group": "response",
+      "fixture": "tests/schema_validation/fixtures/issue-17/response/application-invalid/active-import.json",
+      "coverage_id": "portia.issue17.response.active_import",
+      "expectation": "Structurally valid scenario is rejected by the Issue #17 application invariant documented by its source manifest and focused contract test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-17/response/manifest.json"
+    },
+    {
+      "group": "response",
+      "fixture": "tests/schema_validation/fixtures/issue-17/response/application-invalid/active-paper-ingested.json",
+      "coverage_id": "portia.issue17.response.active_paper_ingested",
+      "expectation": "Structurally valid scenario is rejected by the Issue #17 application invariant documented by its source manifest and focused contract test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-17/response/manifest.json"
+    },
+    {
+      "group": "response",
+      "fixture": "tests/schema_validation/fixtures/issue-17/response/application-invalid/digital-active-unknown-execution.json",
+      "coverage_id": "portia.issue17.response.digital_active_unknown_execution",
+      "expectation": "Structurally valid scenario is rejected by the Issue #17 application invariant documented by its source manifest and focused contract test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-17/response/manifest.json"
+    },
+    {
+      "group": "response",
+      "fixture": "tests/schema_validation/fixtures/issue-17/response/application-invalid/review-ref-other-event.json",
+      "coverage_id": "portia.issue17.response.review_ref_other_event",
+      "expectation": "Structurally valid scenario is rejected by the Issue #17 application invariant documented by its source manifest and focused contract test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-17/response/manifest.json"
+    },
+    {
+      "group": "response",
+      "fixture": "tests/schema_validation/fixtures/issue-17/response/application-invalid/determination-ref-other-event.json",
+      "coverage_id": "portia.issue17.response.determination_ref_other_event",
+      "expectation": "Structurally valid scenario is rejected by the Issue #17 application invariant documented by its source manifest and focused contract test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-17/response/manifest.json"
+    },
+    {
+      "group": "response",
+      "fixture": "tests/schema_validation/fixtures/issue-17/response/application-invalid/roster-student-provider-consequence.json",
+      "coverage_id": "portia.issue17.response.roster_student_provider_consequence",
+      "expectation": "Structurally valid scenario is rejected by the Issue #17 application invariant documented by its source manifest and focused contract test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-17/response/manifest.json"
+    },
+    {
+      "group": "response",
+      "fixture": "tests/schema_validation/fixtures/issue-17/response/application-invalid/self-supersession.json",
+      "coverage_id": "portia.issue17.response.self_supersession",
+      "expectation": "Structurally valid scenario is rejected by the Issue #17 application invariant documented by its source manifest and focused contract test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-17/response/manifest.json"
+    },
+    {
+      "group": "response",
+      "fixture": "tests/schema_validation/fixtures/issue-17/response/application-invalid/duplicate-predecessor.json",
+      "coverage_id": "portia.issue17.response.duplicate_predecessor",
+      "expectation": "Structurally valid scenario is rejected by the Issue #17 application invariant documented by its source manifest and focused contract test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-17/response/manifest.json"
+    },
+    {
+      "group": "response",
+      "fixture": "tests/schema_validation/fixtures/issue-17/response/application-invalid/mixed-supersession-reasons.json",
+      "coverage_id": "portia.issue17.response.mixed_supersession_reasons",
+      "expectation": "Structurally valid scenario is rejected by the Issue #17 application invariant documented by its source manifest and focused contract test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-17/response/manifest.json"
+    },
+    {
+      "group": "response",
+      "fixture": "tests/schema_validation/fixtures/issue-17/response/application-invalid/ordinary-correction-cross-work.json",
+      "coverage_id": "portia.issue17.response.ordinary_correction_cross_work",
+      "expectation": "Structurally valid scenario is rejected by the Issue #17 application invariant documented by its source manifest and focused contract test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-17/response/manifest.json"
+    },
+    {
+      "group": "response",
+      "fixture": "tests/schema_validation/fixtures/issue-17/response/application-invalid/work-root-reason-same-work.json",
+      "coverage_id": "portia.issue17.response.work_root_reason_same_work",
+      "expectation": "Structurally valid scenario is rejected by the Issue #17 application invariant documented by its source manifest and focused contract test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-17/response/manifest.json"
+    },
+    {
+      "group": "response",
+      "fixture": "tests/schema_validation/fixtures/issue-17/response/application-invalid/work-root-correction-changes-id.json",
+      "coverage_id": "portia.issue17.response.work_root_correction_changes_id",
+      "expectation": "Structurally valid scenario is rejected by the Issue #17 application invariant documented by its source manifest and focused contract test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-17/response/manifest.json"
+    },
+    {
+      "group": "response",
+      "fixture": "tests/schema_validation/fixtures/issue-17/response/application-invalid/duplicate-consolidation-one-predecessor.json",
+      "coverage_id": "portia.issue17.response.duplicate_consolidation_one_predecessor",
+      "expectation": "Structurally valid scenario is rejected by the Issue #17 application invariant documented by its source manifest and focused contract test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-17/response/manifest.json"
+    },
+    {
+      "group": "response",
+      "fixture": "tests/schema_validation/fixtures/issue-17/response/application-invalid/nonconsolidation-multiple-predecessors.json",
+      "coverage_id": "portia.issue17.response.nonconsolidation_multiple_predecessors",
+      "expectation": "Structurally valid scenario is rejected by the Issue #17 application invariant documented by its source manifest and focused contract test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-17/response/manifest.json"
+    },
+    {
+      "group": "response",
+      "fixture": "tests/schema_validation/fixtures/issue-17/response/application-invalid/in-progress-with-ended-at.json",
+      "coverage_id": "portia.issue17.response.in_progress_with_ended_at",
+      "expectation": "Structurally valid scenario is rejected by the Issue #17 application invariant documented by its source manifest and focused contract test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-17/response/manifest.json"
+    },
+    {
+      "group": "communication",
+      "fixture": "tests/schema_validation/fixtures/issue-17/communication/application-invalid/updated-before-created.json",
+      "coverage_id": "portia.issue17.communication.updated_before_created",
+      "expectation": "Structurally valid scenario is rejected by the Issue #17 application invariant documented by its source manifest and focused contract test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-17/communication/manifest.json"
+    },
+    {
+      "group": "communication",
+      "fixture": "tests/schema_validation/fixtures/issue-17/communication/application-invalid/started-after-updated.json",
+      "coverage_id": "portia.issue17.communication.started_after_updated",
+      "expectation": "Structurally valid scenario is rejected by the Issue #17 application invariant documented by its source manifest and focused contract test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-17/communication/manifest.json"
+    },
+    {
+      "group": "communication",
+      "fixture": "tests/schema_validation/fixtures/issue-17/communication/application-invalid/ended-before-started.json",
+      "coverage_id": "portia.issue17.communication.ended_before_started",
+      "expectation": "Structurally valid scenario is rejected by the Issue #17 application invariant documented by its source manifest and focused contract test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-17/communication/manifest.json"
+    },
+    {
+      "group": "communication",
+      "fixture": "tests/schema_validation/fixtures/issue-17/communication/application-invalid/ended-after-updated.json",
+      "coverage_id": "portia.issue17.communication.ended_after_updated",
+      "expectation": "Structurally valid scenario is rejected by the Issue #17 application invariant documented by its source manifest and focused contract test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-17/communication/manifest.json"
+    },
+    {
+      "group": "communication",
+      "fixture": "tests/schema_validation/fixtures/issue-17/communication/application-invalid/active-import.json",
+      "coverage_id": "portia.issue17.communication.active_import",
+      "expectation": "Structurally valid scenario is rejected by the Issue #17 application invariant documented by its source manifest and focused contract test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-17/communication/manifest.json"
+    },
+    {
+      "group": "communication",
+      "fixture": "tests/schema_validation/fixtures/issue-17/communication/application-invalid/active-paper-ingested.json",
+      "coverage_id": "portia.issue17.communication.active_paper_ingested",
+      "expectation": "Structurally valid scenario is rejected by the Issue #17 application invariant documented by its source manifest and focused contract test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-17/communication/manifest.json"
+    },
+    {
+      "group": "communication",
+      "fixture": "tests/schema_validation/fixtures/issue-17/communication/application-invalid/support-process-owner-before-issue18.json",
+      "coverage_id": "portia.issue17.communication.support_process_owner_before_issue18",
+      "expectation": "Structurally valid scenario is rejected by the Issue #17 application invariant documented by its source manifest and focused contract test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-17/communication/manifest.json"
+    },
+    {
+      "group": "communication",
+      "fixture": "tests/schema_validation/fixtures/issue-17/communication/application-invalid/digital-unknown-method.json",
+      "coverage_id": "portia.issue17.communication.digital_unknown_method",
+      "expectation": "Structurally valid scenario is rejected by the Issue #17 application invariant documented by its source manifest and focused contract test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-17/communication/manifest.json"
+    },
+    {
+      "group": "communication",
+      "fixture": "tests/schema_validation/fixtures/issue-17/communication/application-invalid/digital-unknown-purpose.json",
+      "coverage_id": "portia.issue17.communication.digital_unknown_purpose",
+      "expectation": "Structurally valid scenario is rejected by the Issue #17 application invariant documented by its source manifest and focused contract test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-17/communication/manifest.json"
+    },
+    {
+      "group": "communication",
+      "fixture": "tests/schema_validation/fixtures/issue-17/communication/application-invalid/digital-unknown-act-state.json",
+      "coverage_id": "portia.issue17.communication.digital_unknown_act_state",
+      "expectation": "Structurally valid scenario is rejected by the Issue #17 application invariant documented by its source manifest and focused contract test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-17/communication/manifest.json"
+    },
+    {
+      "group": "communication",
+      "fixture": "tests/schema_validation/fixtures/issue-17/communication/application-invalid/digital-unknown-privacy.json",
+      "coverage_id": "portia.issue17.communication.digital_unknown_privacy",
+      "expectation": "Structurally valid scenario is rejected by the Issue #17 application invariant documented by its source manifest and focused contract test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-17/communication/manifest.json"
+    },
+    {
+      "group": "communication",
+      "fixture": "tests/schema_validation/fixtures/issue-17/communication/application-invalid/digital-unknown-participation.json",
+      "coverage_id": "portia.issue17.communication.digital_unknown_participation",
+      "expectation": "Structurally valid scenario is rejected by the Issue #17 application invariant documented by its source manifest and focused contract test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-17/communication/manifest.json"
+    },
+    {
+      "group": "communication",
+      "fixture": "tests/schema_validation/fixtures/issue-17/communication/application-invalid/active-unidentified-sender.json",
+      "coverage_id": "portia.issue17.communication.active_unidentified_sender",
+      "expectation": "Structurally valid scenario is rejected by the Issue #17 application invariant documented by its source manifest and focused contract test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-17/communication/manifest.json"
+    },
+    {
+      "group": "communication",
+      "fixture": "tests/schema_validation/fixtures/issue-17/communication/application-invalid/active-unidentified-recipient.json",
+      "coverage_id": "portia.issue17.communication.active_unidentified_recipient",
+      "expectation": "Structurally valid scenario is rejected by the Issue #17 application invariant documented by its source manifest and focused contract test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-17/communication/manifest.json"
+    },
+    {
+      "group": "communication",
+      "fixture": "tests/schema_validation/fixtures/issue-17/communication/application-invalid/duplicate-logical-recipient.json",
+      "coverage_id": "portia.issue17.communication.duplicate_logical_recipient",
+      "expectation": "Structurally valid scenario is rejected by the Issue #17 application invariant documented by its source manifest and focused contract test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-17/communication/manifest.json"
+    },
+    {
+      "group": "communication",
+      "fixture": "tests/schema_validation/fixtures/issue-17/communication/application-invalid/endpoint-actor-mismatch.json",
+      "coverage_id": "portia.issue17.communication.endpoint_actor_mismatch",
+      "expectation": "Structurally valid scenario is rejected by the Issue #17 application invariant documented by its source manifest and focused contract test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-17/communication/manifest.json"
+    },
+    {
+      "group": "communication",
+      "fixture": "tests/schema_validation/fixtures/issue-17/communication/application-invalid/module-attachment-module-mismatch.json",
+      "coverage_id": "portia.issue17.communication.module_attachment_module_mismatch",
+      "expectation": "Structurally valid scenario is rejected by the Issue #17 application invariant documented by its source manifest and focused contract test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-17/communication/manifest.json"
+    },
+    {
+      "group": "communication",
+      "fixture": "tests/schema_validation/fixtures/issue-17/communication/application-invalid/determination-relation-wrong-kind.json",
+      "coverage_id": "portia.issue17.communication.determination_relation_wrong_kind",
+      "expectation": "Structurally valid scenario is rejected by the Issue #17 application invariant documented by its source manifest and focused contract test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-17/communication/manifest.json"
+    },
+    {
+      "group": "communication",
+      "fixture": "tests/schema_validation/fixtures/issue-17/communication/application-invalid/response-relation-wrong-kind.json",
+      "coverage_id": "portia.issue17.communication.response_relation_wrong_kind",
+      "expectation": "Structurally valid scenario is rejected by the Issue #17 application invariant documented by its source manifest and focused contract test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-17/communication/manifest.json"
+    },
+    {
+      "group": "communication",
+      "fixture": "tests/schema_validation/fixtures/issue-17/communication/application-invalid/account-relation-wrong-kind.json",
+      "coverage_id": "portia.issue17.communication.account_relation_wrong_kind",
+      "expectation": "Structurally valid scenario is rejected by the Issue #17 application invariant documented by its source manifest and focused contract test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-17/communication/manifest.json"
+    },
+    {
+      "group": "communication",
+      "fixture": "tests/schema_validation/fixtures/issue-17/communication/application-invalid/responds-to-wrong-kind.json",
+      "coverage_id": "portia.issue17.communication.responds_to_wrong_kind",
+      "expectation": "Structurally valid scenario is rejected by the Issue #17 application invariant documented by its source manifest and focused contract test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-17/communication/manifest.json"
+    },
+    {
+      "group": "communication",
+      "fixture": "tests/schema_validation/fixtures/issue-17/communication/application-invalid/responds-to-self.json",
+      "coverage_id": "portia.issue17.communication.responds_to_self",
+      "expectation": "Structurally valid scenario is rejected by the Issue #17 application invariant documented by its source manifest and focused contract test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-17/communication/manifest.json"
+    },
+    {
+      "group": "communication",
+      "fixture": "tests/schema_validation/fixtures/issue-17/communication/application-invalid/responds-to-other-work.json",
+      "coverage_id": "portia.issue17.communication.responds_to_other_work",
+      "expectation": "Structurally valid scenario is rejected by the Issue #17 application invariant documented by its source manifest and focused contract test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-17/communication/manifest.json"
+    },
+    {
+      "group": "communication",
+      "fixture": "tests/schema_validation/fixtures/issue-17/communication/application-invalid/self-portia-attachment.json",
+      "coverage_id": "portia.issue17.communication.self_portia_attachment",
+      "expectation": "Structurally valid scenario is rejected by the Issue #17 application invariant documented by its source manifest and focused contract test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-17/communication/manifest.json"
+    },
+    {
+      "group": "communication",
+      "fixture": "tests/schema_validation/fixtures/issue-17/communication/application-invalid/unavailable-with-participation.json",
+      "coverage_id": "portia.issue17.communication.unavailable_with_participation",
+      "expectation": "Structurally valid scenario is rejected by the Issue #17 application invariant documented by its source manifest and focused contract test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-17/communication/manifest.json"
+    },
+    {
+      "group": "communication",
+      "fixture": "tests/schema_validation/fixtures/issue-17/communication/application-invalid/self-supersession.json",
+      "coverage_id": "portia.issue17.communication.self_supersession",
+      "expectation": "Structurally valid scenario is rejected by the Issue #17 application invariant documented by its source manifest and focused contract test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-17/communication/manifest.json"
+    },
+    {
+      "group": "communication",
+      "fixture": "tests/schema_validation/fixtures/issue-17/communication/application-invalid/duplicate-predecessor.json",
+      "coverage_id": "portia.issue17.communication.duplicate_predecessor",
+      "expectation": "Structurally valid scenario is rejected by the Issue #17 application invariant documented by its source manifest and focused contract test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-17/communication/manifest.json"
+    },
+    {
+      "group": "communication",
+      "fixture": "tests/schema_validation/fixtures/issue-17/communication/application-invalid/mixed-supersession-reasons.json",
+      "coverage_id": "portia.issue17.communication.mixed_supersession_reasons",
+      "expectation": "Structurally valid scenario is rejected by the Issue #17 application invariant documented by its source manifest and focused contract test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-17/communication/manifest.json"
+    },
+    {
+      "group": "communication",
+      "fixture": "tests/schema_validation/fixtures/issue-17/communication/application-invalid/ordinary-correction-cross-work.json",
+      "coverage_id": "portia.issue17.communication.ordinary_correction_cross_work",
+      "expectation": "Structurally valid scenario is rejected by the Issue #17 application invariant documented by its source manifest and focused contract test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-17/communication/manifest.json"
+    },
+    {
+      "group": "communication",
+      "fixture": "tests/schema_validation/fixtures/issue-17/communication/application-invalid/work-root-reason-same-work.json",
+      "coverage_id": "portia.issue17.communication.work_root_reason_same_work",
+      "expectation": "Structurally valid scenario is rejected by the Issue #17 application invariant documented by its source manifest and focused contract test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-17/communication/manifest.json"
+    },
+    {
+      "group": "communication",
+      "fixture": "tests/schema_validation/fixtures/issue-17/communication/application-invalid/work-root-correction-changes-id.json",
+      "coverage_id": "portia.issue17.communication.work_root_correction_changes_id",
+      "expectation": "Structurally valid scenario is rejected by the Issue #17 application invariant documented by its source manifest and focused contract test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-17/communication/manifest.json"
+    },
+    {
+      "group": "communication",
+      "fixture": "tests/schema_validation/fixtures/issue-17/communication/application-invalid/duplicate-consolidation-one-predecessor.json",
+      "coverage_id": "portia.issue17.communication.duplicate_consolidation_one_predecessor",
+      "expectation": "Structurally valid scenario is rejected by the Issue #17 application invariant documented by its source manifest and focused contract test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-17/communication/manifest.json"
+    },
+    {
+      "group": "communication",
+      "fixture": "tests/schema_validation/fixtures/issue-17/communication/application-invalid/nonconsolidation-multiple-predecessors.json",
+      "coverage_id": "portia.issue17.communication.nonconsolidation_multiple_predecessors",
+      "expectation": "Structurally valid scenario is rejected by the Issue #17 application invariant documented by its source manifest and focused contract test.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-17/communication/manifest.json"
+    }
+  ],
+  "programmatic_invariants": [
+    {
+      "coverage_id": "portia.issue17.cross.response_communication_distinct",
+      "expectation": "Response and Communication remain separate canonical records even when linked by an exact typed relation.",
+      "test": "tests/schema_validation/test_issue_17_shared_infrastructure_compatibility.py::Issue17SharedInfrastructureCompatibilityTests::test_response_and_communication_remain_distinct"
+    },
+    {
+      "coverage_id": "portia.issue17.cross.failed_then_completed_contact",
+      "expectation": "A failed contact attempt and a later completed contact remain separate Communication records.",
+      "test": "tests/schema_validation/test_issue_17_shared_infrastructure_compatibility.py::Issue17SharedInfrastructureCompatibilityTests::test_failed_then_completed_contact_preserves_both_records"
+    },
+    {
+      "coverage_id": "portia.issue17.cross.determination_notice_response",
+      "expectation": "Communication may convey an exact Determination while Response separately records implementation.",
+      "test": "tests/schema_validation/test_issue_17_shared_infrastructure_compatibility.py::Issue17SharedInfrastructureCompatibilityTests::test_determination_notice_and_response_share_exact_context"
+    },
+    {
+      "coverage_id": "portia.issue17.cross.communication_account_boundary",
+      "expectation": "Communication metadata does not silently become source-evidence Account content.",
+      "test": "tests/schema_validation/test_issue_17_shared_infrastructure_compatibility.py::Issue17SharedInfrastructureCompatibilityTests::test_communication_account_relation_preserves_source_boundary"
+    },
+    {
+      "coverage_id": "portia.issue17.cross.contact_point_exact_history",
+      "expectation": "Exact Actor Contact Point references do not silently follow later successor contact points.",
+      "test": "tests/schema_validation/test_issue_17_shared_infrastructure_compatibility.py::Issue17SharedInfrastructureCompatibilityTests::test_exact_contact_point_never_silently_follows_successor"
+    },
+    {
+      "coverage_id": "portia.issue17.infrastructure.shared_contract_reuse",
+      "expectation": "Response and Communication reuse existing lifecycle/correction/migration/operation/derived contracts without family-specific forks.",
+      "test": "tests/schema_validation/test_issue_17_shared_infrastructure_compatibility.py::Issue17SharedInfrastructureCompatibilityTests::test_shared_versions_are_reused_without_forks"
+    },
+    {
+      "coverage_id": "portia.issue17.infrastructure.metadata_privacy",
+      "expectation": "Removal, operation, Quarantine, Integrity Finding, source-snapshot, and derived metadata avoid copying substantive Response/Communication text.",
+      "test": "tests/schema_validation/test_issue_17_shared_infrastructure_compatibility.py::Issue17SharedInfrastructureCompatibilityTests::test_removal_operation_and_diagnostics_are_metadata_only"
+    },
+    {
+      "coverage_id": "portia.issue17.infrastructure.amendment_prohibited",
+      "expectation": "Generic amendment@1 remains structurally reusable, while Response/Communication v1 prohibit substantive Amendment at application level.",
+      "test": "tests/schema_validation/test_issue_17_shared_infrastructure_compatibility.py::Issue17SharedInfrastructureCompatibilityTests::test_amendment_is_structural_but_application_prohibited"
+    }
+  ]
+}

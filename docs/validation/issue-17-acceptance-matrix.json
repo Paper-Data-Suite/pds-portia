@@ -1,0 +1,658 @@
+{
+  "matrix_version": "1",
+  "issue": 17,
+  "title": "Response and Communication acceptance matrix",
+  "status": "provisional",
+  "criteria_count": 60,
+  "pass_count": 57,
+  "pending_count": 3,
+  "pending_reason": "Final repository/Core drift verification, final validation-note completion, and active README/schema-guide reconciliation are intentionally reserved for the final Issue #17 closeout slice.",
+  "criteria": [
+    {
+      "criterion_id": "architecture.001",
+      "group": "architecture",
+      "status": "pending",
+      "statement": "Initial, pre-ADR, and final repository drift checks are recorded.",
+      "evidence": [
+        "docs/validation/issue-17-initial-repository-checkpoint.md",
+        "docs/validation/issue-17-pre-adr-checkpoint.md",
+        "docs/validation/issue-17-final-repository-checkpoint.md"
+      ]
+    },
+    {
+      "criterion_id": "architecture.002",
+      "group": "architecture",
+      "status": "pass",
+      "statement": "Current Portia/Core contracts are reviewed.",
+      "evidence": [
+        "docs/design/portia-response-and-communication-domain-models.md",
+        "docs/decisions/0013-define-response-and-communication-domain-models.md"
+      ]
+    },
+    {
+      "criterion_id": "architecture.003",
+      "group": "architecture",
+      "status": "pass",
+      "statement": "Published schemas are not modified in place.",
+      "evidence": [
+        "docs/design/portia-response-and-communication-domain-models.md",
+        "docs/decisions/0013-define-response-and-communication-domain-models.md"
+      ]
+    },
+    {
+      "criterion_id": "architecture.004",
+      "group": "architecture",
+      "status": "pass",
+      "statement": "Response and Communication semantic units are explicit.",
+      "evidence": [
+        "docs/design/portia-response-and-communication-domain-models.md",
+        "docs/decisions/0013-define-response-and-communication-domain-models.md"
+      ]
+    },
+    {
+      "criterion_id": "architecture.005",
+      "group": "architecture",
+      "status": "pass",
+      "statement": "Response is distinct from Event, Determination, Support, and Outcome.",
+      "evidence": [
+        "docs/design/portia-response-and-communication-domain-models.md",
+        "docs/decisions/0013-define-response-and-communication-domain-models.md"
+      ]
+    },
+    {
+      "criterion_id": "architecture.006",
+      "group": "architecture",
+      "status": "pass",
+      "statement": "Communication is distinct from Account, Response, Determination, and Support.",
+      "evidence": [
+        "docs/design/portia-response-and-communication-domain-models.md",
+        "docs/decisions/0013-define-response-and-communication-domain-models.md"
+      ]
+    },
+    {
+      "criterion_id": "architecture.007",
+      "group": "architecture",
+      "status": "pass",
+      "statement": "Consequence does not become proof of misconduct.",
+      "evidence": [
+        "docs/design/portia-response-and-communication-domain-models.md",
+        "docs/decisions/0013-define-response-and-communication-domain-models.md"
+      ]
+    },
+    {
+      "criterion_id": "architecture.008",
+      "group": "architecture",
+      "status": "pass",
+      "statement": "Communication does not prove its content true.",
+      "evidence": [
+        "docs/design/portia-response-and-communication-domain-models.md",
+        "docs/decisions/0013-define-response-and-communication-domain-models.md"
+      ]
+    },
+    {
+      "criterion_id": "architecture.009",
+      "group": "architecture",
+      "status": "pass",
+      "statement": "Neither record becomes a durable student trait.",
+      "evidence": [
+        "docs/design/portia-response-and-communication-domain-models.md",
+        "docs/decisions/0013-define-response-and-communication-domain-models.md"
+      ]
+    },
+    {
+      "criterion_id": "response.010",
+      "group": "response",
+      "status": "pass",
+      "statement": "Durable opaque Response identity is defined.",
+      "evidence": [
+        "schemas/v1/responses/response.schema.json",
+        "tests/schema_validation/test_issue_17_response_contract.py",
+        "tests/schema_validation/fixtures/issue-17/response"
+      ]
+    },
+    {
+      "criterion_id": "response.011",
+      "group": "response",
+      "status": "pass",
+      "statement": "Canonical ownership/path and cardinality are defined.",
+      "evidence": [
+        "schemas/v1/responses/response.schema.json",
+        "tests/schema_validation/test_issue_17_response_contract.py",
+        "tests/schema_validation/fixtures/issue-17/response"
+      ]
+    },
+    {
+      "criterion_id": "response.012",
+      "group": "response",
+      "status": "pass",
+      "statement": "Event/Participant targeting is explicit.",
+      "evidence": [
+        "schemas/v1/responses/response.schema.json",
+        "tests/schema_validation/test_issue_17_response_contract.py",
+        "tests/schema_validation/fixtures/issue-17/response"
+      ]
+    },
+    {
+      "criterion_id": "response.013",
+      "group": "response",
+      "status": "pass",
+      "statement": "Provider is distinct from recorder.",
+      "evidence": [
+        "schemas/v1/responses/response.schema.json",
+        "tests/schema_validation/test_issue_17_response_contract.py",
+        "tests/schema_validation/fixtures/issue-17/response"
+      ]
+    },
+    {
+      "criterion_id": "response.014",
+      "group": "response",
+      "status": "pass",
+      "statement": "Classroom, environmental/instructional, support-access, safety/de-escalation, referral/handoff, restorative/repair, and consequence actions are representable.",
+      "evidence": [
+        "schemas/v1/responses/response.schema.json",
+        "tests/schema_validation/test_issue_17_response_contract.py",
+        "tests/schema_validation/fixtures/issue-17/response"
+      ]
+    },
+    {
+      "criterion_id": "response.015",
+      "group": "response",
+      "status": "pass",
+      "statement": "Restricted crisis workflows are not flattened into ordinary Response.",
+      "evidence": [
+        "schemas/v1/responses/response.schema.json",
+        "tests/schema_validation/test_issue_17_response_contract.py",
+        "tests/schema_validation/fixtures/issue-17/response"
+      ]
+    },
+    {
+      "criterion_id": "response.016",
+      "group": "response",
+      "status": "pass",
+      "statement": "Institutional consequence does not duplicate Determination semantics.",
+      "evidence": [
+        "schemas/v1/responses/response.schema.json",
+        "tests/schema_validation/test_issue_17_response_contract.py",
+        "tests/schema_validation/fixtures/issue-17/response"
+      ]
+    },
+    {
+      "criterion_id": "response.017",
+      "group": "response",
+      "status": "pass",
+      "statement": "Immediate Response versus ongoing Support boundary is explicit.",
+      "evidence": [
+        "schemas/v1/responses/response.schema.json",
+        "tests/schema_validation/test_issue_17_response_contract.py",
+        "tests/schema_validation/fixtures/issue-17/response"
+      ]
+    },
+    {
+      "criterion_id": "response.018",
+      "group": "response",
+      "status": "pass",
+      "statement": "Execution state is distinct from lifecycle and effectiveness.",
+      "evidence": [
+        "schemas/v1/responses/response.schema.json",
+        "tests/schema_validation/test_issue_17_response_contract.py",
+        "tests/schema_validation/fixtures/issue-17/response"
+      ]
+    },
+    {
+      "criterion_id": "response.019",
+      "group": "response",
+      "status": "pass",
+      "statement": "Chronology is validated.",
+      "evidence": [
+        "schemas/v1/responses/response.schema.json",
+        "tests/schema_validation/test_issue_17_response_contract.py",
+        "tests/schema_validation/fixtures/issue-17/response"
+      ]
+    },
+    {
+      "criterion_id": "response.020",
+      "group": "response",
+      "status": "pass",
+      "statement": "Material correction preserves history.",
+      "evidence": [
+        "schemas/v1/responses/response.schema.json",
+        "tests/schema_validation/test_issue_17_response_contract.py",
+        "tests/schema_validation/fixtures/issue-17/response"
+      ]
+    },
+    {
+      "criterion_id": "communication.021",
+      "group": "communication",
+      "status": "pass",
+      "statement": "Durable opaque Communication identity is defined.",
+      "evidence": [
+        "schemas/v1/communications/communication.schema.json",
+        "tests/schema_validation/test_issue_17_communication_contract.py",
+        "tests/schema_validation/fixtures/issue-17/communication"
+      ]
+    },
+    {
+      "criterion_id": "communication.022",
+      "group": "communication",
+      "status": "pass",
+      "statement": "Canonical ownership/path is explicit.",
+      "evidence": [
+        "schemas/v1/communications/communication.schema.json",
+        "tests/schema_validation/test_issue_17_communication_contract.py",
+        "tests/schema_validation/fixtures/issue-17/communication"
+      ]
+    },
+    {
+      "criterion_id": "communication.023",
+      "group": "communication",
+      "status": "pass",
+      "statement": "Sender is distinct from recorder.",
+      "evidence": [
+        "schemas/v1/communications/communication.schema.json",
+        "tests/schema_validation/test_issue_17_communication_contract.py",
+        "tests/schema_validation/fixtures/issue-17/communication"
+      ]
+    },
+    {
+      "criterion_id": "communication.024",
+      "group": "communication",
+      "status": "pass",
+      "statement": "One or more recipients are explicit.",
+      "evidence": [
+        "schemas/v1/communications/communication.schema.json",
+        "tests/schema_validation/test_issue_17_communication_contract.py",
+        "tests/schema_validation/fixtures/issue-17/communication"
+      ]
+    },
+    {
+      "criterion_id": "communication.025",
+      "group": "communication",
+      "status": "pass",
+      "statement": "Duplicate logical recipients are invalid.",
+      "evidence": [
+        "schemas/v1/communications/communication.schema.json",
+        "tests/schema_validation/test_issue_17_communication_contract.py",
+        "tests/schema_validation/fixtures/issue-17/communication"
+      ]
+    },
+    {
+      "criterion_id": "communication.026",
+      "group": "communication",
+      "status": "pass",
+      "statement": "Actor Contact Point history is preserved exactly.",
+      "evidence": [
+        "schemas/v1/communications/communication.schema.json",
+        "tests/schema_validation/test_issue_17_communication_contract.py",
+        "tests/schema_validation/fixtures/issue-17/communication"
+      ]
+    },
+    {
+      "criterion_id": "communication.027",
+      "group": "communication",
+      "status": "pass",
+      "statement": "Contact Point preference is not consent.",
+      "evidence": [
+        "schemas/v1/communications/communication.schema.json",
+        "tests/schema_validation/test_issue_17_communication_contract.py",
+        "tests/schema_validation/fixtures/issue-17/communication"
+      ]
+    },
+    {
+      "criterion_id": "communication.028",
+      "group": "communication",
+      "status": "pass",
+      "statement": "Contact Point verification is not delivery proof.",
+      "evidence": [
+        "schemas/v1/communications/communication.schema.json",
+        "tests/schema_validation/test_issue_17_communication_contract.py",
+        "tests/schema_validation/fixtures/issue-17/communication"
+      ]
+    },
+    {
+      "criterion_id": "communication.029",
+      "group": "communication",
+      "status": "pass",
+      "statement": "Closed method and purpose vocabularies are defined.",
+      "evidence": [
+        "schemas/v1/communications/communication.schema.json",
+        "tests/schema_validation/test_issue_17_communication_contract.py",
+        "tests/schema_validation/fixtures/issue-17/communication"
+      ]
+    },
+    {
+      "criterion_id": "communication.030",
+      "group": "communication",
+      "status": "pass",
+      "statement": "Attempted versus completed Communication is explicit.",
+      "evidence": [
+        "schemas/v1/communications/communication.schema.json",
+        "tests/schema_validation/test_issue_17_communication_contract.py",
+        "tests/schema_validation/fixtures/issue-17/communication"
+      ]
+    },
+    {
+      "criterion_id": "communication.031",
+      "group": "communication",
+      "status": "pass",
+      "statement": "Later attempts do not rewrite earlier attempts.",
+      "evidence": [
+        "schemas/v1/communications/communication.schema.json",
+        "tests/schema_validation/test_issue_17_communication_contract.py",
+        "tests/schema_validation/fixtures/issue-17/communication"
+      ]
+    },
+    {
+      "criterion_id": "communication.032",
+      "group": "communication",
+      "status": "pass",
+      "statement": "Communication content versus Account evidence boundary is explicit.",
+      "evidence": [
+        "schemas/v1/communications/communication.schema.json",
+        "tests/schema_validation/test_issue_17_communication_contract.py",
+        "tests/schema_validation/fixtures/issue-17/communication"
+      ]
+    },
+    {
+      "criterion_id": "communication.033",
+      "group": "communication",
+      "status": "pass",
+      "statement": "Message history cannot be silently rewritten.",
+      "evidence": [
+        "schemas/v1/communications/communication.schema.json",
+        "tests/schema_validation/test_issue_17_communication_contract.py",
+        "tests/schema_validation/fixtures/issue-17/communication"
+      ]
+    },
+    {
+      "criterion_id": "communication.034",
+      "group": "communication",
+      "status": "pass",
+      "statement": "Attachment semantics are explicit.",
+      "evidence": [
+        "schemas/v1/communications/communication.schema.json",
+        "tests/schema_validation/test_issue_17_communication_contract.py",
+        "tests/schema_validation/fixtures/issue-17/communication"
+      ]
+    },
+    {
+      "criterion_id": "communication.035",
+      "group": "communication",
+      "status": "pass",
+      "statement": "Family/student participation requires explicit evidence, not recipient listing.",
+      "evidence": [
+        "schemas/v1/communications/communication.schema.json",
+        "tests/schema_validation/test_issue_17_communication_contract.py",
+        "tests/schema_validation/fixtures/issue-17/communication"
+      ]
+    },
+    {
+      "criterion_id": "communication.036",
+      "group": "communication",
+      "status": "pass",
+      "statement": "No engagement/remorse/compliance scoring is introduced.",
+      "evidence": [
+        "schemas/v1/communications/communication.schema.json",
+        "tests/schema_validation/test_issue_17_communication_contract.py",
+        "tests/schema_validation/fixtures/issue-17/communication"
+      ]
+    },
+    {
+      "criterion_id": "correction_infrastructure.037",
+      "group": "correction_infrastructure",
+      "status": "pass",
+      "statement": "Response/Communication lifecycle and reason vocabularies are defined.",
+      "evidence": [
+        "tests/schema_validation/test_issue_17_shared_infrastructure_compatibility.py",
+        "docs/design/portia-response-and-communication-domain-models.md",
+        "docs/decisions/0013-define-response-and-communication-domain-models.md"
+      ]
+    },
+    {
+      "criterion_id": "correction_infrastructure.038",
+      "group": "correction_infrastructure",
+      "status": "pass",
+      "statement": "Amendment paths, if any, are exact and bounded.",
+      "evidence": [
+        "tests/schema_validation/test_issue_17_shared_infrastructure_compatibility.py",
+        "docs/design/portia-response-and-communication-domain-models.md",
+        "docs/decisions/0013-define-response-and-communication-domain-models.md"
+      ]
+    },
+    {
+      "criterion_id": "correction_infrastructure.039",
+      "group": "correction_infrastructure",
+      "status": "pass",
+      "statement": "Material correction uses preserved-history semantics.",
+      "evidence": [
+        "tests/schema_validation/test_issue_17_shared_infrastructure_compatibility.py",
+        "docs/design/portia-response-and-communication-domain-models.md",
+        "docs/decisions/0013-define-response-and-communication-domain-models.md"
+      ]
+    },
+    {
+      "criterion_id": "correction_infrastructure.040",
+      "group": "correction_infrastructure",
+      "status": "pass",
+      "statement": "Statement of Disagreement behavior is defined.",
+      "evidence": [
+        "tests/schema_validation/test_issue_17_shared_infrastructure_compatibility.py",
+        "docs/design/portia-response-and-communication-domain-models.md",
+        "docs/decisions/0013-define-response-and-communication-domain-models.md"
+      ]
+    },
+    {
+      "criterion_id": "correction_infrastructure.041",
+      "group": "correction_infrastructure",
+      "status": "pass",
+      "statement": "Existing reference/lifecycle/migration/removal/operation/derived contracts are reused where sufficient.",
+      "evidence": [
+        "tests/schema_validation/test_issue_17_shared_infrastructure_compatibility.py",
+        "docs/design/portia-response-and-communication-domain-models.md",
+        "docs/decisions/0013-define-response-and-communication-domain-models.md"
+      ]
+    },
+    {
+      "criterion_id": "correction_infrastructure.042",
+      "group": "correction_infrastructure",
+      "status": "pass",
+      "statement": "Exact historical references never silently follow successors.",
+      "evidence": [
+        "tests/schema_validation/test_issue_17_shared_infrastructure_compatibility.py",
+        "docs/design/portia-response-and-communication-domain-models.md",
+        "docs/decisions/0013-define-response-and-communication-domain-models.md"
+      ]
+    },
+    {
+      "criterion_id": "correction_infrastructure.043",
+      "group": "correction_infrastructure",
+      "status": "pass",
+      "statement": "Operational/derived records remain privacy-minimized.",
+      "evidence": [
+        "tests/schema_validation/test_issue_17_shared_infrastructure_compatibility.py",
+        "docs/design/portia-response-and-communication-domain-models.md",
+        "docs/decisions/0013-define-response-and-communication-domain-models.md"
+      ]
+    },
+    {
+      "criterion_id": "paper_automation.044",
+      "group": "paper_automation",
+      "status": "pass",
+      "statement": "Paper/OCR/draft creation does not fabricate Response or Communication.",
+      "evidence": [
+        "schemas/v1/responses/response.schema.json",
+        "schemas/v1/communications/communication.schema.json",
+        "tests/schema_validation/test_issue_17_response_contract.py",
+        "tests/schema_validation/test_issue_17_communication_contract.py",
+        "docs/decisions/0013-define-response-and-communication-domain-models.md"
+      ]
+    },
+    {
+      "criterion_id": "paper_automation.045",
+      "group": "paper_automation",
+      "status": "pass",
+      "statement": "Imported uncertainty can be represented honestly.",
+      "evidence": [
+        "schemas/v1/responses/response.schema.json",
+        "schemas/v1/communications/communication.schema.json",
+        "tests/schema_validation/test_issue_17_response_contract.py",
+        "tests/schema_validation/test_issue_17_communication_contract.py",
+        "docs/decisions/0013-define-response-and-communication-domain-models.md"
+      ]
+    },
+    {
+      "criterion_id": "paper_automation.046",
+      "group": "paper_automation",
+      "status": "pass",
+      "statement": "No automatic punishment, escalation, risk score, engagement inference, remorse/compliance inference, or effectiveness determination is introduced.",
+      "evidence": [
+        "schemas/v1/responses/response.schema.json",
+        "schemas/v1/communications/communication.schema.json",
+        "tests/schema_validation/test_issue_17_response_contract.py",
+        "tests/schema_validation/test_issue_17_communication_contract.py",
+        "docs/decisions/0013-define-response-and-communication-domain-models.md"
+      ]
+    },
+    {
+      "criterion_id": "paper_automation.047",
+      "group": "paper_automation",
+      "status": "pass",
+      "statement": "Automated drafts do not imply messages were sent.",
+      "evidence": [
+        "schemas/v1/responses/response.schema.json",
+        "schemas/v1/communications/communication.schema.json",
+        "tests/schema_validation/test_issue_17_response_contract.py",
+        "tests/schema_validation/test_issue_17_communication_contract.py",
+        "docs/decisions/0013-define-response-and-communication-domain-models.md"
+      ]
+    },
+    {
+      "criterion_id": "schemas_tests_docs.048",
+      "group": "schemas_tests_docs",
+      "status": "pass",
+      "statement": "Draft 2020-12 public schemas are added with immutable $id values.",
+      "evidence": [
+        "schemas/v1/responses/response.schema.json",
+        "schemas/v1/communications/communication.schema.json",
+        "schemas/v1/identifiers/portia-response-id.schema.json",
+        "schemas/v1/identifiers/portia-communication-id.schema.json"
+      ]
+    },
+    {
+      "criterion_id": "schemas_tests_docs.049",
+      "group": "schemas_tests_docs",
+      "status": "pass",
+      "statement": "Schema catalog is updated.",
+      "evidence": [
+        "schemas/schema-catalog.json",
+        "tests/schema_validation/test_issue_17_identifier_primitives.py"
+      ]
+    },
+    {
+      "criterion_id": "schemas_tests_docs.050",
+      "group": "schemas_tests_docs",
+      "status": "pass",
+      "statement": "Valid, structural-invalid, and application-invalid fixtures are complete.",
+      "evidence": [
+        "tests/schema_validation/fixtures/issue-17/response",
+        "tests/schema_validation/fixtures/issue-17/communication",
+        "tests/schema_validation/test_issue_17_response_contract.py",
+        "tests/schema_validation/test_issue_17_communication_contract.py"
+      ]
+    },
+    {
+      "criterion_id": "schemas_tests_docs.051",
+      "group": "schemas_tests_docs",
+      "status": "pass",
+      "statement": "Cross-record and shared-infrastructure tests pass.",
+      "evidence": [
+        "tests/schema_validation/test_issue_17_shared_infrastructure_compatibility.py",
+        "tests/schema_validation/fixtures/issue-17/cross-record"
+      ]
+    },
+    {
+      "criterion_id": "schemas_tests_docs.052",
+      "group": "schemas_tests_docs",
+      "status": "pass",
+      "statement": "Existing schema-validation tests remain green.",
+      "evidence": [
+        "docs/validation/issue-17-response-communication-validation.md"
+      ]
+    },
+    {
+      "criterion_id": "schemas_tests_docs.053",
+      "group": "schemas_tests_docs",
+      "status": "pass",
+      "statement": "Full tests/schema_validation discovery passes.",
+      "evidence": [
+        "docs/validation/issue-17-response-communication-validation.md"
+      ]
+    },
+    {
+      "criterion_id": "schemas_tests_docs.054",
+      "group": "schemas_tests_docs",
+      "status": "pass",
+      "statement": "git diff --check passes.",
+      "evidence": [
+        "docs/validation/issue-17-response-communication-validation.md"
+      ]
+    },
+    {
+      "criterion_id": "schemas_tests_docs.055",
+      "group": "schemas_tests_docs",
+      "status": "pass",
+      "statement": "Design document and ADR are complete.",
+      "evidence": [
+        "docs/design/portia-response-and-communication-domain-models.md",
+        "docs/decisions/0013-define-response-and-communication-domain-models.md"
+      ]
+    },
+    {
+      "criterion_id": "schemas_tests_docs.056",
+      "group": "schemas_tests_docs",
+      "status": "pass",
+      "statement": "Synthetic examples are complete.",
+      "evidence": [
+        "docs/examples/portia-response-and-communication-examples.md"
+      ]
+    },
+    {
+      "criterion_id": "schemas_tests_docs.057",
+      "group": "schemas_tests_docs",
+      "status": "pass",
+      "statement": "Application-invalid and acceptance matrices are complete.",
+      "evidence": [
+        "docs/validation/issue-17-application-invalid-matrix.json",
+        "docs/validation/issue-17-acceptance-matrix.json"
+      ]
+    },
+    {
+      "criterion_id": "schemas_tests_docs.058",
+      "group": "schemas_tests_docs",
+      "status": "pending",
+      "statement": "Final validation note is complete.",
+      "evidence": [
+        "docs/validation/issue-17-response-communication-validation.md"
+      ]
+    },
+    {
+      "criterion_id": "schemas_tests_docs.059",
+      "group": "schemas_tests_docs",
+      "status": "pending",
+      "statement": "README/schema guide and related active documentation are reconciled.",
+      "evidence": [
+        "README.md",
+        "schemas/README.md"
+      ]
+    },
+    {
+      "criterion_id": "schemas_tests_docs.060",
+      "group": "schemas_tests_docs",
+      "status": "pass",
+      "statement": "No real student, family, staff, phone, email, or sensitive communication data is committed.",
+      "evidence": [
+        "docs/examples/portia-response-and-communication-examples.md",
+        "docs/validation/issue-17-response-communication-validation.md"
+      ]
+    }
+  ]
+}
