@@ -1,12 +1,13 @@
 # Portia Response and Communication Domain Models
 
-**Status:** Working architecture — pre-ADR
+**Status:** Accepted architecture — ADR 0013
 **Project:** Paper Data Suite
 **Module:** `pds-portia`
 **Issue:** `#17 — Define Response and Communication domain models`
 **Umbrella:** `#10 — Complete the Portia foundations milestone`
 **Date:** 2026-08-09
 **Branch:** `17-response-communication-domain-models`
+**Decision:** ADR 0013 accepted
 
 ## 1. Purpose
 
@@ -186,7 +187,7 @@ convenient.
 
 ---
 
-# 5. Approved-For-ADR Direction: Response Is Event-Local
+# 5. Accepted Direction: Response Is Event-Local
 
 One Response represents:
 
@@ -667,7 +668,7 @@ version if production use demonstrates a safe, useful nonmaterial surface.
 
 ---
 
-# 19. Approved-For-ADR Direction: Communication Is Portia-Work-Local
+# 19. Accepted Direction: Communication Is Portia-Work-Local
 
 One Communication represents:
 
@@ -1135,7 +1136,7 @@ notifies_about
 conveys_determination
 documents_handoff_for
 relates_to_response
-source_account
+account_from_communication
 other
 ```
 
@@ -1155,7 +1156,7 @@ conveys_determination
 relates_to_response
 → Response
 
-source_account
+account_from_communication
 → Account
 ```
 
@@ -1756,9 +1757,9 @@ family-engagement finding.
 
 ---
 
-## 47. Required Pre-ADR Questions
+## 47. ADR 0013 Decision Checklist
 
-The following questions must be resolved in ADR 0013:
+ADR 0013 resolves the following decisions:
 
 1. Confirm Response Event-local ownership.
 2. Confirm Communication generic Portia-work-local ownership.
@@ -1842,10 +1843,10 @@ documentation reconciliation.
 
 ---
 
-## 50. Pre-ADR Recommendation
+## 50. ADR 0013 Acceptance
 
-Proceed with ADR 0013 using the decisions above unless the pre-ADR repository
-drift check reveals a concrete contradiction.
+ADR 0013 accepts the decisions above. The required pre-ADR repository drift
+check found no contradiction requiring a change.
 
 The most consequential choices are:
 
