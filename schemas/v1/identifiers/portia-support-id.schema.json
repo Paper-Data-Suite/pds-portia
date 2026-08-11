@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-support-id.schema.json",
   "title": "Portia Support Identifier",
-  "description": "Opaque canonical identifier for one Portia Portia Support. The spt_ prefix is part of the public identifier contract. The identifier carries no student, provider, target, strategy, diagnosis, status, outcome, school-year, or date meaning.",
+  "description": "Opaque canonical identifier for one Portia Support. The spt_ prefix is part of the public identifier contract. The identifier carries no student, provider, target, strategy, diagnosis, status, outcome, school-year, or date meaning.",
   "type": "string",
   "minLength": 5,
   "maxLength": 128,

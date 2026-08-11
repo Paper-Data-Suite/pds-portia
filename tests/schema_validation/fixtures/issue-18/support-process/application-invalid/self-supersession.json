@@ -1,0 +1,43 @@
+{
+  "schema_version": "1",
+  "record_type": "portia_work",
+  "work_kind": "support_process",
+  "module_id": "portia",
+  "class_id": "english10_p2",
+  "work_id": "sup_support_1",
+  "school_year": "2026-2027",
+  "status": "active",
+  "workflow_state": "active",
+  "summary": "Synthetic classroom support workflow for access and routine planning.",
+  "initiation": {
+    "kind": "teacher_identified_need",
+    "detail": "Teacher identified a bounded classroom access need."
+  },
+  "planned_start_date": "2026-09-01",
+  "review_on": "2026-10-01",
+  "creation_source": {
+    "type": "digital_entry"
+  },
+  "created_at": "2026-08-20T12:00:00-04:00",
+  "created_by": {
+    "type": "local_operator",
+    "display_label": "Teacher Local"
+  },
+  "updated_at": "2026-08-20T12:00:00-04:00",
+  "updated_by": {
+    "type": "local_operator",
+    "display_label": "Teacher Local"
+  },
+  "supersedes": [
+    {
+      "work_ref": {
+        "module_id": "portia",
+        "class_id": "english10_p2",
+        "work_id": "sup_support_1",
+        "work_kind": "support_process",
+        "contract_version": "1"
+      },
+      "reason": "summary_corrected"
+    }
+  ]
+}

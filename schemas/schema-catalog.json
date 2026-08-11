@@ -11,6 +11,12 @@
         "path": "schemas/v2/event.schema.json"
       }
     },
+    "support_process": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/support-processes/support-process.schema.json",
+        "path": "schemas/v1/support-processes/support-process.schema.json"
+      }
+    },
     "event_participant": {
       "1": {
         "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/event-participant.schema.json",
@@ -23,6 +29,12 @@
       "3": {
         "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v3/event-participant.schema.json",
         "path": "schemas/v3/event-participant.schema.json"
+      }
+    },
+    "support_process_participant": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/support-processes/support-process-participant.schema.json",
+        "path": "schemas/v1/support-processes/support-process-participant.schema.json"
       }
     },
     "event_participant_role": {
