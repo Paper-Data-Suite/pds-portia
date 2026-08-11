@@ -1,0 +1,32 @@
+{
+  "schema_version": "1",
+  "record_type": "support_goal",
+  "module_id": "portia",
+  "class_id": "english10_p2",
+  "work_id": "sup_support_1",
+  "goal_id": "spg_routine_1",
+  "status": "active",
+  "target": {
+    "kind": "support_process_participant",
+    "record_ref": {
+      "record_kind": "support_process_participant",
+      "record_id": "spp_student_1",
+      "contract_version": "1"
+    }
+  },
+  "planned_criteria": "Later review may examine whether the routine was available and used as planned.",
+  "measurement_approach": "Teacher review of documented implementation occurrences and contextual notes.",
+  "creation_source": {
+    "type": "digital_entry"
+  },
+  "created_at": "2026-09-01T08:05:00-04:00",
+  "created_by": {
+    "type": "local_operator",
+    "display_label": "Teacher Local"
+  },
+  "updated_at": "2026-09-01T08:05:00-04:00",
+  "updated_by": {
+    "type": "local_operator",
+    "display_label": "Teacher Local"
+  }
+}

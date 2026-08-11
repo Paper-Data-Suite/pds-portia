@@ -1,0 +1,81 @@
+{
+  "manifest_version": "1",
+  "issue": 18,
+  "contract": "support_need",
+  "version": "1",
+  "valid": [
+    "participant-access.json",
+    "whole-process-environmental.json",
+    "participant-set-organizational.json",
+    "skill-or-strategy.json",
+    "relationship.json",
+    "resource-coordination.json",
+    "other-with-detail.json",
+    "proposed-import.json"
+  ],
+  "invalid": [
+    "wrong-record-type.json",
+    "wrong-need-prefix.json",
+    "wrong-work-prefix.json",
+    "missing-target.json",
+    "missing-description.json",
+    "unsupported-kind.json",
+    "other-missing-detail.json",
+    "non-other-with-kind-detail.json",
+    "diagnosis-field.json",
+    "risk-score-field.json",
+    "outcome-field.json",
+    "wrong-supersession-record-kind.json",
+    "other-supersession-missing-detail.json"
+  ],
+  "application_invalid": [
+    {
+      "file": "updated-before-created.json",
+      "expected_error": "updated_at precedes created_at"
+    },
+    {
+      "file": "active-import.json",
+      "expected_error": "paper/import activation requires accepted review history"
+    },
+    {
+      "file": "active-paper.json",
+      "expected_error": "paper/import activation requires accepted review history"
+    },
+    {
+      "file": "unresolved-participant-target.json",
+      "expected_error": "Support Need target participant does not resolve in owning Support Process"
+    },
+    {
+      "file": "duplicate-logical-targets.json",
+      "expected_error": "Support Need target set repeats a logical participant"
+    },
+    {
+      "file": "self-supersession.json",
+      "expected_error": "Support Need cannot supersede itself"
+    },
+    {
+      "file": "mixed-supersession-reasons.json",
+      "expected_error": "mixed Support Need supersession reasons"
+    },
+    {
+      "file": "duplicate-consolidation-one-predecessor.json",
+      "expected_error": "duplicate consolidation needs two Support Need predecessors"
+    },
+    {
+      "file": "ordinary-correction-two-predecessors.json",
+      "expected_error": "ordinary Support Need correction is one-to-one"
+    },
+    {
+      "file": "ordinary-correction-cross-work.json",
+      "expected_error": "ordinary Support Need correction cannot cross Support Process roots"
+    },
+    {
+      "file": "work-root-correction-same-work.json",
+      "expected_error": "work-root correction requires a different Support Process root"
+    },
+    {
+      "file": "work-root-correction-changed-id.json",
+      "expected_error": "work-root correction must preserve Support Need ID"
+    }
+  ]
+}
