@@ -1,0 +1,10 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-intervention-id.schema.json",
+  "title": "Portia Intervention Identifier",
+  "description": "Opaque canonical identifier for one Portia Portia Intervention. The int_ prefix is part of the public identifier contract. The identifier carries no student, provider, target, strategy, diagnosis, status, outcome, school-year, or date meaning.",
+  "type": "string",
+  "minLength": 5,
+  "maxLength": 128,
+  "pattern": "^int_[A-Za-z0-9][A-Za-z0-9_-]*$"
+}

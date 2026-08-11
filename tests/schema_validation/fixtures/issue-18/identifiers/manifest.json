@@ -1,0 +1,139 @@
+{
+  "manifest_version": "1",
+  "issue": 18,
+  "contracts": {
+    "portia_support_process_participant_id": {
+      "version": "1",
+      "valid": [
+        "spp_a",
+        "spp_1",
+        "spp_support-process-participant-001",
+        "spp_A_b-C9"
+      ],
+      "invalid": [
+        "",
+        "spp_",
+        "support_process_participant_1",
+        "SPP_1",
+        "spp_-bad",
+        "spp__bad",
+        "spp_bad space",
+        "spp_bad/segment"
+      ]
+    },
+    "portia_support_need_id": {
+      "version": "1",
+      "valid": [
+        "spn_a",
+        "spn_1",
+        "spn_support-need-001",
+        "spn_A_b-C9"
+      ],
+      "invalid": [
+        "",
+        "spn_",
+        "support_need_1",
+        "SPN_1",
+        "spn_-bad",
+        "spn__bad",
+        "spn_bad space",
+        "spn_bad/segment"
+      ]
+    },
+    "portia_support_goal_id": {
+      "version": "1",
+      "valid": [
+        "spg_a",
+        "spg_1",
+        "spg_support-goal-001",
+        "spg_A_b-C9"
+      ],
+      "invalid": [
+        "",
+        "spg_",
+        "support_goal_1",
+        "SPG_1",
+        "spg_-bad",
+        "spg__bad",
+        "spg_bad space",
+        "spg_bad/segment"
+      ]
+    },
+    "portia_support_id": {
+      "version": "1",
+      "valid": [
+        "spt_a",
+        "spt_1",
+        "spt_support-001",
+        "spt_A_b-C9"
+      ],
+      "invalid": [
+        "",
+        "spt_",
+        "support_1",
+        "SPT_1",
+        "spt_-bad",
+        "spt__bad",
+        "spt_bad space",
+        "spt_bad/segment"
+      ]
+    },
+    "portia_intervention_id": {
+      "version": "1",
+      "valid": [
+        "int_a",
+        "int_1",
+        "int_intervention-001",
+        "int_A_b-C9"
+      ],
+      "invalid": [
+        "",
+        "int_",
+        "intervention_1",
+        "INT_1",
+        "int_-bad",
+        "int__bad",
+        "int_bad space",
+        "int_bad/segment"
+      ]
+    },
+    "portia_implementation_id": {
+      "version": "1",
+      "valid": [
+        "imp_a",
+        "imp_1",
+        "imp_implementation-001",
+        "imp_A_b-C9"
+      ],
+      "invalid": [
+        "",
+        "imp_",
+        "implementation_1",
+        "IMP_1",
+        "imp_-bad",
+        "imp__bad",
+        "imp_bad space",
+        "imp_bad/segment"
+      ]
+    },
+    "portia_fidelity_id": {
+      "version": "1",
+      "valid": [
+        "fid_a",
+        "fid_1",
+        "fid_fidelity-001",
+        "fid_A_b-C9"
+      ],
+      "invalid": [
+        "",
+        "fid_",
+        "fidelity_1",
+        "FID_1",
+        "fid_-bad",
+        "fid__bad",
+        "fid_bad space",
+        "fid_bad/segment"
+      ]
+    }
+  }
+}
