@@ -2,16 +2,15 @@
   "matrix_version": "1",
   "issue": 17,
   "title": "Response and Communication acceptance matrix",
-  "status": "provisional",
+  "status": "accepted",
   "criteria_count": 60,
-  "pass_count": 57,
-  "pending_count": 3,
-  "pending_reason": "Final repository/Core drift verification, final validation-note completion, and active README/schema-guide reconciliation are intentionally reserved for the final Issue #17 closeout slice.",
+  "pass_count": 60,
+  "pending_count": 0,
   "criteria": [
     {
       "criterion_id": "architecture.001",
       "group": "architecture",
-      "status": "pending",
+      "status": "pass",
       "statement": "Initial, pre-ADR, and final repository drift checks are recorded.",
       "evidence": [
         "docs/validation/issue-17-initial-repository-checkpoint.md",
@@ -628,7 +627,7 @@
     {
       "criterion_id": "schemas_tests_docs.058",
       "group": "schemas_tests_docs",
-      "status": "pending",
+      "status": "pass",
       "statement": "Final validation note is complete.",
       "evidence": [
         "docs/validation/issue-17-response-communication-validation.md"
@@ -637,7 +636,7 @@
     {
       "criterion_id": "schemas_tests_docs.059",
       "group": "schemas_tests_docs",
-      "status": "pending",
+      "status": "pass",
       "statement": "README/schema guide and related active documentation are reconciled.",
       "evidence": [
         "README.md",

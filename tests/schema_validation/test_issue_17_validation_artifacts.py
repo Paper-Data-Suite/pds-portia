@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from pathlib import Path
 import json
 import re
 import unittest
@@ -22,6 +21,7 @@ REQUIRED_DOCS = [
     VALIDATION_ROOT / "issue-17-application-invalid-matrix.json",
     VALIDATION_ROOT / "issue-17-acceptance-matrix.json",
     VALIDATION_ROOT / "issue-17-response-communication-validation.md",
+    VALIDATION_ROOT / "issue-17-final-repository-checkpoint.md",
     EXAMPLE_PATH,
 ]
 
@@ -67,11 +67,9 @@ class Issue17ValidationArtifactTests(unittest.TestCase):
         for entry in matrix["programmatic_invariants"]:
             test_path = entry["test"].split("::", 1)[0]
             with self.subTest(test=test_path):
-                self.assertTrue(
-                    (REPO_ROOT / test_path).is_file()
-                )
+                self.assertTrue((REPO_ROOT / test_path).is_file())
 
-    def test_acceptance_matrix_is_provisional_only_for_final_closeout(self) -> None:
+    def test_acceptance_matrix_is_fully_accepted(self) -> None:
         matrix = json.loads(
             (
                 VALIDATION_ROOT
@@ -80,25 +78,12 @@ class Issue17ValidationArtifactTests(unittest.TestCase):
         )
         self.assertEqual(matrix["criteria_count"], 60)
         self.assertEqual(len(matrix["criteria"]), 60)
-        self.assertEqual(matrix["status"], "provisional")
-        self.assertEqual(matrix["pass_count"], 57)
-        self.assertEqual(matrix["pending_count"], 3)
-        pending = {
-            item["statement"]
-            for item in matrix["criteria"]
-            if item["status"] == "pending"
-        }
-        self.assertEqual(
-            pending,
-            {
-                "Initial, pre-ADR, and final repository drift checks are recorded.",
-                "Final validation note is complete.",
-                "README/schema guide and related active documentation are reconciled.",
-            },
-        )
+        self.assertEqual(matrix["status"], "accepted")
+        self.assertEqual(matrix["pass_count"], 60)
+        self.assertEqual(matrix["pending_count"], 0)
         self.assertTrue(
             all(
-                item["status"] in {"pass", "pending"}
+                item["status"] == "pass"
                 for item in matrix["criteria"]
             )
         )
@@ -111,16 +96,12 @@ class Issue17ValidationArtifactTests(unittest.TestCase):
             ).read_text(encoding="utf-8")
         )
         for item in matrix["criteria"]:
-            if item["status"] != "pass":
-                continue
             for raw_path in item["evidence"]:
                 with self.subTest(
                     criterion=item["criterion_id"],
                     path=raw_path,
                 ):
-                    self.assertTrue(
-                        (REPO_ROOT / raw_path).exists()
-                    )
+                    self.assertTrue((REPO_ROOT / raw_path).exists())
 
     def test_synthetic_examples_cover_required_thirty_two(self) -> None:
         text = EXAMPLE_PATH.read_text(encoding="utf-8")
@@ -134,28 +115,33 @@ class Issue17ValidationArtifactTests(unittest.TestCase):
         ]
         self.assertEqual(rows, list(range(1, 33)))
         self.assertIn("synthetic", text.lower())
-        self.assertIn("Communication records a bounded human communication act or attempt", text)
+        self.assertIn(
+            "Communication records a bounded human communication act or attempt",
+            text,
+        )
         self.assertIn("Response records an action", text)
 
-    def test_validation_note_records_verified_precloseout_baseline(self) -> None:
+    def test_validation_note_records_final_closeout_state(self) -> None:
         text = (
             VALIDATION_ROOT
             / "issue-17-response-communication-validation.md"
         ).read_text(encoding="utf-8")
         self.assertIn(
-            "0020aca5fc354df65e4699feaaa215a876315d9a",
+            "Contract and integration validation complete",
             text,
         )
-        self.assertIn("638 tests", text)
+        self.assertIn(
+            "34d8100a1775effc43737409f86ad0486c01fb34",
+            text,
+        )
+        self.assertIn(
+            "6c507213618b68a6dd3ea096e1a898201ff029e6",
+            text,
+        )
         self.assertIn("644 tests", text)
-        self.assertIn(
-            "final repository reconciliation pending",
-            text.lower(),
-        )
-        self.assertIn(
-            "docs/validation/issue-17-final-repository-checkpoint.md",
-            text,
-        )
+        self.assertIn("652 tests", text)
+        self.assertIn("pass:    60", text)
+        self.assertIn("pending:  0", text)
 
 
 if __name__ == "__main__":

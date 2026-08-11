@@ -16,6 +16,14 @@
 > decision-maker identity does not change Account/Observation semantics and does
 > not make represented-human identity proof of institutional authority.
 
+> **Current downstream communication boundary (Issue #17, 2026-08-10):**
+> Accepted ADR 0013 preserves this source-evidence boundary. Communication
+> records that a bounded contact act or attempt occurred. If a student, family
+> member, staff member, or other represented source makes a substantive
+> assertion that matters as evidence, that assertion remains separately
+> preservable as Account. `account_from_communication` may link the records;
+> Communication metadata does not itself become source evidence.
+
 ## 1. Purpose
 
 This document defines the accepted architecture for Portia Accounts and Observations under ADR 0011.

@@ -8,6 +8,14 @@
 **Date:** 2026-08-07
 **Branch:** `16-review-classification-hypothesis-determination-domain-models`
 
+> **Current downstream action/communication authority (Issue #17, 2026-08-10):**
+> Accepted ADR 0013 begins after this judgment layer. A Determination does not
+> automatically create a Response or Communication. A recorded institutional
+> consequence Response retains exact Determination context without copying
+> authority semantics, while conveying a Determination is a separate
+> Communication act. Later action/contact never retroactively proves the
+> underlying Classification, Hypothesis, or Determination correct.
+
 ## 1. Purpose
 
 This document defines the accepted ADR 0012 architecture for Portia's human review, interpretation, and decision layer.
