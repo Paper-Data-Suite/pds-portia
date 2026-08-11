@@ -49,6 +49,18 @@
         "path": "schemas/v1/support-processes/support-goal.schema.json"
       }
     },
+    "support": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/support-processes/support.schema.json",
+        "path": "schemas/v1/support-processes/support.schema.json"
+      }
+    },
+    "intervention": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/support-processes/intervention.schema.json",
+        "path": "schemas/v1/support-processes/intervention.schema.json"
+      }
+    },
     "event_participant_role": {
       "1": {
         "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/event-participant-role.schema.json",

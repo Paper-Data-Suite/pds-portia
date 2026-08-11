@@ -1,0 +1,94 @@
+{
+  "manifest_version": "1",
+  "issue": 18,
+  "contract": "intervention",
+  "version": "1",
+  "valid": [
+    "active-recurring-assigned.json",
+    "active-condition-triggered.json",
+    "active-custom-schedule.json",
+    "multiple-needs-goals-providers.json",
+    "paused-intervention.json",
+    "completed-valid-history.json",
+    "proposed-import-no-provider.json",
+    "proposed-as-needed.json"
+  ],
+  "invalid": [
+    "wrong-record-type.json",
+    "wrong-id-prefix.json",
+    "empty-need-refs.json",
+    "empty-goal-refs.json",
+    "missing-monitoring-approach.json",
+    "wrong-goal-ref-kind.json",
+    "empty-assigned-provider-list.json",
+    "unsupported-strategy.json",
+    "progress-field.json",
+    "tier-field.json",
+    "fidelity-field.json",
+    "outcome-field.json",
+    "adaptation-field.json",
+    "other-supersession-missing-detail.json"
+  ],
+  "application_invalid": [
+    {
+      "file": "updated-before-created.json",
+      "expected_error": "updated_at precedes created_at"
+    },
+    {
+      "file": "active-import.json",
+      "expected_error": "paper/import activation requires accepted review history"
+    },
+    {
+      "file": "active-paper.json",
+      "expected_error": "paper/import activation requires accepted review history"
+    },
+    {
+      "file": "active-no-assigned-provider.json",
+      "expected_error": "active Intervention requires assigned provider_plan"
+    },
+    {
+      "file": "active-as-needed.json",
+      "expected_error": "active Intervention rejects as_needed schedule"
+    },
+    {
+      "file": "unresolved-need.json",
+      "expected_error": "Intervention Need ref does not resolve in owning Support Process"
+    },
+    {
+      "file": "unresolved-goal.json",
+      "expected_error": "Intervention Goal ref does not resolve in owning Support Process"
+    },
+    {
+      "file": "unresolved-provider.json",
+      "expected_error": "Intervention provider Participant ref does not resolve in owning Support Process"
+    },
+    {
+      "file": "duplicate-logical-provider.json",
+      "expected_error": "Intervention provider set repeats a logical participant"
+    },
+    {
+      "file": "self-supersession.json",
+      "expected_error": "Intervention cannot supersede itself"
+    },
+    {
+      "file": "mixed-supersession-reasons.json",
+      "expected_error": "mixed Intervention supersession reasons"
+    },
+    {
+      "file": "duplicate-consolidation-one-predecessor.json",
+      "expected_error": "duplicate consolidation needs two Intervention predecessors"
+    },
+    {
+      "file": "ordinary-correction-cross-work.json",
+      "expected_error": "ordinary Intervention correction cannot cross Support Process roots"
+    },
+    {
+      "file": "plan-adaptation-cross-work.json",
+      "expected_error": "plan adaptation cannot cross Support Process roots"
+    },
+    {
+      "file": "work-root-correction-changed-id.json",
+      "expected_error": "work-root correction must preserve Intervention ID"
+    }
+  ]
+}
