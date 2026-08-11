@@ -61,6 +61,12 @@
         "path": "schemas/v1/support-processes/intervention.schema.json"
       }
     },
+    "implementation": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/support-processes/implementation.schema.json",
+        "path": "schemas/v1/support-processes/implementation.schema.json"
+      }
+    },
     "event_participant_role": {
       "1": {
         "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/event-participant-role.schema.json",

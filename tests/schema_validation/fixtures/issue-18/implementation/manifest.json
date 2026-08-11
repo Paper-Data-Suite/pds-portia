@@ -1,0 +1,127 @@
+{
+  "manifest_version": "1",
+  "issue": 18,
+  "contract": "implementation",
+  "version": "1",
+  "valid": [
+    "completed-intervention-occurrence.json",
+    "in-progress-occurrence.json",
+    "attempted-occurrence.json",
+    "partially-completed-occurrence.json",
+    "unable-to-complete-occurrence.json",
+    "support-environmental-no-human-provider.json",
+    "provider-variation-recorded.json",
+    "target-variation-recorded.json",
+    "multi-kind-variation.json",
+    "proposed-import-unknown.json"
+  ],
+  "invalid": [
+    "wrong-record-type.json",
+    "wrong-id-prefix.json",
+    "wrong-work-prefix.json",
+    "wrong-plan-kind.json",
+    "plan-ref-null-version.json",
+    "wrong-provider-ref-kind.json",
+    "empty-provider-set.json",
+    "provider-other-missing-detail.json",
+    "unsupported-execution-state.json",
+    "variation-empty-kinds.json",
+    "variation-unsupported-kind.json",
+    "variation-missing-detail.json",
+    "successful-field.json",
+    "fidelity-field.json",
+    "outcome-field.json",
+    "preallocated-paper.json",
+    "other-supersession-missing-detail.json"
+  ],
+  "application_invalid": [
+    {
+      "file": "ended-before-started.json",
+      "expected_error": "ended_at precedes started_at"
+    },
+    {
+      "file": "created-before-started.json",
+      "expected_error": "created_at precedes started_at"
+    },
+    {
+      "file": "updated-before-created.json",
+      "expected_error": "updated_at precedes created_at"
+    },
+    {
+      "file": "active-import.json",
+      "expected_error": "paper/import activation requires accepted review history"
+    },
+    {
+      "file": "active-paper.json",
+      "expected_error": "paper/import activation requires accepted review history"
+    },
+    {
+      "file": "unknown-digital.json",
+      "expected_error": "unknown execution_state is import-only"
+    },
+    {
+      "file": "unknown-paper.json",
+      "expected_error": "unknown execution_state is import-only"
+    },
+    {
+      "file": "unresolved-plan.json",
+      "expected_error": "Implementation plan ref does not resolve in owning Support Process"
+    },
+    {
+      "file": "unresolved-target.json",
+      "expected_error": "Implementation actual target does not resolve in owning Support Process"
+    },
+    {
+      "file": "unresolved-provider.json",
+      "expected_error": "Implementation provider Participant ref does not resolve in owning Support Process"
+    },
+    {
+      "file": "duplicate-logical-provider.json",
+      "expected_error": "Implementation provider set repeats a logical participant"
+    },
+    {
+      "file": "provider-diff-without-variation.json",
+      "expected_error": "provider variation is required when actual provider differs from plan"
+    },
+    {
+      "file": "target-diff-without-variation.json",
+      "expected_error": "target variation is required when actual target differs from plan"
+    },
+    {
+      "file": "provider-diff-wrong-variation-kind.json",
+      "expected_error": "provider variation is required when actual provider differs from plan"
+    },
+    {
+      "file": "target-diff-wrong-variation-kind.json",
+      "expected_error": "target variation is required when actual target differs from plan"
+    },
+    {
+      "file": "self-supersession.json",
+      "expected_error": "Implementation cannot supersede itself"
+    },
+    {
+      "file": "mixed-supersession-reasons.json",
+      "expected_error": "mixed Implementation supersession reasons"
+    },
+    {
+      "file": "duplicate-consolidation-one-predecessor.json",
+      "expected_error": "duplicate consolidation needs two Implementation predecessors"
+    },
+    {
+      "file": "ordinary-correction-two-predecessors.json",
+      "expected_error": "ordinary Implementation correction is one-to-one"
+    },
+    {
+      "file": "ordinary-correction-cross-work.json",
+      "expected_error": "ordinary Implementation correction cannot cross Support Process roots"
+    },
+    {
+      "file": "work-root-correction-same-work.json",
+      "expected_error": "work-root correction requires a different Support Process root"
+    },
+    {
+      "file": "work-root-correction-changed-id.json",
+      "expected_error": "work-root correction must preserve Implementation ID"
+    }
+  ]
+}
