@@ -7,6 +7,14 @@
 * **Related research:** [`docs/research/student-behavior-tracking-best-practices.md`](../research/student-behavior-tracking-best-practices.md)
 * **Related design:** [`docs/design/portia-role-within-paper-data-suite.md`](../design/portia-role-within-paper-data-suite.md)
 
+> **Current implementation authority (Issue #17, 2026-08-10):**
+> Accepted ADR 0013 now governs Response and Communication semantics. The
+> historical "family contact" shorthand under Immediate Responses must not be
+> read as collapsing contact activity into Response. The communication act or
+> attempt is a separate Communication. A Response exists only when that same
+> workflow also deliberately records a bounded action. Determination,
+> Communication, Response, ongoing Support, and later Outcome remain distinct.
+
 ## Context
 
 Portia is one module within Paper Data Suite. Its purpose is to support the documentation, interpretation, management, and evaluation of student behavior and related supports.

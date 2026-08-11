@@ -36,6 +36,14 @@ Portia should be **cross-cutting without becoming an integration hub**. It may r
 > Review initiation/routing rather than a finding, and a Hypothesis remains
 > tentative rather than becoming a Determination automatically.
 
+> **Current implementation reconciliation (Issue #17, 2026-08-10):**
+> Accepted ADR 0013 extends the active progression to
+> `Determination → Response and/or Communication → Support Process / Support /
+> Intervention`. Response is Event-local bounded action; Communication is one
+> bounded contact act or attempt. "Family contact" is therefore Communication
+> by default, not an implicit Response. Neither consequence nor communication
+> retroactively proves what occurred, and ongoing Support remains Issue #18.
+
 # 1. What Paper Data Suite currently is
 
 The repositories establish a consistent architectural identity for Paper Data Suite:

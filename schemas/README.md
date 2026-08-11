@@ -53,6 +53,8 @@ The initial prefixes are:
 - Classification: `cls_`
 - Hypothesis: `hyp_`
 - Determination: `det_`
+- Response: `rsp_`
+- Communication: `comm_`
 - Work Relationship: `rel_`
 - Lifecycle Transition: `lct_`
 - Lifecycle-History Correction: `lhc_`
@@ -201,6 +203,12 @@ contract version. `judgment_evidence_ref@1` is a narrow evidence-role locator
 union for Review/Hypothesis/Determination use; it does not change generic exact
 identity semantics or make a referenced record true, current, or authoritative.
 
+Issue #17 likewise does not add dedicated Response- or Communication-specific
+exact-reference families. `exact_portia_work_record_ref@1` already preserves
+exact work scope, record kind, opaque ID, and contract version for both families.
+Exact Response and Communication references therefore never silently follow
+successor correction, consolidation, migration, or ownership correction.
+
 ## Shared snapshots and target contracts
 
 The initial reusable historical snapshot is:
@@ -293,6 +301,14 @@ Hypothesis author, and Determination decision-maker identity. That reuse does
 not broaden the attribution contract into an authorization contract:
 represented human identity remains separate from institutional authority,
 process/policy basis, and persistence-operation `created_by` / `updated_by`.
+
+Issue #17 reuses `represented_human_attribution@1` for Response provider and
+Communication sender/recipient identity. That reuse remains structural: represented
+human identity does not establish provider eligibility, institutional authority,
+guardianship, consent, disclosure authorization, participation, or delivery.
+Communication may additionally retain `exact_actor_contact_point_ref@1` for an
+Actor recipient; the exact Contact Point remains historical endpoint identity, not
+proof of consent or successful delivery.
 
 `evidence_time` preserves honest source-evidence timing through `exact`,
 `approximate`, `date_only`, `range`, and `unknown` variants. Application
@@ -703,6 +719,51 @@ Review linkage and chronology, definition support, evidence resolution and
 lineage, authority/process sufficiency, paper/import review gates, replacement
 topology, reconsideration/reversal semantics, authorization, privacy,
 operational recovery, and derived freshness.
+
+## Response and Communication contracts
+
+ADR 0013 adds four public version-1 contracts:
+
+```text
+schemas/v1/identifiers/portia-response-id.schema.json
+schemas/v1/identifiers/portia-communication-id.schema.json
+schemas/v1/responses/response.schema.json
+schemas/v1/communications/communication.schema.json
+```
+
+Response identity uses `rsp_<opaque-id>` and Communication identity uses
+`comm_<opaque-id>`. Neither identifier encodes student, provider/sender,
+recipient, action/method, consequence, date, privacy, or lifecycle meaning.
+
+`response@1` is Event-local and reuses `portia_target_ref@1`. The provider is a
+represented human distinct from persistence attribution. Stable action families
+describe what action occurred; execution state remains separate from lifecycle
+and effectiveness. A recorded institutional consequence requires exact
+same-Event Determination context without duplicating authority or policy meaning.
+
+`communication@1` is Portia-work-local with `event` and `support_process`
+structural ownership. Event ownership is current-use eligible under Issue #17;
+Support Process current use waits for Issue #18's published owner contract.
+Sender and recipients are represented humans. Recipient participation is explicit
+and descriptive; listing a recipient is not participation.
+
+Communication attachments are schema-local rather than a broadening of
+`source_artifact_ref@1`. The closed v1 attachment branches are
+`workspace_file`, `portia_record`, `module_record`, and `external_record`.
+No binary payload is embedded, external locators remain inert, and attachment
+presence proves neither delivery nor evidentiary weight.
+
+Communication uses typed exact record relations including `responds_to`,
+`conveys_determination`, `relates_to_response`, and
+`account_from_communication`. Communication records the contact act; Account
+remains the source-evidence record for a substantive represented-source
+assertion.
+
+Both families use `proposed`, `active`, `invalidated`, and `superseded`
+canonical lifecycle states and expose no v1 Amendment paths. Material correction
+uses successor/history semantics. Generic lifecycle, disagreement, dependency,
+migration/removal, operation, diagnostic, snapshot, and derived-state contracts
+remain authoritative.
 
 ## Lifecycle and lifecycle-history contracts
 

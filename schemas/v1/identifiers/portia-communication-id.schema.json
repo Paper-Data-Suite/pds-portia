@@ -1,0 +1,10 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-communication-id.schema.json",
+  "title": "Portia Communication Identifier",
+  "description": "Opaque canonical identifier for one Communication inside one Portia work item. The comm_ prefix is part of the public identifier contract. The identifier does not encode student, sender, recipient, method, purpose, privacy scope, timing, act state, lifecycle, or other sensitive meaning.",
+  "type": "string",
+  "minLength": 6,
+  "maxLength": 128,
+  "pattern": "^comm_[A-Za-z0-9][A-Za-z0-9_-]*$"
+}

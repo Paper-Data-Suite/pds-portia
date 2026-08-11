@@ -1,0 +1,750 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/communications/communication.schema.json",
+  "title": "Portia Communication",
+  "description": "Canonical version-1 Portia-work-local Communication representing one bounded human communication act or attempt. Communication records contact activity; it is not an Account, Response, Determination, mutable message thread, proof of delivery/read status, proof of legal notice, or proof that a listed recipient participated.",
+  "$comment": "Application validation remains responsible for canonical work-local storage, work-kind/work resolution, current Support Process availability, sender/recipient resolution and current-use eligibility, logical recipient uniqueness, Actor Contact Point ownership and exact historical resolution, chronology, relation compatibility, attachment resolution/fingerprints/module agreement, privacy handling, paper/import activation gates, lifecycle/history reconciliation, supersession topology, ownership correction, no silent successor following, authorization, and coordinated writes.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "record_type",
+    "module_id",
+    "class_id",
+    "work_kind",
+    "work_id",
+    "communication_id",
+    "status",
+    "sender",
+    "recipients",
+    "method",
+    "purpose",
+    "act_state",
+    "privacy_scope",
+    "started_at",
+    "creation_source",
+    "created_at",
+    "created_by",
+    "updated_at",
+    "updated_by"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1"
+    },
+    "record_type": {
+      "const": "communication"
+    },
+    "module_id": {
+      "const": "portia"
+    },
+    "class_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+    },
+    "work_kind": {
+      "enum": [
+        "event",
+        "support_process"
+      ]
+    },
+    "work_id": {
+      "type": "string"
+    },
+    "communication_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-communication-id.schema.json"
+    },
+    "status": {
+      "enum": [
+        "proposed",
+        "active",
+        "invalidated",
+        "superseded"
+      ]
+    },
+    "sender": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/attribution/represented-human-attribution.schema.json"
+    },
+    "recipients": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 100,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/recipient"
+      }
+    },
+    "method": {
+      "$ref": "#/$defs/method"
+    },
+    "purpose": {
+      "$ref": "#/$defs/purpose"
+    },
+    "act_state": {
+      "enum": [
+        "attempted",
+        "completed",
+        "recipient_unavailable",
+        "recipient_declined",
+        "interrupted",
+        "unknown"
+      ]
+    },
+    "privacy_scope": {
+      "enum": [
+        "ordinary",
+        "participant_limited",
+        "restricted",
+        "unknown"
+      ]
+    },
+    "started_at": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+    },
+    "ended_at": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+    },
+    "summary": {
+      "allOf": [
+        {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+        },
+        {
+          "maxLength": 4000
+        }
+      ],
+      "description": "Bounded recorder-authored summary of the communication act. It is not automatically an exact quotation, message archive, or source-evidence Account."
+    },
+    "attachments": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 100,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/attachment"
+      }
+    },
+    "relations": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 100,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/relation"
+      }
+    },
+    "supersedes": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 100,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/supersessionEntry"
+      }
+    },
+    "creation_source": {
+      "allOf": [
+        {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/provenance/creation-source.schema.json"
+        },
+        {
+          "not": {
+            "type": "object",
+            "properties": {
+              "type": {
+                "const": "paper_capture"
+              },
+              "stage": {
+                "const": "preallocated"
+              }
+            },
+            "required": [
+              "type",
+              "stage"
+            ]
+          }
+        }
+      ]
+    },
+    "created_at": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+    },
+    "created_by": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/attribution/attribution-agent.schema.json"
+    },
+    "updated_at": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+    },
+    "updated_by": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/attribution/attribution-agent.schema.json"
+    }
+  },
+  "$defs": {
+    "recipient": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "person",
+        "participation"
+      ],
+      "properties": {
+        "person": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/attribution/represented-human-attribution.schema.json"
+        },
+        "endpoint_ref": {
+          "allOf": [
+            {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-actor-contact-point-ref.schema.json"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "contract_version": {
+                  "const": "1"
+                }
+              },
+              "required": [
+                "contract_version"
+              ]
+            }
+          ]
+        },
+        "participation": {
+          "enum": [
+            "participated",
+            "not_established",
+            "unknown"
+          ],
+          "description": "Explicit descriptive participation state. Listing a recipient does not itself establish participation. unknown is reserved for historical/imported uncertainty."
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "required": [
+              "endpoint_ref"
+            ]
+          },
+          "then": {
+            "properties": {
+              "person": {
+                "allOf": [
+                  {
+                    "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/attribution/represented-human-attribution.schema.json"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "kind": {
+                        "const": "actor"
+                      }
+                    },
+                    "required": [
+                      "kind"
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      ]
+    },
+    "method": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind"
+      ],
+      "properties": {
+        "kind": {
+          "enum": [
+            "in_person",
+            "phone_call",
+            "voicemail",
+            "text_message",
+            "email",
+            "letter",
+            "portal_or_system_message",
+            "video_call",
+            "other",
+            "unknown"
+          ]
+        },
+        "detail": {
+          "allOf": [
+            {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+            },
+            {
+              "maxLength": 500
+            }
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "other"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "required": [
+              "detail"
+            ]
+          },
+          "else": {
+            "not": {
+              "required": [
+                "detail"
+              ]
+            }
+          }
+        }
+      ],
+      "title": "Communication Method"
+    },
+    "purpose": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind"
+      ],
+      "properties": {
+        "kind": {
+          "enum": [
+            "information_sharing",
+            "request_for_information",
+            "notice",
+            "scheduling",
+            "review_coordination",
+            "determination_notice",
+            "response_coordination",
+            "support_coordination",
+            "referral_or_handoff",
+            "follow_up",
+            "reentry_or_repair",
+            "other",
+            "unknown"
+          ]
+        },
+        "detail": {
+          "allOf": [
+            {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+            },
+            {
+              "maxLength": 500
+            }
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "other"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "required": [
+              "detail"
+            ]
+          },
+          "else": {
+            "not": {
+              "required": [
+                "detail"
+              ]
+            }
+          }
+        }
+      ],
+      "title": "Communication Purpose"
+    },
+    "workspaceFileAttachment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "path",
+        "fingerprint"
+      ],
+      "properties": {
+        "kind": {
+          "const": "workspace_file"
+        },
+        "path": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/workspace-relative-path.schema.json"
+        },
+        "fingerprint": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/content-fingerprint.schema.json"
+        }
+      }
+    },
+    "portiaRecordAttachment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "record_ref"
+      ],
+      "properties": {
+        "kind": {
+          "const": "portia_record"
+        },
+        "record_ref": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-portia-work-record-ref.schema.json"
+        }
+      }
+    },
+    "moduleRecordAttachment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "module_work_record_ref"
+      ],
+      "properties": {
+        "kind": {
+          "const": "module_record"
+        },
+        "module_work_record_ref": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/module-work-record-ref.schema.json"
+        }
+      }
+    },
+    "externalRecordAttachment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "system_label",
+        "external_reference"
+      ],
+      "properties": {
+        "kind": {
+          "const": "external_record"
+        },
+        "system_label": {
+          "allOf": [
+            {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+            },
+            {
+              "maxLength": 200
+            }
+          ]
+        },
+        "external_reference": {
+          "allOf": [
+            {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+            },
+            {
+              "maxLength": 500
+            }
+          ]
+        },
+        "record_label": {
+          "allOf": [
+            {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+            },
+            {
+              "maxLength": 200
+            }
+          ]
+        }
+      }
+    },
+    "attachment": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/workspaceFileAttachment"
+        },
+        {
+          "$ref": "#/$defs/portiaRecordAttachment"
+        },
+        {
+          "$ref": "#/$defs/moduleRecordAttachment"
+        },
+        {
+          "$ref": "#/$defs/externalRecordAttachment"
+        }
+      ]
+    },
+    "relation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "relation",
+        "record_ref"
+      ],
+      "properties": {
+        "relation": {
+          "enum": [
+            "responds_to",
+            "communicates",
+            "requests",
+            "coordinates",
+            "notifies_about",
+            "conveys_determination",
+            "documents_handoff_for",
+            "relates_to_response",
+            "account_from_communication",
+            "other"
+          ]
+        },
+        "record_ref": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-portia-work-record-ref.schema.json"
+        },
+        "detail": {
+          "allOf": [
+            {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+            },
+            {
+              "maxLength": 500
+            }
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "relation": {
+                "const": "other"
+              }
+            },
+            "required": [
+              "relation"
+            ]
+          },
+          "then": {
+            "required": [
+              "detail"
+            ]
+          },
+          "else": {
+            "not": {
+              "required": [
+                "detail"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "communicationWorkRecordRef": {
+      "allOf": [
+        {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-portia-work-record-ref.schema.json"
+        },
+        {
+          "type": "object",
+          "required": [
+            "work_ref",
+            "record_ref"
+          ],
+          "properties": {
+            "record_ref": {
+              "allOf": [
+                {
+                  "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-local-record-ref.schema.json"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "record_kind": {
+                      "const": "communication"
+                    },
+                    "record_id": {
+                      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-communication-id.schema.json"
+                    },
+                    "contract_version": {
+                      "const": "1"
+                    }
+                  },
+                  "required": [
+                    "record_kind",
+                    "record_id",
+                    "contract_version"
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "supersessionEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "work_record_ref",
+        "reason"
+      ],
+      "properties": {
+        "work_record_ref": {
+          "$ref": "#/$defs/communicationWorkRecordRef"
+        },
+        "reason": {
+          "enum": [
+            "sender_corrected",
+            "recipient_corrected",
+            "method_corrected",
+            "purpose_corrected",
+            "timing_corrected",
+            "content_summary_corrected",
+            "attachment_corrected",
+            "relation_corrected",
+            "privacy_scope_corrected",
+            "duplicate_consolidated",
+            "work_root_corrected",
+            "contract_migrated",
+            "other"
+          ]
+        },
+        "detail": {
+          "allOf": [
+            {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+            },
+            {
+              "maxLength": 500
+            }
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "reason": {
+                "const": "other"
+              }
+            },
+            "required": [
+              "reason"
+            ]
+          },
+          "then": {
+            "required": [
+              "detail"
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "work_kind": {
+            "const": "event"
+          }
+        },
+        "required": [
+          "work_kind"
+        ]
+      },
+      "then": {
+        "properties": {
+          "work_id": {
+            "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-event-id.schema.json"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "work_kind": {
+            "const": "support_process"
+          }
+        },
+        "required": [
+          "work_kind"
+        ]
+      },
+      "then": {
+        "properties": {
+          "work_id": {
+            "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-support-process-id.schema.json"
+          }
+        }
+      }
+    }
+  ],
+  "x-portia-application-invariants": [
+    "portia.communication.canonical_storage_scope",
+    "portia.communication.path_identity_agreement",
+    "portia.communication.owner_work_resolution",
+    "portia.communication.work_kind_id_agreement",
+    "portia.communication.support_process_current_use_requires_published_owner",
+    "portia.communication.sender_resolution",
+    "portia.communication.sender_current_use_eligibility",
+    "portia.communication.sender_recorder_distinction",
+    "portia.communication.recipient_resolution",
+    "portia.communication.recipient_current_use_eligibility",
+    "portia.communication.recipient_logical_identity_unique",
+    "portia.communication.recipient_order_nonsemantic",
+    "portia.communication.participation_explicit",
+    "portia.communication.recipient_listing_not_participation",
+    "portia.communication.endpoint_exact_resolution",
+    "portia.communication.endpoint_actor_owner_agreement",
+    "portia.communication.endpoint_no_silent_successor_following",
+    "portia.communication.contact_preference_not_consent",
+    "portia.communication.contact_verification_not_delivery",
+    "portia.communication.timestamp_chronology",
+    "portia.communication.recording_chronology",
+    "portia.communication.unknown_values_historical_only",
+    "portia.communication.repeated_attempt_separate_record",
+    "portia.communication.completed_not_delivery_proof",
+    "portia.communication.summary_not_account_evidence",
+    "portia.communication.attachment_workspace_resolution",
+    "portia.communication.attachment_fingerprint_match",
+    "portia.communication.attachment_module_id_agreement",
+    "portia.communication.attachment_external_inert",
+    "portia.communication.attachment_not_automatic_evidence",
+    "portia.communication.relation_resolution",
+    "portia.communication.relation_kind_compatibility",
+    "portia.communication.responds_to_not_self",
+    "portia.communication.responds_to_same_work",
+    "portia.communication.relation_identity_unique",
+    "portia.communication.creation_provenance_immutable",
+    "portia.communication.paper_activation_requires_review_history",
+    "portia.communication.import_activation_requires_review_history",
+    "portia.communication.lifecycle_matrix",
+    "portia.communication.lifecycle_history_reconciliation",
+    "portia.communication.current_use_eligibility",
+    "portia.communication.amendment_prohibited_v1",
+    "portia.communication.predecessor_resolution",
+    "portia.communication.predecessor_identity_unique",
+    "portia.communication.self_supersession",
+    "portia.communication.supersession_reason_uniform",
+    "portia.communication.replacement_topology",
+    "portia.communication.supersession_cycle",
+    "portia.communication.ownership_reconciliation",
+    "portia.communication.successor_effectiveness",
+    "portia.communication.incoming_reference_complete",
+    "portia.communication.no_silent_successor_following",
+    "portia.communication.no_engagement_scoring",
+    "portia.communication.no_delivery_inference",
+    "portia.communication.no_automatic_external_send",
+    "portia.communication.restricted_content_minimization"
+  ]
+}

@@ -20,6 +20,19 @@ The repository currently contains:
 
 Portia does not yet contain an executable application. The current domain implementation targets are Event v2, Event Participant v3, Event Participant Role v3, Work Relationship v2, the Actor Directory version-1 record family, Account v1, Observation v1, Review v1, Classification v1, Hypothesis v1, and Determination v1. Issue #14 completes the public teacher-local Actor identity family. Issue #15 completes attributed Account and direct/instrumented Observation identity, targeting, attribution, provenance, lifecycle, correction, retraction, migration/removal compatibility, operational/derived reuse, and privacy contracts. Issue #16 completes bounded Review, attributed Classification, tentative Hypothesis, and authority-scoped Determination contracts plus shared-infrastructure compatibility. Production filesystem services and teacher-facing workflows remain assigned to a later executable milestone.
 
+### Issue #17 current implementation
+
+The current architecture now includes **accepted ADR 0013 for Response and Communication**.
+The active domain targets include **Response v1 and Communication v1** in addition to
+the earlier Event, Actor, evidence, and judgment families. Response is Event-local;
+Communication is Portia-work-local with Event current use and structurally reserved
+Support Process ownership for Issue #18. Response records bounded action without
+proving misconduct or effectiveness. Communication records a bounded contact act or
+attempt without proving delivery, participation, legal notice, or the truth of its
+content. Issue #17 also validates exact Contact Point history, typed record relations,
+schema-local attachment references, successor-based correction, and shared
+lifecycle/migration/operation/derived compatibility.
+
 ## Product Position
 
 Portia is designed as:
@@ -36,9 +49,9 @@ Event
 → Review
 → Classification and/or Hypothesis
 → Determination
-→ Immediate Responses
-→ Supports and Interventions
-→ Follow-Up and Outcomes
+→ Response and/or Communication
+→ Support Process / Support / Intervention
+→ Follow-Up / Outcome / Reentry / Repair
 ```
 
 These stages represent distinct records and forms of human judgment. A reported concern is not automatically a confirmed finding, a hypothesis is not a fact, and a response or consequence does not define what occurred.
@@ -594,6 +607,53 @@ generation, and current-pointer contracts are reused without judgment-specific
 forks. Response/Communication remains #17 and broader Support-Process/FBA
 ownership remains #18.
 
+## Accepted Response and Communication Contracts
+
+ADR 0013 defines Portia's bounded action and communication layer.
+
+The additive public contracts are:
+
+```text
+portia_response_id@1
+portia_communication_id@1
+response@1
+communication@1
+```
+
+Response v1 is Event-local and reuses `portia_target_ref@1` plus
+`represented_human_attribution@1`. Its action family describes what was done,
+not severity, culpability, risk, policy truth, or effectiveness. Teacher-local
+consequences may exist without Determination; a recorded institutional
+consequence requires an exact same-Event Determination without copying
+Determination authority semantics.
+
+Communication v1 is Portia-work-local. Event-owned Communication is current-use
+eligible now; Support Process ownership is structurally reserved until Issue #18
+publishes the owner. Human sender and recipient identity reuse
+`represented_human_attribution@1`. Exact Actor Contact Point references preserve
+the historical endpoint without copying the raw contact value. Preference is not
+consent, and local verification is not delivery proof.
+
+Communication stores a bounded summary rather than an unrestricted mutable
+message body. Repeated attempts and replies are separate canonical records.
+Recipient listing is not participation. Communication is not Account evidence:
+when a source assertion matters as evidence, it is separately preservable as
+Account and may be linked with `account_from_communication`.
+
+Communication attachments use a schema-local closed union for workspace files,
+exact Portia records, sibling-module records, and inert external records.
+`source_artifact_ref@1` is not broadened beyond its accepted Account/Observation
+semantics.
+
+Response and Communication expose no v1 Amendment paths. Material correction
+uses preserved successor/history semantics. Existing lifecycle, disagreement,
+dependency, migration/removal, operation, Quarantine, Integrity Finding,
+source-snapshot, and derived-state contracts are reused without Issue #17-specific
+forks. Exact references never silently follow successors.
+
+Issue #17 validation is recorded in
+`docs/validation/issue-17-response-communication-validation.md`.
+
 ## Initial Event, Event Participant, and Role Model
 
 Portia now defines an initial canonical model for Events, Event Participants, and Event Participant Roles.
@@ -1077,6 +1137,10 @@ Portia should use Core infrastructure and public cross-module contracts rather t
   Historical version-1 Role examples covering direct digital creation, compatible assignments, contextual detail, paper/import reported involvement, basis correction, and supersession. Their conceptual Account/Observation references are superseded for current use by Role v3 plus ADR 0011 and the Issue #15 compatibility examples.
 
 ### Validation
+
+* [Issue #17 Validation: Response and Communication Domain Models](docs/validation/issue-17-response-communication-validation.md)
+
+  Records the four additive public contracts, 52 application-invalid fixture scenarios plus eight programmatic invariants, 60 acceptance criteria, 32 synthetic examples, final Core/Portia drift anchors, shared-infrastructure compatibility, and repository acceptance commands.
 
 * [Issue #16 Validation: Review, Classification, Hypothesis, and Determination](docs/validation/issue-16-review-classification-hypothesis-determination-validation.md)
 

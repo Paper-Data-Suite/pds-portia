@@ -1,0 +1,513 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/responses/response.schema.json",
+  "title": "Portia Response",
+  "description": "Canonical version-1 Event-local Portia Response record representing one bounded action that a represented human provider took, attempted, initiated, or completed in direct relation to one Event or its Event-local review/decision context. Response is action, not evidence, Determination, Support, Outcome, proof of misconduct, or proof that an action was justified or effective.",
+  "$comment": "Application validation remains responsible for canonical path and Event ownership, target/provider/context resolution and eligibility, same-Event Review/Determination agreement, provider-role eligibility, chronology, paper/import activation gates, lifecycle legality and history reconciliation, supersession topology, ownership correction, current-use eligibility, no silent successor following, authorization, privacy, and recoverable coordinated writes.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "record_type",
+    "module_id",
+    "class_id",
+    "work_id",
+    "response_id",
+    "status",
+    "target",
+    "provider",
+    "action",
+    "execution_state",
+    "started_at",
+    "creation_source",
+    "created_at",
+    "created_by",
+    "updated_at",
+    "updated_by"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1"
+    },
+    "record_type": {
+      "const": "response"
+    },
+    "module_id": {
+      "const": "portia"
+    },
+    "class_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+    },
+    "work_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-event-id.schema.json"
+    },
+    "response_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-response-id.schema.json"
+    },
+    "status": {
+      "enum": [
+        "proposed",
+        "active",
+        "invalidated",
+        "superseded"
+      ]
+    },
+    "target": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/targets/portia-target-ref.schema.json"
+    },
+    "provider": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/attribution/represented-human-attribution.schema.json"
+    },
+    "action": {
+      "$ref": "#/$defs/responseAction"
+    },
+    "execution_state": {
+      "enum": [
+        "attempted",
+        "in_progress",
+        "completed",
+        "partially_completed",
+        "discontinued",
+        "unable_to_complete",
+        "unknown"
+      ]
+    },
+    "started_at": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+    },
+    "ended_at": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+    },
+    "review_ref": {
+      "$ref": "#/$defs/reviewWorkRecordRef"
+    },
+    "determination_ref": {
+      "$ref": "#/$defs/determinationWorkRecordRef"
+    },
+    "supersedes": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/supersessionEntry"
+      }
+    },
+    "creation_source": {
+      "allOf": [
+        {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/provenance/creation-source.schema.json"
+        },
+        {
+          "not": {
+            "type": "object",
+            "properties": {
+              "type": {
+                "const": "paper_capture"
+              },
+              "stage": {
+                "const": "preallocated"
+              }
+            },
+            "required": [
+              "type",
+              "stage"
+            ]
+          }
+        }
+      ]
+    },
+    "created_at": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+    },
+    "created_by": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/attribution/attribution-agent.schema.json"
+    },
+    "updated_at": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+    },
+    "updated_by": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/attribution/attribution-agent.schema.json"
+    }
+  },
+  "$defs": {
+    "responseAction": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "family",
+        "description"
+      ],
+      "properties": {
+        "family": {
+          "enum": [
+            "classroom_management",
+            "environmental_or_instructional",
+            "support_access",
+            "de_escalation",
+            "safety_or_protective",
+            "referral_or_handoff",
+            "restorative_or_repair",
+            "consequence",
+            "other"
+          ]
+        },
+        "description": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+        },
+        "consequence_context": {
+          "enum": [
+            "teacher_local",
+            "recorded_institutional"
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "family": {
+                "const": "consequence"
+              }
+            },
+            "required": [
+              "family"
+            ]
+          },
+          "then": {
+            "required": [
+              "consequence_context"
+            ]
+          },
+          "else": {
+            "not": {
+              "required": [
+                "consequence_context"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "reviewWorkRecordRef": {
+      "allOf": [
+        {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-portia-work-record-ref.schema.json"
+        },
+        {
+          "type": "object",
+          "required": [
+            "work_ref",
+            "record_ref"
+          ],
+          "properties": {
+            "work_ref": {
+              "allOf": [
+                {
+                  "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-portia-work-ref.schema.json"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "work_kind": {
+                      "const": "event"
+                    },
+                    "work_id": {
+                      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-event-id.schema.json"
+                    },
+                    "contract_version": {
+                      "const": "2"
+                    }
+                  },
+                  "required": [
+                    "work_kind",
+                    "work_id",
+                    "contract_version"
+                  ]
+                }
+              ]
+            },
+            "record_ref": {
+              "allOf": [
+                {
+                  "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-local-record-ref.schema.json"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "record_kind": {
+                      "const": "review"
+                    },
+                    "record_id": {
+                      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-review-id.schema.json"
+                    },
+                    "contract_version": {
+                      "const": "1"
+                    }
+                  },
+                  "required": [
+                    "record_kind",
+                    "record_id",
+                    "contract_version"
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "determinationWorkRecordRef": {
+      "allOf": [
+        {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-portia-work-record-ref.schema.json"
+        },
+        {
+          "type": "object",
+          "required": [
+            "work_ref",
+            "record_ref"
+          ],
+          "properties": {
+            "work_ref": {
+              "allOf": [
+                {
+                  "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-portia-work-ref.schema.json"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "work_kind": {
+                      "const": "event"
+                    },
+                    "work_id": {
+                      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-event-id.schema.json"
+                    },
+                    "contract_version": {
+                      "const": "2"
+                    }
+                  },
+                  "required": [
+                    "work_kind",
+                    "work_id",
+                    "contract_version"
+                  ]
+                }
+              ]
+            },
+            "record_ref": {
+              "allOf": [
+                {
+                  "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-local-record-ref.schema.json"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "record_kind": {
+                      "const": "determination"
+                    },
+                    "record_id": {
+                      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-determination-id.schema.json"
+                    },
+                    "contract_version": {
+                      "const": "1"
+                    }
+                  },
+                  "required": [
+                    "record_kind",
+                    "record_id",
+                    "contract_version"
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "responseWorkRecordRef": {
+      "allOf": [
+        {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-portia-work-record-ref.schema.json"
+        },
+        {
+          "type": "object",
+          "required": [
+            "work_ref",
+            "record_ref"
+          ],
+          "properties": {
+            "work_ref": {
+              "allOf": [
+                {
+                  "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-portia-work-ref.schema.json"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "work_kind": {
+                      "const": "event"
+                    },
+                    "work_id": {
+                      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-event-id.schema.json"
+                    },
+                    "contract_version": {
+                      "const": "2"
+                    }
+                  },
+                  "required": [
+                    "work_kind",
+                    "work_id",
+                    "contract_version"
+                  ]
+                }
+              ]
+            },
+            "record_ref": {
+              "allOf": [
+                {
+                  "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-local-record-ref.schema.json"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "record_kind": {
+                      "const": "response"
+                    },
+                    "record_id": {
+                      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-response-id.schema.json"
+                    },
+                    "contract_version": {
+                      "const": "1"
+                    }
+                  },
+                  "required": [
+                    "record_kind",
+                    "record_id",
+                    "contract_version"
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "supersessionEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "work_record_ref",
+        "reason"
+      ],
+      "properties": {
+        "work_record_ref": {
+          "$ref": "#/$defs/responseWorkRecordRef"
+        },
+        "reason": {
+          "enum": [
+            "provider_corrected",
+            "target_corrected",
+            "action_corrected",
+            "timing_corrected",
+            "decision_context_corrected",
+            "duplicate_consolidated",
+            "work_root_corrected",
+            "contract_migrated",
+            "other"
+          ]
+        },
+        "detail": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "reason": {
+                "const": "other"
+              }
+            },
+            "required": [
+              "reason"
+            ]
+          },
+          "then": {
+            "required": [
+              "detail"
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "action": {
+            "type": "object",
+            "properties": {
+              "family": {
+                "const": "consequence"
+              },
+              "consequence_context": {
+                "const": "recorded_institutional"
+              }
+            },
+            "required": [
+              "family",
+              "consequence_context"
+            ]
+          }
+        },
+        "required": [
+          "action"
+        ]
+      },
+      "then": {
+        "required": [
+          "determination_ref"
+        ]
+      }
+    }
+  ],
+  "x-portia-application-invariants": [
+    "portia.response.canonical_storage_scope",
+    "portia.response.path_identity_agreement",
+    "portia.response.parent_event_resolution",
+    "portia.response.target_resolution",
+    "portia.response.target_same_event",
+    "portia.response.provider_resolution",
+    "portia.response.provider_role_eligibility",
+    "portia.response.provider_recorder_distinction",
+    "portia.response.review_resolution",
+    "portia.response.review_same_event",
+    "portia.response.determination_resolution",
+    "portia.response.determination_same_event",
+    "portia.response.recorded_institutional_determination_required",
+    "portia.response.execution_chronology",
+    "portia.response.recording_chronology",
+    "portia.response.unknown_execution_import_only",
+    "portia.response.creation_provenance_immutable",
+    "portia.response.paper_activation_requires_review_history",
+    "portia.response.import_activation_requires_review_history",
+    "portia.response.lifecycle_matrix",
+    "portia.response.lifecycle_history_reconciliation",
+    "portia.response.current_use_eligibility",
+    "portia.response.amendment_prohibited_v1",
+    "portia.response.predecessor_resolution",
+    "portia.response.predecessor_identity_unique",
+    "portia.response.self_supersession",
+    "portia.response.supersession_reason_uniform",
+    "portia.response.replacement_topology",
+    "portia.response.supersession_cycle",
+    "portia.response.ownership_reconciliation",
+    "portia.response.successor_effectiveness",
+    "portia.response.incoming_reference_complete",
+    "portia.response.no_silent_successor_following",
+    "portia.response.no_automatic_judgment",
+    "portia.response.no_effectiveness_inference",
+    "portia.response.restricted_workflow_boundary"
+  ]
+}
