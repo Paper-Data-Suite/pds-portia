@@ -1,8 +1,8 @@
 # Issue #18 Initial Repository Checkpoint
 
-**Issue:** `#18 — Define Support Process, Support, Intervention, implementation, and fidelity contracts`  
-**Date:** 2026-08-10  
-**Branch:** `18-support-process-support-intervention-implementation-fidelity`  
+**Issue:** `#18 — Define Support Process, Support, Intervention, implementation, and fidelity contracts`
+**Date:** 2026-08-10
+**Branch:** `18-support-process-support-intervention-implementation-fidelity`
 **Checkpoint:** initial repository and dependency review
 
 ## Portia branch baseline

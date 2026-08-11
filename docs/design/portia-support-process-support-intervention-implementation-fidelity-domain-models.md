@@ -1,16 +1,17 @@
 # Portia Support Process, Support, Intervention, Implementation, and Fidelity Domain Models
 
-**Status:** Pre-ADR design candidate  
-**Project:** Paper Data Suite  
-**Module:** `pds-portia`  
-**Issue:** `#18 — Define Support Process, Support, Intervention, implementation, and fidelity contracts`  
-**Umbrella:** `#10 — Complete the Portia foundations milestone`  
-**Date:** 2026-08-10  
+**Status:** Accepted architecture — ADR 0014
+**Project:** Paper Data Suite
+**Module:** `pds-portia`
+**Issue:** `#18 — Define Support Process, Support, Intervention, implementation, and fidelity contracts`
+**Umbrella:** `#10 — Complete the Portia foundations milestone`
+**Date:** 2026-08-10
 **Branch:** `18-support-process-support-intervention-implementation-fidelity`
+**Decision:** ADR 0014 accepted
 
 ## 1. Purpose
 
-This document defines the pre-ADR architecture for Portia's longitudinal
+This document defines the accepted architecture for Portia's longitudinal
 teacher-local support layer.
 
 The accepted record progression is:
@@ -45,7 +46,7 @@ operational completion
 ≠ success / resolution
 ```
 
-The central semantic units are proposed as:
+The central semantic units are accepted as:
 
 ```text
 Support Process
@@ -223,7 +224,7 @@ sup_<opaque-id>
 portia_support_process_id@1
 ```
 
-Proposed public root contract:
+Accepted public root contract:
 
 ```text
 support_process@1
@@ -262,7 +263,7 @@ derived.
 
 The root should remain intentionally small.
 
-Candidate root fields include:
+Accepted root fields are:
 
 ```text
 schema_version
@@ -296,7 +297,7 @@ through references/derived views.
 
 ### Canonical lifecycle
 
-Candidate canonical lifecycle:
+Accepted canonical lifecycle:
 
 ```text
 proposed
@@ -310,7 +311,7 @@ support workflow stage.
 
 ### Workflow state
 
-Candidate Support Process workflow state:
+Accepted Support Process workflow state:
 
 ```text
 planning
@@ -384,7 +385,7 @@ other bounded reason
 The root should preserve one bounded `initiation` object stating why the process
 was opened and, when appropriate, an exact context reference.
 
-The exact final wire shape belongs in ADR 0014, but the design should favor:
+ADR 0014 accepts an initiation union built from:
 
 ```text
 reason
@@ -417,27 +418,26 @@ or diagnosis.
 
 # 8. Support Process Participant Is a Canonical Child
 
-Issue #18 should publish:
+Issue #18 will publish:
 
 ```text
 portia_support_process_participant_id@1
 support_process_participant@1
 ```
 
-Candidate opaque identifier prefix:
+Accepted opaque identifier prefix:
 
 ```text
 spp_<opaque-id>
 ```
 
-The prefix remains provisional until ADR 0014.
 
 One Support Process Participant represents:
 
 > One represented human explicitly included in one exact Support Process
 > context.
 
-Candidate canonical storage:
+Accepted canonical storage:
 
 ```text
 classes/<class_id>/modules/portia/work/<support_process_id>/
@@ -469,7 +469,7 @@ Historical/imported proposed material may preserve honest uncertainty.
 
 ### Process participation context
 
-The participant may carry a small descriptive set such as:
+The Participant carries one or more nonexclusive descriptive contexts:
 
 ```text
 supported_person
@@ -480,7 +480,7 @@ observer
 other
 ```
 
-The final vocabulary belongs in ADR 0014.
+ADR 0014 accepts this context vocabulary.
 
 These values are navigation/context only. They do not establish:
 
@@ -542,14 +542,14 @@ participation.
 
 # 10. Need Is an Independently Addressable Child
 
-Initial design favors:
+ADR 0014 accepts:
 
 ```text
 portia_support_need_id@1
 support_need@1
 ```
 
-Candidate opaque prefix:
+Accepted opaque prefix:
 
 ```text
 spn_<opaque-id>
@@ -561,7 +561,7 @@ One Support Need represents:
 > need, environmental need, or other reason for planning support for one exact
 > Support Process target.
 
-Candidate fields:
+Accepted core fields:
 
 ```text
 need_id
@@ -575,7 +575,7 @@ created_at / created_by
 updated_at / updated_by
 ```
 
-A small descriptive kind vocabulary may distinguish concepts such as:
+Accepted Need kind vocabulary is:
 
 ```text
 access
@@ -609,14 +609,14 @@ future #19 records.
 
 # 11. Goal Is an Independently Addressable Child
 
-Initial design favors:
+ADR 0014 accepts:
 
 ```text
 portia_support_goal_id@1
 support_goal@1
 ```
 
-Candidate opaque prefix:
+Accepted opaque prefix:
 
 ```text
 spg_<opaque-id>
@@ -627,7 +627,7 @@ One Support Goal represents:
 > One intended support objective or desired future condition for one exact
 > Support Process target.
 
-Candidate fields:
+Accepted core fields:
 
 ```text
 goal_id
@@ -664,7 +664,7 @@ representation without reopening the plan.
 
 # 12. Support and Intervention Are Separate Canonical Record Families
 
-Initial design favors separate:
+ADR 0014 accepts separate:
 
 ```text
 portia_support_id@1
@@ -674,14 +674,13 @@ portia_intervention_id@1
 intervention@1
 ```
 
-Candidate prefixes:
+Accepted prefixes:
 
 ```text
 spt_<opaque-id>
 int_<opaque-id>
 ```
 
-Prefixes remain provisional until ADR 0014.
 
 This separation is intentional rather than cosmetic.
 
@@ -744,10 +743,10 @@ self-describing without inspecting a nested plan-kind discriminator.
 
 # 13. Plan Strategy Vocabulary Should Stay Broad and Neutral
 
-Support and Intervention should share a small broad strategy family rather than
+Support and Intervention share a small broad strategy family rather than
 publish a district discipline/intervention taxonomy.
 
-Candidate family concepts:
+Accepted strategy family vocabulary:
 
 ```text
 access
@@ -820,7 +819,7 @@ Rules:
 # 15. Planned Schedule Is Shared but Separate From Actual History
 
 Support and Intervention have at least two stable consumers for a common planned
-schedule shape, so Issue #18 should evaluate an additive:
+schedule shape, so ADR 0014 accepts an additive:
 
 ```text
 planned_schedule@1
@@ -849,7 +848,9 @@ planned per-occurrence duration or bounded range
 selected days/times
 ```
 
-The exact union belongs in ADR 0014.
+ADR 0014 defines the closed union as `as_needed`, `recurring`,
+`condition_triggered`, and `custom`, with typed planning windows/duration and
+recurring cadence fields as specified by the ADR.
 
 Requirements:
 
@@ -878,7 +879,7 @@ plan.
 Support and Intervention need plan state because one plan can pause/end while the
 containing Support Process continues.
 
-Candidate plan state:
+Accepted plan state:
 
 ```text
 planned
@@ -914,14 +915,14 @@ It does not mean the plan was effective or the Goal was attained.
 
 # 17. Implementation Is One Actual Occurrence or Attempt
 
-Issue #18 should publish:
+Issue #18 will publish:
 
 ```text
 portia_implementation_id@1
 implementation@1
 ```
 
-Candidate prefix:
+Accepted prefix:
 
 ```text
 imp_<opaque-id>
@@ -932,7 +933,7 @@ One Implementation represents:
 > One bounded actual occurrence, attempt, or explicitly delimited implementation
 > interval of one exact Support or Intervention.
 
-Candidate core fields:
+Accepted core fields:
 
 ```text
 implementation_id
@@ -963,7 +964,7 @@ separate from persistence attribution.
 
 Actual target should reuse `support_process_target_ref@1`.
 
-Candidate execution states:
+Accepted execution states:
 
 ```text
 attempted
@@ -1024,7 +1025,7 @@ A material prospective change belongs to a new Support/Intervention successor.
 
 # 19. Material Adaptation Uses Plan Successor History
 
-Initial design does not justify a public `adaptation@1` record.
+ADR 0014 does not justify a public `adaptation@1` record.
 
 Use this boundary:
 
@@ -1054,7 +1055,7 @@ monitoring expectation
 The successor should preserve a reason that distinguishes intentional plan
 adaptation from correction of a falsely recorded prior plan.
 
-Likely reason concepts include:
+Accepted plan successor reason concepts include:
 
 ```text
 plan_adapted
@@ -1064,13 +1065,15 @@ provider_corrected
 need_link_corrected
 goal_link_corrected
 schedule_corrected
+monitoring_corrected
 duplicate_consolidated
 work_root_corrected
 contract_migrated
 other
 ```
 
-Exact final reason vocabulary belongs in ADR 0014.
+ADR 0014 additionally includes `monitoring_corrected` and fixes this shared
+plan-successor vocabulary for v1.
 
 No successor mechanism should silently retarget existing Implementation or
 Fidelity references.
@@ -1079,14 +1082,14 @@ Fidelity references.
 
 # 20. Fidelity Is Attributed Implementation-Quality Evaluation
 
-Issue #18 should publish:
+Issue #18 will publish:
 
 ```text
 portia_fidelity_id@1
 fidelity@1
 ```
 
-Candidate prefix:
+Accepted prefix:
 
 ```text
 fid_<opaque-id>
@@ -1098,7 +1101,7 @@ One Fidelity record represents:
 > set of Implementations, or bounded implementation interval matched one exact
 > Support/Intervention plan or identified protocol.
 
-Candidate scope branches:
+Accepted scope branches:
 
 ```text
 one_implementation
@@ -1106,7 +1109,7 @@ implementation_set
 bounded_plan_interval
 ```
 
-Candidate result vocabulary:
+Accepted categorical result vocabulary:
 
 ```text
 as_planned
@@ -1161,7 +1164,7 @@ Issue #16 deferred broader cross-Event/FBA ownership for reconsideration once
 Support Process became concrete. That deferral does not require Issue #18 to
 invent a formal FBA record.
 
-Initial Issue #18 direction is:
+ADR 0014 accepts this boundary:
 
 - Support Process may draw context from several Events;
 - Support Process planning may retain exact references to one or more Event-local
@@ -1234,7 +1237,7 @@ goal_not_met
 
 The generic Amendment contract permits only family-approved nonmaterial paths.
 
-Pre-ADR default is conservative:
+ADR 0014 accepts the conservative v1 policy:
 
 ```text
 Support Process root:
@@ -1258,7 +1261,7 @@ Statement of Disagreement remains additive and nonadjudicating.
 A Support Process that legitimately continues into a new school year should
 normally create a new Support Process under the new legitimate owning class/year.
 
-Initial design favors a successor-owned root field:
+ADR 0014 accepts a successor-owned root field:
 
 ```text
 continues_from
@@ -1323,7 +1326,7 @@ Preallocated paper must not fabricate Support, Intervention, Implementation, or
 Fidelity records.
 
 Ingested paper/import may preserve only proposed representations where future
-#20 workflow permits human review.
+Issue #20 workflow permits human review.
 
 Historical imports may preserve honest uncertainty such as unknown provider,
 method, timing, or execution state when the final schemas explicitly support it.
@@ -1423,9 +1426,9 @@ not the canonical Support Process storage model.
 
 ---
 
-# 29. Proposed Additive Public Contract Inventory
+# 29. Accepted Additive Public Contract Inventory
 
-Pre-ADR candidate inventory:
+ADR 0014 authorizes implementation of this additive inventory:
 
 ```text
 support_process@1
@@ -1469,7 +1472,7 @@ work_relationship@2
 represented_human_attribution@1
 ```
 
-Initial design does not justify public:
+ADR 0014 does not authorize public:
 
 ```text
 adaptation@1
@@ -1483,14 +1486,15 @@ service@1
 plan@1
 ```
 
-Every new `$id`, record kind, and opaque prefix remains un-published until ADR
-0014 is accepted after the required pre-ADR drift check.
+ADR 0014 is accepted after the required pre-ADR drift check. The contracts listed
+above are authorized for additive implementation; no existing published `$id` is
+modified in place.
 
 ---
 
-# 30. Application-Level Invariants To Carry Into ADR 0014
+# 30. Accepted Application-Level Invariants
 
-The final application validator/tests should cover at least these graph rules.
+The application validator/tests must cover at least these graph rules.
 
 ## Support Process
 
@@ -1562,31 +1566,72 @@ The final application validator/tests should cover at least these graph rules.
 
 ---
 
-# 31. ADR 0014 Decision Checklist
+# 31. ADR 0014 Resolution Summary
 
-Before publishing schemas, ADR 0014 must resolve at least:
+ADR 0014 resolves the required decisions as follows:
 
-1. exact Support Process workflow-state vocabulary;
-2. final Participant process-context vocabulary;
-3. final Need kind vocabulary;
-4. final shared strategy family vocabulary;
-5. exact `initiation` wire union and valid ref-kind mappings;
-6. exact Support/Intervention required-field differences;
-7. exact `planned_schedule@1` union;
-8. plan-state vocabulary;
-9. exact Implementation execution-state vocabulary;
-10. exact Implementation variation shape;
-11. exact plan supersession/adaptation reason vocabularies;
-12. Fidelity scope union;
-13. Fidelity evaluator representation;
-14. Fidelity basis/instrument result representation;
-15. exact cross-year `continues_from` shape and cardinality;
-16. family-by-family Amendment policy;
-17. final additive public contract inventory;
-18. final opaque identifier prefixes;
-19. Communication application-gate reconciliation strategy;
-20. confirmation that no formal Support Process Hypothesis/FBA contract is
-    required in v1.
+1. Support Process canonical lifecycle is `proposed`, `active`, `invalidated`,
+   `superseded`; workflow state is separately `planning`, `active`, `paused`,
+   `completed`, `discontinued`, or `cancelled`.
+2. Support Process Participant uses opaque `spp_` identity and a nonexclusive
+   context set: `supported_person`, `provider_or_collaborator`,
+   `family_or_support_person`, `coordinator`, `observer`, `other`.
+3. Need uses opaque `spn_` identity and the closed descriptive kind vocabulary
+   `access`, `environmental_or_instructional`, `organizational_or_routine`,
+   `skill_or_strategy`, `relationship_or_connection`,
+   `resource_or_coordination`, `other`.
+4. Support and Intervention are distinct canonical families. Support uses `spt_`;
+   Intervention uses `int_`.
+5. Both plan families share strategy families `access`,
+   `environmental_or_instructional`, `organizational`,
+   `relationship_or_connection`, `routine_or_structure`, `skill_building`,
+   `self_management`, `resource_or_coordination`, `other`.
+6. Need and Goal are independently addressable canonical children. Goal uses
+   opaque `spg_` identity.
+7. `planned_schedule@1` is a shared closed union for `as_needed`, `recurring`,
+   `condition_triggered`, and `custom`; `as_needed` is Support-only for active
+   current use.
+8. Intervention requires at least one Need, at least one Goal, an assigned
+   provider set, a non-`as_needed` schedule, and a bounded monitoring approach.
+   Support requires at least one Need but may omit Goal and may explicitly state
+   that no human provider is assigned when the support semantics justify it.
+9. Plan operational state is `planned`, `active`, `paused`, `completed`, or
+   `discontinued`, separate from canonical lifecycle and effectiveness.
+10. Implementation uses opaque `imp_` identity and neutral execution state
+    `attempted`, `in_progress`, `completed`, `partially_completed`,
+    `unable_to_complete`, `unknown`. Only `in_progress` has an ordinary terminal
+    progression update; terminal-state corrections use successor history.
+11. One-occurrence deviation is Implementation-local variation. Material
+    prospective adaptation creates a Support/Intervention successor with
+    `plan_adapted`; no `adaptation@1` is published in v1.
+12. Fidelity uses opaque `fid_` identity, exact plan scope plus one
+    Implementation, an explicit Implementation set, or a bounded plan interval,
+    and categorical results `as_planned`, `partially_as_planned`,
+    `not_as_planned`, `unable_to_determine`, `not_applicable`.
+13. Fidelity evaluator is an exact Support Process Participant. Instrument-defined
+    numeric/scaled results are permitted only with explicit instrument version and
+    source-defined scale bounds; there is no universal Portia fidelity score.
+14. Support Process initiation has one primary closed reason/context union;
+    additional Event context uses `work_relationship@2` unchanged.
+15. Cross-year continuation uses one successor-owned exact `continues_from`
+    Support Process reference. It is one-to-one in v1, does not supersede the
+    predecessor, and is distinct from migration and ownership correction.
+16. No Issue #18 family exposes v1 Amendment paths. Ordinary process/plan state
+    progression and in-progress Implementation completion are revision-aware
+    workflow updates; material semantic correction preserves successor history.
+17. `communication@1` remains wire-compatible. Issue #18 replaces only the
+    temporary application-level owner-unavailable gate with real Support Process
+    resolution/current-use validation.
+18. Event-local `hypothesis@1` remains Event-local; no formal FBA or
+    `support_process_hypothesis@1` is published in v1.
+19. The additive public inventory is `support_process@1`, seven new opaque child
+    identifier contracts and their seven canonical record contracts, plus
+    `planned_schedule@1`. Existing `portia_support_process_id@1` and shared
+    reference/target/infrastructure contracts are reused unchanged.
+20. Core `intervention_record_set` remains future publication compatibility only;
+    Issue #18 does not implement publication, Academic Work Registration, Score,
+    standards-rating, Grade, or Meridian policy.
 
-The pre-ADR drift checkpoint must occur before those decisions become accepted
-architecture.
+The accepted architecture now authorizes additive schema implementation and
+fixture/test work. Any later discovery of a genuine wire incompatibility must use
+an explicit new contract version rather than mutate a published `$id`.
