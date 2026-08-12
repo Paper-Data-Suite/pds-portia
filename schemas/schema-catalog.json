@@ -723,12 +723,20 @@
       "1": {
         "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/accounts/account.schema.json",
         "path": "schemas/v1/accounts/account.schema.json"
+      },
+      "2": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v2/accounts/account.schema.json",
+        "path": "schemas/v2/accounts/account.schema.json"
       }
     },
     "observation": {
       "1": {
         "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/observations/observation.schema.json",
         "path": "schemas/v1/observations/observation.schema.json"
+      },
+      "2": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v2/observations/observation.schema.json",
+        "path": "schemas/v2/observations/observation.schema.json"
       }
     },
     "portia_review_id": {

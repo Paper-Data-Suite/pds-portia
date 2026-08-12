@@ -1,0 +1,34 @@
+{
+  "manifest_version": "1",
+  "issue": 19,
+  "contract": "observation",
+  "version": "2",
+  "valid": [
+    "event-manual-count.json",
+    "support-process-manual-count.json",
+    "support-process-manual-timing.json",
+    "support-process-live-direct.json",
+    "event-v1-migration-successor.json",
+    "support-process-instrumented.json"
+  ],
+  "invalid": [
+    "missing-work-kind.json",
+    "unknown-work-kind.json",
+    "wrong-schema-version.json",
+    "event-owner-support-id.json",
+    "support-owner-event-target.json",
+    "event-owner-support-target.json",
+    "embedded-outcome.json",
+    "predecessor-contract-version-3.json"
+  ],
+  "application_invalid": [
+    "updated-before-created.json",
+    "observed-after-created.json",
+    "active-import-without-review.json",
+    "human-instrumented-method.json",
+    "manual-count-with-duration.json",
+    "support-process-v1-predecessor.json",
+    "contract-migrated-from-v2.json",
+    "ordinary-correction-cross-work.json"
+  ]
+}
