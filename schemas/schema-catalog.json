@@ -840,6 +840,12 @@
         "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-repair-id.schema.json",
         "path": "schemas/v1/identifiers/portia-repair-id.schema.json"
       }
+    },
+    "follow_up": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/follow-ups/follow-up.schema.json",
+        "path": "schemas/v1/follow-ups/follow-up.schema.json"
+      }
     }
   }
 }

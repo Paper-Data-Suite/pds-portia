@@ -1,0 +1,49 @@
+{
+  "manifest_version": "1",
+  "issue": 19,
+  "contract": "follow_up",
+  "version": "1",
+  "valid": [
+    "event-scheduled-date-only.json",
+    "event-scheduled-exact-time.json",
+    "event-completed-produced-communication.json",
+    "support-scheduled-date-window.json",
+    "support-scheduled-exact-window.json",
+    "support-completed-review-disposition.json",
+    "support-completed-reviewed-and-produced.json",
+    "support-other-purpose-with-detail.json",
+    "support-proposed-import.json",
+    "event-timing-correction-successor.json"
+  ],
+  "invalid": [
+    "missing-work-kind.json",
+    "event-owner-support-id.json",
+    "event-owner-support-target.json",
+    "event-owner-support-participant-owner.json",
+    "support-owner-event-human-owner.json",
+    "other-purpose-missing-detail.json",
+    "window-missing-end.json",
+    "completed-missing-completed-at.json",
+    "scheduled-has-completed-at.json",
+    "event-has-disposition.json",
+    "disposition-on-non-review-purpose.json",
+    "embedded-outcome.json",
+    "wrong-id-family.json"
+  ],
+  "application_invalid": [
+    "active-event-roster-student-owner.json",
+    "active-event-descriptive-owner.json",
+    "active-event-unidentified-owner.json",
+    "active-import-without-review.json",
+    "updated-before-created.json",
+    "date-window-ends-before-start.json",
+    "exact-window-ends-before-start.json",
+    "produced-record-cross-work.json",
+    "follow-up-to-non-follow-up.json",
+    "self-related-record.json",
+    "support-owner-without-operational-context.json",
+    "self-supersession.json",
+    "ordinary-correction-cross-work.json",
+    "duplicate-consolidation-one-predecessor.json"
+  ]
+}

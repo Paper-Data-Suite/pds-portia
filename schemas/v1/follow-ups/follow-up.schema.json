@@ -1,0 +1,691 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/follow-ups/follow-up.schema.json",
+  "title": "Portia Follow-Up",
+  "description": "Canonical version-1 Portia work-local Follow-Up representing one bounded, explicitly owned downstream check, review, coordination action, or follow-up obligation associated with one Event or Support Process. Follow-Up records planned timing and workflow completion separately from substantive source evidence and human Outcome evaluation. Completion does not establish a favorable Outcome, goal attainment, effectiveness, compliance, remorse, resolution, or causal success.",
+  "$comment": "Application validation remains responsible for canonical work-local storage; work-kind/work resolution; owner current-use eligibility and exact Support Process Participant resolution; owner/target/work agreement; logical-human uniqueness for plural targets; planned-window chronology; paper/import review gates; relation exact resolution and compatibility; disposition eligibility; lifecycle/history reconciliation; supersession topology; no silent successor following; authorization/privacy; and recoverable coordinated writes.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "record_type",
+    "module_id",
+    "class_id",
+    "work_kind",
+    "work_id",
+    "follow_up_id",
+    "status",
+    "target",
+    "owner",
+    "purpose",
+    "planned_timing",
+    "workflow_state",
+    "creation_source",
+    "created_at",
+    "created_by",
+    "updated_at",
+    "updated_by"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1"
+    },
+    "record_type": {
+      "const": "follow_up"
+    },
+    "module_id": {
+      "const": "portia"
+    },
+    "class_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+    },
+    "work_kind": {
+      "enum": [
+        "event",
+        "support_process"
+      ]
+    },
+    "work_id": {
+      "type": "string"
+    },
+    "follow_up_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-follow-up-id.schema.json"
+    },
+    "status": {
+      "enum": [
+        "proposed",
+        "active",
+        "invalidated",
+        "superseded"
+      ]
+    },
+    "target": {
+      "oneOf": [
+        {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/targets/portia-target-ref.schema.json"
+        },
+        {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/targets/support-process-target-ref.schema.json"
+        }
+      ],
+      "description": "Owner-local target. Application and structural validation require Event targets for Event ownership and Support Process targets for Support Process ownership."
+    },
+    "owner": {
+      "$ref": "#/$defs/owner"
+    },
+    "purpose": {
+      "$ref": "#/$defs/purpose"
+    },
+    "planned_timing": {
+      "$ref": "#/$defs/plannedTiming"
+    },
+    "workflow_state": {
+      "enum": [
+        "scheduled",
+        "in_progress",
+        "completed",
+        "cancelled",
+        "unable_to_complete"
+      ]
+    },
+    "completed_at": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json",
+      "description": "Actual completion timestamp for a completed Follow-Up. It is not planned timing and does not establish a favorable Outcome."
+    },
+    "related_records": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 100,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/relatedRecord"
+      }
+    },
+    "disposition": {
+      "$ref": "#/$defs/disposition"
+    },
+    "supersedes": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 100,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/supersessionEntry"
+      }
+    },
+    "creation_source": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/provenance/creation-source.schema.json"
+    },
+    "created_at": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+    },
+    "created_by": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/attribution/attribution-agent.schema.json"
+    },
+    "updated_at": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+    },
+    "updated_by": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/attribution/attribution-agent.schema.json"
+    }
+  },
+  "$defs": {
+    "exactSupportProcessParticipantRef": {
+      "allOf": [
+        {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-local-record-ref.schema.json"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "record_kind": {
+              "const": "support_process_participant"
+            },
+            "record_id": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-support-process-participant-id.schema.json"
+            },
+            "contract_version": {
+              "const": "1"
+            }
+          },
+          "required": [
+            "record_kind",
+            "record_id",
+            "contract_version"
+          ]
+        }
+      ]
+    },
+    "eventOwner": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "person"
+      ],
+      "properties": {
+        "kind": {
+          "const": "represented_human"
+        },
+        "person": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/attribution/represented-human-attribution.schema.json"
+        }
+      },
+      "description": "Event-owned operational owner representation. Application validation rejects roster-student, descriptive-only, and unidentified current-use owners and resolves Actor eligibility where applicable."
+    },
+    "supportProcessOwner": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "participant_ref"
+      ],
+      "properties": {
+        "kind": {
+          "const": "support_process_participant"
+        },
+        "participant_ref": {
+          "$ref": "#/$defs/exactSupportProcessParticipantRef"
+        }
+      },
+      "description": "Support-Process-owned operational owner. Application validation requires exact resolution to an eligible active participant with provider_or_collaborator or coordinator context."
+    },
+    "owner": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/eventOwner"
+        },
+        {
+          "$ref": "#/$defs/supportProcessOwner"
+        }
+      ]
+    },
+    "purpose": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind"
+      ],
+      "properties": {
+        "kind": {
+          "enum": [
+            "student_check_in",
+            "family_or_support_person_check_in",
+            "affected_person_check_in",
+            "event_review",
+            "response_review",
+            "support_process_review",
+            "goal_review",
+            "implementation_review",
+            "fidelity_review",
+            "reentry_check",
+            "repair_check",
+            "coordination",
+            "other"
+          ]
+        },
+        "detail": {
+          "allOf": [
+            {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+            },
+            {
+              "maxLength": 1000
+            }
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "other"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "required": [
+              "detail"
+            ]
+          },
+          "else": {
+            "not": {
+              "required": [
+                "detail"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "dateOnlyTiming": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "date"
+      ],
+      "properties": {
+        "kind": {
+          "const": "date_only"
+        },
+        "date": {
+          "type": "string",
+          "format": "date"
+        }
+      }
+    },
+    "exactTimeTiming": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "at"
+      ],
+      "properties": {
+        "kind": {
+          "const": "exact_time"
+        },
+        "at": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+        }
+      }
+    },
+    "dateOnlyWindowTiming": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "starts_on",
+        "ends_on"
+      ],
+      "properties": {
+        "kind": {
+          "const": "window"
+        },
+        "starts_on": {
+          "type": "string",
+          "format": "date"
+        },
+        "ends_on": {
+          "type": "string",
+          "format": "date"
+        }
+      },
+      "description": "Date-precision planned window; chronology is application validated."
+    },
+    "exactWindowTiming": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "starts_at",
+        "ends_at"
+      ],
+      "properties": {
+        "kind": {
+          "const": "window"
+        },
+        "starts_at": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+        },
+        "ends_at": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+        }
+      },
+      "description": "Timestamp-precision planned window; chronology is application validated."
+    },
+    "plannedTiming": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/dateOnlyTiming"
+        },
+        {
+          "$ref": "#/$defs/exactTimeTiming"
+        },
+        {
+          "$ref": "#/$defs/dateOnlyWindowTiming"
+        },
+        {
+          "$ref": "#/$defs/exactWindowTiming"
+        }
+      ],
+      "description": "Planning-only timing. Time elapsed or a reminder firing does not change workflow_state automatically."
+    },
+    "relatedRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "role",
+        "record_ref"
+      ],
+      "properties": {
+        "role": {
+          "enum": [
+            "context",
+            "reviewed",
+            "produced",
+            "follow_up_to"
+          ]
+        },
+        "record_ref": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-portia-work-record-ref.schema.json"
+        }
+      },
+      "description": "Exact workflow provenance relation. It does not copy substantive payload or establish evidence weight, truth, effect, or causation."
+    },
+    "disposition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind"
+      ],
+      "properties": {
+        "kind": {
+          "enum": [
+            "continue_current_support",
+            "review_later",
+            "adapt_plan",
+            "fade_or_reduce_support",
+            "complete_process",
+            "discontinue_process",
+            "no_additional_action",
+            "other"
+          ]
+        },
+        "detail": {
+          "allOf": [
+            {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+            },
+            {
+              "maxLength": 1000
+            }
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "other"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "required": [
+              "detail"
+            ]
+          },
+          "else": {
+            "not": {
+              "required": [
+                "detail"
+              ]
+            }
+          }
+        }
+      ],
+      "description": "Human-selected next workflow action for an eligible completed Support Process review. It is not Outcome, Determination, effectiveness, or an automatic process-state transition."
+    },
+    "followUpWorkRecordRef": {
+      "allOf": [
+        {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-portia-work-record-ref.schema.json"
+        },
+        {
+          "type": "object",
+          "required": [
+            "work_ref",
+            "record_ref"
+          ],
+          "properties": {
+            "record_ref": {
+              "allOf": [
+                {
+                  "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-local-record-ref.schema.json"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "record_kind": {
+                      "const": "follow_up"
+                    },
+                    "record_id": {
+                      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-follow-up-id.schema.json"
+                    },
+                    "contract_version": {
+                      "const": "1"
+                    }
+                  },
+                  "required": [
+                    "record_kind",
+                    "record_id",
+                    "contract_version"
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "supersessionEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "work_record_ref",
+        "reason"
+      ],
+      "properties": {
+        "work_record_ref": {
+          "$ref": "#/$defs/followUpWorkRecordRef"
+        },
+        "reason": {
+          "enum": [
+            "owner_corrected",
+            "purpose_corrected",
+            "target_corrected",
+            "timing_corrected",
+            "completion_corrected",
+            "related_record_corrected",
+            "duplicate_consolidated",
+            "work_root_corrected",
+            "contract_migrated",
+            "other"
+          ]
+        },
+        "detail": {
+          "allOf": [
+            {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+            },
+            {
+              "maxLength": 2000
+            }
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "reason": {
+                "const": "other"
+              }
+            },
+            "required": [
+              "reason"
+            ]
+          },
+          "then": {
+            "required": [
+              "detail"
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "work_kind": {
+            "const": "event"
+          }
+        },
+        "required": [
+          "work_kind"
+        ]
+      },
+      "then": {
+        "properties": {
+          "work_id": {
+            "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-event-id.schema.json"
+          },
+          "target": {
+            "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/targets/portia-target-ref.schema.json"
+          },
+          "owner": {
+            "$ref": "#/$defs/eventOwner"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "work_kind": {
+            "const": "support_process"
+          }
+        },
+        "required": [
+          "work_kind"
+        ]
+      },
+      "then": {
+        "properties": {
+          "work_id": {
+            "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-support-process-id.schema.json"
+          },
+          "target": {
+            "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/targets/support-process-target-ref.schema.json"
+          },
+          "owner": {
+            "$ref": "#/$defs/supportProcessOwner"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "workflow_state": {
+            "const": "completed"
+          }
+        },
+        "required": [
+          "workflow_state"
+        ]
+      },
+      "then": {
+        "required": [
+          "completed_at"
+        ]
+      },
+      "else": {
+        "not": {
+          "required": [
+            "completed_at"
+          ]
+        }
+      }
+    },
+    {
+      "if": {
+        "required": [
+          "disposition"
+        ]
+      },
+      "then": {
+        "properties": {
+          "work_kind": {
+            "const": "support_process"
+          },
+          "workflow_state": {
+            "const": "completed"
+          },
+          "purpose": {
+            "allOf": [
+              {
+                "$ref": "#/$defs/purpose"
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "kind": {
+                    "enum": [
+                      "response_review",
+                      "support_process_review",
+                      "goal_review",
+                      "implementation_review",
+                      "fidelity_review"
+                    ]
+                  }
+                },
+                "required": [
+                  "kind"
+                ]
+              }
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "x-portia-application-invariants": [
+    "portia.follow_up.canonical_storage_scope",
+    "portia.follow_up.path_identity_agreement",
+    "portia.follow_up.parent_work_resolution",
+    "portia.follow_up.work_kind_identity_agreement",
+    "portia.follow_up.owner_conditioned_target",
+    "portia.follow_up.owner_current_use_eligibility",
+    "portia.follow_up.support_process_owner_exact_resolution",
+    "portia.follow_up.support_process_owner_context_eligibility",
+    "portia.follow_up.owner_not_authority",
+    "portia.follow_up.target_logical_human_unique",
+    "portia.follow_up.planned_timing_chronology",
+    "portia.follow_up.overdue_derived_only",
+    "portia.follow_up.workflow_completion_not_outcome",
+    "portia.follow_up.completed_at_workflow_agreement",
+    "portia.follow_up.related_record_exact_resolution",
+    "portia.follow_up.related_record_identity_unique",
+    "portia.follow_up.related_record_self_reference",
+    "portia.follow_up.related_record_role_compatibility",
+    "portia.follow_up.produced_record_same_work",
+    "portia.follow_up.disposition_eligibility",
+    "portia.follow_up.disposition_not_outcome",
+    "portia.follow_up.creation_provenance_immutable",
+    "portia.follow_up.paper_activation_requires_review_history",
+    "portia.follow_up.import_activation_requires_review_history",
+    "portia.follow_up.lifecycle_matrix",
+    "portia.follow_up.lifecycle_history_reconciliation",
+    "portia.follow_up.predecessor_resolution",
+    "portia.follow_up.predecessor_identity_unique",
+    "portia.follow_up.self_supersession",
+    "portia.follow_up.supersession_reason_uniform",
+    "portia.follow_up.replacement_topology",
+    "portia.follow_up.no_silent_successor_following",
+    "portia.follow_up.amendment_prohibited_v1",
+    "portia.follow_up.no_automatic_outcome_or_closure"
+  ]
+}
