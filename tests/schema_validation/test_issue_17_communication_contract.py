@@ -117,6 +117,8 @@ def _same_work(
 
 def application_errors(
     communication: dict[str, Any],
+    *,
+    resolved_support_process_owners: set[tuple[str, str]] | None = None,
 ) -> list[str]:
     errors: list[str] = []
 
@@ -146,10 +148,17 @@ def application_errors(
         errors.append("paper/import activation requires accepted review history")
 
     if communication["work_kind"] == "support_process":
-        errors.append(
-            "Support Process owner is unavailable until Issue #18 publishes "
-            "the canonical Support Process contract"
+        owner_key = (
+            communication["class_id"],
+            communication["work_id"],
         )
+        if (
+            resolved_support_process_owners is None
+            or owner_key not in resolved_support_process_owners
+        ):
+            errors.append(
+                "Support Process owner must resolve and be current-use eligible"
+            )
 
     historical_only = (
         creation["type"] in {"paper_capture", "import"}

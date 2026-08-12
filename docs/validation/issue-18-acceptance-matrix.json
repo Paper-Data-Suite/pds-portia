@@ -1,0 +1,1494 @@
+{
+  "matrix_version": "1",
+  "issue": 18,
+  "title": "Support Process, Support, Intervention, Implementation, and Fidelity acceptance matrix",
+  "status": "accepted",
+  "criteria_count": 128,
+  "pass_count": 128,
+  "pending_count": 0,
+  "criteria": [
+    {
+      "criterion_id": "architecture.001",
+      "group": "architecture",
+      "status": "pass",
+      "statement": "Initial repository anchors are recorded.",
+      "evidence": [
+        "docs/design/portia-support-process-support-intervention-implementation-fidelity-domain-models.md",
+        "docs/decisions/0014-define-support-process-support-intervention-implementation-and-fidelity-contracts.md",
+        "docs/validation/issue-18-initial-repository-checkpoint.md",
+        "docs/validation/issue-18-pre-adr-checkpoint.md",
+        "docs/validation/issue-18-final-repository-checkpoint.md"
+      ]
+    },
+    {
+      "criterion_id": "architecture.002",
+      "group": "architecture",
+      "status": "pass",
+      "statement": "Pre-ADR drift check is recorded.",
+      "evidence": [
+        "docs/design/portia-support-process-support-intervention-implementation-fidelity-domain-models.md",
+        "docs/decisions/0014-define-support-process-support-intervention-implementation-and-fidelity-contracts.md",
+        "docs/validation/issue-18-initial-repository-checkpoint.md",
+        "docs/validation/issue-18-pre-adr-checkpoint.md",
+        "docs/validation/issue-18-final-repository-checkpoint.md"
+      ]
+    },
+    {
+      "criterion_id": "architecture.003",
+      "group": "architecture",
+      "status": "pass",
+      "statement": "Final pre-acceptance drift check is recorded.",
+      "evidence": [
+        "docs/design/portia-support-process-support-intervention-implementation-fidelity-domain-models.md",
+        "docs/decisions/0014-define-support-process-support-intervention-implementation-and-fidelity-contracts.md",
+        "docs/validation/issue-18-initial-repository-checkpoint.md",
+        "docs/validation/issue-18-pre-adr-checkpoint.md",
+        "docs/validation/issue-18-final-repository-checkpoint.md"
+      ]
+    },
+    {
+      "criterion_id": "architecture.004",
+      "group": "architecture",
+      "status": "pass",
+      "statement": "Current Portia/Core contracts are reviewed.",
+      "evidence": [
+        "docs/design/portia-support-process-support-intervention-implementation-fidelity-domain-models.md",
+        "docs/decisions/0014-define-support-process-support-intervention-implementation-and-fidelity-contracts.md",
+        "docs/validation/issue-18-initial-repository-checkpoint.md",
+        "docs/validation/issue-18-pre-adr-checkpoint.md",
+        "docs/validation/issue-18-final-repository-checkpoint.md"
+      ]
+    },
+    {
+      "criterion_id": "architecture.005",
+      "group": "architecture",
+      "status": "pass",
+      "statement": "Published schemas are not modified in place.",
+      "evidence": [
+        "docs/design/portia-support-process-support-intervention-implementation-fidelity-domain-models.md",
+        "docs/decisions/0014-define-support-process-support-intervention-implementation-and-fidelity-contracts.md",
+        "docs/validation/issue-18-initial-repository-checkpoint.md",
+        "docs/validation/issue-18-pre-adr-checkpoint.md",
+        "docs/validation/issue-18-final-repository-checkpoint.md"
+      ]
+    },
+    {
+      "criterion_id": "architecture.006",
+      "group": "architecture",
+      "status": "pass",
+      "statement": "Support Process semantic unit is explicit.",
+      "evidence": [
+        "docs/design/portia-support-process-support-intervention-implementation-fidelity-domain-models.md",
+        "docs/decisions/0014-define-support-process-support-intervention-implementation-and-fidelity-contracts.md",
+        "docs/validation/issue-18-initial-repository-checkpoint.md",
+        "docs/validation/issue-18-pre-adr-checkpoint.md",
+        "docs/validation/issue-18-final-repository-checkpoint.md"
+      ]
+    },
+    {
+      "criterion_id": "architecture.007",
+      "group": "architecture",
+      "status": "pass",
+      "statement": "Support, Intervention, Implementation, Fidelity, and Outcome are not collapsed.",
+      "evidence": [
+        "docs/design/portia-support-process-support-intervention-implementation-fidelity-domain-models.md",
+        "docs/decisions/0014-define-support-process-support-intervention-implementation-and-fidelity-contracts.md",
+        "docs/validation/issue-18-initial-repository-checkpoint.md",
+        "docs/validation/issue-18-pre-adr-checkpoint.md",
+        "docs/validation/issue-18-final-repository-checkpoint.md"
+      ]
+    },
+    {
+      "criterion_id": "architecture.008",
+      "group": "architecture",
+      "status": "pass",
+      "statement": "#17 Response/Communication boundaries remain intact.",
+      "evidence": [
+        "docs/design/portia-support-process-support-intervention-implementation-fidelity-domain-models.md",
+        "docs/decisions/0014-define-support-process-support-intervention-implementation-and-fidelity-contracts.md",
+        "docs/validation/issue-18-initial-repository-checkpoint.md",
+        "docs/validation/issue-18-pre-adr-checkpoint.md",
+        "docs/validation/issue-18-final-repository-checkpoint.md"
+      ]
+    },
+    {
+      "criterion_id": "architecture.009",
+      "group": "architecture",
+      "status": "pass",
+      "statement": "#19 Outcome/Follow-Up boundaries remain intact.",
+      "evidence": [
+        "docs/design/portia-support-process-support-intervention-implementation-fidelity-domain-models.md",
+        "docs/decisions/0014-define-support-process-support-intervention-implementation-and-fidelity-contracts.md",
+        "docs/validation/issue-18-initial-repository-checkpoint.md",
+        "docs/validation/issue-18-pre-adr-checkpoint.md",
+        "docs/validation/issue-18-final-repository-checkpoint.md"
+      ]
+    },
+    {
+      "criterion_id": "architecture.010",
+      "group": "architecture",
+      "status": "pass",
+      "statement": "Teacher-local scope is explicit and does not claim IEP/504/BIP/FBA/clinical/institutional authority.",
+      "evidence": [
+        "docs/design/portia-support-process-support-intervention-implementation-fidelity-domain-models.md",
+        "docs/decisions/0014-define-support-process-support-intervention-implementation-and-fidelity-contracts.md",
+        "docs/validation/issue-18-initial-repository-checkpoint.md",
+        "docs/validation/issue-18-pre-adr-checkpoint.md",
+        "docs/validation/issue-18-final-repository-checkpoint.md"
+      ]
+    },
+    {
+      "criterion_id": "support_process.011",
+      "group": "support_process",
+      "status": "pass",
+      "statement": "`support_process@1` is canonical and class-owned.",
+      "evidence": [
+        "schemas/v1/support-processes/support-process.schema.json",
+        "schemas/v1/support-processes/support-process-participant.schema.json",
+        "tests/schema_validation/test_issue_18_support_process_root_contracts.py"
+      ]
+    },
+    {
+      "criterion_id": "support_process.012",
+      "group": "support_process",
+      "status": "pass",
+      "statement": "Existing `portia_support_process_id@1` is reused.",
+      "evidence": [
+        "schemas/v1/support-processes/support-process.schema.json",
+        "schemas/v1/support-processes/support-process-participant.schema.json",
+        "tests/schema_validation/test_issue_18_support_process_root_contracts.py"
+      ]
+    },
+    {
+      "criterion_id": "support_process.013",
+      "group": "support_process",
+      "status": "pass",
+      "statement": "Canonical work path is defined.",
+      "evidence": [
+        "schemas/v1/support-processes/support-process.schema.json",
+        "schemas/v1/support-processes/support-process-participant.schema.json",
+        "tests/schema_validation/test_issue_18_support_process_root_contracts.py"
+      ]
+    },
+    {
+      "criterion_id": "support_process.014",
+      "group": "support_process",
+      "status": "pass",
+      "statement": "One owning class is required.",
+      "evidence": [
+        "schemas/v1/support-processes/support-process.schema.json",
+        "schemas/v1/support-processes/support-process-participant.schema.json",
+        "tests/schema_validation/test_issue_18_support_process_root_contracts.py"
+      ]
+    },
+    {
+      "criterion_id": "support_process.015",
+      "group": "support_process",
+      "status": "pass",
+      "statement": "Cross-class participation does not split ownership.",
+      "evidence": [
+        "schemas/v1/support-processes/support-process.schema.json",
+        "schemas/v1/support-processes/support-process-participant.schema.json",
+        "tests/schema_validation/test_issue_18_support_process_root_contracts.py"
+      ]
+    },
+    {
+      "criterion_id": "support_process.016",
+      "group": "support_process",
+      "status": "pass",
+      "statement": "Support Process is not a student-global dossier.",
+      "evidence": [
+        "schemas/v1/support-processes/support-process.schema.json",
+        "schemas/v1/support-processes/support-process-participant.schema.json",
+        "tests/schema_validation/test_issue_18_support_process_root_contracts.py"
+      ]
+    },
+    {
+      "criterion_id": "support_process.017",
+      "group": "support_process",
+      "status": "pass",
+      "statement": "participant identity/cardinality are explicit.",
+      "evidence": [
+        "schemas/v1/support-processes/support-process.schema.json",
+        "schemas/v1/support-processes/support-process-participant.schema.json",
+        "tests/schema_validation/test_issue_18_support_process_root_contracts.py"
+      ]
+    },
+    {
+      "criterion_id": "support_process.018",
+      "group": "support_process",
+      "status": "pass",
+      "statement": "`support_process_target_ref@1` is operationally usable.",
+      "evidence": [
+        "schemas/v1/support-processes/support-process.schema.json",
+        "schemas/v1/support-processes/support-process-participant.schema.json",
+        "tests/schema_validation/test_issue_18_support_process_root_contracts.py"
+      ]
+    },
+    {
+      "criterion_id": "support_process.019",
+      "group": "support_process",
+      "status": "pass",
+      "statement": "duplicate logical participants are invalid.",
+      "evidence": [
+        "schemas/v1/support-processes/support-process.schema.json",
+        "schemas/v1/support-processes/support-process-participant.schema.json",
+        "tests/schema_validation/test_issue_18_support_process_root_contracts.py"
+      ]
+    },
+    {
+      "criterion_id": "support_process.020",
+      "group": "support_process",
+      "status": "pass",
+      "statement": "process workflow state is distinct from canonical lifecycle.",
+      "evidence": [
+        "schemas/v1/support-processes/support-process.schema.json",
+        "schemas/v1/support-processes/support-process-participant.schema.json",
+        "tests/schema_validation/test_issue_18_support_process_root_contracts.py"
+      ]
+    },
+    {
+      "criterion_id": "support_process.021",
+      "group": "support_process",
+      "status": "pass",
+      "statement": "pause is distinct from invalidation.",
+      "evidence": [
+        "schemas/v1/support-processes/support-process.schema.json",
+        "schemas/v1/support-processes/support-process-participant.schema.json",
+        "tests/schema_validation/test_issue_18_support_process_root_contracts.py"
+      ]
+    },
+    {
+      "criterion_id": "support_process.022",
+      "group": "support_process",
+      "status": "pass",
+      "statement": "completion is distinct from effectiveness/Outcome.",
+      "evidence": [
+        "schemas/v1/support-processes/support-process.schema.json",
+        "schemas/v1/support-processes/support-process-participant.schema.json",
+        "tests/schema_validation/test_issue_18_support_process_root_contracts.py"
+      ]
+    },
+    {
+      "criterion_id": "support_process.023",
+      "group": "support_process",
+      "status": "pass",
+      "statement": "dates do not automatically change process state.",
+      "evidence": [
+        "schemas/v1/support-processes/support-process.schema.json",
+        "schemas/v1/support-processes/support-process-participant.schema.json",
+        "tests/schema_validation/test_issue_18_support_process_root_contracts.py"
+      ]
+    },
+    {
+      "criterion_id": "support_process.024",
+      "group": "support_process",
+      "status": "pass",
+      "statement": "initiating context is explicit and exact where needed.",
+      "evidence": [
+        "schemas/v1/support-processes/support-process.schema.json",
+        "schemas/v1/support-processes/support-process-participant.schema.json",
+        "tests/schema_validation/test_issue_18_support_process_root_contracts.py"
+      ]
+    },
+    {
+      "criterion_id": "support_process.025",
+      "group": "support_process",
+      "status": "pass",
+      "statement": "linked Events do not automatically establish pattern/cause/function.",
+      "evidence": [
+        "schemas/v1/support-processes/support-process.schema.json",
+        "schemas/v1/support-processes/support-process-participant.schema.json",
+        "tests/schema_validation/test_issue_18_support_process_root_contracts.py"
+      ]
+    },
+    {
+      "criterion_id": "needs_goals.026",
+      "group": "needs_goals",
+      "status": "pass",
+      "statement": "Need semantics are explicit and non-diagnostic.",
+      "evidence": [
+        "schemas/v1/support-processes/support-need.schema.json",
+        "schemas/v1/support-processes/support-goal.schema.json",
+        "tests/schema_validation/test_issue_18_need_goal_contracts.py"
+      ]
+    },
+    {
+      "criterion_id": "needs_goals.027",
+      "group": "needs_goals",
+      "status": "pass",
+      "statement": "Need identity/cardinality/history decision is explicit.",
+      "evidence": [
+        "schemas/v1/support-processes/support-need.schema.json",
+        "schemas/v1/support-processes/support-goal.schema.json",
+        "tests/schema_validation/test_issue_18_need_goal_contracts.py"
+      ]
+    },
+    {
+      "criterion_id": "needs_goals.028",
+      "group": "needs_goals",
+      "status": "pass",
+      "statement": "Goal semantics are explicit.",
+      "evidence": [
+        "schemas/v1/support-processes/support-need.schema.json",
+        "schemas/v1/support-processes/support-goal.schema.json",
+        "tests/schema_validation/test_issue_18_need_goal_contracts.py"
+      ]
+    },
+    {
+      "criterion_id": "needs_goals.029",
+      "group": "needs_goals",
+      "status": "pass",
+      "statement": "Goal identity/cardinality/history decision is explicit.",
+      "evidence": [
+        "schemas/v1/support-processes/support-need.schema.json",
+        "schemas/v1/support-processes/support-goal.schema.json",
+        "tests/schema_validation/test_issue_18_need_goal_contracts.py"
+      ]
+    },
+    {
+      "criterion_id": "needs_goals.030",
+      "group": "needs_goals",
+      "status": "pass",
+      "statement": "Goals do not carry Outcome/effectiveness semantics.",
+      "evidence": [
+        "schemas/v1/support-processes/support-need.schema.json",
+        "schemas/v1/support-processes/support-goal.schema.json",
+        "tests/schema_validation/test_issue_18_need_goal_contracts.py"
+      ]
+    },
+    {
+      "criterion_id": "needs_goals.031",
+      "group": "needs_goals",
+      "status": "pass",
+      "statement": "no universal progress/compliance score is introduced.",
+      "evidence": [
+        "schemas/v1/support-processes/support-need.schema.json",
+        "schemas/v1/support-processes/support-goal.schema.json",
+        "tests/schema_validation/test_issue_18_need_goal_contracts.py"
+      ]
+    },
+    {
+      "criterion_id": "support_intervention_planning.032",
+      "group": "support_intervention_planning",
+      "status": "pass",
+      "statement": "Support vs. Intervention distinction is explicit.",
+      "evidence": [
+        "schemas/v1/support-processes/planned-schedule.schema.json",
+        "schemas/v1/support-processes/support.schema.json",
+        "schemas/v1/support-processes/intervention.schema.json",
+        "tests/schema_validation/test_issue_18_support_intervention_contracts.py"
+      ]
+    },
+    {
+      "criterion_id": "support_intervention_planning.033",
+      "group": "support_intervention_planning",
+      "status": "pass",
+      "statement": "separate-schema vs. discriminated-shared-schema decision is justified.",
+      "evidence": [
+        "schemas/v1/support-processes/planned-schedule.schema.json",
+        "schemas/v1/support-processes/support.schema.json",
+        "schemas/v1/support-processes/intervention.schema.json",
+        "tests/schema_validation/test_issue_18_support_intervention_contracts.py"
+      ]
+    },
+    {
+      "criterion_id": "support_intervention_planning.034",
+      "group": "support_intervention_planning",
+      "status": "pass",
+      "statement": "recipients/targets are explicit.",
+      "evidence": [
+        "schemas/v1/support-processes/planned-schedule.schema.json",
+        "schemas/v1/support-processes/support.schema.json",
+        "schemas/v1/support-processes/intervention.schema.json",
+        "tests/schema_validation/test_issue_18_support_intervention_contracts.py"
+      ]
+    },
+    {
+      "criterion_id": "support_intervention_planning.035",
+      "group": "support_intervention_planning",
+      "status": "pass",
+      "statement": "providers are explicit where applicable.",
+      "evidence": [
+        "schemas/v1/support-processes/planned-schedule.schema.json",
+        "schemas/v1/support-processes/support.schema.json",
+        "schemas/v1/support-processes/intervention.schema.json",
+        "tests/schema_validation/test_issue_18_support_intervention_contracts.py"
+      ]
+    },
+    {
+      "criterion_id": "support_intervention_planning.036",
+      "group": "support_intervention_planning",
+      "status": "pass",
+      "statement": "provider is distinct from recorder.",
+      "evidence": [
+        "schemas/v1/support-processes/planned-schedule.schema.json",
+        "schemas/v1/support-processes/support.schema.json",
+        "schemas/v1/support-processes/intervention.schema.json",
+        "tests/schema_validation/test_issue_18_support_intervention_contracts.py"
+      ]
+    },
+    {
+      "criterion_id": "support_intervention_planning.037",
+      "group": "support_intervention_planning",
+      "status": "pass",
+      "statement": "participant membership does not imply provider/recipient role.",
+      "evidence": [
+        "schemas/v1/support-processes/planned-schedule.schema.json",
+        "schemas/v1/support-processes/support.schema.json",
+        "schemas/v1/support-processes/intervention.schema.json",
+        "tests/schema_validation/test_issue_18_support_intervention_contracts.py"
+      ]
+    },
+    {
+      "criterion_id": "support_intervention_planning.038",
+      "group": "support_intervention_planning",
+      "status": "pass",
+      "statement": "provider identity does not establish authorization.",
+      "evidence": [
+        "schemas/v1/support-processes/planned-schedule.schema.json",
+        "schemas/v1/support-processes/support.schema.json",
+        "schemas/v1/support-processes/intervention.schema.json",
+        "tests/schema_validation/test_issue_18_support_intervention_contracts.py"
+      ]
+    },
+    {
+      "criterion_id": "support_intervention_planning.039",
+      "group": "support_intervention_planning",
+      "status": "pass",
+      "statement": "planned cadence/frequency is representable.",
+      "evidence": [
+        "schemas/v1/support-processes/planned-schedule.schema.json",
+        "schemas/v1/support-processes/support.schema.json",
+        "schemas/v1/support-processes/intervention.schema.json",
+        "tests/schema_validation/test_issue_18_support_intervention_contracts.py"
+      ]
+    },
+    {
+      "criterion_id": "support_intervention_planning.040",
+      "group": "support_intervention_planning",
+      "status": "pass",
+      "statement": "planned duration is representable.",
+      "evidence": [
+        "schemas/v1/support-processes/planned-schedule.schema.json",
+        "schemas/v1/support-processes/support.schema.json",
+        "schemas/v1/support-processes/intervention.schema.json",
+        "tests/schema_validation/test_issue_18_support_intervention_contracts.py"
+      ]
+    },
+    {
+      "criterion_id": "support_intervention_planning.041",
+      "group": "support_intervention_planning",
+      "status": "pass",
+      "statement": "`as_needed` or non-fixed cadence can be represented honestly.",
+      "evidence": [
+        "schemas/v1/support-processes/planned-schedule.schema.json",
+        "schemas/v1/support-processes/support.schema.json",
+        "schemas/v1/support-processes/intervention.schema.json",
+        "tests/schema_validation/test_issue_18_support_intervention_contracts.py"
+      ]
+    },
+    {
+      "criterion_id": "support_intervention_planning.042",
+      "group": "support_intervention_planning",
+      "status": "pass",
+      "statement": "planned dosage is distinct from actual implementation.",
+      "evidence": [
+        "schemas/v1/support-processes/planned-schedule.schema.json",
+        "schemas/v1/support-processes/support.schema.json",
+        "schemas/v1/support-processes/intervention.schema.json",
+        "tests/schema_validation/test_issue_18_support_intervention_contracts.py"
+      ]
+    },
+    {
+      "criterion_id": "support_intervention_planning.043",
+      "group": "support_intervention_planning",
+      "status": "pass",
+      "statement": "no authoritative mutable \u201ctimes delivered\u201d counter substitutes for Implementation records.",
+      "evidence": [
+        "schemas/v1/support-processes/planned-schedule.schema.json",
+        "schemas/v1/support-processes/support.schema.json",
+        "schemas/v1/support-processes/intervention.schema.json",
+        "tests/schema_validation/test_issue_18_support_intervention_contracts.py"
+      ]
+    },
+    {
+      "criterion_id": "support_intervention_planning.044",
+      "group": "support_intervention_planning",
+      "status": "pass",
+      "statement": "plan states exclude effectiveness/compliance labels.",
+      "evidence": [
+        "schemas/v1/support-processes/planned-schedule.schema.json",
+        "schemas/v1/support-processes/support.schema.json",
+        "schemas/v1/support-processes/intervention.schema.json",
+        "tests/schema_validation/test_issue_18_support_intervention_contracts.py"
+      ]
+    },
+    {
+      "criterion_id": "support_intervention_planning.045",
+      "group": "support_intervention_planning",
+      "status": "pass",
+      "statement": "material plan changes preserve history.",
+      "evidence": [
+        "schemas/v1/support-processes/planned-schedule.schema.json",
+        "schemas/v1/support-processes/support.schema.json",
+        "schemas/v1/support-processes/intervention.schema.json",
+        "tests/schema_validation/test_issue_18_support_intervention_contracts.py"
+      ]
+    },
+    {
+      "criterion_id": "implementation.046",
+      "group": "implementation",
+      "status": "pass",
+      "statement": "Implementation has durable opaque identity.",
+      "evidence": [
+        "schemas/v1/support-processes/implementation.schema.json",
+        "tests/schema_validation/test_issue_18_implementation_contract.py"
+      ]
+    },
+    {
+      "criterion_id": "implementation.047",
+      "group": "implementation",
+      "status": "pass",
+      "statement": "one Implementation represents one bounded occurrence/interval.",
+      "evidence": [
+        "schemas/v1/support-processes/implementation.schema.json",
+        "tests/schema_validation/test_issue_18_implementation_contract.py"
+      ]
+    },
+    {
+      "criterion_id": "implementation.048",
+      "group": "implementation",
+      "status": "pass",
+      "statement": "exact plan linkage is required.",
+      "evidence": [
+        "schemas/v1/support-processes/implementation.schema.json",
+        "tests/schema_validation/test_issue_18_implementation_contract.py"
+      ]
+    },
+    {
+      "criterion_id": "implementation.049",
+      "group": "implementation",
+      "status": "pass",
+      "statement": "actual provider is represented separately from recorder.",
+      "evidence": [
+        "schemas/v1/support-processes/implementation.schema.json",
+        "tests/schema_validation/test_issue_18_implementation_contract.py"
+      ]
+    },
+    {
+      "criterion_id": "implementation.050",
+      "group": "implementation",
+      "status": "pass",
+      "statement": "actual recipient/target is explicit.",
+      "evidence": [
+        "schemas/v1/support-processes/implementation.schema.json",
+        "tests/schema_validation/test_issue_18_implementation_contract.py"
+      ]
+    },
+    {
+      "criterion_id": "implementation.051",
+      "group": "implementation",
+      "status": "pass",
+      "statement": "occurrence chronology is validated.",
+      "evidence": [
+        "schemas/v1/support-processes/implementation.schema.json",
+        "tests/schema_validation/test_issue_18_implementation_contract.py"
+      ]
+    },
+    {
+      "criterion_id": "implementation.052",
+      "group": "implementation",
+      "status": "pass",
+      "statement": "neutral execution state is defined.",
+      "evidence": [
+        "schemas/v1/support-processes/implementation.schema.json",
+        "tests/schema_validation/test_issue_18_implementation_contract.py"
+      ]
+    },
+    {
+      "criterion_id": "implementation.053",
+      "group": "implementation",
+      "status": "pass",
+      "statement": "repeated occurrences remain separate records.",
+      "evidence": [
+        "schemas/v1/support-processes/implementation.schema.json",
+        "tests/schema_validation/test_issue_18_implementation_contract.py"
+      ]
+    },
+    {
+      "criterion_id": "implementation.054",
+      "group": "implementation",
+      "status": "pass",
+      "statement": "scheduled/reminder entries do not fabricate Implementation.",
+      "evidence": [
+        "schemas/v1/support-processes/implementation.schema.json",
+        "tests/schema_validation/test_issue_18_implementation_contract.py"
+      ]
+    },
+    {
+      "criterion_id": "implementation.055",
+      "group": "implementation",
+      "status": "pass",
+      "statement": "Communication does not fabricate Implementation.",
+      "evidence": [
+        "schemas/v1/support-processes/implementation.schema.json",
+        "tests/schema_validation/test_issue_18_implementation_contract.py"
+      ]
+    },
+    {
+      "criterion_id": "implementation.056",
+      "group": "implementation",
+      "status": "pass",
+      "statement": "Response handoff does not fabricate Implementation.",
+      "evidence": [
+        "schemas/v1/support-processes/implementation.schema.json",
+        "tests/schema_validation/test_issue_18_implementation_contract.py"
+      ]
+    },
+    {
+      "criterion_id": "implementation.057",
+      "group": "implementation",
+      "status": "pass",
+      "statement": "implementation-local variation is distinct from material plan adaptation.",
+      "evidence": [
+        "schemas/v1/support-processes/implementation.schema.json",
+        "tests/schema_validation/test_issue_18_implementation_contract.py"
+      ]
+    },
+    {
+      "criterion_id": "implementation.058",
+      "group": "implementation",
+      "status": "pass",
+      "statement": "Implementation does not contain effectiveness/Outcome.",
+      "evidence": [
+        "schemas/v1/support-processes/implementation.schema.json",
+        "tests/schema_validation/test_issue_18_implementation_contract.py"
+      ]
+    },
+    {
+      "criterion_id": "adaptation_correction.059",
+      "group": "adaptation_correction",
+      "status": "pass",
+      "statement": "one-off variation vs. material adaptation is defined.",
+      "evidence": [
+        "docs/decisions/0014-define-support-process-support-intervention-implementation-and-fidelity-contracts.md",
+        "tests/schema_validation/test_issue_18_support_intervention_contracts.py",
+        "tests/schema_validation/test_issue_18_implementation_contract.py"
+      ]
+    },
+    {
+      "criterion_id": "adaptation_correction.060",
+      "group": "adaptation_correction",
+      "status": "pass",
+      "statement": "whether `adaptation@1` is needed is explicitly decided.",
+      "evidence": [
+        "docs/decisions/0014-define-support-process-support-intervention-implementation-and-fidelity-contracts.md",
+        "tests/schema_validation/test_issue_18_support_intervention_contracts.py",
+        "tests/schema_validation/test_issue_18_implementation_contract.py"
+      ]
+    },
+    {
+      "criterion_id": "adaptation_correction.061",
+      "group": "adaptation_correction",
+      "status": "pass",
+      "statement": "material prospective plan change does not silently rewrite history.",
+      "evidence": [
+        "docs/decisions/0014-define-support-process-support-intervention-implementation-and-fidelity-contracts.md",
+        "tests/schema_validation/test_issue_18_support_intervention_contracts.py",
+        "tests/schema_validation/test_issue_18_implementation_contract.py"
+      ]
+    },
+    {
+      "criterion_id": "adaptation_correction.062",
+      "group": "adaptation_correction",
+      "status": "pass",
+      "statement": "correction and adaptation are not conflated.",
+      "evidence": [
+        "docs/decisions/0014-define-support-process-support-intervention-implementation-and-fidelity-contracts.md",
+        "tests/schema_validation/test_issue_18_support_intervention_contracts.py",
+        "tests/schema_validation/test_issue_18_implementation_contract.py"
+      ]
+    },
+    {
+      "criterion_id": "adaptation_correction.063",
+      "group": "adaptation_correction",
+      "status": "pass",
+      "statement": "successor topology is defined.",
+      "evidence": [
+        "docs/decisions/0014-define-support-process-support-intervention-implementation-and-fidelity-contracts.md",
+        "tests/schema_validation/test_issue_18_support_intervention_contracts.py",
+        "tests/schema_validation/test_issue_18_implementation_contract.py"
+      ]
+    },
+    {
+      "criterion_id": "adaptation_correction.064",
+      "group": "adaptation_correction",
+      "status": "pass",
+      "statement": "exact historical references never silently follow plan successors.",
+      "evidence": [
+        "docs/decisions/0014-define-support-process-support-intervention-implementation-and-fidelity-contracts.md",
+        "tests/schema_validation/test_issue_18_support_intervention_contracts.py",
+        "tests/schema_validation/test_issue_18_implementation_contract.py"
+      ]
+    },
+    {
+      "criterion_id": "fidelity.065",
+      "group": "fidelity",
+      "status": "pass",
+      "statement": "fidelity semantic unit is explicit.",
+      "evidence": [
+        "schemas/v1/support-processes/fidelity.schema.json",
+        "tests/schema_validation/test_issue_18_fidelity_contract.py"
+      ]
+    },
+    {
+      "criterion_id": "fidelity.066",
+      "group": "fidelity",
+      "status": "pass",
+      "statement": "evaluator is distinct from provider and recorder.",
+      "evidence": [
+        "schemas/v1/support-processes/fidelity.schema.json",
+        "tests/schema_validation/test_issue_18_fidelity_contract.py"
+      ]
+    },
+    {
+      "criterion_id": "fidelity.067",
+      "group": "fidelity",
+      "status": "pass",
+      "statement": "exact plan/Implementation scope is explicit.",
+      "evidence": [
+        "schemas/v1/support-processes/fidelity.schema.json",
+        "tests/schema_validation/test_issue_18_fidelity_contract.py"
+      ]
+    },
+    {
+      "criterion_id": "fidelity.068",
+      "group": "fidelity",
+      "status": "pass",
+      "statement": "basis/source is explicit.",
+      "evidence": [
+        "schemas/v1/support-processes/fidelity.schema.json",
+        "tests/schema_validation/test_issue_18_fidelity_contract.py"
+      ]
+    },
+    {
+      "criterion_id": "fidelity.069",
+      "group": "fidelity",
+      "status": "pass",
+      "statement": "unable-to-determine is representable.",
+      "evidence": [
+        "schemas/v1/support-processes/fidelity.schema.json",
+        "tests/schema_validation/test_issue_18_fidelity_contract.py"
+      ]
+    },
+    {
+      "criterion_id": "fidelity.070",
+      "group": "fidelity",
+      "status": "pass",
+      "statement": "instrument-defined numeric/scaled fidelity requires identified scale/version.",
+      "evidence": [
+        "schemas/v1/support-processes/fidelity.schema.json",
+        "tests/schema_validation/test_issue_18_fidelity_contract.py"
+      ]
+    },
+    {
+      "criterion_id": "fidelity.071",
+      "group": "fidelity",
+      "status": "pass",
+      "statement": "no universal fidelity score is invented.",
+      "evidence": [
+        "schemas/v1/support-processes/fidelity.schema.json",
+        "tests/schema_validation/test_issue_18_fidelity_contract.py"
+      ]
+    },
+    {
+      "criterion_id": "fidelity.072",
+      "group": "fidelity",
+      "status": "pass",
+      "statement": "fidelity is distinct from student compliance.",
+      "evidence": [
+        "schemas/v1/support-processes/fidelity.schema.json",
+        "tests/schema_validation/test_issue_18_fidelity_contract.py"
+      ]
+    },
+    {
+      "criterion_id": "fidelity.073",
+      "group": "fidelity",
+      "status": "pass",
+      "statement": "fidelity is distinct from provider competence.",
+      "evidence": [
+        "schemas/v1/support-processes/fidelity.schema.json",
+        "tests/schema_validation/test_issue_18_fidelity_contract.py"
+      ]
+    },
+    {
+      "criterion_id": "fidelity.074",
+      "group": "fidelity",
+      "status": "pass",
+      "statement": "fidelity is distinct from effectiveness and Outcome.",
+      "evidence": [
+        "schemas/v1/support-processes/fidelity.schema.json",
+        "tests/schema_validation/test_issue_18_fidelity_contract.py"
+      ]
+    },
+    {
+      "criterion_id": "fidelity.075",
+      "group": "fidelity",
+      "status": "pass",
+      "statement": "missing fidelity does not imply low fidelity.",
+      "evidence": [
+        "schemas/v1/support-processes/fidelity.schema.json",
+        "tests/schema_validation/test_issue_18_fidelity_contract.py"
+      ]
+    },
+    {
+      "criterion_id": "fidelity.076",
+      "group": "fidelity",
+      "status": "pass",
+      "statement": "high fidelity does not imply effectiveness.",
+      "evidence": [
+        "schemas/v1/support-processes/fidelity.schema.json",
+        "tests/schema_validation/test_issue_18_fidelity_contract.py"
+      ]
+    },
+    {
+      "criterion_id": "fidelity.077",
+      "group": "fidelity",
+      "status": "pass",
+      "statement": "implementation count does not imply fidelity.",
+      "evidence": [
+        "schemas/v1/support-processes/fidelity.schema.json",
+        "tests/schema_validation/test_issue_18_fidelity_contract.py"
+      ]
+    },
+    {
+      "criterion_id": "cross_event_fba.078",
+      "group": "cross_event_fba",
+      "status": "pass",
+      "statement": "Event-local `hypothesis@1` remains Event-local.",
+      "evidence": [
+        "docs/design/portia-support-process-support-intervention-implementation-fidelity-domain-models.md",
+        "docs/decisions/0014-define-support-process-support-intervention-implementation-and-fidelity-contracts.md"
+      ]
+    },
+    {
+      "criterion_id": "cross_event_fba.079",
+      "group": "cross_event_fba",
+      "status": "pass",
+      "statement": "Support Process may reference exact Event hypotheses without automatic aggregation.",
+      "evidence": [
+        "docs/design/portia-support-process-support-intervention-implementation-fidelity-domain-models.md",
+        "docs/decisions/0014-define-support-process-support-intervention-implementation-and-fidelity-contracts.md"
+      ]
+    },
+    {
+      "criterion_id": "cross_event_fba.080",
+      "group": "cross_event_fba",
+      "status": "pass",
+      "statement": "formal FBA is not fabricated.",
+      "evidence": [
+        "docs/design/portia-support-process-support-intervention-implementation-fidelity-domain-models.md",
+        "docs/decisions/0014-define-support-process-support-intervention-implementation-and-fidelity-contracts.md"
+      ]
+    },
+    {
+      "criterion_id": "cross_event_fba.081",
+      "group": "cross_event_fba",
+      "status": "pass",
+      "statement": "whether a Support Process-local hypothesis is needed is explicitly decided.",
+      "evidence": [
+        "docs/design/portia-support-process-support-intervention-implementation-fidelity-domain-models.md",
+        "docs/decisions/0014-define-support-process-support-intervention-implementation-and-fidelity-contracts.md"
+      ]
+    },
+    {
+      "criterion_id": "cross_event_fba.082",
+      "group": "cross_event_fba",
+      "status": "pass",
+      "statement": "no automatic Hypothesis \u2192 Intervention selection exists.",
+      "evidence": [
+        "docs/design/portia-support-process-support-intervention-implementation-fidelity-domain-models.md",
+        "docs/decisions/0014-define-support-process-support-intervention-implementation-and-fidelity-contracts.md"
+      ]
+    },
+    {
+      "criterion_id": "communication_integration.083",
+      "group": "communication_integration",
+      "status": "pass",
+      "statement": "valid Support Process-owned Communication becomes current-use eligible through owner resolution.",
+      "evidence": [
+        "tests/schema_validation/fixtures/issue-18/cross-record/support-process-communication.json",
+        "tests/schema_validation/test_issue_18_shared_infrastructure_integration.py",
+        "docs/design/portia-response-and-communication-domain-models.md"
+      ]
+    },
+    {
+      "criterion_id": "communication_integration.084",
+      "group": "communication_integration",
+      "status": "pass",
+      "statement": "Communication wire semantics are not broadened unnecessarily.",
+      "evidence": [
+        "tests/schema_validation/fixtures/issue-18/cross-record/support-process-communication.json",
+        "tests/schema_validation/test_issue_18_shared_infrastructure_integration.py",
+        "docs/design/portia-response-and-communication-domain-models.md"
+      ]
+    },
+    {
+      "criterion_id": "communication_integration.085",
+      "group": "communication_integration",
+      "status": "pass",
+      "statement": "support coordination Communication remains distinct from Support/Implementation.",
+      "evidence": [
+        "tests/schema_validation/fixtures/issue-18/cross-record/support-process-communication.json",
+        "tests/schema_validation/test_issue_18_shared_infrastructure_integration.py",
+        "docs/design/portia-response-and-communication-domain-models.md"
+      ]
+    },
+    {
+      "criterion_id": "communication_integration.086",
+      "group": "communication_integration",
+      "status": "pass",
+      "statement": "Determination/Response/Communication links use exact typed references.",
+      "evidence": [
+        "tests/schema_validation/fixtures/issue-18/cross-record/support-process-communication.json",
+        "tests/schema_validation/test_issue_18_shared_infrastructure_integration.py",
+        "docs/design/portia-response-and-communication-domain-models.md"
+      ]
+    },
+    {
+      "criterion_id": "communication_integration.087",
+      "group": "communication_integration",
+      "status": "pass",
+      "statement": "several linked records do not become automatic evidence of success/need/cause.",
+      "evidence": [
+        "tests/schema_validation/fixtures/issue-18/cross-record/support-process-communication.json",
+        "tests/schema_validation/test_issue_18_shared_infrastructure_integration.py",
+        "docs/design/portia-response-and-communication-domain-models.md"
+      ]
+    },
+    {
+      "criterion_id": "lifecycle_cross_year_shared.088",
+      "group": "lifecycle_cross_year_shared",
+      "status": "pass",
+      "statement": "lifecycle/reason vocabularies are defined for each new family where needed.",
+      "evidence": [
+        "tests/schema_validation/test_issue_18_shared_infrastructure_integration.py",
+        "tests/schema_validation/fixtures/issue-18/cross-record/shared-infrastructure-scenarios.json",
+        "docs/decisions/0014-define-support-process-support-intervention-implementation-and-fidelity-contracts.md"
+      ]
+    },
+    {
+      "criterion_id": "lifecycle_cross_year_shared.089",
+      "group": "lifecycle_cross_year_shared",
+      "status": "pass",
+      "statement": "Amendment policy is explicit for each family.",
+      "evidence": [
+        "tests/schema_validation/test_issue_18_shared_infrastructure_integration.py",
+        "tests/schema_validation/fixtures/issue-18/cross-record/shared-infrastructure-scenarios.json",
+        "docs/decisions/0014-define-support-process-support-intervention-implementation-and-fidelity-contracts.md"
+      ]
+    },
+    {
+      "criterion_id": "lifecycle_cross_year_shared.090",
+      "group": "lifecycle_cross_year_shared",
+      "status": "pass",
+      "statement": "Statement of Disagreement behavior is defined.",
+      "evidence": [
+        "tests/schema_validation/test_issue_18_shared_infrastructure_integration.py",
+        "tests/schema_validation/fixtures/issue-18/cross-record/shared-infrastructure-scenarios.json",
+        "docs/decisions/0014-define-support-process-support-intervention-implementation-and-fidelity-contracts.md"
+      ]
+    },
+    {
+      "criterion_id": "lifecycle_cross_year_shared.091",
+      "group": "lifecycle_cross_year_shared",
+      "status": "pass",
+      "statement": "migration/removal compatibility is demonstrated.",
+      "evidence": [
+        "tests/schema_validation/test_issue_18_shared_infrastructure_integration.py",
+        "tests/schema_validation/fixtures/issue-18/cross-record/shared-infrastructure-scenarios.json",
+        "docs/decisions/0014-define-support-process-support-intervention-implementation-and-fidelity-contracts.md"
+      ]
+    },
+    {
+      "criterion_id": "lifecycle_cross_year_shared.092",
+      "group": "lifecycle_cross_year_shared",
+      "status": "pass",
+      "statement": "operation/lock/Quarantine/Integrity Finding reuse is demonstrated.",
+      "evidence": [
+        "tests/schema_validation/test_issue_18_shared_infrastructure_integration.py",
+        "tests/schema_validation/fixtures/issue-18/cross-record/shared-infrastructure-scenarios.json",
+        "docs/decisions/0014-define-support-process-support-intervention-implementation-and-fidelity-contracts.md"
+      ]
+    },
+    {
+      "criterion_id": "lifecycle_cross_year_shared.093",
+      "group": "lifecycle_cross_year_shared",
+      "status": "pass",
+      "statement": "derived state remains rebuildable and nonauthoritative.",
+      "evidence": [
+        "tests/schema_validation/test_issue_18_shared_infrastructure_integration.py",
+        "tests/schema_validation/fixtures/issue-18/cross-record/shared-infrastructure-scenarios.json",
+        "docs/decisions/0014-define-support-process-support-intervention-implementation-and-fidelity-contracts.md"
+      ]
+    },
+    {
+      "criterion_id": "lifecycle_cross_year_shared.094",
+      "group": "lifecycle_cross_year_shared",
+      "status": "pass",
+      "statement": "derived state is privacy-minimized.",
+      "evidence": [
+        "tests/schema_validation/test_issue_18_shared_infrastructure_integration.py",
+        "tests/schema_validation/fixtures/issue-18/cross-record/shared-infrastructure-scenarios.json",
+        "docs/decisions/0014-define-support-process-support-intervention-implementation-and-fidelity-contracts.md"
+      ]
+    },
+    {
+      "criterion_id": "lifecycle_cross_year_shared.095",
+      "group": "lifecycle_cross_year_shared",
+      "status": "pass",
+      "statement": "cross-year successor Support Process semantics are explicit.",
+      "evidence": [
+        "tests/schema_validation/test_issue_18_shared_infrastructure_integration.py",
+        "tests/schema_validation/fixtures/issue-18/cross-record/shared-infrastructure-scenarios.json",
+        "docs/decisions/0014-define-support-process-support-intervention-implementation-and-fidelity-contracts.md"
+      ]
+    },
+    {
+      "criterion_id": "lifecycle_cross_year_shared.096",
+      "group": "lifecycle_cross_year_shared",
+      "status": "pass",
+      "statement": "predecessor/successor exact links are preserved.",
+      "evidence": [
+        "tests/schema_validation/test_issue_18_shared_infrastructure_integration.py",
+        "tests/schema_validation/fixtures/issue-18/cross-record/shared-infrastructure-scenarios.json",
+        "docs/decisions/0014-define-support-process-support-intervention-implementation-and-fidelity-contracts.md"
+      ]
+    },
+    {
+      "criterion_id": "lifecycle_cross_year_shared.097",
+      "group": "lifecycle_cross_year_shared",
+      "status": "pass",
+      "statement": "cross-year continuation is distinct from migration and ownership correction.",
+      "evidence": [
+        "tests/schema_validation/test_issue_18_shared_infrastructure_integration.py",
+        "tests/schema_validation/fixtures/issue-18/cross-record/shared-infrastructure-scenarios.json",
+        "docs/decisions/0014-define-support-process-support-intervention-implementation-and-fidelity-contracts.md"
+      ]
+    },
+    {
+      "criterion_id": "lifecycle_cross_year_shared.098",
+      "group": "lifecycle_cross_year_shared",
+      "status": "pass",
+      "statement": "old exact references do not silently retarget to the successor.",
+      "evidence": [
+        "tests/schema_validation/test_issue_18_shared_infrastructure_integration.py",
+        "tests/schema_validation/fixtures/issue-18/cross-record/shared-infrastructure-scenarios.json",
+        "docs/decisions/0014-define-support-process-support-intervention-implementation-and-fidelity-contracts.md"
+      ]
+    },
+    {
+      "criterion_id": "lifecycle_cross_year_shared.099",
+      "group": "lifecycle_cross_year_shared",
+      "status": "pass",
+      "statement": "Core year closure does not automatically close/migrate a Support Process.",
+      "evidence": [
+        "tests/schema_validation/test_issue_18_shared_infrastructure_integration.py",
+        "tests/schema_validation/fixtures/issue-18/cross-record/shared-infrastructure-scenarios.json",
+        "docs/decisions/0014-define-support-process-support-intervention-implementation-and-fidelity-contracts.md"
+      ]
+    },
+    {
+      "criterion_id": "paper_privacy_automation_core.100",
+      "group": "paper_privacy_automation_core",
+      "status": "pass",
+      "statement": "paper preallocation does not fabricate plan/Implementation/Fidelity.",
+      "evidence": [
+        "tests/schema_validation/test_issue_18_shared_infrastructure_integration.py",
+        "docs/design/portia-support-process-support-intervention-implementation-fidelity-domain-models.md",
+        "docs/decisions/0014-define-support-process-support-intervention-implementation-and-fidelity-contracts.md"
+      ]
+    },
+    {
+      "criterion_id": "paper_privacy_automation_core.101",
+      "group": "paper_privacy_automation_core",
+      "status": "pass",
+      "statement": "import uncertainty can be represented honestly.",
+      "evidence": [
+        "tests/schema_validation/test_issue_18_shared_infrastructure_integration.py",
+        "docs/design/portia-support-process-support-intervention-implementation-fidelity-domain-models.md",
+        "docs/decisions/0014-define-support-process-support-intervention-implementation-and-fidelity-contracts.md"
+      ]
+    },
+    {
+      "criterion_id": "paper_privacy_automation_core.102",
+      "group": "paper_privacy_automation_core",
+      "status": "pass",
+      "statement": "sensitive support narrative is minimized.",
+      "evidence": [
+        "tests/schema_validation/test_issue_18_shared_infrastructure_integration.py",
+        "docs/design/portia-support-process-support-intervention-implementation-fidelity-domain-models.md",
+        "docs/decisions/0014-define-support-process-support-intervention-implementation-and-fidelity-contracts.md"
+      ]
+    },
+    {
+      "criterion_id": "paper_privacy_automation_core.103",
+      "group": "paper_privacy_automation_core",
+      "status": "pass",
+      "statement": "no diagnosis/eligibility/authorization is inferred.",
+      "evidence": [
+        "tests/schema_validation/test_issue_18_shared_infrastructure_integration.py",
+        "docs/design/portia-support-process-support-intervention-implementation-fidelity-domain-models.md",
+        "docs/decisions/0014-define-support-process-support-intervention-implementation-and-fidelity-contracts.md"
+      ]
+    },
+    {
+      "criterion_id": "paper_privacy_automation_core.104",
+      "group": "paper_privacy_automation_core",
+      "status": "pass",
+      "statement": "no automatic intervention recommendation/escalation is introduced.",
+      "evidence": [
+        "tests/schema_validation/test_issue_18_shared_infrastructure_integration.py",
+        "docs/design/portia-support-process-support-intervention-implementation-fidelity-domain-models.md",
+        "docs/decisions/0014-define-support-process-support-intervention-implementation-and-fidelity-contracts.md"
+      ]
+    },
+    {
+      "criterion_id": "paper_privacy_automation_core.105",
+      "group": "paper_privacy_automation_core",
+      "status": "pass",
+      "statement": "no automatic compliance/engagement/fidelity/effectiveness inference is introduced.",
+      "evidence": [
+        "tests/schema_validation/test_issue_18_shared_infrastructure_integration.py",
+        "docs/design/portia-support-process-support-intervention-implementation-fidelity-domain-models.md",
+        "docs/decisions/0014-define-support-process-support-intervention-implementation-and-fidelity-contracts.md"
+      ]
+    },
+    {
+      "criterion_id": "paper_privacy_automation_core.106",
+      "group": "paper_privacy_automation_core",
+      "status": "pass",
+      "statement": "no automatic process completion from dates is introduced.",
+      "evidence": [
+        "tests/schema_validation/test_issue_18_shared_infrastructure_integration.py",
+        "docs/design/portia-support-process-support-intervention-implementation-fidelity-domain-models.md",
+        "docs/decisions/0014-define-support-process-support-intervention-implementation-and-fidelity-contracts.md"
+      ]
+    },
+    {
+      "criterion_id": "paper_privacy_automation_core.107",
+      "group": "paper_privacy_automation_core",
+      "status": "pass",
+      "statement": "Core v0.6 `intervention_record_set` compatibility is considered.",
+      "evidence": [
+        "tests/schema_validation/test_issue_18_shared_infrastructure_integration.py",
+        "docs/design/portia-support-process-support-intervention-implementation-fidelity-domain-models.md",
+        "docs/decisions/0014-define-support-process-support-intervention-implementation-and-fidelity-contracts.md"
+      ]
+    },
+    {
+      "criterion_id": "paper_privacy_automation_core.108",
+      "group": "paper_privacy_automation_core",
+      "status": "pass",
+      "statement": "#18 does not implement academic-result or Grade semantics.",
+      "evidence": [
+        "tests/schema_validation/test_issue_18_shared_infrastructure_integration.py",
+        "docs/design/portia-support-process-support-intervention-implementation-fidelity-domain-models.md",
+        "docs/decisions/0014-define-support-process-support-intervention-implementation-and-fidelity-contracts.md"
+      ]
+    },
+    {
+      "criterion_id": "paper_privacy_automation_core.109",
+      "group": "paper_privacy_automation_core",
+      "status": "pass",
+      "statement": "#18 does not automatically publish intervention data.",
+      "evidence": [
+        "tests/schema_validation/test_issue_18_shared_infrastructure_integration.py",
+        "docs/design/portia-support-process-support-intervention-implementation-fidelity-domain-models.md",
+        "docs/decisions/0014-define-support-process-support-intervention-implementation-and-fidelity-contracts.md"
+      ]
+    },
+    {
+      "criterion_id": "paper_privacy_automation_core.110",
+      "group": "paper_privacy_automation_core",
+      "status": "pass",
+      "statement": "future publication remains a privacy-minimized projection over Portia-native authority.",
+      "evidence": [
+        "tests/schema_validation/test_issue_18_shared_infrastructure_integration.py",
+        "docs/design/portia-support-process-support-intervention-implementation-fidelity-domain-models.md",
+        "docs/decisions/0014-define-support-process-support-intervention-implementation-and-fidelity-contracts.md"
+      ]
+    },
+    {
+      "criterion_id": "schemas_tests_docs.111",
+      "group": "schemas_tests_docs",
+      "status": "pass",
+      "statement": "all required public Draft 2020-12 schemas are added.",
+      "evidence": [
+        "schemas/schema-catalog.json",
+        "docs/examples/portia-support-process-support-intervention-implementation-fidelity-examples.md",
+        "docs/validation/issue-18-application-invalid-matrix.json",
+        "docs/validation/issue-18-support-process-support-intervention-implementation-fidelity-validation.md",
+        "tests/schema_validation/test_issue_18_final_documentation.py",
+        "README.md",
+        "schemas/README.md"
+      ]
+    },
+    {
+      "criterion_id": "schemas_tests_docs.112",
+      "group": "schemas_tests_docs",
+      "status": "pass",
+      "statement": "schema catalog is updated.",
+      "evidence": [
+        "schemas/schema-catalog.json",
+        "docs/examples/portia-support-process-support-intervention-implementation-fidelity-examples.md",
+        "docs/validation/issue-18-application-invalid-matrix.json",
+        "docs/validation/issue-18-support-process-support-intervention-implementation-fidelity-validation.md",
+        "tests/schema_validation/test_issue_18_final_documentation.py",
+        "README.md",
+        "schemas/README.md"
+      ]
+    },
+    {
+      "criterion_id": "schemas_tests_docs.113",
+      "group": "schemas_tests_docs",
+      "status": "pass",
+      "statement": "valid fixtures are complete.",
+      "evidence": [
+        "schemas/schema-catalog.json",
+        "docs/examples/portia-support-process-support-intervention-implementation-fidelity-examples.md",
+        "docs/validation/issue-18-application-invalid-matrix.json",
+        "docs/validation/issue-18-support-process-support-intervention-implementation-fidelity-validation.md",
+        "tests/schema_validation/test_issue_18_final_documentation.py",
+        "README.md",
+        "schemas/README.md"
+      ]
+    },
+    {
+      "criterion_id": "schemas_tests_docs.114",
+      "group": "schemas_tests_docs",
+      "status": "pass",
+      "statement": "structural-invalid fixtures are complete.",
+      "evidence": [
+        "schemas/schema-catalog.json",
+        "docs/examples/portia-support-process-support-intervention-implementation-fidelity-examples.md",
+        "docs/validation/issue-18-application-invalid-matrix.json",
+        "docs/validation/issue-18-support-process-support-intervention-implementation-fidelity-validation.md",
+        "tests/schema_validation/test_issue_18_final_documentation.py",
+        "README.md",
+        "schemas/README.md"
+      ]
+    },
+    {
+      "criterion_id": "schemas_tests_docs.115",
+      "group": "schemas_tests_docs",
+      "status": "pass",
+      "statement": "application-invalid fixtures are complete.",
+      "evidence": [
+        "schemas/schema-catalog.json",
+        "docs/examples/portia-support-process-support-intervention-implementation-fidelity-examples.md",
+        "docs/validation/issue-18-application-invalid-matrix.json",
+        "docs/validation/issue-18-support-process-support-intervention-implementation-fidelity-validation.md",
+        "tests/schema_validation/test_issue_18_final_documentation.py",
+        "README.md",
+        "schemas/README.md"
+      ]
+    },
+    {
+      "criterion_id": "schemas_tests_docs.116",
+      "group": "schemas_tests_docs",
+      "status": "pass",
+      "statement": "cross-record/shared-infrastructure tests pass.",
+      "evidence": [
+        "schemas/schema-catalog.json",
+        "docs/examples/portia-support-process-support-intervention-implementation-fidelity-examples.md",
+        "docs/validation/issue-18-application-invalid-matrix.json",
+        "docs/validation/issue-18-support-process-support-intervention-implementation-fidelity-validation.md",
+        "tests/schema_validation/test_issue_18_final_documentation.py",
+        "README.md",
+        "schemas/README.md"
+      ]
+    },
+    {
+      "criterion_id": "schemas_tests_docs.117",
+      "group": "schemas_tests_docs",
+      "status": "pass",
+      "statement": "Support Process-owned Communication integration is tested.",
+      "evidence": [
+        "schemas/schema-catalog.json",
+        "docs/examples/portia-support-process-support-intervention-implementation-fidelity-examples.md",
+        "docs/validation/issue-18-application-invalid-matrix.json",
+        "docs/validation/issue-18-support-process-support-intervention-implementation-fidelity-validation.md",
+        "tests/schema_validation/test_issue_18_final_documentation.py",
+        "README.md",
+        "schemas/README.md"
+      ]
+    },
+    {
+      "criterion_id": "schemas_tests_docs.118",
+      "group": "schemas_tests_docs",
+      "status": "pass",
+      "statement": "existing schema-validation tests remain green.",
+      "evidence": [
+        "schemas/schema-catalog.json",
+        "docs/examples/portia-support-process-support-intervention-implementation-fidelity-examples.md",
+        "docs/validation/issue-18-application-invalid-matrix.json",
+        "docs/validation/issue-18-support-process-support-intervention-implementation-fidelity-validation.md",
+        "tests/schema_validation/test_issue_18_final_documentation.py",
+        "README.md",
+        "schemas/README.md"
+      ]
+    },
+    {
+      "criterion_id": "schemas_tests_docs.119",
+      "group": "schemas_tests_docs",
+      "status": "pass",
+      "statement": "full `tests/schema_validation` discovery passes.",
+      "evidence": [
+        "schemas/schema-catalog.json",
+        "docs/examples/portia-support-process-support-intervention-implementation-fidelity-examples.md",
+        "docs/validation/issue-18-application-invalid-matrix.json",
+        "docs/validation/issue-18-support-process-support-intervention-implementation-fidelity-validation.md",
+        "tests/schema_validation/test_issue_18_final_documentation.py",
+        "README.md",
+        "schemas/README.md"
+      ]
+    },
+    {
+      "criterion_id": "schemas_tests_docs.120",
+      "group": "schemas_tests_docs",
+      "status": "pass",
+      "statement": "`git diff --check` passes.",
+      "evidence": [
+        "schemas/schema-catalog.json",
+        "docs/examples/portia-support-process-support-intervention-implementation-fidelity-examples.md",
+        "docs/validation/issue-18-application-invalid-matrix.json",
+        "docs/validation/issue-18-support-process-support-intervention-implementation-fidelity-validation.md",
+        "tests/schema_validation/test_issue_18_final_documentation.py",
+        "README.md",
+        "schemas/README.md"
+      ]
+    },
+    {
+      "criterion_id": "schemas_tests_docs.121",
+      "group": "schemas_tests_docs",
+      "status": "pass",
+      "statement": "design document is complete.",
+      "evidence": [
+        "schemas/schema-catalog.json",
+        "docs/examples/portia-support-process-support-intervention-implementation-fidelity-examples.md",
+        "docs/validation/issue-18-application-invalid-matrix.json",
+        "docs/validation/issue-18-support-process-support-intervention-implementation-fidelity-validation.md",
+        "tests/schema_validation/test_issue_18_final_documentation.py",
+        "README.md",
+        "schemas/README.md"
+      ]
+    },
+    {
+      "criterion_id": "schemas_tests_docs.122",
+      "group": "schemas_tests_docs",
+      "status": "pass",
+      "statement": "ADR is accepted.",
+      "evidence": [
+        "schemas/schema-catalog.json",
+        "docs/examples/portia-support-process-support-intervention-implementation-fidelity-examples.md",
+        "docs/validation/issue-18-application-invalid-matrix.json",
+        "docs/validation/issue-18-support-process-support-intervention-implementation-fidelity-validation.md",
+        "tests/schema_validation/test_issue_18_final_documentation.py",
+        "README.md",
+        "schemas/README.md"
+      ]
+    },
+    {
+      "criterion_id": "schemas_tests_docs.123",
+      "group": "schemas_tests_docs",
+      "status": "pass",
+      "statement": "at least 40 synthetic examples are documented.",
+      "evidence": [
+        "schemas/schema-catalog.json",
+        "docs/examples/portia-support-process-support-intervention-implementation-fidelity-examples.md",
+        "docs/validation/issue-18-application-invalid-matrix.json",
+        "docs/validation/issue-18-support-process-support-intervention-implementation-fidelity-validation.md",
+        "tests/schema_validation/test_issue_18_final_documentation.py",
+        "README.md",
+        "schemas/README.md"
+      ]
+    },
+    {
+      "criterion_id": "schemas_tests_docs.124",
+      "group": "schemas_tests_docs",
+      "status": "pass",
+      "statement": "application-invalid matrix is complete.",
+      "evidence": [
+        "schemas/schema-catalog.json",
+        "docs/examples/portia-support-process-support-intervention-implementation-fidelity-examples.md",
+        "docs/validation/issue-18-application-invalid-matrix.json",
+        "docs/validation/issue-18-support-process-support-intervention-implementation-fidelity-validation.md",
+        "tests/schema_validation/test_issue_18_final_documentation.py",
+        "README.md",
+        "schemas/README.md"
+      ]
+    },
+    {
+      "criterion_id": "schemas_tests_docs.125",
+      "group": "schemas_tests_docs",
+      "status": "pass",
+      "statement": "acceptance matrix is complete.",
+      "evidence": [
+        "schemas/schema-catalog.json",
+        "docs/examples/portia-support-process-support-intervention-implementation-fidelity-examples.md",
+        "docs/validation/issue-18-application-invalid-matrix.json",
+        "docs/validation/issue-18-support-process-support-intervention-implementation-fidelity-validation.md",
+        "tests/schema_validation/test_issue_18_final_documentation.py",
+        "README.md",
+        "schemas/README.md"
+      ]
+    },
+    {
+      "criterion_id": "schemas_tests_docs.126",
+      "group": "schemas_tests_docs",
+      "status": "pass",
+      "statement": "final validation note is complete.",
+      "evidence": [
+        "schemas/schema-catalog.json",
+        "docs/examples/portia-support-process-support-intervention-implementation-fidelity-examples.md",
+        "docs/validation/issue-18-application-invalid-matrix.json",
+        "docs/validation/issue-18-support-process-support-intervention-implementation-fidelity-validation.md",
+        "tests/schema_validation/test_issue_18_final_documentation.py",
+        "README.md",
+        "schemas/README.md"
+      ]
+    },
+    {
+      "criterion_id": "schemas_tests_docs.127",
+      "group": "schemas_tests_docs",
+      "status": "pass",
+      "statement": "README/schema guide and related active documentation are reconciled.",
+      "evidence": [
+        "schemas/schema-catalog.json",
+        "docs/examples/portia-support-process-support-intervention-implementation-fidelity-examples.md",
+        "docs/validation/issue-18-application-invalid-matrix.json",
+        "docs/validation/issue-18-support-process-support-intervention-implementation-fidelity-validation.md",
+        "tests/schema_validation/test_issue_18_final_documentation.py",
+        "README.md",
+        "schemas/README.md"
+      ]
+    },
+    {
+      "criterion_id": "schemas_tests_docs.128",
+      "group": "schemas_tests_docs",
+      "status": "pass",
+      "statement": "no real student/family/staff/support data is committed.",
+      "evidence": [
+        "schemas/schema-catalog.json",
+        "docs/examples/portia-support-process-support-intervention-implementation-fidelity-examples.md",
+        "docs/validation/issue-18-application-invalid-matrix.json",
+        "docs/validation/issue-18-support-process-support-intervention-implementation-fidelity-validation.md",
+        "tests/schema_validation/test_issue_18_final_documentation.py",
+        "README.md",
+        "schemas/README.md"
+      ]
+    }
+  ]
+}

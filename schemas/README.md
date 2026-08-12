@@ -41,6 +41,13 @@ The initial prefixes are:
 
 - Event: `evt_`
 - Support Process: `sup_`
+- Support Process Participant: `spp_`
+- Support Need: `spn_`
+- Support Goal: `spg_`
+- Support: `spt_`
+- Intervention: `int_`
+- Implementation: `imp_`
+- Fidelity: `fid_`
 - Actor: `actr_`
 - Actor Contact Point: `acp_`
 - Actor-to-Student Relationship: `asrel_`
@@ -338,6 +345,58 @@ Passing the schema does not prove actual containment, symlink safety, existence,
 file kind, or identity/path agreement. A content fingerprint binds exact SHA-256
 bytes and byte length; it does not prove semantic meaning, acceptance, or
 authorization.
+
+
+## Support Process, Support, Intervention, Implementation, and Fidelity contracts
+
+ADR 0014 adds the canonical Support Process planning, implementation, and
+implementation-quality family:
+
+```text
+schemas/v1/support-processes/support-process.schema.json
+schemas/v1/support-processes/support-process-participant.schema.json
+schemas/v1/support-processes/support-need.schema.json
+schemas/v1/support-processes/support-goal.schema.json
+schemas/v1/support-processes/planned-schedule.schema.json
+schemas/v1/support-processes/support.schema.json
+schemas/v1/support-processes/intervention.schema.json
+schemas/v1/support-processes/implementation.schema.json
+schemas/v1/support-processes/fidelity.schema.json
+```
+
+The central boundary is:
+
+```text
+planned Support / Intervention
+≠ actual Implementation
+≠ Fidelity
+≠ Outcome
+```
+
+`planned_schedule@1` is planning only. A scheduled occurrence never creates an
+Implementation, and Implementation history never creates or implies Fidelity.
+
+Issue #18 adds no dedicated exact-reference family because
+`exact_local_record_ref@1` and `exact_portia_work_record_ref@1` already preserve
+record kind, opaque ID, work scope, and contract version. Exact references do
+not silently follow plan adaptation, correction, consolidation, migration,
+ownership correction, or cross-year succession.
+
+The Issue #18 v1 families expose no Amendment paths. Material correction and
+prospective plan adaptation use preserved successor/history semantics.
+Statement of Disagreement remains additive.
+
+Support Process-owned Communication is now resolvable against the canonical
+owner, but Communication remains a contact act/attempt rather than consent,
+service delivery, Implementation, Fidelity, or Outcome.
+
+Shared operation, lock, Quarantine, Integrity Finding, source-snapshot, and
+derived-state contracts are reused. Derived state remains rebuildable and
+nonauthoritative.
+
+Core v0.6 `intervention_record_set` is not canonical Portia storage and is not
+published by Issue #18. Future publication remains a separate privacy-minimized
+projection.
 
 ## Actor Directory contracts
 

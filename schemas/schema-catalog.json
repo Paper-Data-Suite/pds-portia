@@ -11,6 +11,12 @@
         "path": "schemas/v2/event.schema.json"
       }
     },
+    "support_process": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/support-processes/support-process.schema.json",
+        "path": "schemas/v1/support-processes/support-process.schema.json"
+      }
+    },
     "event_participant": {
       "1": {
         "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/event-participant.schema.json",
@@ -23,6 +29,48 @@
       "3": {
         "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v3/event-participant.schema.json",
         "path": "schemas/v3/event-participant.schema.json"
+      }
+    },
+    "support_process_participant": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/support-processes/support-process-participant.schema.json",
+        "path": "schemas/v1/support-processes/support-process-participant.schema.json"
+      }
+    },
+    "support_need": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/support-processes/support-need.schema.json",
+        "path": "schemas/v1/support-processes/support-need.schema.json"
+      }
+    },
+    "support_goal": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/support-processes/support-goal.schema.json",
+        "path": "schemas/v1/support-processes/support-goal.schema.json"
+      }
+    },
+    "support": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/support-processes/support.schema.json",
+        "path": "schemas/v1/support-processes/support.schema.json"
+      }
+    },
+    "intervention": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/support-processes/intervention.schema.json",
+        "path": "schemas/v1/support-processes/intervention.schema.json"
+      }
+    },
+    "implementation": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/support-processes/implementation.schema.json",
+        "path": "schemas/v1/support-processes/implementation.schema.json"
+      }
+    },
+    "fidelity": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/support-processes/fidelity.schema.json",
+        "path": "schemas/v1/support-processes/fidelity.schema.json"
       }
     },
     "event_participant_role": {
@@ -103,6 +151,48 @@
       "1": {
         "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-support-process-id.schema.json",
         "path": "schemas/v1/identifiers/portia-support-process-id.schema.json"
+      }
+    },
+    "portia_support_process_participant_id": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-support-process-participant-id.schema.json",
+        "path": "schemas/v1/identifiers/portia-support-process-participant-id.schema.json"
+      }
+    },
+    "portia_support_need_id": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-support-need-id.schema.json",
+        "path": "schemas/v1/identifiers/portia-support-need-id.schema.json"
+      }
+    },
+    "portia_support_goal_id": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-support-goal-id.schema.json",
+        "path": "schemas/v1/identifiers/portia-support-goal-id.schema.json"
+      }
+    },
+    "portia_support_id": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-support-id.schema.json",
+        "path": "schemas/v1/identifiers/portia-support-id.schema.json"
+      }
+    },
+    "portia_intervention_id": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-intervention-id.schema.json",
+        "path": "schemas/v1/identifiers/portia-intervention-id.schema.json"
+      }
+    },
+    "portia_implementation_id": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-implementation-id.schema.json",
+        "path": "schemas/v1/identifiers/portia-implementation-id.schema.json"
+      }
+    },
+    "portia_fidelity_id": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-fidelity-id.schema.json",
+        "path": "schemas/v1/identifiers/portia-fidelity-id.schema.json"
       }
     },
     "portia_actor_id": {
@@ -615,6 +705,12 @@
       "1": {
         "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/evidence-time.schema.json",
         "path": "schemas/v1/common/evidence-time.schema.json"
+      }
+    },
+    "planned_schedule": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/support-processes/planned-schedule.schema.json",
+        "path": "schemas/v1/support-processes/planned-schedule.schema.json"
       }
     },
     "source_artifact_ref": {

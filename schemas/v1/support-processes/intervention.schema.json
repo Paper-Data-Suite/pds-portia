@@ -1,0 +1,534 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/support-processes/intervention.schema.json",
+  "title": "Portia Intervention",
+  "description": "Canonical version-1 Support Process-local Intervention representing one deliberately structured, goal-linked plan with explicit implementation parameters and an expectation of repeated implementation or monitoring. Intervention requires exact Need and Goal linkage, an explicit target, provider plan, planned schedule, bounded monitoring approach, and plan state. Active Intervention requires assigned providers and a non-as-needed schedule. It does not establish MTSS/RTI tier, IEP/504/BIP/FBA status, clinical treatment, evidence-based certification, institutional authorization, likely effectiveness, progress, or Outcome.",
+  "$comment": "Application validation remains responsible for parent Support Process and exact Need/Goal/Participant resolution; same-process ownership; current-use eligibility; target/provider logical uniqueness; active assigned-provider and non-as-needed rules; plan-state transitions; paper/import activation gates; successor topology; adaptation lineage; no silent successor following; authorization/privacy; and coordinated writes.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "record_type",
+    "module_id",
+    "class_id",
+    "work_id",
+    "intervention_id",
+    "status",
+    "target",
+    "need_refs",
+    "goal_refs",
+    "strategy",
+    "provider_plan",
+    "schedule",
+    "monitoring_approach",
+    "plan_state",
+    "creation_source",
+    "created_at",
+    "created_by",
+    "updated_at",
+    "updated_by"
+  ],
+  "properties": {
+    "record_type": {
+      "const": "intervention"
+    },
+    "schema_version": {
+      "const": "1"
+    },
+    "module_id": {
+      "const": "portia"
+    },
+    "class_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+    },
+    "work_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-support-process-id.schema.json"
+    },
+    "intervention_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-intervention-id.schema.json"
+    },
+    "status": {
+      "enum": [
+        "proposed",
+        "active",
+        "invalidated",
+        "superseded"
+      ]
+    },
+    "target": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/targets/support-process-target-ref.schema.json"
+    },
+    "need_refs": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 50,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/exactNeedRef"
+      }
+    },
+    "goal_refs": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 50,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/exactGoalRef"
+      }
+    },
+    "strategy": {
+      "$ref": "#/$defs/strategy"
+    },
+    "provider_plan": {
+      "$ref": "#/$defs/providerPlan"
+    },
+    "schedule": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/support-processes/planned-schedule.schema.json"
+    },
+    "plan_state": {
+      "enum": [
+        "planned",
+        "active",
+        "paused",
+        "completed",
+        "discontinued"
+      ]
+    },
+    "supersedes": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/supersessionEntry"
+      }
+    },
+    "creation_source": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/provenance/creation-source.schema.json"
+    },
+    "created_at": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+    },
+    "created_by": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/attribution/attribution-agent.schema.json"
+    },
+    "updated_at": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+    },
+    "updated_by": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/attribution/attribution-agent.schema.json"
+    },
+    "monitoring_approach": {
+      "allOf": [
+        {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+        },
+        {
+          "maxLength": 4000
+        }
+      ],
+      "description": "Bounded planned monitoring approach. It does not record progress, effectiveness, Fidelity, or Outcome."
+    }
+  },
+  "$defs": {
+    "exactParticipantRef": {
+      "allOf": [
+        {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-local-record-ref.schema.json"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "record_kind": {
+              "const": "support_process_participant"
+            },
+            "record_id": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-support-process-participant-id.schema.json"
+            },
+            "contract_version": {
+              "const": "1"
+            }
+          },
+          "required": [
+            "record_kind",
+            "record_id",
+            "contract_version"
+          ]
+        }
+      ]
+    },
+    "exactNeedRef": {
+      "allOf": [
+        {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-local-record-ref.schema.json"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "record_kind": {
+              "const": "support_need"
+            },
+            "record_id": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-support-need-id.schema.json"
+            },
+            "contract_version": {
+              "const": "1"
+            }
+          },
+          "required": [
+            "record_kind",
+            "record_id",
+            "contract_version"
+          ]
+        }
+      ]
+    },
+    "exactGoalRef": {
+      "allOf": [
+        {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-local-record-ref.schema.json"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "record_kind": {
+              "const": "support_goal"
+            },
+            "record_id": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-support-goal-id.schema.json"
+            },
+            "contract_version": {
+              "const": "1"
+            }
+          },
+          "required": [
+            "record_kind",
+            "record_id",
+            "contract_version"
+          ]
+        }
+      ]
+    },
+    "exactPlanWorkRecordRef": {
+      "allOf": [
+        {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-portia-work-record-ref.schema.json"
+        },
+        {
+          "type": "object",
+          "required": [
+            "work_ref",
+            "record_ref"
+          ],
+          "properties": {
+            "work_ref": {
+              "allOf": [
+                {
+                  "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-portia-work-ref.schema.json"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "work_kind": {
+                      "const": "support_process"
+                    },
+                    "work_id": {
+                      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-support-process-id.schema.json"
+                    },
+                    "contract_version": {
+                      "const": "1"
+                    }
+                  },
+                  "required": [
+                    "work_kind",
+                    "work_id",
+                    "contract_version"
+                  ]
+                }
+              ]
+            },
+            "record_ref": {
+              "allOf": [
+                {
+                  "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-local-record-ref.schema.json"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "record_kind": {
+                      "const": "intervention"
+                    },
+                    "record_id": {
+                      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-intervention-id.schema.json"
+                    },
+                    "contract_version": {
+                      "const": "1"
+                    }
+                  },
+                  "required": [
+                    "record_kind",
+                    "record_id",
+                    "contract_version"
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "strategy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "procedure"
+      ],
+      "properties": {
+        "kind": {
+          "enum": [
+            "access",
+            "environmental_or_instructional",
+            "organizational",
+            "relationship_or_connection",
+            "routine_or_structure",
+            "skill_building",
+            "self_management",
+            "resource_or_coordination",
+            "other"
+          ]
+        },
+        "procedure": {
+          "allOf": [
+            {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+            },
+            {
+              "maxLength": 4000
+            }
+          ]
+        },
+        "kind_detail": {
+          "allOf": [
+            {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+            },
+            {
+              "maxLength": 2000
+            }
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "other"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "required": [
+              "kind_detail"
+            ]
+          },
+          "else": {
+            "not": {
+              "required": [
+                "kind_detail"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "assignedProviderPlan": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "participant_refs"
+      ],
+      "properties": {
+        "kind": {
+          "const": "assigned"
+        },
+        "participant_refs": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 50,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/exactParticipantRef"
+          }
+        }
+      }
+    },
+    "noAssignedProviderPlan": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "reason"
+      ],
+      "properties": {
+        "kind": {
+          "const": "no_assigned_provider"
+        },
+        "reason": {
+          "enum": [
+            "access_condition",
+            "self_directed",
+            "resource_availability",
+            "other"
+          ]
+        },
+        "detail": {
+          "allOf": [
+            {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+            },
+            {
+              "maxLength": 2000
+            }
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "reason": {
+                "const": "other"
+              }
+            },
+            "required": [
+              "reason"
+            ]
+          },
+          "then": {
+            "required": [
+              "detail"
+            ]
+          },
+          "else": {
+            "not": {
+              "required": [
+                "detail"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "providerPlan": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/assignedProviderPlan"
+        },
+        {
+          "$ref": "#/$defs/noAssignedProviderPlan"
+        }
+      ]
+    },
+    "supersessionEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "work_record_ref",
+        "reason"
+      ],
+      "properties": {
+        "work_record_ref": {
+          "$ref": "#/$defs/exactPlanWorkRecordRef"
+        },
+        "reason": {
+          "enum": [
+            "plan_adapted",
+            "strategy_corrected",
+            "target_corrected",
+            "provider_corrected",
+            "need_link_corrected",
+            "goal_link_corrected",
+            "schedule_corrected",
+            "monitoring_corrected",
+            "duplicate_consolidated",
+            "work_root_corrected",
+            "contract_migrated",
+            "other"
+          ]
+        },
+        "detail": {
+          "allOf": [
+            {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+            },
+            {
+              "maxLength": 2000
+            }
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "reason": {
+                "const": "other"
+              }
+            },
+            "required": [
+              "reason"
+            ]
+          },
+          "then": {
+            "required": [
+              "detail"
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "x-portia-application-invariants": [
+    "portia.intervention.canonical_storage_scope",
+    "portia.intervention.path_identity_agreement",
+    "portia.intervention.parent_support_process_resolution",
+    "portia.intervention.owner_agreement",
+    "portia.intervention.target_resolution",
+    "portia.intervention.target_same_support_process",
+    "portia.intervention.need_refs_exact_resolution",
+    "portia.intervention.need_refs_same_support_process",
+    "portia.intervention.goal_refs_exact_resolution",
+    "portia.intervention.goal_refs_same_support_process",
+    "portia.intervention.provider_refs_exact_resolution",
+    "portia.intervention.provider_refs_same_support_process",
+    "portia.intervention.provider_logical_identity_unique",
+    "portia.intervention.active_requires_assigned_provider",
+    "portia.intervention.active_rejects_as_needed_schedule",
+    "portia.intervention.monitoring_is_planning_only",
+    "portia.intervention.schedule_is_planning_only",
+    "portia.intervention.plan_state_matrix",
+    "portia.intervention.plan_state_not_effectiveness",
+    "portia.intervention.creation_provenance_immutable",
+    "portia.intervention.paper_activation_requires_review_history",
+    "portia.intervention.import_activation_requires_review_history",
+    "portia.intervention.lifecycle_matrix",
+    "portia.intervention.lifecycle_history_reconciliation",
+    "portia.intervention.predecessor_resolution",
+    "portia.intervention.predecessor_identity_unique",
+    "portia.intervention.self_supersession",
+    "portia.intervention.supersession_reason_uniform",
+    "portia.intervention.replacement_topology",
+    "portia.intervention.work_root_correction",
+    "portia.intervention.plan_adaptation_creates_successor",
+    "portia.intervention.no_silent_successor_following",
+    "portia.intervention.amendment_prohibited_v1",
+    "portia.intervention.no_implementation_claim",
+    "portia.intervention.no_outcome_or_effectiveness",
+    "portia.intervention.no_authorization_claim"
+  ]
+}

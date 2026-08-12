@@ -1,0 +1,55 @@
+{
+  "schema_version": "1",
+  "record_type": "fidelity",
+  "module_id": "portia",
+  "class_id": "english10_p2",
+  "work_id": "sup_support_1",
+  "fidelity_id": "fid_routine_1",
+  "status": "active",
+  "plan_ref": {
+    "record_kind": "intervention",
+    "record_id": "int_routine_1",
+    "contract_version": "1"
+  },
+  "evaluator_ref": {
+    "record_kind": "support_process_participant",
+    "record_id": "spp_observer_1",
+    "contract_version": "1"
+  },
+  "scope": {
+    "kind": "one_implementation",
+    "implementation_ref": {
+      "record_kind": "implementation",
+      "record_id": "imp_routine_1",
+      "contract_version": "1"
+    }
+  },
+  "result": "as_planned",
+  "basis": {
+    "kind": "checklist_or_instrument",
+    "instrument_use": "scored"
+  },
+  "evaluated_at": "2026-09-08T08:20:00-04:00",
+  "summary": "Synthetic fidelity evaluation of one implementation occurrence.",
+  "creation_source": {
+    "type": "digital_entry"
+  },
+  "created_at": "2026-09-08T08:22:00-04:00",
+  "created_by": {
+    "type": "local_operator",
+    "display_label": "Teacher Local"
+  },
+  "updated_at": "2026-09-08T08:22:00-04:00",
+  "updated_by": {
+    "type": "local_operator",
+    "display_label": "Teacher Local"
+  },
+  "instrument_result": {
+    "instrument_name": "Synthetic Fidelity Checklist",
+    "instrument_version": "1.0",
+    "scale_minimum": 0,
+    "scale_maximum": 5,
+    "value": 6,
+    "scale_label": "Synthetic source-defined scale"
+  }
+}

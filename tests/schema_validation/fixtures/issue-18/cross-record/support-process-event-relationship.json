@@ -1,0 +1,38 @@
+{
+  "schema_version": "2",
+  "record_type": "work_relationship",
+  "module_id": "portia",
+  "class_id": "english10_p2",
+  "work_id": "sup_support_1",
+  "relationship_id": "rel_support_context_1",
+  "status": "active",
+  "relationship_type": "draws_context_from",
+  "source": {
+    "module_id": "portia",
+    "class_id": "english10_p2",
+    "work_id": "sup_support_1",
+    "work_kind": "support_process",
+    "contract_version": "1"
+  },
+  "target": {
+    "module_id": "portia",
+    "class_id": "english10_p2",
+    "work_id": "evt_context_1",
+    "work_kind": "event",
+    "contract_version": "2"
+  },
+  "detail": "Synthetic exact Event context for the Support Process.",
+  "creation_source": {
+    "type": "digital_entry"
+  },
+  "created_at": "2026-09-01T08:00:00-04:00",
+  "created_by": {
+    "type": "local_operator",
+    "display_label": "Teacher Local"
+  },
+  "updated_at": "2026-09-01T08:00:00-04:00",
+  "updated_by": {
+    "type": "local_operator",
+    "display_label": "Teacher Local"
+  }
+}

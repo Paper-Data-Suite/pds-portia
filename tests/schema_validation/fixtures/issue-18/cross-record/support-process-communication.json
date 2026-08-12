@@ -1,0 +1,123 @@
+{
+  "support_process": {
+    "schema_version": "1",
+    "record_type": "portia_work",
+    "work_kind": "support_process",
+    "module_id": "portia",
+    "class_id": "english10_p2",
+    "work_id": "sup_support_1",
+    "school_year": "2026-2027",
+    "status": "active",
+    "workflow_state": "active",
+    "summary": "Synthetic classroom support workflow for access and routine planning.",
+    "initiation": {
+      "kind": "teacher_identified_need",
+      "detail": "Teacher identified a bounded classroom access need."
+    },
+    "planned_start_date": "2026-09-01",
+    "review_on": "2026-10-01",
+    "creation_source": {
+      "type": "digital_entry"
+    },
+    "created_at": "2026-08-20T12:00:00-04:00",
+    "created_by": {
+      "type": "local_operator",
+      "display_label": "Teacher Local"
+    },
+    "updated_at": "2026-08-20T12:00:00-04:00",
+    "updated_by": {
+      "type": "local_operator",
+      "display_label": "Teacher Local"
+    }
+  },
+  "participants": [
+    {
+      "schema_version": "1",
+      "record_type": "support_process_participant",
+      "module_id": "portia",
+      "class_id": "english10_p2",
+      "work_id": "sup_support_1",
+      "participant_id": "spp_student_1",
+      "status": "active",
+      "person": {
+        "kind": "roster_student",
+        "roster_student_ref": {
+          "class_id": "english10_p2",
+          "student_id": "student_001"
+        },
+        "display_snapshot": {
+          "display_name": "Synthetic Student"
+        }
+      },
+      "contexts": [
+        {
+          "kind": "supported_person"
+        }
+      ],
+      "creation_source": {
+        "type": "digital_entry"
+      },
+      "created_at": "2026-08-20T12:01:00-04:00",
+      "created_by": {
+        "type": "local_operator",
+        "display_label": "Teacher Local"
+      },
+      "updated_at": "2026-08-20T12:01:00-04:00",
+      "updated_by": {
+        "type": "local_operator",
+        "display_label": "Teacher Local"
+      }
+    }
+  ],
+  "communication": {
+    "schema_version": "1",
+    "record_type": "communication",
+    "module_id": "portia",
+    "class_id": "english10_p2",
+    "work_kind": "support_process",
+    "work_id": "sup_support_1",
+    "communication_id": "comm_support_coordination_1",
+    "status": "active",
+    "sender": {
+      "kind": "local_operator",
+      "display_label": "Teacher Local"
+    },
+    "recipients": [
+      {
+        "person": {
+          "kind": "actor",
+          "actor_ref": {
+            "actor_id": "actr_family_1"
+          },
+          "display_snapshot": {
+            "display_name": "Synthetic Family Contact"
+          }
+        },
+        "participation": "participated"
+      }
+    ],
+    "method": {
+      "kind": "phone_call"
+    },
+    "purpose": {
+      "kind": "support_coordination"
+    },
+    "act_state": "completed",
+    "privacy_scope": "participant_limited",
+    "started_at": "2026-09-03T15:00:00-04:00",
+    "summary": "Synthetic coordination call concerning the active Support Process.",
+    "creation_source": {
+      "type": "digital_entry"
+    },
+    "created_at": "2026-09-03T15:10:00-04:00",
+    "created_by": {
+      "type": "local_operator",
+      "display_label": "Teacher Local"
+    },
+    "updated_at": "2026-09-03T15:10:00-04:00",
+    "updated_by": {
+      "type": "local_operator",
+      "display_label": "Teacher Local"
+    }
+  }
+}

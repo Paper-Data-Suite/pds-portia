@@ -1,0 +1,76 @@
+{
+  "manifest_version": "1",
+  "issue": 18,
+  "contract": "support_process_participant",
+  "version": "1",
+  "valid": [
+    "supported-roster-student.json",
+    "cross-class-roster-student.json",
+    "actor-collaborator.json",
+    "local-operator-coordinator.json",
+    "descriptive-family-person.json",
+    "observer-context.json",
+    "other-context-with-detail.json",
+    "proposed-unidentified-import.json"
+  ],
+  "invalid": [
+    "wrong-record-type.json",
+    "wrong-participant-prefix.json",
+    "wrong-work-prefix.json",
+    "missing-person.json",
+    "missing-contexts.json",
+    "empty-contexts.json",
+    "unsupported-context.json",
+    "other-context-missing-detail.json",
+    "non-other-context-with-detail.json",
+    "unknown-property.json",
+    "supersession-wrong-record-kind.json",
+    "supersession-other-missing-detail.json"
+  ],
+  "application_invalid": [
+    {
+      "file": "updated-before-created.json",
+      "expected_error": "updated_at precedes created_at"
+    },
+    {
+      "file": "active-import.json",
+      "expected_error": "paper/import activation requires accepted review history"
+    },
+    {
+      "file": "active-paper.json",
+      "expected_error": "paper/import activation requires accepted review history"
+    },
+    {
+      "file": "active-unidentified.json",
+      "expected_error": "active current-use Support Process Participant must be resolved"
+    },
+    {
+      "file": "self-supersession.json",
+      "expected_error": "Support Process Participant cannot supersede itself"
+    },
+    {
+      "file": "mixed-supersession-reasons.json",
+      "expected_error": "mixed Participant supersession reasons"
+    },
+    {
+      "file": "duplicate-consolidation-one-predecessor.json",
+      "expected_error": "duplicate consolidation needs two Participant predecessors"
+    },
+    {
+      "file": "ordinary-correction-two-predecessors.json",
+      "expected_error": "ordinary Participant correction is one-to-one"
+    },
+    {
+      "file": "ordinary-correction-cross-work.json",
+      "expected_error": "ordinary Participant correction cannot cross Support Process roots"
+    },
+    {
+      "file": "work-root-correction-same-work.json",
+      "expected_error": "work-root correction requires a different Support Process root"
+    },
+    {
+      "file": "work-root-correction-changed-id.json",
+      "expected_error": "work-root correction must preserve Participant ID"
+    }
+  ]
+}

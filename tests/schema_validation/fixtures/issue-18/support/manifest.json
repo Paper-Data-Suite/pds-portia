@@ -1,0 +1,86 @@
+{
+  "manifest_version": "1",
+  "issue": 18,
+  "contract": "support",
+  "version": "1",
+  "valid": [
+    "as-needed-access-no-provider.json",
+    "assigned-recurring-support.json",
+    "goal-linked-support.json",
+    "self-directed-no-provider.json",
+    "resource-availability-no-provider.json",
+    "paused-support.json",
+    "completed-valid-history.json",
+    "proposed-import-support.json"
+  ],
+  "invalid": [
+    "wrong-record-type.json",
+    "wrong-id-prefix.json",
+    "empty-need-refs.json",
+    "wrong-need-ref-kind.json",
+    "strategy-other-missing-detail.json",
+    "strategy-non-other-with-detail.json",
+    "provider-other-missing-detail.json",
+    "empty-assigned-provider-list.json",
+    "wrong-provider-ref-kind.json",
+    "effectiveness-field.json",
+    "implementation-count-field.json",
+    "generic-plan-kind-field.json",
+    "adaptation-field.json",
+    "other-supersession-missing-detail.json"
+  ],
+  "application_invalid": [
+    {
+      "file": "updated-before-created.json",
+      "expected_error": "updated_at precedes created_at"
+    },
+    {
+      "file": "active-import.json",
+      "expected_error": "paper/import activation requires accepted review history"
+    },
+    {
+      "file": "active-paper.json",
+      "expected_error": "paper/import activation requires accepted review history"
+    },
+    {
+      "file": "unresolved-need.json",
+      "expected_error": "Support Need ref does not resolve in owning Support Process"
+    },
+    {
+      "file": "unresolved-goal.json",
+      "expected_error": "Support Goal ref does not resolve in owning Support Process"
+    },
+    {
+      "file": "unresolved-provider.json",
+      "expected_error": "Support provider Participant ref does not resolve in owning Support Process"
+    },
+    {
+      "file": "duplicate-logical-provider.json",
+      "expected_error": "Support provider set repeats a logical participant"
+    },
+    {
+      "file": "self-supersession.json",
+      "expected_error": "Support cannot supersede itself"
+    },
+    {
+      "file": "mixed-supersession-reasons.json",
+      "expected_error": "mixed Support supersession reasons"
+    },
+    {
+      "file": "duplicate-consolidation-one-predecessor.json",
+      "expected_error": "duplicate consolidation needs two Support predecessors"
+    },
+    {
+      "file": "ordinary-correction-cross-work.json",
+      "expected_error": "ordinary Support correction cannot cross Support Process roots"
+    },
+    {
+      "file": "plan-adaptation-cross-work.json",
+      "expected_error": "plan adaptation cannot cross Support Process roots"
+    },
+    {
+      "file": "work-root-correction-changed-id.json",
+      "expected_error": "work-root correction must preserve Support ID"
+    }
+  ]
+}

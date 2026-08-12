@@ -1871,3 +1871,22 @@ no v1 Amendment paths
 These choices preserve the existing Portia epistemic and authority boundaries
 while leaving #18–#21 room to extend the record graph without immediately
 versioning the new contracts.
+
+## Current downstream Support Process boundary (Issue #18)
+
+Issue #18 makes the previously reserved Support Process owner concrete without
+changing `communication@1`.
+
+A Response handoff/referral may provide exact initiating context for a Support
+Process, but the Response does not prove that a Support or Intervention was
+planned or implemented.
+
+A Support Process-owned Communication may document coordination, notice,
+scheduling, referral/handoff, or follow-up contact. It remains a bounded
+communication act/attempt and does not establish consent, participation,
+service delivery, Implementation, Fidelity, effectiveness, or Outcome.
+
+Recurring/longitudinal planning belongs to `support@1` / `intervention@1`;
+actual occurrences belong to `implementation@1`; implementation-quality
+evaluation belongs to `fidelity@1`. Issue #19 remains authoritative for
+Outcome/effectiveness.

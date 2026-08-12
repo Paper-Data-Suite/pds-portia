@@ -1,0 +1,217 @@
+{
+  "manifest_version": "1",
+  "issue": 18,
+  "contract": "planned_schedule",
+  "version": "1",
+  "valid": [
+    {
+      "name": "as-needed-access",
+      "value": {
+        "kind": "as_needed",
+        "window": {
+          "starts_on": "2026-09-01",
+          "review_on": "2026-09-30"
+        },
+        "planned_duration": {
+          "kind": "minutes",
+          "minutes": 10
+        }
+      }
+    },
+    {
+      "name": "weekly-selected-days",
+      "value": {
+        "kind": "recurring",
+        "frequency": {
+          "occurrences": 1,
+          "interval_count": 1,
+          "interval_unit": "week"
+        },
+        "selected_days": [
+          "monday",
+          "thursday"
+        ],
+        "timing_detail": "During the first ten minutes of class.",
+        "planned_duration": {
+          "kind": "minutes",
+          "minutes": 10
+        },
+        "window": {
+          "starts_on": "2026-09-01",
+          "ends_on": "2026-10-15",
+          "review_on": "2026-10-01"
+        }
+      }
+    },
+    {
+      "name": "every-two-weeks-range",
+      "value": {
+        "kind": "recurring",
+        "frequency": {
+          "occurrences": 1,
+          "interval_count": 2,
+          "interval_unit": "week"
+        },
+        "planned_duration": {
+          "kind": "range_minutes",
+          "minimum_minutes": 15,
+          "maximum_minutes": 30
+        }
+      }
+    },
+    {
+      "name": "condition-triggered",
+      "value": {
+        "kind": "condition_triggered",
+        "trigger": "When the planned independent-work routine begins.",
+        "planned_duration": {
+          "kind": "minutes",
+          "minutes": 5
+        }
+      }
+    },
+    {
+      "name": "custom",
+      "value": {
+        "kind": "custom",
+        "description": "Use the teacher-authored rotating schedule for this support.",
+        "window": {
+          "review_on": "2026-11-01"
+        }
+      }
+    }
+  ],
+  "structural_invalid": [
+    {
+      "name": "as-needed-fabricated-frequency",
+      "value": {
+        "kind": "as_needed",
+        "frequency": {
+          "occurrences": 1,
+          "interval_count": 1,
+          "interval_unit": "week"
+        }
+      }
+    },
+    {
+      "name": "recurring-missing-frequency",
+      "value": {
+        "kind": "recurring"
+      }
+    },
+    {
+      "name": "recurring-invalid-unit",
+      "value": {
+        "kind": "recurring",
+        "frequency": {
+          "occurrences": 1,
+          "interval_count": 1,
+          "interval_unit": "semester"
+        }
+      }
+    },
+    {
+      "name": "duplicate-selected-days",
+      "value": {
+        "kind": "recurring",
+        "frequency": {
+          "occurrences": 1,
+          "interval_count": 1,
+          "interval_unit": "week"
+        },
+        "selected_days": [
+          "monday",
+          "monday"
+        ]
+      }
+    },
+    {
+      "name": "condition-missing-trigger",
+      "value": {
+        "kind": "condition_triggered"
+      }
+    },
+    {
+      "name": "custom-missing-description",
+      "value": {
+        "kind": "custom"
+      }
+    },
+    {
+      "name": "zero-duration",
+      "value": {
+        "kind": "as_needed",
+        "planned_duration": {
+          "kind": "minutes",
+          "minutes": 0
+        }
+      }
+    },
+    {
+      "name": "empty-window",
+      "value": {
+        "kind": "as_needed",
+        "window": {}
+      }
+    },
+    {
+      "name": "malformed-date",
+      "value": {
+        "kind": "as_needed",
+        "window": {
+          "starts_on": "2026-02-30"
+        }
+      }
+    },
+    {
+      "name": "unexpected-property",
+      "value": {
+        "kind": "as_needed",
+        "actual_count": 4
+      }
+    }
+  ],
+  "application_invalid": [
+    {
+      "name": "window-ended-before-started",
+      "value": {
+        "kind": "recurring",
+        "frequency": {
+          "occurrences": 1,
+          "interval_count": 1,
+          "interval_unit": "week"
+        },
+        "window": {
+          "starts_on": "2026-10-01",
+          "ends_on": "2026-09-30"
+        }
+      },
+      "expected_error": "ends_on precedes starts_on"
+    },
+    {
+      "name": "review-before-start",
+      "value": {
+        "kind": "custom",
+        "description": "A bounded teacher-authored cadence.",
+        "window": {
+          "starts_on": "2026-10-01",
+          "review_on": "2026-09-15"
+        }
+      },
+      "expected_error": "review_on precedes starts_on"
+    },
+    {
+      "name": "duration-range-reversed",
+      "value": {
+        "kind": "condition_triggered",
+        "trigger": "When the identified classroom routine begins.",
+        "planned_duration": {
+          "kind": "range_minutes",
+          "minimum_minutes": 30,
+          "maximum_minutes": 10
+        }
+      },
+      "expected_error": "minimum_minutes exceeds maximum_minutes"
+    }
+  ]
+}
