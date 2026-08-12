@@ -1260,3 +1260,18 @@ Some design work may overlap, but implementation should not begin until identity
 Issue #2 establishes Portia’s role within Paper Data Suite and identifies the next architecture work.
 
 It does not require all follow-up issues to be created or completed before Issue #2 closes. The list above provides focused, traceable next work that can be converted into GitHub issues as development proceeds.
+
+## Current implementation reconciliation (Issue #18: Support Process layer)
+
+Accepted ADR 0014 makes the second initial Portia work kind concrete. Support
+Process is a bounded class-owned teacher-local workflow, not a student-global
+dossier or institutional case-management record.
+
+Need and Goal describe planning context. Support and Intervention describe what
+is planned. Implementation records bounded actual occurrences. Fidelity records
+attributed implementation-quality evaluation. Follow-Up/Outcome remain Issue
+#19 concerns.
+
+Portia therefore preserves `plan ≠ implementation ≠ fidelity ≠ outcome`.
+Support Process-owned Communication is coordination/contact evidence and does
+not prove service delivery, consent, participation, or Implementation.

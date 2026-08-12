@@ -1,0 +1,944 @@
+{
+  "matrix_version": "1",
+  "issue": 18,
+  "title": "Support Process / Support / Intervention / Implementation / Fidelity application-invalid matrix",
+  "fixture_application_invalid_scenarios": 122,
+  "programmatic_cross_record_invariants": 13,
+  "total_coverage_entries": 135,
+  "entries": [
+    {
+      "group": "support_process",
+      "fixture": "tests/schema_validation/fixtures/issue-18/support-process/application-invalid/school-year-not-consecutive.json",
+      "coverage_id": "portia.issue18.support_process.school_year_not_consecutive",
+      "expectation": "school_year is not a consecutive academic-year range",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/support-process/manifest.json"
+    },
+    {
+      "group": "support_process",
+      "fixture": "tests/schema_validation/fixtures/issue-18/support-process/application-invalid/planned-end-before-start.json",
+      "coverage_id": "portia.issue18.support_process.planned_end_before_start",
+      "expectation": "planned_end_date precedes planned_start_date",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/support-process/manifest.json"
+    },
+    {
+      "group": "support_process",
+      "fixture": "tests/schema_validation/fixtures/issue-18/support-process/application-invalid/review-before-start.json",
+      "coverage_id": "portia.issue18.support_process.review_before_start",
+      "expectation": "review_on precedes planned_start_date",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/support-process/manifest.json"
+    },
+    {
+      "group": "support_process",
+      "fixture": "tests/schema_validation/fixtures/issue-18/support-process/application-invalid/updated-before-created.json",
+      "coverage_id": "portia.issue18.support_process.updated_before_created",
+      "expectation": "updated_at precedes created_at",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/support-process/manifest.json"
+    },
+    {
+      "group": "support_process",
+      "fixture": "tests/schema_validation/fixtures/issue-18/support-process/application-invalid/active-import.json",
+      "coverage_id": "portia.issue18.support_process.active_import",
+      "expectation": "paper/import activation requires accepted review history",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/support-process/manifest.json"
+    },
+    {
+      "group": "support_process",
+      "fixture": "tests/schema_validation/fixtures/issue-18/support-process/application-invalid/active-paper.json",
+      "coverage_id": "portia.issue18.support_process.active_paper",
+      "expectation": "paper/import activation requires accepted review history",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/support-process/manifest.json"
+    },
+    {
+      "group": "support_process",
+      "fixture": "tests/schema_validation/fixtures/issue-18/support-process/application-invalid/imported-history-with-digital-source.json",
+      "coverage_id": "portia.issue18.support_process.imported_history_with_digital_source",
+      "expectation": "imported_history initiation requires import provenance",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/support-process/manifest.json"
+    },
+    {
+      "group": "support_process",
+      "fixture": "tests/schema_validation/fixtures/issue-18/support-process/application-invalid/continues-from-self.json",
+      "coverage_id": "portia.issue18.support_process.continues_from_self",
+      "expectation": "continues_from must identify a distinct Support Process",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/support-process/manifest.json"
+    },
+    {
+      "group": "support_process",
+      "fixture": "tests/schema_validation/fixtures/issue-18/support-process/application-invalid/continuation-also-supersession.json",
+      "coverage_id": "portia.issue18.support_process.continuation_also_supersession",
+      "expectation": "continues_from must not also be a supersession predecessor",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/support-process/manifest.json"
+    },
+    {
+      "group": "support_process",
+      "fixture": "tests/schema_validation/fixtures/issue-18/support-process/application-invalid/self-supersession.json",
+      "coverage_id": "portia.issue18.support_process.self_supersession",
+      "expectation": "Support Process cannot supersede itself",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/support-process/manifest.json"
+    },
+    {
+      "group": "support_process",
+      "fixture": "tests/schema_validation/fixtures/issue-18/support-process/application-invalid/mixed-supersession-reasons.json",
+      "coverage_id": "portia.issue18.support_process.mixed_supersession_reasons",
+      "expectation": "mixed Support Process supersession reasons",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/support-process/manifest.json"
+    },
+    {
+      "group": "support_process",
+      "fixture": "tests/schema_validation/fixtures/issue-18/support-process/application-invalid/duplicate-consolidation-one-predecessor.json",
+      "coverage_id": "portia.issue18.support_process.duplicate_consolidation_one_predecessor",
+      "expectation": "duplicate consolidation needs two Support Process predecessors",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/support-process/manifest.json"
+    },
+    {
+      "group": "support_process",
+      "fixture": "tests/schema_validation/fixtures/issue-18/support-process/application-invalid/ordinary-correction-two-predecessors.json",
+      "coverage_id": "portia.issue18.support_process.ordinary_correction_two_predecessors",
+      "expectation": "ordinary Support Process correction is one-to-one",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/support-process/manifest.json"
+    },
+    {
+      "group": "support_process",
+      "fixture": "tests/schema_validation/fixtures/issue-18/support-process/application-invalid/ordinary-correction-cross-class.json",
+      "coverage_id": "portia.issue18.support_process.ordinary_correction_cross_class",
+      "expectation": "ordinary Support Process correction cannot change owning class",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/support-process/manifest.json"
+    },
+    {
+      "group": "support_process",
+      "fixture": "tests/schema_validation/fixtures/issue-18/support-process/application-invalid/work-root-correction-same-class.json",
+      "coverage_id": "portia.issue18.support_process.work_root_correction_same_class",
+      "expectation": "work-root correction requires a different owning class",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/support-process/manifest.json"
+    },
+    {
+      "group": "support_process",
+      "fixture": "tests/schema_validation/fixtures/issue-18/support-process/application-invalid/work-root-correction-changed-id.json",
+      "coverage_id": "portia.issue18.support_process.work_root_correction_changed_id",
+      "expectation": "work-root correction must preserve Support Process work_id",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/support-process/manifest.json"
+    },
+    {
+      "group": "support_process_participant",
+      "fixture": "tests/schema_validation/fixtures/issue-18/support-process-participant/application-invalid/updated-before-created.json",
+      "coverage_id": "portia.issue18.support_process_participant.updated_before_created",
+      "expectation": "updated_at precedes created_at",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/support-process-participant/manifest.json"
+    },
+    {
+      "group": "support_process_participant",
+      "fixture": "tests/schema_validation/fixtures/issue-18/support-process-participant/application-invalid/active-import.json",
+      "coverage_id": "portia.issue18.support_process_participant.active_import",
+      "expectation": "paper/import activation requires accepted review history",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/support-process-participant/manifest.json"
+    },
+    {
+      "group": "support_process_participant",
+      "fixture": "tests/schema_validation/fixtures/issue-18/support-process-participant/application-invalid/active-paper.json",
+      "coverage_id": "portia.issue18.support_process_participant.active_paper",
+      "expectation": "paper/import activation requires accepted review history",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/support-process-participant/manifest.json"
+    },
+    {
+      "group": "support_process_participant",
+      "fixture": "tests/schema_validation/fixtures/issue-18/support-process-participant/application-invalid/active-unidentified.json",
+      "coverage_id": "portia.issue18.support_process_participant.active_unidentified",
+      "expectation": "active current-use Support Process Participant must be resolved",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/support-process-participant/manifest.json"
+    },
+    {
+      "group": "support_process_participant",
+      "fixture": "tests/schema_validation/fixtures/issue-18/support-process-participant/application-invalid/self-supersession.json",
+      "coverage_id": "portia.issue18.support_process_participant.self_supersession",
+      "expectation": "Support Process Participant cannot supersede itself",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/support-process-participant/manifest.json"
+    },
+    {
+      "group": "support_process_participant",
+      "fixture": "tests/schema_validation/fixtures/issue-18/support-process-participant/application-invalid/mixed-supersession-reasons.json",
+      "coverage_id": "portia.issue18.support_process_participant.mixed_supersession_reasons",
+      "expectation": "mixed Participant supersession reasons",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/support-process-participant/manifest.json"
+    },
+    {
+      "group": "support_process_participant",
+      "fixture": "tests/schema_validation/fixtures/issue-18/support-process-participant/application-invalid/duplicate-consolidation-one-predecessor.json",
+      "coverage_id": "portia.issue18.support_process_participant.duplicate_consolidation_one_predecessor",
+      "expectation": "duplicate consolidation needs two Participant predecessors",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/support-process-participant/manifest.json"
+    },
+    {
+      "group": "support_process_participant",
+      "fixture": "tests/schema_validation/fixtures/issue-18/support-process-participant/application-invalid/ordinary-correction-two-predecessors.json",
+      "coverage_id": "portia.issue18.support_process_participant.ordinary_correction_two_predecessors",
+      "expectation": "ordinary Participant correction is one-to-one",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/support-process-participant/manifest.json"
+    },
+    {
+      "group": "support_process_participant",
+      "fixture": "tests/schema_validation/fixtures/issue-18/support-process-participant/application-invalid/ordinary-correction-cross-work.json",
+      "coverage_id": "portia.issue18.support_process_participant.ordinary_correction_cross_work",
+      "expectation": "ordinary Participant correction cannot cross Support Process roots",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/support-process-participant/manifest.json"
+    },
+    {
+      "group": "support_process_participant",
+      "fixture": "tests/schema_validation/fixtures/issue-18/support-process-participant/application-invalid/work-root-correction-same-work.json",
+      "coverage_id": "portia.issue18.support_process_participant.work_root_correction_same_work",
+      "expectation": "work-root correction requires a different Support Process root",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/support-process-participant/manifest.json"
+    },
+    {
+      "group": "support_process_participant",
+      "fixture": "tests/schema_validation/fixtures/issue-18/support-process-participant/application-invalid/work-root-correction-changed-id.json",
+      "coverage_id": "portia.issue18.support_process_participant.work_root_correction_changed_id",
+      "expectation": "work-root correction must preserve Participant ID",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/support-process-participant/manifest.json"
+    },
+    {
+      "group": "support_need",
+      "fixture": "tests/schema_validation/fixtures/issue-18/support-need/application-invalid/updated-before-created.json",
+      "coverage_id": "portia.issue18.support_need.updated_before_created",
+      "expectation": "updated_at precedes created_at",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/support-need/manifest.json"
+    },
+    {
+      "group": "support_need",
+      "fixture": "tests/schema_validation/fixtures/issue-18/support-need/application-invalid/active-import.json",
+      "coverage_id": "portia.issue18.support_need.active_import",
+      "expectation": "paper/import activation requires accepted review history",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/support-need/manifest.json"
+    },
+    {
+      "group": "support_need",
+      "fixture": "tests/schema_validation/fixtures/issue-18/support-need/application-invalid/active-paper.json",
+      "coverage_id": "portia.issue18.support_need.active_paper",
+      "expectation": "paper/import activation requires accepted review history",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/support-need/manifest.json"
+    },
+    {
+      "group": "support_need",
+      "fixture": "tests/schema_validation/fixtures/issue-18/support-need/application-invalid/unresolved-participant-target.json",
+      "coverage_id": "portia.issue18.support_need.unresolved_participant_target",
+      "expectation": "Support Need target participant does not resolve in owning Support Process",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/support-need/manifest.json"
+    },
+    {
+      "group": "support_need",
+      "fixture": "tests/schema_validation/fixtures/issue-18/support-need/application-invalid/duplicate-logical-targets.json",
+      "coverage_id": "portia.issue18.support_need.duplicate_logical_targets",
+      "expectation": "Support Need target set repeats a logical participant",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/support-need/manifest.json"
+    },
+    {
+      "group": "support_need",
+      "fixture": "tests/schema_validation/fixtures/issue-18/support-need/application-invalid/self-supersession.json",
+      "coverage_id": "portia.issue18.support_need.self_supersession",
+      "expectation": "Support Need cannot supersede itself",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/support-need/manifest.json"
+    },
+    {
+      "group": "support_need",
+      "fixture": "tests/schema_validation/fixtures/issue-18/support-need/application-invalid/mixed-supersession-reasons.json",
+      "coverage_id": "portia.issue18.support_need.mixed_supersession_reasons",
+      "expectation": "mixed Support Need supersession reasons",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/support-need/manifest.json"
+    },
+    {
+      "group": "support_need",
+      "fixture": "tests/schema_validation/fixtures/issue-18/support-need/application-invalid/duplicate-consolidation-one-predecessor.json",
+      "coverage_id": "portia.issue18.support_need.duplicate_consolidation_one_predecessor",
+      "expectation": "duplicate consolidation needs two Support Need predecessors",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/support-need/manifest.json"
+    },
+    {
+      "group": "support_need",
+      "fixture": "tests/schema_validation/fixtures/issue-18/support-need/application-invalid/ordinary-correction-two-predecessors.json",
+      "coverage_id": "portia.issue18.support_need.ordinary_correction_two_predecessors",
+      "expectation": "ordinary Support Need correction is one-to-one",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/support-need/manifest.json"
+    },
+    {
+      "group": "support_need",
+      "fixture": "tests/schema_validation/fixtures/issue-18/support-need/application-invalid/ordinary-correction-cross-work.json",
+      "coverage_id": "portia.issue18.support_need.ordinary_correction_cross_work",
+      "expectation": "ordinary Support Need correction cannot cross Support Process roots",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/support-need/manifest.json"
+    },
+    {
+      "group": "support_need",
+      "fixture": "tests/schema_validation/fixtures/issue-18/support-need/application-invalid/work-root-correction-same-work.json",
+      "coverage_id": "portia.issue18.support_need.work_root_correction_same_work",
+      "expectation": "work-root correction requires a different Support Process root",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/support-need/manifest.json"
+    },
+    {
+      "group": "support_need",
+      "fixture": "tests/schema_validation/fixtures/issue-18/support-need/application-invalid/work-root-correction-changed-id.json",
+      "coverage_id": "portia.issue18.support_need.work_root_correction_changed_id",
+      "expectation": "work-root correction must preserve Support Need ID",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/support-need/manifest.json"
+    },
+    {
+      "group": "support_goal",
+      "fixture": "tests/schema_validation/fixtures/issue-18/support-goal/application-invalid/updated-before-created.json",
+      "coverage_id": "portia.issue18.support_goal.updated_before_created",
+      "expectation": "updated_at precedes created_at",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/support-goal/manifest.json"
+    },
+    {
+      "group": "support_goal",
+      "fixture": "tests/schema_validation/fixtures/issue-18/support-goal/application-invalid/active-import.json",
+      "coverage_id": "portia.issue18.support_goal.active_import",
+      "expectation": "paper/import activation requires accepted review history",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/support-goal/manifest.json"
+    },
+    {
+      "group": "support_goal",
+      "fixture": "tests/schema_validation/fixtures/issue-18/support-goal/application-invalid/active-paper.json",
+      "coverage_id": "portia.issue18.support_goal.active_paper",
+      "expectation": "paper/import activation requires accepted review history",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/support-goal/manifest.json"
+    },
+    {
+      "group": "support_goal",
+      "fixture": "tests/schema_validation/fixtures/issue-18/support-goal/application-invalid/unresolved-participant-target.json",
+      "coverage_id": "portia.issue18.support_goal.unresolved_participant_target",
+      "expectation": "Support Goal target participant does not resolve in owning Support Process",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/support-goal/manifest.json"
+    },
+    {
+      "group": "support_goal",
+      "fixture": "tests/schema_validation/fixtures/issue-18/support-goal/application-invalid/duplicate-logical-targets.json",
+      "coverage_id": "portia.issue18.support_goal.duplicate_logical_targets",
+      "expectation": "Support Goal target set repeats a logical participant",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/support-goal/manifest.json"
+    },
+    {
+      "group": "support_goal",
+      "fixture": "tests/schema_validation/fixtures/issue-18/support-goal/application-invalid/self-supersession.json",
+      "coverage_id": "portia.issue18.support_goal.self_supersession",
+      "expectation": "Support Goal cannot supersede itself",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/support-goal/manifest.json"
+    },
+    {
+      "group": "support_goal",
+      "fixture": "tests/schema_validation/fixtures/issue-18/support-goal/application-invalid/mixed-supersession-reasons.json",
+      "coverage_id": "portia.issue18.support_goal.mixed_supersession_reasons",
+      "expectation": "mixed Support Goal supersession reasons",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/support-goal/manifest.json"
+    },
+    {
+      "group": "support_goal",
+      "fixture": "tests/schema_validation/fixtures/issue-18/support-goal/application-invalid/duplicate-consolidation-one-predecessor.json",
+      "coverage_id": "portia.issue18.support_goal.duplicate_consolidation_one_predecessor",
+      "expectation": "duplicate consolidation needs two Support Goal predecessors",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/support-goal/manifest.json"
+    },
+    {
+      "group": "support_goal",
+      "fixture": "tests/schema_validation/fixtures/issue-18/support-goal/application-invalid/ordinary-correction-two-predecessors.json",
+      "coverage_id": "portia.issue18.support_goal.ordinary_correction_two_predecessors",
+      "expectation": "ordinary Support Goal correction is one-to-one",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/support-goal/manifest.json"
+    },
+    {
+      "group": "support_goal",
+      "fixture": "tests/schema_validation/fixtures/issue-18/support-goal/application-invalid/ordinary-correction-cross-work.json",
+      "coverage_id": "portia.issue18.support_goal.ordinary_correction_cross_work",
+      "expectation": "ordinary Support Goal correction cannot cross Support Process roots",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/support-goal/manifest.json"
+    },
+    {
+      "group": "support_goal",
+      "fixture": "tests/schema_validation/fixtures/issue-18/support-goal/application-invalid/work-root-correction-same-work.json",
+      "coverage_id": "portia.issue18.support_goal.work_root_correction_same_work",
+      "expectation": "work-root correction requires a different Support Process root",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/support-goal/manifest.json"
+    },
+    {
+      "group": "support_goal",
+      "fixture": "tests/schema_validation/fixtures/issue-18/support-goal/application-invalid/work-root-correction-changed-id.json",
+      "coverage_id": "portia.issue18.support_goal.work_root_correction_changed_id",
+      "expectation": "work-root correction must preserve Support Goal ID",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/support-goal/manifest.json"
+    },
+    {
+      "group": "support",
+      "fixture": "tests/schema_validation/fixtures/issue-18/support/application-invalid/updated-before-created.json",
+      "coverage_id": "portia.issue18.support.updated_before_created",
+      "expectation": "updated_at precedes created_at",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/support/manifest.json"
+    },
+    {
+      "group": "support",
+      "fixture": "tests/schema_validation/fixtures/issue-18/support/application-invalid/active-import.json",
+      "coverage_id": "portia.issue18.support.active_import",
+      "expectation": "paper/import activation requires accepted review history",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/support/manifest.json"
+    },
+    {
+      "group": "support",
+      "fixture": "tests/schema_validation/fixtures/issue-18/support/application-invalid/active-paper.json",
+      "coverage_id": "portia.issue18.support.active_paper",
+      "expectation": "paper/import activation requires accepted review history",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/support/manifest.json"
+    },
+    {
+      "group": "support",
+      "fixture": "tests/schema_validation/fixtures/issue-18/support/application-invalid/unresolved-need.json",
+      "coverage_id": "portia.issue18.support.unresolved_need",
+      "expectation": "Support Need ref does not resolve in owning Support Process",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/support/manifest.json"
+    },
+    {
+      "group": "support",
+      "fixture": "tests/schema_validation/fixtures/issue-18/support/application-invalid/unresolved-goal.json",
+      "coverage_id": "portia.issue18.support.unresolved_goal",
+      "expectation": "Support Goal ref does not resolve in owning Support Process",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/support/manifest.json"
+    },
+    {
+      "group": "support",
+      "fixture": "tests/schema_validation/fixtures/issue-18/support/application-invalid/unresolved-provider.json",
+      "coverage_id": "portia.issue18.support.unresolved_provider",
+      "expectation": "Support provider Participant ref does not resolve in owning Support Process",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/support/manifest.json"
+    },
+    {
+      "group": "support",
+      "fixture": "tests/schema_validation/fixtures/issue-18/support/application-invalid/duplicate-logical-provider.json",
+      "coverage_id": "portia.issue18.support.duplicate_logical_provider",
+      "expectation": "Support provider set repeats a logical participant",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/support/manifest.json"
+    },
+    {
+      "group": "support",
+      "fixture": "tests/schema_validation/fixtures/issue-18/support/application-invalid/self-supersession.json",
+      "coverage_id": "portia.issue18.support.self_supersession",
+      "expectation": "Support cannot supersede itself",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/support/manifest.json"
+    },
+    {
+      "group": "support",
+      "fixture": "tests/schema_validation/fixtures/issue-18/support/application-invalid/mixed-supersession-reasons.json",
+      "coverage_id": "portia.issue18.support.mixed_supersession_reasons",
+      "expectation": "mixed Support supersession reasons",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/support/manifest.json"
+    },
+    {
+      "group": "support",
+      "fixture": "tests/schema_validation/fixtures/issue-18/support/application-invalid/duplicate-consolidation-one-predecessor.json",
+      "coverage_id": "portia.issue18.support.duplicate_consolidation_one_predecessor",
+      "expectation": "duplicate consolidation needs two Support predecessors",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/support/manifest.json"
+    },
+    {
+      "group": "support",
+      "fixture": "tests/schema_validation/fixtures/issue-18/support/application-invalid/ordinary-correction-cross-work.json",
+      "coverage_id": "portia.issue18.support.ordinary_correction_cross_work",
+      "expectation": "ordinary Support correction cannot cross Support Process roots",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/support/manifest.json"
+    },
+    {
+      "group": "support",
+      "fixture": "tests/schema_validation/fixtures/issue-18/support/application-invalid/plan-adaptation-cross-work.json",
+      "coverage_id": "portia.issue18.support.plan_adaptation_cross_work",
+      "expectation": "plan adaptation cannot cross Support Process roots",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/support/manifest.json"
+    },
+    {
+      "group": "support",
+      "fixture": "tests/schema_validation/fixtures/issue-18/support/application-invalid/work-root-correction-changed-id.json",
+      "coverage_id": "portia.issue18.support.work_root_correction_changed_id",
+      "expectation": "work-root correction must preserve Support ID",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/support/manifest.json"
+    },
+    {
+      "group": "intervention",
+      "fixture": "tests/schema_validation/fixtures/issue-18/intervention/application-invalid/updated-before-created.json",
+      "coverage_id": "portia.issue18.intervention.updated_before_created",
+      "expectation": "updated_at precedes created_at",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/intervention/manifest.json"
+    },
+    {
+      "group": "intervention",
+      "fixture": "tests/schema_validation/fixtures/issue-18/intervention/application-invalid/active-import.json",
+      "coverage_id": "portia.issue18.intervention.active_import",
+      "expectation": "paper/import activation requires accepted review history",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/intervention/manifest.json"
+    },
+    {
+      "group": "intervention",
+      "fixture": "tests/schema_validation/fixtures/issue-18/intervention/application-invalid/active-paper.json",
+      "coverage_id": "portia.issue18.intervention.active_paper",
+      "expectation": "paper/import activation requires accepted review history",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/intervention/manifest.json"
+    },
+    {
+      "group": "intervention",
+      "fixture": "tests/schema_validation/fixtures/issue-18/intervention/application-invalid/active-no-assigned-provider.json",
+      "coverage_id": "portia.issue18.intervention.active_no_assigned_provider",
+      "expectation": "active Intervention requires assigned provider_plan",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/intervention/manifest.json"
+    },
+    {
+      "group": "intervention",
+      "fixture": "tests/schema_validation/fixtures/issue-18/intervention/application-invalid/active-as-needed.json",
+      "coverage_id": "portia.issue18.intervention.active_as_needed",
+      "expectation": "active Intervention rejects as_needed schedule",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/intervention/manifest.json"
+    },
+    {
+      "group": "intervention",
+      "fixture": "tests/schema_validation/fixtures/issue-18/intervention/application-invalid/unresolved-need.json",
+      "coverage_id": "portia.issue18.intervention.unresolved_need",
+      "expectation": "Intervention Need ref does not resolve in owning Support Process",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/intervention/manifest.json"
+    },
+    {
+      "group": "intervention",
+      "fixture": "tests/schema_validation/fixtures/issue-18/intervention/application-invalid/unresolved-goal.json",
+      "coverage_id": "portia.issue18.intervention.unresolved_goal",
+      "expectation": "Intervention Goal ref does not resolve in owning Support Process",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/intervention/manifest.json"
+    },
+    {
+      "group": "intervention",
+      "fixture": "tests/schema_validation/fixtures/issue-18/intervention/application-invalid/unresolved-provider.json",
+      "coverage_id": "portia.issue18.intervention.unresolved_provider",
+      "expectation": "Intervention provider Participant ref does not resolve in owning Support Process",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/intervention/manifest.json"
+    },
+    {
+      "group": "intervention",
+      "fixture": "tests/schema_validation/fixtures/issue-18/intervention/application-invalid/duplicate-logical-provider.json",
+      "coverage_id": "portia.issue18.intervention.duplicate_logical_provider",
+      "expectation": "Intervention provider set repeats a logical participant",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/intervention/manifest.json"
+    },
+    {
+      "group": "intervention",
+      "fixture": "tests/schema_validation/fixtures/issue-18/intervention/application-invalid/self-supersession.json",
+      "coverage_id": "portia.issue18.intervention.self_supersession",
+      "expectation": "Intervention cannot supersede itself",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/intervention/manifest.json"
+    },
+    {
+      "group": "intervention",
+      "fixture": "tests/schema_validation/fixtures/issue-18/intervention/application-invalid/mixed-supersession-reasons.json",
+      "coverage_id": "portia.issue18.intervention.mixed_supersession_reasons",
+      "expectation": "mixed Intervention supersession reasons",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/intervention/manifest.json"
+    },
+    {
+      "group": "intervention",
+      "fixture": "tests/schema_validation/fixtures/issue-18/intervention/application-invalid/duplicate-consolidation-one-predecessor.json",
+      "coverage_id": "portia.issue18.intervention.duplicate_consolidation_one_predecessor",
+      "expectation": "duplicate consolidation needs two Intervention predecessors",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/intervention/manifest.json"
+    },
+    {
+      "group": "intervention",
+      "fixture": "tests/schema_validation/fixtures/issue-18/intervention/application-invalid/ordinary-correction-cross-work.json",
+      "coverage_id": "portia.issue18.intervention.ordinary_correction_cross_work",
+      "expectation": "ordinary Intervention correction cannot cross Support Process roots",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/intervention/manifest.json"
+    },
+    {
+      "group": "intervention",
+      "fixture": "tests/schema_validation/fixtures/issue-18/intervention/application-invalid/plan-adaptation-cross-work.json",
+      "coverage_id": "portia.issue18.intervention.plan_adaptation_cross_work",
+      "expectation": "plan adaptation cannot cross Support Process roots",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/intervention/manifest.json"
+    },
+    {
+      "group": "intervention",
+      "fixture": "tests/schema_validation/fixtures/issue-18/intervention/application-invalid/work-root-correction-changed-id.json",
+      "coverage_id": "portia.issue18.intervention.work_root_correction_changed_id",
+      "expectation": "work-root correction must preserve Intervention ID",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/intervention/manifest.json"
+    },
+    {
+      "group": "implementation",
+      "fixture": "tests/schema_validation/fixtures/issue-18/implementation/application-invalid/ended-before-started.json",
+      "coverage_id": "portia.issue18.implementation.ended_before_started",
+      "expectation": "ended_at precedes started_at",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/implementation/manifest.json"
+    },
+    {
+      "group": "implementation",
+      "fixture": "tests/schema_validation/fixtures/issue-18/implementation/application-invalid/created-before-started.json",
+      "coverage_id": "portia.issue18.implementation.created_before_started",
+      "expectation": "created_at precedes started_at",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/implementation/manifest.json"
+    },
+    {
+      "group": "implementation",
+      "fixture": "tests/schema_validation/fixtures/issue-18/implementation/application-invalid/updated-before-created.json",
+      "coverage_id": "portia.issue18.implementation.updated_before_created",
+      "expectation": "updated_at precedes created_at",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/implementation/manifest.json"
+    },
+    {
+      "group": "implementation",
+      "fixture": "tests/schema_validation/fixtures/issue-18/implementation/application-invalid/active-import.json",
+      "coverage_id": "portia.issue18.implementation.active_import",
+      "expectation": "paper/import activation requires accepted review history",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/implementation/manifest.json"
+    },
+    {
+      "group": "implementation",
+      "fixture": "tests/schema_validation/fixtures/issue-18/implementation/application-invalid/active-paper.json",
+      "coverage_id": "portia.issue18.implementation.active_paper",
+      "expectation": "paper/import activation requires accepted review history",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/implementation/manifest.json"
+    },
+    {
+      "group": "implementation",
+      "fixture": "tests/schema_validation/fixtures/issue-18/implementation/application-invalid/unknown-digital.json",
+      "coverage_id": "portia.issue18.implementation.unknown_digital",
+      "expectation": "unknown execution_state is import-only",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/implementation/manifest.json"
+    },
+    {
+      "group": "implementation",
+      "fixture": "tests/schema_validation/fixtures/issue-18/implementation/application-invalid/unknown-paper.json",
+      "coverage_id": "portia.issue18.implementation.unknown_paper",
+      "expectation": "unknown execution_state is import-only",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/implementation/manifest.json"
+    },
+    {
+      "group": "implementation",
+      "fixture": "tests/schema_validation/fixtures/issue-18/implementation/application-invalid/unresolved-plan.json",
+      "coverage_id": "portia.issue18.implementation.unresolved_plan",
+      "expectation": "Implementation plan ref does not resolve in owning Support Process",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/implementation/manifest.json"
+    },
+    {
+      "group": "implementation",
+      "fixture": "tests/schema_validation/fixtures/issue-18/implementation/application-invalid/unresolved-target.json",
+      "coverage_id": "portia.issue18.implementation.unresolved_target",
+      "expectation": "Implementation actual target does not resolve in owning Support Process",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/implementation/manifest.json"
+    },
+    {
+      "group": "implementation",
+      "fixture": "tests/schema_validation/fixtures/issue-18/implementation/application-invalid/unresolved-provider.json",
+      "coverage_id": "portia.issue18.implementation.unresolved_provider",
+      "expectation": "Implementation provider Participant ref does not resolve in owning Support Process",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/implementation/manifest.json"
+    },
+    {
+      "group": "implementation",
+      "fixture": "tests/schema_validation/fixtures/issue-18/implementation/application-invalid/duplicate-logical-provider.json",
+      "coverage_id": "portia.issue18.implementation.duplicate_logical_provider",
+      "expectation": "Implementation provider set repeats a logical participant",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/implementation/manifest.json"
+    },
+    {
+      "group": "implementation",
+      "fixture": "tests/schema_validation/fixtures/issue-18/implementation/application-invalid/provider-diff-without-variation.json",
+      "coverage_id": "portia.issue18.implementation.provider_diff_without_variation",
+      "expectation": "provider variation is required when actual provider differs from plan",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/implementation/manifest.json"
+    },
+    {
+      "group": "implementation",
+      "fixture": "tests/schema_validation/fixtures/issue-18/implementation/application-invalid/target-diff-without-variation.json",
+      "coverage_id": "portia.issue18.implementation.target_diff_without_variation",
+      "expectation": "target variation is required when actual target differs from plan",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/implementation/manifest.json"
+    },
+    {
+      "group": "implementation",
+      "fixture": "tests/schema_validation/fixtures/issue-18/implementation/application-invalid/provider-diff-wrong-variation-kind.json",
+      "coverage_id": "portia.issue18.implementation.provider_diff_wrong_variation_kind",
+      "expectation": "provider variation is required when actual provider differs from plan",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/implementation/manifest.json"
+    },
+    {
+      "group": "implementation",
+      "fixture": "tests/schema_validation/fixtures/issue-18/implementation/application-invalid/target-diff-wrong-variation-kind.json",
+      "coverage_id": "portia.issue18.implementation.target_diff_wrong_variation_kind",
+      "expectation": "target variation is required when actual target differs from plan",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/implementation/manifest.json"
+    },
+    {
+      "group": "implementation",
+      "fixture": "tests/schema_validation/fixtures/issue-18/implementation/application-invalid/self-supersession.json",
+      "coverage_id": "portia.issue18.implementation.self_supersession",
+      "expectation": "Implementation cannot supersede itself",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/implementation/manifest.json"
+    },
+    {
+      "group": "implementation",
+      "fixture": "tests/schema_validation/fixtures/issue-18/implementation/application-invalid/mixed-supersession-reasons.json",
+      "coverage_id": "portia.issue18.implementation.mixed_supersession_reasons",
+      "expectation": "mixed Implementation supersession reasons",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/implementation/manifest.json"
+    },
+    {
+      "group": "implementation",
+      "fixture": "tests/schema_validation/fixtures/issue-18/implementation/application-invalid/duplicate-consolidation-one-predecessor.json",
+      "coverage_id": "portia.issue18.implementation.duplicate_consolidation_one_predecessor",
+      "expectation": "duplicate consolidation needs two Implementation predecessors",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/implementation/manifest.json"
+    },
+    {
+      "group": "implementation",
+      "fixture": "tests/schema_validation/fixtures/issue-18/implementation/application-invalid/ordinary-correction-two-predecessors.json",
+      "coverage_id": "portia.issue18.implementation.ordinary_correction_two_predecessors",
+      "expectation": "ordinary Implementation correction is one-to-one",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/implementation/manifest.json"
+    },
+    {
+      "group": "implementation",
+      "fixture": "tests/schema_validation/fixtures/issue-18/implementation/application-invalid/ordinary-correction-cross-work.json",
+      "coverage_id": "portia.issue18.implementation.ordinary_correction_cross_work",
+      "expectation": "ordinary Implementation correction cannot cross Support Process roots",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/implementation/manifest.json"
+    },
+    {
+      "group": "implementation",
+      "fixture": "tests/schema_validation/fixtures/issue-18/implementation/application-invalid/work-root-correction-same-work.json",
+      "coverage_id": "portia.issue18.implementation.work_root_correction_same_work",
+      "expectation": "work-root correction requires a different Support Process root",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/implementation/manifest.json"
+    },
+    {
+      "group": "implementation",
+      "fixture": "tests/schema_validation/fixtures/issue-18/implementation/application-invalid/work-root-correction-changed-id.json",
+      "coverage_id": "portia.issue18.implementation.work_root_correction_changed_id",
+      "expectation": "work-root correction must preserve Implementation ID",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/implementation/manifest.json"
+    },
+    {
+      "group": "fidelity",
+      "fixture": "tests/schema_validation/fixtures/issue-18/fidelity/application-invalid/created-before-evaluated.json",
+      "coverage_id": "portia.issue18.fidelity.created_before_evaluated",
+      "expectation": "created_at precedes evaluated_at",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/fidelity/manifest.json"
+    },
+    {
+      "group": "fidelity",
+      "fixture": "tests/schema_validation/fixtures/issue-18/fidelity/application-invalid/updated-before-created.json",
+      "coverage_id": "portia.issue18.fidelity.updated_before_created",
+      "expectation": "updated_at precedes created_at",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/fidelity/manifest.json"
+    },
+    {
+      "group": "fidelity",
+      "fixture": "tests/schema_validation/fixtures/issue-18/fidelity/application-invalid/active-import.json",
+      "coverage_id": "portia.issue18.fidelity.active_import",
+      "expectation": "paper/import activation requires accepted review history",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/fidelity/manifest.json"
+    },
+    {
+      "group": "fidelity",
+      "fixture": "tests/schema_validation/fixtures/issue-18/fidelity/application-invalid/active-paper.json",
+      "coverage_id": "portia.issue18.fidelity.active_paper",
+      "expectation": "paper/import activation requires accepted review history",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/fidelity/manifest.json"
+    },
+    {
+      "group": "fidelity",
+      "fixture": "tests/schema_validation/fixtures/issue-18/fidelity/application-invalid/unresolved-plan.json",
+      "coverage_id": "portia.issue18.fidelity.unresolved_plan",
+      "expectation": "Fidelity plan ref does not resolve in owning Support Process",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/fidelity/manifest.json"
+    },
+    {
+      "group": "fidelity",
+      "fixture": "tests/schema_validation/fixtures/issue-18/fidelity/application-invalid/unresolved-evaluator.json",
+      "coverage_id": "portia.issue18.fidelity.unresolved_evaluator",
+      "expectation": "Fidelity evaluator Participant ref does not resolve in owning Support Process",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/fidelity/manifest.json"
+    },
+    {
+      "group": "fidelity",
+      "fixture": "tests/schema_validation/fixtures/issue-18/fidelity/application-invalid/unresolved-scope-implementation.json",
+      "coverage_id": "portia.issue18.fidelity.unresolved_scope_implementation",
+      "expectation": "Fidelity scope Implementation ref does not resolve in owning Support Process",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/fidelity/manifest.json"
+    },
+    {
+      "group": "fidelity",
+      "fixture": "tests/schema_validation/fixtures/issue-18/fidelity/application-invalid/scope-implementation-wrong-plan.json",
+      "coverage_id": "portia.issue18.fidelity.scope_implementation_wrong_plan",
+      "expectation": "Fidelity scope Implementation must reference the same exact plan",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/fidelity/manifest.json"
+    },
+    {
+      "group": "fidelity",
+      "fixture": "tests/schema_validation/fixtures/issue-18/fidelity/application-invalid/implementation-set-mixed-plans.json",
+      "coverage_id": "portia.issue18.fidelity.implementation_set_mixed_plans",
+      "expectation": "Fidelity scope Implementation must reference the same exact plan",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/fidelity/manifest.json"
+    },
+    {
+      "group": "fidelity",
+      "fixture": "tests/schema_validation/fixtures/issue-18/fidelity/application-invalid/interval-ended-before-started.json",
+      "coverage_id": "portia.issue18.fidelity.interval_ended_before_started",
+      "expectation": "Fidelity bounded interval ended_at precedes started_at",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/fidelity/manifest.json"
+    },
+    {
+      "group": "fidelity",
+      "fixture": "tests/schema_validation/fixtures/issue-18/fidelity/application-invalid/unresolved-basis-record.json",
+      "coverage_id": "portia.issue18.fidelity.unresolved_basis_record",
+      "expectation": "Fidelity basis record ref does not resolve in owning Support Process",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/fidelity/manifest.json"
+    },
+    {
+      "group": "fidelity",
+      "fixture": "tests/schema_validation/fixtures/issue-18/fidelity/application-invalid/instrument-scale-reversed.json",
+      "coverage_id": "portia.issue18.fidelity.instrument_scale_reversed",
+      "expectation": "instrument scale_minimum must be less than scale_maximum",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/fidelity/manifest.json"
+    },
+    {
+      "group": "fidelity",
+      "fixture": "tests/schema_validation/fixtures/issue-18/fidelity/application-invalid/instrument-value-below-scale.json",
+      "coverage_id": "portia.issue18.fidelity.instrument_value_below_scale",
+      "expectation": "instrument value must fall within declared scale",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/fidelity/manifest.json"
+    },
+    {
+      "group": "fidelity",
+      "fixture": "tests/schema_validation/fixtures/issue-18/fidelity/application-invalid/instrument-value-above-scale.json",
+      "coverage_id": "portia.issue18.fidelity.instrument_value_above_scale",
+      "expectation": "instrument value must fall within declared scale",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/fidelity/manifest.json"
+    },
+    {
+      "group": "fidelity",
+      "fixture": "tests/schema_validation/fixtures/issue-18/fidelity/application-invalid/self-supersession.json",
+      "coverage_id": "portia.issue18.fidelity.self_supersession",
+      "expectation": "Fidelity cannot supersede itself",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/fidelity/manifest.json"
+    },
+    {
+      "group": "fidelity",
+      "fixture": "tests/schema_validation/fixtures/issue-18/fidelity/application-invalid/mixed-supersession-reasons.json",
+      "coverage_id": "portia.issue18.fidelity.mixed_supersession_reasons",
+      "expectation": "mixed Fidelity supersession reasons",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/fidelity/manifest.json"
+    },
+    {
+      "group": "fidelity",
+      "fixture": "tests/schema_validation/fixtures/issue-18/fidelity/application-invalid/duplicate-consolidation-one-predecessor.json",
+      "coverage_id": "portia.issue18.fidelity.duplicate_consolidation_one_predecessor",
+      "expectation": "duplicate consolidation needs two Fidelity predecessors",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/fidelity/manifest.json"
+    },
+    {
+      "group": "fidelity",
+      "fixture": "tests/schema_validation/fixtures/issue-18/fidelity/application-invalid/ordinary-correction-two-predecessors.json",
+      "coverage_id": "portia.issue18.fidelity.ordinary_correction_two_predecessors",
+      "expectation": "ordinary Fidelity correction is one-to-one",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/fidelity/manifest.json"
+    },
+    {
+      "group": "fidelity",
+      "fixture": "tests/schema_validation/fixtures/issue-18/fidelity/application-invalid/ordinary-correction-cross-work.json",
+      "coverage_id": "portia.issue18.fidelity.ordinary_correction_cross_work",
+      "expectation": "ordinary Fidelity correction cannot cross Support Process roots",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/fidelity/manifest.json"
+    },
+    {
+      "group": "fidelity",
+      "fixture": "tests/schema_validation/fixtures/issue-18/fidelity/application-invalid/work-root-correction-same-work.json",
+      "coverage_id": "portia.issue18.fidelity.work_root_correction_same_work",
+      "expectation": "work-root correction requires a different Support Process root",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/fidelity/manifest.json"
+    },
+    {
+      "group": "fidelity",
+      "fixture": "tests/schema_validation/fixtures/issue-18/fidelity/application-invalid/work-root-correction-changed-id.json",
+      "coverage_id": "portia.issue18.fidelity.work_root_correction_changed_id",
+      "expectation": "work-root correction must preserve Fidelity ID",
+      "source_manifest": "tests/schema_validation/fixtures/issue-18/fidelity/manifest.json"
+    }
+  ],
+  "programmatic_invariants": [
+    {
+      "group": "cross_record_shared_infrastructure",
+      "coverage_id": "portia.issue18.integration.exact_reference_resolution",
+      "expectation": "Exact Need/Goal/provider/plan/Implementation/Fidelity references resolve inside one Support Process.",
+      "test": "tests/schema_validation/test_issue_18_shared_infrastructure_integration.py::Issue18SharedInfrastructureIntegrationTests.test_end_to_end_exact_references_resolve_within_one_support_process"
+    },
+    {
+      "group": "cross_record_shared_infrastructure",
+      "coverage_id": "portia.issue18.integration.work_relationship_narrowness",
+      "expectation": "Support Process Event context reuses work_relationship@2 without becoming a generic support link.",
+      "test": "tests/schema_validation/test_issue_18_shared_infrastructure_integration.py::Issue18SharedInfrastructureIntegrationTests.test_work_relationship_v2_does_not_become_generic_support_link"
+    },
+    {
+      "group": "cross_record_shared_infrastructure",
+      "coverage_id": "portia.issue18.integration.operation_exact_targets",
+      "expectation": "Shared exact operational targets accept the Support Process and its child records.",
+      "test": "tests/schema_validation/test_issue_18_shared_infrastructure_integration.py::Issue18SharedInfrastructureIntegrationTests.test_exact_operation_targets_accept_support_process_and_children"
+    },
+    {
+      "group": "cross_record_shared_infrastructure",
+      "coverage_id": "portia.issue18.integration.derived_nonauthoritative",
+      "expectation": "Derived selection remains nonauthoritative and cannot substitute for canonical domain state.",
+      "test": "tests/schema_validation/test_issue_18_shared_infrastructure_integration.py::Issue18SharedInfrastructureIntegrationTests.test_derived_current_pointer_is_not_authoritative_domain_state"
+    },
+    {
+      "group": "cross_record_shared_infrastructure",
+      "coverage_id": "portia.issue18.integration.no_amendment_paths",
+      "expectation": "Issue #18 v1 families expose no Amendment paths.",
+      "test": "tests/schema_validation/test_issue_18_shared_infrastructure_integration.py::Issue18SharedInfrastructureIntegrationTests.test_issue18_families_expose_no_v1_amendment_paths"
+    },
+    {
+      "group": "cross_record_shared_infrastructure",
+      "coverage_id": "portia.issue18.integration.lifecycle_progress_separation",
+      "expectation": "Canonical lifecycle remains separate from workflow/plan/execution/Fidelity state.",
+      "test": "tests/schema_validation/test_issue_18_shared_infrastructure_integration.py::Issue18SharedInfrastructureIntegrationTests.test_canonical_lifecycle_is_separate_from_domain_progress_state"
+    },
+    {
+      "group": "cross_record_shared_infrastructure",
+      "coverage_id": "portia.issue18.integration.adaptation_exactness",
+      "expectation": "Plan adaptation does not silently retarget existing exact references.",
+      "test": "tests/schema_validation/test_issue_18_shared_infrastructure_integration.py::Issue18SharedInfrastructureIntegrationTests.test_plan_adaptation_does_not_retarget_existing_exact_refs"
+    },
+    {
+      "group": "cross_record_shared_infrastructure",
+      "coverage_id": "portia.issue18.integration.schedule_not_implementation",
+      "expectation": "A schedule does not fabricate Implementation.",
+      "test": "tests/schema_validation/test_issue_18_shared_infrastructure_integration.py::Issue18SharedInfrastructureIntegrationTests.test_human_authored_schedule_does_not_create_implementation"
+    },
+    {
+      "group": "cross_record_shared_infrastructure",
+      "coverage_id": "portia.issue18.integration.implementation_not_fidelity",
+      "expectation": "Implementation history does not fabricate or infer Fidelity.",
+      "test": "tests/schema_validation/test_issue_18_shared_infrastructure_integration.py::Issue18SharedInfrastructureIntegrationTests.test_implementation_history_does_not_create_or_infer_fidelity"
+    },
+    {
+      "group": "cross_record_shared_infrastructure",
+      "coverage_id": "portia.issue18.integration.communication_not_implementation",
+      "expectation": "Support coordination Communication does not establish service delivery or Implementation.",
+      "test": "tests/schema_validation/test_issue_18_shared_infrastructure_integration.py::Issue18SharedInfrastructureIntegrationTests.test_support_process_communication_does_not_establish_implementation"
+    },
+    {
+      "group": "cross_record_shared_infrastructure",
+      "coverage_id": "portia.issue18.integration.paper_import_guardrails",
+      "expectation": "Paper/import material cannot fabricate current accepted support history.",
+      "test": "tests/schema_validation/test_issue_18_shared_infrastructure_integration.py::Issue18SharedInfrastructureIntegrationTests.test_paper_and_import_guardrails_do_not_fabricate_current_support_history"
+    },
+    {
+      "group": "cross_record_shared_infrastructure",
+      "coverage_id": "portia.issue18.integration.no_academic_publication",
+      "expectation": "Portia-native support records do not become academic results or publication envelopes.",
+      "test": "tests/schema_validation/test_issue_18_shared_infrastructure_integration.py::Issue18SharedInfrastructureIntegrationTests.test_issue18_native_records_do_not_become_academic_results_or_publication_envelopes"
+    },
+    {
+      "group": "cross_record_shared_infrastructure",
+      "coverage_id": "portia.issue18.integration.no_automatic_judgment",
+      "expectation": "Canonical contracts contain no automatic diagnosis/function/risk/recommendation/effectiveness judgment fields.",
+      "test": "tests/schema_validation/test_issue_18_shared_infrastructure_integration.py::Issue18SharedInfrastructureIntegrationTests.test_no_automatic_support_judgment_fields_appear_in_canonical_contracts"
+    }
+  ]
+}

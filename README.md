@@ -33,6 +33,32 @@ content. Issue #17 also validates exact Contact Point history, typed record rela
 schema-local attachment references, successor-based correction, and shared
 lifecycle/migration/operation/derived compatibility.
 
+
+### Issue #18 current implementation
+
+The current architecture now includes **accepted ADR 0014 for Support Process,
+Support, Intervention, Implementation, and Fidelity**.
+
+The active domain targets now include **Support Process v1, Support Process
+Participant v1, Support Need v1, Support Goal v1, Support v1, Intervention v1,
+Implementation v1, and Fidelity v1** plus `planned_schedule@1`. The existing
+`sup_` Support Process identity is reused; additive child identities are `spp_`,
+`spn_`, `spg_`, `spt_`, `int_`, `imp_`, and `fid_`.
+
+The implementation preserves **planned activity ≠ actual Implementation**,
+**Implementation ≠ Fidelity**, and **Fidelity ≠ Outcome**. Workflow/plan/
+execution state is distinct from canonical lifecycle and from effectiveness.
+
+Support Process-owned Communication is now resolvable/current-use eligible
+without changing `communication@1`; **Communication is not Implementation**.
+`work_relationship@2` is reused narrowly for Support Process
+`draws_context_from` Event context.
+
+Core v0.6 `intervention_record_set` remains a future privacy-minimized
+publication projection over Portia-native authority. Issue #18 does not create
+Academic Work Registration, academic results, Scores, standards ratings, Grades,
+automatic Meridian publication, or automatic portfolio publication.
+
 ## Product Position
 
 Portia is designed as:
