@@ -1,0 +1,217 @@
+{
+  "exact_support_process_ref": {
+    "module_id": "portia",
+    "class_id": "english10_p2",
+    "work_id": "sup_support_1",
+    "work_kind": "support_process",
+    "contract_version": "1"
+  },
+  "exact_event_ref": {
+    "module_id": "portia",
+    "class_id": "english10_p2",
+    "work_id": "evt_context_1",
+    "work_kind": "event",
+    "contract_version": "2"
+  },
+  "operation_targets": [
+    {
+      "kind": "work",
+      "work_ref": {
+        "module_id": "portia",
+        "class_id": "english10_p2",
+        "work_id": "sup_support_1",
+        "work_kind": "support_process",
+        "contract_version": "1"
+      }
+    },
+    {
+      "kind": "work_record",
+      "work_record_ref": {
+        "work_ref": {
+          "module_id": "portia",
+          "class_id": "english10_p2",
+          "work_id": "sup_support_1",
+          "work_kind": "support_process",
+          "contract_version": "1"
+        },
+        "record_ref": {
+          "record_kind": "support_process_participant",
+          "record_id": "spp_student_1",
+          "contract_version": "1"
+        }
+      }
+    },
+    {
+      "kind": "work_record",
+      "work_record_ref": {
+        "work_ref": {
+          "module_id": "portia",
+          "class_id": "english10_p2",
+          "work_id": "sup_support_1",
+          "work_kind": "support_process",
+          "contract_version": "1"
+        },
+        "record_ref": {
+          "record_kind": "support_need",
+          "record_id": "spn_access_1",
+          "contract_version": "1"
+        }
+      }
+    },
+    {
+      "kind": "work_record",
+      "work_record_ref": {
+        "work_ref": {
+          "module_id": "portia",
+          "class_id": "english10_p2",
+          "work_id": "sup_support_1",
+          "work_kind": "support_process",
+          "contract_version": "1"
+        },
+        "record_ref": {
+          "record_kind": "support_goal",
+          "record_id": "spg_routine_1",
+          "contract_version": "1"
+        }
+      }
+    },
+    {
+      "kind": "work_record",
+      "work_record_ref": {
+        "work_ref": {
+          "module_id": "portia",
+          "class_id": "english10_p2",
+          "work_id": "sup_support_1",
+          "work_kind": "support_process",
+          "contract_version": "1"
+        },
+        "record_ref": {
+          "record_kind": "support",
+          "record_id": "spt_access_1",
+          "contract_version": "1"
+        }
+      }
+    },
+    {
+      "kind": "work_record",
+      "work_record_ref": {
+        "work_ref": {
+          "module_id": "portia",
+          "class_id": "english10_p2",
+          "work_id": "sup_support_1",
+          "work_kind": "support_process",
+          "contract_version": "1"
+        },
+        "record_ref": {
+          "record_kind": "intervention",
+          "record_id": "int_routine_1",
+          "contract_version": "1"
+        }
+      }
+    },
+    {
+      "kind": "work_record",
+      "work_record_ref": {
+        "work_ref": {
+          "module_id": "portia",
+          "class_id": "english10_p2",
+          "work_id": "sup_support_1",
+          "work_kind": "support_process",
+          "contract_version": "1"
+        },
+        "record_ref": {
+          "record_kind": "implementation",
+          "record_id": "imp_routine_1",
+          "contract_version": "1"
+        }
+      }
+    },
+    {
+      "kind": "work_record",
+      "work_record_ref": {
+        "work_ref": {
+          "module_id": "portia",
+          "class_id": "english10_p2",
+          "work_id": "sup_support_1",
+          "work_kind": "support_process",
+          "contract_version": "1"
+        },
+        "record_ref": {
+          "record_kind": "fidelity",
+          "record_id": "fid_routine_1",
+          "contract_version": "1"
+        }
+      }
+    },
+    {
+      "kind": "work_record",
+      "work_record_ref": {
+        "work_ref": {
+          "module_id": "portia",
+          "class_id": "english10_p2",
+          "work_id": "sup_support_1",
+          "work_kind": "support_process",
+          "contract_version": "1"
+        },
+        "record_ref": {
+          "record_kind": "communication",
+          "record_id": "comm_support_coordination_1",
+          "contract_version": "1"
+        }
+      }
+    }
+  ],
+  "derived_pointer": {
+    "schema_version": "1",
+    "record_type": "derived_current_pointer",
+    "module_id": "portia",
+    "projection_kind": "work_summary",
+    "projection_scope": {
+      "scope": "work",
+      "work_ref": {
+        "module_id": "portia",
+        "class_id": "english10_p2",
+        "work_id": "sup_support_1",
+        "work_kind": "support_process",
+        "contract_version": "1"
+      }
+    },
+    "generation_ref": {
+      "generation_id": "dgen_support_1",
+      "contract_version": "1"
+    }
+  },
+  "plan_successor_exactness": {
+    "original_plan_ref": {
+      "record_kind": "intervention",
+      "record_id": "int_routine_1",
+      "contract_version": "1"
+    },
+    "adapted_successor_ref": {
+      "record_kind": "intervention",
+      "record_id": "int_routine_2",
+      "contract_version": "1"
+    },
+    "implementation_plan_ref": {
+      "record_kind": "intervention",
+      "record_id": "int_routine_1",
+      "contract_version": "1"
+    },
+    "fidelity_plan_ref": {
+      "record_kind": "intervention",
+      "record_id": "int_routine_1",
+      "contract_version": "1"
+    },
+    "successor_reason": "plan_adapted"
+  },
+  "planning_without_history": {
+    "plan_ref": {
+      "record_kind": "intervention",
+      "record_id": "int_routine_1",
+      "contract_version": "1"
+    },
+    "has_schedule": true,
+    "implementation_refs": [],
+    "fidelity_refs": []
+  }
+}
