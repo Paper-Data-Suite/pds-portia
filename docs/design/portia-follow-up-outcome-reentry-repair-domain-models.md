@@ -1,6 +1,6 @@
 # Portia Follow-Up, Outcome, Reentry, and Repair Domain Models
 
-**Status:** Initial pre-ADR design
+**Status:** Accepted architecture (ADR 0015)
 **Issue:** `#19 — Define Follow-Up, Outcome, Reentry, and Repair domain models`
 **Date:** 2026-08-12
 **Expected ADR:** `0015`, if still free at ADR publication time
@@ -2134,7 +2134,82 @@ existing shared lifecycle and operational infrastructure
 The design should add only the four new semantic families plus independently
 justified primitives.
 
-The principal unresolved ADR question is how Support Process-owned downstream
-work references substantive perspective/direct measurement while Account and
-Observation remain Event-local. That issue must be demonstrated and resolved
-honestly before Outcome wire contracts are finalized.
+ADR 0015 resolves the principal evidence-owner question by preserving
+`account@1` / `observation@1` unchanged and authorizing additive
+`account@2` / `observation@2` contracts with explicit Event-or-Support-Process
+ownership. No fake Event is required for legitimate Support Process source
+evidence.
+
+## 52. ADR 0015 Resolution
+
+ADR 0015 is accepted.
+
+It confirms the leading work-local #19 architecture:
+
+```text
+Event or Support Process owner
+  ├─ Follow-Up
+  ├─ Outcome
+  ├─ Reentry
+  └─ Repair
+```
+
+and accepts candidate identifiers:
+
+```text
+Follow-Up  fup_
+Outcome    out_
+Reentry    ren_
+Repair     rpr_
+```
+
+The major pre-ADR evidence question is resolved additively:
+
+```text
+account@1 / observation@1
+→ remain immutable Event-local history
+
+account@2 / observation@2
+→ preserve the same evidence semantic units
+→ add explicit work_kind = event | support_process
+→ select owner-conditioned work_id and target family
+```
+
+A Support Process check-in or direct progress measurement therefore does not
+require a fabricated Event, and Outcome does not become a raw evidence
+container.
+
+ADR 0015 also confirms:
+
+- existing Event/Support Process target families are reused;
+- existing exact work/record references are reused;
+- Follow-Up owner/evaluator/coordinator/facilitator are explicit and distinct
+  from persistence attribution;
+- Support Process review uses Follow-Up + Outcome rather than broadening
+  Event-local `review@1`;
+- Outcome is bounded by scope, timeframe, evidence basis, result, and
+  limitations;
+- recurrence requires explicit coverage;
+- no universal effectiveness or causal score is introduced;
+- Reentry is not clearance/readiness;
+- Repair participation is neutral/voluntary and does not imply remorse,
+  forgiveness, truth, or relationship restoration;
+- Repair participants/actions remain embedded v1 process-local entries;
+- no #19 v1 Amendment paths are accepted;
+- shared lifecycle/correction/migration/removal/operation/derived contracts are
+  reused;
+- Core/Meridian publication remains a future privacy-minimized projection.
+
+The implementation sequence now places the evidence-version upgrade before the
+four #19 families:
+
+```text
+Slice 3  Account v2 + Observation v2
+Slice 4  #19 identifiers / proven prerequisites
+Slice 5  Follow-Up
+Slice 6  Outcome
+Slice 7  Reentry
+Slice 8  Repair
+Slice 9  shared-infrastructure integration
+Slice 10 final reconciliation / validation
+```
