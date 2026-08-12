@@ -816,6 +816,30 @@
         "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/communications/communication.schema.json",
         "path": "schemas/v1/communications/communication.schema.json"
       }
+    },
+    "portia_follow_up_id": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-follow-up-id.schema.json",
+        "path": "schemas/v1/identifiers/portia-follow-up-id.schema.json"
+      }
+    },
+    "portia_outcome_id": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-outcome-id.schema.json",
+        "path": "schemas/v1/identifiers/portia-outcome-id.schema.json"
+      }
+    },
+    "portia_reentry_id": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-reentry-id.schema.json",
+        "path": "schemas/v1/identifiers/portia-reentry-id.schema.json"
+      }
+    },
+    "portia_repair_id": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-repair-id.schema.json",
+        "path": "schemas/v1/identifiers/portia-repair-id.schema.json"
+      }
     }
   }
 }
