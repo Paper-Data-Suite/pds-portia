@@ -1,0 +1,126 @@
+{
+  "manifest_version": "1",
+  "issue": 18,
+  "contract": "fidelity",
+  "version": "1",
+  "valid": [
+    "one-implementation-direct-observation.json",
+    "implementation-set-record-basis.json",
+    "bounded-plan-interval-review.json",
+    "unscored-checklist.json",
+    "scored-instrument.json",
+    "combined-scored-basis.json",
+    "support-plan-fidelity.json",
+    "other-basis-with-detail.json",
+    "proposed-import-fidelity.json"
+  ],
+  "invalid": [
+    "wrong-record-type.json",
+    "wrong-id-prefix.json",
+    "wrong-work-prefix.json",
+    "wrong-plan-kind.json",
+    "wrong-evaluator-kind.json",
+    "unsupported-scope-kind.json",
+    "implementation-set-one-item.json",
+    "interval-missing-ended-at.json",
+    "unsupported-result.json",
+    "unsupported-basis-kind.json",
+    "other-basis-missing-detail.json",
+    "checklist-missing-instrument-use.json",
+    "scored-basis-missing-result.json",
+    "unscored-basis-with-result.json",
+    "instrument-result-without-instrument-basis.json",
+    "effectiveness-field.json",
+    "compliance-field.json",
+    "provider-competence-field.json",
+    "outcome-field.json",
+    "preallocated-paper.json",
+    "other-supersession-missing-detail.json"
+  ],
+  "application_invalid": [
+    {
+      "file": "created-before-evaluated.json",
+      "expected_error": "created_at precedes evaluated_at"
+    },
+    {
+      "file": "updated-before-created.json",
+      "expected_error": "updated_at precedes created_at"
+    },
+    {
+      "file": "active-import.json",
+      "expected_error": "paper/import activation requires accepted review history"
+    },
+    {
+      "file": "active-paper.json",
+      "expected_error": "paper/import activation requires accepted review history"
+    },
+    {
+      "file": "unresolved-plan.json",
+      "expected_error": "Fidelity plan ref does not resolve in owning Support Process"
+    },
+    {
+      "file": "unresolved-evaluator.json",
+      "expected_error": "Fidelity evaluator Participant ref does not resolve in owning Support Process"
+    },
+    {
+      "file": "unresolved-scope-implementation.json",
+      "expected_error": "Fidelity scope Implementation ref does not resolve in owning Support Process"
+    },
+    {
+      "file": "scope-implementation-wrong-plan.json",
+      "expected_error": "Fidelity scope Implementation must reference the same exact plan"
+    },
+    {
+      "file": "implementation-set-mixed-plans.json",
+      "expected_error": "Fidelity scope Implementation must reference the same exact plan"
+    },
+    {
+      "file": "interval-ended-before-started.json",
+      "expected_error": "Fidelity bounded interval ended_at precedes started_at"
+    },
+    {
+      "file": "unresolved-basis-record.json",
+      "expected_error": "Fidelity basis record ref does not resolve in owning Support Process"
+    },
+    {
+      "file": "instrument-scale-reversed.json",
+      "expected_error": "instrument scale_minimum must be less than scale_maximum"
+    },
+    {
+      "file": "instrument-value-below-scale.json",
+      "expected_error": "instrument value must fall within declared scale"
+    },
+    {
+      "file": "instrument-value-above-scale.json",
+      "expected_error": "instrument value must fall within declared scale"
+    },
+    {
+      "file": "self-supersession.json",
+      "expected_error": "Fidelity cannot supersede itself"
+    },
+    {
+      "file": "mixed-supersession-reasons.json",
+      "expected_error": "mixed Fidelity supersession reasons"
+    },
+    {
+      "file": "duplicate-consolidation-one-predecessor.json",
+      "expected_error": "duplicate consolidation needs two Fidelity predecessors"
+    },
+    {
+      "file": "ordinary-correction-two-predecessors.json",
+      "expected_error": "ordinary Fidelity correction is one-to-one"
+    },
+    {
+      "file": "ordinary-correction-cross-work.json",
+      "expected_error": "ordinary Fidelity correction cannot cross Support Process roots"
+    },
+    {
+      "file": "work-root-correction-same-work.json",
+      "expected_error": "work-root correction requires a different Support Process root"
+    },
+    {
+      "file": "work-root-correction-changed-id.json",
+      "expected_error": "work-root correction must preserve Fidelity ID"
+    }
+  ]
+}
