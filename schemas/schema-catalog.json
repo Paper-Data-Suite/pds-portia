@@ -852,6 +852,12 @@
         "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/outcomes/outcome.schema.json",
         "path": "schemas/v1/outcomes/outcome.schema.json"
       }
+    },
+    "reentry": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/reentries/reentry.schema.json",
+        "path": "schemas/v1/reentries/reentry.schema.json"
+      }
     }
   }
 }

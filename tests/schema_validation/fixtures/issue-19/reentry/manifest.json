@@ -1,0 +1,53 @@
+{
+  "manifest_version": "1",
+  "issue": 19,
+  "contract": "reentry",
+  "version": "1",
+  "valid": [
+    "event-planned-date-only.json",
+    "event-active-exact-time-response-context.json",
+    "event-date-window-determination-context.json",
+    "event-external-minimal-context.json",
+    "event-links-support-plans.json",
+    "support-planned-own-process-context.json",
+    "support-active-exact-window-communication.json",
+    "support-completed-event-context.json",
+    "support-other-context-and-element.json",
+    "support-proposed-import.json",
+    "event-timing-correction-successor.json"
+  ],
+  "invalid": [
+    "missing-work-kind.json",
+    "event-owner-support-id.json",
+    "event-owner-support-target.json",
+    "event-owner-support-coordinator.json",
+    "support-owner-event-coordinator.json",
+    "empty-planned-elements.json",
+    "window-missing-end.json",
+    "completed-missing-completed-at.json",
+    "planned-has-completed-at.json",
+    "external-context-unrestricted-payload.json",
+    "other-context-missing-detail.json",
+    "support-ref-non-plan-kind.json",
+    "clearance-field-prohibited.json",
+    "apology-requirement-prohibited.json",
+    "readiness-score-prohibited.json",
+    "wrong-id-family.json"
+  ],
+  "application_invalid": [
+    "active-event-roster-student-coordinator.json",
+    "active-event-descriptive-coordinator.json",
+    "active-event-unidentified-coordinator.json",
+    "support-coordinator-without-operational-context.json",
+    "active-import-without-review.json",
+    "updated-before-created.json",
+    "date-window-ends-before-start.json",
+    "exact-window-ends-before-start.json",
+    "initiating-context-other-class.json",
+    "support-ref-other-class.json",
+    "support-owned-plan-other-process.json",
+    "self-supersession.json",
+    "ordinary-correction-cross-work.json",
+    "duplicate-consolidation-one-predecessor.json"
+  ]
+}
