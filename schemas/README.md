@@ -1084,3 +1084,45 @@ Quarantine enforcement, projection builders, or teacher-facing maintenance.
 From the repository root, run:
 
     python -m unittest discover -s tests/schema_validation -p "test_*.py"
+
+## Follow-Up, Outcome, Reentry, and Repair contracts
+
+Issue #19 publishes the downstream teacher-local documentation/evaluation layer
+accepted by ADR 0015.
+
+Opaque identifiers:
+
+- Follow-Up: `fup_`
+- Outcome: `out_`
+- Reentry: `ren_`
+- Repair: `rpr_`
+
+Canonical current-use contracts include:
+
+```text
+account@2
+observation@2
+follow_up@1
+outcome@1
+reentry@1
+repair@1
+```
+
+`account@2` and `observation@2` add explicit `event | support_process`
+ownership while preserving the source-evidence semantics of v1. Published v1
+schemas remain unchanged.
+
+Issue #19 adds no generic target or exact-reference family. Event-owned records
+reuse `portia_target_ref@1`; Support-Process-owned records reuse
+`support_process_target_ref@1`; cross-work history/context uses existing exact
+Portia work/record references.
+
+Follow-Up completion links produced records without embedding their substantive
+payload. Outcome is an attributed bounded evaluation and not raw evidence,
+Fidelity, workflow completion, Grade, or causal-effect estimate. Reentry is not
+clearance/readiness/access authority. Repair participant/action entries are
+embedded process-local values; no public `repair_participant@1` or
+`repair_action@1` contract is published.
+
+All four v1 families use successor/history semantics for material correction,
+expose no v1 Amendment path, and preserve exact historical references.

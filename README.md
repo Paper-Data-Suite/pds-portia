@@ -1302,3 +1302,41 @@ Likely next work includes:
 ## License
 
 Licensing information will be documented before an initial software release.
+
+### Issue #19 current implementation
+
+Issue #19 is implemented under **accepted ADR 0015** for Follow-Up, Outcome,
+Reentry, and Repair. The current published downstream surface is **Account v2,
+Observation v2, Follow-Up v1, Outcome v1, Reentry v1, and Repair v1**.
+Account/Observation v1 remain immutable Event-local representations; v2 adds
+explicit Event-or-Support-Process ownership without forcing fake Events.
+
+The governing separations include:
+
+```text
+scheduled Follow-Up ≠ completed Follow-Up
+completed Follow-Up ≠ favorable Outcome
+Account / Observation ≠ Outcome evaluation
+Implementation completed ≠ Support effective
+Fidelity as_planned ≠ Support effective
+Support Process completed ≠ causal success / resolution
+Reentry completed ≠ clearance / compliance / rehabilitation
+Repair completed ≠ remorse / forgiveness / relationship restoration / admission
+temporal sequence or exact linkage ≠ causation
+```
+
+Support Process review is modeled through Follow-Up and, when a bounded human
+evaluation is made, Outcome rather than by broadening Event-local Review.
+Reentry exact-links existing Support/Intervention plans rather than cloning
+them. Repair participants and agreed actions remain embedded process-local
+entries; participation and completion are neutral workflow facts.
+
+Issue #19 reuses exact work/record references, lifecycle/history, disagreement,
+dependency, migration/removal, operation/lock, Quarantine/Integrity Finding,
+and derived-state infrastructure. Exact refs never silently follow successors.
+
+Core v0.6 `intervention_record_set` / `intervention_outcomes` remains a future
+privacy-minimized publication projection over Portia-native semantics. Issue #19
+does not add a Meridian adapter, Score, standards rating, Grade, or automatic
+portfolio publication. Paper/import operationalization remains Issue #20 and
+privacy/redaction/export/retention remains Issue #21.

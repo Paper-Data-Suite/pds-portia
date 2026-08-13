@@ -2213,3 +2213,59 @@ Slice 8  Repair
 Slice 9  shared-infrastructure integration
 Slice 10 final reconciliation / validation
 ```
+
+# Current implementation reconciliation (Issue #19 closeout)
+
+The accepted ADR 0015 architecture is now implemented.
+
+Published/current-use surface:
+
+```text
+account@2
+observation@2
+
+follow_up@1    fup_
+outcome@1      out_
+reentry@1      ren_
+repair@1       rpr_
+```
+
+Account/Observation v1 remain immutable. Their v2 contracts generalize ownership
+to `event | support_process` while preserving source-evidence semantics and
+exact predecessor history.
+
+The four Issue #19 families are canonical children of Event or Support Process,
+reuse the accepted owner-conditioned target families, and use existing exact
+work/record references. No generic #19 target/reference family was required.
+
+Implementation validation confirms:
+
+```text
+planned/completed Follow-Up ≠ Outcome
+Account/Observation ≠ Outcome
+Implementation/Fidelity ≠ Outcome
+Outcome ≠ causal-effect estimate
+Reentry completion ≠ clearance
+Repair participation/completion ≠ admission/remorse/forgiveness
+workflow completion ≠ success/resolution
+record sequence/linkage ≠ causation
+```
+
+Shared disagreement, dependency, migration, Event-oriented ownership correction
+where applicable, exceptional removal, coordinated operation/lock,
+Quarantine/Integrity Finding, and derived-state contracts remain reusable.
+Derived state is nonauthoritative and exact refs do not silently follow
+successors.
+
+The final closeout artifacts are:
+
+```text
+docs/examples/portia-follow-up-outcome-reentry-repair-examples.md
+docs/validation/issue-19-application-invalid-matrix.json
+docs/validation/issue-19-acceptance-matrix.json
+docs/validation/issue-19-follow-up-outcome-reentry-repair-validation.md
+docs/validation/issue-19-final-repository-checkpoint.md
+```
+
+Issue #20 remains authoritative for paper/PDS2/import operationalization and
+Issue #21 for privacy/redaction/export/retention/Sunset integration.

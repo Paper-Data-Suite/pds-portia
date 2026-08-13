@@ -1635,3 +1635,42 @@ ADR 0014 resolves the required decisions as follows:
 The accepted architecture now authorizes additive schema implementation and
 fixture/test work. Any later discovery of a genuine wire incompatibility must use
 an explicit new contract version rather than mutate a published `$id`.
+
+# Current downstream Follow-Up / Outcome / Reentry / Repair boundary (Issue #19)
+
+Issue #19 now implements the downstream layer intentionally deferred by ADR
+0014.
+
+A Support Process may own:
+
+```text
+Follow-Up
+Outcome
+Reentry
+Repair
+```
+
+without changing the meaning of Need, Goal, Support, Intervention,
+Implementation, or Fidelity.
+
+Key boundaries remain:
+
+```text
+Goal criteria ≠ Goal attainment
+plan completion ≠ effectiveness
+Implementation completion ≠ effectiveness
+Fidelity as_planned ≠ effectiveness
+Support Process completion ≠ causal success / resolution
+```
+
+Support Process review uses Follow-Up plus optional bounded Outcome rather than
+broadening Event-local Review. A human Follow-Up disposition may inform a later
+workflow operation but does not itself mutate Support Process or plan state.
+
+Outcome exact-links evidence and explicit scope/timeframe; it does not convert
+Fidelity or Event counts into automatic effectiveness. Reentry exact-links
+existing plans rather than cloning them. Repair completion does not establish
+remorse, forgiveness, rehabilitation, or relationship restoration.
+
+Cross-year continuity remains `continues_from`; old Issue #19 child records stay
+with their original exact Support Process history.
