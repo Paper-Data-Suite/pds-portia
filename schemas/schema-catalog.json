@@ -846,6 +846,12 @@
         "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/follow-ups/follow-up.schema.json",
         "path": "schemas/v1/follow-ups/follow-up.schema.json"
       }
+    },
+    "outcome": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/outcomes/outcome.schema.json",
+        "path": "schemas/v1/outcomes/outcome.schema.json"
+      }
     }
   }
 }
