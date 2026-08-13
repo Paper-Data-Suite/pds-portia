@@ -1,0 +1,397 @@
+{
+  "exact_event_ref": {
+    "module_id": "portia",
+    "class_id": "english10_p2",
+    "work_id": "evt_issue19_integration",
+    "work_kind": "event",
+    "contract_version": "2"
+  },
+  "exact_support_process_ref": {
+    "module_id": "portia",
+    "class_id": "english10_p2",
+    "work_id": "sup_issue19_integration",
+    "work_kind": "support_process",
+    "contract_version": "1"
+  },
+  "operation_targets": [
+    {
+      "kind": "work_record",
+      "work_record_ref": {
+        "work_ref": {
+          "module_id": "portia",
+          "class_id": "english10_p2",
+          "work_id": "evt_issue19_integration",
+          "work_kind": "event",
+          "contract_version": "2"
+        },
+        "record_ref": {
+          "record_kind": "follow_up",
+          "record_id": "fup_issue19_integration",
+          "contract_version": "1"
+        }
+      }
+    },
+    {
+      "kind": "work_record",
+      "work_record_ref": {
+        "work_ref": {
+          "module_id": "portia",
+          "class_id": "english10_p2",
+          "work_id": "evt_issue19_integration",
+          "work_kind": "event",
+          "contract_version": "2"
+        },
+        "record_ref": {
+          "record_kind": "outcome",
+          "record_id": "out_issue19_integration",
+          "contract_version": "1"
+        }
+      }
+    },
+    {
+      "kind": "work_record",
+      "work_record_ref": {
+        "work_ref": {
+          "module_id": "portia",
+          "class_id": "english10_p2",
+          "work_id": "evt_issue19_integration",
+          "work_kind": "event",
+          "contract_version": "2"
+        },
+        "record_ref": {
+          "record_kind": "reentry",
+          "record_id": "ren_issue19_integration",
+          "contract_version": "1"
+        }
+      }
+    },
+    {
+      "kind": "work_record",
+      "work_record_ref": {
+        "work_ref": {
+          "module_id": "portia",
+          "class_id": "english10_p2",
+          "work_id": "evt_issue19_integration",
+          "work_kind": "event",
+          "contract_version": "2"
+        },
+        "record_ref": {
+          "record_kind": "repair",
+          "record_id": "rpr_issue19_integration",
+          "contract_version": "1"
+        }
+      }
+    },
+    {
+      "kind": "work_record",
+      "work_record_ref": {
+        "work_ref": {
+          "module_id": "portia",
+          "class_id": "english10_p2",
+          "work_id": "sup_issue19_integration",
+          "work_kind": "support_process",
+          "contract_version": "1"
+        },
+        "record_ref": {
+          "record_kind": "follow_up",
+          "record_id": "fup_issue19_integration",
+          "contract_version": "1"
+        }
+      }
+    },
+    {
+      "kind": "work_record",
+      "work_record_ref": {
+        "work_ref": {
+          "module_id": "portia",
+          "class_id": "english10_p2",
+          "work_id": "sup_issue19_integration",
+          "work_kind": "support_process",
+          "contract_version": "1"
+        },
+        "record_ref": {
+          "record_kind": "outcome",
+          "record_id": "out_issue19_integration",
+          "contract_version": "1"
+        }
+      }
+    },
+    {
+      "kind": "work_record",
+      "work_record_ref": {
+        "work_ref": {
+          "module_id": "portia",
+          "class_id": "english10_p2",
+          "work_id": "sup_issue19_integration",
+          "work_kind": "support_process",
+          "contract_version": "1"
+        },
+        "record_ref": {
+          "record_kind": "reentry",
+          "record_id": "ren_issue19_integration",
+          "contract_version": "1"
+        }
+      }
+    },
+    {
+      "kind": "work_record",
+      "work_record_ref": {
+        "work_ref": {
+          "module_id": "portia",
+          "class_id": "english10_p2",
+          "work_id": "sup_issue19_integration",
+          "work_kind": "support_process",
+          "contract_version": "1"
+        },
+        "record_ref": {
+          "record_kind": "repair",
+          "record_id": "rpr_issue19_integration",
+          "contract_version": "1"
+        }
+      }
+    }
+  ],
+  "dependency": {
+    "schema_version": "1",
+    "record_type": "dependency",
+    "module_id": "portia",
+    "class_id": "english10_p2",
+    "work_id": "sup_issue19_integration",
+    "dependency_id": "dep_issue19_outcome_evidence",
+    "status": "active",
+    "dependent": {
+      "kind": "local_record",
+      "record_ref": {
+        "record_kind": "outcome",
+        "record_id": "out_issue19_integration",
+        "contract_version": "1"
+      }
+    },
+    "dependency": {
+      "kind": "portia_record",
+      "work_record_ref": {
+        "work_ref": {
+          "module_id": "portia",
+          "class_id": "english10_p2",
+          "work_id": "evt_issue19_integration",
+          "work_kind": "event",
+          "contract_version": "2"
+        },
+        "record_ref": {
+          "record_kind": "observation",
+          "record_id": "obs_issue19_evidence",
+          "contract_version": "2"
+        }
+      }
+    },
+    "strength": "advisory",
+    "applies_to": "current_use",
+    "purpose": "evidentiary_support",
+    "creation_source": {
+      "type": "digital_entry"
+    },
+    "created_at": "2026-08-12T22:00:00-04:00",
+    "created_by": {
+      "type": "local_operator",
+      "display_label": "Synthetic Teacher"
+    },
+    "updated_at": "2026-08-12T22:00:00-04:00",
+    "updated_by": {
+      "type": "local_operator",
+      "display_label": "Synthetic Teacher"
+    }
+  },
+  "statement_of_disagreement": {
+    "schema_version": "1",
+    "record_type": "statement_of_disagreement",
+    "module_id": "portia",
+    "class_id": "english10_p2",
+    "work_id": "sup_issue19_integration",
+    "disagreement_id": "sod_issue19_outcome",
+    "status": "active",
+    "target": {
+      "kind": "local_record",
+      "record_ref": {
+        "record_kind": "outcome",
+        "record_id": "out_issue19_integration",
+        "contract_version": "1"
+      }
+    },
+    "source": {
+      "kind": "local_operator",
+      "display_label": "Synthetic Teacher"
+    },
+    "positions": [
+      "disputes_interpretation"
+    ],
+    "statement": {
+      "representation": "recorded_summary",
+      "text": "Synthetic disagreement preserved additively without rewriting the Outcome."
+    },
+    "creation_source": {
+      "type": "digital_entry"
+    },
+    "created_at": "2026-08-12T22:00:00-04:00",
+    "created_by": {
+      "type": "local_operator",
+      "display_label": "Synthetic Teacher"
+    },
+    "updated_at": "2026-08-12T22:00:00-04:00",
+    "updated_by": {
+      "type": "local_operator",
+      "display_label": "Synthetic Teacher"
+    }
+  },
+  "event_child_ownership_correction": {
+    "schema_version": "1",
+    "record_type": "ownership_correction",
+    "module_id": "portia",
+    "class_id": "english10_p2",
+    "work_id": "evt_issue19_integration",
+    "correction_id": "owc_issue19_event_child",
+    "correction_kind": "child_work_root",
+    "source": {
+      "kind": "work_record",
+      "work_record_ref": {
+        "work_ref": {
+          "module_id": "portia",
+          "class_id": "english10_p2",
+          "work_id": "evt_issue19_wrong_root",
+          "work_kind": "event",
+          "contract_version": "2"
+        },
+        "record_ref": {
+          "record_kind": "outcome",
+          "record_id": "out_issue19_wrong_root",
+          "contract_version": "1"
+        }
+      },
+      "observed_updated_at": "2026-08-12T20:00:00-04:00"
+    },
+    "destination": {
+      "kind": "work_record",
+      "work_record_ref": {
+        "work_ref": {
+          "module_id": "portia",
+          "class_id": "english10_p2",
+          "work_id": "evt_issue19_integration",
+          "work_kind": "event",
+          "contract_version": "2"
+        },
+        "record_ref": {
+          "record_kind": "outcome",
+          "record_id": "out_issue19_correct_root",
+          "contract_version": "1"
+        }
+      },
+      "observed_updated_at": "2026-08-12T21:00:00-04:00"
+    },
+    "reason": {
+      "code": "wrong_event_root"
+    },
+    "effective_at": "2026-08-12T21:30:00-04:00",
+    "creation_source": {
+      "type": "digital_entry"
+    },
+    "created_at": "2026-08-12T22:00:00-04:00",
+    "created_by": {
+      "type": "local_operator",
+      "display_label": "Synthetic Teacher"
+    }
+  },
+  "exceptional_removal": {
+    "schema_version": "1",
+    "record_type": "exceptional_removal",
+    "module_id": "portia",
+    "class_id": "english10_p2",
+    "removal_id": "rmv_issue19_repair_test_data",
+    "target": {
+      "kind": "work_record",
+      "work_record_ref": {
+        "work_ref": {
+          "module_id": "portia",
+          "class_id": "english10_p2",
+          "work_id": "sup_issue19_integration",
+          "work_kind": "support_process",
+          "contract_version": "1"
+        },
+        "record_ref": {
+          "record_kind": "repair",
+          "record_id": "rpr_issue19_integration",
+          "contract_version": "1"
+        }
+      }
+    },
+    "reason": {
+      "category": "administrative_test_data",
+      "code": "synthetic_fixture_cleanup"
+    },
+    "authorization": {
+      "decision_reference": "Synthetic fixture cleanup authorization",
+      "authorized_by": {
+        "type": "local_operator",
+        "display_label": "Synthetic Teacher"
+      }
+    },
+    "content_evidence": {
+      "kind": "salted_sha256",
+      "salt": "YWJjZA==",
+      "digest": "0000000000000000000000000000000000000000000000000000000000000000",
+      "byte_length": 128
+    },
+    "lifecycle_snapshot": {
+      "status": "active"
+    },
+    "effective_at": "2026-08-12T21:30:00-04:00",
+    "creation_source": {
+      "type": "digital_entry"
+    },
+    "created_at": "2026-08-12T22:00:00-04:00",
+    "created_by": {
+      "type": "local_operator",
+      "display_label": "Synthetic Teacher"
+    }
+  },
+  "derived_pointers": [
+    {
+      "schema_version": "1",
+      "record_type": "derived_current_pointer",
+      "module_id": "portia",
+      "projection_kind": "work_summary",
+      "projection_scope": {
+        "scope": "work",
+        "work_ref": {
+          "module_id": "portia",
+          "class_id": "english10_p2",
+          "work_id": "evt_issue19_integration",
+          "work_kind": "event",
+          "contract_version": "2"
+        }
+      },
+      "generation_ref": {
+        "generation_id": "dgen_issue19_event",
+        "contract_version": "1"
+      }
+    },
+    {
+      "schema_version": "1",
+      "record_type": "derived_current_pointer",
+      "module_id": "portia",
+      "projection_kind": "work_summary",
+      "projection_scope": {
+        "scope": "work",
+        "work_ref": {
+          "module_id": "portia",
+          "class_id": "english10_p2",
+          "work_id": "sup_issue19_integration",
+          "work_kind": "support_process",
+          "contract_version": "1"
+        }
+      },
+      "generation_ref": {
+        "generation_id": "dgen_issue19_support",
+        "contract_version": "1"
+      }
+    }
+  ]
+}
