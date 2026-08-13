@@ -1454,3 +1454,38 @@ ADR 0011 therefore accepts this design as the implementation target for Issue
 #15. Subsequent schema slices must remain within these boundaries unless a
 concrete contradiction is discovered and documented through an explicit ADR
 amendment or superseding decision.
+
+# Current implementation reconciliation (Issue #19: Account/Observation v2)
+
+Issue #19 encountered a concrete Support-Process evidence-owner gap: legitimate
+support monitoring and student/family perspective do not necessarily represent
+an Event. The accepted additive resolution is now published as:
+
+```text
+account@2
+observation@2
+```
+
+Version 2 preserves the source-evidence unit of v1 while adding:
+
+```text
+work_kind = event | support_process
+owner-conditioned work_id
+owner-conditioned target family
+```
+
+Published Account/Observation v1 schemas remain immutable and Event-local.
+Current writers prefer v2; no automatic migration is required.
+
+Support-Process-owned evidence therefore no longer requires a fabricated Event,
+and Outcome does not become a raw evidence container:
+
+```text
+substantive perspective → Account
+direct measurement      → Observation
+bounded evaluation      → Outcome
+```
+
+Exact v2 predecessor/history references remain version-specific and never
+silently follow correction, migration, or successor state. Paper/import
+activation continues to require the Issue #20 review gate.

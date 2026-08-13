@@ -1,0 +1,808 @@
+{
+  "matrix_version": "1",
+  "issue": 19,
+  "title": "Follow-Up / Outcome / Reentry / Repair application-invalid matrix",
+  "fixture_application_invalid_scenarios": 80,
+  "programmatic_cross_record_invariants": 26,
+  "total_coverage_entries": 106,
+  "entries": [
+    {
+      "group": "account_v2",
+      "fixture": "tests/schema_validation/fixtures/issue-19/account-v2/application-invalid/updated-before-created.json",
+      "coverage_id": "portia.issue19.account_v2.updated_before_created",
+      "expectation": "Application validation rejects the account v2 scenario: updated before created.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-19/account-v2/manifest.json",
+      "test": "tests/schema_validation/test_issue_19_evidence_v2_contracts.py"
+    },
+    {
+      "group": "account_v2",
+      "fixture": "tests/schema_validation/fixtures/issue-19/account-v2/application-invalid/active-import-without-review.json",
+      "coverage_id": "portia.issue19.account_v2.active_import_without_review",
+      "expectation": "Application validation rejects the account v2 scenario: active import without review.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-19/account-v2/manifest.json",
+      "test": "tests/schema_validation/test_issue_19_evidence_v2_contracts.py"
+    },
+    {
+      "group": "account_v2",
+      "fixture": "tests/schema_validation/fixtures/issue-19/account-v2/application-invalid/provided-after-created.json",
+      "coverage_id": "portia.issue19.account_v2.provided_after_created",
+      "expectation": "Application validation rejects the account v2 scenario: provided after created.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-19/account-v2/manifest.json",
+      "test": "tests/schema_validation/test_issue_19_evidence_v2_contracts.py"
+    },
+    {
+      "group": "account_v2",
+      "fixture": "tests/schema_validation/fixtures/issue-19/account-v2/application-invalid/support-process-local-v1-relation.json",
+      "coverage_id": "portia.issue19.account_v2.support_process_local_v1_relation",
+      "expectation": "Application validation rejects the account v2 scenario: support process local v1 relation.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-19/account-v2/manifest.json",
+      "test": "tests/schema_validation/test_issue_19_evidence_v2_contracts.py"
+    },
+    {
+      "group": "account_v2",
+      "fixture": "tests/schema_validation/fixtures/issue-19/account-v2/application-invalid/support-process-v1-predecessor.json",
+      "coverage_id": "portia.issue19.account_v2.support_process_v1_predecessor",
+      "expectation": "Application validation rejects the account v2 scenario: support process v1 predecessor.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-19/account-v2/manifest.json",
+      "test": "tests/schema_validation/test_issue_19_evidence_v2_contracts.py"
+    },
+    {
+      "group": "account_v2",
+      "fixture": "tests/schema_validation/fixtures/issue-19/account-v2/application-invalid/contract-migrated-from-v2.json",
+      "coverage_id": "portia.issue19.account_v2.contract_migrated_from_v2",
+      "expectation": "Application validation rejects the account v2 scenario: contract migrated from v2.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-19/account-v2/manifest.json",
+      "test": "tests/schema_validation/test_issue_19_evidence_v2_contracts.py"
+    },
+    {
+      "group": "account_v2",
+      "fixture": "tests/schema_validation/fixtures/issue-19/account-v2/application-invalid/ordinary-correction-cross-work.json",
+      "coverage_id": "portia.issue19.account_v2.ordinary_correction_cross_work",
+      "expectation": "Application validation rejects the account v2 scenario: ordinary correction cross work.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-19/account-v2/manifest.json",
+      "test": "tests/schema_validation/test_issue_19_evidence_v2_contracts.py"
+    },
+    {
+      "group": "account_v2",
+      "fixture": "tests/schema_validation/fixtures/issue-19/account-v2/application-invalid/self-supersession.json",
+      "coverage_id": "portia.issue19.account_v2.self_supersession",
+      "expectation": "Application validation rejects the account v2 scenario: self supersession.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-19/account-v2/manifest.json",
+      "test": "tests/schema_validation/test_issue_19_evidence_v2_contracts.py"
+    },
+    {
+      "group": "observation_v2",
+      "fixture": "tests/schema_validation/fixtures/issue-19/observation-v2/application-invalid/updated-before-created.json",
+      "coverage_id": "portia.issue19.observation_v2.updated_before_created",
+      "expectation": "Application validation rejects the observation v2 scenario: updated before created.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-19/observation-v2/manifest.json",
+      "test": "tests/schema_validation/test_issue_19_evidence_v2_contracts.py"
+    },
+    {
+      "group": "observation_v2",
+      "fixture": "tests/schema_validation/fixtures/issue-19/observation-v2/application-invalid/observed-after-created.json",
+      "coverage_id": "portia.issue19.observation_v2.observed_after_created",
+      "expectation": "Application validation rejects the observation v2 scenario: observed after created.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-19/observation-v2/manifest.json",
+      "test": "tests/schema_validation/test_issue_19_evidence_v2_contracts.py"
+    },
+    {
+      "group": "observation_v2",
+      "fixture": "tests/schema_validation/fixtures/issue-19/observation-v2/application-invalid/active-import-without-review.json",
+      "coverage_id": "portia.issue19.observation_v2.active_import_without_review",
+      "expectation": "Application validation rejects the observation v2 scenario: active import without review.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-19/observation-v2/manifest.json",
+      "test": "tests/schema_validation/test_issue_19_evidence_v2_contracts.py"
+    },
+    {
+      "group": "observation_v2",
+      "fixture": "tests/schema_validation/fixtures/issue-19/observation-v2/application-invalid/human-instrumented-method.json",
+      "coverage_id": "portia.issue19.observation_v2.human_instrumented_method",
+      "expectation": "Application validation rejects the observation v2 scenario: human instrumented method.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-19/observation-v2/manifest.json",
+      "test": "tests/schema_validation/test_issue_19_evidence_v2_contracts.py"
+    },
+    {
+      "group": "observation_v2",
+      "fixture": "tests/schema_validation/fixtures/issue-19/observation-v2/application-invalid/manual-count-with-duration.json",
+      "coverage_id": "portia.issue19.observation_v2.manual_count_with_duration",
+      "expectation": "Application validation rejects the observation v2 scenario: manual count with duration.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-19/observation-v2/manifest.json",
+      "test": "tests/schema_validation/test_issue_19_evidence_v2_contracts.py"
+    },
+    {
+      "group": "observation_v2",
+      "fixture": "tests/schema_validation/fixtures/issue-19/observation-v2/application-invalid/support-process-v1-predecessor.json",
+      "coverage_id": "portia.issue19.observation_v2.support_process_v1_predecessor",
+      "expectation": "Application validation rejects the observation v2 scenario: support process v1 predecessor.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-19/observation-v2/manifest.json",
+      "test": "tests/schema_validation/test_issue_19_evidence_v2_contracts.py"
+    },
+    {
+      "group": "observation_v2",
+      "fixture": "tests/schema_validation/fixtures/issue-19/observation-v2/application-invalid/contract-migrated-from-v2.json",
+      "coverage_id": "portia.issue19.observation_v2.contract_migrated_from_v2",
+      "expectation": "Application validation rejects the observation v2 scenario: contract migrated from v2.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-19/observation-v2/manifest.json",
+      "test": "tests/schema_validation/test_issue_19_evidence_v2_contracts.py"
+    },
+    {
+      "group": "observation_v2",
+      "fixture": "tests/schema_validation/fixtures/issue-19/observation-v2/application-invalid/ordinary-correction-cross-work.json",
+      "coverage_id": "portia.issue19.observation_v2.ordinary_correction_cross_work",
+      "expectation": "Application validation rejects the observation v2 scenario: ordinary correction cross work.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-19/observation-v2/manifest.json",
+      "test": "tests/schema_validation/test_issue_19_evidence_v2_contracts.py"
+    },
+    {
+      "group": "follow_up",
+      "fixture": "tests/schema_validation/fixtures/issue-19/follow-up/application-invalid/active-event-roster-student-owner.json",
+      "coverage_id": "portia.issue19.follow_up.active_event_roster_student_owner",
+      "expectation": "Application validation rejects the follow up scenario: active event roster student owner.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-19/follow-up/manifest.json",
+      "test": "tests/schema_validation/test_issue_19_follow_up_contract.py"
+    },
+    {
+      "group": "follow_up",
+      "fixture": "tests/schema_validation/fixtures/issue-19/follow-up/application-invalid/active-event-descriptive-owner.json",
+      "coverage_id": "portia.issue19.follow_up.active_event_descriptive_owner",
+      "expectation": "Application validation rejects the follow up scenario: active event descriptive owner.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-19/follow-up/manifest.json",
+      "test": "tests/schema_validation/test_issue_19_follow_up_contract.py"
+    },
+    {
+      "group": "follow_up",
+      "fixture": "tests/schema_validation/fixtures/issue-19/follow-up/application-invalid/active-event-unidentified-owner.json",
+      "coverage_id": "portia.issue19.follow_up.active_event_unidentified_owner",
+      "expectation": "Application validation rejects the follow up scenario: active event unidentified owner.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-19/follow-up/manifest.json",
+      "test": "tests/schema_validation/test_issue_19_follow_up_contract.py"
+    },
+    {
+      "group": "follow_up",
+      "fixture": "tests/schema_validation/fixtures/issue-19/follow-up/application-invalid/active-import-without-review.json",
+      "coverage_id": "portia.issue19.follow_up.active_import_without_review",
+      "expectation": "Application validation rejects the follow up scenario: active import without review.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-19/follow-up/manifest.json",
+      "test": "tests/schema_validation/test_issue_19_follow_up_contract.py"
+    },
+    {
+      "group": "follow_up",
+      "fixture": "tests/schema_validation/fixtures/issue-19/follow-up/application-invalid/updated-before-created.json",
+      "coverage_id": "portia.issue19.follow_up.updated_before_created",
+      "expectation": "Application validation rejects the follow up scenario: updated before created.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-19/follow-up/manifest.json",
+      "test": "tests/schema_validation/test_issue_19_follow_up_contract.py"
+    },
+    {
+      "group": "follow_up",
+      "fixture": "tests/schema_validation/fixtures/issue-19/follow-up/application-invalid/date-window-ends-before-start.json",
+      "coverage_id": "portia.issue19.follow_up.date_window_ends_before_start",
+      "expectation": "Application validation rejects the follow up scenario: date window ends before start.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-19/follow-up/manifest.json",
+      "test": "tests/schema_validation/test_issue_19_follow_up_contract.py"
+    },
+    {
+      "group": "follow_up",
+      "fixture": "tests/schema_validation/fixtures/issue-19/follow-up/application-invalid/exact-window-ends-before-start.json",
+      "coverage_id": "portia.issue19.follow_up.exact_window_ends_before_start",
+      "expectation": "Application validation rejects the follow up scenario: exact window ends before start.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-19/follow-up/manifest.json",
+      "test": "tests/schema_validation/test_issue_19_follow_up_contract.py"
+    },
+    {
+      "group": "follow_up",
+      "fixture": "tests/schema_validation/fixtures/issue-19/follow-up/application-invalid/produced-record-cross-work.json",
+      "coverage_id": "portia.issue19.follow_up.produced_record_cross_work",
+      "expectation": "Application validation rejects the follow up scenario: produced record cross work.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-19/follow-up/manifest.json",
+      "test": "tests/schema_validation/test_issue_19_follow_up_contract.py"
+    },
+    {
+      "group": "follow_up",
+      "fixture": "tests/schema_validation/fixtures/issue-19/follow-up/application-invalid/follow-up-to-non-follow-up.json",
+      "coverage_id": "portia.issue19.follow_up.follow_up_to_non_follow_up",
+      "expectation": "Application validation rejects the follow up scenario: follow up to non follow up.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-19/follow-up/manifest.json",
+      "test": "tests/schema_validation/test_issue_19_follow_up_contract.py"
+    },
+    {
+      "group": "follow_up",
+      "fixture": "tests/schema_validation/fixtures/issue-19/follow-up/application-invalid/self-related-record.json",
+      "coverage_id": "portia.issue19.follow_up.self_related_record",
+      "expectation": "Application validation rejects the follow up scenario: self related record.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-19/follow-up/manifest.json",
+      "test": "tests/schema_validation/test_issue_19_follow_up_contract.py"
+    },
+    {
+      "group": "follow_up",
+      "fixture": "tests/schema_validation/fixtures/issue-19/follow-up/application-invalid/support-owner-without-operational-context.json",
+      "coverage_id": "portia.issue19.follow_up.support_owner_without_operational_context",
+      "expectation": "Application validation rejects the follow up scenario: support owner without operational context.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-19/follow-up/manifest.json",
+      "test": "tests/schema_validation/test_issue_19_follow_up_contract.py"
+    },
+    {
+      "group": "follow_up",
+      "fixture": "tests/schema_validation/fixtures/issue-19/follow-up/application-invalid/self-supersession.json",
+      "coverage_id": "portia.issue19.follow_up.self_supersession",
+      "expectation": "Application validation rejects the follow up scenario: self supersession.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-19/follow-up/manifest.json",
+      "test": "tests/schema_validation/test_issue_19_follow_up_contract.py"
+    },
+    {
+      "group": "follow_up",
+      "fixture": "tests/schema_validation/fixtures/issue-19/follow-up/application-invalid/ordinary-correction-cross-work.json",
+      "coverage_id": "portia.issue19.follow_up.ordinary_correction_cross_work",
+      "expectation": "Application validation rejects the follow up scenario: ordinary correction cross work.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-19/follow-up/manifest.json",
+      "test": "tests/schema_validation/test_issue_19_follow_up_contract.py"
+    },
+    {
+      "group": "follow_up",
+      "fixture": "tests/schema_validation/fixtures/issue-19/follow-up/application-invalid/duplicate-consolidation-one-predecessor.json",
+      "coverage_id": "portia.issue19.follow_up.duplicate_consolidation_one_predecessor",
+      "expectation": "Application validation rejects the follow up scenario: duplicate consolidation one predecessor.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-19/follow-up/manifest.json",
+      "test": "tests/schema_validation/test_issue_19_follow_up_contract.py"
+    },
+    {
+      "group": "outcome",
+      "fixture": "tests/schema_validation/fixtures/issue-19/outcome/application-invalid/active-event-roster-student-evaluator.json",
+      "coverage_id": "portia.issue19.outcome.active_event_roster_student_evaluator",
+      "expectation": "Application validation rejects the outcome scenario: active event roster student evaluator.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-19/outcome/manifest.json",
+      "test": "tests/schema_validation/test_issue_19_outcome_contract.py"
+    },
+    {
+      "group": "outcome",
+      "fixture": "tests/schema_validation/fixtures/issue-19/outcome/application-invalid/active-event-descriptive-evaluator.json",
+      "coverage_id": "portia.issue19.outcome.active_event_descriptive_evaluator",
+      "expectation": "Application validation rejects the outcome scenario: active event descriptive evaluator.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-19/outcome/manifest.json",
+      "test": "tests/schema_validation/test_issue_19_outcome_contract.py"
+    },
+    {
+      "group": "outcome",
+      "fixture": "tests/schema_validation/fixtures/issue-19/outcome/application-invalid/active-event-unidentified-evaluator.json",
+      "coverage_id": "portia.issue19.outcome.active_event_unidentified_evaluator",
+      "expectation": "Application validation rejects the outcome scenario: active event unidentified evaluator.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-19/outcome/manifest.json",
+      "test": "tests/schema_validation/test_issue_19_outcome_contract.py"
+    },
+    {
+      "group": "outcome",
+      "fixture": "tests/schema_validation/fixtures/issue-19/outcome/application-invalid/support-evaluator-without-evaluator-context.json",
+      "coverage_id": "portia.issue19.outcome.support_evaluator_without_evaluator_context",
+      "expectation": "Application validation rejects the outcome scenario: support evaluator without evaluator context.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-19/outcome/manifest.json",
+      "test": "tests/schema_validation/test_issue_19_outcome_contract.py"
+    },
+    {
+      "group": "outcome",
+      "fixture": "tests/schema_validation/fixtures/issue-19/outcome/application-invalid/active-import-without-review.json",
+      "coverage_id": "portia.issue19.outcome.active_import_without_review",
+      "expectation": "Application validation rejects the outcome scenario: active import without review.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-19/outcome/manifest.json",
+      "test": "tests/schema_validation/test_issue_19_outcome_contract.py"
+    },
+    {
+      "group": "outcome",
+      "fixture": "tests/schema_validation/fixtures/issue-19/outcome/application-invalid/updated-before-created.json",
+      "coverage_id": "portia.issue19.outcome.updated_before_created",
+      "expectation": "Application validation rejects the outcome scenario: updated before created.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-19/outcome/manifest.json",
+      "test": "tests/schema_validation/test_issue_19_outcome_contract.py"
+    },
+    {
+      "group": "outcome",
+      "fixture": "tests/schema_validation/fixtures/issue-19/outcome/application-invalid/timeframe-range-reversed.json",
+      "coverage_id": "portia.issue19.outcome.timeframe_range_reversed",
+      "expectation": "Application validation rejects the outcome scenario: timeframe range reversed.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-19/outcome/manifest.json",
+      "test": "tests/schema_validation/test_issue_19_outcome_contract.py"
+    },
+    {
+      "group": "outcome",
+      "fixture": "tests/schema_validation/fixtures/issue-19/outcome/application-invalid/active-unknown-timeframe.json",
+      "coverage_id": "portia.issue19.outcome.active_unknown_timeframe",
+      "expectation": "Application validation rejects the outcome scenario: active unknown timeframe.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-19/outcome/manifest.json",
+      "test": "tests/schema_validation/test_issue_19_outcome_contract.py"
+    },
+    {
+      "group": "outcome",
+      "fixture": "tests/schema_validation/fixtures/issue-19/outcome/application-invalid/student-perspective-role-non-account.json",
+      "coverage_id": "portia.issue19.outcome.student_perspective_role_non_account",
+      "expectation": "Application validation rejects the outcome scenario: student perspective role non account.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-19/outcome/manifest.json",
+      "test": "tests/schema_validation/test_issue_19_outcome_contract.py"
+    },
+    {
+      "group": "outcome",
+      "fixture": "tests/schema_validation/fixtures/issue-19/outcome/application-invalid/implementation-context-non-implementation.json",
+      "coverage_id": "portia.issue19.outcome.implementation_context_non_implementation",
+      "expectation": "Application validation rejects the outcome scenario: implementation context non implementation.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-19/outcome/manifest.json",
+      "test": "tests/schema_validation/test_issue_19_outcome_contract.py"
+    },
+    {
+      "group": "outcome",
+      "fixture": "tests/schema_validation/fixtures/issue-19/outcome/application-invalid/fidelity-context-non-fidelity.json",
+      "coverage_id": "portia.issue19.outcome.fidelity_context_non_fidelity",
+      "expectation": "Application validation rejects the outcome scenario: fidelity context non fidelity.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-19/outcome/manifest.json",
+      "test": "tests/schema_validation/test_issue_19_outcome_contract.py"
+    },
+    {
+      "group": "outcome",
+      "fixture": "tests/schema_validation/fixtures/issue-19/outcome/application-invalid/self-basis-reference.json",
+      "coverage_id": "portia.issue19.outcome.self_basis_reference",
+      "expectation": "Application validation rejects the outcome scenario: self basis reference.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-19/outcome/manifest.json",
+      "test": "tests/schema_validation/test_issue_19_outcome_contract.py"
+    },
+    {
+      "group": "outcome",
+      "fixture": "tests/schema_validation/fixtures/issue-19/outcome/application-invalid/goal-ref-other-support-process.json",
+      "coverage_id": "portia.issue19.outcome.goal_ref_other_support_process",
+      "expectation": "Application validation rejects the outcome scenario: goal ref other support process.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-19/outcome/manifest.json",
+      "test": "tests/schema_validation/test_issue_19_outcome_contract.py"
+    },
+    {
+      "group": "outcome",
+      "fixture": "tests/schema_validation/fixtures/issue-19/outcome/application-invalid/plan-ref-other-support-process.json",
+      "coverage_id": "portia.issue19.outcome.plan_ref_other_support_process",
+      "expectation": "Application validation rejects the outcome scenario: plan ref other support process.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-19/outcome/manifest.json",
+      "test": "tests/schema_validation/test_issue_19_outcome_contract.py"
+    },
+    {
+      "group": "outcome",
+      "fixture": "tests/schema_validation/fixtures/issue-19/outcome/application-invalid/self-supersession.json",
+      "coverage_id": "portia.issue19.outcome.self_supersession",
+      "expectation": "Application validation rejects the outcome scenario: self supersession.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-19/outcome/manifest.json",
+      "test": "tests/schema_validation/test_issue_19_outcome_contract.py"
+    },
+    {
+      "group": "outcome",
+      "fixture": "tests/schema_validation/fixtures/issue-19/outcome/application-invalid/ordinary-correction-cross-work.json",
+      "coverage_id": "portia.issue19.outcome.ordinary_correction_cross_work",
+      "expectation": "Application validation rejects the outcome scenario: ordinary correction cross work.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-19/outcome/manifest.json",
+      "test": "tests/schema_validation/test_issue_19_outcome_contract.py"
+    },
+    {
+      "group": "outcome",
+      "fixture": "tests/schema_validation/fixtures/issue-19/outcome/application-invalid/duplicate-consolidation-one-predecessor.json",
+      "coverage_id": "portia.issue19.outcome.duplicate_consolidation_one_predecessor",
+      "expectation": "Application validation rejects the outcome scenario: duplicate consolidation one predecessor.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-19/outcome/manifest.json",
+      "test": "tests/schema_validation/test_issue_19_outcome_contract.py"
+    },
+    {
+      "group": "reentry",
+      "fixture": "tests/schema_validation/fixtures/issue-19/reentry/application-invalid/active-event-roster-student-coordinator.json",
+      "coverage_id": "portia.issue19.reentry.active_event_roster_student_coordinator",
+      "expectation": "Application validation rejects the reentry scenario: active event roster student coordinator.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-19/reentry/manifest.json",
+      "test": "tests/schema_validation/test_issue_19_reentry_contract.py"
+    },
+    {
+      "group": "reentry",
+      "fixture": "tests/schema_validation/fixtures/issue-19/reentry/application-invalid/active-event-descriptive-coordinator.json",
+      "coverage_id": "portia.issue19.reentry.active_event_descriptive_coordinator",
+      "expectation": "Application validation rejects the reentry scenario: active event descriptive coordinator.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-19/reentry/manifest.json",
+      "test": "tests/schema_validation/test_issue_19_reentry_contract.py"
+    },
+    {
+      "group": "reentry",
+      "fixture": "tests/schema_validation/fixtures/issue-19/reentry/application-invalid/active-event-unidentified-coordinator.json",
+      "coverage_id": "portia.issue19.reentry.active_event_unidentified_coordinator",
+      "expectation": "Application validation rejects the reentry scenario: active event unidentified coordinator.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-19/reentry/manifest.json",
+      "test": "tests/schema_validation/test_issue_19_reentry_contract.py"
+    },
+    {
+      "group": "reentry",
+      "fixture": "tests/schema_validation/fixtures/issue-19/reentry/application-invalid/support-coordinator-without-operational-context.json",
+      "coverage_id": "portia.issue19.reentry.support_coordinator_without_operational_context",
+      "expectation": "Application validation rejects the reentry scenario: support coordinator without operational context.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-19/reentry/manifest.json",
+      "test": "tests/schema_validation/test_issue_19_reentry_contract.py"
+    },
+    {
+      "group": "reentry",
+      "fixture": "tests/schema_validation/fixtures/issue-19/reentry/application-invalid/active-import-without-review.json",
+      "coverage_id": "portia.issue19.reentry.active_import_without_review",
+      "expectation": "Application validation rejects the reentry scenario: active import without review.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-19/reentry/manifest.json",
+      "test": "tests/schema_validation/test_issue_19_reentry_contract.py"
+    },
+    {
+      "group": "reentry",
+      "fixture": "tests/schema_validation/fixtures/issue-19/reentry/application-invalid/updated-before-created.json",
+      "coverage_id": "portia.issue19.reentry.updated_before_created",
+      "expectation": "Application validation rejects the reentry scenario: updated before created.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-19/reentry/manifest.json",
+      "test": "tests/schema_validation/test_issue_19_reentry_contract.py"
+    },
+    {
+      "group": "reentry",
+      "fixture": "tests/schema_validation/fixtures/issue-19/reentry/application-invalid/date-window-ends-before-start.json",
+      "coverage_id": "portia.issue19.reentry.date_window_ends_before_start",
+      "expectation": "Application validation rejects the reentry scenario: date window ends before start.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-19/reentry/manifest.json",
+      "test": "tests/schema_validation/test_issue_19_reentry_contract.py"
+    },
+    {
+      "group": "reentry",
+      "fixture": "tests/schema_validation/fixtures/issue-19/reentry/application-invalid/exact-window-ends-before-start.json",
+      "coverage_id": "portia.issue19.reentry.exact_window_ends_before_start",
+      "expectation": "Application validation rejects the reentry scenario: exact window ends before start.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-19/reentry/manifest.json",
+      "test": "tests/schema_validation/test_issue_19_reentry_contract.py"
+    },
+    {
+      "group": "reentry",
+      "fixture": "tests/schema_validation/fixtures/issue-19/reentry/application-invalid/initiating-context-other-class.json",
+      "coverage_id": "portia.issue19.reentry.initiating_context_other_class",
+      "expectation": "Application validation rejects the reentry scenario: initiating context other class.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-19/reentry/manifest.json",
+      "test": "tests/schema_validation/test_issue_19_reentry_contract.py"
+    },
+    {
+      "group": "reentry",
+      "fixture": "tests/schema_validation/fixtures/issue-19/reentry/application-invalid/support-ref-other-class.json",
+      "coverage_id": "portia.issue19.reentry.support_ref_other_class",
+      "expectation": "Application validation rejects the reentry scenario: support ref other class.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-19/reentry/manifest.json",
+      "test": "tests/schema_validation/test_issue_19_reentry_contract.py"
+    },
+    {
+      "group": "reentry",
+      "fixture": "tests/schema_validation/fixtures/issue-19/reentry/application-invalid/support-owned-plan-other-process.json",
+      "coverage_id": "portia.issue19.reentry.support_owned_plan_other_process",
+      "expectation": "Application validation rejects the reentry scenario: support owned plan other process.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-19/reentry/manifest.json",
+      "test": "tests/schema_validation/test_issue_19_reentry_contract.py"
+    },
+    {
+      "group": "reentry",
+      "fixture": "tests/schema_validation/fixtures/issue-19/reentry/application-invalid/self-supersession.json",
+      "coverage_id": "portia.issue19.reentry.self_supersession",
+      "expectation": "Application validation rejects the reentry scenario: self supersession.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-19/reentry/manifest.json",
+      "test": "tests/schema_validation/test_issue_19_reentry_contract.py"
+    },
+    {
+      "group": "reentry",
+      "fixture": "tests/schema_validation/fixtures/issue-19/reentry/application-invalid/ordinary-correction-cross-work.json",
+      "coverage_id": "portia.issue19.reentry.ordinary_correction_cross_work",
+      "expectation": "Application validation rejects the reentry scenario: ordinary correction cross work.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-19/reentry/manifest.json",
+      "test": "tests/schema_validation/test_issue_19_reentry_contract.py"
+    },
+    {
+      "group": "reentry",
+      "fixture": "tests/schema_validation/fixtures/issue-19/reentry/application-invalid/duplicate-consolidation-one-predecessor.json",
+      "coverage_id": "portia.issue19.reentry.duplicate_consolidation_one_predecessor",
+      "expectation": "Application validation rejects the reentry scenario: duplicate consolidation one predecessor.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-19/reentry/manifest.json",
+      "test": "tests/schema_validation/test_issue_19_reentry_contract.py"
+    },
+    {
+      "group": "repair",
+      "fixture": "tests/schema_validation/fixtures/issue-19/repair/application-invalid/active-event-roster-student-facilitator.json",
+      "coverage_id": "portia.issue19.repair.active_event_roster_student_facilitator",
+      "expectation": "Application validation rejects the repair scenario: active event roster student facilitator.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-19/repair/manifest.json",
+      "test": "tests/schema_validation/test_issue_19_repair_contract.py"
+    },
+    {
+      "group": "repair",
+      "fixture": "tests/schema_validation/fixtures/issue-19/repair/application-invalid/active-event-descriptive-facilitator.json",
+      "coverage_id": "portia.issue19.repair.active_event_descriptive_facilitator",
+      "expectation": "Application validation rejects the repair scenario: active event descriptive facilitator.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-19/repair/manifest.json",
+      "test": "tests/schema_validation/test_issue_19_repair_contract.py"
+    },
+    {
+      "group": "repair",
+      "fixture": "tests/schema_validation/fixtures/issue-19/repair/application-invalid/active-event-unidentified-facilitator.json",
+      "coverage_id": "portia.issue19.repair.active_event_unidentified_facilitator",
+      "expectation": "Application validation rejects the repair scenario: active event unidentified facilitator.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-19/repair/manifest.json",
+      "test": "tests/schema_validation/test_issue_19_repair_contract.py"
+    },
+    {
+      "group": "repair",
+      "fixture": "tests/schema_validation/fixtures/issue-19/repair/application-invalid/support-facilitator-without-operational-context.json",
+      "coverage_id": "portia.issue19.repair.support_facilitator_without_operational_context",
+      "expectation": "Application validation rejects the repair scenario: support facilitator without operational context.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-19/repair/manifest.json",
+      "test": "tests/schema_validation/test_issue_19_repair_contract.py"
+    },
+    {
+      "group": "repair",
+      "fixture": "tests/schema_validation/fixtures/issue-19/repair/application-invalid/active-event-unidentified-participant.json",
+      "coverage_id": "portia.issue19.repair.active_event_unidentified_participant",
+      "expectation": "Application validation rejects the repair scenario: active event unidentified participant.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-19/repair/manifest.json",
+      "test": "tests/schema_validation/test_issue_19_repair_contract.py"
+    },
+    {
+      "group": "repair",
+      "fixture": "tests/schema_validation/fixtures/issue-19/repair/application-invalid/active-unknown-participation-state.json",
+      "coverage_id": "portia.issue19.repair.active_unknown_participation_state",
+      "expectation": "Application validation rejects the repair scenario: active unknown participation state.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-19/repair/manifest.json",
+      "test": "tests/schema_validation/test_issue_19_repair_contract.py"
+    },
+    {
+      "group": "repair",
+      "fixture": "tests/schema_validation/fixtures/issue-19/repair/application-invalid/support-participant-other-process.json",
+      "coverage_id": "portia.issue19.repair.support_participant_other_process",
+      "expectation": "Application validation rejects the repair scenario: support participant other process.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-19/repair/manifest.json",
+      "test": "tests/schema_validation/test_issue_19_repair_contract.py"
+    },
+    {
+      "group": "repair",
+      "fixture": "tests/schema_validation/fixtures/issue-19/repair/application-invalid/duplicate-participant-key.json",
+      "coverage_id": "portia.issue19.repair.duplicate_participant_key",
+      "expectation": "Application validation rejects the repair scenario: duplicate participant key.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-19/repair/manifest.json",
+      "test": "tests/schema_validation/test_issue_19_repair_contract.py"
+    },
+    {
+      "group": "repair",
+      "fixture": "tests/schema_validation/fixtures/issue-19/repair/application-invalid/action-agreed-by-unknown-key.json",
+      "coverage_id": "portia.issue19.repair.action_agreed_by_unknown_key",
+      "expectation": "Application validation rejects the repair scenario: action agreed by unknown key.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-19/repair/manifest.json",
+      "test": "tests/schema_validation/test_issue_19_repair_contract.py"
+    },
+    {
+      "group": "repair",
+      "fixture": "tests/schema_validation/fixtures/issue-19/repair/application-invalid/action-responsible-unknown-key.json",
+      "coverage_id": "portia.issue19.repair.action_responsible_unknown_key",
+      "expectation": "Application validation rejects the repair scenario: action responsible unknown key.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-19/repair/manifest.json",
+      "test": "tests/schema_validation/test_issue_19_repair_contract.py"
+    },
+    {
+      "group": "repair",
+      "fixture": "tests/schema_validation/fixtures/issue-19/repair/application-invalid/duplicate-action-key.json",
+      "coverage_id": "portia.issue19.repair.duplicate_action_key",
+      "expectation": "Application validation rejects the repair scenario: duplicate action key.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-19/repair/manifest.json",
+      "test": "tests/schema_validation/test_issue_19_repair_contract.py"
+    },
+    {
+      "group": "repair",
+      "fixture": "tests/schema_validation/fixtures/issue-19/repair/application-invalid/context-other-class.json",
+      "coverage_id": "portia.issue19.repair.context_other_class",
+      "expectation": "Application validation rejects the repair scenario: context other class.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-19/repair/manifest.json",
+      "test": "tests/schema_validation/test_issue_19_repair_contract.py"
+    },
+    {
+      "group": "repair",
+      "fixture": "tests/schema_validation/fixtures/issue-19/repair/application-invalid/self-context-reference.json",
+      "coverage_id": "portia.issue19.repair.self_context_reference",
+      "expectation": "Application validation rejects the repair scenario: self context reference.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-19/repair/manifest.json",
+      "test": "tests/schema_validation/test_issue_19_repair_contract.py"
+    },
+    {
+      "group": "repair",
+      "fixture": "tests/schema_validation/fixtures/issue-19/repair/application-invalid/active-import-without-review.json",
+      "coverage_id": "portia.issue19.repair.active_import_without_review",
+      "expectation": "Application validation rejects the repair scenario: active import without review.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-19/repair/manifest.json",
+      "test": "tests/schema_validation/test_issue_19_repair_contract.py"
+    },
+    {
+      "group": "repair",
+      "fixture": "tests/schema_validation/fixtures/issue-19/repair/application-invalid/updated-before-created.json",
+      "coverage_id": "portia.issue19.repair.updated_before_created",
+      "expectation": "Application validation rejects the repair scenario: updated before created.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-19/repair/manifest.json",
+      "test": "tests/schema_validation/test_issue_19_repair_contract.py"
+    },
+    {
+      "group": "repair",
+      "fixture": "tests/schema_validation/fixtures/issue-19/repair/application-invalid/action-completed-before-agreed.json",
+      "coverage_id": "portia.issue19.repair.action_completed_before_agreed",
+      "expectation": "Application validation rejects the repair scenario: action completed before agreed.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-19/repair/manifest.json",
+      "test": "tests/schema_validation/test_issue_19_repair_contract.py"
+    },
+    {
+      "group": "repair",
+      "fixture": "tests/schema_validation/fixtures/issue-19/repair/application-invalid/self-supersession.json",
+      "coverage_id": "portia.issue19.repair.self_supersession",
+      "expectation": "Application validation rejects the repair scenario: self supersession.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-19/repair/manifest.json",
+      "test": "tests/schema_validation/test_issue_19_repair_contract.py"
+    },
+    {
+      "group": "repair",
+      "fixture": "tests/schema_validation/fixtures/issue-19/repair/application-invalid/ordinary-correction-cross-work.json",
+      "coverage_id": "portia.issue19.repair.ordinary_correction_cross_work",
+      "expectation": "Application validation rejects the repair scenario: ordinary correction cross work.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-19/repair/manifest.json",
+      "test": "tests/schema_validation/test_issue_19_repair_contract.py"
+    },
+    {
+      "group": "repair",
+      "fixture": "tests/schema_validation/fixtures/issue-19/repair/application-invalid/duplicate-consolidation-one-predecessor.json",
+      "coverage_id": "portia.issue19.repair.duplicate_consolidation_one_predecessor",
+      "expectation": "Application validation rejects the repair scenario: duplicate consolidation one predecessor.",
+      "source_manifest": "tests/schema_validation/fixtures/issue-19/repair/manifest.json",
+      "test": "tests/schema_validation/test_issue_19_repair_contract.py"
+    }
+  ],
+  "programmatic_invariants": [
+    {
+      "group": "cross_record_shared_infrastructure",
+      "coverage_id": "portia.issue19.integration.issue19_public_contract_inventory_is_complete",
+      "expectation": "issue19 public contract inventory is complete.",
+      "test": "tests/schema_validation/test_issue_19_shared_infrastructure_integration.py::Issue19SharedInfrastructureIntegrationTests.test_issue19_public_contract_inventory_is_complete"
+    },
+    {
+      "group": "cross_record_shared_infrastructure",
+      "coverage_id": "portia.issue19.integration.shared_infrastructure_versions_remain_registered",
+      "expectation": "shared infrastructure versions remain registered.",
+      "test": "tests/schema_validation/test_issue_19_shared_infrastructure_integration.py::Issue19SharedInfrastructureIntegrationTests.test_shared_infrastructure_versions_remain_registered"
+    },
+    {
+      "group": "cross_record_shared_infrastructure",
+      "coverage_id": "portia.issue19.integration.exact_operation_targets_accept_event_and_support_issue19_children",
+      "expectation": "exact operation targets accept event and support issue19 children.",
+      "test": "tests/schema_validation/test_issue_19_shared_infrastructure_integration.py::Issue19SharedInfrastructureIntegrationTests.test_exact_operation_targets_accept_event_and_support_issue19_children"
+    },
+    {
+      "group": "cross_record_shared_infrastructure",
+      "coverage_id": "portia.issue19.integration.exact_issue19_target_rejects_missing_contract_version",
+      "expectation": "exact issue19 target rejects missing contract version.",
+      "test": "tests/schema_validation/test_issue_19_shared_infrastructure_integration.py::Issue19SharedInfrastructureIntegrationTests.test_exact_issue19_target_rejects_missing_contract_version"
+    },
+    {
+      "group": "cross_record_shared_infrastructure",
+      "coverage_id": "portia.issue19.integration.exact_issue19_target_rejects_null_contract_version",
+      "expectation": "exact issue19 target rejects null contract version.",
+      "test": "tests/schema_validation/test_issue_19_shared_infrastructure_integration.py::Issue19SharedInfrastructureIntegrationTests.test_exact_issue19_target_rejects_null_contract_version"
+    },
+    {
+      "group": "cross_record_shared_infrastructure",
+      "coverage_id": "portia.issue19.integration.dependency_can_link_support_outcome_to_exact_event_evidence",
+      "expectation": "dependency can link support outcome to exact event evidence.",
+      "test": "tests/schema_validation/test_issue_19_shared_infrastructure_integration.py::Issue19SharedInfrastructureIntegrationTests.test_dependency_can_link_support_outcome_to_exact_event_evidence"
+    },
+    {
+      "group": "cross_record_shared_infrastructure",
+      "coverage_id": "portia.issue19.integration.dependency_remains_declarative_not_lifecycle_cascade",
+      "expectation": "dependency remains declarative not lifecycle cascade.",
+      "test": "tests/schema_validation/test_issue_19_shared_infrastructure_integration.py::Issue19SharedInfrastructureIntegrationTests.test_dependency_remains_declarative_not_lifecycle_cascade"
+    },
+    {
+      "group": "cross_record_shared_infrastructure",
+      "coverage_id": "portia.issue19.integration.statement_of_disagreement_can_target_issue19_outcome_additively",
+      "expectation": "statement of disagreement can target issue19 outcome additively.",
+      "test": "tests/schema_validation/test_issue_19_shared_infrastructure_integration.py::Issue19SharedInfrastructureIntegrationTests.test_statement_of_disagreement_can_target_issue19_outcome_additively"
+    },
+    {
+      "group": "cross_record_shared_infrastructure",
+      "coverage_id": "portia.issue19.integration.disagreement_does_not_rewrite_or_retarget_outcome",
+      "expectation": "disagreement does not rewrite or retarget outcome.",
+      "test": "tests/schema_validation/test_issue_19_shared_infrastructure_integration.py::Issue19SharedInfrastructureIntegrationTests.test_disagreement_does_not_rewrite_or_retarget_outcome"
+    },
+    {
+      "group": "cross_record_shared_infrastructure",
+      "coverage_id": "portia.issue19.integration.event_owned_issue19_child_uses_existing_ownership_correction",
+      "expectation": "event owned issue19 child uses existing ownership correction.",
+      "test": "tests/schema_validation/test_issue_19_shared_infrastructure_integration.py::Issue19SharedInfrastructureIntegrationTests.test_event_owned_issue19_child_uses_existing_ownership_correction"
+    },
+    {
+      "group": "cross_record_shared_infrastructure",
+      "coverage_id": "portia.issue19.integration.ownership_correction_v1_remains_event_oriented",
+      "expectation": "ownership correction v1 remains event oriented.",
+      "test": "tests/schema_validation/test_issue_19_shared_infrastructure_integration.py::Issue19SharedInfrastructureIntegrationTests.test_ownership_correction_v1_remains_event_oriented"
+    },
+    {
+      "group": "cross_record_shared_infrastructure",
+      "coverage_id": "portia.issue19.integration.support_process_root_correction_uses_family_successor_semantics",
+      "expectation": "support process root correction uses family successor semantics.",
+      "test": "tests/schema_validation/test_issue_19_shared_infrastructure_integration.py::Issue19SharedInfrastructureIntegrationTests.test_support_process_root_correction_uses_family_successor_semantics"
+    },
+    {
+      "group": "cross_record_shared_infrastructure",
+      "coverage_id": "portia.issue19.integration.exceptional_removal_accepts_exact_issue19_child",
+      "expectation": "exceptional removal accepts exact issue19 child.",
+      "test": "tests/schema_validation/test_issue_19_shared_infrastructure_integration.py::Issue19SharedInfrastructureIntegrationTests.test_exceptional_removal_accepts_exact_issue19_child"
+    },
+    {
+      "group": "cross_record_shared_infrastructure",
+      "coverage_id": "portia.issue19.integration.exceptional_removal_preserves_history_and_incoming_refs",
+      "expectation": "exceptional removal preserves history and incoming refs.",
+      "test": "tests/schema_validation/test_issue_19_shared_infrastructure_integration.py::Issue19SharedInfrastructureIntegrationTests.test_exceptional_removal_preserves_history_and_incoming_refs"
+    },
+    {
+      "group": "cross_record_shared_infrastructure",
+      "coverage_id": "portia.issue19.integration.record_migration_reuses_family_neutral_exact_endpoints",
+      "expectation": "record migration reuses family neutral exact endpoints.",
+      "test": "tests/schema_validation/test_issue_19_shared_infrastructure_integration.py::Issue19SharedInfrastructureIntegrationTests.test_record_migration_reuses_family_neutral_exact_endpoints"
+    },
+    {
+      "group": "cross_record_shared_infrastructure",
+      "coverage_id": "portia.issue19.integration.no_issue19_specific_migration_or_removal_forks_exist",
+      "expectation": "no issue19 specific migration or removal forks exist.",
+      "test": "tests/schema_validation/test_issue_19_shared_infrastructure_integration.py::Issue19SharedInfrastructureIntegrationTests.test_no_issue19_specific_migration_or_removal_forks_exist"
+    },
+    {
+      "group": "cross_record_shared_infrastructure",
+      "coverage_id": "portia.issue19.integration.operation_journal_reuses_exact_portia_targets",
+      "expectation": "operation journal reuses exact portia targets.",
+      "test": "tests/schema_validation/test_issue_19_shared_infrastructure_integration.py::Issue19SharedInfrastructureIntegrationTests.test_operation_journal_reuses_exact_portia_targets"
+    },
+    {
+      "group": "cross_record_shared_infrastructure",
+      "coverage_id": "portia.issue19.integration.operation_lock_record_scope_reuses_exact_work_record_reference",
+      "expectation": "operation lock record scope reuses exact work record reference.",
+      "test": "tests/schema_validation/test_issue_19_shared_infrastructure_integration.py::Issue19SharedInfrastructureIntegrationTests.test_operation_lock_record_scope_reuses_exact_work_record_reference"
+    },
+    {
+      "group": "cross_record_shared_infrastructure",
+      "coverage_id": "portia.issue19.integration.integrity_finding_remains_diagnostic_and_exact_reference_aware",
+      "expectation": "integrity finding remains diagnostic and exact reference aware.",
+      "test": "tests/schema_validation/test_issue_19_shared_infrastructure_integration.py::Issue19SharedInfrastructureIntegrationTests.test_integrity_finding_remains_diagnostic_and_exact_reference_aware"
+    },
+    {
+      "group": "cross_record_shared_infrastructure",
+      "coverage_id": "portia.issue19.integration.derived_current_pointers_accept_event_and_support_scopes",
+      "expectation": "derived current pointers accept event and support scopes.",
+      "test": "tests/schema_validation/test_issue_19_shared_infrastructure_integration.py::Issue19SharedInfrastructureIntegrationTests.test_derived_current_pointers_accept_event_and_support_scopes"
+    },
+    {
+      "group": "cross_record_shared_infrastructure",
+      "coverage_id": "portia.issue19.integration.derived_pointer_is_explicitly_nonauthoritative",
+      "expectation": "derived pointer is explicitly nonauthoritative.",
+      "test": "tests/schema_validation/test_issue_19_shared_infrastructure_integration.py::Issue19SharedInfrastructureIntegrationTests.test_derived_pointer_is_explicitly_nonauthoritative"
+    },
+    {
+      "group": "cross_record_shared_infrastructure",
+      "coverage_id": "portia.issue19.integration.issue19_lifecycle_remains_separate_from_domain_progress",
+      "expectation": "issue19 lifecycle remains separate from domain progress.",
+      "test": "tests/schema_validation/test_issue_19_shared_infrastructure_integration.py::Issue19SharedInfrastructureIntegrationTests.test_issue19_lifecycle_remains_separate_from_domain_progress"
+    },
+    {
+      "group": "cross_record_shared_infrastructure",
+      "coverage_id": "portia.issue19.integration.issue19_families_expose_no_v1_amendment_paths",
+      "expectation": "issue19 families expose no v1 amendment paths.",
+      "test": "tests/schema_validation/test_issue_19_shared_infrastructure_integration.py::Issue19SharedInfrastructureIntegrationTests.test_issue19_families_expose_no_v1_amendment_paths"
+    },
+    {
+      "group": "cross_record_shared_infrastructure",
+      "coverage_id": "portia.issue19.integration.issue19_paper_and_import_activation_guards_remain_deferred_to_issue20",
+      "expectation": "issue19 paper and import activation guards remain deferred to issue20.",
+      "test": "tests/schema_validation/test_issue_19_shared_infrastructure_integration.py::Issue19SharedInfrastructureIntegrationTests.test_issue19_paper_and_import_activation_guards_remain_deferred_to_issue20"
+    },
+    {
+      "group": "cross_record_shared_infrastructure",
+      "coverage_id": "portia.issue19.integration.issue19_families_do_not_publish_reporting_or_portfolio_state",
+      "expectation": "issue19 families do not publish reporting or portfolio state.",
+      "test": "tests/schema_validation/test_issue_19_shared_infrastructure_integration.py::Issue19SharedInfrastructureIntegrationTests.test_issue19_families_do_not_publish_reporting_or_portfolio_state"
+    },
+    {
+      "group": "cross_record_shared_infrastructure",
+      "coverage_id": "portia.issue19.integration.issue19_owner_envelopes_do_not_create_student_global_dossiers",
+      "expectation": "issue19 owner envelopes do not create student global dossiers.",
+      "test": "tests/schema_validation/test_issue_19_shared_infrastructure_integration.py::Issue19SharedInfrastructureIntegrationTests.test_issue19_owner_envelopes_do_not_create_student_global_dossiers"
+    }
+  ]
+}

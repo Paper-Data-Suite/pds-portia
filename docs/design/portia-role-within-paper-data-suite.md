@@ -1275,3 +1275,34 @@ attributed implementation-quality evaluation. Follow-Up/Outcome remain Issue
 Portia therefore preserves `plan ≠ implementation ≠ fidelity ≠ outcome`.
 Support Process-owned Communication is coordination/contact evidence and does
 not prove service delivery, consent, participation, or Implementation.
+
+## Current implementation reconciliation (Issue #19: downstream support documentation)
+
+Portia's implemented domain progression now reaches:
+
+```text
+Event
+→ Accounts / Observations
+→ Review
+→ Classification and/or Hypothesis
+→ Determination
+→ Response and/or Communication
+→ Support Process / Support / Intervention
+→ Implementation
+→ Fidelity
+→ Follow-Up / Outcome / Reentry / Repair
+```
+
+These arrows are possible relationships, not mandatory record creation or
+causal claims.
+
+Issue #19 adds teacher-local downstream documentation and bounded human
+evaluation through Account v2, Observation v2, Follow-Up v1, Outcome v1,
+Reentry v1, and Repair v1. It does not turn Portia into a clinical outcome
+system, safety-clearance system, district discipline case manager, restitution
+ledger, causal-inference engine, or student/family portal.
+
+Portia owns native behavior-support Outcome semantics. Core owns future generic
+publication infrastructure; Meridian owns downstream reporting policy. No
+Portia Outcome automatically becomes a Score, standards rating, Grade, report
+card value, or portfolio item.

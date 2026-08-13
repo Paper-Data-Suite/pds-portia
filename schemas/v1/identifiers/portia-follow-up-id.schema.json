@@ -1,0 +1,10 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-follow-up-id.schema.json",
+  "title": "Portia Follow-Up Identifier",
+  "description": "Opaque canonical identifier for one Portia Follow-Up. The fup_ prefix is part of the public identifier contract. The identifier carries no student, owner, target, purpose, schedule, completion, outcome, school-year, or date meaning.",
+  "type": "string",
+  "minLength": 5,
+  "maxLength": 128,
+  "pattern": "^fup_[A-Za-z0-9][A-Za-z0-9_-]*$"
+}

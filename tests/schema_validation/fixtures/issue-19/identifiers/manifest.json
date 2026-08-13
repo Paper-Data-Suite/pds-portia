@@ -1,0 +1,78 @@
+{
+  "manifest_version": "1",
+  "issue": 19,
+  "contracts": {
+    "portia_follow_up_id": {
+      "version": "1",
+      "valid": [
+        "fup_a",
+        "fup_alpha",
+        "fup_A9_test-2"
+      ],
+      "invalid": [
+        "fup_",
+        "xfup_alpha",
+        "fup_-leading-hyphen",
+        "fup__leading-underscore",
+        "fup_contains space",
+        "fup_contains/slash",
+        "fup_contains.dot",
+        "fup_contains:colon"
+      ]
+    },
+    "portia_outcome_id": {
+      "version": "1",
+      "valid": [
+        "out_a",
+        "out_alpha",
+        "out_A9_test-2"
+      ],
+      "invalid": [
+        "out_",
+        "xout_alpha",
+        "out_-leading-hyphen",
+        "out__leading-underscore",
+        "out_contains space",
+        "out_contains/slash",
+        "out_contains.dot",
+        "out_contains:colon"
+      ]
+    },
+    "portia_reentry_id": {
+      "version": "1",
+      "valid": [
+        "ren_a",
+        "ren_alpha",
+        "ren_A9_test-2"
+      ],
+      "invalid": [
+        "ren_",
+        "xren_alpha",
+        "ren_-leading-hyphen",
+        "ren__leading-underscore",
+        "ren_contains space",
+        "ren_contains/slash",
+        "ren_contains.dot",
+        "ren_contains:colon"
+      ]
+    },
+    "portia_repair_id": {
+      "version": "1",
+      "valid": [
+        "rpr_a",
+        "rpr_alpha",
+        "rpr_A9_test-2"
+      ],
+      "invalid": [
+        "rpr_",
+        "xrpr_alpha",
+        "rpr_-leading-hyphen",
+        "rpr__leading-underscore",
+        "rpr_contains space",
+        "rpr_contains/slash",
+        "rpr_contains.dot",
+        "rpr_contains:colon"
+      ]
+    }
+  }
+}

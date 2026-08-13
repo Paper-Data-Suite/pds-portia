@@ -1,0 +1,74 @@
+{
+  "schema_version": "1",
+  "record_type": "outcome",
+  "module_id": "portia",
+  "class_id": "eng10_p2_2026",
+  "work_kind": "support_process",
+  "work_id": "sup_alpha",
+  "outcome_id": "out_goal_met",
+  "status": "active",
+  "target": {
+    "kind": "support_process_participant",
+    "record_ref": {
+      "record_kind": "support_process_participant",
+      "record_id": "spp_student",
+      "contract_version": "1"
+    }
+  },
+  "evaluator": {
+    "kind": "support_process_participant",
+    "participant_ref": {
+      "record_kind": "support_process_participant",
+      "record_id": "spp_evaluator",
+      "contract_version": "1"
+    }
+  },
+  "scope": {
+    "kind": "goal_status",
+    "goal_ref": {
+      "record_kind": "support_goal",
+      "record_id": "spg_alpha",
+      "contract_version": "1"
+    }
+  },
+  "timeframe": {
+    "precision": "date_only",
+    "date": "2026-08-12"
+  },
+  "basis": [
+    {
+      "role": "current_period",
+      "locator": {
+        "kind": "portia_record",
+        "record_ref": {
+          "work_ref": {
+            "module_id": "portia",
+            "class_id": "eng10_p2_2026",
+            "work_id": "sup_alpha",
+            "work_kind": "support_process",
+            "contract_version": "1"
+          },
+          "record_ref": {
+            "record_kind": "observation",
+            "record_id": "obs_support_current",
+            "contract_version": "2"
+          }
+        }
+      }
+    }
+  ],
+  "result": "met",
+  "creation_source": {
+    "type": "digital_entry"
+  },
+  "created_at": "2026-08-12T10:00:00-04:00",
+  "created_by": {
+    "type": "local_operator",
+    "display_label": "Synthetic Teacher"
+  },
+  "updated_at": "2026-08-12T10:00:00-04:00",
+  "updated_by": {
+    "type": "local_operator",
+    "display_label": "Synthetic Teacher"
+  }
+}

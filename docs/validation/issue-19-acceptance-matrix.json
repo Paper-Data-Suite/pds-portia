@@ -1,0 +1,1441 @@
+{
+  "matrix_version": "1",
+  "issue": 19,
+  "title": "Follow-Up, Outcome, Reentry, and Repair acceptance matrix",
+  "status": "accepted",
+  "criteria_count": 88,
+  "pass_count": 88,
+  "pending_count": 0,
+  "criteria": [
+    {
+      "criterion_id": "architecture.001",
+      "group": "architecture",
+      "status": "pass",
+      "statement": "Initial Portia/Core anchors and current Meridian context are recorded.",
+      "evidence": [
+        "docs/design/portia-follow-up-outcome-reentry-repair-domain-models.md",
+        "docs/decisions/0015-define-follow-up-outcome-reentry-and-repair-domain-models.md",
+        "docs/validation/issue-19-initial-repository-checkpoint.md",
+        "docs/validation/issue-19-pre-adr-checkpoint.md",
+        "docs/validation/issue-19-final-repository-checkpoint.md"
+      ]
+    },
+    {
+      "criterion_id": "architecture.002",
+      "group": "architecture",
+      "status": "pass",
+      "statement": "Pre-ADR and final drift checks are recorded.",
+      "evidence": [
+        "docs/design/portia-follow-up-outcome-reentry-repair-domain-models.md",
+        "docs/decisions/0015-define-follow-up-outcome-reentry-and-repair-domain-models.md",
+        "docs/validation/issue-19-initial-repository-checkpoint.md",
+        "docs/validation/issue-19-pre-adr-checkpoint.md",
+        "docs/validation/issue-19-final-repository-checkpoint.md"
+      ]
+    },
+    {
+      "criterion_id": "architecture.003",
+      "group": "architecture",
+      "status": "pass",
+      "statement": "Published schemas are not modified in place.",
+      "evidence": [
+        "docs/design/portia-follow-up-outcome-reentry-repair-domain-models.md",
+        "docs/decisions/0015-define-follow-up-outcome-reentry-and-repair-domain-models.md",
+        "docs/validation/issue-19-initial-repository-checkpoint.md",
+        "docs/validation/issue-19-pre-adr-checkpoint.md",
+        "docs/validation/issue-19-final-repository-checkpoint.md"
+      ]
+    },
+    {
+      "criterion_id": "architecture.004",
+      "group": "architecture",
+      "status": "pass",
+      "statement": "Follow-Up, Outcome, Reentry, and Repair semantic units are explicit.",
+      "evidence": [
+        "docs/design/portia-follow-up-outcome-reentry-repair-domain-models.md",
+        "docs/decisions/0015-define-follow-up-outcome-reentry-and-repair-domain-models.md",
+        "docs/validation/issue-19-initial-repository-checkpoint.md",
+        "docs/validation/issue-19-pre-adr-checkpoint.md",
+        "docs/validation/issue-19-final-repository-checkpoint.md"
+      ]
+    },
+    {
+      "criterion_id": "architecture.005",
+      "group": "architecture",
+      "status": "pass",
+      "statement": "Event/Support Process work-local ownership decision is explicit.",
+      "evidence": [
+        "docs/design/portia-follow-up-outcome-reentry-repair-domain-models.md",
+        "docs/decisions/0015-define-follow-up-outcome-reentry-and-repair-domain-models.md",
+        "docs/validation/issue-19-initial-repository-checkpoint.md",
+        "docs/validation/issue-19-pre-adr-checkpoint.md",
+        "docs/validation/issue-19-final-repository-checkpoint.md"
+      ]
+    },
+    {
+      "criterion_id": "architecture.006",
+      "group": "architecture",
+      "status": "pass",
+      "statement": "#17 Response/Communication and #18 plan/Implementation/Fidelity boundaries remain intact.",
+      "evidence": [
+        "docs/design/portia-follow-up-outcome-reentry-repair-domain-models.md",
+        "docs/decisions/0015-define-follow-up-outcome-reentry-and-repair-domain-models.md",
+        "docs/validation/issue-19-initial-repository-checkpoint.md",
+        "docs/validation/issue-19-pre-adr-checkpoint.md",
+        "docs/validation/issue-19-final-repository-checkpoint.md"
+      ]
+    },
+    {
+      "criterion_id": "architecture.007",
+      "group": "architecture",
+      "status": "pass",
+      "statement": "#20 paper/import and #21 privacy/export/retention boundaries remain intact.",
+      "evidence": [
+        "docs/design/portia-follow-up-outcome-reentry-repair-domain-models.md",
+        "docs/decisions/0015-define-follow-up-outcome-reentry-and-repair-domain-models.md",
+        "docs/validation/issue-19-initial-repository-checkpoint.md",
+        "docs/validation/issue-19-pre-adr-checkpoint.md",
+        "docs/validation/issue-19-final-repository-checkpoint.md"
+      ]
+    },
+    {
+      "criterion_id": "architecture.008",
+      "group": "architecture",
+      "status": "pass",
+      "statement": "Teacher-local scope is explicit.",
+      "evidence": [
+        "docs/design/portia-follow-up-outcome-reentry-repair-domain-models.md",
+        "docs/decisions/0015-define-follow-up-outcome-reentry-and-repair-domain-models.md",
+        "docs/validation/issue-19-initial-repository-checkpoint.md",
+        "docs/validation/issue-19-pre-adr-checkpoint.md",
+        "docs/validation/issue-19-final-repository-checkpoint.md"
+      ]
+    },
+    {
+      "criterion_id": "follow_up_perspective.001",
+      "group": "follow_up_perspective",
+      "status": "pass",
+      "statement": "Follow-Up has opaque identity, canonical path, explicit target, owner, purpose, timing, workflow state, lifecycle, and provenance.",
+      "evidence": [
+        "schemas/v1/follow-ups/follow-up.schema.json",
+        "tests/schema_validation/test_issue_19_follow_up_contract.py",
+        "schemas/v2/accounts/account.schema.json",
+        "schemas/v2/observations/observation.schema.json",
+        "tests/schema_validation/test_issue_19_evidence_v2_contracts.py",
+        "docs/design/portia-follow-up-outcome-reentry-repair-domain-models.md",
+        "docs/examples/portia-follow-up-outcome-reentry-repair-examples.md"
+      ]
+    },
+    {
+      "criterion_id": "follow_up_perspective.002",
+      "group": "follow_up_perspective",
+      "status": "pass",
+      "statement": "owner is distinct from recorder/target/provider/authority.",
+      "evidence": [
+        "schemas/v1/follow-ups/follow-up.schema.json",
+        "tests/schema_validation/test_issue_19_follow_up_contract.py",
+        "schemas/v2/accounts/account.schema.json",
+        "schemas/v2/observations/observation.schema.json",
+        "tests/schema_validation/test_issue_19_evidence_v2_contracts.py",
+        "docs/design/portia-follow-up-outcome-reentry-repair-domain-models.md",
+        "docs/examples/portia-follow-up-outcome-reentry-repair-examples.md"
+      ]
+    },
+    {
+      "criterion_id": "follow_up_perspective.003",
+      "group": "follow_up_perspective",
+      "status": "pass",
+      "statement": "scheduled, overdue-derived, completed, cancelled, and unable states are not conflated.",
+      "evidence": [
+        "schemas/v1/follow-ups/follow-up.schema.json",
+        "tests/schema_validation/test_issue_19_follow_up_contract.py",
+        "schemas/v2/accounts/account.schema.json",
+        "schemas/v2/observations/observation.schema.json",
+        "tests/schema_validation/test_issue_19_evidence_v2_contracts.py",
+        "docs/design/portia-follow-up-outcome-reentry-repair-domain-models.md",
+        "docs/examples/portia-follow-up-outcome-reentry-repair-examples.md"
+      ]
+    },
+    {
+      "criterion_id": "follow_up_perspective.004",
+      "group": "follow_up_perspective",
+      "status": "pass",
+      "statement": "completion does not imply favorable Outcome.",
+      "evidence": [
+        "schemas/v1/follow-ups/follow-up.schema.json",
+        "tests/schema_validation/test_issue_19_follow_up_contract.py",
+        "schemas/v2/accounts/account.schema.json",
+        "schemas/v2/observations/observation.schema.json",
+        "tests/schema_validation/test_issue_19_evidence_v2_contracts.py",
+        "docs/design/portia-follow-up-outcome-reentry-repair-domain-models.md",
+        "docs/examples/portia-follow-up-outcome-reentry-repair-examples.md"
+      ]
+    },
+    {
+      "criterion_id": "follow_up_perspective.005",
+      "group": "follow_up_perspective",
+      "status": "pass",
+      "statement": "completion links exact produced records without copying payload.",
+      "evidence": [
+        "schemas/v1/follow-ups/follow-up.schema.json",
+        "tests/schema_validation/test_issue_19_follow_up_contract.py",
+        "schemas/v2/accounts/account.schema.json",
+        "schemas/v2/observations/observation.schema.json",
+        "tests/schema_validation/test_issue_19_evidence_v2_contracts.py",
+        "docs/design/portia-follow-up-outcome-reentry-repair-domain-models.md",
+        "docs/examples/portia-follow-up-outcome-reentry-repair-examples.md"
+      ]
+    },
+    {
+      "criterion_id": "follow_up_perspective.006",
+      "group": "follow_up_perspective",
+      "status": "pass",
+      "statement": "later Follow-Ups remain distinct history.",
+      "evidence": [
+        "schemas/v1/follow-ups/follow-up.schema.json",
+        "tests/schema_validation/test_issue_19_follow_up_contract.py",
+        "schemas/v2/accounts/account.schema.json",
+        "schemas/v2/observations/observation.schema.json",
+        "tests/schema_validation/test_issue_19_evidence_v2_contracts.py",
+        "docs/design/portia-follow-up-outcome-reentry-repair-domain-models.md",
+        "docs/examples/portia-follow-up-outcome-reentry-repair-examples.md"
+      ]
+    },
+    {
+      "criterion_id": "follow_up_perspective.007",
+      "group": "follow_up_perspective",
+      "status": "pass",
+      "statement": "substantive perspective remains Account, contact remains Communication, direct measurement remains Observation.",
+      "evidence": [
+        "schemas/v1/follow-ups/follow-up.schema.json",
+        "tests/schema_validation/test_issue_19_follow_up_contract.py",
+        "schemas/v2/accounts/account.schema.json",
+        "schemas/v2/observations/observation.schema.json",
+        "tests/schema_validation/test_issue_19_evidence_v2_contracts.py",
+        "docs/design/portia-follow-up-outcome-reentry-repair-domain-models.md",
+        "docs/examples/portia-follow-up-outcome-reentry-repair-examples.md"
+      ]
+    },
+    {
+      "criterion_id": "follow_up_perspective.008",
+      "group": "follow_up_perspective",
+      "status": "pass",
+      "statement": "recipient/participation/agreement/decline/unavailability/withdrawal remain distinct.",
+      "evidence": [
+        "schemas/v1/follow-ups/follow-up.schema.json",
+        "tests/schema_validation/test_issue_19_follow_up_contract.py",
+        "schemas/v2/accounts/account.schema.json",
+        "schemas/v2/observations/observation.schema.json",
+        "tests/schema_validation/test_issue_19_evidence_v2_contracts.py",
+        "docs/design/portia-follow-up-outcome-reentry-repair-domain-models.md",
+        "docs/examples/portia-follow-up-outcome-reentry-repair-examples.md"
+      ]
+    },
+    {
+      "criterion_id": "follow_up_perspective.009",
+      "group": "follow_up_perspective",
+      "status": "pass",
+      "statement": "no engagement/cooperation score is introduced.",
+      "evidence": [
+        "schemas/v1/follow-ups/follow-up.schema.json",
+        "tests/schema_validation/test_issue_19_follow_up_contract.py",
+        "schemas/v2/accounts/account.schema.json",
+        "schemas/v2/observations/observation.schema.json",
+        "tests/schema_validation/test_issue_19_evidence_v2_contracts.py",
+        "docs/design/portia-follow-up-outcome-reentry-repair-domain-models.md",
+        "docs/examples/portia-follow-up-outcome-reentry-repair-examples.md"
+      ]
+    },
+    {
+      "criterion_id": "outcome_recurrence_causality.001",
+      "group": "outcome_recurrence_causality",
+      "status": "pass",
+      "statement": "Outcome has opaque identity and one bounded attributed evaluation unit.",
+      "evidence": [
+        "schemas/v1/outcomes/outcome.schema.json",
+        "tests/schema_validation/test_issue_19_outcome_contract.py",
+        "schemas/v2/accounts/account.schema.json",
+        "schemas/v2/observations/observation.schema.json",
+        "tests/schema_validation/test_issue_19_evidence_v2_contracts.py",
+        "docs/design/portia-follow-up-outcome-reentry-repair-domain-models.md",
+        "docs/examples/portia-follow-up-outcome-reentry-repair-examples.md"
+      ]
+    },
+    {
+      "criterion_id": "outcome_recurrence_causality.002",
+      "group": "outcome_recurrence_causality",
+      "status": "pass",
+      "statement": "evaluator, target, question/scope, timeframe, basis, result, and limitations are explicit.",
+      "evidence": [
+        "schemas/v1/outcomes/outcome.schema.json",
+        "tests/schema_validation/test_issue_19_outcome_contract.py",
+        "schemas/v2/accounts/account.schema.json",
+        "schemas/v2/observations/observation.schema.json",
+        "tests/schema_validation/test_issue_19_evidence_v2_contracts.py",
+        "docs/design/portia-follow-up-outcome-reentry-repair-domain-models.md",
+        "docs/examples/portia-follow-up-outcome-reentry-repair-examples.md"
+      ]
+    },
+    {
+      "criterion_id": "outcome_recurrence_causality.003",
+      "group": "outcome_recurrence_causality",
+      "status": "pass",
+      "statement": "later timeframe normally creates a new Outcome rather than correction.",
+      "evidence": [
+        "schemas/v1/outcomes/outcome.schema.json",
+        "tests/schema_validation/test_issue_19_outcome_contract.py",
+        "schemas/v2/accounts/account.schema.json",
+        "schemas/v2/observations/observation.schema.json",
+        "tests/schema_validation/test_issue_19_evidence_v2_contracts.py",
+        "docs/design/portia-follow-up-outcome-reentry-repair-domain-models.md",
+        "docs/examples/portia-follow-up-outcome-reentry-repair-examples.md"
+      ]
+    },
+    {
+      "criterion_id": "outcome_recurrence_causality.004",
+      "group": "outcome_recurrence_causality",
+      "status": "pass",
+      "statement": "Goal status exact-links Goal and does not rewrite it.",
+      "evidence": [
+        "schemas/v1/outcomes/outcome.schema.json",
+        "tests/schema_validation/test_issue_19_outcome_contract.py",
+        "schemas/v2/accounts/account.schema.json",
+        "schemas/v2/observations/observation.schema.json",
+        "tests/schema_validation/test_issue_19_evidence_v2_contracts.py",
+        "docs/design/portia-follow-up-outcome-reentry-repair-domain-models.md",
+        "docs/examples/portia-follow-up-outcome-reentry-repair-examples.md"
+      ]
+    },
+    {
+      "criterion_id": "outcome_recurrence_causality.005",
+      "group": "outcome_recurrence_causality",
+      "status": "pass",
+      "statement": "observed change is target/measure-specific.",
+      "evidence": [
+        "schemas/v1/outcomes/outcome.schema.json",
+        "tests/schema_validation/test_issue_19_outcome_contract.py",
+        "schemas/v2/accounts/account.schema.json",
+        "schemas/v2/observations/observation.schema.json",
+        "tests/schema_validation/test_issue_19_evidence_v2_contracts.py",
+        "docs/design/portia-follow-up-outcome-reentry-repair-domain-models.md",
+        "docs/examples/portia-follow-up-outcome-reentry-repair-examples.md"
+      ]
+    },
+    {
+      "criterion_id": "outcome_recurrence_causality.006",
+      "group": "outcome_recurrence_causality",
+      "status": "pass",
+      "statement": "raw measurement remains Observation where sufficient.",
+      "evidence": [
+        "schemas/v1/outcomes/outcome.schema.json",
+        "tests/schema_validation/test_issue_19_outcome_contract.py",
+        "schemas/v2/accounts/account.schema.json",
+        "schemas/v2/observations/observation.schema.json",
+        "tests/schema_validation/test_issue_19_evidence_v2_contracts.py",
+        "docs/design/portia-follow-up-outcome-reentry-repair-domain-models.md",
+        "docs/examples/portia-follow-up-outcome-reentry-repair-examples.md"
+      ]
+    },
+    {
+      "criterion_id": "outcome_recurrence_causality.007",
+      "group": "outcome_recurrence_causality",
+      "status": "pass",
+      "statement": "evidence roles and exact history are explicit.",
+      "evidence": [
+        "schemas/v1/outcomes/outcome.schema.json",
+        "tests/schema_validation/test_issue_19_outcome_contract.py",
+        "schemas/v2/accounts/account.schema.json",
+        "schemas/v2/observations/observation.schema.json",
+        "tests/schema_validation/test_issue_19_evidence_v2_contracts.py",
+        "docs/design/portia-follow-up-outcome-reentry-repair-domain-models.md",
+        "docs/examples/portia-follow-up-outcome-reentry-repair-examples.md"
+      ]
+    },
+    {
+      "criterion_id": "outcome_recurrence_causality.008",
+      "group": "outcome_recurrence_causality",
+      "status": "pass",
+      "statement": "missingness and `unable_to_determine` are first-class.",
+      "evidence": [
+        "schemas/v1/outcomes/outcome.schema.json",
+        "tests/schema_validation/test_issue_19_outcome_contract.py",
+        "schemas/v2/accounts/account.schema.json",
+        "schemas/v2/observations/observation.schema.json",
+        "tests/schema_validation/test_issue_19_evidence_v2_contracts.py",
+        "docs/design/portia-follow-up-outcome-reentry-repair-domain-models.md",
+        "docs/examples/portia-follow-up-outcome-reentry-repair-examples.md"
+      ]
+    },
+    {
+      "criterion_id": "outcome_recurrence_causality.009",
+      "group": "outcome_recurrence_causality",
+      "status": "pass",
+      "statement": "positive progress is representable without rankings/universal percentage.",
+      "evidence": [
+        "schemas/v1/outcomes/outcome.schema.json",
+        "tests/schema_validation/test_issue_19_outcome_contract.py",
+        "schemas/v2/accounts/account.schema.json",
+        "schemas/v2/observations/observation.schema.json",
+        "tests/schema_validation/test_issue_19_evidence_v2_contracts.py",
+        "docs/design/portia-follow-up-outcome-reentry-repair-domain-models.md",
+        "docs/examples/portia-follow-up-outcome-reentry-repair-examples.md"
+      ]
+    },
+    {
+      "criterion_id": "outcome_recurrence_causality.010",
+      "group": "outcome_recurrence_causality",
+      "status": "pass",
+      "statement": "recurrence requires explicit timeframe and coverage.",
+      "evidence": [
+        "schemas/v1/outcomes/outcome.schema.json",
+        "tests/schema_validation/test_issue_19_outcome_contract.py",
+        "schemas/v2/accounts/account.schema.json",
+        "schemas/v2/observations/observation.schema.json",
+        "tests/schema_validation/test_issue_19_evidence_v2_contracts.py",
+        "docs/design/portia-follow-up-outcome-reentry-repair-domain-models.md",
+        "docs/examples/portia-follow-up-outcome-reentry-repair-examples.md"
+      ]
+    },
+    {
+      "criterion_id": "outcome_recurrence_causality.011",
+      "group": "outcome_recurrence_causality",
+      "status": "pass",
+      "statement": "later Event does not automatically mean recurrence/failure.",
+      "evidence": [
+        "schemas/v1/outcomes/outcome.schema.json",
+        "tests/schema_validation/test_issue_19_outcome_contract.py",
+        "schemas/v2/accounts/account.schema.json",
+        "schemas/v2/observations/observation.schema.json",
+        "tests/schema_validation/test_issue_19_evidence_v2_contracts.py",
+        "docs/design/portia-follow-up-outcome-reentry-repair-domain-models.md",
+        "docs/examples/portia-follow-up-outcome-reentry-repair-examples.md"
+      ]
+    },
+    {
+      "criterion_id": "outcome_recurrence_causality.012",
+      "group": "outcome_recurrence_causality",
+      "status": "pass",
+      "statement": "no later Event does not prove no recurrence.",
+      "evidence": [
+        "schemas/v1/outcomes/outcome.schema.json",
+        "tests/schema_validation/test_issue_19_outcome_contract.py",
+        "schemas/v2/accounts/account.schema.json",
+        "schemas/v2/observations/observation.schema.json",
+        "tests/schema_validation/test_issue_19_evidence_v2_contracts.py",
+        "docs/design/portia-follow-up-outcome-reentry-repair-domain-models.md",
+        "docs/examples/portia-follow-up-outcome-reentry-repair-examples.md"
+      ]
+    },
+    {
+      "criterion_id": "outcome_recurrence_causality.013",
+      "group": "outcome_recurrence_causality",
+      "status": "pass",
+      "statement": "ordinary Outcome does not contain causal-effect fields.",
+      "evidence": [
+        "schemas/v1/outcomes/outcome.schema.json",
+        "tests/schema_validation/test_issue_19_outcome_contract.py",
+        "schemas/v2/accounts/account.schema.json",
+        "schemas/v2/observations/observation.schema.json",
+        "tests/schema_validation/test_issue_19_evidence_v2_contracts.py",
+        "docs/design/portia-follow-up-outcome-reentry-repair-domain-models.md",
+        "docs/examples/portia-follow-up-outcome-reentry-repair-examples.md"
+      ]
+    },
+    {
+      "criterion_id": "outcome_recurrence_causality.014",
+      "group": "outcome_recurrence_causality",
+      "status": "pass",
+      "statement": "\"effectiveness\" is resolved without a universal boolean/score.",
+      "evidence": [
+        "schemas/v1/outcomes/outcome.schema.json",
+        "tests/schema_validation/test_issue_19_outcome_contract.py",
+        "schemas/v2/accounts/account.schema.json",
+        "schemas/v2/observations/observation.schema.json",
+        "tests/schema_validation/test_issue_19_evidence_v2_contracts.py",
+        "docs/design/portia-follow-up-outcome-reentry-repair-domain-models.md",
+        "docs/examples/portia-follow-up-outcome-reentry-repair-examples.md"
+      ]
+    },
+    {
+      "criterion_id": "outcome_recurrence_causality.015",
+      "group": "outcome_recurrence_causality",
+      "status": "pass",
+      "statement": "Fidelity and Outcome remain distinct.",
+      "evidence": [
+        "schemas/v1/outcomes/outcome.schema.json",
+        "tests/schema_validation/test_issue_19_outcome_contract.py",
+        "schemas/v2/accounts/account.schema.json",
+        "schemas/v2/observations/observation.schema.json",
+        "tests/schema_validation/test_issue_19_evidence_v2_contracts.py",
+        "docs/design/portia-follow-up-outcome-reentry-repair-domain-models.md",
+        "docs/examples/portia-follow-up-outcome-reentry-repair-examples.md"
+      ]
+    },
+    {
+      "criterion_id": "outcome_recurrence_causality.016",
+      "group": "outcome_recurrence_causality",
+      "status": "pass",
+      "statement": "adverse/unintended change is representable without causal overclaim.",
+      "evidence": [
+        "schemas/v1/outcomes/outcome.schema.json",
+        "tests/schema_validation/test_issue_19_outcome_contract.py",
+        "schemas/v2/accounts/account.schema.json",
+        "schemas/v2/observations/observation.schema.json",
+        "tests/schema_validation/test_issue_19_evidence_v2_contracts.py",
+        "docs/design/portia-follow-up-outcome-reentry-repair-domain-models.md",
+        "docs/examples/portia-follow-up-outcome-reentry-repair-examples.md"
+      ]
+    },
+    {
+      "criterion_id": "support_process_review_closure.001",
+      "group": "support_process_review_closure",
+      "status": "pass",
+      "statement": "Support Process review uses Follow-Up/Outcome rather than broadening Event Review.",
+      "evidence": [
+        "schemas/v1/follow-ups/follow-up.schema.json",
+        "schemas/v1/outcomes/outcome.schema.json",
+        "schemas/v1/support-processes/support-process.schema.json",
+        "tests/schema_validation/test_issue_19_follow_up_contract.py",
+        "tests/schema_validation/test_issue_19_outcome_contract.py",
+        "tests/schema_validation/test_issue_19_shared_infrastructure_integration.py",
+        "docs/design/portia-support-process-support-intervention-implementation-fidelity-domain-models.md"
+      ]
+    },
+    {
+      "criterion_id": "support_process_review_closure.002",
+      "group": "support_process_review_closure",
+      "status": "pass",
+      "statement": "review completion is distinct from conclusion/disposition.",
+      "evidence": [
+        "schemas/v1/follow-ups/follow-up.schema.json",
+        "schemas/v1/outcomes/outcome.schema.json",
+        "schemas/v1/support-processes/support-process.schema.json",
+        "tests/schema_validation/test_issue_19_follow_up_contract.py",
+        "tests/schema_validation/test_issue_19_outcome_contract.py",
+        "tests/schema_validation/test_issue_19_shared_infrastructure_integration.py",
+        "docs/design/portia-support-process-support-intervention-implementation-fidelity-domain-models.md"
+      ]
+    },
+    {
+      "criterion_id": "support_process_review_closure.003",
+      "group": "support_process_review_closure",
+      "status": "pass",
+      "statement": "favorable Outcome does not auto-close; unfavorable Outcome does not auto-adapt/intensify.",
+      "evidence": [
+        "schemas/v1/follow-ups/follow-up.schema.json",
+        "schemas/v1/outcomes/outcome.schema.json",
+        "schemas/v1/support-processes/support-process.schema.json",
+        "tests/schema_validation/test_issue_19_follow_up_contract.py",
+        "tests/schema_validation/test_issue_19_outcome_contract.py",
+        "tests/schema_validation/test_issue_19_shared_infrastructure_integration.py",
+        "docs/design/portia-support-process-support-intervention-implementation-fidelity-domain-models.md"
+      ]
+    },
+    {
+      "criterion_id": "support_process_review_closure.004",
+      "group": "support_process_review_closure",
+      "status": "pass",
+      "statement": "explicit human disposition can drive revision-aware workflow-state update.",
+      "evidence": [
+        "schemas/v1/follow-ups/follow-up.schema.json",
+        "schemas/v1/outcomes/outcome.schema.json",
+        "schemas/v1/support-processes/support-process.schema.json",
+        "tests/schema_validation/test_issue_19_follow_up_contract.py",
+        "tests/schema_validation/test_issue_19_outcome_contract.py",
+        "tests/schema_validation/test_issue_19_shared_infrastructure_integration.py",
+        "docs/design/portia-support-process-support-intervention-implementation-fidelity-domain-models.md"
+      ]
+    },
+    {
+      "criterion_id": "support_process_review_closure.005",
+      "group": "support_process_review_closure",
+      "status": "pass",
+      "statement": "plan adaptation continues to use #18 successor semantics.",
+      "evidence": [
+        "schemas/v1/follow-ups/follow-up.schema.json",
+        "schemas/v1/outcomes/outcome.schema.json",
+        "schemas/v1/support-processes/support-process.schema.json",
+        "tests/schema_validation/test_issue_19_follow_up_contract.py",
+        "tests/schema_validation/test_issue_19_outcome_contract.py",
+        "tests/schema_validation/test_issue_19_shared_infrastructure_integration.py",
+        "docs/design/portia-support-process-support-intervention-implementation-fidelity-domain-models.md"
+      ]
+    },
+    {
+      "criterion_id": "support_process_review_closure.006",
+      "group": "support_process_review_closure",
+      "status": "pass",
+      "statement": "process completion remains distinct from causal success/resolution.",
+      "evidence": [
+        "schemas/v1/follow-ups/follow-up.schema.json",
+        "schemas/v1/outcomes/outcome.schema.json",
+        "schemas/v1/support-processes/support-process.schema.json",
+        "tests/schema_validation/test_issue_19_follow_up_contract.py",
+        "tests/schema_validation/test_issue_19_outcome_contract.py",
+        "tests/schema_validation/test_issue_19_shared_infrastructure_integration.py",
+        "docs/design/portia-support-process-support-intervention-implementation-fidelity-domain-models.md"
+      ]
+    },
+    {
+      "criterion_id": "reentry.001",
+      "group": "reentry",
+      "status": "pass",
+      "statement": "Reentry has opaque identity, ownership, target, coordinator, exact context, timing/context, planned elements, workflow state, lifecycle, and provenance.",
+      "evidence": [
+        "schemas/v1/reentries/reentry.schema.json",
+        "tests/schema_validation/test_issue_19_reentry_contract.py",
+        "docs/design/portia-follow-up-outcome-reentry-repair-domain-models.md",
+        "docs/examples/portia-follow-up-outcome-reentry-repair-examples.md"
+      ]
+    },
+    {
+      "criterion_id": "reentry.002",
+      "group": "reentry",
+      "status": "pass",
+      "statement": "coordinator is distinct from recorder/authority.",
+      "evidence": [
+        "schemas/v1/reentries/reentry.schema.json",
+        "tests/schema_validation/test_issue_19_reentry_contract.py",
+        "docs/design/portia-follow-up-outcome-reentry-repair-domain-models.md",
+        "docs/examples/portia-follow-up-outcome-reentry-repair-examples.md"
+      ]
+    },
+    {
+      "criterion_id": "reentry.003",
+      "group": "reentry",
+      "status": "pass",
+      "statement": "existing Support/Intervention is referenced rather than cloned.",
+      "evidence": [
+        "schemas/v1/reentries/reentry.schema.json",
+        "tests/schema_validation/test_issue_19_reentry_contract.py",
+        "docs/design/portia-follow-up-outcome-reentry-repair-domain-models.md",
+        "docs/examples/portia-follow-up-outcome-reentry-repair-examples.md"
+      ]
+    },
+    {
+      "criterion_id": "reentry.004",
+      "group": "reentry",
+      "status": "pass",
+      "statement": "actual actions remain existing canonical families.",
+      "evidence": [
+        "schemas/v1/reentries/reentry.schema.json",
+        "tests/schema_validation/test_issue_19_reentry_contract.py",
+        "docs/design/portia-follow-up-outcome-reentry-repair-domain-models.md",
+        "docs/examples/portia-follow-up-outcome-reentry-repair-examples.md"
+      ]
+    },
+    {
+      "criterion_id": "reentry.005",
+      "group": "reentry",
+      "status": "pass",
+      "statement": "date passage/person return does not auto-complete all reentry work.",
+      "evidence": [
+        "schemas/v1/reentries/reentry.schema.json",
+        "tests/schema_validation/test_issue_19_reentry_contract.py",
+        "docs/design/portia-follow-up-outcome-reentry-repair-domain-models.md",
+        "docs/examples/portia-follow-up-outcome-reentry-repair-examples.md"
+      ]
+    },
+    {
+      "criterion_id": "reentry.006",
+      "group": "reentry",
+      "status": "pass",
+      "statement": "completed Reentry does not imply safety/compliance/rehabilitation.",
+      "evidence": [
+        "schemas/v1/reentries/reentry.schema.json",
+        "tests/schema_validation/test_issue_19_reentry_contract.py",
+        "docs/design/portia-follow-up-outcome-reentry-repair-domain-models.md",
+        "docs/examples/portia-follow-up-outcome-reentry-repair-examples.md"
+      ]
+    },
+    {
+      "criterion_id": "reentry.007",
+      "group": "reentry",
+      "status": "pass",
+      "statement": "post-reentry check is separate Follow-Up.",
+      "evidence": [
+        "schemas/v1/reentries/reentry.schema.json",
+        "tests/schema_validation/test_issue_19_reentry_contract.py",
+        "docs/design/portia-follow-up-outcome-reentry-repair-domain-models.md",
+        "docs/examples/portia-follow-up-outcome-reentry-repair-examples.md"
+      ]
+    },
+    {
+      "criterion_id": "reentry.008",
+      "group": "reentry",
+      "status": "pass",
+      "statement": "optional Portia steps do not create unauthorized access barriers.",
+      "evidence": [
+        "schemas/v1/reentries/reentry.schema.json",
+        "tests/schema_validation/test_issue_19_reentry_contract.py",
+        "docs/design/portia-follow-up-outcome-reentry-repair-domain-models.md",
+        "docs/examples/portia-follow-up-outcome-reentry-repair-examples.md"
+      ]
+    },
+    {
+      "criterion_id": "reentry.009",
+      "group": "reentry",
+      "status": "pass",
+      "statement": "restricted safety/clinical processes remain external/minimally linked.",
+      "evidence": [
+        "schemas/v1/reentries/reentry.schema.json",
+        "tests/schema_validation/test_issue_19_reentry_contract.py",
+        "docs/design/portia-follow-up-outcome-reentry-repair-domain-models.md",
+        "docs/examples/portia-follow-up-outcome-reentry-repair-examples.md"
+      ]
+    },
+    {
+      "criterion_id": "reentry.010",
+      "group": "reentry",
+      "status": "pass",
+      "statement": "no readiness score is introduced.",
+      "evidence": [
+        "schemas/v1/reentries/reentry.schema.json",
+        "tests/schema_validation/test_issue_19_reentry_contract.py",
+        "docs/design/portia-follow-up-outcome-reentry-repair-domain-models.md",
+        "docs/examples/portia-follow-up-outcome-reentry-repair-examples.md"
+      ]
+    },
+    {
+      "criterion_id": "repair.001",
+      "group": "repair",
+      "status": "pass",
+      "statement": "Repair has opaque identity and is distinct from Response/Communication/Determination/Outcome.",
+      "evidence": [
+        "schemas/v1/repairs/repair.schema.json",
+        "tests/schema_validation/test_issue_19_repair_contract.py",
+        "docs/design/portia-follow-up-outcome-reentry-repair-domain-models.md",
+        "docs/examples/portia-follow-up-outcome-reentry-repair-examples.md"
+      ]
+    },
+    {
+      "criterion_id": "repair.002",
+      "group": "repair",
+      "status": "pass",
+      "statement": "neutral participant roles and voluntary participation states are defined.",
+      "evidence": [
+        "schemas/v1/repairs/repair.schema.json",
+        "tests/schema_validation/test_issue_19_repair_contract.py",
+        "docs/design/portia-follow-up-outcome-reentry-repair-domain-models.md",
+        "docs/examples/portia-follow-up-outcome-reentry-repair-examples.md"
+      ]
+    },
+    {
+      "criterion_id": "repair.003",
+      "group": "repair",
+      "status": "pass",
+      "statement": "decline/unavailability/withdrawal are nonjudgmental.",
+      "evidence": [
+        "schemas/v1/repairs/repair.schema.json",
+        "tests/schema_validation/test_issue_19_repair_contract.py",
+        "docs/design/portia-follow-up-outcome-reentry-repair-domain-models.md",
+        "docs/examples/portia-follow-up-outcome-reentry-repair-examples.md"
+      ]
+    },
+    {
+      "criterion_id": "repair.004",
+      "group": "repair",
+      "status": "pass",
+      "statement": "affected-person participation/direct meeting/apology is not mandatory.",
+      "evidence": [
+        "schemas/v1/repairs/repair.schema.json",
+        "tests/schema_validation/test_issue_19_repair_contract.py",
+        "docs/design/portia-follow-up-outcome-reentry-repair-domain-models.md",
+        "docs/examples/portia-follow-up-outcome-reentry-repair-examples.md"
+      ]
+    },
+    {
+      "criterion_id": "repair.005",
+      "group": "repair",
+      "status": "pass",
+      "statement": "Repair focus does not overwrite source evidence.",
+      "evidence": [
+        "schemas/v1/repairs/repair.schema.json",
+        "tests/schema_validation/test_issue_19_repair_contract.py",
+        "docs/design/portia-follow-up-outcome-reentry-repair-domain-models.md",
+        "docs/examples/portia-follow-up-outcome-reentry-repair-examples.md"
+      ]
+    },
+    {
+      "criterion_id": "repair.006",
+      "group": "repair",
+      "status": "pass",
+      "statement": "agreement/action modeling decision is explicit.",
+      "evidence": [
+        "schemas/v1/repairs/repair.schema.json",
+        "tests/schema_validation/test_issue_19_repair_contract.py",
+        "docs/design/portia-follow-up-outcome-reentry-repair-domain-models.md",
+        "docs/examples/portia-follow-up-outcome-reentry-repair-examples.md"
+      ]
+    },
+    {
+      "criterion_id": "repair.007",
+      "group": "repair",
+      "status": "pass",
+      "statement": "`repair_action@1` is not added without independent semantic justification.",
+      "evidence": [
+        "schemas/v1/repairs/repair.schema.json",
+        "tests/schema_validation/test_issue_19_repair_contract.py",
+        "docs/design/portia-follow-up-outcome-reentry-repair-domain-models.md",
+        "docs/examples/portia-follow-up-outcome-reentry-repair-examples.md"
+      ]
+    },
+    {
+      "criterion_id": "repair.008",
+      "group": "repair",
+      "status": "pass",
+      "statement": "restitution does not become debt/collections tracking.",
+      "evidence": [
+        "schemas/v1/repairs/repair.schema.json",
+        "tests/schema_validation/test_issue_19_repair_contract.py",
+        "docs/design/portia-follow-up-outcome-reentry-repair-domain-models.md",
+        "docs/examples/portia-follow-up-outcome-reentry-repair-examples.md"
+      ]
+    },
+    {
+      "criterion_id": "repair.009",
+      "group": "repair",
+      "status": "pass",
+      "statement": "completion does not imply remorse, forgiveness, rehabilitation, or relationship restoration.",
+      "evidence": [
+        "schemas/v1/repairs/repair.schema.json",
+        "tests/schema_validation/test_issue_19_repair_contract.py",
+        "docs/design/portia-follow-up-outcome-reentry-repair-domain-models.md",
+        "docs/examples/portia-follow-up-outcome-reentry-repair-examples.md"
+      ]
+    },
+    {
+      "criterion_id": "repair.010",
+      "group": "repair",
+      "status": "pass",
+      "statement": "relationship change is separate Outcome if evaluated.",
+      "evidence": [
+        "schemas/v1/repairs/repair.schema.json",
+        "tests/schema_validation/test_issue_19_repair_contract.py",
+        "docs/design/portia-follow-up-outcome-reentry-repair-domain-models.md",
+        "docs/examples/portia-follow-up-outcome-reentry-repair-examples.md"
+      ]
+    },
+    {
+      "criterion_id": "repair.011",
+      "group": "repair",
+      "status": "pass",
+      "statement": "no engagement/remorse/sincerity score is introduced.",
+      "evidence": [
+        "schemas/v1/repairs/repair.schema.json",
+        "tests/schema_validation/test_issue_19_repair_contract.py",
+        "docs/design/portia-follow-up-outcome-reentry-repair-domain-models.md",
+        "docs/examples/portia-follow-up-outcome-reentry-repair-examples.md"
+      ]
+    },
+    {
+      "criterion_id": "lifecycle_infrastructure_cross_year.001",
+      "group": "lifecycle_infrastructure_cross_year",
+      "status": "pass",
+      "statement": "lifecycle/workflow/correction policy is explicit for each family.",
+      "evidence": [
+        "tests/schema_validation/test_issue_19_shared_infrastructure_integration.py",
+        "tests/schema_validation/fixtures/issue-19/cross-record/shared-infrastructure-scenarios.json",
+        "schemas/v1/references/exact-portia-work-record-ref.schema.json",
+        "schemas/v1/targets/exact-portia-work-or-record-target.schema.json",
+        "schemas/v1/dependencies/dependency.schema.json",
+        "schemas/v1/migrations/record-migration.schema.json",
+        "schemas/v1/corrections/ownership-correction.schema.json",
+        "schemas/v1/removals/exceptional-removal.schema.json",
+        "schemas/v1/support-processes/support-process.schema.json",
+        "docs/design/portia-follow-up-outcome-reentry-repair-domain-models.md"
+      ]
+    },
+    {
+      "criterion_id": "lifecycle_infrastructure_cross_year.002",
+      "group": "lifecycle_infrastructure_cross_year",
+      "status": "pass",
+      "statement": "later evaluation is distinct from correction.",
+      "evidence": [
+        "tests/schema_validation/test_issue_19_shared_infrastructure_integration.py",
+        "tests/schema_validation/fixtures/issue-19/cross-record/shared-infrastructure-scenarios.json",
+        "schemas/v1/references/exact-portia-work-record-ref.schema.json",
+        "schemas/v1/targets/exact-portia-work-or-record-target.schema.json",
+        "schemas/v1/dependencies/dependency.schema.json",
+        "schemas/v1/migrations/record-migration.schema.json",
+        "schemas/v1/corrections/ownership-correction.schema.json",
+        "schemas/v1/removals/exceptional-removal.schema.json",
+        "schemas/v1/support-processes/support-process.schema.json",
+        "docs/design/portia-follow-up-outcome-reentry-repair-domain-models.md"
+      ]
+    },
+    {
+      "criterion_id": "lifecycle_infrastructure_cross_year.003",
+      "group": "lifecycle_infrastructure_cross_year",
+      "status": "pass",
+      "statement": "Amendment policy and family successor reasons are explicit.",
+      "evidence": [
+        "tests/schema_validation/test_issue_19_shared_infrastructure_integration.py",
+        "tests/schema_validation/fixtures/issue-19/cross-record/shared-infrastructure-scenarios.json",
+        "schemas/v1/references/exact-portia-work-record-ref.schema.json",
+        "schemas/v1/targets/exact-portia-work-or-record-target.schema.json",
+        "schemas/v1/dependencies/dependency.schema.json",
+        "schemas/v1/migrations/record-migration.schema.json",
+        "schemas/v1/corrections/ownership-correction.schema.json",
+        "schemas/v1/removals/exceptional-removal.schema.json",
+        "schemas/v1/support-processes/support-process.schema.json",
+        "docs/design/portia-follow-up-outcome-reentry-repair-domain-models.md"
+      ]
+    },
+    {
+      "criterion_id": "lifecycle_infrastructure_cross_year.004",
+      "group": "lifecycle_infrastructure_cross_year",
+      "status": "pass",
+      "statement": "exact refs never silently follow successors.",
+      "evidence": [
+        "tests/schema_validation/test_issue_19_shared_infrastructure_integration.py",
+        "tests/schema_validation/fixtures/issue-19/cross-record/shared-infrastructure-scenarios.json",
+        "schemas/v1/references/exact-portia-work-record-ref.schema.json",
+        "schemas/v1/targets/exact-portia-work-or-record-target.schema.json",
+        "schemas/v1/dependencies/dependency.schema.json",
+        "schemas/v1/migrations/record-migration.schema.json",
+        "schemas/v1/corrections/ownership-correction.schema.json",
+        "schemas/v1/removals/exceptional-removal.schema.json",
+        "schemas/v1/support-processes/support-process.schema.json",
+        "docs/design/portia-follow-up-outcome-reentry-repair-domain-models.md"
+      ]
+    },
+    {
+      "criterion_id": "lifecycle_infrastructure_cross_year.005",
+      "group": "lifecycle_infrastructure_cross_year",
+      "status": "pass",
+      "statement": "disagreement, dependency, migration, ownership correction, removal compatibility is demonstrated.",
+      "evidence": [
+        "tests/schema_validation/test_issue_19_shared_infrastructure_integration.py",
+        "tests/schema_validation/fixtures/issue-19/cross-record/shared-infrastructure-scenarios.json",
+        "schemas/v1/references/exact-portia-work-record-ref.schema.json",
+        "schemas/v1/targets/exact-portia-work-or-record-target.schema.json",
+        "schemas/v1/dependencies/dependency.schema.json",
+        "schemas/v1/migrations/record-migration.schema.json",
+        "schemas/v1/corrections/ownership-correction.schema.json",
+        "schemas/v1/removals/exceptional-removal.schema.json",
+        "schemas/v1/support-processes/support-process.schema.json",
+        "docs/design/portia-follow-up-outcome-reentry-repair-domain-models.md"
+      ]
+    },
+    {
+      "criterion_id": "lifecycle_infrastructure_cross_year.006",
+      "group": "lifecycle_infrastructure_cross_year",
+      "status": "pass",
+      "statement": "operation/lock/Quarantine/Integrity Finding reuse is demonstrated.",
+      "evidence": [
+        "tests/schema_validation/test_issue_19_shared_infrastructure_integration.py",
+        "tests/schema_validation/fixtures/issue-19/cross-record/shared-infrastructure-scenarios.json",
+        "schemas/v1/references/exact-portia-work-record-ref.schema.json",
+        "schemas/v1/targets/exact-portia-work-or-record-target.schema.json",
+        "schemas/v1/dependencies/dependency.schema.json",
+        "schemas/v1/migrations/record-migration.schema.json",
+        "schemas/v1/corrections/ownership-correction.schema.json",
+        "schemas/v1/removals/exceptional-removal.schema.json",
+        "schemas/v1/support-processes/support-process.schema.json",
+        "docs/design/portia-follow-up-outcome-reentry-repair-domain-models.md"
+      ]
+    },
+    {
+      "criterion_id": "lifecycle_infrastructure_cross_year.007",
+      "group": "lifecycle_infrastructure_cross_year",
+      "status": "pass",
+      "statement": "derived state remains rebuildable/nonauthoritative/privacy-minimized.",
+      "evidence": [
+        "tests/schema_validation/test_issue_19_shared_infrastructure_integration.py",
+        "tests/schema_validation/fixtures/issue-19/cross-record/shared-infrastructure-scenarios.json",
+        "schemas/v1/references/exact-portia-work-record-ref.schema.json",
+        "schemas/v1/targets/exact-portia-work-or-record-target.schema.json",
+        "schemas/v1/dependencies/dependency.schema.json",
+        "schemas/v1/migrations/record-migration.schema.json",
+        "schemas/v1/corrections/ownership-correction.schema.json",
+        "schemas/v1/removals/exceptional-removal.schema.json",
+        "schemas/v1/support-processes/support-process.schema.json",
+        "docs/design/portia-follow-up-outcome-reentry-repair-domain-models.md"
+      ]
+    },
+    {
+      "criterion_id": "lifecycle_infrastructure_cross_year.008",
+      "group": "lifecycle_infrastructure_cross_year",
+      "status": "pass",
+      "statement": "missing derived state never proves absence.",
+      "evidence": [
+        "tests/schema_validation/test_issue_19_shared_infrastructure_integration.py",
+        "tests/schema_validation/fixtures/issue-19/cross-record/shared-infrastructure-scenarios.json",
+        "schemas/v1/references/exact-portia-work-record-ref.schema.json",
+        "schemas/v1/targets/exact-portia-work-or-record-target.schema.json",
+        "schemas/v1/dependencies/dependency.schema.json",
+        "schemas/v1/migrations/record-migration.schema.json",
+        "schemas/v1/corrections/ownership-correction.schema.json",
+        "schemas/v1/removals/exceptional-removal.schema.json",
+        "schemas/v1/support-processes/support-process.schema.json",
+        "docs/design/portia-follow-up-outcome-reentry-repair-domain-models.md"
+      ]
+    },
+    {
+      "criterion_id": "lifecycle_infrastructure_cross_year.009",
+      "group": "lifecycle_infrastructure_cross_year",
+      "status": "pass",
+      "statement": "cross-year Support continuity preserves old #19 records exactly.",
+      "evidence": [
+        "tests/schema_validation/test_issue_19_shared_infrastructure_integration.py",
+        "tests/schema_validation/fixtures/issue-19/cross-record/shared-infrastructure-scenarios.json",
+        "schemas/v1/references/exact-portia-work-record-ref.schema.json",
+        "schemas/v1/targets/exact-portia-work-or-record-target.schema.json",
+        "schemas/v1/dependencies/dependency.schema.json",
+        "schemas/v1/migrations/record-migration.schema.json",
+        "schemas/v1/corrections/ownership-correction.schema.json",
+        "schemas/v1/removals/exceptional-removal.schema.json",
+        "schemas/v1/support-processes/support-process.schema.json",
+        "docs/design/portia-follow-up-outcome-reentry-repair-domain-models.md"
+      ]
+    },
+    {
+      "criterion_id": "paper_privacy_automation_core.001",
+      "group": "paper_privacy_automation_core",
+      "status": "pass",
+      "statement": "paper templates do not fabricate completion, Outcome, agreement, participation, or judgment.",
+      "evidence": [
+        "docs/decisions/0015-define-follow-up-outcome-reentry-and-repair-domain-models.md",
+        "docs/design/portia-follow-up-outcome-reentry-repair-domain-models.md",
+        "schemas/v1/follow-ups/follow-up.schema.json",
+        "schemas/v1/outcomes/outcome.schema.json",
+        "schemas/v1/reentries/reentry.schema.json",
+        "schemas/v1/repairs/repair.schema.json",
+        "tests/schema_validation/test_issue_19_shared_infrastructure_integration.py",
+        "docs/validation/issue-19-follow-up-outcome-reentry-repair-validation.md"
+      ]
+    },
+    {
+      "criterion_id": "paper_privacy_automation_core.002",
+      "group": "paper_privacy_automation_core",
+      "status": "pass",
+      "statement": "current-use import/paper gating remains #20.",
+      "evidence": [
+        "docs/decisions/0015-define-follow-up-outcome-reentry-and-repair-domain-models.md",
+        "docs/design/portia-follow-up-outcome-reentry-repair-domain-models.md",
+        "schemas/v1/follow-ups/follow-up.schema.json",
+        "schemas/v1/outcomes/outcome.schema.json",
+        "schemas/v1/reentries/reentry.schema.json",
+        "schemas/v1/repairs/repair.schema.json",
+        "tests/schema_validation/test_issue_19_shared_infrastructure_integration.py",
+        "docs/validation/issue-19-follow-up-outcome-reentry-repair-validation.md"
+      ]
+    },
+    {
+      "criterion_id": "paper_privacy_automation_core.003",
+      "group": "paper_privacy_automation_core",
+      "status": "pass",
+      "statement": "native payloads minimize sensitive/restricted content.",
+      "evidence": [
+        "docs/decisions/0015-define-follow-up-outcome-reentry-and-repair-domain-models.md",
+        "docs/design/portia-follow-up-outcome-reentry-repair-domain-models.md",
+        "schemas/v1/follow-ups/follow-up.schema.json",
+        "schemas/v1/outcomes/outcome.schema.json",
+        "schemas/v1/reentries/reentry.schema.json",
+        "schemas/v1/repairs/repair.schema.json",
+        "tests/schema_validation/test_issue_19_shared_infrastructure_integration.py",
+        "docs/validation/issue-19-follow-up-outcome-reentry-repair-validation.md"
+      ]
+    },
+    {
+      "criterion_id": "paper_privacy_automation_core.004",
+      "group": "paper_privacy_automation_core",
+      "status": "pass",
+      "statement": "no automatic progress/recurrence/effectiveness/closure/adaptation/Reentry/Repair inference is introduced.",
+      "evidence": [
+        "docs/decisions/0015-define-follow-up-outcome-reentry-and-repair-domain-models.md",
+        "docs/design/portia-follow-up-outcome-reentry-repair-domain-models.md",
+        "schemas/v1/follow-ups/follow-up.schema.json",
+        "schemas/v1/outcomes/outcome.schema.json",
+        "schemas/v1/reentries/reentry.schema.json",
+        "schemas/v1/repairs/repair.schema.json",
+        "tests/schema_validation/test_issue_19_shared_infrastructure_integration.py",
+        "docs/validation/issue-19-follow-up-outcome-reentry-repair-validation.md"
+      ]
+    },
+    {
+      "criterion_id": "paper_privacy_automation_core.005",
+      "group": "paper_privacy_automation_core",
+      "status": "pass",
+      "statement": "no compliance/engagement/remorse/competence inference is introduced.",
+      "evidence": [
+        "docs/decisions/0015-define-follow-up-outcome-reentry-and-repair-domain-models.md",
+        "docs/design/portia-follow-up-outcome-reentry-repair-domain-models.md",
+        "schemas/v1/follow-ups/follow-up.schema.json",
+        "schemas/v1/outcomes/outcome.schema.json",
+        "schemas/v1/reentries/reentry.schema.json",
+        "schemas/v1/repairs/repair.schema.json",
+        "tests/schema_validation/test_issue_19_shared_infrastructure_integration.py",
+        "docs/validation/issue-19-follow-up-outcome-reentry-repair-validation.md"
+      ]
+    },
+    {
+      "criterion_id": "paper_privacy_automation_core.006",
+      "group": "paper_privacy_automation_core",
+      "status": "pass",
+      "statement": "Core v0.6 `intervention_outcomes` compatibility is considered.",
+      "evidence": [
+        "docs/decisions/0015-define-follow-up-outcome-reentry-and-repair-domain-models.md",
+        "docs/design/portia-follow-up-outcome-reentry-repair-domain-models.md",
+        "schemas/v1/follow-ups/follow-up.schema.json",
+        "schemas/v1/outcomes/outcome.schema.json",
+        "schemas/v1/reentries/reentry.schema.json",
+        "schemas/v1/repairs/repair.schema.json",
+        "tests/schema_validation/test_issue_19_shared_infrastructure_integration.py",
+        "docs/validation/issue-19-follow-up-outcome-reentry-repair-validation.md"
+      ]
+    },
+    {
+      "criterion_id": "paper_privacy_automation_core.007",
+      "group": "paper_privacy_automation_core",
+      "status": "pass",
+      "statement": "Portia owns native Outcome semantics; #19 does not implement producer publication or Meridian adapter.",
+      "evidence": [
+        "docs/decisions/0015-define-follow-up-outcome-reentry-and-repair-domain-models.md",
+        "docs/design/portia-follow-up-outcome-reentry-repair-domain-models.md",
+        "schemas/v1/follow-ups/follow-up.schema.json",
+        "schemas/v1/outcomes/outcome.schema.json",
+        "schemas/v1/reentries/reentry.schema.json",
+        "schemas/v1/repairs/repair.schema.json",
+        "tests/schema_validation/test_issue_19_shared_infrastructure_integration.py",
+        "docs/validation/issue-19-follow-up-outcome-reentry-repair-validation.md"
+      ]
+    },
+    {
+      "criterion_id": "paper_privacy_automation_core.008",
+      "group": "paper_privacy_automation_core",
+      "status": "pass",
+      "statement": "Outcome does not become Score/standards rating/Grade or automatic portfolio content.",
+      "evidence": [
+        "docs/decisions/0015-define-follow-up-outcome-reentry-and-repair-domain-models.md",
+        "docs/design/portia-follow-up-outcome-reentry-repair-domain-models.md",
+        "schemas/v1/follow-ups/follow-up.schema.json",
+        "schemas/v1/outcomes/outcome.schema.json",
+        "schemas/v1/reentries/reentry.schema.json",
+        "schemas/v1/repairs/repair.schema.json",
+        "tests/schema_validation/test_issue_19_shared_infrastructure_integration.py",
+        "docs/validation/issue-19-follow-up-outcome-reentry-repair-validation.md"
+      ]
+    },
+    {
+      "criterion_id": "schemas_fixtures_tests_docs.001",
+      "group": "schemas_fixtures_tests_docs",
+      "status": "pass",
+      "statement": "accepted public Draft 2020-12 schemas and collision-checked identifiers are added.",
+      "evidence": [
+        "schemas/schema-catalog.json",
+        "schemas/v2/accounts/account.schema.json",
+        "schemas/v2/observations/observation.schema.json",
+        "schemas/v1/follow-ups/follow-up.schema.json",
+        "schemas/v1/outcomes/outcome.schema.json",
+        "schemas/v1/reentries/reentry.schema.json",
+        "schemas/v1/repairs/repair.schema.json",
+        "tests/schema_validation/test_issue_19_evidence_v2_contracts.py",
+        "tests/schema_validation/test_issue_19_follow_up_contract.py",
+        "tests/schema_validation/test_issue_19_outcome_contract.py",
+        "tests/schema_validation/test_issue_19_reentry_contract.py",
+        "tests/schema_validation/test_issue_19_repair_contract.py",
+        "tests/schema_validation/test_issue_19_shared_infrastructure_integration.py",
+        "tests/schema_validation/test_issue_19_final_documentation.py",
+        "docs/validation/issue-19-application-invalid-matrix.json",
+        "docs/validation/issue-19-acceptance-matrix.json",
+        "docs/validation/issue-19-follow-up-outcome-reentry-repair-validation.md",
+        "docs/validation/issue-19-final-repository-checkpoint.md",
+        "docs/examples/portia-follow-up-outcome-reentry-repair-examples.md",
+        "README.md",
+        "schemas/README.md"
+      ]
+    },
+    {
+      "criterion_id": "schemas_fixtures_tests_docs.002",
+      "group": "schemas_fixtures_tests_docs",
+      "status": "pass",
+      "statement": "schema catalog is updated.",
+      "evidence": [
+        "schemas/schema-catalog.json",
+        "schemas/v2/accounts/account.schema.json",
+        "schemas/v2/observations/observation.schema.json",
+        "schemas/v1/follow-ups/follow-up.schema.json",
+        "schemas/v1/outcomes/outcome.schema.json",
+        "schemas/v1/reentries/reentry.schema.json",
+        "schemas/v1/repairs/repair.schema.json",
+        "tests/schema_validation/test_issue_19_evidence_v2_contracts.py",
+        "tests/schema_validation/test_issue_19_follow_up_contract.py",
+        "tests/schema_validation/test_issue_19_outcome_contract.py",
+        "tests/schema_validation/test_issue_19_reentry_contract.py",
+        "tests/schema_validation/test_issue_19_repair_contract.py",
+        "tests/schema_validation/test_issue_19_shared_infrastructure_integration.py",
+        "tests/schema_validation/test_issue_19_final_documentation.py",
+        "docs/validation/issue-19-application-invalid-matrix.json",
+        "docs/validation/issue-19-acceptance-matrix.json",
+        "docs/validation/issue-19-follow-up-outcome-reentry-repair-validation.md",
+        "docs/validation/issue-19-final-repository-checkpoint.md",
+        "docs/examples/portia-follow-up-outcome-reentry-repair-examples.md",
+        "README.md",
+        "schemas/README.md"
+      ]
+    },
+    {
+      "criterion_id": "schemas_fixtures_tests_docs.003",
+      "group": "schemas_fixtures_tests_docs",
+      "status": "pass",
+      "statement": "valid, structural-invalid, and application-invalid coverage is complete.",
+      "evidence": [
+        "schemas/schema-catalog.json",
+        "schemas/v2/accounts/account.schema.json",
+        "schemas/v2/observations/observation.schema.json",
+        "schemas/v1/follow-ups/follow-up.schema.json",
+        "schemas/v1/outcomes/outcome.schema.json",
+        "schemas/v1/reentries/reentry.schema.json",
+        "schemas/v1/repairs/repair.schema.json",
+        "tests/schema_validation/test_issue_19_evidence_v2_contracts.py",
+        "tests/schema_validation/test_issue_19_follow_up_contract.py",
+        "tests/schema_validation/test_issue_19_outcome_contract.py",
+        "tests/schema_validation/test_issue_19_reentry_contract.py",
+        "tests/schema_validation/test_issue_19_repair_contract.py",
+        "tests/schema_validation/test_issue_19_shared_infrastructure_integration.py",
+        "tests/schema_validation/test_issue_19_final_documentation.py",
+        "docs/validation/issue-19-application-invalid-matrix.json",
+        "docs/validation/issue-19-acceptance-matrix.json",
+        "docs/validation/issue-19-follow-up-outcome-reentry-repair-validation.md",
+        "docs/validation/issue-19-final-repository-checkpoint.md",
+        "docs/examples/portia-follow-up-outcome-reentry-repair-examples.md",
+        "README.md",
+        "schemas/README.md"
+      ]
+    },
+    {
+      "criterion_id": "schemas_fixtures_tests_docs.004",
+      "group": "schemas_fixtures_tests_docs",
+      "status": "pass",
+      "statement": "cross-record/causality/closure/reentry/repair invariants are tested.",
+      "evidence": [
+        "schemas/schema-catalog.json",
+        "schemas/v2/accounts/account.schema.json",
+        "schemas/v2/observations/observation.schema.json",
+        "schemas/v1/follow-ups/follow-up.schema.json",
+        "schemas/v1/outcomes/outcome.schema.json",
+        "schemas/v1/reentries/reentry.schema.json",
+        "schemas/v1/repairs/repair.schema.json",
+        "tests/schema_validation/test_issue_19_evidence_v2_contracts.py",
+        "tests/schema_validation/test_issue_19_follow_up_contract.py",
+        "tests/schema_validation/test_issue_19_outcome_contract.py",
+        "tests/schema_validation/test_issue_19_reentry_contract.py",
+        "tests/schema_validation/test_issue_19_repair_contract.py",
+        "tests/schema_validation/test_issue_19_shared_infrastructure_integration.py",
+        "tests/schema_validation/test_issue_19_final_documentation.py",
+        "docs/validation/issue-19-application-invalid-matrix.json",
+        "docs/validation/issue-19-acceptance-matrix.json",
+        "docs/validation/issue-19-follow-up-outcome-reentry-repair-validation.md",
+        "docs/validation/issue-19-final-repository-checkpoint.md",
+        "docs/examples/portia-follow-up-outcome-reentry-repair-examples.md",
+        "README.md",
+        "schemas/README.md"
+      ]
+    },
+    {
+      "criterion_id": "schemas_fixtures_tests_docs.005",
+      "group": "schemas_fixtures_tests_docs",
+      "status": "pass",
+      "statement": "existing and full schema-validation suites pass.",
+      "evidence": [
+        "schemas/schema-catalog.json",
+        "schemas/v2/accounts/account.schema.json",
+        "schemas/v2/observations/observation.schema.json",
+        "schemas/v1/follow-ups/follow-up.schema.json",
+        "schemas/v1/outcomes/outcome.schema.json",
+        "schemas/v1/reentries/reentry.schema.json",
+        "schemas/v1/repairs/repair.schema.json",
+        "tests/schema_validation/test_issue_19_evidence_v2_contracts.py",
+        "tests/schema_validation/test_issue_19_follow_up_contract.py",
+        "tests/schema_validation/test_issue_19_outcome_contract.py",
+        "tests/schema_validation/test_issue_19_reentry_contract.py",
+        "tests/schema_validation/test_issue_19_repair_contract.py",
+        "tests/schema_validation/test_issue_19_shared_infrastructure_integration.py",
+        "tests/schema_validation/test_issue_19_final_documentation.py",
+        "docs/validation/issue-19-application-invalid-matrix.json",
+        "docs/validation/issue-19-acceptance-matrix.json",
+        "docs/validation/issue-19-follow-up-outcome-reentry-repair-validation.md",
+        "docs/validation/issue-19-final-repository-checkpoint.md",
+        "docs/examples/portia-follow-up-outcome-reentry-repair-examples.md",
+        "README.md",
+        "schemas/README.md"
+      ]
+    },
+    {
+      "criterion_id": "schemas_fixtures_tests_docs.006",
+      "group": "schemas_fixtures_tests_docs",
+      "status": "pass",
+      "statement": "`git diff --check` passes.",
+      "evidence": [
+        "schemas/schema-catalog.json",
+        "schemas/v2/accounts/account.schema.json",
+        "schemas/v2/observations/observation.schema.json",
+        "schemas/v1/follow-ups/follow-up.schema.json",
+        "schemas/v1/outcomes/outcome.schema.json",
+        "schemas/v1/reentries/reentry.schema.json",
+        "schemas/v1/repairs/repair.schema.json",
+        "tests/schema_validation/test_issue_19_evidence_v2_contracts.py",
+        "tests/schema_validation/test_issue_19_follow_up_contract.py",
+        "tests/schema_validation/test_issue_19_outcome_contract.py",
+        "tests/schema_validation/test_issue_19_reentry_contract.py",
+        "tests/schema_validation/test_issue_19_repair_contract.py",
+        "tests/schema_validation/test_issue_19_shared_infrastructure_integration.py",
+        "tests/schema_validation/test_issue_19_final_documentation.py",
+        "docs/validation/issue-19-application-invalid-matrix.json",
+        "docs/validation/issue-19-acceptance-matrix.json",
+        "docs/validation/issue-19-follow-up-outcome-reentry-repair-validation.md",
+        "docs/validation/issue-19-final-repository-checkpoint.md",
+        "docs/examples/portia-follow-up-outcome-reentry-repair-examples.md",
+        "README.md",
+        "schemas/README.md"
+      ]
+    },
+    {
+      "criterion_id": "schemas_fixtures_tests_docs.007",
+      "group": "schemas_fixtures_tests_docs",
+      "status": "pass",
+      "statement": "design document and accepted ADR are complete.",
+      "evidence": [
+        "schemas/schema-catalog.json",
+        "schemas/v2/accounts/account.schema.json",
+        "schemas/v2/observations/observation.schema.json",
+        "schemas/v1/follow-ups/follow-up.schema.json",
+        "schemas/v1/outcomes/outcome.schema.json",
+        "schemas/v1/reentries/reentry.schema.json",
+        "schemas/v1/repairs/repair.schema.json",
+        "tests/schema_validation/test_issue_19_evidence_v2_contracts.py",
+        "tests/schema_validation/test_issue_19_follow_up_contract.py",
+        "tests/schema_validation/test_issue_19_outcome_contract.py",
+        "tests/schema_validation/test_issue_19_reentry_contract.py",
+        "tests/schema_validation/test_issue_19_repair_contract.py",
+        "tests/schema_validation/test_issue_19_shared_infrastructure_integration.py",
+        "tests/schema_validation/test_issue_19_final_documentation.py",
+        "docs/validation/issue-19-application-invalid-matrix.json",
+        "docs/validation/issue-19-acceptance-matrix.json",
+        "docs/validation/issue-19-follow-up-outcome-reentry-repair-validation.md",
+        "docs/validation/issue-19-final-repository-checkpoint.md",
+        "docs/examples/portia-follow-up-outcome-reentry-repair-examples.md",
+        "README.md",
+        "schemas/README.md"
+      ]
+    },
+    {
+      "criterion_id": "schemas_fixtures_tests_docs.008",
+      "group": "schemas_fixtures_tests_docs",
+      "status": "pass",
+      "statement": "at least 40 synthetic examples are documented.",
+      "evidence": [
+        "schemas/schema-catalog.json",
+        "schemas/v2/accounts/account.schema.json",
+        "schemas/v2/observations/observation.schema.json",
+        "schemas/v1/follow-ups/follow-up.schema.json",
+        "schemas/v1/outcomes/outcome.schema.json",
+        "schemas/v1/reentries/reentry.schema.json",
+        "schemas/v1/repairs/repair.schema.json",
+        "tests/schema_validation/test_issue_19_evidence_v2_contracts.py",
+        "tests/schema_validation/test_issue_19_follow_up_contract.py",
+        "tests/schema_validation/test_issue_19_outcome_contract.py",
+        "tests/schema_validation/test_issue_19_reentry_contract.py",
+        "tests/schema_validation/test_issue_19_repair_contract.py",
+        "tests/schema_validation/test_issue_19_shared_infrastructure_integration.py",
+        "tests/schema_validation/test_issue_19_final_documentation.py",
+        "docs/validation/issue-19-application-invalid-matrix.json",
+        "docs/validation/issue-19-acceptance-matrix.json",
+        "docs/validation/issue-19-follow-up-outcome-reentry-repair-validation.md",
+        "docs/validation/issue-19-final-repository-checkpoint.md",
+        "docs/examples/portia-follow-up-outcome-reentry-repair-examples.md",
+        "README.md",
+        "schemas/README.md"
+      ]
+    },
+    {
+      "criterion_id": "schemas_fixtures_tests_docs.009",
+      "group": "schemas_fixtures_tests_docs",
+      "status": "pass",
+      "statement": "application-invalid and acceptance matrices are complete.",
+      "evidence": [
+        "schemas/schema-catalog.json",
+        "schemas/v2/accounts/account.schema.json",
+        "schemas/v2/observations/observation.schema.json",
+        "schemas/v1/follow-ups/follow-up.schema.json",
+        "schemas/v1/outcomes/outcome.schema.json",
+        "schemas/v1/reentries/reentry.schema.json",
+        "schemas/v1/repairs/repair.schema.json",
+        "tests/schema_validation/test_issue_19_evidence_v2_contracts.py",
+        "tests/schema_validation/test_issue_19_follow_up_contract.py",
+        "tests/schema_validation/test_issue_19_outcome_contract.py",
+        "tests/schema_validation/test_issue_19_reentry_contract.py",
+        "tests/schema_validation/test_issue_19_repair_contract.py",
+        "tests/schema_validation/test_issue_19_shared_infrastructure_integration.py",
+        "tests/schema_validation/test_issue_19_final_documentation.py",
+        "docs/validation/issue-19-application-invalid-matrix.json",
+        "docs/validation/issue-19-acceptance-matrix.json",
+        "docs/validation/issue-19-follow-up-outcome-reentry-repair-validation.md",
+        "docs/validation/issue-19-final-repository-checkpoint.md",
+        "docs/examples/portia-follow-up-outcome-reentry-repair-examples.md",
+        "README.md",
+        "schemas/README.md"
+      ]
+    },
+    {
+      "criterion_id": "schemas_fixtures_tests_docs.010",
+      "group": "schemas_fixtures_tests_docs",
+      "status": "pass",
+      "statement": "final validation/checkpoint docs and README/schema-guide reconciliation are complete.",
+      "evidence": [
+        "schemas/schema-catalog.json",
+        "schemas/v2/accounts/account.schema.json",
+        "schemas/v2/observations/observation.schema.json",
+        "schemas/v1/follow-ups/follow-up.schema.json",
+        "schemas/v1/outcomes/outcome.schema.json",
+        "schemas/v1/reentries/reentry.schema.json",
+        "schemas/v1/repairs/repair.schema.json",
+        "tests/schema_validation/test_issue_19_evidence_v2_contracts.py",
+        "tests/schema_validation/test_issue_19_follow_up_contract.py",
+        "tests/schema_validation/test_issue_19_outcome_contract.py",
+        "tests/schema_validation/test_issue_19_reentry_contract.py",
+        "tests/schema_validation/test_issue_19_repair_contract.py",
+        "tests/schema_validation/test_issue_19_shared_infrastructure_integration.py",
+        "tests/schema_validation/test_issue_19_final_documentation.py",
+        "docs/validation/issue-19-application-invalid-matrix.json",
+        "docs/validation/issue-19-acceptance-matrix.json",
+        "docs/validation/issue-19-follow-up-outcome-reentry-repair-validation.md",
+        "docs/validation/issue-19-final-repository-checkpoint.md",
+        "docs/examples/portia-follow-up-outcome-reentry-repair-examples.md",
+        "README.md",
+        "schemas/README.md"
+      ]
+    },
+    {
+      "criterion_id": "schemas_fixtures_tests_docs.011",
+      "group": "schemas_fixtures_tests_docs",
+      "status": "pass",
+      "statement": "no real student/family/staff data is committed.",
+      "evidence": [
+        "schemas/schema-catalog.json",
+        "schemas/v2/accounts/account.schema.json",
+        "schemas/v2/observations/observation.schema.json",
+        "schemas/v1/follow-ups/follow-up.schema.json",
+        "schemas/v1/outcomes/outcome.schema.json",
+        "schemas/v1/reentries/reentry.schema.json",
+        "schemas/v1/repairs/repair.schema.json",
+        "tests/schema_validation/test_issue_19_evidence_v2_contracts.py",
+        "tests/schema_validation/test_issue_19_follow_up_contract.py",
+        "tests/schema_validation/test_issue_19_outcome_contract.py",
+        "tests/schema_validation/test_issue_19_reentry_contract.py",
+        "tests/schema_validation/test_issue_19_repair_contract.py",
+        "tests/schema_validation/test_issue_19_shared_infrastructure_integration.py",
+        "tests/schema_validation/test_issue_19_final_documentation.py",
+        "docs/validation/issue-19-application-invalid-matrix.json",
+        "docs/validation/issue-19-acceptance-matrix.json",
+        "docs/validation/issue-19-follow-up-outcome-reentry-repair-validation.md",
+        "docs/validation/issue-19-final-repository-checkpoint.md",
+        "docs/examples/portia-follow-up-outcome-reentry-repair-examples.md",
+        "README.md",
+        "schemas/README.md"
+      ]
+    }
+  ]
+}

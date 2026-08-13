@@ -1,0 +1,66 @@
+{
+  "schema_version": "1",
+  "record_type": "reentry",
+  "module_id": "portia",
+  "class_id": "eng10_p2_2026",
+  "work_kind": "event",
+  "work_id": "evt_alpha",
+  "reentry_id": "ren_response",
+  "status": "active",
+  "target": {
+    "kind": "event_participant",
+    "record_ref": {
+      "record_kind": "event_participant",
+      "record_id": "ep_alpha",
+      "contract_version": "3"
+    }
+  },
+  "coordinator": {
+    "kind": "represented_human",
+    "person": {
+      "kind": "local_operator",
+      "display_label": "Synthetic Teacher"
+    }
+  },
+  "initiating_context": {
+    "kind": "response",
+    "record_ref": {
+      "work_ref": {
+        "module_id": "portia",
+        "class_id": "eng10_p2_2026",
+        "work_id": "evt_alpha",
+        "work_kind": "event",
+        "contract_version": "2"
+      },
+      "record_ref": {
+        "record_kind": "response",
+        "record_id": "rsp_alpha",
+        "contract_version": "1"
+      }
+    }
+  },
+  "planned_return": {
+    "kind": "exact_time",
+    "at": "2026-08-13T08:30:00-04:00"
+  },
+  "planned_elements": [
+    {
+      "kind": "orientation_or_check_in",
+      "description": "Synthetic teacher-local check-in before ordinary classroom workflow resumes."
+    }
+  ],
+  "workflow_state": "active",
+  "creation_source": {
+    "type": "digital_entry"
+  },
+  "created_at": "2026-08-12T10:00:00-04:00",
+  "created_by": {
+    "type": "local_operator",
+    "display_label": "Synthetic Teacher"
+  },
+  "updated_at": "2026-08-12T10:00:00-04:00",
+  "updated_by": {
+    "type": "local_operator",
+    "display_label": "Synthetic Teacher"
+  }
+}
