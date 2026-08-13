@@ -1,0 +1,817 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/repairs/repair.schema.json",
+  "title": "Portia Repair",
+  "description": "Canonical version-1 Portia work-local Repair representing one bounded teacher-local restorative or reparative process intended to address represented impact, relationship/community needs, or agreed restorative actions without converting participation into admission, punishment, character judgment, compliance, remorse, sincerity, forgiveness, or proof of the underlying allegation. Repair is distinct from Response, Communication, Determination, Support, Reentry, and Outcome.",
+  "$comment": "Application validation remains responsible for canonical work-local storage; work/target/facilitator resolution and current-use eligibility; participant logical identity and Support Process reference resolution; participant/action key uniqueness; agreement key resolution; exact context resolution and same-class authorization; chronology; paper/import review gates; lifecycle/history reconciliation; successor topology; no silent successor following; privacy; and coordinated writes. Repair completion or action completion must not manufacture admission, remorse, forgiveness, restored relationship, rehabilitation, recurrence prevention, or favorable Outcome.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "record_type",
+    "module_id",
+    "class_id",
+    "work_kind",
+    "work_id",
+    "repair_id",
+    "status",
+    "target",
+    "facilitator",
+    "focus",
+    "context_refs",
+    "participants",
+    "workflow_state",
+    "creation_source",
+    "created_at",
+    "created_by",
+    "updated_at",
+    "updated_by"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1"
+    },
+    "record_type": {
+      "const": "repair"
+    },
+    "module_id": {
+      "const": "portia"
+    },
+    "class_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+    },
+    "work_kind": {
+      "enum": [
+        "event",
+        "support_process"
+      ]
+    },
+    "work_id": {
+      "type": "string"
+    },
+    "repair_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-repair-id.schema.json"
+    },
+    "status": {
+      "enum": [
+        "proposed",
+        "active",
+        "invalidated",
+        "superseded"
+      ]
+    },
+    "target": {
+      "oneOf": [
+        {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/targets/portia-target-ref.schema.json"
+        },
+        {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/targets/support-process-target-ref.schema.json"
+        }
+      ]
+    },
+    "facilitator": {
+      "$ref": "#/$defs/facilitator"
+    },
+    "focus": {
+      "allOf": [
+        {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+        },
+        {
+          "maxLength": 4000
+        }
+      ],
+      "description": "Bounded neutral process focus. It is not an official narrative, Determination, admission, or truth finding."
+    },
+    "context_refs": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 100,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/contextLocator"
+      }
+    },
+    "participants": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 100,
+      "uniqueItems": true,
+      "items": {
+        "oneOf": [
+          {
+            "$ref": "#/$defs/eventParticipantEntry"
+          },
+          {
+            "$ref": "#/$defs/supportProcessParticipantEntry"
+          }
+        ]
+      }
+    },
+    "actions": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 100,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/agreedAction"
+      },
+      "description": "Optional embedded agreed actions. Absence of actions may honestly represent invitation, decline, unavailability, or a process that did not reach agreement."
+    },
+    "workflow_state": {
+      "enum": [
+        "planning",
+        "active",
+        "completed",
+        "cancelled",
+        "unable_to_complete"
+      ]
+    },
+    "completed_at": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+    },
+    "supersedes": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 100,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/supersessionEntry"
+      }
+    },
+    "creation_source": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/provenance/creation-source.schema.json"
+    },
+    "created_at": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+    },
+    "created_by": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/attribution/attribution-agent.schema.json"
+    },
+    "updated_at": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+    },
+    "updated_by": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/attribution/attribution-agent.schema.json"
+    }
+  },
+  "$defs": {
+    "localKey": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$",
+      "description": "Schema-local stable key only. It is not a public Portia record identifier and carries no semantic meaning."
+    },
+    "exactSupportProcessParticipantRef": {
+      "allOf": [
+        {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-local-record-ref.schema.json"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "record_kind": {
+              "const": "support_process_participant"
+            },
+            "record_id": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-support-process-participant-id.schema.json"
+            },
+            "contract_version": {
+              "const": "1"
+            }
+          },
+          "required": [
+            "record_kind",
+            "record_id",
+            "contract_version"
+          ]
+        }
+      ]
+    },
+    "eventFacilitator": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "person"
+      ],
+      "properties": {
+        "kind": {
+          "const": "represented_human"
+        },
+        "person": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/attribution/represented-human-attribution.schema.json"
+        }
+      },
+      "description": "Event-owned Repair facilitator. Current-use application validation requires an eligible operational human. Facilitator identity does not establish professional licensure, restorative-justice authority, or legal authority."
+    },
+    "supportProcessFacilitator": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "participant_ref"
+      ],
+      "properties": {
+        "kind": {
+          "const": "support_process_participant"
+        },
+        "participant_ref": {
+          "$ref": "#/$defs/exactSupportProcessParticipantRef"
+        }
+      },
+      "description": "Support-Process-owned Repair facilitator. Current-use application validation requires an exact active participant with provider_or_collaborator or coordinator context."
+    },
+    "facilitator": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/eventFacilitator"
+        },
+        {
+          "$ref": "#/$defs/supportProcessFacilitator"
+        }
+      ]
+    },
+    "eventParticipantPerson": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "person"
+      ],
+      "properties": {
+        "kind": {
+          "const": "represented_human"
+        },
+        "person": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/attribution/represented-human-attribution.schema.json"
+        }
+      }
+    },
+    "supportProcessParticipantPerson": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "participant_ref"
+      ],
+      "properties": {
+        "kind": {
+          "const": "support_process_participant"
+        },
+        "participant_ref": {
+          "$ref": "#/$defs/exactSupportProcessParticipantRef"
+        }
+      }
+    },
+    "participantRole": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind"
+      ],
+      "properties": {
+        "kind": {
+          "enum": [
+            "affected_person",
+            "person_addressing_impact",
+            "supporter",
+            "community_participant",
+            "other"
+          ]
+        },
+        "detail": {
+          "allOf": [
+            {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+            },
+            {
+              "maxLength": 1000
+            }
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "other"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "required": [
+              "detail"
+            ]
+          },
+          "else": {
+            "not": {
+              "required": [
+                "detail"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "eventParticipantEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "participant_key",
+        "person",
+        "roles",
+        "participation_state"
+      ],
+      "properties": {
+        "participant_key": {
+          "$ref": "#/$defs/localKey"
+        },
+        "person": {
+          "$ref": "#/$defs/eventParticipantPerson"
+        },
+        "roles": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 10,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/participantRole"
+          }
+        },
+        "participation_state": {
+          "enum": [
+            "invited",
+            "agreed_to_participate",
+            "participated",
+            "declined",
+            "unavailable",
+            "withdrew",
+            "not_applicable",
+            "unknown"
+          ]
+        }
+      },
+      "description": "Embedded process-local participant entry. Participation state is neutral workflow history and does not encode compliance, cooperation, remorse, sincerity, agreement with allegations, or forgiveness."
+    },
+    "supportProcessParticipantEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "participant_key",
+        "person",
+        "roles",
+        "participation_state"
+      ],
+      "properties": {
+        "participant_key": {
+          "$ref": "#/$defs/localKey"
+        },
+        "person": {
+          "$ref": "#/$defs/supportProcessParticipantPerson"
+        },
+        "roles": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 10,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/participantRole"
+          }
+        },
+        "participation_state": {
+          "enum": [
+            "invited",
+            "agreed_to_participate",
+            "participated",
+            "declined",
+            "unavailable",
+            "withdrew",
+            "not_applicable",
+            "unknown"
+          ]
+        }
+      },
+      "description": "Embedded process-local participant entry referencing one exact Support Process Participant. No separate repair_participant@1 record is published."
+    },
+    "workContext": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "work_ref"
+      ],
+      "properties": {
+        "kind": {
+          "const": "work"
+        },
+        "work_ref": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-portia-work-ref.schema.json"
+        }
+      }
+    },
+    "recordContext": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "record_ref"
+      ],
+      "properties": {
+        "kind": {
+          "const": "record"
+        },
+        "record_ref": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-portia-work-record-ref.schema.json"
+        }
+      }
+    },
+    "contextLocator": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/workContext"
+        },
+        {
+          "$ref": "#/$defs/recordContext"
+        }
+      ],
+      "description": "Exact context locator only. Context does not overwrite Event evidence, Determination, or conflicting Accounts and does not establish truth."
+    },
+    "agreedAction": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "action_key",
+        "action_type",
+        "description",
+        "agreed_by",
+        "completion_state"
+      ],
+      "properties": {
+        "action_key": {
+          "$ref": "#/$defs/localKey"
+        },
+        "action_type": {
+          "enum": [
+            "return_or_restore_property",
+            "repair_or_replace_property",
+            "restorative_action",
+            "community_or_relationship_action",
+            "follow_up_conversation",
+            "other"
+          ]
+        },
+        "type_detail": {
+          "allOf": [
+            {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+            },
+            {
+              "maxLength": 1000
+            }
+          ]
+        },
+        "description": {
+          "allOf": [
+            {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+            },
+            {
+              "maxLength": 3000
+            }
+          ]
+        },
+        "agreed_by": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 50,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/localKey"
+          }
+        },
+        "responsible_participant_keys": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 50,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/localKey"
+          }
+        },
+        "agreed_at": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+        },
+        "completion_state": {
+          "enum": [
+            "planned",
+            "in_progress",
+            "completed",
+            "unable_to_complete",
+            "withdrawn"
+          ]
+        },
+        "completed_at": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+        },
+        "completion_detail": {
+          "allOf": [
+            {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+            },
+            {
+              "maxLength": 2000
+            }
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "action_type": {
+                "const": "other"
+              }
+            },
+            "required": [
+              "action_type"
+            ]
+          },
+          "then": {
+            "required": [
+              "type_detail"
+            ]
+          },
+          "else": {
+            "not": {
+              "required": [
+                "type_detail"
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "completion_state": {
+                "const": "completed"
+              }
+            },
+            "required": [
+              "completion_state"
+            ]
+          },
+          "then": {
+            "required": [
+              "completed_at"
+            ]
+          },
+          "else": {
+            "not": {
+              "required": [
+                "completed_at"
+              ]
+            }
+          }
+        }
+      ],
+      "description": "Embedded local agreed action. Completion is operational only and does not establish remorse, forgiveness, relationship restoration, rehabilitation, or prevention of recurrence. No financial ledger or debt semantics exist."
+    },
+    "repairWorkRecordRef": {
+      "allOf": [
+        {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-portia-work-record-ref.schema.json"
+        },
+        {
+          "type": "object",
+          "required": [
+            "work_ref",
+            "record_ref"
+          ],
+          "properties": {
+            "record_ref": {
+              "allOf": [
+                {
+                  "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-local-record-ref.schema.json"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "record_kind": {
+                      "const": "repair"
+                    },
+                    "record_id": {
+                      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-repair-id.schema.json"
+                    },
+                    "contract_version": {
+                      "const": "1"
+                    }
+                  },
+                  "required": [
+                    "record_kind",
+                    "record_id",
+                    "contract_version"
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "supersessionEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "work_record_ref",
+        "reason"
+      ],
+      "properties": {
+        "work_record_ref": {
+          "$ref": "#/$defs/repairWorkRecordRef"
+        },
+        "reason": {
+          "enum": [
+            "facilitator_corrected",
+            "participant_corrected",
+            "focus_corrected",
+            "agreement_corrected",
+            "completion_corrected",
+            "duplicate_consolidated",
+            "work_root_corrected",
+            "contract_migrated",
+            "other"
+          ]
+        },
+        "detail": {
+          "allOf": [
+            {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+            },
+            {
+              "maxLength": 2000
+            }
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "reason": {
+                "const": "other"
+              }
+            },
+            "required": [
+              "reason"
+            ]
+          },
+          "then": {
+            "required": [
+              "detail"
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "work_kind": {
+            "const": "event"
+          }
+        },
+        "required": [
+          "work_kind"
+        ]
+      },
+      "then": {
+        "properties": {
+          "work_id": {
+            "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-event-id.schema.json"
+          },
+          "target": {
+            "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/targets/portia-target-ref.schema.json"
+          },
+          "facilitator": {
+            "$ref": "#/$defs/eventFacilitator"
+          },
+          "participants": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/eventParticipantEntry"
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "work_kind": {
+            "const": "support_process"
+          }
+        },
+        "required": [
+          "work_kind"
+        ]
+      },
+      "then": {
+        "properties": {
+          "work_id": {
+            "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-support-process-id.schema.json"
+          },
+          "target": {
+            "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/targets/support-process-target-ref.schema.json"
+          },
+          "facilitator": {
+            "$ref": "#/$defs/supportProcessFacilitator"
+          },
+          "participants": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/supportProcessParticipantEntry"
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "workflow_state": {
+            "const": "completed"
+          }
+        },
+        "required": [
+          "workflow_state"
+        ]
+      },
+      "then": {
+        "required": [
+          "completed_at"
+        ]
+      },
+      "else": {
+        "not": {
+          "required": [
+            "completed_at"
+          ]
+        }
+      }
+    }
+  ],
+  "x-portia-application-invariants": [
+    "portia.repair.canonical_storage_scope",
+    "portia.repair.path_identity_agreement",
+    "portia.repair.parent_work_resolution",
+    "portia.repair.work_kind_identity_agreement",
+    "portia.repair.owner_conditioned_target",
+    "portia.repair.facilitator_current_use_eligibility",
+    "portia.repair.support_process_facilitator_exact_resolution",
+    "portia.repair.support_process_facilitator_context_eligibility",
+    "portia.repair.facilitator_not_authority",
+    "portia.repair.participant_key_unique",
+    "portia.repair.participant_logical_person_unique",
+    "portia.repair.event_participant_current_use_unidentified_prohibited",
+    "portia.repair.support_process_participant_exact_resolution",
+    "portia.repair.support_process_participant_same_process",
+    "portia.repair.support_process_participant_current_use_eligible",
+    "portia.repair.participation_state_not_character_judgment",
+    "portia.repair.context_exact_resolution",
+    "portia.repair.context_same_class",
+    "portia.repair.context_not_truth_finding",
+    "portia.repair.action_key_unique",
+    "portia.repair.action_participant_keys_resolve",
+    "portia.repair.action_completion_chronology",
+    "portia.repair.action_completion_not_remorse_or_forgiveness",
+    "portia.repair.no_financial_ledger",
+    "portia.repair.workflow_completion_not_outcome",
+    "portia.repair.workflow_completion_not_relationship_restoration",
+    "portia.repair.workflow_completion_not_rehabilitation",
+    "portia.repair.workflow_completion_not_recurrence_prevention",
+    "portia.repair.no_mandatory_apology_or_affected_person_participation",
+    "portia.repair.no_engagement_or_sincerity_score",
+    "portia.repair.creation_provenance_immutable",
+    "portia.repair.paper_activation_requires_review_history",
+    "portia.repair.import_activation_requires_review_history",
+    "portia.repair.lifecycle_matrix",
+    "portia.repair.lifecycle_history_reconciliation",
+    "portia.repair.predecessor_resolution",
+    "portia.repair.predecessor_identity_unique",
+    "portia.repair.self_supersession",
+    "portia.repair.supersession_reason_uniform",
+    "portia.repair.replacement_topology",
+    "portia.repair.no_silent_successor_following",
+    "portia.repair.amendment_prohibited_v1",
+    "portia.repair.no_automatic_outcome_or_publication"
+  ]
+}

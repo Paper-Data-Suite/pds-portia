@@ -858,6 +858,12 @@
         "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/reentries/reentry.schema.json",
         "path": "schemas/v1/reentries/reentry.schema.json"
       }
+    },
+    "repair": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/repairs/repair.schema.json",
+        "path": "schemas/v1/repairs/repair.schema.json"
+      }
     }
   }
 }

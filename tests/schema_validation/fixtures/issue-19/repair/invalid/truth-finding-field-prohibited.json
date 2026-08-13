@@ -1,0 +1,77 @@
+{
+  "schema_version": "1",
+  "record_type": "repair",
+  "module_id": "portia",
+  "class_id": "eng10_p2_2026",
+  "work_kind": "event",
+  "work_id": "evt_alpha",
+  "repair_id": "rpr_alpha",
+  "status": "active",
+  "target": {
+    "kind": "event_participant",
+    "record_ref": {
+      "record_kind": "event_participant",
+      "record_id": "ep_alpha",
+      "contract_version": "3"
+    }
+  },
+  "facilitator": {
+    "kind": "represented_human",
+    "person": {
+      "kind": "local_operator",
+      "display_label": "Synthetic Teacher"
+    }
+  },
+  "focus": "Synthetic bounded restorative focus without an official narrative or admission.",
+  "context_refs": [
+    {
+      "kind": "work",
+      "work_ref": {
+        "module_id": "portia",
+        "class_id": "eng10_p2_2026",
+        "work_id": "evt_alpha",
+        "work_kind": "event",
+        "contract_version": "2"
+      }
+    }
+  ],
+  "participants": [
+    {
+      "participant_key": "student",
+      "person": {
+        "kind": "represented_human",
+        "person": {
+          "kind": "roster_student",
+          "roster_student_ref": {
+            "class_id": "eng10_p2_2026",
+            "student_id": "stu_001"
+          },
+          "display_snapshot": {
+            "display_name": "Synthetic Student"
+          }
+        }
+      },
+      "roles": [
+        {
+          "kind": "person_addressing_impact"
+        }
+      ],
+      "participation_state": "invited"
+    }
+  ],
+  "workflow_state": "planning",
+  "creation_source": {
+    "type": "digital_entry"
+  },
+  "created_at": "2026-08-12T10:00:00-04:00",
+  "created_by": {
+    "type": "local_operator",
+    "display_label": "Synthetic Teacher"
+  },
+  "updated_at": "2026-08-12T10:00:00-04:00",
+  "updated_by": {
+    "type": "local_operator",
+    "display_label": "Synthetic Teacher"
+  },
+  "truth_finding": "allegation_confirmed"
+}
