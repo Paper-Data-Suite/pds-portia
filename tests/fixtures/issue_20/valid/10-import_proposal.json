@@ -1,0 +1,42 @@
+{
+  "schema_version": "1",
+  "record_type": "import_proposal",
+  "module_id": "portia",
+  "class_id": "class_english10_p2",
+  "import_batch_id": "ibat_attempt_01",
+  "source_record_id": "isrc_observation_01",
+  "proposal_id": "iprp_event_01",
+  "proposal_key": "event",
+  "proposal_identity_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "target": {
+    "record_kind": "event",
+    "contract_version": "2",
+    "context": {
+      "kind": "new_work"
+    }
+  },
+  "field_bindings": [
+    {
+      "target_path": "/location_text",
+      "source_field_key": "location",
+      "value_source": "source_value"
+    },
+    {
+      "target_path": "/occurred_at",
+      "source_field_key": "occurred_date",
+      "value_source": "transformed_candidate",
+      "transformed_candidate": "2026-08-13T09:15:00-04:00"
+    }
+  ],
+  "review_flags": [],
+  "proposed_at": "2026-08-14T13:05:00-04:00",
+  "proposed_by": {
+    "type": "system_process",
+    "process_id": "structured_import_mapping_test"
+  },
+  "created_at": "2026-08-14T13:05:00-04:00",
+  "created_by": {
+    "type": "system_process",
+    "process_id": "structured_import_mapping_test"
+  }
+}

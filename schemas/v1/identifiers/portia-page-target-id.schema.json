@@ -1,0 +1,10 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-page-target-id.schema.json",
+  "title": "Portia Page Target Identifier",
+  "description": "Opaque workspace-scoped identifier for one Portia pre-print page target inside a Capture Batch. The ptgt_ prefix is part of the public contract. The identifier does not encode a Core route, printed copy, returned physical page, student, or behavior-domain record.",
+  "type": "string",
+  "minLength": 6,
+  "maxLength": 128,
+  "pattern": "^ptgt_[A-Za-z0-9][A-Za-z0-9_-]*$"
+}

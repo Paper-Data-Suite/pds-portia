@@ -1,0 +1,10 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-capture-batch-id.schema.json",
+  "title": "Portia Capture Batch Identifier",
+  "description": "Opaque workspace-scoped identifier for one Portia paper-assisted capture work root. The cbat_ prefix is part of the public contract. The identifier does not encode class, form, date, route, page count, processing state, or any behavior-domain fact.",
+  "type": "string",
+  "minLength": 6,
+  "maxLength": 128,
+  "pattern": "^cbat_[A-Za-z0-9][A-Za-z0-9_-]*$"
+}

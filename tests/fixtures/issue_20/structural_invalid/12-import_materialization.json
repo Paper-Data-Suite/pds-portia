@@ -1,0 +1,52 @@
+{
+  "schema_version": "1",
+  "record_type": "wrong_issue_20_fixture_type",
+  "module_id": "portia",
+  "class_id": "class_english10_p2",
+  "import_batch_ref": {
+    "contract_version": "1",
+    "import_batch_id": "ibat_batch_01",
+    "import_identity_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  },
+  "source_record_ref": {
+    "contract_version": "1",
+    "source_record_id": "isrc_record_01",
+    "source_record_identity_digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+  },
+  "proposal_ref": {
+    "contract_version": "1",
+    "proposal_id": "iprp_proposal_01",
+    "proposal_identity_digest": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+  },
+  "review_ref": {
+    "contract_version": "1",
+    "review_id": "irev_review_01",
+    "review_sequence": 1
+  },
+  "operation_journal_ref": {
+    "operation_id": "op_import_materialize_01",
+    "journal_revision": 4,
+    "contract_version": "1"
+  },
+  "canonical_results": [
+    {
+      "result_relation": "produced",
+      "target": {
+        "kind": "work",
+        "work_ref": {
+          "module_id": "portia",
+          "class_id": "class_english10_p2",
+          "work_id": "evt_event_01",
+          "work_kind": "event",
+          "contract_version": "2"
+        }
+      }
+    }
+  ],
+  "materialized_at": "2026-08-14T13:45:00-04:00",
+  "recorded_at": "2026-08-14T13:45:00-04:00",
+  "recorded_by": {
+    "type": "system_process",
+    "process_id": "import_materializer"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-capture-review-id.schema.json",
+  "title": "Portia Capture Review Identifier",
+  "description": "Opaque identifier for one immutable attributable human review decision over one exact capture proposal. The crev_ prefix is part of the public identifier contract and is intentionally distinct from the canonical Event-local Review rvw_ family.",
+  "type": "string",
+  "minLength": 6,
+  "maxLength": 128,
+  "pattern": "^crev_[A-Za-z0-9][A-Za-z0-9_-]*$"
+}

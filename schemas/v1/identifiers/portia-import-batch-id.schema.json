@@ -1,0 +1,10 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-import-batch-id.schema.json",
+  "title": "Portia Import Batch Identifier",
+  "description": "Opaque identifier for one bounded Portia import attempt. The ibat_ prefix is part of the public identifier contract. The value does not encode class, source system, filename, student/person identity, mapping profile, date, status, or domain facts.",
+  "type": "string",
+  "minLength": 6,
+  "maxLength": 128,
+  "pattern": "^ibat_[A-Za-z0-9][A-Za-z0-9_-]*$"
+}

@@ -1,0 +1,10 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-import-source-record-id.schema.json",
+  "title": "Portia Import Source Record Identifier",
+  "description": "Opaque identifier for one durable Portia Import Source Record observation. The isrc_ prefix is part of the public identifier contract. The value does not encode row number, source record key, person identity, Event identity, source label, mapping result, date, or domain judgment.",
+  "type": "string",
+  "minLength": 6,
+  "maxLength": 128,
+  "pattern": "^isrc_[A-Za-z0-9][A-Za-z0-9_-]*$"
+}

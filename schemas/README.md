@@ -48,6 +48,10 @@ The initial prefixes are:
 - Intervention: `int_`
 - Implementation: `imp_`
 - Fidelity: `fid_`
+- Follow-Up: `fup_`
+- Outcome: `out_`
+- Reentry: `ren_`
+- Repair: `rpr_`
 - Actor: `actr_`
 - Actor Contact Point: `acp_`
 - Actor-to-Student Relationship: `asrel_`
@@ -78,6 +82,16 @@ The initial prefixes are:
 - Finding Acknowledgement: `fack_`
 - Finding Suppression: `fsup_`
 - Derived Generation: `dgen_`
+- Capture Batch: `cbat_`
+- Page Target: `ptgt_`
+- Page Record: `prec_`
+- Paper Interpretation: `pint_`
+- Capture Proposal: `cprp_`
+- Capture Review: `crev_`
+- Import Batch: `ibat_`
+- Import Source Record: `isrc_`
+- Import Proposal: `iprp_`
+- Import Review: `irev_`
 
 The operation, step, Quarantine, acknowledgement, suppression, and generation
 suffixes are opaque. `portia-lock-id` is specialized: `lock_` is followed by
@@ -177,6 +191,77 @@ Issue #13 adds these operational reference contracts:
 Stable references do not imply existence or currentness. Exact revision references
 must resolve the named revision and contract; consumers must not substitute the
 greatest revision, newest timestamp, filename order, or current pointer.
+
+## Issue #20 paper-capture and import contracts
+
+Issue #20 adds a Portia-specific paper-capture layer without redefining Core
+PDS2 routing or retained-source contracts.
+
+Paper capture records are:
+
+```text
+capture_batch@1
+page_target@1
+page_record@1
+paper_interpretation@1
+capture_proposal@1
+capture_review@1
+capture_materialization@1
+```
+
+`capture_batch@1` is non-domain operational work. It supplies the Core-required
+capture `work_id` without creating a fake Event or Support Process.
+
+`page_target@1` is the legitimate Portia route target created before QR/PDS2
+rendering. It preserves exact historical template/layout/capture-spec identity,
+page purpose, entry keys, and exact existing-work context when present.
+
+`page_record@1` represents one Core-retained returned physical page. It
+preserves route and retained-source provenance but does not embed raw image/PDF
+bytes.
+
+`paper_interpretation@1` preserves immutable machine/manual transcription
+candidates and uncertainty. `capture_proposal@1` and `capture_review@1` keep
+mapping and attributable human confirmation separate from both source
+interpretation and canonical behavior-domain Review.
+
+`capture_materialization@1` is a receipt over the existing coordinated-operation
+system. Materialization reuses existing `op_` identity, Operation Journal, and
+Operation Lock rather than publishing a second transaction mechanism.
+
+Structured import records are:
+
+```text
+import_batch@1
+import_source_record@1
+import_proposal@1
+import_review@1
+import_materialization@1
+```
+
+`import_batch@1` identifies one bounded attempt against one exact source
+snapshot and mapping profile/version. `import_source_record@1` represents one
+source-side unit and may yield `0..N` proposals; it is not a Portia Event.
+
+Stable import replay identity must not depend on row order, array position,
+filename alone, display text, or fuzzy person matching. Changed source content
+or mapping preserves new history. Missing later source rows do not imply
+deletion.
+
+Paper and import remain distinct provenance paths. New paper-derived canonical
+records use existing `creation_source.type = paper_capture`; new import-derived
+canonical records use existing `creation_source.type = import`.
+
+Core remains authoritative for `ModuleWorkRef`, `RouteLocator`,
+`ModuleRecordRef`, `RouteRegistration`, `RouteResolution`,
+`RetainedSourceScan`, retain-first preservation, and generic module dispatch.
+Portia must not publish competing generic route or retained-source contracts.
+
+JSON Schema establishes local structure only. Exact Core route/target
+resolution, retained-source existence, historical template/mapping
+availability, review authorization, operation recovery, replay identity,
+canonical readback, and other cross-record rules remain application-validation
+responsibilities.
 
 Issue #14 adds exact Actor Directory representation references:
 

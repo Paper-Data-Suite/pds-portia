@@ -1,0 +1,10 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-paper-interpretation-id.schema.json",
+  "title": "Portia Paper Interpretation Identifier",
+  "description": "Opaque identifier for one immutable paper-interpretation generation inside one Portia Capture Batch. The pint_ prefix is part of the public identifier contract. The identifier does not encode student identity, source content, page purpose, interpreter, confidence, review disposition, or canonical domain meaning.",
+  "type": "string",
+  "minLength": 6,
+  "maxLength": 128,
+  "pattern": "^pint_[A-Za-z0-9][A-Za-z0-9_-]*$"
+}

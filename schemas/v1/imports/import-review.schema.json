@@ -1,0 +1,392 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/imports/import-review.schema.json",
+  "title": "Portia Import Review",
+  "description": "Version-1 immutable attributable human review of one exact Import Proposal. Review may accept, correct and accept, reject, or leave unresolved the staging proposal while preserving the exact Import Source Record, mapping proposal, and original source/mapped candidates. It is operational staging, not Portia domain Review.",
+  "$comment": "review_sequence preserves correction/reversal history without mutable latest state. A reviewer is represented-human attribution; persistence created_by remains separate. accepted means the exact proposal is accepted for a later materialization gate, not that source assertions are true. corrected_and_accepted stores only human corrections; original source values and transformed candidates remain immutable in prior records.",
+  "x-portia-application-invariants": [
+    {
+      "id": "import_review.lineage_exactness",
+      "description": "proposal_ref must resolve the exact Import Proposal; source_record_ref and import_batch_id must agree with that proposal and exact Import Source Record. Current/latest mapping substitution is prohibited."
+    },
+    {
+      "id": "import_review.reviewer_human_and_eligible",
+      "description": "reviewer identifies the substantive human reviewer. Application authorization must establish eligibility independently; system_process persistence attribution cannot substitute for the human decision-maker."
+    },
+    {
+      "id": "import_review.target_path_exactness",
+      "description": "Every field_review target_path must correspond to one unique field binding in the exact proposal. Duplicate logical target paths are application-invalid."
+    },
+    {
+      "id": "import_review.accept_candidate_requires_candidate",
+      "description": "accept_candidate is valid only when the exact binding supplies source_value or transformed_candidate. human_resolution_required has no candidate to accept."
+    },
+    {
+      "id": "import_review.correction_preserves_source_and_candidate",
+      "description": "confirmed_value is additive human review history. It never overwrites Import Source Record fields, transformed candidates, mapping identity, or earlier proposal/review history."
+    },
+    {
+      "id": "import_review.unresolved_not_negative",
+      "description": "leave_unresolved does not mean blank, false, no, declined, uninvolved, unsuccessful, unidentified, or another domain conclusion and must not be coerced to satisfy downstream schemas."
+    },
+    {
+      "id": "import_review.rejection_not_deletion",
+      "description": "Rejecting a proposal rejects that staging proposal only. It does not delete the Import Source Record, source snapshot history, earlier canonical records, or source-system data."
+    },
+    {
+      "id": "import_review.disposition_not_truth",
+      "description": "accepted/corrected_and_accepted means the human accepts the staging mapping for the next workflow gate. It does not establish source authority, authenticity, credibility, fault, causation, consent, or legal/process validity."
+    },
+    {
+      "id": "import_review.no_fuzzy_identity",
+      "description": "Review may explicitly resolve an ambiguous identity through a human correction, but software must not preselect or auto-accept a person based on fuzzy name/email similarity, row position, or nearby labels."
+    },
+    {
+      "id": "import_review.judgment_families_remain_human",
+      "description": "Import review of transcription/mapping does not itself originate Classification, Hypothesis, Determination, Fidelity, Outcome, Reentry, Repair, or other judgment semantics. Required domain judgment attribution and rules remain separately applicable."
+    },
+    {
+      "id": "import_review.sequence_history",
+      "description": "Review correction or reversal creates a later immutable review_sequence with exact predecessor_review_id. Sequence 1 has no predecessor; self-predecessor, cycles, silent mutation, and invalid forks are rejected by application validation."
+    },
+    {
+      "id": "import_review.current_decision_is_derived",
+      "description": "No mutable latest/current review pointer is authoritative. Current staging disposition is derived from preserved review history and application rules."
+    },
+    {
+      "id": "import_review.no_automatic_materialization",
+      "description": "Persisting an accepted Import Review does not itself create, activate, complete, update, invalidate, or supersede a canonical Portia record. Import materialization is a separate idempotent coordinated operation."
+    },
+    {
+      "id": "import_review.import_creation_source",
+      "description": "When later materialization creates an eligible canonical record from this reviewed import, provenance uses creation_source.type import and an exact import-source linkage; it never uses paper_capture provenance."
+    }
+  ],
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "record_type",
+    "module_id",
+    "class_id",
+    "import_batch_id",
+    "source_record_ref",
+    "review_id",
+    "review_sequence",
+    "proposal_ref",
+    "reviewer",
+    "disposition",
+    "field_reviews",
+    "reason_codes",
+    "reviewed_at",
+    "created_at",
+    "created_by"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1"
+    },
+    "record_type": {
+      "const": "import_review"
+    },
+    "module_id": {
+      "const": "portia"
+    },
+    "class_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+    },
+    "import_batch_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-import-batch-id.schema.json"
+    },
+    "source_record_ref": {
+      "$ref": "#/$defs/sourceRecordRef"
+    },
+    "review_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-import-review-id.schema.json"
+    },
+    "review_sequence": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "predecessor_review_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-import-review-id.schema.json"
+    },
+    "proposal_ref": {
+      "$ref": "#/$defs/proposalRef"
+    },
+    "reviewer": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/attribution/represented-human-attribution.schema.json"
+    },
+    "disposition": {
+      "enum": [
+        "accepted",
+        "corrected_and_accepted",
+        "rejected",
+        "unresolved"
+      ]
+    },
+    "field_reviews": {
+      "type": "array",
+      "maxItems": 128,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/fieldReview"
+      }
+    },
+    "reason_codes": {
+      "type": "array",
+      "maxItems": 32,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/lowercase-token.schema.json"
+      }
+    },
+    "reviewed_at": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+    },
+    "created_at": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+    },
+    "created_by": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/attribution/attribution-agent.schema.json"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "review_sequence": {
+            "const": 1
+          }
+        },
+        "required": [
+          "review_sequence"
+        ]
+      },
+      "then": {
+        "not": {
+          "required": [
+            "predecessor_review_id"
+          ]
+        }
+      },
+      "else": {
+        "required": [
+          "predecessor_review_id"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "disposition": {
+            "const": "accepted"
+          }
+        },
+        "required": [
+          "disposition"
+        ]
+      },
+      "then": {
+        "properties": {
+          "field_reviews": {
+            "maxItems": 0
+          },
+          "reason_codes": {
+            "maxItems": 0
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "disposition": {
+            "const": "corrected_and_accepted"
+          }
+        },
+        "required": [
+          "disposition"
+        ]
+      },
+      "then": {
+        "properties": {
+          "field_reviews": {
+            "minItems": 1,
+            "contains": {
+              "properties": {
+                "decision": {
+                  "const": "correct"
+                }
+              },
+              "required": [
+                "decision"
+              ]
+            },
+            "minContains": 1
+          }
+        },
+        "not": {
+          "properties": {
+            "field_reviews": {
+              "contains": {
+                "properties": {
+                  "decision": {
+                    "const": "leave_unresolved"
+                  }
+                },
+                "required": [
+                  "decision"
+                ]
+              },
+              "minContains": 1
+            }
+          },
+          "required": [
+            "field_reviews"
+          ]
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "disposition": {
+            "const": "rejected"
+          }
+        },
+        "required": [
+          "disposition"
+        ]
+      },
+      "then": {
+        "properties": {
+          "field_reviews": {
+            "maxItems": 0
+          },
+          "reason_codes": {
+            "minItems": 1
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "disposition": {
+            "const": "unresolved"
+          }
+        },
+        "required": [
+          "disposition"
+        ]
+      },
+      "then": {
+        "properties": {
+          "field_reviews": {
+            "minItems": 1,
+            "contains": {
+              "properties": {
+                "decision": {
+                  "const": "leave_unresolved"
+                }
+              },
+              "required": [
+                "decision"
+              ]
+            },
+            "minContains": 1
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "sourceRecordRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "contract_version",
+        "source_record_id"
+      ],
+      "properties": {
+        "contract_version": {
+          "const": "1"
+        },
+        "source_record_id": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-import-source-record-id.schema.json"
+        }
+      }
+    },
+    "proposalRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "contract_version",
+        "proposal_id",
+        "proposal_identity_digest"
+      ],
+      "properties": {
+        "contract_version": {
+          "const": "1"
+        },
+        "proposal_id": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-import-proposal-id.schema.json"
+        },
+        "proposal_identity_digest": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/sha256-digest.schema.json"
+        }
+      }
+    },
+    "fieldReview": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "target_path",
+        "decision"
+      ],
+      "properties": {
+        "target_path": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512,
+          "pattern": "^/"
+        },
+        "decision": {
+          "enum": [
+            "accept_candidate",
+            "correct",
+            "leave_unresolved"
+          ]
+        },
+        "confirmed_value": true
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "decision": {
+                "const": "correct"
+              }
+            },
+            "required": [
+              "decision"
+            ]
+          },
+          "then": {
+            "required": [
+              "confirmed_value"
+            ]
+          },
+          "else": {
+            "not": {
+              "required": [
+                "confirmed_value"
+              ]
+            }
+          }
+        }
+      ]
+    }
+  }
+}

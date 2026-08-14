@@ -1,0 +1,267 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/imports/import-materialization.schema.json",
+  "title": "Portia Import Materialization",
+  "description": "Version-1 immutable operational receipt linking one exact accepted Import Review and its exact Import Batch / Import Source Record lineage to one exact completed or reconciled Portia coordinated operation and the exact canonical Portia work/record representations that operation produced or affected. It is not a domain record, not review authority, not a source snapshot, not a transaction engine, and not a mutable materialization queue.",
+  "$comment": "The existing Operation Journal and Operation Lock contracts remain authoritative for coordinated persistence, crash recovery, expected-prior-state checks, canonical acceptance, and lock ownership. This receipt is written only after the exact operation journal proves canonical acceptance/reconciliation. Exact import lineage is retained through batch/source/proposal/review references and identity digests; creation_source@1 remains the canonical record's coarse provenance marker and is not redefined. If canonical writes are already durable but the receipt is missing, recovery reconciles the existing operation and writes the missing receipt without replaying canonical creation. Receipt identity is the exact operation + exact import review/proposal lineage; there is no separate import-materialization identifier family.",
+  "x-portia-application-invariants": [
+    {
+      "id": "import_materialization.lineage_exactness",
+      "description": "class_id, import_batch_ref, source_record_ref, proposal_ref, and review_ref must resolve one exact import lineage. The Import Proposal and Review must point to the same exact Import Source Record and Import Batch; current/latest mapping or source substitution is prohibited."
+    },
+    {
+      "id": "import_materialization.batch_identity_exactness",
+      "description": "import_batch_ref.import_identity_digest must equal the recomputed identity digest of the exact Import Batch. The batch source/profile snapshot and mapping profile/version/digest are fixed historical inputs and must not be substituted by a later replay."
+    },
+    {
+      "id": "import_materialization.source_record_identity_exactness",
+      "description": "source_record_ref.source_record_identity_digest must equal the exact Import Source Record identity digest. Source row order, filename, display text, array position, or a later source snapshot must not substitute for that source record."
+    },
+    {
+      "id": "import_materialization.review_must_authorize_next_step",
+      "description": "The exact Import Review must resolve with disposition accepted or corrected_and_accepted, and no later applicable review sequence may have replaced that decision before materialization preflight. Rejected or unresolved review is never materializable."
+    },
+    {
+      "id": "import_materialization.review_is_not_domain_judgment",
+      "description": "Import Review confirms source mapping/transcription only. It must not substitute for domain-required reviewer, selector, hypothesis author, decision-maker, provider, fidelity assessor, outcome assessor, reentry participant, repair participant, policy basis, authority, consent, or other human/domain semantics required by the target contract."
+    },
+    {
+      "id": "import_materialization.operation_reuse",
+      "description": "The same exact accepted import review/proposal and materialization intent must resolve to one stable coordinated operation identity/intent. Retry or restart reuses or reconciles that operation and must not allocate a second logical materialization operation merely because a prior process crashed."
+    },
+    {
+      "id": "import_materialization.operation_journal_exactness",
+      "description": "operation_journal_ref must resolve the exact immutable journal revision for the same operation and supported contract. That revision must prove committed/completed canonical acceptance or equivalent recovery reconciliation and agree with the exact import lineage, planned write set, and canonical_results."
+    },
+    {
+      "id": "import_materialization.lock_and_preflight_reuse",
+      "description": "Materialization must use Portia's existing deterministic Operation Lock, preflight, expected-prior-state, write-set, commit-point, and recovery rules. Import staging does not define a second lock or transaction mechanism."
+    },
+    {
+      "id": "import_materialization.results_exactness",
+      "description": "Every canonical_results target must resolve exactly at its named contract version and class/work scope. Logical duplicate result targets are invalid even when encoded with different result_relation values or object forms."
+    },
+    {
+      "id": "import_materialization.produced_vs_affected",
+      "description": "result_relation produced means the operation created and canonically accepted the named representation. affected identifies an exact existing representation materially involved under a valid domain operation; it never grants permission for silent in-place mutation or bypasses successor, correction, lifecycle, migration, ownership-correction, or other domain rules."
+    },
+    {
+      "id": "import_materialization.import_creation_source",
+      "description": "Every newly produced eligible canonical Portia representation created from this import must use creation_source.type import. source_label must identify the exact Import Batch source system/profile under the documented mapping policy. external_reference is optional and, if retained, must be a deliberate source-record locator rather than row order, filename alone, or fuzzy identity. The exact batch/source linkage in this receipt remains the stronger provenance record."
+    },
+    {
+      "id": "import_materialization.source_artifact_alignment",
+      "description": "Where a canonical target contract supports source_artifact_ref and an import artifact reference is retained, it must align with the exact Import Batch source snapshot and/or exact source-side record locator without copying the source payload. The artifact reference does not establish authority, authenticity, accuracy, credibility, or authorization."
+    },
+    {
+      "id": "import_materialization.source_assertions_not_judgments",
+      "description": "Source-system assertions, labels, transformed candidates, and accepted import mappings must not automatically originate Classification, Hypothesis, Determination, fault, severity, Response appropriateness, Support recommendation, Fidelity, Outcome, recurrence failure, Reentry completion, Repair agreement/remorse/forgiveness, or other judgment semantics."
+    },
+    {
+      "id": "import_materialization.no_import_time_as_domain_time",
+      "description": "Source snapshot, observed, import, proposal, review, operation, and receipt timestamps must not be substituted for unknown Event, evidence, implementation, follow-up, outcome, reentry, repair, communication, or other domain time."
+    },
+    {
+      "id": "import_materialization.context_exactness",
+      "description": "Proposal existing_work/existing_record context remains exact and must not silently follow successors, corrections, migrations, consolidations, ownership corrections, current pointers, or newer contract versions during materialization."
+    },
+    {
+      "id": "import_materialization.no_duplicate_canonical_records",
+      "description": "Before any canonical write, recovery/preflight must reconcile the stable Import Batch, source-record, proposal, review, operation intent, expected target state, durable write fingerprints, and any existing receipt. Retry after partial or completed persistence must resume/reconcile rather than create duplicate Events, child records, Support Processes, or other canonical records."
+    },
+    {
+      "id": "import_materialization.unchanged_replay_idempotent",
+      "description": "Same exact source snapshot/source record plus same exact mapping and proposal/review intent must reconcile previously materialized canonical outcomes rather than generate duplicate proposals, operations, or canonical records on a later Import Batch replay."
+    },
+    {
+      "id": "import_materialization.changed_source_or_mapping_preserves_history",
+      "description": "Changed source content or changed mapping creates new import history. Existing materialization receipts and canonical records are never silently rewritten; any required canonical correction uses the appropriate Portia correction/lifecycle/successor mechanisms with preserved provenance."
+    },
+    {
+      "id": "import_materialization.missing_later_source_not_deletion",
+      "description": "Absence of the source record from a later Import Batch is not a deletion instruction and must not delete, deactivate, invalidate, supersede, or otherwise mutate this receipt or its canonical results."
+    },
+    {
+      "id": "import_materialization.receipt_after_canonical_acceptance",
+      "description": "The receipt may be persisted only after the referenced Operation Journal proves all required canonical-gate steps accepted/reconciled. Receipt absence after durable canonical acceptance is a recoverable missing post-commit artifact, not evidence that canonical writes should be repeated."
+    },
+    {
+      "id": "import_materialization.later_review_or_correction_preserves_history",
+      "description": "A later Import Review correction/reversal does not delete or rewrite this receipt or prior canonical history. Required correction proceeds through explicit later import history and the appropriate Portia domain correction/lifecycle/successor mechanisms."
+    },
+    {
+      "id": "import_materialization.no_raw_source_payload",
+      "description": "The receipt stores exact references and identity evidence only. It must not embed imported file/API bytes, copied source rows, base64 payloads, temporary paths, transformed candidate values, human-confirmed field values, or canonical payloads."
+    },
+    {
+      "id": "import_materialization.not_quarantine",
+      "description": "Ordinary materialization failure/retry uses Operation Journal recovery. Quarantine is reserved for exceptional integrity isolation such as irreconcilable provenance, identity, mapping-version, or canonical-state contradictions, not routine review or recoverable process interruption."
+    }
+  ],
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "record_type",
+    "module_id",
+    "class_id",
+    "import_batch_ref",
+    "source_record_ref",
+    "proposal_ref",
+    "review_ref",
+    "operation_journal_ref",
+    "canonical_results",
+    "materialized_at",
+    "recorded_at",
+    "recorded_by"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1"
+    },
+    "record_type": {
+      "const": "import_materialization"
+    },
+    "module_id": {
+      "const": "portia"
+    },
+    "class_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+    },
+    "import_batch_ref": {
+      "$ref": "#/$defs/importBatchRef"
+    },
+    "source_record_ref": {
+      "$ref": "#/$defs/sourceRecordRef"
+    },
+    "proposal_ref": {
+      "$ref": "#/$defs/proposalRef"
+    },
+    "review_ref": {
+      "$ref": "#/$defs/reviewRef"
+    },
+    "operation_journal_ref": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/operation-journal-ref.schema.json"
+    },
+    "canonical_results": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 64,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/canonicalResult"
+      }
+    },
+    "materialized_at": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+    },
+    "recorded_at": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+    },
+    "recorded_by": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/attribution/attribution-agent.schema.json"
+    }
+  },
+  "$defs": {
+    "importBatchRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "contract_version",
+        "import_batch_id",
+        "import_identity_digest"
+      ],
+      "properties": {
+        "contract_version": {
+          "const": "1"
+        },
+        "import_batch_id": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-import-batch-id.schema.json"
+        },
+        "import_identity_digest": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/sha256-digest.schema.json"
+        }
+      }
+    },
+    "sourceRecordRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "contract_version",
+        "source_record_id",
+        "source_record_identity_digest"
+      ],
+      "properties": {
+        "contract_version": {
+          "const": "1"
+        },
+        "source_record_id": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-import-source-record-id.schema.json"
+        },
+        "source_record_identity_digest": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/sha256-digest.schema.json"
+        }
+      }
+    },
+    "proposalRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "contract_version",
+        "proposal_id",
+        "proposal_identity_digest"
+      ],
+      "properties": {
+        "contract_version": {
+          "const": "1"
+        },
+        "proposal_id": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-import-proposal-id.schema.json"
+        },
+        "proposal_identity_digest": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/sha256-digest.schema.json"
+        }
+      }
+    },
+    "reviewRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "contract_version",
+        "review_id",
+        "review_sequence"
+      ],
+      "properties": {
+        "contract_version": {
+          "const": "1"
+        },
+        "review_id": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-import-review-id.schema.json"
+        },
+        "review_sequence": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "canonicalResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "result_relation",
+        "target"
+      ],
+      "properties": {
+        "result_relation": {
+          "enum": [
+            "produced",
+            "affected"
+          ]
+        },
+        "target": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/targets/exact-portia-work-or-record-target.schema.json"
+        }
+      }
+    }
+  }
+}

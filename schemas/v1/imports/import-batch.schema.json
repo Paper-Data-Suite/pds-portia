@@ -1,0 +1,366 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/imports/import-batch.schema.json",
+  "title": "Portia Import Batch",
+  "description": "Version-1 immutable operational root for one bounded structured-import attempt against one exact source snapshot and one exact mapping configuration. It preserves import lineage and replay classification without asserting that source records are true, that identities match Portia people, or that any Portia behavior-domain record exists.",
+  "$comment": "Import Batch is distinct from Capture Batch and paper/PDS2 intake. The shared derived source_snapshot@1 contract is not reused here because that contract means a deterministic inventory for derived-generation processing, not an imported source snapshot. Application validation recomputes import_identity_digest from the contract-significant source/profile, exact source fingerprint, class scope, and exact mapping profile/version/digest; validates any previous-batch comparison; and preserves every attempt as history. An unchanged replay may be recorded as another attempt, but must not duplicate logical proposals or canonical records.",
+  "x-portia-application-invariants": [
+    {
+      "id": "import_batch.operational_not_domain",
+      "description": "Import Batch is an operational import-attempt root only. Creating or completing it must not create or imply an Event, participant, Account, Observation, Review, Classification, Hypothesis, Determination, Response, Support, Implementation, Fidelity, Outcome, Reentry, Repair, or other domain fact."
+    },
+    {
+      "id": "import_batch.paper_boundary",
+      "description": "Import Batch is not a Capture Batch, Page Target, Page Record, PDS2 route, or retained paper source. Paper provenance and import provenance remain distinct even when both workflows eventually propose the same Portia record family."
+    },
+    {
+      "id": "import_batch.exact_source_snapshot",
+      "description": "source_snapshot must identify the exact imported byte snapshot through one explicit locator plus exact content fingerprint. Filename, modification time, display label, or later contents at the same locator must not substitute for the captured fingerprint."
+    },
+    {
+      "id": "import_batch.source_snapshot_not_derived_snapshot",
+      "description": "The import source_snapshot value has import-specific meaning and must not be represented by or confused with source_snapshot@1, whose established meaning is a deterministic source inventory for derived generation."
+    },
+    {
+      "id": "import_batch.mapping_exactness",
+      "description": "mapping_profile_id, mapping_version, and mapping_digest identify the exact mapping configuration used for this attempt. current/latest or same-name substitution is prohibited."
+    },
+    {
+      "id": "import_batch.identity_digest",
+      "description": "import_identity_digest must be recomputed from a versioned canonical encoding of class_id, source_profile, exact source_snapshot fingerprint/locator identity, and exact mapping_profile. Attempt timestamps, status, filenames used only as display labels, and import_batch_id are not identity inputs."
+    },
+    {
+      "id": "import_batch.previous_relationship_truth",
+      "description": "If comparison_to_previous is present, previous_import_batch_id must resolve in the same authorized class scope and relationship must agree with exact source fingerprint/profile and mapping profile/version/digest comparisons. Application code must not trust the supplied relationship label without recomputation."
+    },
+    {
+      "id": "import_batch.unchanged_replay_idempotent",
+      "description": "A same-source same-mapping replay must not create duplicate logical proposals or canonical Portia records. Existing accepted/materialized outcomes are reconciled by stable import identity rather than row position or run order."
+    },
+    {
+      "id": "import_batch.changed_source_or_mapping_preserves_history",
+      "description": "Changed source content and/or changed mapping configuration creates preserved import history. Earlier Import Batches, source records, proposals, reviews, and canonical provenance are not rewritten in place."
+    },
+    {
+      "id": "import_batch.missing_later_source_not_deletion",
+      "description": "A source record absent from a later Import Batch is only absent from that snapshot. Absence must not delete, deactivate, invalidate, supersede, or otherwise mutate prior Portia canonical records or import history; correction/removal requires explicit Portia semantics."
+    },
+    {
+      "id": "import_batch.no_fuzzy_identity",
+      "description": "Import processing must not infer person/Actor/student identity from similar names, similar email addresses, row position, nearby labels, array position, or other fuzzy heuristics. Ambiguous identity requires attributable human review."
+    },
+    {
+      "id": "import_batch.source_assertions_not_judgments",
+      "description": "Source-system labels and fields are imported assertions only. They must not automatically become Portia Classification, Hypothesis, Determination, fault, severity, Response appropriateness, Support recommendation, Fidelity, Outcome, recurrence failure, Reentry completion, or Repair meaning."
+    },
+    {
+      "id": "import_batch.import_time_not_domain_time",
+      "description": "source snapshot, attempt, processing, and import timestamps are provenance/operation times and must not be substituted for unknown Event, evidence, implementation, communication, follow-up, outcome, reentry, repair, or other domain time."
+    },
+    {
+      "id": "import_batch.creation_source_boundary",
+      "description": "When a reviewed import later materializes a canonical record, creation provenance uses creation_source.type import, not paper_capture. The existing creation_source contract records provenance only and does not establish source authority or truth."
+    },
+    {
+      "id": "import_batch.no_raw_source_payload",
+      "description": "Import Batch stores source locator metadata and fingerprints, not the imported file/API payload, base64 bytes, temporary paths, or a copied table of source records."
+    },
+    {
+      "id": "import_batch.lifecycle",
+      "description": "status transitions and timestamps are application-validated. A completed or failed attempt is immutable historical state; retry/replay creates or resumes the appropriate bounded attempt without silently rewriting a completed predecessor."
+    }
+  ],
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "record_type",
+    "module_id",
+    "class_id",
+    "import_batch_id",
+    "source_profile",
+    "source_snapshot",
+    "mapping_profile",
+    "import_identity_digest",
+    "status",
+    "failure_codes",
+    "started_at",
+    "created_at",
+    "created_by"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1"
+    },
+    "record_type": {
+      "const": "import_batch"
+    },
+    "module_id": {
+      "const": "portia"
+    },
+    "class_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+    },
+    "import_batch_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-import-batch-id.schema.json"
+    },
+    "source_profile": {
+      "$ref": "#/$defs/sourceProfile"
+    },
+    "source_snapshot": {
+      "$ref": "#/$defs/sourceSnapshot"
+    },
+    "mapping_profile": {
+      "$ref": "#/$defs/mappingProfile"
+    },
+    "import_identity_digest": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/sha256-digest.schema.json"
+    },
+    "comparison_to_previous": {
+      "$ref": "#/$defs/previousComparison"
+    },
+    "status": {
+      "enum": [
+        "open",
+        "completed",
+        "failed"
+      ]
+    },
+    "failure_codes": {
+      "type": "array",
+      "maxItems": 32,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/lowercase-token.schema.json"
+      }
+    },
+    "started_at": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+    },
+    "finished_at": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+    },
+    "created_at": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+    },
+    "created_by": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/attribution/attribution-agent.schema.json"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "open"
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "then": {
+        "properties": {
+          "failure_codes": {
+            "maxItems": 0
+          }
+        },
+        "not": {
+          "required": [
+            "finished_at"
+          ]
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "completed"
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "then": {
+        "required": [
+          "finished_at"
+        ],
+        "properties": {
+          "failure_codes": {
+            "maxItems": 0
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "failed"
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "then": {
+        "required": [
+          "finished_at"
+        ],
+        "properties": {
+          "failure_codes": {
+            "minItems": 1
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "sourceProfile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_system_id",
+        "profile_id",
+        "profile_version"
+      ],
+      "properties": {
+        "source_system_id": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+        },
+        "profile_id": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+        },
+        "profile_version": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+        },
+        "display_label": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+        }
+      }
+    },
+    "sourceSnapshot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "locator",
+        "fingerprint",
+        "observed_at"
+      ],
+      "properties": {
+        "locator": {
+          "$ref": "#/$defs/sourceLocator"
+        },
+        "fingerprint": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/content-fingerprint.schema.json"
+        },
+        "observed_at": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+        }
+      }
+    },
+    "sourceLocator": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "path"
+          ],
+          "properties": {
+            "kind": {
+              "const": "workspace_file"
+            },
+            "path": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/workspace-relative-path.schema.json"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "source_label",
+            "external_reference"
+          ],
+          "properties": {
+            "kind": {
+              "const": "external_snapshot"
+            },
+            "source_label": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+            },
+            "external_reference": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "source_label",
+            "snapshot_key"
+          ],
+          "properties": {
+            "kind": {
+              "const": "opaque_snapshot"
+            },
+            "source_label": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+            },
+            "snapshot_key": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+            }
+          }
+        }
+      ]
+    },
+    "mappingProfile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mapping_profile_id",
+        "mapping_version",
+        "mapping_digest"
+      ],
+      "properties": {
+        "mapping_profile_id": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+        },
+        "mapping_version": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+        },
+        "mapping_digest": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/sha256-digest.schema.json"
+        }
+      }
+    },
+    "previousComparison": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "previous_import_batch_id",
+        "relationship"
+      ],
+      "properties": {
+        "previous_import_batch_id": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-import-batch-id.schema.json"
+        },
+        "relationship": {
+          "enum": [
+            "replay_same_source_same_mapping",
+            "changed_source_same_mapping",
+            "same_source_changed_mapping",
+            "changed_source_and_mapping"
+          ]
+        }
+      }
+    }
+  }
+}

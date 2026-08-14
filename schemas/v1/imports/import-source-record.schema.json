@@ -1,0 +1,191 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/imports/import-source-record.schema.json",
+  "title": "Portia Import Source Record",
+  "description": "Version-1 immutable representation of one source-side record observed within one exact Import Batch. It preserves stable source-key lineage and a bounded source-field snapshot for mapping/review while remaining explicitly noncanonical: one source record may produce zero, one, or many proposals and is never itself a Portia Event or other behavior-domain record.",
+  "$comment": "source_record_key is source/profile identity, not Portia person or domain identity. Application validation resolves the exact Import Batch; requires source_record_key_origin truth; recomputes source_record_digest over the versioned canonical source-field representation; recomputes source_record_identity_digest from the exact batch import identity, key origin/value, and record digest; rejects duplicate logical field keys; and uses those identities to detect replay without relying on row order, display text, array position, or filename. Missing source fields are represented by absence; explicit null is preserved as null. Nested source structures must be normalized by the exact source profile into the bounded scalar/array field form before persistence.",
+  "x-portia-application-invariants": [
+    {
+      "id": "import_source_record.batch_exactness",
+      "description": "import_batch_id must resolve one exact authorized Import Batch in the same class_id, and source-profile/source-snapshot/mapping meaning is inherited only from that exact batch, never from a newer run or current mapping."
+    },
+    {
+      "id": "import_source_record.source_side_not_domain",
+      "description": "An Import Source Record represents one source-side unit only. It is not an Event, participant, Account, Observation, Review, Classification, Support, Implementation, Outcome, or other canonical Portia record, even if one source row resembles such a record."
+    },
+    {
+      "id": "import_source_record.zero_to_many_proposals",
+      "description": "One Import Source Record may legitimately produce zero, one, or many later import proposals. Source-record persistence itself creates no proposal and no canonical record."
+    },
+    {
+      "id": "import_source_record.stable_key_policy",
+      "description": "source_record_key must be a stable source-provided key when available. profile_defined_exact is allowed only when the exact source profile defines a deterministic key from designated stable source fields; row number, array position, display text, nearby labels, filename alone, fuzzy person matching, or import order are prohibited key inputs."
+    },
+    {
+      "id": "import_source_record.content_digest",
+      "description": "source_record_digest must be recomputed from the versioned canonical encoding of source_record_key_origin, source_record_key, and normalized source_fields. observed_at, local IDs, run order, and later mapping results are not content-digest inputs."
+    },
+    {
+      "id": "import_source_record.identity_digest",
+      "description": "source_record_identity_digest must be recomputed from the exact Import Batch import_identity_digest plus source_record_key_origin, source_record_key, and source_record_digest. Same exact input/mapping replay therefore has stable logical identity evidence; changed source content or mapping remains distinguishable history."
+    },
+    {
+      "id": "import_source_record.field_keys_unique",
+      "description": "field_key values within source_fields must be logically unique even if two field objects differ in value. Array order has no source-field semantic meaning unless the exact source profile explicitly defines array-valued field order."
+    },
+    {
+      "id": "import_source_record.missing_vs_null",
+      "description": "A field absent from source_fields means not present in the normalized source record. A present field whose value is null preserves an explicit source null. Neither condition may be coerced into false, no, declined, uninvolved, or another Portia domain value."
+    },
+    {
+      "id": "import_source_record.source_assertion_only",
+      "description": "Values in source_fields remain source-system assertions. Labels such as offense, severity, consequence, success, compliant, restored, or similar wording do not automatically become Portia Classification, Determination, Response, Fidelity, Outcome, Reentry, Repair, or other judgment."
+    },
+    {
+      "id": "import_source_record.no_identity_manufacture",
+      "description": "Names, emails, source labels, positions, or other fields must not silently create or merge Actor/roster identity. Exact identifier mappings may be applied only under the mapping profile and authorization rules; ambiguity requires human review."
+    },
+    {
+      "id": "import_source_record.replay_no_duplicate_downstream",
+      "description": "Repeated observation of the same logical source input under the same mapping must not duplicate downstream logical proposals or canonical records. Later stages reconcile source_record_identity_digest and preserved proposal/review/materialization history."
+    },
+    {
+      "id": "import_source_record.changed_content_preserves_history",
+      "description": "The same source_record_key with changed source_record_digest is new preserved source history. It must not silently rewrite a previously accepted proposal or canonical Portia record."
+    },
+    {
+      "id": "import_source_record.later_absence_not_deletion",
+      "description": "If this source_record_key is not observed in a later Import Batch, this record and all downstream history remain preserved. Later absence is not an instruction to delete, deactivate, invalidate, or supersede anything."
+    },
+    {
+      "id": "import_source_record.import_time_not_domain_time",
+      "description": "observed_at and Import Batch timestamps are import provenance times, not Event/evidence/implementation/outcome or other domain time unless a reviewed source field independently maps to an allowed domain-time field."
+    },
+    {
+      "id": "import_source_record.no_binary_or_nested_payload",
+      "description": "source_fields contain only bounded scalar values or bounded arrays of scalars. Raw files, base64 payloads, temporary paths, arbitrary nested source objects, and copied paper scans are not persisted in this contract."
+    },
+    {
+      "id": "import_source_record.immutable",
+      "description": "Once persisted, batch lineage, source key, digests, normalized source fields, and attribution are immutable. Corrections or changed extraction create preserved later import history rather than in-place mutation."
+    }
+  ],
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "record_type",
+    "module_id",
+    "class_id",
+    "import_batch_id",
+    "source_record_id",
+    "source_record_key_origin",
+    "source_record_key",
+    "source_record_digest",
+    "source_record_identity_digest",
+    "source_fields",
+    "observed_at",
+    "created_at",
+    "created_by"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1"
+    },
+    "record_type": {
+      "const": "import_source_record"
+    },
+    "module_id": {
+      "const": "portia"
+    },
+    "class_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+    },
+    "import_batch_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-import-batch-id.schema.json"
+    },
+    "source_record_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-import-source-record-id.schema.json"
+    },
+    "source_record_key_origin": {
+      "enum": [
+        "source_provided",
+        "profile_defined_exact"
+      ]
+    },
+    "source_record_key": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512,
+      "pattern": "^(?=.*\\S)[^\\u0000-\\u001F\\u007F]+$"
+    },
+    "source_record_digest": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/sha256-digest.schema.json"
+    },
+    "source_record_identity_digest": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/sha256-digest.schema.json"
+    },
+    "source_fields": {
+      "type": "array",
+      "maxItems": 256,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/sourceField"
+      }
+    },
+    "observed_at": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+    },
+    "created_at": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+    },
+    "created_by": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/attribution/attribution-agent.schema.json"
+    }
+  },
+  "$defs": {
+    "sourceField": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "field_key",
+        "value"
+      ],
+      "properties": {
+        "field_key": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256,
+          "pattern": "^(?=.*\\S)[^\\u0000-\\u001F\\u007F]+$"
+        },
+        "value": {
+          "$ref": "#/$defs/sourceValue"
+        }
+      }
+    },
+    "sourceValue": {
+      "anyOf": [
+        {
+          "type": [
+            "string",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        {
+          "type": "array",
+          "maxItems": 256,
+          "items": {
+            "type": [
+              "string",
+              "number",
+              "boolean",
+              "null"
+            ]
+          }
+        }
+      ]
+    }
+  }
+}
