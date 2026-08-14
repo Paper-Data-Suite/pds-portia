@@ -1,0 +1,79 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/capture/capture-batch.schema.json",
+  "title": "Portia Capture Batch",
+  "description": "Version-1 non-domain Portia work root for one paper-assisted capture operation. A Capture Batch exists so Portia can prepare and route blank or partially prefilled paper without fabricating an Event, Account, Observation, Response, Communication, or other behavior-domain record before evidence exists.",
+  "$comment": "The Capture Batch work_id is the identity used by Core work references for this operational workflow. Application validation remains responsible for Core class ownership, storage-path agreement, lifecycle transitions, authorization, and ensuring that opening or closing a Capture Batch does not itself create or assert behavior-domain facts.",
+  "x-portia-application-invariants": [
+    {
+      "id": "capture_batch.canonical_owner_path",
+      "description": "The Capture Batch must resolve at the canonical Portia work path for its exact class_id/work_id, and that class must be a legitimate Core-owned class context."
+    },
+    {
+      "id": "capture_batch.non_domain_work_root",
+      "description": "Creating, opening, closing, or cancelling a Capture Batch must not create or assert an Event, participant fact, Account, Observation, Response, Communication, Support, Implementation, Fidelity, Outcome, Reentry, Repair, or other behavior-domain fact."
+    },
+    {
+      "id": "capture_batch.lifecycle_authorization",
+      "description": "Application logic must enforce authorized state transitions and must not use Capture Batch state as evidence that printing, return, interpretation, review, or canonical materialization occurred."
+    }
+  ],
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "record_type",
+    "work_kind",
+    "module_id",
+    "class_id",
+    "work_id",
+    "status",
+    "created_at",
+    "created_by",
+    "updated_at",
+    "updated_by"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1"
+    },
+    "record_type": {
+      "const": "portia_work"
+    },
+    "work_kind": {
+      "const": "capture_batch"
+    },
+    "module_id": {
+      "const": "portia"
+    },
+    "class_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+    },
+    "work_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-capture-batch-id.schema.json"
+    },
+    "status": {
+      "enum": [
+        "open",
+        "closed",
+        "cancelled"
+      ]
+    },
+    "label": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json",
+      "description": "Optional human-facing label for locating the operational batch. It is not a behavior-domain assertion."
+    },
+    "created_at": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+    },
+    "created_by": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/attribution/attribution-agent.schema.json"
+    },
+    "updated_at": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+    },
+    "updated_by": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/attribution/attribution-agent.schema.json"
+    }
+  }
+}

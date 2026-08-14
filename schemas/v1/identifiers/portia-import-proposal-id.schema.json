@@ -1,0 +1,10 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-import-proposal-id.schema.json",
+  "title": "Portia Import Proposal Identifier",
+  "description": "Opaque identifier for one durable import-specific proposal. The iprp_ prefix is part of the public identifier contract. The identifier does not encode source system, student, Event, record family, review disposition, mapping outcome, or other sensitive meaning.",
+  "type": "string",
+  "minLength": 6,
+  "maxLength": 128,
+  "pattern": "^iprp_[A-Za-z0-9][A-Za-z0-9_-]*$"
+}

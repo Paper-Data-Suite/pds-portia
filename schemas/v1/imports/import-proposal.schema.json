@@ -1,0 +1,357 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/imports/import-proposal.schema.json",
+  "title": "Portia Import Proposal",
+  "description": "Version-1 immutable import-staging proposal produced from one exact Import Source Record under its exact Import Batch mapping profile. It maps source-side assertions toward one possible Portia target without creating a canonical record, establishing person identity, or converting source-system labels into Portia judgments.",
+  "$comment": "One Import Source Record may yield zero, one, or many Import Proposals. proposal_key is stable only within the exact mapping profile and source record; proposal_identity_digest is application-recomputed from the exact source record identity, exact batch mapping identity, proposal_key, target, and field bindings. Source values are referenced rather than copied when possible. transformed_candidate is allowed only when the exact mapping deterministically produces a value that is not byte/value-identical to the source field. human_resolution_required supplies no value.",
+  "x-portia-application-invariants": [
+    {
+      "id": "import_proposal.lineage_exactness",
+      "description": "import_batch_id and source_record_id must resolve one exact Import Source Record in the same class and exact Import Batch. Mapping profile/version/digest are inherited only from that exact batch."
+    },
+    {
+      "id": "import_proposal.zero_to_many_and_stable_key",
+      "description": "A source record may produce zero, one, or many proposals. proposal_key must be deterministic and unique for logical proposals produced by the exact mapping profile; list position, source row order, and local proposal_id are not logical identity inputs."
+    },
+    {
+      "id": "import_proposal.identity_digest",
+      "description": "proposal_identity_digest must be recomputed from a versioned canonical encoding of exact source-record identity, exact batch import/mapping identity, proposal_key, target, and field bindings. Unchanged replay must reconcile the same logical proposal rather than duplicate it."
+    },
+    {
+      "id": "import_proposal.source_values_not_duplicated",
+      "description": "source_value bindings reference the exact source field and do not copy its value into the proposal. transformed_candidate is stored only when deterministic mapping actually produces a distinct candidate needed for review."
+    },
+    {
+      "id": "import_proposal.transformed_candidate_not_truth",
+      "description": "A transformed_candidate is a mapping candidate only. Normalization, parsing, code translation, or format conversion does not establish truth, authority, identity, judgment, or canonical acceptance."
+    },
+    {
+      "id": "import_proposal.human_resolution_has_no_value",
+      "description": "human_resolution_required identifies a target field that cannot be safely resolved automatically. It supplies no implied null/false/no value and must be resolved or left unresolved by attributable review."
+    },
+    {
+      "id": "import_proposal.no_fuzzy_identity",
+      "description": "Mapping must not use similar name/email, row position, nearby labels, or fuzzy matching to silently create or merge Actor, roster-student, participant, or other person identity. Ambiguity requires human review."
+    },
+    {
+      "id": "import_proposal.no_source_label_to_judgment",
+      "description": "Source labels must not automatically become Portia Classification, Hypothesis, Determination, fault, severity, Response appropriateness, Support recommendation, Fidelity, Outcome, recurrence failure, Reentry completion, or Repair meaning."
+    },
+    {
+      "id": "import_proposal.new_work_boundary",
+      "description": "new_work target context is allowed only for Event or Support Process roots. Child records require exact existing work context or another explicitly valid target relationship during materialization."
+    },
+    {
+      "id": "import_proposal.exact_existing_context",
+      "description": "existing_work and existing_record contexts are exact historical references and must not silently follow successor, correction, migration, consolidation, or ownership correction."
+    },
+    {
+      "id": "import_proposal.review_required_before_materialization",
+      "description": "Persisting an Import Proposal never creates or changes a canonical Portia record. Human review is required wherever the target family, mapping ambiguity, identity resolution, or local policy requires it."
+    },
+    {
+      "id": "import_proposal.import_provenance_only",
+      "description": "A later reviewed canonical record uses creation_source.type import. Import provenance does not establish source-system authority, authenticity, accuracy, or truth."
+    },
+    {
+      "id": "import_proposal.no_paper_semantics",
+      "description": "Import Proposal must not carry route_id, Page Record, Page Target, retained-source, OCR/mark interpretation, or paper_capture provenance."
+    },
+    {
+      "id": "import_proposal.changed_mapping_preserves_history",
+      "description": "A later mapping profile/version may create a different proposal generation/identity, but earlier source records, proposals, reviews, and canonical records remain preserved and are not silently rewritten."
+    }
+  ],
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "record_type",
+    "module_id",
+    "class_id",
+    "import_batch_id",
+    "source_record_id",
+    "proposal_id",
+    "proposal_key",
+    "proposal_identity_digest",
+    "target",
+    "field_bindings",
+    "review_flags",
+    "proposed_at",
+    "proposed_by",
+    "created_at",
+    "created_by"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1"
+    },
+    "record_type": {
+      "const": "import_proposal"
+    },
+    "module_id": {
+      "const": "portia"
+    },
+    "class_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+    },
+    "import_batch_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-import-batch-id.schema.json"
+    },
+    "source_record_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-import-source-record-id.schema.json"
+    },
+    "proposal_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-import-proposal-id.schema.json"
+    },
+    "proposal_key": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/lowercase-token.schema.json"
+    },
+    "proposal_identity_digest": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/sha256-digest.schema.json"
+    },
+    "target": {
+      "$ref": "#/$defs/proposalTarget"
+    },
+    "field_bindings": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 128,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/fieldBinding"
+      }
+    },
+    "review_flags": {
+      "type": "array",
+      "maxItems": 32,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/lowercase-token.schema.json"
+      }
+    },
+    "proposed_at": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+    },
+    "proposed_by": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/attribution/attribution-agent.schema.json"
+    },
+    "created_at": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+    },
+    "created_by": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/attribution/attribution-agent.schema.json"
+    }
+  },
+  "$defs": {
+    "proposalTarget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "record_kind",
+        "contract_version",
+        "context"
+      ],
+      "properties": {
+        "record_kind": {
+          "$ref": "#/$defs/mappedRecordKind"
+        },
+        "contract_version": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+        },
+        "context": {
+          "$ref": "#/$defs/targetContext"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "context": {
+                "properties": {
+                  "kind": {
+                    "const": "new_work"
+                  }
+                },
+                "required": [
+                  "kind"
+                ]
+              }
+            },
+            "required": [
+              "context"
+            ]
+          },
+          "then": {
+            "properties": {
+              "record_kind": {
+                "enum": [
+                  "event",
+                  "support_process"
+                ]
+              }
+            }
+          }
+        }
+      ]
+    },
+    "targetContext": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ],
+          "properties": {
+            "kind": {
+              "const": "new_work"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "work_ref"
+          ],
+          "properties": {
+            "kind": {
+              "const": "existing_work"
+            },
+            "work_ref": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-portia-work-ref.schema.json"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "work_record_ref"
+          ],
+          "properties": {
+            "kind": {
+              "const": "existing_record"
+            },
+            "work_record_ref": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-portia-work-record-ref.schema.json"
+            }
+          }
+        }
+      ]
+    },
+    "fieldBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "target_path",
+        "source_field_key",
+        "value_source"
+      ],
+      "properties": {
+        "target_path": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512,
+          "pattern": "^/"
+        },
+        "source_field_key": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256,
+          "pattern": "^(?=.*\\S)[^\\u0000-\\u001F\\u007F]+$"
+        },
+        "value_source": {
+          "enum": [
+            "source_value",
+            "transformed_candidate",
+            "human_resolution_required"
+          ]
+        },
+        "transformed_candidate": {
+          "$ref": "#/$defs/candidateValue"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "value_source": {
+                "const": "transformed_candidate"
+              }
+            },
+            "required": [
+              "value_source"
+            ]
+          },
+          "then": {
+            "required": [
+              "transformed_candidate"
+            ]
+          },
+          "else": {
+            "not": {
+              "required": [
+                "transformed_candidate"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "candidateValue": {
+      "anyOf": [
+        {
+          "type": [
+            "string",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        {
+          "type": "array",
+          "maxItems": 256,
+          "items": {
+            "type": [
+              "string",
+              "number",
+              "boolean",
+              "null"
+            ]
+          }
+        }
+      ]
+    },
+    "mappedRecordKind": {
+      "enum": [
+        "event",
+        "event_participant",
+        "event_participant_role",
+        "account",
+        "observation",
+        "review",
+        "classification",
+        "hypothesis",
+        "determination",
+        "response",
+        "communication",
+        "support_process",
+        "support_process_participant",
+        "support_need",
+        "support_goal",
+        "support",
+        "intervention",
+        "implementation",
+        "fidelity",
+        "follow_up",
+        "outcome",
+        "reentry",
+        "repair"
+      ]
+    }
+  }
+}

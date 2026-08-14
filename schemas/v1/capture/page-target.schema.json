@@ -1,0 +1,344 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/capture/page-target.schema.json",
+  "title": "Portia Page Target",
+  "description": "Version-1 Portia pre-print operational target for one logical page within a Capture Batch. It preserves the exact intended capture purpose, historical template/layout identity, expected interpretation mode, stable page-local entry layout, and optional exact existing Portia context needed to interpret a returned page later. A Core PDS2 RouteRegistration may target this record before printing. The Page Target is not a printed-copy identity, returned-page identity, retained source, machine interpretation, proposal, review decision, or canonical behavior-domain record.",
+  "$comment": "Core route registration remains authoritative for route_id, payload/signature state, and immutable route metadata. Page Target semantic fields are Portia-owned and must exist before route registration/QR rendering rather than being reconstructed from Core module_details. Application validation is responsible for Capture Batch existence/class agreement, Core RouteRegistration target agreement, registration-before-render, exact context resolution, purpose/context compatibility, template/layout availability and fingerprint agreement, lifecycle/correction rules, authorization, and preventing Page Targets from being treated as evidence or domain facts.",
+  "x-portia-application-invariants": [
+    {
+      "id": "page_target.capture_batch_resolves",
+      "description": "The owning Capture Batch must exist and agree exactly with class_id/work_id; page_index uniqueness is enforced within the rendering workflow where required."
+    },
+    {
+      "id": "page_target.core_route_exact_target",
+      "description": "Any Core RouteRegistration used for this page must identify module_id portia and the same class_id/work_id, and its target must be record_kind capture_page_target with this exact page_target_id and supported non-null contract version."
+    },
+    {
+      "id": "page_target.registration_before_render",
+      "description": "QR/PDS2 rendering is permitted only after an exact active Core RouteRegistration has been created and verified for this Page Target."
+    },
+    {
+      "id": "page_target.template_layout_exactness",
+      "description": "Rendering and later interpretation must use the exact template_id/template_version/layout_version/capture_spec_version/layout_fingerprint/page_role/page_ordinal represented here; current-installed-template substitution is prohibited."
+    },
+    {
+      "id": "page_target.semantic_immutability_after_registration",
+      "description": "After a Core route has been registered or a copy printed, page_purpose, purpose_detail, template_identity, capture_mode, entry_layout, and exact existing context are historical semantics and must not be materially rewritten in place; correction requires preserved history and, where necessary, a new Page Target/route."
+    },
+    {
+      "id": "page_target.existing_context_exactness",
+      "description": "Any existing_work_context or existing_record_context must resolve exactly, remain in the legitimate class/work history, and must never silently follow migration, supersession, ownership correction, plan adaptation, or cross-year succession; if both contexts are present, their exact work references must agree."
+    },
+    {
+      "id": "page_target.purpose_context_compatibility",
+      "description": "The application must enforce semantic compatibility between page_purpose and any exact existing context; purpose describes intended capture context only and never proves that the corresponding domain fact occurred or is true."
+    },
+    {
+      "id": "page_target.no_domain_preallocation",
+      "description": "Creating or printing a Page Target must not pre-create Event, participant, Account, Observation, Review, Classification, Hypothesis, Determination, Response, Communication, Support Process/Participant, Need, Goal, Support, Intervention, Implementation, Fidelity, Follow-Up, Outcome, Reentry, or Repair facts solely to satisfy routing or printing."
+    },
+    {
+      "id": "page_target.privacy_minimized_route",
+      "description": "QR/PDS2 locator and human fallback text must remain privacy-minimized; sensitive narrative and domain conclusions belong neither in route payloads nor in Portia Page Target identity fields."
+    }
+  ],
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "record_type",
+    "module_id",
+    "class_id",
+    "work_id",
+    "page_target_id",
+    "page_index",
+    "page_purpose",
+    "template_identity",
+    "capture_mode",
+    "entry_layout",
+    "status",
+    "created_at",
+    "created_by",
+    "updated_at",
+    "updated_by"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1"
+    },
+    "record_type": {
+      "const": "capture_page_target"
+    },
+    "module_id": {
+      "const": "portia"
+    },
+    "class_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+    },
+    "work_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-capture-batch-id.schema.json",
+      "description": "Owning Capture Batch identity and the same work_id carried by Core work references for this capture workflow. Existing Event/Support Process context, when any, is represented separately and exactly."
+    },
+    "page_target_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-page-target-id.schema.json"
+    },
+    "page_index": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Positive logical page position inside the capture rendering workflow. It is not the historical template page ordinal, a retained-source page number, or a printed-copy identity."
+    },
+    "page_purpose": {
+      "enum": [
+        "new_event_capture",
+        "event_evidence_capture",
+        "support_process_evidence_capture",
+        "follow_up_capture",
+        "implementation_capture",
+        "fidelity_capture",
+        "reentry_capture",
+        "repair_capture",
+        "multi_entry_event_capture",
+        "other"
+      ],
+      "description": "Closed descriptive intent for the page. Purpose never establishes that an Event, implementation, fidelity result, follow-up, reentry, repair, or other domain fact exists or occurred."
+    },
+    "purpose_detail": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json",
+      "description": "Bounded explanatory detail required exactly when page_purpose is other."
+    },
+    "template_identity": {
+      "$ref": "#/$defs/templateIdentity"
+    },
+    "capture_mode": {
+      "enum": [
+        "text_recognition",
+        "handwriting_recognition",
+        "mark_recognition",
+        "mixed_recognition",
+        "manual_transcription"
+      ],
+      "description": "Expected mechanical interpretation mode for this historical layout. It controls processing expectations only and never authorizes semantic inference or review bypass."
+    },
+    "entry_layout": {
+      "$ref": "#/$defs/entryLayout"
+    },
+    "existing_work_context": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-portia-work-ref.schema.json",
+      "description": "Optional exact historical Event or Support Process context known at print time. This is separate from the Capture Batch work_id and must not silently follow later successors or corrections."
+    },
+    "existing_record_context": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-portia-work-record-ref.schema.json",
+      "description": "Optional exact historical Portia child-record context when the page is specifically tied to a known record representation. Its contained exact work reference remains historical."
+    },
+    "status": {
+      "enum": [
+        "active",
+        "retired",
+        "invalidated"
+      ],
+      "description": "Operational Page Target state. retired prevents new use but does not erase historical meaning; invalidated marks the representation defective without erasing any Core route or retained-source history."
+    },
+    "created_at": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+    },
+    "created_by": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/attribution/attribution-agent.schema.json"
+    },
+    "updated_at": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+    },
+    "updated_by": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/attribution/attribution-agent.schema.json"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "page_purpose": {
+            "const": "other"
+          }
+        },
+        "required": [
+          "page_purpose"
+        ]
+      },
+      "then": {
+        "required": [
+          "purpose_detail"
+        ]
+      },
+      "else": {
+        "not": {
+          "required": [
+            "purpose_detail"
+          ]
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "page_purpose": {
+            "enum": [
+              "new_event_capture",
+              "multi_entry_event_capture"
+            ]
+          }
+        },
+        "required": [
+          "page_purpose"
+        ]
+      },
+      "then": {
+        "not": {
+          "anyOf": [
+            {
+              "required": [
+                "existing_work_context"
+              ]
+            },
+            {
+              "required": [
+                "existing_record_context"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "page_purpose": {
+            "const": "multi_entry_event_capture"
+          }
+        },
+        "required": [
+          "page_purpose"
+        ]
+      },
+      "then": {
+        "properties": {
+          "entry_layout": {
+            "properties": {
+              "mode": {
+                "const": "multi_entry"
+              }
+            },
+            "required": [
+              "mode"
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "templateIdentity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "template_id",
+        "template_version",
+        "layout_version",
+        "capture_spec_version",
+        "layout_fingerprint",
+        "page_role",
+        "page_ordinal"
+      ],
+      "properties": {
+        "template_id": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+        },
+        "template_version": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+        },
+        "layout_version": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+        },
+        "capture_spec_version": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+        },
+        "layout_fingerprint": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/sha256-digest.schema.json",
+          "description": "SHA-256 digest/fingerprint of the exact historical interpretation layout/capture specification used for this page."
+        },
+        "page_role": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/lowercase-token.schema.json",
+          "description": "Stable template-local semantic page role, such as incident_form or monitoring_sheet; it is not a domain assertion."
+        },
+        "page_ordinal": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Positive ordinal of this page within the exact template/layout version. It is distinct from scan order and retained-source page number."
+        }
+      }
+    },
+    "entryLayout": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mode",
+        "entry_keys"
+      ],
+      "properties": {
+        "mode": {
+          "enum": [
+            "single_entry",
+            "multi_entry"
+          ]
+        },
+        "entry_keys": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/lowercase-token.schema.json"
+          },
+          "description": "Stable template-local entry/slot keys. They identify reviewable page-local locations only; an entry key does not identify a person, Event, or canonical record and does not mean the slot contains returned content."
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "mode": {
+                "const": "single_entry"
+              }
+            },
+            "required": [
+              "mode"
+            ]
+          },
+          "then": {
+            "properties": {
+              "entry_keys": {
+                "minItems": 1,
+                "maxItems": 1
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "mode": {
+                "const": "multi_entry"
+              }
+            },
+            "required": [
+              "mode"
+            ]
+          },
+          "then": {
+            "properties": {
+              "entry_keys": {
+                "minItems": 2
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

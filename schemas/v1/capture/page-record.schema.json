@@ -1,0 +1,167 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/capture/page-record.schema.json",
+  "title": "Portia Page Record",
+  "description": "Version-1 durable Portia processing record for one physical page dispatched from a retained source through one immutable Core PDS2 route registration. The Page Record bridges Core routing/retention to later Portia interpretation and review while remaining non-domain evidence-processing state rather than a canonical behavior-domain fact.",
+  "$comment": "Application validation remains responsible for verifying the referenced Core RouteRegistration, confirming that its target is the named Page Target in the same class/work, resolving the retained source, enforcing deterministic reuse/idempotency for the tuple (route_id, source_scan_id, source_page_number), preserving source_sha256 agreement with Core retention metadata, legal processing-state transitions, retry/reprocessing history, authorization, and ensuring that no processing state automatically materializes a behavior-domain record. Paper Interpretation generations are stored as separate immutable staging records that exact-link this Page Record; mutable latest-generation pointers and proposal/review state are not embedded here.",
+  "x-portia-application-invariants": [
+    {
+      "id": "page_record.capture_owner_target_agreement",
+      "description": "The Capture Batch and Page Target must exist and agree exactly with the Page Record class_id/work_id/page_target_id."
+    },
+    {
+      "id": "page_record.core_route_exact_target",
+      "description": "The immutable Core RouteRegistration identified by route_id must resolve to this exact Portia Page Target in the same module/class/work context."
+    },
+    {
+      "id": "page_record.retained_source_exactness",
+      "description": "source_scan_id, source_sha256, and source_page_number must resolve to and agree with Core retained-source metadata; Portia must not rewrite Core source identity or route history."
+    },
+    {
+      "id": "page_record.idempotent_same_source_same_route",
+      "description": "Reprocessing the same route_id/source_scan_id/source_page_number must reuse the same logical Page Record processing lineage rather than create duplicate accepted interpretations or canonical records."
+    },
+    {
+      "id": "page_record.same_route_different_source_distinct",
+      "description": "A different retained source returned through the same route remains a distinct physical-source intake and must not silently replace an earlier Page Record."
+    },
+    {
+      "id": "page_record.same_hash_not_auto_collapsed",
+      "description": "Matching content hashes may support duplicate review but must not automatically collapse or delete distinct Core retained-source histories."
+    },
+    {
+      "id": "page_record.target_template_historical_exactness",
+      "description": "Interpretation must use the exact historical Page Target template/layout/capture specification; a later installed template version must not silently reinterpret this Page Record."
+    },
+    {
+      "id": "page_record.no_automatic_domain_materialization",
+      "description": "No Page Record processing state may itself create, activate, complete, or otherwise assert a behavior-domain record or human judgment."
+    }
+  ],
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "record_type",
+    "module_id",
+    "class_id",
+    "work_id",
+    "page_target_id",
+    "page_record_id",
+    "route_id",
+    "source_ref",
+    "processing_state",
+    "created_at",
+    "created_by",
+    "updated_at",
+    "updated_by"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1"
+    },
+    "record_type": {
+      "const": "capture_page_record"
+    },
+    "module_id": {
+      "const": "portia"
+    },
+    "class_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+    },
+    "work_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-capture-batch-id.schema.json",
+      "description": "Owning Capture Batch identity."
+    },
+    "page_target_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-page-target-id.schema.json"
+    },
+    "page_record_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-page-record-id.schema.json"
+    },
+    "route_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json",
+      "description": "Identifier of the immutable Core PDS2 RouteRegistration used to dispatch this physical page. The Core registration remains authoritative for route content and signature semantics."
+    },
+    "source_ref": {
+      "$ref": "#/$defs/retainedSourcePageRef"
+    },
+    "processing_state": {
+      "enum": [
+        "received",
+        "processing",
+        "processed",
+        "failed"
+      ],
+      "description": "Operational page-processing state only. Interpretation, proposal, human-review, and canonical materialization lifecycles are separate Issue #20 contracts and must not be inferred from this value."
+    },
+    "failure_detail": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json",
+      "description": "Human-readable operational failure detail. Required exactly when processing_state is failed. It must not be treated as a behavior-domain assertion."
+    },
+    "created_at": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+    },
+    "created_by": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/attribution/attribution-agent.schema.json"
+    },
+    "updated_at": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+    },
+    "updated_by": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/attribution/attribution-agent.schema.json"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "processing_state": {
+            "const": "failed"
+          }
+        },
+        "required": [
+          "processing_state"
+        ]
+      },
+      "then": {
+        "required": [
+          "failure_detail"
+        ]
+      },
+      "else": {
+        "not": {
+          "required": [
+            "failure_detail"
+          ]
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "retainedSourcePageRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_scan_id",
+        "source_sha256",
+        "source_page_number"
+      ],
+      "properties": {
+        "source_scan_id": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json",
+          "description": "Core retained-source identity for the immutable whole submitted source."
+        },
+        "source_sha256": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/sha256-digest.schema.json",
+          "description": "SHA-256 digest of the immutable whole retained source, copied from and checked against Core retention metadata."
+        },
+        "source_page_number": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Positive one-based physical page number dispatched by Core from the retained source."
+        }
+      }
+    }
+  }
+}

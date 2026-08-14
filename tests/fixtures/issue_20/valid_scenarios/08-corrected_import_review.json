@@ -1,0 +1,41 @@
+{
+  "schema_version": "1",
+  "record_type": "import_review",
+  "module_id": "portia",
+  "class_id": "class_english10_p2",
+  "import_batch_id": "ibat_attempt_01",
+  "source_record_ref": {
+    "contract_version": "1",
+    "source_record_id": "isrc_observation_01"
+  },
+  "review_id": "irev_review_01",
+  "review_sequence": 1,
+  "proposal_ref": {
+    "contract_version": "1",
+    "proposal_id": "iprp_event_01",
+    "proposal_identity_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  },
+  "reviewer": {
+    "kind": "local_operator",
+    "display_label": "Synthetic Import Reviewer"
+  },
+  "disposition": "corrected_and_accepted",
+  "field_reviews": [
+    {
+      "target_path": "/occurred_at",
+      "decision": "correct",
+      "confirmed_value": "2026-08-13T09:20:00-04:00"
+    },
+    {
+      "target_path": "/location_text",
+      "decision": "accept_candidate"
+    }
+  ],
+  "reason_codes": [],
+  "reviewed_at": "2026-08-14T13:05:00-04:00",
+  "created_at": "2026-08-14T13:05:00-04:00",
+  "created_by": {
+    "type": "system_process",
+    "process_id": "structured_import_mapping_test"
+  }
+}

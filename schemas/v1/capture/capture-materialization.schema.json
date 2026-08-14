@@ -1,0 +1,203 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/capture/capture-materialization.schema.json",
+  "title": "Portia Capture Materialization",
+  "description": "Version-1 immutable operational receipt linking one exact accepted Capture Review to one exact completed or reconciled Portia coordinated operation and the exact canonical Portia work/record representations that operation produced or affected. It is not a domain record, not review authority, not a transaction engine, and not a mutable materialization queue.",
+  "$comment": "The existing Operation Journal and Operation Lock contracts remain authoritative for coordinated persistence, crash recovery, expected-prior-state checks, canonical acceptance, and lock ownership. This receipt is written only after the exact operation journal proves canonical acceptance/reconciliation. If canonical writes are already durable but the receipt is missing, recovery must reconcile the existing operation and write the missing receipt without replaying canonical creation. Receipt identity is the exact operation + exact review lineage; there is no separate capture-materialization identifier family.",
+  "x-portia-application-invariants": [
+    {
+      "id": "capture_materialization.lineage_exactness",
+      "description": "class_id/work_id/page_target_id/page_record_id, proposal_ref, and review_ref must resolve to one exact capture lineage. The receipt must not retarget another physical page, entry, proposal, review sequence, Capture Batch, or class."
+    },
+    {
+      "id": "capture_materialization.review_must_authorize_next_step",
+      "description": "The exact Capture Review must resolve with disposition accepted or corrected_and_accepted, and no later applicable review sequence may have replaced that decision before materialization preflight. Rejected or unresolved review is never materializable."
+    },
+    {
+      "id": "capture_materialization.review_is_not_domain_judgment",
+      "description": "Capture Review confirms staging transcription/mapping only. It must not be substituted for domain-required reviewer, selector, author, decision-maker, provider, fidelity assessor, outcome assessor, reentry participant, repair participant, policy basis, authority, consent, or other human/domain semantics required by the target contract."
+    },
+    {
+      "id": "capture_materialization.operation_reuse",
+      "description": "The same exact accepted review and materialization intent must resolve to one stable coordinated operation identity/intent. Retry or restart reuses or reconciles that operation; it must not allocate a second logical materialization operation merely because a prior process crashed."
+    },
+    {
+      "id": "capture_materialization.operation_journal_exactness",
+      "description": "operation_journal_ref must resolve the exact immutable journal revision for the same operation and supported contract. That revision must prove committed/completed canonical acceptance or an equivalent recovery reconciliation and must agree with the exact capture review, proposal, lineage, planned write set, and canonical_results."
+    },
+    {
+      "id": "capture_materialization.lock_and_preflight_reuse",
+      "description": "Materialization must use Portia's existing deterministic Operation Lock, preflight, expected-prior-state, write-set, commit-point, and recovery rules. Capture staging does not define a second lock or transaction mechanism."
+    },
+    {
+      "id": "capture_materialization.results_exactness",
+      "description": "Every canonical_results target must resolve exactly at its named contract version and class/work scope. Logical duplicate result targets are invalid even if encoded with different result_relation values or object forms."
+    },
+    {
+      "id": "capture_materialization.produced_vs_affected",
+      "description": "result_relation produced means the operation created and canonically accepted the named representation. affected identifies an exact existing representation materially involved under a valid domain operation; it never grants permission for in-place mutation or bypasses successor, correction, lifecycle, migration, ownership-correction, or other domain rules."
+    },
+    {
+      "id": "capture_materialization.paper_creation_source",
+      "description": "Every newly produced canonical Portia representation created from this returned page must use creation_source.type paper_capture with stage ingested and route_id/page_record_id matching the exact Page Record/Core route lineage. preallocated is not valid provenance for returned-page materialization."
+    },
+    {
+      "id": "capture_materialization.paper_source_artifact",
+      "description": "Where the canonical target contract supports source_artifact_ref, paper-derived evidence must preserve a paper_capture artifact reference whose route_id, page_record_id, and source_page_number agree with the exact Page Record/Core retained-source page. This locator does not establish truth, credibility, authenticity, authorization, or evidentiary weight."
+    },
+    {
+      "id": "capture_materialization.no_scan_time_as_domain_time",
+      "description": "Scan, interpretation, proposal, review, operation, and receipt timestamps must not be substituted for unknown Event, evidence, implementation, follow-up, outcome, reentry, repair, communication, or other domain time."
+    },
+    {
+      "id": "capture_materialization.context_exactness",
+      "description": "Proposal existing_work/existing_record context remains exact and must not silently follow successors, corrections, migrations, consolidations, ownership corrections, current pointers, or newer contract versions during materialization."
+    },
+    {
+      "id": "capture_materialization.no_duplicate_canonical_records",
+      "description": "Before any canonical write, recovery/preflight must reconcile the stable operation intent, exact review lineage, expected target state, durable write fingerprints, and any existing receipt. A retry after partial or completed persistence must resume/reconcile rather than create duplicate Events, child records, Support Processes, or other canonical records."
+    },
+    {
+      "id": "capture_materialization.receipt_after_canonical_acceptance",
+      "description": "The receipt may be persisted only after the referenced Operation Journal proves all required canonical-gate steps accepted/reconciled. Receipt absence after durable canonical acceptance is a recoverable missing post-commit artifact, not evidence that canonical writes should be repeated."
+    },
+    {
+      "id": "capture_materialization.later_review_or_correction_preserves_history",
+      "description": "A later Capture Review correction/reversal does not delete or rewrite this receipt or prior canonical history. Required correction proceeds through the appropriate Portia domain correction/lifecycle/successor mechanisms with preserved provenance."
+    },
+    {
+      "id": "capture_materialization.no_raw_source_payload",
+      "description": "The receipt stores exact references only. It must not embed scan/PDF/image bytes, base64 source payloads, temporary paths, copied OCR text, machine alternatives, or confirmed domain field values."
+    },
+    {
+      "id": "capture_materialization.not_quarantine",
+      "description": "Ordinary materialization failure/retry uses Operation Journal recovery. Quarantine is reserved for exceptional integrity isolation such as irreconcilable provenance/identity/state contradictions, not routine review or recoverable process interruption."
+    }
+  ],
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "record_type",
+    "module_id",
+    "class_id",
+    "work_id",
+    "page_target_id",
+    "page_record_id",
+    "proposal_ref",
+    "review_ref",
+    "operation_journal_ref",
+    "canonical_results",
+    "materialized_at",
+    "recorded_at",
+    "recorded_by"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1"
+    },
+    "record_type": {
+      "const": "capture_materialization"
+    },
+    "module_id": {
+      "const": "portia"
+    },
+    "class_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+    },
+    "work_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-capture-batch-id.schema.json"
+    },
+    "page_target_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-page-target-id.schema.json"
+    },
+    "page_record_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-page-record-id.schema.json"
+    },
+    "proposal_ref": {
+      "$ref": "#/$defs/proposalRef"
+    },
+    "review_ref": {
+      "$ref": "#/$defs/reviewRef"
+    },
+    "operation_journal_ref": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/operation-journal-ref.schema.json"
+    },
+    "canonical_results": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 64,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/canonicalResult"
+      }
+    },
+    "materialized_at": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+    },
+    "recorded_at": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+    },
+    "recorded_by": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/attribution/attribution-agent.schema.json"
+    }
+  },
+  "$defs": {
+    "proposalRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "contract_version",
+        "proposal_id"
+      ],
+      "properties": {
+        "contract_version": {
+          "const": "1"
+        },
+        "proposal_id": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-capture-proposal-id.schema.json"
+        }
+      }
+    },
+    "reviewRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "contract_version",
+        "review_id",
+        "review_sequence"
+      ],
+      "properties": {
+        "contract_version": {
+          "const": "1"
+        },
+        "review_id": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-capture-review-id.schema.json"
+        },
+        "review_sequence": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "canonicalResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "result_relation",
+        "target"
+      ],
+      "properties": {
+        "result_relation": {
+          "enum": [
+            "produced",
+            "affected"
+          ]
+        },
+        "target": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/targets/exact-portia-work-or-record-target.schema.json"
+        }
+      }
+    }
+  }
+}

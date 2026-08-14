@@ -1,0 +1,39 @@
+{
+  "schema_version": "1",
+  "record_type": "wrong_issue_20_fixture_type",
+  "module_id": "portia",
+  "class_id": "class_english10_p2",
+  "import_batch_id": "ibat_attempt_01",
+  "source_profile": {
+    "source_system_id": "student_system",
+    "profile_id": "behavior_export",
+    "profile_version": "3",
+    "display_label": "Synthetic behavior export"
+  },
+  "source_snapshot": {
+    "locator": {
+      "kind": "workspace_file",
+      "path": "imports/synthetic-behavior.csv"
+    },
+    "fingerprint": {
+      "algorithm": "sha256",
+      "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "byte_length": 2048
+    },
+    "observed_at": "2026-08-14T11:40:00-04:00"
+  },
+  "mapping_profile": {
+    "mapping_profile_id": "behavior_csv",
+    "mapping_version": "5",
+    "mapping_digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+  },
+  "import_identity_digest": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+  "status": "open",
+  "failure_codes": [],
+  "started_at": "2026-08-14T11:40:00-04:00",
+  "created_at": "2026-08-14T11:40:00-04:00",
+  "created_by": {
+    "type": "system_process",
+    "process_id": "structured_import_test"
+  }
+}

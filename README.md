@@ -59,6 +59,77 @@ publication projection over Portia-native authority. Issue #18 does not create
 Academic Work Registration, academic results, Scores, standards ratings, Grades,
 automatic Meridian publication, or automatic portfolio publication.
 
+### Issue #19 current implementation
+
+The current architecture includes **accepted ADR 0015 for Follow-Up, Outcome,
+Reentry, and Repair**.
+
+The active domain targets include `follow_up@1`, `outcome@1`, `reentry@1`, and
+`repair@1`. Additive `account@2` and `observation@2` permit source evidence to
+belong honestly to either an Event or Support Process without fabricating an
+Event merely to host routine support-process evidence.
+
+Follow-Up completion remains distinct from Outcome; Outcome remains an
+attributable bounded human evaluation rather than a universal effectiveness
+score; Reentry does not establish clearance or rehabilitation; and Repair does
+not establish admission, remorse, forgiveness, or restored relationships.
+
+### Issue #20 current implementation
+
+The current architecture now includes **accepted ADR 0016 for paper-assisted
+capture, Core-owned PDS2 routing, retained-source provenance, human-reviewed
+interpretation, and structured imports**.
+
+The paper path is:
+
+```text
+Capture Batch
+→ Page Target
+→ Core RouteRegistration / QR
+→ Core retain-first intake and dispatch
+→ Page Record
+→ Paper Interpretation candidate
+→ Capture Proposal
+→ attributable Capture Review
+→ coordinated canonical materialization when allowed
+```
+
+Capture Batch is explicitly non-domain and exists so blank/new-record forms can
+obtain the Core-required `work_id` without pre-creating a fake Event. Page
+Target is the legitimate Portia route target and must exist before QR/PDS2
+rendering. Page Record represents one returned physical page intake and keeps
+exact Core retained-source provenance without embedding raw source bytes.
+
+The structured import path is:
+
+```text
+exact source snapshot
+→ Import Batch
+→ Import Source Record
+→ 0..N Import Proposals
+→ attributable Import Review
+→ coordinated canonical materialization when allowed
+```
+
+Import replay uses stable source/mapping identity rather than row order,
+filename, display text, or fuzzy person matching. Changed source content or
+mapping preserves new history; a source record missing from a later snapshot
+does not delete earlier Portia history.
+
+Core retains ownership of generic PDS2 routing, RouteRegistration/
+RouteResolution, retained-source identity and bytes, and generic page dispatch.
+Portia owns Portia-specific page meaning, interpretation staging, human review,
+and behavior-domain materialization.
+
+Across both paths, OCR/mark candidates and source-system assertions are
+proposals, not behavior facts. Human capture/import confirmation is also not a
+substitute for canonical Classification, Hypothesis, Determination, Fidelity,
+Outcome, Reentry, or Repair judgment semantics.
+
+Ordinary uncertainty belongs in review/retry state. Integrity Finding is
+diagnostic for broken provenance/linkage/invariants. Quarantine remains
+exceptional isolation rather than an ordinary review queue.
+
 ## Product Position
 
 Portia is designed as:

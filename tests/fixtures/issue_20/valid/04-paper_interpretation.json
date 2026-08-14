@@ -1,0 +1,57 @@
+{
+  "schema_version": "1",
+  "record_type": "paper_interpretation",
+  "module_id": "portia",
+  "class_id": "class_english10_p2",
+  "work_id": "cbat_batch_01",
+  "page_target_id": "ptgt_page_01",
+  "page_record_id": "prec_returned_01",
+  "interpretation_id": "pint_interp_01",
+  "generation": 1,
+  "layout_snapshot": {
+    "template_id": "portia_incident_form",
+    "template_version": "1",
+    "layout_version": "layout_1",
+    "capture_spec_version": "capture_2",
+    "layout_fingerprint": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "page_role": "incident_form",
+    "page_ordinal": 1
+  },
+  "interpreter_profile": {
+    "interpreter_id": "portia_capture_interpreter",
+    "interpreter_version": "1.2.0",
+    "mapping_profile_id": "incident_form_mapping",
+    "mapping_version": "2"
+  },
+  "interpretation_status": "complete",
+  "limitation_codes": [],
+  "entries": {
+    "entry": {
+      "entry_state": "candidate",
+      "mapped_record_kind": "event",
+      "fields": {
+        "location_text": {
+          "capture_method": "handwriting_recognition",
+          "recognition_state": "candidate_detected",
+          "candidate_literal": "Room 214",
+          "normalized_value": "Room 214",
+          "confidence": 0.91
+        },
+        "family_contacted": {
+          "capture_method": "mark_recognition",
+          "recognition_state": "unmarked"
+        }
+      }
+    }
+  },
+  "interpreted_at": "2026-08-13T19:30:00-04:00",
+  "interpreted_by": {
+    "type": "system_process",
+    "process_id": "paper_capture_test"
+  },
+  "created_at": "2026-08-13T19:30:00-04:00",
+  "created_by": {
+    "type": "system_process",
+    "process_id": "paper_capture_test"
+  }
+}

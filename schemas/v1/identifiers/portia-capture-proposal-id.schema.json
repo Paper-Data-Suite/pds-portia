@@ -1,0 +1,10 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-capture-proposal-id.schema.json",
+  "title": "Portia Capture Proposal Identifier",
+  "description": "Opaque identifier for one immutable Portia capture proposal. The cprp_ prefix is part of the public identifier contract. The value does not encode class, page, entry, target record family, review state, person identity, date, or domain facts.",
+  "type": "string",
+  "minLength": 6,
+  "maxLength": 128,
+  "pattern": "^cprp_[A-Za-z0-9][A-Za-z0-9_-]*$"
+}

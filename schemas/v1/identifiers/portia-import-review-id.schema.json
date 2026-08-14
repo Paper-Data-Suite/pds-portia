@@ -1,0 +1,10 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-import-review-id.schema.json",
+  "title": "Portia Import Review Identifier",
+  "description": "Opaque identifier for one immutable import-staging human review. The irev_ prefix distinguishes this operational review from Portia domain Review records (rvw_) and paper Capture Review records (crev_).",
+  "type": "string",
+  "minLength": 6,
+  "maxLength": 128,
+  "pattern": "^irev_[A-Za-z0-9][A-Za-z0-9_-]*$"
+}

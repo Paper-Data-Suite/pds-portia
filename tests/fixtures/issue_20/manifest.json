@@ -1,0 +1,370 @@
+{
+  "fixture_manifest_version": "1",
+  "issue": 20,
+  "examples": [
+    {
+      "example_id": "valid_capture_batch",
+      "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/capture/capture-batch.schema.json",
+      "path": "valid/01-capture_batch.json",
+      "expected": "valid",
+      "contract_kind": "record"
+    },
+    {
+      "example_id": "structural_invalid_capture_batch",
+      "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/capture/capture-batch.schema.json",
+      "path": "structural_invalid/01-capture_batch.json",
+      "expected": "invalid",
+      "contract_kind": "record"
+    },
+    {
+      "example_id": "valid_page_target",
+      "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/capture/page-target.schema.json",
+      "path": "valid/02-page_target.json",
+      "expected": "valid",
+      "contract_kind": "record"
+    },
+    {
+      "example_id": "structural_invalid_page_target",
+      "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/capture/page-target.schema.json",
+      "path": "structural_invalid/02-page_target.json",
+      "expected": "invalid",
+      "contract_kind": "record"
+    },
+    {
+      "example_id": "valid_page_record",
+      "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/capture/page-record.schema.json",
+      "path": "valid/03-page_record.json",
+      "expected": "valid",
+      "contract_kind": "record"
+    },
+    {
+      "example_id": "structural_invalid_page_record",
+      "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/capture/page-record.schema.json",
+      "path": "structural_invalid/03-page_record.json",
+      "expected": "invalid",
+      "contract_kind": "record"
+    },
+    {
+      "example_id": "valid_paper_interpretation",
+      "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/capture/paper-interpretation.schema.json",
+      "path": "valid/04-paper_interpretation.json",
+      "expected": "valid",
+      "contract_kind": "record"
+    },
+    {
+      "example_id": "structural_invalid_paper_interpretation",
+      "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/capture/paper-interpretation.schema.json",
+      "path": "structural_invalid/04-paper_interpretation.json",
+      "expected": "invalid",
+      "contract_kind": "record"
+    },
+    {
+      "example_id": "valid_capture_proposal",
+      "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/capture/capture-proposal.schema.json",
+      "path": "valid/05-capture_proposal.json",
+      "expected": "valid",
+      "contract_kind": "record"
+    },
+    {
+      "example_id": "structural_invalid_capture_proposal",
+      "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/capture/capture-proposal.schema.json",
+      "path": "structural_invalid/05-capture_proposal.json",
+      "expected": "invalid",
+      "contract_kind": "record"
+    },
+    {
+      "example_id": "valid_capture_review",
+      "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/capture/capture-review.schema.json",
+      "path": "valid/06-capture_review.json",
+      "expected": "valid",
+      "contract_kind": "record"
+    },
+    {
+      "example_id": "structural_invalid_capture_review",
+      "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/capture/capture-review.schema.json",
+      "path": "structural_invalid/06-capture_review.json",
+      "expected": "invalid",
+      "contract_kind": "record"
+    },
+    {
+      "example_id": "valid_capture_materialization",
+      "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/capture/capture-materialization.schema.json",
+      "path": "valid/07-capture_materialization.json",
+      "expected": "valid",
+      "contract_kind": "record"
+    },
+    {
+      "example_id": "structural_invalid_capture_materialization",
+      "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/capture/capture-materialization.schema.json",
+      "path": "structural_invalid/07-capture_materialization.json",
+      "expected": "invalid",
+      "contract_kind": "record"
+    },
+    {
+      "example_id": "valid_import_batch",
+      "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/imports/import-batch.schema.json",
+      "path": "valid/08-import_batch.json",
+      "expected": "valid",
+      "contract_kind": "record"
+    },
+    {
+      "example_id": "structural_invalid_import_batch",
+      "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/imports/import-batch.schema.json",
+      "path": "structural_invalid/08-import_batch.json",
+      "expected": "invalid",
+      "contract_kind": "record"
+    },
+    {
+      "example_id": "valid_import_source_record",
+      "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/imports/import-source-record.schema.json",
+      "path": "valid/09-import_source_record.json",
+      "expected": "valid",
+      "contract_kind": "record"
+    },
+    {
+      "example_id": "structural_invalid_import_source_record",
+      "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/imports/import-source-record.schema.json",
+      "path": "structural_invalid/09-import_source_record.json",
+      "expected": "invalid",
+      "contract_kind": "record"
+    },
+    {
+      "example_id": "valid_import_proposal",
+      "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/imports/import-proposal.schema.json",
+      "path": "valid/10-import_proposal.json",
+      "expected": "valid",
+      "contract_kind": "record"
+    },
+    {
+      "example_id": "structural_invalid_import_proposal",
+      "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/imports/import-proposal.schema.json",
+      "path": "structural_invalid/10-import_proposal.json",
+      "expected": "invalid",
+      "contract_kind": "record"
+    },
+    {
+      "example_id": "valid_import_review",
+      "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/imports/import-review.schema.json",
+      "path": "valid/11-import_review.json",
+      "expected": "valid",
+      "contract_kind": "record"
+    },
+    {
+      "example_id": "structural_invalid_import_review",
+      "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/imports/import-review.schema.json",
+      "path": "structural_invalid/11-import_review.json",
+      "expected": "invalid",
+      "contract_kind": "record"
+    },
+    {
+      "example_id": "valid_import_materialization",
+      "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/imports/import-materialization.schema.json",
+      "path": "valid/12-import_materialization.json",
+      "expected": "valid",
+      "contract_kind": "record"
+    },
+    {
+      "example_id": "structural_invalid_import_materialization",
+      "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/imports/import-materialization.schema.json",
+      "path": "structural_invalid/12-import_materialization.json",
+      "expected": "invalid",
+      "contract_kind": "record"
+    },
+    {
+      "example_id": "valid_portia_capture_batch_id",
+      "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-capture-batch-id.schema.json",
+      "path": "valid/13-portia_capture_batch_id.json",
+      "expected": "valid",
+      "contract_kind": "identifier"
+    },
+    {
+      "example_id": "structural_invalid_portia_capture_batch_id",
+      "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-capture-batch-id.schema.json",
+      "path": "structural_invalid/13-portia_capture_batch_id.json",
+      "expected": "invalid",
+      "contract_kind": "identifier"
+    },
+    {
+      "example_id": "valid_portia_page_target_id",
+      "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-page-target-id.schema.json",
+      "path": "valid/14-portia_page_target_id.json",
+      "expected": "valid",
+      "contract_kind": "identifier"
+    },
+    {
+      "example_id": "structural_invalid_portia_page_target_id",
+      "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-page-target-id.schema.json",
+      "path": "structural_invalid/14-portia_page_target_id.json",
+      "expected": "invalid",
+      "contract_kind": "identifier"
+    },
+    {
+      "example_id": "valid_portia_page_record_id",
+      "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-page-record-id.schema.json",
+      "path": "valid/15-portia_page_record_id.json",
+      "expected": "valid",
+      "contract_kind": "identifier"
+    },
+    {
+      "example_id": "structural_invalid_portia_page_record_id",
+      "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-page-record-id.schema.json",
+      "path": "structural_invalid/15-portia_page_record_id.json",
+      "expected": "invalid",
+      "contract_kind": "identifier"
+    },
+    {
+      "example_id": "valid_portia_paper_interpretation_id",
+      "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-paper-interpretation-id.schema.json",
+      "path": "valid/16-portia_paper_interpretation_id.json",
+      "expected": "valid",
+      "contract_kind": "identifier"
+    },
+    {
+      "example_id": "structural_invalid_portia_paper_interpretation_id",
+      "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-paper-interpretation-id.schema.json",
+      "path": "structural_invalid/16-portia_paper_interpretation_id.json",
+      "expected": "invalid",
+      "contract_kind": "identifier"
+    },
+    {
+      "example_id": "valid_portia_capture_proposal_id",
+      "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-capture-proposal-id.schema.json",
+      "path": "valid/17-portia_capture_proposal_id.json",
+      "expected": "valid",
+      "contract_kind": "identifier"
+    },
+    {
+      "example_id": "structural_invalid_portia_capture_proposal_id",
+      "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-capture-proposal-id.schema.json",
+      "path": "structural_invalid/17-portia_capture_proposal_id.json",
+      "expected": "invalid",
+      "contract_kind": "identifier"
+    },
+    {
+      "example_id": "valid_portia_capture_review_id",
+      "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-capture-review-id.schema.json",
+      "path": "valid/18-portia_capture_review_id.json",
+      "expected": "valid",
+      "contract_kind": "identifier"
+    },
+    {
+      "example_id": "structural_invalid_portia_capture_review_id",
+      "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-capture-review-id.schema.json",
+      "path": "structural_invalid/18-portia_capture_review_id.json",
+      "expected": "invalid",
+      "contract_kind": "identifier"
+    },
+    {
+      "example_id": "valid_portia_import_batch_id",
+      "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-import-batch-id.schema.json",
+      "path": "valid/19-portia_import_batch_id.json",
+      "expected": "valid",
+      "contract_kind": "identifier"
+    },
+    {
+      "example_id": "structural_invalid_portia_import_batch_id",
+      "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-import-batch-id.schema.json",
+      "path": "structural_invalid/19-portia_import_batch_id.json",
+      "expected": "invalid",
+      "contract_kind": "identifier"
+    },
+    {
+      "example_id": "valid_portia_import_source_record_id",
+      "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-import-source-record-id.schema.json",
+      "path": "valid/20-portia_import_source_record_id.json",
+      "expected": "valid",
+      "contract_kind": "identifier"
+    },
+    {
+      "example_id": "structural_invalid_portia_import_source_record_id",
+      "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-import-source-record-id.schema.json",
+      "path": "structural_invalid/20-portia_import_source_record_id.json",
+      "expected": "invalid",
+      "contract_kind": "identifier"
+    },
+    {
+      "example_id": "valid_portia_import_proposal_id",
+      "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-import-proposal-id.schema.json",
+      "path": "valid/21-portia_import_proposal_id.json",
+      "expected": "valid",
+      "contract_kind": "identifier"
+    },
+    {
+      "example_id": "structural_invalid_portia_import_proposal_id",
+      "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-import-proposal-id.schema.json",
+      "path": "structural_invalid/21-portia_import_proposal_id.json",
+      "expected": "invalid",
+      "contract_kind": "identifier"
+    },
+    {
+      "example_id": "valid_portia_import_review_id",
+      "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-import-review-id.schema.json",
+      "path": "valid/22-portia_import_review_id.json",
+      "expected": "valid",
+      "contract_kind": "identifier"
+    },
+    {
+      "example_id": "structural_invalid_portia_import_review_id",
+      "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-import-review-id.schema.json",
+      "path": "structural_invalid/22-portia_import_review_id.json",
+      "expected": "invalid",
+      "contract_kind": "identifier"
+    },
+    {
+      "example_id": "scenario_existing_event_page_target",
+      "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/capture/page-target.schema.json",
+      "path": "valid_scenarios/01-existing_event_page_target.json",
+      "expected": "valid",
+      "contract_kind": "scenario"
+    },
+    {
+      "example_id": "scenario_multi_entry_page_target",
+      "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/capture/page-target.schema.json",
+      "path": "valid_scenarios/02-multi_entry_page_target.json",
+      "expected": "valid",
+      "contract_kind": "scenario"
+    },
+    {
+      "example_id": "scenario_ambiguous_paper_interpretation",
+      "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/capture/paper-interpretation.schema.json",
+      "path": "valid_scenarios/03-ambiguous_paper_interpretation.json",
+      "expected": "valid",
+      "contract_kind": "scenario"
+    },
+    {
+      "example_id": "scenario_corrected_capture_review",
+      "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/capture/capture-review.schema.json",
+      "path": "valid_scenarios/04-corrected_capture_review.json",
+      "expected": "valid",
+      "contract_kind": "scenario"
+    },
+    {
+      "example_id": "scenario_completed_import_batch",
+      "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/imports/import-batch.schema.json",
+      "path": "valid_scenarios/05-completed_import_batch.json",
+      "expected": "valid",
+      "contract_kind": "scenario"
+    },
+    {
+      "example_id": "scenario_profile_defined_import_source_key",
+      "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/imports/import-source-record.schema.json",
+      "path": "valid_scenarios/06-profile_defined_import_source_key.json",
+      "expected": "valid",
+      "contract_kind": "scenario"
+    },
+    {
+      "example_id": "scenario_import_account_existing_work_proposal",
+      "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/imports/import-proposal.schema.json",
+      "path": "valid_scenarios/07-import_account_existing_work_proposal.json",
+      "expected": "valid",
+      "contract_kind": "scenario"
+    },
+    {
+      "example_id": "scenario_corrected_import_review",
+      "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/imports/import-review.schema.json",
+      "path": "valid_scenarios/08-corrected_import_review.json",
+      "expected": "valid",
+      "contract_kind": "scenario"
+    }
+  ]
+}

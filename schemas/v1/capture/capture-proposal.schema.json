@@ -1,0 +1,337 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/capture/capture-proposal.schema.json",
+  "title": "Portia Capture Proposal",
+  "description": "Version-1 immutable noncanonical staging proposal derived from one exact Paper Interpretation entry. It maps exact interpretation fields toward one exact Portia target contract without copying candidate values, asserting truth, making human judgments, or creating/mutating canonical domain records.",
+  "$comment": "Application validation resolves the exact Page Record, Paper Interpretation generation, entry, field bindings, target contract, and optional exact existing context. The proposal is a reviewable mapping artifact only. Candidate literals remain authoritative staging content in Paper Interpretation; proposal bindings point to them instead of duplicating source text. Human review is required before any review-gated materialization.",
+  "x-portia-application-invariants": [
+    {
+      "id": "capture_proposal.lineage_exactness",
+      "description": "class_id/work_id/page_target_id/page_record_id and interpretation_ref must resolve to one exact capture lineage; proposal must not retarget a physical page, interpretation generation, or entry."
+    },
+    {
+      "id": "capture_proposal.entry_must_exist",
+      "description": "entry_key must exist in the exact Paper Interpretation and Page Target historical layout; scan order and array position cannot substitute for entry identity."
+    },
+    {
+      "id": "capture_proposal.mapped_kind_agreement",
+      "description": "target.record_kind must agree with the exact historical mapping profile and any mapped_record_kind emitted for the interpretation entry; software must not choose a different domain family from narrative meaning or mark content."
+    },
+    {
+      "id": "capture_proposal.target_contract_supported",
+      "description": "target.contract_version must be a supported exact Portia contract for target.record_kind; null/current/latest substitution is prohibited."
+    },
+    {
+      "id": "capture_proposal.context_exactness",
+      "description": "existing_work/existing_record context must resolve exactly and remain bound to the historical representation named at proposal time; successors are never followed silently."
+    },
+    {
+      "id": "capture_proposal.binding_source_valid",
+      "description": "Every field binding target_path must be valid for the exact target contract and each source field must exist in the exact interpretation entry. candidate_literal/normalized_value bindings require a detected candidate; human_resolution_required may reference ambiguous or unreadable source state but never converts blank/unmarked into negative domain facts."
+    },
+    {
+      "id": "capture_proposal.target_paths_unique",
+      "description": "One proposal must not bind the same logical target path more than once, even when JSON objects differ."
+    },
+    {
+      "id": "capture_proposal.no_candidate_value_duplication",
+      "description": "Proposal JSON stores references to interpretation fields, not copied candidate literals, OCR text, mark alternatives, or raw source bytes; review and materialization resolve the exact immutable interpretation generation."
+    },
+    {
+      "id": "capture_proposal.same_mapping_replay_idempotent",
+      "description": "Replaying the same interpretation entry through the same exact mapping to the same target contract must not create duplicate logical proposals or downstream canonical records."
+    },
+    {
+      "id": "capture_proposal.immutable",
+      "description": "Once persisted, lineage, target, context, bindings, flags, and provenance are immutable; a changed mapping or corrected staging decision creates a new proposal while preserving prior history."
+    },
+    {
+      "id": "capture_proposal.no_identity_or_judgment_inference",
+      "description": "Proposal generation must not fuzzy-match people, infer authorship/firsthand status, participation/fault, Classification/Hypothesis/Determination, Response/Support choice, Fidelity/Outcome, Reentry/Repair completion, remorse, forgiveness, or comparable human judgment."
+    },
+    {
+      "id": "capture_proposal.review_required_before_materialization",
+      "description": "A proposal is never sufficient authority to create, activate, complete, invalidate, supersede, or otherwise mutate a review-gated canonical Portia record."
+    },
+    {
+      "id": "capture_proposal.not_quarantine",
+      "description": "Ordinary uncertainty or review need belongs in proposal/review staging. Capture Proposal must not be treated as Quarantine or Integrity Finding state merely because confidence is low or review is unresolved."
+    }
+  ],
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "record_type",
+    "module_id",
+    "class_id",
+    "work_id",
+    "page_target_id",
+    "page_record_id",
+    "proposal_id",
+    "interpretation_ref",
+    "entry_key",
+    "target",
+    "field_bindings",
+    "review_flags",
+    "proposed_at",
+    "proposed_by",
+    "created_at",
+    "created_by"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1"
+    },
+    "record_type": {
+      "const": "capture_proposal"
+    },
+    "module_id": {
+      "const": "portia"
+    },
+    "class_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+    },
+    "work_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-capture-batch-id.schema.json"
+    },
+    "page_target_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-page-target-id.schema.json"
+    },
+    "page_record_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-page-record-id.schema.json"
+    },
+    "proposal_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-capture-proposal-id.schema.json"
+    },
+    "interpretation_ref": {
+      "$ref": "#/$defs/interpretationRef"
+    },
+    "entry_key": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/lowercase-token.schema.json"
+    },
+    "target": {
+      "$ref": "#/$defs/proposalTarget"
+    },
+    "field_bindings": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 128,
+      "items": {
+        "$ref": "#/$defs/fieldBinding"
+      },
+      "uniqueItems": true
+    },
+    "review_flags": {
+      "type": "array",
+      "maxItems": 32,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/lowercase-token.schema.json"
+      },
+      "description": "Privacy-minimized review-routing flags only. They are not domain findings, severity, credibility, or truth labels."
+    },
+    "proposed_at": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+    },
+    "proposed_by": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/attribution/attribution-agent.schema.json"
+    },
+    "created_at": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+    },
+    "created_by": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/attribution/attribution-agent.schema.json"
+    }
+  },
+  "$defs": {
+    "interpretationRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "contract_version",
+        "interpretation_id",
+        "generation"
+      ],
+      "properties": {
+        "contract_version": {
+          "const": "1"
+        },
+        "interpretation_id": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-paper-interpretation-id.schema.json"
+        },
+        "generation": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "proposalTarget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "record_kind",
+        "contract_version",
+        "context"
+      ],
+      "properties": {
+        "record_kind": {
+          "$ref": "#/$defs/mappedRecordKind"
+        },
+        "contract_version": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+        },
+        "context": {
+          "$ref": "#/$defs/targetContext"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "context": {
+                "properties": {
+                  "kind": {
+                    "const": "new_work"
+                  }
+                },
+                "required": [
+                  "kind"
+                ]
+              }
+            },
+            "required": [
+              "context"
+            ]
+          },
+          "then": {
+            "properties": {
+              "record_kind": {
+                "enum": [
+                  "event",
+                  "support_process"
+                ]
+              }
+            }
+          }
+        }
+      ]
+    },
+    "targetContext": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ],
+          "properties": {
+            "kind": {
+              "const": "new_work"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "work_ref"
+          ],
+          "properties": {
+            "kind": {
+              "const": "existing_work"
+            },
+            "work_ref": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-portia-work-ref.schema.json"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "work_record_ref"
+          ],
+          "properties": {
+            "kind": {
+              "const": "existing_record"
+            },
+            "work_record_ref": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-portia-work-record-ref.schema.json"
+            }
+          }
+        }
+      ]
+    },
+    "fieldBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "target_path",
+        "source_field"
+      ],
+      "properties": {
+        "target_path": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512,
+          "pattern": "^/",
+          "description": "Target-contract JSON Pointer-like path. Application validation must require a valid exact path under target.record_kind + contract_version."
+        },
+        "source_field": {
+          "$ref": "#/$defs/sourceField"
+        }
+      }
+    },
+    "sourceField": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "field_key",
+        "value_source"
+      ],
+      "properties": {
+        "field_key": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/lowercase-token.schema.json"
+        },
+        "value_source": {
+          "enum": [
+            "candidate_literal",
+            "normalized_value",
+            "human_resolution_required"
+          ],
+          "description": "Selects which exact interpretation staging form a later reviewer/materializer must inspect. human_resolution_required does not itself supply a domain value."
+        }
+      }
+    },
+    "mappedRecordKind": {
+      "enum": [
+        "event",
+        "event_participant",
+        "event_participant_role",
+        "account",
+        "observation",
+        "review",
+        "classification",
+        "hypothesis",
+        "determination",
+        "response",
+        "communication",
+        "support_process",
+        "support_process_participant",
+        "support_need",
+        "support_goal",
+        "support",
+        "intervention",
+        "implementation",
+        "fidelity",
+        "follow_up",
+        "outcome",
+        "reentry",
+        "repair"
+      ]
+    }
+  }
+}

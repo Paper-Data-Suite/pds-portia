@@ -1,0 +1,43 @@
+{
+  "schema_version": "1",
+  "record_type": "import_source_record",
+  "module_id": "portia",
+  "class_id": "class_english10_p2",
+  "import_batch_id": "ibat_attempt_01",
+  "source_record_id": "isrc_observation_01",
+  "source_record_key_origin": "source_provided",
+  "source_record_key": "SRC-000042",
+  "source_record_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "source_record_identity_digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+  "source_fields": [
+    {
+      "field_key": "student_external_id",
+      "value": "S-1042"
+    },
+    {
+      "field_key": "source_label",
+      "value": "office referral"
+    },
+    {
+      "field_key": "points",
+      "value": 2
+    },
+    {
+      "field_key": "tags",
+      "value": [
+        "late",
+        "hallway"
+      ]
+    },
+    {
+      "field_key": "optional_note",
+      "value": null
+    }
+  ],
+  "observed_at": "2026-08-14T11:40:00-04:00",
+  "created_at": "2026-08-14T11:40:00-04:00",
+  "created_by": {
+    "type": "system_process",
+    "process_id": "structured_import_test"
+  }
+}

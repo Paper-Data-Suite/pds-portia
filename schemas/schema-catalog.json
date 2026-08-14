@@ -864,6 +864,138 @@
         "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/repairs/repair.schema.json",
         "path": "schemas/v1/repairs/repair.schema.json"
       }
+    },
+    "capture_batch": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/capture/capture-batch.schema.json",
+        "path": "schemas/v1/capture/capture-batch.schema.json"
+      }
+    },
+    "page_target": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/capture/page-target.schema.json",
+        "path": "schemas/v1/capture/page-target.schema.json"
+      }
+    },
+    "page_record": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/capture/page-record.schema.json",
+        "path": "schemas/v1/capture/page-record.schema.json"
+      }
+    },
+    "portia_capture_batch_id": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-capture-batch-id.schema.json",
+        "path": "schemas/v1/identifiers/portia-capture-batch-id.schema.json"
+      }
+    },
+    "portia_page_target_id": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-page-target-id.schema.json",
+        "path": "schemas/v1/identifiers/portia-page-target-id.schema.json"
+      }
+    },
+    "portia_page_record_id": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-page-record-id.schema.json",
+        "path": "schemas/v1/identifiers/portia-page-record-id.schema.json"
+      }
+    },
+    "paper_interpretation": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/capture/paper-interpretation.schema.json",
+        "path": "schemas/v1/capture/paper-interpretation.schema.json"
+      }
+    },
+    "portia_paper_interpretation_id": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-paper-interpretation-id.schema.json",
+        "path": "schemas/v1/identifiers/portia-paper-interpretation-id.schema.json"
+      }
+    },
+    "capture_proposal": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/capture/capture-proposal.schema.json",
+        "path": "schemas/v1/capture/capture-proposal.schema.json"
+      }
+    },
+    "capture_review": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/capture/capture-review.schema.json",
+        "path": "schemas/v1/capture/capture-review.schema.json"
+      }
+    },
+    "portia_capture_proposal_id": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-capture-proposal-id.schema.json",
+        "path": "schemas/v1/identifiers/portia-capture-proposal-id.schema.json"
+      }
+    },
+    "portia_capture_review_id": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-capture-review-id.schema.json",
+        "path": "schemas/v1/identifiers/portia-capture-review-id.schema.json"
+      }
+    },
+    "capture_materialization": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/capture/capture-materialization.schema.json",
+        "path": "schemas/v1/capture/capture-materialization.schema.json"
+      }
+    },
+    "import_batch": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/imports/import-batch.schema.json",
+        "path": "schemas/v1/imports/import-batch.schema.json"
+      }
+    },
+    "import_source_record": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/imports/import-source-record.schema.json",
+        "path": "schemas/v1/imports/import-source-record.schema.json"
+      }
+    },
+    "portia_import_batch_id": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-import-batch-id.schema.json",
+        "path": "schemas/v1/identifiers/portia-import-batch-id.schema.json"
+      }
+    },
+    "portia_import_source_record_id": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-import-source-record-id.schema.json",
+        "path": "schemas/v1/identifiers/portia-import-source-record-id.schema.json"
+      }
+    },
+    "import_proposal": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/imports/import-proposal.schema.json",
+        "path": "schemas/v1/imports/import-proposal.schema.json"
+      }
+    },
+    "import_review": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/imports/import-review.schema.json",
+        "path": "schemas/v1/imports/import-review.schema.json"
+      }
+    },
+    "portia_import_proposal_id": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-import-proposal-id.schema.json",
+        "path": "schemas/v1/identifiers/portia-import-proposal-id.schema.json"
+      }
+    },
+    "portia_import_review_id": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-import-review-id.schema.json",
+        "path": "schemas/v1/identifiers/portia-import-review-id.schema.json"
+      }
+    },
+    "import_materialization": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/imports/import-materialization.schema.json",
+        "path": "schemas/v1/imports/import-materialization.schema.json"
+      }
     }
   }
 }

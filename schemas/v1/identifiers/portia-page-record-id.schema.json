@@ -1,0 +1,10 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-page-record-id.schema.json",
+  "title": "Portia Page Record Identifier",
+  "description": "Opaque workspace-scoped identifier for one durable Portia returned-page processing record. The prec_ prefix is part of the public contract. The identifier does not encode Core route identity, retained-source identity, source page number, processing result, or a canonical behavior-domain record.",
+  "type": "string",
+  "minLength": 6,
+  "maxLength": 128,
+  "pattern": "^prec_[A-Za-z0-9][A-Za-z0-9_-]*$"
+}

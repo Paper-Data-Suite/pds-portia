@@ -1,0 +1,26 @@
+{
+  "schema_version": "1",
+  "record_type": "capture_page_record",
+  "module_id": "portia",
+  "class_id": "class_english10_p2",
+  "work_id": "cbat_batch_01",
+  "page_target_id": "ptgt_page_01",
+  "page_record_id": "prec_returned_01",
+  "route_id": "route_portia_capture_01",
+  "source_ref": {
+    "source_scan_id": "scan_portia_capture_01",
+    "source_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "source_page_number": 1
+  },
+  "processing_state": "received",
+  "created_at": "2026-08-13T16:00:00-04:00",
+  "created_by": {
+    "type": "system_process",
+    "process_id": "paper_capture_test"
+  },
+  "updated_at": "2026-08-13T16:00:00-04:00",
+  "updated_by": {
+    "type": "system_process",
+    "process_id": "paper_capture_test"
+  }
+}
