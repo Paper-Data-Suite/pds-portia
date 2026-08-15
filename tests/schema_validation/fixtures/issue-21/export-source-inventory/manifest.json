@@ -1,0 +1,18 @@
+{
+  "manifest_version": "1",
+  "issue": 21,
+  "contract": "export_source_inventory",
+  "version": "1",
+  "valid": [
+    "administrative-inventory.json",
+    "student-facing-inventory.json"
+  ],
+  "invalid": [
+    "missing-inventory-digest.json",
+    "null-foreign-contract-version.json"
+  ],
+  "application_invalid": [
+    "digest-mismatch.json",
+    "nondeterministic-order.json"
+  ]
+}

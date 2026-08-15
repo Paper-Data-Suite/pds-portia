@@ -1,0 +1,19 @@
+{
+  "scenario_id": "P21-17",
+  "title": "Coherent supersession history eligible for routine disposition",
+  "category": "retention",
+  "source_facts": [
+    "Predecessor/successor/correction unit is complete.",
+    "External policy and authorization cover the whole unit.",
+    "No hold or recovery blocker exists."
+  ],
+  "expected": {
+    "result": "authorized_for_module_action_candidate",
+    "must": [
+      "evaluate_coherent_history_unit"
+    ],
+    "must_not": [
+      "use_exceptional_removal_merely_for_expiry"
+    ]
+  }
+}

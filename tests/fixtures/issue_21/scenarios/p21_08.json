@@ -1,0 +1,18 @@
+{
+  "scenario_id": "P21-08",
+  "title": "Free text cannot be safely mechanically redacted",
+  "category": "redaction",
+  "source_facts": [
+    "Account quote contains third-party facts essential to proposition."
+  ],
+  "expected": {
+    "result": "requires_manual_review",
+    "must": [
+      "preserve_quote_vs_summary_semantics"
+    ],
+    "must_not": [
+      "splice_words",
+      "auto_paraphrase"
+    ]
+  }
+}

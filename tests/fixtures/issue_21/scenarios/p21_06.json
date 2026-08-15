@@ -1,0 +1,18 @@
+{
+  "scenario_id": "P21-06",
+  "title": "Restricted Communication",
+  "category": "redaction",
+  "source_facts": [
+    "Communication privacy_scope is restricted.",
+    "Requested purpose is family_facing."
+  ],
+  "expected": {
+    "result": "withheld_or_manual_review",
+    "must": [
+      "fail_closed"
+    ],
+    "must_not": [
+      "treat_privacy_scope_as_authorization"
+    ]
+  }
+}

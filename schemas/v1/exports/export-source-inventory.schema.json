@@ -1,0 +1,226 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/exports/export-source-inventory.schema.json",
+  "title": "Portia Export Source Inventory",
+  "description": "Privacy-minimized deterministic inventory of exact source representations that materially contributed to one accepted Portia deliberate export. It inventories included/projected source representations, not every withheld or unavailable record considered by privacy evaluation. It is distinct from source_snapshot@1, which is a filesystem/discovery inventory for rebuildable derived projections.",
+  "$comment": "Application validation must verify exact source resolution, exact representation digests and byte lengths, deterministic ordering, unique semantic source identity, non-null foreign contract versions, role/source compatibility, canonical digest recomputation, authorization to read each source representation, and no silent successor following.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "record_type",
+    "module_id",
+    "inventory_algorithm",
+    "entries",
+    "inventory_digest"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1"
+    },
+    "record_type": {
+      "const": "export_source_inventory"
+    },
+    "module_id": {
+      "const": "portia"
+    },
+    "inventory_algorithm": {
+      "const": "portia_export_source_inventory_v1"
+    },
+    "entries": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 10000,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/sourceEntry"
+      }
+    },
+    "inventory_digest": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/sha256-digest.schema.json"
+    }
+  },
+  "$defs": {
+    "sourceRole": {
+      "enum": [
+        "projected_domain",
+        "projection_context",
+        "correction_context",
+        "disagreement_context",
+        "included_artifact",
+        "foreign_projection"
+      ]
+    },
+    "digest": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/sha256-digest.schema.json"
+    },
+    "length": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "portiaWorkSource": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_kind",
+        "source_role",
+        "work_ref",
+        "representation_digest",
+        "byte_length"
+      ],
+      "properties": {
+        "source_kind": {
+          "const": "portia_work"
+        },
+        "source_role": {
+          "$ref": "#/$defs/sourceRole"
+        },
+        "work_ref": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-portia-work-ref.schema.json"
+        },
+        "representation_digest": {
+          "$ref": "#/$defs/digest"
+        },
+        "byte_length": {
+          "$ref": "#/$defs/length"
+        }
+      }
+    },
+    "portiaRecordSource": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_kind",
+        "source_role",
+        "work_record_ref",
+        "representation_digest",
+        "byte_length"
+      ],
+      "properties": {
+        "source_kind": {
+          "const": "portia_record"
+        },
+        "source_role": {
+          "$ref": "#/$defs/sourceRole"
+        },
+        "work_record_ref": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-portia-work-record-ref.schema.json"
+        },
+        "representation_digest": {
+          "$ref": "#/$defs/digest"
+        },
+        "byte_length": {
+          "$ref": "#/$defs/length"
+        }
+      }
+    },
+    "moduleRecordSource": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_kind",
+        "source_role",
+        "module_work_record_ref",
+        "representation_digest",
+        "byte_length"
+      ],
+      "properties": {
+        "source_kind": {
+          "const": "module_record"
+        },
+        "source_role": {
+          "$ref": "#/$defs/sourceRole"
+        },
+        "module_work_record_ref": {
+          "allOf": [
+            {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/module-work-record-ref.schema.json"
+            },
+            {
+              "type": "object",
+              "required": [
+                "record_ref"
+              ],
+              "properties": {
+                "record_ref": {
+                  "type": "object",
+                  "required": [
+                    "contract_version"
+                  ],
+                  "properties": {
+                    "contract_version": {
+                      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "representation_digest": {
+          "$ref": "#/$defs/digest"
+        },
+        "byte_length": {
+          "$ref": "#/$defs/length"
+        }
+      }
+    },
+    "artifactSource": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_kind",
+        "source_role",
+        "artifact_ref",
+        "representation_digest",
+        "byte_length"
+      ],
+      "properties": {
+        "source_kind": {
+          "const": "source_artifact"
+        },
+        "source_role": {
+          "const": "included_artifact"
+        },
+        "artifact_ref": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/provenance/source-artifact-ref.schema.json"
+        },
+        "representation_digest": {
+          "$ref": "#/$defs/digest"
+        },
+        "byte_length": {
+          "$ref": "#/$defs/length"
+        }
+      }
+    },
+    "sourceEntry": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/portiaWorkSource"
+        },
+        {
+          "$ref": "#/$defs/portiaRecordSource"
+        },
+        {
+          "$ref": "#/$defs/moduleRecordSource"
+        },
+        {
+          "$ref": "#/$defs/artifactSource"
+        }
+      ]
+    }
+  },
+  "x-portia-application-invariants": [
+    "portia.export_source_inventory.exact_source_resolution",
+    "portia.export_source_inventory.representation_digest_verification",
+    "portia.export_source_inventory.byte_length_verification",
+    "portia.export_source_inventory.deterministic_entry_order",
+    "portia.export_source_inventory.semantic_source_identity_unique",
+    "portia.export_source_inventory.foreign_contract_version_non_null",
+    "portia.export_source_inventory.source_role_compatible",
+    "portia.export_source_inventory.inventory_digest_recomputed",
+    "portia.export_source_inventory.source_read_authorized",
+    "portia.export_source_inventory.no_silent_successor_following",
+    "portia.export_source_inventory.includes_contributing_sources_only"
+  ]
+}

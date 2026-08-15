@@ -1,0 +1,19 @@
+{
+  "scenario_id": "P21-14",
+  "title": "Deletion request unresolved",
+  "category": "retention",
+  "source_facts": [
+    "User asks for destruction.",
+    "No authoritative entitlement or disposition decision is supplied."
+  ],
+  "expected": {
+    "result": "needs_policy_review",
+    "must": [
+      "block_destructive_action"
+    ],
+    "must_not": [
+      "invoke_exceptional_removal",
+      "invoke_routine_delete"
+    ]
+  }
+}

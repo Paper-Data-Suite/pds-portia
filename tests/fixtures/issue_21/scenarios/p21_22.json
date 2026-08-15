@@ -1,0 +1,18 @@
+{
+  "scenario_id": "P21-22",
+  "title": "Sunset candidate becomes stale",
+  "category": "sunset",
+  "source_facts": [
+    "Dry-run candidate was validated.",
+    "Correction graph changes before execution."
+  ],
+  "expected": {
+    "result": "stale_candidate",
+    "must": [
+      "revalidate_and_replan"
+    ],
+    "must_not": [
+      "execute_stale_candidate"
+    ]
+  }
+}

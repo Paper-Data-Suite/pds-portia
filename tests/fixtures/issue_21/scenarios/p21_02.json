@@ -1,0 +1,20 @@
+{
+  "scenario_id": "P21-02",
+  "title": "Three-participant student-facing projection",
+  "category": "redaction",
+  "source_facts": [
+    "Event has focal Student A and unrelated Students B and C.",
+    "Native participant records contain stable IDs and display snapshots."
+  ],
+  "expected": {
+    "result": "focal_projection",
+    "must": [
+      "include_focal_identity_conditionally",
+      "withhold_unrelated_identity_and_native_ids"
+    ],
+    "must_not": [
+      "expose_hidden_participant_count_by_default",
+      "false_singularization"
+    ]
+  }
+}

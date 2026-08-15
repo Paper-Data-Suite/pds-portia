@@ -1,0 +1,61 @@
+{
+  "schema_version": "1",
+  "record_type": "export_source_inventory",
+  "module_id": "portia",
+  "inventory_algorithm": "portia_export_source_inventory_v1",
+  "entries": [
+    {
+      "source_kind": "portia_record",
+      "source_role": "disagreement_context",
+      "work_record_ref": {
+        "work_ref": {
+          "module_id": "portia",
+          "class_id": "class_english10_p2",
+          "work_id": "evt_demo",
+          "work_kind": "event",
+          "contract_version": "2"
+        },
+        "record_ref": {
+          "record_kind": "statement_of_disagreement",
+          "record_id": "sdis_demo_a",
+          "contract_version": "1"
+        }
+      },
+      "representation_digest": "3333333333333333333333333333333333333333333333333333333333333333",
+      "byte_length": 742
+    },
+    {
+      "source_kind": "portia_record",
+      "source_role": "projected_domain",
+      "work_record_ref": {
+        "work_ref": {
+          "module_id": "portia",
+          "class_id": "class_english10_p2",
+          "work_id": "evt_demo",
+          "work_kind": "event",
+          "contract_version": "2"
+        },
+        "record_ref": {
+          "record_kind": "account",
+          "record_id": "acct_demo_a",
+          "contract_version": "1"
+        }
+      },
+      "representation_digest": "2222222222222222222222222222222222222222222222222222222222222222",
+      "byte_length": 1260
+    },
+    {
+      "source_kind": "portia_work",
+      "source_role": "projection_context",
+      "work_ref": {
+        "module_id": "portia",
+        "class_id": "class_english10_p2",
+        "work_id": "evt_demo",
+        "work_kind": "event",
+        "contract_version": "2"
+      },
+      "representation_digest": "1111111111111111111111111111111111111111111111111111111111111111",
+      "byte_length": 980
+    }
+  ]
+}

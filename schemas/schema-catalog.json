@@ -996,6 +996,24 @@
         "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/imports/import-materialization.schema.json",
         "path": "schemas/v1/imports/import-materialization.schema.json"
       }
+    },
+    "portia_deliberate_export_id": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-deliberate-export-id.schema.json",
+        "path": "schemas/v1/identifiers/portia-deliberate-export-id.schema.json"
+      }
+    },
+    "export_source_inventory": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/exports/export-source-inventory.schema.json",
+        "path": "schemas/v1/exports/export-source-inventory.schema.json"
+      }
+    },
+    "deliberate_export": {
+      "1": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/exports/deliberate-export.schema.json",
+        "path": "schemas/v1/exports/deliberate-export.schema.json"
+      }
     }
   }
 }

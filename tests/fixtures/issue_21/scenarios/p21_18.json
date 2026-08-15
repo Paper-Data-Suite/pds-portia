@@ -1,0 +1,18 @@
+{
+  "scenario_id": "P21-18",
+  "title": "Derived cache deletion with canonical source retained",
+  "category": "retention",
+  "source_facts": [
+    "Derived dashboard cache is rebuildable.",
+    "Canonical source remains retained."
+  ],
+  "expected": {
+    "result": "delete_derived_cache_candidate",
+    "must": [
+      "preserve_canonical_source"
+    ],
+    "must_not": [
+      "infer_canonical_absence"
+    ]
+  }
+}

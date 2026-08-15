@@ -1,0 +1,20 @@
+{
+  "scenario_id": "P21-21",
+  "title": "Future Sunset dry-run",
+  "category": "sunset",
+  "source_facts": [
+    "External policy is supplied.",
+    "Portia adapter can enumerate semantic custody."
+  ],
+  "expected": {
+    "result": "non_destructive_plan",
+    "must": [
+      "enumerate_semantic_candidates",
+      "surface_blockers_and_foreign_custody"
+    ],
+    "must_not": [
+      "mutate_during_planning",
+      "delete_by_path_age"
+    ]
+  }
+}

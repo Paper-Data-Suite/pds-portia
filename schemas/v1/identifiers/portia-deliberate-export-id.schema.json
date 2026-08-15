@@ -1,0 +1,10 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-deliberate-export-id.schema.json",
+  "title": "Portia Deliberate Export Identifier",
+  "description": "Opaque identifier for one immutable Portia deliberate-export provenance record. The pexp_ prefix is part of the public identifier contract. The value does not encode student/person identity, class, work, projection purpose, format, policy, authorization, date, digest, path, or disclosure outcome.",
+  "type": "string",
+  "minLength": 6,
+  "maxLength": 128,
+  "pattern": "^pexp_[A-Za-z0-9][A-Za-z0-9_-]*$"
+}

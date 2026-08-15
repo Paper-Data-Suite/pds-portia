@@ -1,0 +1,19 @@
+{
+  "scenario_id": "P21-19",
+  "title": "Stale derived cache after authorized source disposition",
+  "category": "retention",
+  "source_facts": [
+    "Canonical source disposition is validly committed.",
+    "Old projection cache still contains substantive content."
+  ],
+  "expected": {
+    "result": "cleanup_required",
+    "must": [
+      "remove_or_rebuild_stale_cache",
+      "prevent_resurrection"
+    ],
+    "must_not": [
+      "restore_source_from_cache"
+    ]
+  }
+}

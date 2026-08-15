@@ -1,0 +1,41 @@
+{
+  "schema_version": "1",
+  "record_type": "export_source_inventory",
+  "module_id": "portia",
+  "inventory_algorithm": "portia_export_source_inventory_v1",
+  "entries": [
+    {
+      "source_kind": "module_record",
+      "source_role": "foreign_projection",
+      "module_work_record_ref": {
+        "work_ref": {
+          "module_id": "meridian",
+          "class_id": "class_english10_p2",
+          "work_id": "gradebook_demo"
+        },
+        "record_ref": {
+          "module_id": "meridian",
+          "record_kind": "report_projection",
+          "record_id": "report_demo_01",
+          "contract_version": null
+        }
+      },
+      "representation_digest": "8888888888888888888888888888888888888888888888888888888888888888",
+      "byte_length": 512
+    },
+    {
+      "source_kind": "portia_work",
+      "source_role": "projection_context",
+      "work_ref": {
+        "module_id": "portia",
+        "class_id": "class_english10_p2",
+        "work_id": "evt_demo",
+        "work_kind": "event",
+        "contract_version": "2"
+      },
+      "representation_digest": "1111111111111111111111111111111111111111111111111111111111111111",
+      "byte_length": 980
+    }
+  ],
+  "inventory_digest": "b2433ce6ae701b8b69d0b3197795013e0962910d77788795844c0cb9a1d9db4e"
+}

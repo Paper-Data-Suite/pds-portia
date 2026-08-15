@@ -1,0 +1,21 @@
+{
+  "scenario_id": "P21-23",
+  "title": "Partial cross-module disposition",
+  "category": "sunset",
+  "source_facts": [
+    "Portia local action commits.",
+    "Required Core action is blocked.",
+    "Vitrine holds separate immutable prior copy."
+  ],
+  "expected": {
+    "result": "partially_completed_or_unresolved",
+    "must": [
+      "preserve_per_module_results",
+      "keep_vitrine_separate"
+    ],
+    "must_not": [
+      "report_global_completion",
+      "resurrect_portia_content_for_rollback"
+    ]
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "scenario_id": "P21-03",
+  "title": "Third-party Account about focal student",
+  "category": "redaction",
+  "source_facts": [
+    "Account targets Student A.",
+    "Account source is Student B.",
+    "Account contains substantive recorded summary."
+  ],
+  "expected": {
+    "result": "requires_manual_review",
+    "must": [
+      "withhold_third_party_source_identity",
+      "review_complete_content_segment"
+    ],
+    "must_not": [
+      "auto_paraphrase",
+      "expose_source_artifact"
+    ]
+  }
+}

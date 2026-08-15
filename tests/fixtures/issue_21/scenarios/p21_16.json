@@ -1,0 +1,18 @@
+{
+  "scenario_id": "P21-16",
+  "title": "Disagreement dependency retained with contested record",
+  "category": "retention",
+  "source_facts": [
+    "Contested target will remain.",
+    "Applicable policy requires associated Statement of Disagreement."
+  ],
+  "expected": {
+    "result": "must_preserve_together",
+    "must": [
+      "retain_required_disagreement_association"
+    ],
+    "must_not": [
+      "dispose_disagreement_alone"
+    ]
+  }
+}

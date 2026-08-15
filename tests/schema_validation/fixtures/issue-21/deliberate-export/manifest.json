@@ -1,0 +1,19 @@
+{
+  "manifest_version": "1",
+  "issue": 21,
+  "contract": "deliberate_export",
+  "version": "1",
+  "valid": [
+    "administrative-csv.json",
+    "student-facing-pdf.json"
+  ],
+  "invalid": [
+    "missing-output-digest.json",
+    "unresolved-manual-review.json"
+  ],
+  "application_invalid": [
+    "generation-before-request.json",
+    "path-not-export-scoped.json",
+    "review-digest-mismatch.json"
+  ]
+}
