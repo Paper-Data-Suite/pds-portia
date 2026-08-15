@@ -16,6 +16,7 @@
     "projection_policy",
     "authorization",
     "source_inventory",
+    "projection_decision_algorithm",
     "projection_decision_digest",
     "disposition_summary",
     "manual_review",
@@ -53,7 +54,7 @@
       "$ref": "#/$defs/exportScope"
     },
     "focal_subject_ref": {
-      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-portia-work-record-ref.schema.json"
+      "$ref": "#/$defs/focalSubjectRef"
     },
     "projection_policy": {
       "$ref": "#/$defs/projectionPolicy"
@@ -99,6 +100,9 @@
       "items": {
         "$ref": "#/$defs/supersessionEntry"
       }
+    },
+    "projection_decision_algorithm": {
+      "const": "portia_projection_decision_v1"
     }
   },
   "$defs": {
@@ -175,7 +179,10 @@
           "additionalProperties": false,
           "required": [
             "scope",
-            "scope_id"
+            "scope_id",
+            "scope_version",
+            "scope_algorithm",
+            "scope_digest"
           ],
           "properties": {
             "scope": {
@@ -183,6 +190,15 @@
             },
             "scope_id": {
               "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+            },
+            "scope_version": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+            },
+            "scope_algorithm": {
+              "const": "portia_export_scope_set_v1"
+            },
+            "scope_digest": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/sha256-digest.schema.json"
             }
           }
         }
@@ -526,6 +542,86 @@
           }
         }
       ]
+    },
+    "focalSubjectRef": {
+      "oneOf": [
+        {
+          "allOf": [
+            {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-portia-work-record-ref.schema.json"
+            },
+            {
+              "type": "object",
+              "required": [
+                "work_ref",
+                "record_ref"
+              ],
+              "properties": {
+                "work_ref": {
+                  "type": "object",
+                  "required": [
+                    "work_kind"
+                  ],
+                  "properties": {
+                    "work_kind": {
+                      "const": "event"
+                    }
+                  }
+                },
+                "record_ref": {
+                  "type": "object",
+                  "required": [
+                    "record_kind"
+                  ],
+                  "properties": {
+                    "record_kind": {
+                      "const": "event_participant"
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "allOf": [
+            {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-portia-work-record-ref.schema.json"
+            },
+            {
+              "type": "object",
+              "required": [
+                "work_ref",
+                "record_ref"
+              ],
+              "properties": {
+                "work_ref": {
+                  "type": "object",
+                  "required": [
+                    "work_kind"
+                  ],
+                  "properties": {
+                    "work_kind": {
+                      "const": "support_process"
+                    }
+                  }
+                },
+                "record_ref": {
+                  "type": "object",
+                  "required": [
+                    "record_kind"
+                  ],
+                  "properties": {
+                    "record_kind": {
+                      "const": "support_process_participant"
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
     }
   },
   "x-portia-application-invariants": [
@@ -554,6 +650,46 @@
     "portia.deliberate_export.supersession_cycle",
     "portia.deliberate_export.historical_export_immutable",
     "portia.deliberate_export.generation_not_disclosure",
-    "portia.deliberate_export.no_raw_private_record_passthrough"
+    "portia.deliberate_export.no_raw_private_record_passthrough",
+    "portia.deliberate_export.focal_purposes_require_work_scope",
+    "portia.deliberate_export.focal_subject_kind_alignment",
+    "portia.deliberate_export.explicit_source_set_identity_exact",
+    "portia.deliberate_export.projection_decision_algorithm_supported"
+  ],
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "projection_purpose": {
+            "enum": [
+              "participant_specific",
+              "student_facing",
+              "family_facing"
+            ]
+          }
+        },
+        "required": [
+          "projection_purpose"
+        ]
+      },
+      "then": {
+        "required": [
+          "focal_subject_ref"
+        ],
+        "properties": {
+          "export_scope": {
+            "type": "object",
+            "required": [
+              "scope"
+            ],
+            "properties": {
+              "scope": {
+                "const": "work"
+              }
+            }
+          }
+        }
+      }
+    }
   ]
 }

@@ -5,14 +5,8 @@
   "export_id": "pexp_student_demo_01",
   "projection_purpose": "student_facing",
   "export_scope": {
-    "scope": "work",
-    "work_ref": {
-      "module_id": "portia",
-      "class_id": "class_english10_p2",
-      "work_id": "evt_demo",
-      "work_kind": "event",
-      "contract_version": "2"
-    }
+    "scope": "class",
+    "class_id": "class_english10_p2"
   },
   "focal_subject_ref": {
     "work_ref": {
@@ -143,7 +137,7 @@
     "type": "local_operator",
     "display_label": "Teacher"
   },
-  "generated_at": "2026-08-14T18:58:00-04:00",
+  "generated_at": "2026-08-14T19:03:00-04:00",
   "generated_by": {
     "type": "system_process",
     "process_id": "privacy_export"

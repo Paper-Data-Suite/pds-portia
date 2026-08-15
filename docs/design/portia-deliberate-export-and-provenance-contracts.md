@@ -308,3 +308,78 @@ source_artifact_ref@1
 workspace_relative_path@1
 sha256_digest@1
 ```
+
+## Post-review reconciliation
+
+The post-implementation targeted review tightened four v1 details before merge.
+
+### Privacy-minimal source-artifact identity
+
+A raw source-artifact locator is not persisted in `export_source_inventory@1`.
+
+For `source_kind = source_artifact`, export provenance stores:
+
+```text
+artifact_kind
+artifact_identity_algorithm = portia_source_artifact_identity_v1
+artifact_identity_digest
+representation_digest
+byte_length
+```
+
+The artifact identity digest binds the exact canonical `source_artifact_ref@1`
+used by the restricted projection/operation workflow without copying workspace
+paths, external references, route locators, labels, or possible capability
+tokens into durable export provenance.
+
+### Focal deliberate exports are work-scoped in v1
+
+These purposes:
+
+```text
+participant_specific
+student_facing
+family_facing
+```
+
+require:
+
+```text
+export_scope.scope = work
+focal_subject_ref
+```
+
+The focal subject is structurally restricted to:
+
+```text
+Event -> event_participant
+Support Process -> support_process_participant
+```
+
+Class/workspace focal exports are deferred until an accepted stable cross-work
+focal identity contract exists.
+
+### Exact explicit source-set identity
+
+`explicit_source_set` now binds:
+
+```text
+scope_id
+scope_version
+scope_algorithm = portia_export_scope_set_v1
+scope_digest
+```
+
+so the source-set definition cannot silently drift after export.
+
+### Versioned projection-decision digest
+
+Every deliberate export now binds:
+
+```text
+projection_decision_algorithm = portia_projection_decision_v1
+projection_decision_digest
+```
+
+An incompatible decision-manifest/canonicalization change requires a new
+algorithm identifier.

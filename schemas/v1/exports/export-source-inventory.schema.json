@@ -171,7 +171,9 @@
       "required": [
         "source_kind",
         "source_role",
-        "artifact_ref",
+        "artifact_kind",
+        "artifact_identity_algorithm",
+        "artifact_identity_digest",
         "representation_digest",
         "byte_length"
       ],
@@ -182,8 +184,20 @@
         "source_role": {
           "const": "included_artifact"
         },
-        "artifact_ref": {
-          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/provenance/source-artifact-ref.schema.json"
+        "artifact_kind": {
+          "enum": [
+            "paper_capture",
+            "workspace_file",
+            "portia_work_record",
+            "module_work_record",
+            "external_record"
+          ]
+        },
+        "artifact_identity_algorithm": {
+          "const": "portia_source_artifact_identity_v1"
+        },
+        "artifact_identity_digest": {
+          "$ref": "#/$defs/digest"
         },
         "representation_digest": {
           "$ref": "#/$defs/digest"
@@ -221,6 +235,8 @@
     "portia.export_source_inventory.inventory_digest_recomputed",
     "portia.export_source_inventory.source_read_authorized",
     "portia.export_source_inventory.no_silent_successor_following",
-    "portia.export_source_inventory.includes_contributing_sources_only"
+    "portia.export_source_inventory.includes_contributing_sources_only",
+    "portia.export_source_inventory.artifact_identity_digest_verified",
+    "portia.export_source_inventory.artifact_locator_not_persisted"
   ]
 }

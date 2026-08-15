@@ -141,5 +141,6 @@
   "generated_by": {
     "type": "system_process",
     "process_id": "privacy_export"
-  }
+  },
+  "projection_decision_algorithm": "portia_projection_decision_v1"
 }

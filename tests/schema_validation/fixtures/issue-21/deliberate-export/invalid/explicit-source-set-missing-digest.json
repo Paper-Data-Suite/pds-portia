@@ -8,8 +8,7 @@
     "scope": "explicit_source_set",
     "scope_id": "scope_admin_demo_01",
     "scope_version": "1",
-    "scope_algorithm": "portia_export_scope_set_v1",
-    "scope_digest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+    "scope_algorithm": "portia_export_scope_set_v1"
   },
   "projection_policy": {
     "policy_id": "admin_export_standard",

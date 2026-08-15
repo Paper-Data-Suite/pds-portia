@@ -184,3 +184,15 @@ prevent unsafe operation
 
 Ordinary privacy uncertainty and human-review need remain distinct from integrity
 failure.
+
+## Targeted-review additions
+
+The following are also application/contract invalid:
+
+| Area | Invalid condition | Required handling |
+| --- | --- | --- |
+| Export provenance | raw source-artifact workspace path, external reference, route locator, or capability-bearing locator is persisted in the deliberate-export source inventory | reject; persist privacy-minimal artifact kind + versioned identity digest instead |
+| Focal export | participant/student/family purpose uses class/workspace/explicit-source-set scope while focal identity is work-local | reject in v1; focal deliberate export is exact-work scoped |
+| Focal export | `focal_subject_ref` points to Account/Observation/Communication or another non-participant record | reject structurally |
+| Export scope | `explicit_source_set` lacks exact version/algorithm/digest identity | reject exact-scope claim |
+| Export provenance | projection decision digest lacks a supported algorithm/version identity | reject historical-verification claim |

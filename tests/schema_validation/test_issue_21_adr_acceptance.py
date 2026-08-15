@@ -151,7 +151,7 @@ class Issue21AdrAcceptanceTests(unittest.TestCase):
         closeout = self.read("docs/validation/issue-21-final-closeout.md")
         self.assertIn("PASS: 58", closeout)
         self.assertIn("PENDING: 0", closeout)
-        self.assertIn("ready for a targeted senior/Codex review", closeout)
+        self.assertIn("The targeted review found four concrete contract-hardening issues.", closeout)
 
     def test_adr_explicitly_defers_shared_sunset_protocol(self) -> None:
         text = ADR.read_text(encoding="utf-8")

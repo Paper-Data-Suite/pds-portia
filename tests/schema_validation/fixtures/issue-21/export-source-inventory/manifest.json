@@ -5,11 +5,13 @@
   "version": "1",
   "valid": [
     "administrative-inventory.json",
+    "artifact-identity-inventory.json",
     "student-facing-inventory.json"
   ],
   "invalid": [
     "missing-inventory-digest.json",
-    "null-foreign-contract-version.json"
+    "null-foreign-contract-version.json",
+    "raw-source-artifact-locator.json"
   ],
   "application_invalid": [
     "digest-mismatch.json",

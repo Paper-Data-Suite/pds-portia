@@ -23,9 +23,9 @@
       "contract_version": "2"
     },
     "record_ref": {
-      "record_kind": "event_participant",
-      "record_id": "epar_demo_a",
-      "contract_version": "3"
+      "record_kind": "account",
+      "record_id": "acct_demo_a",
+      "contract_version": "1"
     }
   },
   "projection_policy": {
@@ -143,7 +143,7 @@
     "type": "local_operator",
     "display_label": "Teacher"
   },
-  "generated_at": "2026-08-14T18:58:00-04:00",
+  "generated_at": "2026-08-14T19:03:00-04:00",
   "generated_by": {
     "type": "system_process",
     "process_id": "privacy_export"

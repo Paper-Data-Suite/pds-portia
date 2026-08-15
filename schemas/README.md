@@ -1258,3 +1258,17 @@ embedded process-local values; no public `repair_participant@1` or
 
 All four v1 families use successor/history semantics for material correction,
 expose no v1 Amendment path, and preserve exact historical references.
+
+### Issue #21 targeted-review hardening
+
+Before merge, the Issue #21 v1 export contracts were tightened so that:
+
+- `source_artifact` inventory entries persist artifact kind plus a versioned
+  identity digest rather than the raw source-artifact locator;
+- `participant_specific`, `student_facing`, and `family_facing` deliberate
+  exports are exact-work scoped and use Event/Support Process participant refs;
+- `explicit_source_set` carries exact version/algorithm/digest identity; and
+- `projection_decision_digest` is paired with
+  `projection_decision_algorithm = portia_projection_decision_v1`.
+
+These changes do not add another public contract or identifier prefix.

@@ -866,3 +866,25 @@ Slice 2 accepts these architecture decisions:
 
 The wire shape of projection policy and deliberate export remains deferred to
 Slice 4 so the participant/redaction rules in Slice 3 can constrain it first.
+
+## Post-review deliberate-export scope clarification
+
+The projection policy continues to permit class context for teacher-current and
+aggregate use, but deliberate-export v1 has a narrower focal identity contract.
+
+For:
+
+```text
+participant_specific
+student_facing
+family_facing
+```
+
+the deliberate export is one exact work plus one exact work-local participant.
+
+This prevents a work-local Event Participant / Support Process Participant
+reference from being misused as though it were a stable class/workspace-wide
+student identity.
+
+Broader focal export remains fail-closed until a separate stable cross-work
+identity contract is accepted.

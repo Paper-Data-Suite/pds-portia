@@ -982,3 +982,18 @@ remaining execution dependencies.
 
 A future Core/Sunset architecture effort should decide the final shared adapter
 wire/API protocol without changing the Portia semantic ownership accepted here.
+
+## Pre-merge targeted-review reconciliation
+
+A targeted review of review baseline
+`05a6e625a8cd5e02701a97850cade3ecfdd0173f` found four contract-hardening gaps
+that are reconciled without changing the ADR's architectural direction:
+
+1. raw source-artifact locators are no longer copied into durable export
+   provenance; a versioned artifact-identity digest is persisted instead;
+2. focal deliberate-export purposes are work-scoped and focal refs are limited
+   to Event/Support Process participant records;
+3. `explicit_source_set` now has immutable version/algorithm/digest identity;
+4. projection-decision digests now carry an explicit algorithm/version identity.
+
+The public contract names and `pexp_` prefix remain unchanged.

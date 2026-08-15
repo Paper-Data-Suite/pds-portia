@@ -36,7 +36,17 @@ def canonical_inventory_digest(value: dict[str, object]) -> str:
     return hashlib.sha256(encoded).hexdigest()
 
 def source_identity(entry: dict[str, object]) -> str:
-    for key in ("work_ref","work_record_ref","module_work_record_ref","artifact_ref"):
+    if "artifact_identity_digest" in entry:
+        return json.dumps(
+            {
+                "artifact_kind": entry["artifact_kind"],
+                "artifact_identity_digest": entry["artifact_identity_digest"],
+            },
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(",", ":"),
+        )
+    for key in ("work_ref","work_record_ref","module_work_record_ref"):
         if key in entry:
             return json.dumps(
                 entry[key],

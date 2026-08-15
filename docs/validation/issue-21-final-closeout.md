@@ -152,7 +152,7 @@ requirements, external-copy destruction, or secure-media destruction.
 
 ## Review handoff
 
-The implementation is ready for a targeted senior/Codex review focused on:
+The targeted review found four concrete contract-hardening issues. They are reconciled by the pre-merge review patch; the full local suite must be rerun before merge. Review focus remains:
 
 ```text
 privacy leakage through indirect identifiers/existence/counts
