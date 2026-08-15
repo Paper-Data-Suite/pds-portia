@@ -1,0 +1,18 @@
+{
+  "scenario_id": "P21-15",
+  "title": "Outstanding inspection request blocks disposition",
+  "category": "retention",
+  "source_facts": [
+    "Authoritative external input says an access/inspection request covers the Event.",
+    "Retention schedule otherwise shows eligibility."
+  ],
+  "expected": {
+    "result": "blocked",
+    "must": [
+      "preserve_covered_records_until_authoritative_release"
+    ],
+    "must_not": [
+      "treat_schedule_eligibility_as_override"
+    ]
+  }
+}

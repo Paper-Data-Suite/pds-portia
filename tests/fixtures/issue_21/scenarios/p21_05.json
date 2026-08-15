@@ -1,0 +1,19 @@
+{
+  "scenario_id": "P21-05",
+  "title": "Communication with hidden unrelated recipient",
+  "category": "redaction",
+  "source_facts": [
+    "Communication includes focal Student A and unrelated recipient B.",
+    "Both recipients have endpoint references."
+  ],
+  "expected": {
+    "result": "focal_recipient_only",
+    "must": [
+      "withhold_unrelated_recipient",
+      "withhold_endpoint_refs"
+    ],
+    "must_not": [
+      "leak_recipient_count_by_default"
+    ]
+  }
+}

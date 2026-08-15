@@ -1,0 +1,21 @@
+{
+  "scenario_id": "P21-12",
+  "title": "Successor export after source correction",
+  "category": "export",
+  "source_facts": [
+    "Earlier export exists.",
+    "Canonical source is materially corrected.",
+    "New export is requested."
+  ],
+  "expected": {
+    "result": "new_export_supersedes_prior_for_current_use",
+    "must": [
+      "new_pexp_identity",
+      "preserve_historical_export_immutability"
+    ],
+    "must_not": [
+      "rewrite_old_bytes",
+      "auto_delete_old_export"
+    ]
+  }
+}

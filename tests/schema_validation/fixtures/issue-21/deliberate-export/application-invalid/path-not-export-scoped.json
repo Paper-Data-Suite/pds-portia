@@ -1,0 +1,152 @@
+{
+  "schema_version": "1",
+  "record_type": "deliberate_export",
+  "module_id": "portia",
+  "export_id": "pexp_student_demo_01",
+  "projection_purpose": "student_facing",
+  "export_scope": {
+    "scope": "work",
+    "work_ref": {
+      "module_id": "portia",
+      "class_id": "class_english10_p2",
+      "work_id": "evt_demo",
+      "work_kind": "event",
+      "contract_version": "2"
+    }
+  },
+  "focal_subject_ref": {
+    "work_ref": {
+      "module_id": "portia",
+      "class_id": "class_english10_p2",
+      "work_id": "evt_demo",
+      "work_kind": "event",
+      "contract_version": "2"
+    },
+    "record_ref": {
+      "record_kind": "event_participant",
+      "record_id": "epar_demo_a",
+      "contract_version": "3"
+    }
+  },
+  "projection_policy": {
+    "policy_id": "student_facing_standard",
+    "policy_version": "1",
+    "policy_digest": "4444444444444444444444444444444444444444444444444444444444444444"
+  },
+  "authorization": {
+    "kind": "policy_rule",
+    "result": "authorized",
+    "authorization_scope_id": "authscope_demo_01",
+    "policy_rule_id": "local_student_export_rule",
+    "policy_rule_version": "1",
+    "policy_rule_digest": "5555555555555555555555555555555555555555555555555555555555555555",
+    "evaluated_at": "2026-08-14T19:00:00-04:00",
+    "recorded_by": {
+      "type": "local_operator",
+      "display_label": "Teacher"
+    }
+  },
+  "source_inventory": {
+    "schema_version": "1",
+    "record_type": "export_source_inventory",
+    "module_id": "portia",
+    "inventory_algorithm": "portia_export_source_inventory_v1",
+    "entries": [
+      {
+        "source_kind": "portia_record",
+        "source_role": "disagreement_context",
+        "work_record_ref": {
+          "work_ref": {
+            "module_id": "portia",
+            "class_id": "class_english10_p2",
+            "work_id": "evt_demo",
+            "work_kind": "event",
+            "contract_version": "2"
+          },
+          "record_ref": {
+            "record_kind": "statement_of_disagreement",
+            "record_id": "sdis_demo_a",
+            "contract_version": "1"
+          }
+        },
+        "representation_digest": "3333333333333333333333333333333333333333333333333333333333333333",
+        "byte_length": 742
+      },
+      {
+        "source_kind": "portia_record",
+        "source_role": "projected_domain",
+        "work_record_ref": {
+          "work_ref": {
+            "module_id": "portia",
+            "class_id": "class_english10_p2",
+            "work_id": "evt_demo",
+            "work_kind": "event",
+            "contract_version": "2"
+          },
+          "record_ref": {
+            "record_kind": "account",
+            "record_id": "acct_demo_a",
+            "contract_version": "1"
+          }
+        },
+        "representation_digest": "2222222222222222222222222222222222222222222222222222222222222222",
+        "byte_length": 1260
+      },
+      {
+        "source_kind": "portia_work",
+        "source_role": "projection_context",
+        "work_ref": {
+          "module_id": "portia",
+          "class_id": "class_english10_p2",
+          "work_id": "evt_demo",
+          "work_kind": "event",
+          "contract_version": "2"
+        },
+        "representation_digest": "1111111111111111111111111111111111111111111111111111111111111111",
+        "byte_length": 980
+      }
+    ],
+    "inventory_digest": "d28c4e7ad945d1a2ae1ec196dfd23ff6978245068ef026c8d23a23bebf3e9a47"
+  },
+  "projection_decision_digest": "6666666666666666666666666666666666666666666666666666666666666666",
+  "disposition_summary": {
+    "count_unit": "projection_item",
+    "included": 7,
+    "withheld": 4,
+    "unavailable": 0,
+    "absent": 2,
+    "manual_review_resolved": 1
+  },
+  "manual_review": {
+    "status": "resolved",
+    "reviewed_projection_digest": "6666666666666666666666666666666666666666666666666666666666666666",
+    "reviewed_at": "2026-08-14T19:02:00-04:00",
+    "reviewed_by": {
+      "type": "local_operator",
+      "display_label": "Teacher"
+    }
+  },
+  "output": {
+    "format": "pdf",
+    "media_type": "application/pdf",
+    "workspace_relative_path": "portia/exports/student-alex/report.pdf",
+    "byte_length": 4096,
+    "sha256_digest": "7777777777777777777777777777777777777777777777777777777777777777"
+  },
+  "operation_journal_ref": {
+    "operation_id": "op_export_demo_01",
+    "journal_revision": 3,
+    "contract_version": "1"
+  },
+  "requested_at": "2026-08-14T18:59:30-04:00",
+  "requested_by": {
+    "type": "local_operator",
+    "display_label": "Teacher"
+  },
+  "generated_at": "2026-08-14T19:03:00-04:00",
+  "generated_by": {
+    "type": "system_process",
+    "process_id": "privacy_export"
+  },
+  "projection_decision_algorithm": "portia_projection_decision_v1"
+}

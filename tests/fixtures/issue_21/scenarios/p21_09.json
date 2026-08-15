@@ -1,0 +1,21 @@
+{
+  "scenario_id": "P21-09",
+  "title": "Absent, withheld, and unavailable remain distinct",
+  "category": "projection",
+  "source_facts": [
+    "One optional field truly does not exist.",
+    "One source exists but policy hides it.",
+    "One referenced artifact cannot currently be resolved."
+  ],
+  "expected": {
+    "result": "three_distinct_dispositions",
+    "must": [
+      "represent_absent",
+      "represent_withheld",
+      "represent_unavailable"
+    ],
+    "must_not": [
+      "normalize_all_to_missing"
+    ]
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "scenario_id": "P21-13",
+  "title": "Generated export has not been disclosed",
+  "category": "export",
+  "source_facts": [
+    "PDF exists locally.",
+    "No recipient/delivery action occurred."
+  ],
+  "expected": {
+    "result": "generated_only",
+    "must": [
+      "keep_disclosure_state_separate"
+    ],
+    "must_not": [
+      "infer_delivery",
+      "infer_read",
+      "infer_consent"
+    ]
+  }
+}

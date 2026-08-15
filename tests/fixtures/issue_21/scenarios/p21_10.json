@@ -1,0 +1,18 @@
+{
+  "scenario_id": "P21-10",
+  "title": "Small-cell aggregate with rare context",
+  "category": "aggregate",
+  "source_facts": [
+    "Aggregate cell is very small.",
+    "Rare location/time combination makes identity inferable."
+  ],
+  "expected": {
+    "result": "requires_reidentification_review",
+    "must": [
+      "suppress_or_coarsen_under_exact_policy"
+    ],
+    "must_not": [
+      "claim_deidentified_because_names_removed"
+    ]
+  }
+}

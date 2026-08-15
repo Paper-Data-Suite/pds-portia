@@ -1,0 +1,107 @@
+{
+  "schema_version": "1",
+  "record_type": "deliberate_export",
+  "module_id": "portia",
+  "export_id": "pexp_admin_demo_01",
+  "projection_purpose": "administrative_export",
+  "export_scope": {
+    "scope": "explicit_source_set",
+    "scope_id": "scope_admin_demo_01",
+    "scope_version": "1",
+    "scope_algorithm": "portia_export_scope_set_v1"
+  },
+  "projection_policy": {
+    "policy_id": "admin_export_standard",
+    "policy_version": "1",
+    "policy_digest": "9999999999999999999999999999999999999999999999999999999999999999"
+  },
+  "authorization": {
+    "kind": "external_decision",
+    "result": "authorized",
+    "system_label": "District records policy",
+    "decision_id": "decision_demo_01",
+    "decision_version": "1",
+    "decision_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "evaluated_at": "2026-08-14T19:10:00-04:00",
+    "recorded_by": {
+      "type": "local_operator",
+      "display_label": "Teacher"
+    }
+  },
+  "source_inventory": {
+    "schema_version": "1",
+    "record_type": "export_source_inventory",
+    "module_id": "portia",
+    "inventory_algorithm": "portia_export_source_inventory_v1",
+    "entries": [
+      {
+        "source_kind": "module_record",
+        "source_role": "foreign_projection",
+        "module_work_record_ref": {
+          "work_ref": {
+            "module_id": "meridian",
+            "class_id": "class_english10_p2",
+            "work_id": "gradebook_demo"
+          },
+          "record_ref": {
+            "module_id": "meridian",
+            "record_kind": "report_projection",
+            "record_id": "report_demo_01",
+            "contract_version": "1"
+          }
+        },
+        "representation_digest": "8888888888888888888888888888888888888888888888888888888888888888",
+        "byte_length": 512
+      },
+      {
+        "source_kind": "portia_work",
+        "source_role": "projection_context",
+        "work_ref": {
+          "module_id": "portia",
+          "class_id": "class_english10_p2",
+          "work_id": "evt_demo",
+          "work_kind": "event",
+          "contract_version": "2"
+        },
+        "representation_digest": "1111111111111111111111111111111111111111111111111111111111111111",
+        "byte_length": 980
+      }
+    ],
+    "inventory_digest": "04514f60cb5243c18faf7468e30395f858935cc9d7adb46df952505a8cd8e879"
+  },
+  "projection_decision_digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+  "disposition_summary": {
+    "count_unit": "projection_item",
+    "included": 3,
+    "withheld": 0,
+    "unavailable": 0,
+    "absent": 0,
+    "manual_review_resolved": 0
+  },
+  "manual_review": {
+    "status": "not_required"
+  },
+  "output": {
+    "format": "csv",
+    "media_type": "text/csv",
+    "workspace_relative_path": "portia/exports/pexp_admin_demo_01/artifact.csv",
+    "byte_length": 1200,
+    "sha256_digest": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+  },
+  "operation_journal_ref": {
+    "operation_id": "op_export_demo_02",
+    "journal_revision": 2,
+    "contract_version": "1"
+  },
+  "requested_at": "2026-08-14T19:09:00-04:00",
+  "requested_by": {
+    "type": "local_operator",
+    "display_label": "Teacher"
+  },
+  "generated_at": "2026-08-14T19:11:00-04:00",
+  "generated_by": {
+    "type": "system_process",
+    "process_id": "privacy_export"
+  },
+  "projection_decision_algorithm": "portia_projection_decision_v1"
+}

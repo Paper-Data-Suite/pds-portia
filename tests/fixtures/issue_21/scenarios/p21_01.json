@@ -1,0 +1,19 @@
+{
+  "scenario_id": "P21-01",
+  "title": "Bounded teacher-current Event projection",
+  "category": "projection",
+  "source_facts": [
+    "One exact current Event is deliberately selected.",
+    "Historical Events for the same student exist in other classes/years."
+  ],
+  "expected": {
+    "result": "included_bounded_view",
+    "must": [
+      "limit_to_selected_work_context",
+      "avoid_automatic_longitudinal_dossier"
+    ],
+    "must_not": [
+      "aggregate_every_historical_record"
+    ]
+  }
+}

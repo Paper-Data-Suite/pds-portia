@@ -130,6 +130,50 @@ Ordinary uncertainty belongs in review/retry state. Integrity Finding is
 diagnostic for broken provenance/linkage/invariants. Quarantine remains
 exceptional isolation rather than an ordinary review queue.
 
+### Issue #21 current implementation
+
+The current architecture now includes **accepted ADR 0017 for privacy
+projections, multi-participant redaction, deliberate export provenance,
+retention-policy hooks, and the future Sunset boundary**.
+
+Ordinary teacher-current, participant-specific, student-facing, family-facing,
+aggregate-equity, dashboard/history, and privacy-projection views remain derived
+and rebuildable. Portia does not introduce a canonical student dossier.
+
+Projection policy is exact/versioned and fail-closed. Record eligibility does
+not imply field eligibility; `included`, `absent`, `withheld`, `unavailable`,
+and `requires_manual_review` remain distinct. Multi-party records are not
+falsely rewritten as single-student records, and free text that cannot be
+mechanically redacted without changing meaning requires manual review.
+
+Issue #21 adds three public contracts:
+
+```text
+portia_deliberate_export_id@1
+export_source_inventory@1
+deliberate_export@1
+```
+
+with opaque `pexp_` identity. One deliberate export binds one accepted immutable
+artifact, exact policy and authorization provenance, exact contributing source
+representations, privacy-decision digest, output digest/length, and coordinated
+Operation Journal evidence. Export generation remains distinct from disclosure,
+delivery, receipt, read, consent, or external acceptance.
+
+`source_snapshot@1` remains the discovery/filesystem inventory for rebuildable
+derived projections and is not widened for outward exports.
+
+Portia defines 11 semantic retention classes and exact trigger/policy hooks but
+does not hard-code legal retention periods, decide legal holds, approve
+destruction, authenticate requesters, or claim that local deletion removed
+Core/sibling/external copies. Routine retention disposition remains distinct
+from Exceptional Removal.
+
+No `pds-sunset` dependency exists. A future Sunset-like module may orchestrate
+cross-module dry-run planning, safe ordering, recovery, and bounded results, but
+each module retains semantic authority and performs/verifies mutation of its own
+custody.
+
 ## Product Position
 
 Portia is designed as:

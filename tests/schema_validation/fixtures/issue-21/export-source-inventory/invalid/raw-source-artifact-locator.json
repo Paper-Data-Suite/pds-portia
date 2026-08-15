@@ -1,0 +1,21 @@
+{
+  "schema_version": "1",
+  "record_type": "export_source_inventory",
+  "module_id": "portia",
+  "inventory_algorithm": "portia_export_source_inventory_v1",
+  "entries": [
+    {
+      "source_kind": "source_artifact",
+      "source_role": "included_artifact",
+      "artifact_ref": {
+        "kind": "external_record",
+        "system_label": "Example SIS",
+        "external_reference": "https://example.invalid/record?token=do-not-persist",
+        "record_label": "Student-sensitive locator"
+      },
+      "representation_digest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+      "byte_length": 2048
+    }
+  ],
+  "inventory_digest": "a4391c6e65773ecd717a528b63c9a8253ff15370b11c517115827c3d59b68a8c"
+}

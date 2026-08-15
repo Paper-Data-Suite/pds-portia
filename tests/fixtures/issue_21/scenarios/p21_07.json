@@ -1,0 +1,18 @@
+{
+  "scenario_id": "P21-07",
+  "title": "Contested record with active disagreement",
+  "category": "correction",
+  "source_facts": [
+    "A projectable target has an applicable active Statement of Disagreement.",
+    "Policy requires disagreement association."
+  ],
+  "expected": {
+    "result": "combined_disclosure_unit",
+    "must": [
+      "evaluate_disagreement_with_contested_content"
+    ],
+    "must_not": [
+      "omit_disagreement_and_present_target_as_uncontested"
+    ]
+  }
+}

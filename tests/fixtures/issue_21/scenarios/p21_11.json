@@ -1,0 +1,22 @@
+{
+  "scenario_id": "P21-11",
+  "title": "Deliberate student-facing PDF export",
+  "category": "export",
+  "source_facts": [
+    "Exact focal student projection is authorized.",
+    "Manual review is resolved.",
+    "One PDF artifact is generated."
+  ],
+  "expected": {
+    "result": "accepted_deliberate_export",
+    "must": [
+      "new_pexp_identity",
+      "bind_policy_digest",
+      "bind_source_inventory",
+      "bind_output_digest"
+    ],
+    "must_not": [
+      "record_generation_as_disclosure"
+    ]
+  }
+}

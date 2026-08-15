@@ -1,0 +1,20 @@
+{
+  "scenario_id": "P21-04",
+  "title": "Multi-target Observation with focal measurement",
+  "category": "redaction",
+  "source_facts": [
+    "Observation targets Students A and B.",
+    "Measurement applies to focal Student A.",
+    "Narrative identifies Student B."
+  ],
+  "expected": {
+    "result": "mixed_field_dispositions",
+    "must": [
+      "preserve_native_multi_party_scope",
+      "separate_measurement_from_narrative"
+    ],
+    "must_not": [
+      "rewrite_native_target_as_single_student"
+    ]
+  }
+}

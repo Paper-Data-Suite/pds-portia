@@ -1,0 +1,18 @@
+{
+  "schema_version": "1",
+  "record_type": "export_source_inventory",
+  "module_id": "portia",
+  "inventory_algorithm": "portia_export_source_inventory_v1",
+  "entries": [
+    {
+      "source_kind": "source_artifact",
+      "source_role": "included_artifact",
+      "artifact_kind": "external_record",
+      "artifact_identity_algorithm": "portia_source_artifact_identity_v1",
+      "artifact_identity_digest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "representation_digest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+      "byte_length": 2048
+    }
+  ],
+  "inventory_digest": "27bdf24811e681900967115e53fc430c169c6566571cbd9da6c0e8eaf59a5020"
+}

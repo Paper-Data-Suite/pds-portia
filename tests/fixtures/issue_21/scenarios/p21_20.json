@@ -1,0 +1,19 @@
+{
+  "scenario_id": "P21-20",
+  "title": "Portia Page Record references Core retained source",
+  "category": "foreign_custody",
+  "source_facts": [
+    "Portia Page Record is disposition candidate.",
+    "Referenced scan bytes are owned by Core."
+  ],
+  "expected": {
+    "result": "separate_owner_actions",
+    "must": [
+      "limit_portia_action_to_portia_custody",
+      "surface_core_foreign_custody"
+    ],
+    "must_not": [
+      "delete_core_scan_from_portia"
+    ]
+  }
+}

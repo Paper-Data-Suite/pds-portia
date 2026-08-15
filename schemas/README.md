@@ -263,6 +263,53 @@ availability, review authorization, operation recovery, replay identity,
 canonical readback, and other cross-record rules remain application-validation
 responsibilities.
 
+## Issue #21 privacy projection, deliberate export, and retention contracts
+
+Issue #21 keeps ordinary privacy projections derived/noncanonical and adds only
+three public contracts:
+
+```text
+portia_deliberate_export_id@1
+export_source_inventory@1
+deliberate_export@1
+```
+
+The new opaque identifier prefix is:
+
+```text
+Deliberate Export: `pexp_`
+```
+
+`export_source_inventory@1` is a privacy-minimized deterministic inventory of
+exact source representations that materially contributed to one accepted
+deliberate export. It is intentionally distinct from `source_snapshot@1`.
+
+`deliberate_export@1` is immutable operational provenance for one deliberately
+requested privacy-projected artifact. It binds exact projection purpose/scope,
+policy identity/version/digest, positive authorization provenance, contributing
+source representations, privacy-decision digest, manual-review state, output
+path/length/SHA-256, request/generation attribution, and exact Operation Journal
+revision.
+
+Output bytes remain outside canonical JSON.
+
+The export record is not a disclosure, delivery, receipt, consent, or legal
+authorization record.
+
+Issue #21 deliberately does **not** add public schemas for ordinary privacy
+projections, student/family profiles, legal/privacy request cases, legal holds,
+institution retention policy, routine cross-module disposition, or a Sunset
+adapter protocol.
+
+Retention is documented through stable semantic class keys and
+application/deployment policy hooks rather than by adding mutable jurisdictional
+fields such as `retention_until` or `legal_hold` to every canonical schema.
+
+No existing published `$id` is widened by Issue #21. In particular,
+`source_snapshot@1`, `derived_index_metadata@1`, `communication@1`,
+`statement_of_disagreement@1`, `exceptional_removal@1`, and the Operation
+Journal family retain their existing meanings.
+
 Issue #14 adds exact Actor Directory representation references:
 
 - `exact-actor-ref.schema.json`;
@@ -1211,3 +1258,17 @@ embedded process-local values; no public `repair_participant@1` or
 
 All four v1 families use successor/history semantics for material correction,
 expose no v1 Amendment path, and preserve exact historical references.
+
+### Issue #21 targeted-review hardening
+
+Before merge, the Issue #21 v1 export contracts were tightened so that:
+
+- `source_artifact` inventory entries persist artifact kind plus a versioned
+  identity digest rather than the raw source-artifact locator;
+- `participant_specific`, `student_facing`, and `family_facing` deliberate
+  exports are exact-work scoped and use Event/Support Process participant refs;
+- `explicit_source_set` carries exact version/algorithm/digest identity; and
+- `projection_decision_digest` is paired with
+  `projection_decision_algorithm = portia_projection_decision_v1`.
+
+These changes do not add another public contract or identifier prefix.

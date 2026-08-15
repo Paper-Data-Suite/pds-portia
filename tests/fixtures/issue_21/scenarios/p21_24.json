@@ -1,0 +1,18 @@
+{
+  "scenario_id": "P21-24",
+  "title": "Local export deletion with outside-suite copy",
+  "category": "foreign_custody",
+  "source_facts": [
+    "Local export bytes are validly deleted.",
+    "A prior downloaded/email copy may exist."
+  ],
+  "expected": {
+    "result": "local_success_external_unresolved",
+    "must": [
+      "report_outside_suite_control"
+    ],
+    "must_not": [
+      "claim_all_copies_destroyed"
+    ]
+  }
+}
