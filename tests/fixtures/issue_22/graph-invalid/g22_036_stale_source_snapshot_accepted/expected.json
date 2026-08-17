@@ -1,0 +1,10 @@
+{
+  "scenario_id": "G22-036",
+  "expected_graph_result": "invalid",
+  "expected_finding_ids": [
+    "G22.DERIVED.STALE_SOURCE_SNAPSHOT_ACCEPTED"
+  ],
+  "primary_finding_id": "G22.DERIVED.STALE_SOURCE_SNAPSHOT_ACCEPTED",
+  "structurally_valid_public_records": true,
+  "reason": "A derived result is accepted from a structurally valid Source Snapshot whose recorded fingerprint no longer matches the current exact canonical Account bytes."
+}

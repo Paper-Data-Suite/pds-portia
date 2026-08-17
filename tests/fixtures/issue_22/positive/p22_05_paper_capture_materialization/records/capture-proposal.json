@@ -1,0 +1,50 @@
+{
+  "schema_version": "1",
+  "record_type": "capture_proposal",
+  "module_id": "portia",
+  "class_id": "eng10_p2_2026",
+  "work_id": "cbat_p22_paper_001",
+  "page_target_id": "ptgt_p22_paper_001",
+  "page_record_id": "prec_p22_paper_001",
+  "proposal_id": "cprp_p22_paper_001",
+  "interpretation_ref": {
+    "contract_version": "1",
+    "interpretation_id": "pint_p22_paper_001",
+    "generation": 1
+  },
+  "entry_key": "entry",
+  "target": {
+    "record_kind": "event",
+    "contract_version": "2",
+    "context": {
+      "kind": "new_work"
+    }
+  },
+  "field_bindings": [
+    {
+      "target_path": "/occurrence/started_at",
+      "source_field": {
+        "field_key": "event_time",
+        "value_source": "candidate_literal"
+      }
+    },
+    {
+      "target_path": "/summary",
+      "source_field": {
+        "field_key": "summary",
+        "value_source": "candidate_literal"
+      }
+    }
+  ],
+  "review_flags": [],
+  "proposed_at": "2026-08-15T11:05:00-04:00",
+  "proposed_by": {
+    "type": "system_process",
+    "process_id": "issue22_paper_capture"
+  },
+  "created_at": "2026-08-15T11:05:00-04:00",
+  "created_by": {
+    "type": "system_process",
+    "process_id": "issue22_paper_capture"
+  }
+}

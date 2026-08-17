@@ -1,0 +1,184 @@
+{
+  "fixture_contract": "pds-portia.representative-contract-graph-scenario",
+  "fixture_version": "1",
+  "not_runtime_contract": true,
+  "scenario_id": "P22-02",
+  "title": "Multi-participant Event with conflicting Accounts",
+  "scenario_kind": "positive",
+  "synthetic": true,
+  "records": [
+    {
+      "fixture_path": "records/event.json",
+      "contract": "event",
+      "version": "2",
+      "logical_identity": "event:evt_p22_conflict_001",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "event",
+        "work_id": "evt_p22_conflict_001"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/evt_p22_conflict_001/work.json"
+    },
+    {
+      "fixture_path": "records/participant-a.json",
+      "contract": "event_participant",
+      "version": "3",
+      "logical_identity": "event_participant:ep_p22_conflict_a",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "event",
+        "work_id": "evt_p22_conflict_001"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/evt_p22_conflict_001/records/event_participant/ep_p22_conflict_a.json"
+    },
+    {
+      "fixture_path": "records/participant-b.json",
+      "contract": "event_participant",
+      "version": "3",
+      "logical_identity": "event_participant:ep_p22_conflict_b",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "event",
+        "work_id": "evt_p22_conflict_001"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/evt_p22_conflict_001/records/event_participant/ep_p22_conflict_b.json"
+    },
+    {
+      "fixture_path": "records/participant-c.json",
+      "contract": "event_participant",
+      "version": "3",
+      "logical_identity": "event_participant:ep_p22_conflict_c",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "event",
+        "work_id": "evt_p22_conflict_001"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/evt_p22_conflict_001/records/event_participant/ep_p22_conflict_c.json"
+    },
+    {
+      "fixture_path": "records/role-a.json",
+      "contract": "event_participant_role",
+      "version": "3",
+      "logical_identity": "event_participant_role:epr_p22_conflict_a",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "event",
+        "work_id": "evt_p22_conflict_001"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/evt_p22_conflict_001/records/event_participant_role/epr_p22_conflict_a.json"
+    },
+    {
+      "fixture_path": "records/role-b.json",
+      "contract": "event_participant_role",
+      "version": "3",
+      "logical_identity": "event_participant_role:epr_p22_conflict_b",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "event",
+        "work_id": "evt_p22_conflict_001"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/evt_p22_conflict_001/records/event_participant_role/epr_p22_conflict_b.json"
+    },
+    {
+      "fixture_path": "records/role-c.json",
+      "contract": "event_participant_role",
+      "version": "3",
+      "logical_identity": "event_participant_role:epr_p22_conflict_c",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "event",
+        "work_id": "evt_p22_conflict_001"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/evt_p22_conflict_001/records/event_participant_role/epr_p22_conflict_c.json"
+    },
+    {
+      "fixture_path": "records/account-a.json",
+      "contract": "account",
+      "version": "2",
+      "logical_identity": "account:acct_p22_conflict_a",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "event",
+        "work_id": "evt_p22_conflict_001"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/evt_p22_conflict_001/records/account/acct_p22_conflict_a.json"
+    },
+    {
+      "fixture_path": "records/account-c.json",
+      "contract": "account",
+      "version": "2",
+      "logical_identity": "account:acct_p22_conflict_c",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "event",
+        "work_id": "evt_p22_conflict_001"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/evt_p22_conflict_001/records/account/acct_p22_conflict_c.json"
+    },
+    {
+      "fixture_path": "records/observation.json",
+      "contract": "observation",
+      "version": "2",
+      "logical_identity": "observation:obs_p22_conflict_001",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "event",
+        "work_id": "evt_p22_conflict_001"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/evt_p22_conflict_001/records/observation/obs_p22_conflict_001.json"
+    },
+    {
+      "fixture_path": "records/review.json",
+      "contract": "review",
+      "version": "1",
+      "logical_identity": "review:rvw_p22_conflict_001",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "event",
+        "work_id": "evt_p22_conflict_001"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/evt_p22_conflict_001/records/review/rvw_p22_conflict_001.json"
+    },
+    {
+      "fixture_path": "records/determination.json",
+      "contract": "determination",
+      "version": "1",
+      "logical_identity": "determination:det_p22_conflict_001",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "event",
+        "work_id": "evt_p22_conflict_001"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/evt_p22_conflict_001/records/determination/det_p22_conflict_001.json"
+    }
+  ],
+  "context": [
+    {
+      "context_kind": "synthetic_core_roster",
+      "fixture_path": "../../shared/core-context/roster.json"
+    }
+  ],
+  "required_distinctions": [
+    "One participant's Account does not become another participant's Account.",
+    "Reported involvement does not become direct Observation.",
+    "Repeated or conflicting reports do not become proof.",
+    "Participant role does not become guilt or fault.",
+    "Review completion does not require a finding.",
+    "Insufficient information remains a valid bounded Determination outcome."
+  ],
+  "expected_graph_result": "valid",
+  "expected_finding_ids": [],
+  "expected_path": "expected.json"
+}

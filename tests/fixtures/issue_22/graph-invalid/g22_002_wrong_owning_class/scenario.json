@@ -1,0 +1,104 @@
+{
+  "fixture_contract": "pds-portia.representative-contract-graph-scenario",
+  "fixture_version": "1",
+  "not_runtime_contract": true,
+  "scenario_id": "G22-002",
+  "title": "Work/record ref uses wrong owning class",
+  "scenario_kind": "graph_invalid",
+  "synthetic": true,
+  "records": [
+    {
+      "fixture_path": "event-owner.json",
+      "contract": "event",
+      "version": "2",
+      "logical_identity": "event:evt_g22_owner_class",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_g22_owner",
+        "work_kind": "event",
+        "work_id": "evt_g22_owner_class"
+      },
+      "canonical_path": "classes/eng10_g22_owner/modules/portia/work/evt_g22_owner_class/work.json"
+    },
+    {
+      "fixture_path": "review-owner.json",
+      "contract": "review",
+      "version": "1",
+      "logical_identity": "review:rvw_g22_wrong_class",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_g22_owner",
+        "work_kind": "event",
+        "work_id": "evt_g22_owner_class"
+      },
+      "canonical_path": "classes/eng10_g22_owner/modules/portia/work/evt_g22_owner_class/records/review/rvw_g22_wrong_class.json"
+    },
+    {
+      "fixture_path": "event-foreign.json",
+      "contract": "event",
+      "version": "2",
+      "logical_identity": "event:evt_g22_foreign_class",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_g22_foreign",
+        "work_kind": "event",
+        "work_id": "evt_g22_foreign_class"
+      },
+      "canonical_path": "classes/eng10_g22_foreign/modules/portia/work/evt_g22_foreign_class/work.json"
+    },
+    {
+      "fixture_path": "participant-foreign.json",
+      "contract": "event_participant",
+      "version": "3",
+      "logical_identity": "event_participant:ep_g22_foreign_class",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_g22_foreign",
+        "work_kind": "event",
+        "work_id": "evt_g22_foreign_class"
+      },
+      "canonical_path": "classes/eng10_g22_foreign/modules/portia/work/evt_g22_foreign_class/records/event_participant/ep_g22_foreign_class.json"
+    },
+    {
+      "fixture_path": "account-foreign.json",
+      "contract": "account",
+      "version": "2",
+      "logical_identity": "account:acct_g22_foreign_class",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_g22_foreign",
+        "work_kind": "event",
+        "work_id": "evt_g22_foreign_class"
+      },
+      "canonical_path": "classes/eng10_g22_foreign/modules/portia/work/evt_g22_foreign_class/records/account/acct_g22_foreign_class.json"
+    }
+  ],
+  "context": [
+    {
+      "context_kind": "synthetic_core_roster",
+      "fixture_path": "roster-owner.json"
+    },
+    {
+      "context_kind": "synthetic_core_roster",
+      "fixture_path": "roster-foreign.json"
+    }
+  ],
+  "required_distinctions": [
+    "Exact work-record references do not cross owning classes by convenience.",
+    "A real record in another class does not satisfy the owner-scoped reference."
+  ],
+  "expected_graph_result": "invalid",
+  "expected_finding_ids": [
+    "G22.EVIDENCE.WRONG_WORK"
+  ],
+  "primary_finding_id": "G22.EVIDENCE.WRONG_WORK",
+  "principal_defect": "An Event-A Review uses an exact Account reference whose work_ref names another owning class/work.",
+  "structurally_valid_reason": "The Review evidence reference is structurally well formed and points to a structurally valid Account; class/work ownership makes the graph invalid.",
+  "records_must_remain_unmodified": [
+    "event-owner.json",
+    "event-foreign.json",
+    "participant-foreign.json",
+    "account-foreign.json"
+  ],
+  "expected_path": "expected.json"
+}

@@ -1,0 +1,36 @@
+{
+  "schema_version": "2",
+  "record_type": "portia_work",
+  "work_kind": "event",
+  "module_id": "portia",
+  "class_id": "eng10_g22_026",
+  "work_id": "evt_g22_026_original",
+  "school_year": "2026-2027",
+  "status": "active",
+  "creation_source": {
+    "type": "import",
+    "source_label": "Synthetic retained source",
+    "external_reference": "retained-row-g22-026"
+  },
+  "created_at": "2026-11-02T09:00:00-05:00",
+  "created_by": {
+    "type": "local_operator",
+    "display_label": "Synthetic Teacher"
+  },
+  "updated_at": "2026-11-02T09:00:00-05:00",
+  "updated_by": {
+    "type": "local_operator",
+    "display_label": "Synthetic Teacher"
+  },
+  "occurrence": {
+    "precision": "exact",
+    "started_at": "2026-11-02T08:35:00-05:00"
+  },
+  "summary": "Synthetic Event from the first accepted materialization.",
+  "location": {
+    "type": "classroom"
+  },
+  "instructional_context": {
+    "type": "independent_work"
+  }
+}

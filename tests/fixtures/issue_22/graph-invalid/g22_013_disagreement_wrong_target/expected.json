@@ -1,0 +1,12 @@
+{
+  "fixture_contract": "pds-portia.graph-invalid-expectation",
+  "fixture_version": "1",
+  "not_runtime_contract": true,
+  "scenario_id": "G22-013",
+  "primary_finding_id": "G22.CORRECTION.DISAGREEMENT_WRONG_TARGET",
+  "expected_finding_ids": [
+    "G22.CORRECTION.DISAGREEMENT_WRONG_TARGET"
+  ],
+  "structurally_valid_public_records": true,
+  "principal_defect": "The Statement of Disagreement is structurally valid and resolves to Account B, but the fixture-declared contested representation is the distinct exact Account A."
+}

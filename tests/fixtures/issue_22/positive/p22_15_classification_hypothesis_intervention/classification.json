@@ -1,0 +1,95 @@
+{
+  "schema_version": "1",
+  "record_type": "classification",
+  "module_id": "portia",
+  "class_id": "eng10_p2_2026",
+  "work_id": "evt_p22_judgment_support_001",
+  "classification_id": "cls_p22_judgment_support_001",
+  "status": "active",
+  "target": {
+    "kind": "event_participant",
+    "record_ref": {
+      "record_kind": "event_participant",
+      "record_id": "ep_p22_judgment_support_001",
+      "contract_version": "3"
+    }
+  },
+  "selector": {
+    "kind": "local_operator",
+    "display_label": "Synthetic Teacher"
+  },
+  "stage": "reviewer_selected",
+  "result": {
+    "kind": "category_selected",
+    "definition": {
+      "scheme_id": "local_classroom_context",
+      "scheme_version": "2026_1",
+      "category_code": "transition_delay",
+      "category_label": "Transition Delay",
+      "definition_text": "Synthetic local classroom category for a delayed start immediately following an instructional transition."
+    }
+  },
+  "basis": [
+    {
+      "kind": "portia_record",
+      "work_record_ref": {
+        "work_ref": {
+          "module_id": "portia",
+          "class_id": "eng10_p2_2026",
+          "work_id": "evt_p22_judgment_support_001",
+          "work_kind": "event",
+          "contract_version": "2"
+        },
+        "record_ref": {
+          "record_kind": "account",
+          "record_id": "acct_p22_judgment_support_001",
+          "contract_version": "2"
+        }
+      }
+    },
+    {
+      "kind": "portia_record",
+      "work_record_ref": {
+        "work_ref": {
+          "module_id": "portia",
+          "class_id": "eng10_p2_2026",
+          "work_id": "evt_p22_judgment_support_001",
+          "work_kind": "event",
+          "contract_version": "2"
+        },
+        "record_ref": {
+          "record_kind": "observation",
+          "record_id": "obs_p22_judgment_support_001",
+          "contract_version": "2"
+        }
+      }
+    }
+  ],
+  "review_ref": {
+    "work_ref": {
+      "module_id": "portia",
+      "class_id": "eng10_p2_2026",
+      "work_id": "evt_p22_judgment_support_001",
+      "work_kind": "event",
+      "contract_version": "2"
+    },
+    "record_ref": {
+      "record_kind": "review",
+      "record_id": "rvw_p22_judgment_support_001",
+      "contract_version": "1"
+    }
+  },
+  "creation_source": {
+    "type": "digital_entry"
+  },
+  "created_at": "2026-08-10T10:37:00-04:00",
+  "created_by": {
+    "type": "local_operator",
+    "display_label": "Synthetic Teacher"
+  },
+  "updated_at": "2026-08-10T10:37:00-04:00",
+  "updated_by": {
+    "type": "local_operator",
+    "display_label": "Synthetic Teacher"
+  }
+}

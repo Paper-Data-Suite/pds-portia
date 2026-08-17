@@ -1,0 +1,64 @@
+{
+  "schema_version": "2",
+  "record_type": "account",
+  "module_id": "portia",
+  "class_id": "eng10_p2_2026",
+  "work_kind": "event",
+  "work_id": "evt_p22_privacy_001",
+  "account_id": "acct_p22_privacy_b",
+  "status": "active",
+  "target": {
+    "kind": "event_participant",
+    "record_ref": {
+      "record_kind": "event_participant",
+      "record_id": "ep_p22_privacy_b",
+      "contract_version": "3"
+    }
+  },
+  "source": {
+    "kind": "roster_student",
+    "roster_student_ref": {
+      "class_id": "eng10_p2_2026",
+      "student_id": "stu_p22_002"
+    },
+    "display_snapshot": {
+      "display_name": "Synthetic Student B"
+    }
+  },
+  "information_origin": "firsthand",
+  "source_certainty": "stated_certain",
+  "content": [
+    {
+      "representation": "recorded_summary",
+      "text": "Student B stated that they stayed at the side table and asked the teacher before moving materials."
+    }
+  ],
+  "source_artifacts": [
+    {
+      "kind": "workspace_file",
+      "path": "classes/eng10_p2_2026/modules/portia/work/evt_p22_privacy_001/attachments/focal-source-note.txt",
+      "fingerprint": {
+        "algorithm": "sha256",
+        "digest": "cc95e0ee8cad61d700e03a74873a315c19083f218efaf6a0886942dd4438a305",
+        "byte_length": 120
+      }
+    }
+  ],
+  "provided_time": {
+    "precision": "exact",
+    "at": "2026-09-22T09:56:00-04:00"
+  },
+  "creation_source": {
+    "type": "digital_entry"
+  },
+  "created_at": "2026-09-22T10:14:00-04:00",
+  "created_by": {
+    "type": "local_operator",
+    "display_label": "Synthetic Teacher"
+  },
+  "updated_at": "2026-09-22T10:14:00-04:00",
+  "updated_by": {
+    "type": "local_operator",
+    "display_label": "Synthetic Teacher"
+  }
+}

@@ -1,0 +1,112 @@
+{
+  "fixture_contract": "pds-portia.representative-contract-graph-scenario",
+  "fixture_version": "1",
+  "not_runtime_contract": true,
+  "scenario_id": "G22-032",
+  "title": "Deliberate export inventory silently binds successor representation",
+  "scenario_kind": "graph_invalid",
+  "synthetic": true,
+  "records": [
+    {
+      "fixture_path": "event-primary.json",
+      "contract": "event",
+      "version": "2",
+      "logical_identity": "event:evt_p22_derived_001",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "event",
+        "work_id": "evt_p22_derived_001"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/evt_p22_derived_001/work.json"
+    },
+    {
+      "fixture_path": "participant.json",
+      "contract": "event_participant",
+      "version": "3",
+      "logical_identity": "event_participant:ep_p22_derived_student",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "event",
+        "work_id": "evt_p22_derived_001"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/evt_p22_derived_001/records/event_participant/ep_p22_derived_student.json"
+    },
+    {
+      "fixture_path": "account-original.json",
+      "contract": "account",
+      "version": "2",
+      "logical_identity": "account:acct_p22_derived_original",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "event",
+        "work_id": "evt_p22_derived_001"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/evt_p22_derived_001/records/account/acct_p22_derived_original.json"
+    },
+    {
+      "fixture_path": "account-corrected.json",
+      "contract": "account",
+      "version": "2",
+      "logical_identity": "account:acct_p22_derived_corrected",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "event",
+        "work_id": "evt_p22_derived_001"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/evt_p22_derived_001/records/account/acct_p22_derived_corrected.json"
+    },
+    {
+      "fixture_path": "deliberate-export.json",
+      "contract": "deliberate_export",
+      "version": "1",
+      "logical_identity": "deliberate_export:pexp_g22_032_exact_consumption",
+      "authority": "portia",
+      "owner": {
+        "owner_kind": "deliberate_export",
+        "export_id": "pexp_g22_032_exact_consumption"
+      },
+      "canonical_path": "portia/exports/pexp_g22_032_exact_consumption/export.json"
+    }
+  ],
+  "context": [
+    {
+      "context_kind": "synthetic_export_consumption_resolution",
+      "fixture_path": "consumption-context.json"
+    },
+    {
+      "context_kind": "synthetic_core_roster",
+      "fixture_path": "roster-context.json"
+    }
+  ],
+  "required_distinctions": [
+    "Export provenance binds the exact representation actually consumed.",
+    "A successor may be current but cannot replace a historical consumed source in the inventory."
+  ],
+  "expected_graph_result": "invalid",
+  "expected_finding_ids": [
+    "G22.PRIVACY.EXPORT_INVENTORY_WRONG_REPRESENTATION"
+  ],
+  "primary_finding_id": "G22.PRIVACY.EXPORT_INVENTORY_WRONG_REPRESENTATION",
+  "principal_defect": "The export actually consumed the historical Account predecessor but its truthful source inventory names the corrected successor instead.",
+  "structurally_valid_reason": "Every public Portia contract fixture is structurally valid; the defect exists only in combined projection/export/derived/custody application semantics.",
+  "records_must_remain_unmodified": [
+    "event-primary.json",
+    "participant.json",
+    "account-original.json",
+    "account-corrected.json",
+    "deliberate-export.json"
+  ],
+  "expected_path": "expected.json",
+  "byte_fixtures": [
+    {
+      "fixture_path": "artifact.csv",
+      "workspace_relative_path": "portia/exports/pexp_g22_032_exact_consumption/artifact.csv",
+      "media_type": "text/csv",
+      "role": "deliberate_export_output"
+    }
+  ]
+}

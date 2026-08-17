@@ -1,0 +1,26 @@
+{
+  "fixture_contract": "pds-portia.synthetic-core-roster-context",
+  "fixture_version": "1",
+  "not_runtime_contract": true,
+  "synthetic": true,
+  "class_id": "eng10_p2_2026",
+  "school_year": "2026-2027",
+  "students": [
+    {
+      "student_id": "stu_p22_001",
+      "display_name": "Synthetic Student A"
+    },
+    {
+      "student_id": "stu_p22_002",
+      "display_name": "Synthetic Student B"
+    },
+    {
+      "student_id": "stu_p22_003",
+      "display_name": "Synthetic Student C"
+    },
+    {
+      "student_id": "stu_collision_001",
+      "display_name": "Synthetic Alex"
+    }
+  ]
+}

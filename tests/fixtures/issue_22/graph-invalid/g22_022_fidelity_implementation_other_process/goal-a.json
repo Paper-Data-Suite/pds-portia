@@ -1,0 +1,33 @@
+{
+  "schema_version": "1",
+  "record_type": "support_goal",
+  "module_id": "portia",
+  "class_id": "eng10_g22_022",
+  "work_id": "sup_g22_022_a",
+  "goal_id": "spg_g22_022_a",
+  "status": "active",
+  "target": {
+    "kind": "support_process_participant",
+    "record_ref": {
+      "record_kind": "support_process_participant",
+      "record_id": "spp_g22_022_student_a",
+      "contract_version": "1"
+    }
+  },
+  "description": "A brief written sequence for the current independent assignment will be available when multi-step work begins.",
+  "planned_criteria": "Review bounded documented opportunities for whether the written sequence was available and how it was used.",
+  "measurement_approach": "Teacher review of same-year Implementation and direct Observation records only.",
+  "creation_source": {
+    "type": "digital_entry"
+  },
+  "created_at": "2026-09-04T15:07:00-04:00",
+  "created_by": {
+    "type": "local_operator",
+    "display_label": "Synthetic Teacher"
+  },
+  "updated_at": "2026-09-04T15:07:00-04:00",
+  "updated_by": {
+    "type": "local_operator",
+    "display_label": "Synthetic Teacher"
+  }
+}

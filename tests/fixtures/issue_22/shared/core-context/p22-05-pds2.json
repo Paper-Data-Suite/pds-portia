@@ -1,0 +1,27 @@
+{
+  "fixture_contract": "pds-portia.synthetic-core-pds2-context",
+  "fixture_version": "1",
+  "not_runtime_contract": true,
+  "synthetic": true,
+  "authority": "core",
+  "route": {
+    "route_id": "route_p22_portia_paper_001",
+    "module_id": "portia",
+    "class_id": "eng10_p2_2026",
+    "work_id": "cbat_p22_paper_001",
+    "target": {
+      "record_kind": "capture_page_target",
+      "record_id": "ptgt_p22_paper_001",
+      "contract_version": "1"
+    },
+    "state": "active"
+  },
+  "retained_source": {
+    "source_scan_id": "scan_p22_portia_paper_001",
+    "source_sha256": "75f767d36c35c9d42ed81dd6a2f45c652244c8a66291a50b1228ac32ed125251",
+    "source_page_number": 1,
+    "byte_length": 70,
+    "media_type": "image/bmp",
+    "fixture_path": "shared/source-bytes/p22-05-returned-page.bmp"
+  }
+}

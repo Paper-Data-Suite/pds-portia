@@ -1,0 +1,158 @@
+{
+  "fixture_contract": "pds-portia.representative-contract-graph-scenario",
+  "fixture_version": "1",
+  "not_runtime_contract": true,
+  "scenario_id": "G22-021",
+  "title": "Implementation plan resolves only in another Support Process",
+  "scenario_kind": "graph_invalid",
+  "synthetic": true,
+  "records": [
+    {
+      "fixture_path": "process-a.json",
+      "contract": "support_process",
+      "version": "1",
+      "logical_identity": "support_process:sup_g22_021_a",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_g22_021",
+        "work_kind": "support_process",
+        "work_id": "sup_g22_021_a"
+      },
+      "canonical_path": "classes/eng10_g22_021/modules/portia/work/sup_g22_021_a/work.json"
+    },
+    {
+      "fixture_path": "student-a.json",
+      "contract": "support_process_participant",
+      "version": "1",
+      "logical_identity": "support_process_participant:spp_g22_021_student_a",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_g22_021",
+        "work_kind": "support_process",
+        "work_id": "sup_g22_021_a"
+      },
+      "canonical_path": "classes/eng10_g22_021/modules/portia/work/sup_g22_021_a/records/support_process_participant/spp_g22_021_student_a.json"
+    },
+    {
+      "fixture_path": "teacher-a.json",
+      "contract": "support_process_participant",
+      "version": "1",
+      "logical_identity": "support_process_participant:spp_g22_021_teacher_a",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_g22_021",
+        "work_kind": "support_process",
+        "work_id": "sup_g22_021_a"
+      },
+      "canonical_path": "classes/eng10_g22_021/modules/portia/work/sup_g22_021_a/records/support_process_participant/spp_g22_021_teacher_a.json"
+    },
+    {
+      "fixture_path": "implementation-a.json",
+      "contract": "implementation",
+      "version": "1",
+      "logical_identity": "implementation:imp_g22_021_a",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_g22_021",
+        "work_kind": "support_process",
+        "work_id": "sup_g22_021_a"
+      },
+      "canonical_path": "classes/eng10_g22_021/modules/portia/work/sup_g22_021_a/records/implementation/imp_g22_021_a.json"
+    },
+    {
+      "fixture_path": "process-b.json",
+      "contract": "support_process",
+      "version": "1",
+      "logical_identity": "support_process:sup_g22_021_b",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_g22_021",
+        "work_kind": "support_process",
+        "work_id": "sup_g22_021_b"
+      },
+      "canonical_path": "classes/eng10_g22_021/modules/portia/work/sup_g22_021_b/work.json"
+    },
+    {
+      "fixture_path": "student-b.json",
+      "contract": "support_process_participant",
+      "version": "1",
+      "logical_identity": "support_process_participant:spp_g22_021_student_b",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_g22_021",
+        "work_kind": "support_process",
+        "work_id": "sup_g22_021_b"
+      },
+      "canonical_path": "classes/eng10_g22_021/modules/portia/work/sup_g22_021_b/records/support_process_participant/spp_g22_021_student_b.json"
+    },
+    {
+      "fixture_path": "teacher-b.json",
+      "contract": "support_process_participant",
+      "version": "1",
+      "logical_identity": "support_process_participant:spp_g22_021_teacher_b",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_g22_021",
+        "work_kind": "support_process",
+        "work_id": "sup_g22_021_b"
+      },
+      "canonical_path": "classes/eng10_g22_021/modules/portia/work/sup_g22_021_b/records/support_process_participant/spp_g22_021_teacher_b.json"
+    },
+    {
+      "fixture_path": "need-b.json",
+      "contract": "support_need",
+      "version": "1",
+      "logical_identity": "support_need:spn_g22_021_b",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_g22_021",
+        "work_kind": "support_process",
+        "work_id": "sup_g22_021_b"
+      },
+      "canonical_path": "classes/eng10_g22_021/modules/portia/work/sup_g22_021_b/records/support_need/spn_g22_021_b.json"
+    },
+    {
+      "fixture_path": "goal-b.json",
+      "contract": "support_goal",
+      "version": "1",
+      "logical_identity": "support_goal:spg_g22_021_b",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_g22_021",
+        "work_kind": "support_process",
+        "work_id": "sup_g22_021_b"
+      },
+      "canonical_path": "classes/eng10_g22_021/modules/portia/work/sup_g22_021_b/records/support_goal/spg_g22_021_b.json"
+    },
+    {
+      "fixture_path": "support-b.json",
+      "contract": "support",
+      "version": "1",
+      "logical_identity": "support:spt_g22_021_foreign",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_g22_021",
+        "work_kind": "support_process",
+        "work_id": "sup_g22_021_b"
+      },
+      "canonical_path": "classes/eng10_g22_021/modules/portia/work/sup_g22_021_b/records/support/spt_g22_021_foreign.json"
+    }
+  ],
+  "context": [],
+  "required_distinctions": [
+    "Support plan ownership != Implementation occurrence ownership.",
+    "A local plan reference must resolve inside the owning Support Process even when the same exact plan identity exists elsewhere."
+  ],
+  "expected_graph_result": "invalid",
+  "expected_finding_ids": [
+    "G22.SUPPORT.IMPLEMENTATION_PLAN_WRONG_PROCESS"
+  ],
+  "primary_finding_id": "G22.SUPPORT.IMPLEMENTATION_PLAN_WRONG_PROCESS",
+  "principal_defect": "The Implementation is owned by Support Process A but its exact plan_ref names a Support record that exists only under Support Process B.",
+  "structurally_valid_reason": "Every public record uses an accepted contract shape; plan_ref is structurally valid because local Support/Intervention refs do not carry a work root. The application graph must reject cross-process resolution.",
+  "records_must_remain_unmodified": [
+    "support-b.json",
+    "implementation-a.json"
+  ],
+  "expected_path": "expected.json"
+}

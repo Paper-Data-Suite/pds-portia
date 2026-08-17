@@ -1,0 +1,76 @@
+{
+  "schema_version": "1",
+  "record_type": "communication",
+  "module_id": "portia",
+  "class_id": "eng10_p2_2026",
+  "work_kind": "event",
+  "work_id": "evt_p22_family_comm_001",
+  "communication_id": "comm_p22_family_001",
+  "status": "active",
+  "sender": {
+    "kind": "local_operator",
+    "display_label": "Synthetic Teacher"
+  },
+  "recipients": [
+    {
+      "person": {
+        "kind": "actor",
+        "actor_ref": {
+          "actor_id": "actr_p22_family_001"
+        },
+        "display_snapshot": {
+          "display_name": "Synthetic Family Contact"
+        }
+      },
+      "endpoint_ref": {
+        "actor_id": "actr_p22_family_001",
+        "contact_point_id": "acp_p22_family_email_001",
+        "contract_version": "1"
+      },
+      "participation": "not_established"
+    }
+  ],
+  "method": {
+    "kind": "email"
+  },
+  "purpose": {
+    "kind": "response_coordination"
+  },
+  "act_state": "completed",
+  "privacy_scope": "participant_limited",
+  "started_at": "2026-08-15T12:25:00-04:00",
+  "ended_at": "2026-08-15T12:26:00-04:00",
+  "summary": "Teacher emailed the listed family contact to share that a quieter seat had been offered during independent work.",
+  "relations": [
+    {
+      "relation": "relates_to_response",
+      "record_ref": {
+        "work_ref": {
+          "module_id": "portia",
+          "class_id": "eng10_p2_2026",
+          "work_id": "evt_p22_family_comm_001",
+          "work_kind": "event",
+          "contract_version": "2"
+        },
+        "record_ref": {
+          "record_kind": "response",
+          "record_id": "rsp_p22_family_001",
+          "contract_version": "1"
+        }
+      }
+    }
+  ],
+  "creation_source": {
+    "type": "digital_entry"
+  },
+  "created_at": "2026-08-15T12:28:00-04:00",
+  "created_by": {
+    "type": "local_operator",
+    "display_label": "Synthetic Teacher"
+  },
+  "updated_at": "2026-08-15T12:28:00-04:00",
+  "updated_by": {
+    "type": "local_operator",
+    "display_label": "Synthetic Teacher"
+  }
+}

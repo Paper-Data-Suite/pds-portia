@@ -1,0 +1,81 @@
+{
+  "fixture_contract": "pds-portia.representative-contract-graph-scenario",
+  "fixture_version": "1",
+  "not_runtime_contract": true,
+  "scenario_id": "G22-018",
+  "title": "Judgment evidence resolves outside the accepted owning work",
+  "scenario_kind": "graph_invalid",
+  "synthetic": true,
+  "records": [
+    {
+      "fixture_path": "event-a.json",
+      "contract": "event",
+      "version": "2",
+      "logical_identity": "event:evt_g22_018_a",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_g22_018",
+        "work_kind": "event",
+        "work_id": "evt_g22_018_a"
+      },
+      "canonical_path": "classes/eng10_g22_018/modules/portia/work/evt_g22_018_a/work.json"
+    },
+    {
+      "fixture_path": "event-b.json",
+      "contract": "event",
+      "version": "2",
+      "logical_identity": "event:evt_g22_018_b",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_g22_018",
+        "work_kind": "event",
+        "work_id": "evt_g22_018_b"
+      },
+      "canonical_path": "classes/eng10_g22_018/modules/portia/work/evt_g22_018_b/work.json"
+    },
+    {
+      "fixture_path": "observation-b.json",
+      "contract": "observation",
+      "version": "2",
+      "logical_identity": "observation:obs_g22_018_b",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_g22_018",
+        "work_kind": "event",
+        "work_id": "evt_g22_018_b"
+      },
+      "canonical_path": "classes/eng10_g22_018/modules/portia/work/evt_g22_018_b/records/observation/obs_g22_018_b.json"
+    },
+    {
+      "fixture_path": "determination-a.json",
+      "contract": "determination",
+      "version": "1",
+      "logical_identity": "determination:det_g22_018_a",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_g22_018",
+        "work_kind": "event",
+        "work_id": "evt_g22_018_a"
+      },
+      "canonical_path": "classes/eng10_g22_018/modules/portia/work/evt_g22_018_a/records/determination/det_g22_018_a.json"
+    }
+  ],
+  "context": [],
+  "required_distinctions": [
+    "Judgment evidence remains exact and work-scoped.",
+    "An existing record in another Event does not satisfy Event-local evidence resolution."
+  ],
+  "expected_graph_result": "invalid",
+  "expected_finding_ids": [
+    "G22.EVIDENCE.WRONG_WORK"
+  ],
+  "primary_finding_id": "G22.EVIDENCE.WRONG_WORK",
+  "principal_defect": "A Determination owned by Event A cites an exact Observation that correctly exists in Event B, outside the Determination's accepted owning Event scope.",
+  "structurally_valid_reason": "Determination@1 structurally permits a complete exact Portia work-record evidence reference; agreement between that reference and the Determination's owning Event is an application invariant.",
+  "records_must_remain_unmodified": [
+    "event-a.json",
+    "event-b.json",
+    "observation-b.json"
+  ],
+  "expected_path": "expected.json"
+}

@@ -1,0 +1,97 @@
+{
+  "fixture_contract": "pds-portia.representative-contract-graph-scenario",
+  "fixture_version": "1",
+  "not_runtime_contract": true,
+  "scenario_id": "G22-029",
+  "title": "Restart replays an already committed semantic write",
+  "scenario_kind": "graph_invalid",
+  "synthetic": true,
+  "records": [
+    {
+      "fixture_path": "event-primary.json",
+      "contract": "event",
+      "version": "2",
+      "logical_identity": "event:evt_p22_recovery_primary",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "event",
+        "work_id": "evt_p22_recovery_primary"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/evt_p22_recovery_primary/work.json"
+    },
+    {
+      "fixture_path": "event-context.json",
+      "contract": "event",
+      "version": "2",
+      "logical_identity": "event:evt_p22_recovery_context",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "event",
+        "work_id": "evt_p22_recovery_context"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/evt_p22_recovery_context/work.json"
+    },
+    {
+      "fixture_path": "relationship-original.json",
+      "contract": "work_relationship",
+      "version": "2",
+      "logical_identity": "work_relationship:rel_p22_recovery_original",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "event",
+        "work_id": "evt_p22_recovery_primary"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/evt_p22_recovery_primary/records/work_relationship/rel_p22_recovery_original.json"
+    },
+    {
+      "fixture_path": "relationship-corrected.json",
+      "contract": "work_relationship",
+      "version": "2",
+      "logical_identity": "work_relationship:rel_p22_recovery_corrected",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "event",
+        "work_id": "evt_p22_recovery_primary"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/evt_p22_recovery_primary/records/work_relationship/rel_p22_recovery_corrected.json"
+    }
+  ],
+  "context": [
+    {
+      "context_kind": "synthetic_operation_restart_resolution",
+      "fixture_path": "restart-context.json"
+    }
+  ],
+  "operational_contract_fixtures": [
+    {
+      "fixture_path": "operation-journal-r5.json",
+      "contract": "operation_journal",
+      "version": "1",
+      "authority": "durable_operational_not_domain_truth",
+      "canonical_path": "portia/operations/op_p22_recovery_relationship/revisions/5.json"
+    }
+  ],
+  "required_distinctions": [
+    "Restart recovery must reconcile durable accepted writes before mutation.",
+    "Already committed semantic write != remaining write to replay."
+  ],
+  "expected_graph_result": "invalid",
+  "expected_finding_ids": [
+    "G22.OPERATION.RESTART_REPLAYS_COMMITTED_WRITE"
+  ],
+  "primary_finding_id": "G22.OPERATION.RESTART_REPLAYS_COMMITTED_WRITE",
+  "principal_defect": "Restart replays an already accepted durable semantic write instead of reconciling exact canonical readback and continuing only remaining work.",
+  "structurally_valid_reason": "The committed Operation Journal and both canonical Work Relationships are valid; the invalidity is the synthetic restart decision applied to an already accepted write step.",
+  "records_must_remain_unmodified": [
+    "event-primary.json",
+    "event-context.json",
+    "relationship-original.json",
+    "relationship-corrected.json",
+    "operation-journal-r5.json"
+  ],
+  "expected_path": "expected.json"
+}

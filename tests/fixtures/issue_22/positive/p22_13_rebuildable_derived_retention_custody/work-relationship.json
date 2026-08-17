@@ -1,0 +1,38 @@
+{
+  "schema_version": "2",
+  "record_type": "work_relationship",
+  "module_id": "portia",
+  "class_id": "eng10_p2_2026",
+  "work_id": "evt_p22_derived_001",
+  "relationship_id": "rel_p22_derived_context",
+  "status": "active",
+  "relationship_type": "draws_context_from",
+  "source": {
+    "module_id": "portia",
+    "class_id": "eng10_p2_2026",
+    "work_id": "evt_p22_derived_001",
+    "work_kind": "event",
+    "contract_version": "2"
+  },
+  "target": {
+    "module_id": "portia",
+    "class_id": "eng10_p2_2026",
+    "work_id": "evt_p22_derived_context",
+    "work_kind": "event",
+    "contract_version": "2"
+  },
+  "detail": "The later Event draws bounded classroom context from the earlier Event without merging work identity.",
+  "creation_source": {
+    "type": "digital_entry"
+  },
+  "created_at": "2026-10-06T09:04:00-04:00",
+  "created_by": {
+    "type": "local_operator",
+    "display_label": "Synthetic Teacher"
+  },
+  "updated_at": "2026-10-06T09:04:00-04:00",
+  "updated_by": {
+    "type": "local_operator",
+    "display_label": "Synthetic Teacher"
+  }
+}

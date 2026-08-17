@@ -1,0 +1,12 @@
+{
+  "fixture_contract": "pds-portia.synthetic-foreign-custody-context",
+  "fixture_version": "1",
+  "not_runtime_contract": true,
+  "synthetic": true,
+  "authority": "pds-core",
+  "custody_marker": "core_retained_source",
+  "source_id": "core_source_p22_derived_001",
+  "portia_has_read_authority": true,
+  "portia_has_destruction_authority": false,
+  "notes": "Foreign Core retained-source custody is context only; Portia cannot claim deletion of Core bytes."
+}

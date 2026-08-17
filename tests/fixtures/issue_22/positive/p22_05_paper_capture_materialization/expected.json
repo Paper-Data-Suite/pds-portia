@@ -1,0 +1,35 @@
+{
+  "source_fixture_path": "tests/fixtures/issue_22/shared/source-bytes/p22-05-returned-page.bmp",
+  "source_sha256": "75f767d36c35c9d42ed81dd6a2f45c652244c8a66291a50b1228ac32ed125251",
+  "source_byte_length": 70,
+  "source_media_type": "image/bmp",
+  "layout_fixture_path": "tests/fixtures/issue_22/shared/policy-context/p22-05-event-intake-layout.json",
+  "layout_sha256": "7fb7d50e2a143bae662cf8760b2b638fa64c982178c696fc8827be85ec716212",
+  "capture_batch_id": "cbat_p22_paper_001",
+  "page_target_id": "ptgt_p22_paper_001",
+  "page_record_id": "prec_p22_paper_001",
+  "route_id": "route_p22_portia_paper_001",
+  "source_scan_id": "scan_p22_portia_paper_001",
+  "source_page_number": 1,
+  "interpretation_id": "pint_p22_paper_001",
+  "interpretation_generation": 1,
+  "proposal_id": "cprp_p22_paper_001",
+  "review_id": "crev_p22_paper_001",
+  "review_disposition": "accepted",
+  "operation_id": "op_p22_paper_create_event_001",
+  "operation_revision": 3,
+  "materialized_event_id": "evt_p22_paper_001",
+  "event_occurrence_started_at": "2026-08-15T08:35:00-04:00",
+  "event_summary": "Student asked for a quieter seat during independent work.",
+  "paper_creation_source": {
+    "type": "paper_capture",
+    "stage": "ingested",
+    "route_id": "route_p22_portia_paper_001",
+    "page_record_id": "prec_p22_paper_001"
+  },
+  "idempotency_tuple": [
+    "route_p22_portia_paper_001",
+    "scan_p22_portia_paper_001",
+    1
+  ]
+}

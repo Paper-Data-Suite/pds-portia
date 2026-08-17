@@ -1,0 +1,104 @@
+{
+  "fixture_contract": "pds-portia.representative-contract-graph-scenario",
+  "fixture_version": "1",
+  "not_runtime_contract": true,
+  "scenario_id": "G22-013",
+  "title": "Statement of Disagreement resolves to the wrong exact contested record",
+  "scenario_kind": "graph_invalid",
+  "synthetic": true,
+  "records": [
+    {
+      "fixture_path": "event.json",
+      "contract": "event",
+      "version": "2",
+      "logical_identity": "event:evt_g22_013",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_g22_013",
+        "work_kind": "event",
+        "work_id": "evt_g22_013"
+      },
+      "canonical_path": "classes/eng10_g22_013/modules/portia/work/evt_g22_013/work.json"
+    },
+    {
+      "fixture_path": "participant.json",
+      "contract": "event_participant",
+      "version": "3",
+      "logical_identity": "event_participant:ep_g22_013_student",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_g22_013",
+        "work_kind": "event",
+        "work_id": "evt_g22_013"
+      },
+      "canonical_path": "classes/eng10_g22_013/modules/portia/work/evt_g22_013/records/event_participant/ep_g22_013_student.json"
+    },
+    {
+      "fixture_path": "account-a.json",
+      "contract": "account",
+      "version": "2",
+      "logical_identity": "account:acct_g22_013_a",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_g22_013",
+        "work_kind": "event",
+        "work_id": "evt_g22_013"
+      },
+      "canonical_path": "classes/eng10_g22_013/modules/portia/work/evt_g22_013/records/account/acct_g22_013_a.json"
+    },
+    {
+      "fixture_path": "account-b.json",
+      "contract": "account",
+      "version": "2",
+      "logical_identity": "account:acct_g22_013_b",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_g22_013",
+        "work_kind": "event",
+        "work_id": "evt_g22_013"
+      },
+      "canonical_path": "classes/eng10_g22_013/modules/portia/work/evt_g22_013/records/account/acct_g22_013_b.json"
+    },
+    {
+      "fixture_path": "disagreement.json",
+      "contract": "statement_of_disagreement",
+      "version": "1",
+      "logical_identity": "statement_of_disagreement:sod_g22_013",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_g22_013",
+        "work_kind": "event",
+        "work_id": "evt_g22_013"
+      },
+      "canonical_path": "classes/eng10_g22_013/modules/portia/work/evt_g22_013/records/statement_of_disagreement/sod_g22_013.json"
+    }
+  ],
+  "context": [
+    {
+      "context_kind": "synthetic_core_roster",
+      "fixture_path": "roster.json"
+    },
+    {
+      "context_kind": "synthetic_disagreement_resolution",
+      "fixture_path": "disagreement-resolution.json"
+    }
+  ],
+  "required_distinctions": [
+    "Statement of Disagreement does not adjudicate truth.",
+    "A disagreement remains pinned to the exact record actually contested and cannot silently bind a same-family neighbor."
+  ],
+  "expected_graph_result": "invalid",
+  "expected_finding_ids": [
+    "G22.CORRECTION.DISAGREEMENT_WRONG_TARGET"
+  ],
+  "primary_finding_id": "G22.CORRECTION.DISAGREEMENT_WRONG_TARGET",
+  "principal_defect": "The Statement of Disagreement is structurally valid and resolves to Account B, but the fixture-declared contested representation is the distinct exact Account A.",
+  "structurally_valid_reason": "The disagreement target is a structurally valid local-record reference and both Accounts exist; only the combined exact-contested-record expectation exposes the mismatch.",
+  "records_must_remain_unmodified": [
+    "event.json",
+    "participant.json",
+    "account-a.json",
+    "account-b.json"
+  ],
+  "expected_path": "expected.json"
+}

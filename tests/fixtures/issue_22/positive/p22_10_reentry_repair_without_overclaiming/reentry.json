@@ -1,0 +1,71 @@
+{
+  "schema_version": "1",
+  "record_type": "reentry",
+  "module_id": "portia",
+  "class_id": "eng10_p2_2026",
+  "work_kind": "event",
+  "work_id": "evt_p22_reentry_repair_001",
+  "reentry_id": "ren_p22_reentry_repair_001",
+  "status": "active",
+  "target": {
+    "kind": "event_participant",
+    "record_ref": {
+      "record_kind": "event_participant",
+      "record_id": "ep_p22_reentry_repair_a",
+      "contract_version": "3"
+    }
+  },
+  "coordinator": {
+    "kind": "represented_human",
+    "person": {
+      "kind": "local_operator",
+      "display_label": "Synthetic Teacher"
+    }
+  },
+  "initiating_context": {
+    "kind": "response",
+    "record_ref": {
+      "work_ref": {
+        "module_id": "portia",
+        "class_id": "eng10_p2_2026",
+        "work_id": "evt_p22_reentry_repair_001",
+        "work_kind": "event",
+        "contract_version": "2"
+      },
+      "record_ref": {
+        "record_kind": "response",
+        "record_id": "rsp_p22_reentry_repair_001",
+        "contract_version": "1"
+      }
+    }
+  },
+  "planned_return": {
+    "kind": "date_only",
+    "date": "2026-09-15"
+  },
+  "planned_elements": [
+    {
+      "kind": "orientation_or_check_in",
+      "description": "Brief teacher check-in before the next collaborative-work block."
+    },
+    {
+      "kind": "relationship_reconnection",
+      "description": "Return to ordinary shared-work routines without requiring apology, admission, or proof of readiness."
+    }
+  ],
+  "workflow_state": "completed",
+  "completed_at": "2026-09-15T09:58:00-04:00",
+  "creation_source": {
+    "type": "digital_entry"
+  },
+  "created_at": "2026-09-14T10:30:00-04:00",
+  "created_by": {
+    "type": "local_operator",
+    "display_label": "Synthetic Teacher"
+  },
+  "updated_at": "2026-09-15T10:02:00-04:00",
+  "updated_by": {
+    "type": "local_operator",
+    "display_label": "Synthetic Teacher"
+  }
+}

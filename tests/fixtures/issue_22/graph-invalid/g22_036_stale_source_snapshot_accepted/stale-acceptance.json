@@ -1,0 +1,16 @@
+{
+  "fixture_contract": "pds-portia.synthetic-stale-source-snapshot-acceptance",
+  "fixture_version": "1",
+  "not_runtime_contract": true,
+  "source_record": {
+    "class_id": "eng10_p2_2026",
+    "work_id": "evt_p22_derived_001",
+    "record_kind": "account",
+    "record_id": "acct_p22_derived_corrected",
+    "contract_version": "2"
+  },
+  "snapshot_workspace_relative_path": "classes/eng10_p2_2026/modules/portia/work/evt_p22_derived_001/records/account/acct_p22_derived_corrected.json",
+  "snapshot_representation_digest": "3e066c1be07438a33223bda1c6be3ed9d74ea42a9e04a4e14c4e40ceb808df6b",
+  "source_changed_after_snapshot": true,
+  "stale_derived_result_accepted": true
+}

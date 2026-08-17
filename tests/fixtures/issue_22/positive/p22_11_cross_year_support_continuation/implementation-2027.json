@@ -1,0 +1,49 @@
+{
+  "schema_version": "1",
+  "record_type": "implementation",
+  "module_id": "portia",
+  "class_id": "eng11_p3_2027",
+  "work_id": "sup_p22_crossyear_2027",
+  "implementation_id": "imp_p22_crossyear_2027",
+  "status": "active",
+  "plan_ref": {
+    "record_kind": "support",
+    "record_id": "spt_p22_crossyear_2027",
+    "contract_version": "1"
+  },
+  "actual_target": {
+    "kind": "support_process_participant",
+    "record_ref": {
+      "record_kind": "support_process_participant",
+      "record_id": "spp_p22_crossyear_student_2027",
+      "contract_version": "1"
+    }
+  },
+  "implementation_provider": {
+    "kind": "participants",
+    "participant_refs": [
+      {
+        "record_kind": "support_process_participant",
+        "record_id": "spp_p22_crossyear_teacher_2027",
+        "contract_version": "1"
+      }
+    ]
+  },
+  "execution_state": "completed",
+  "started_at": "2027-09-14T09:10:00-04:00",
+  "ended_at": "2027-09-14T09:12:00-04:00",
+  "summary": "The current-year research planning template was made available and the planned source-selection check-in was offered.",
+  "creation_source": {
+    "type": "digital_entry"
+  },
+  "created_at": "2027-09-14T11:00:00-04:00",
+  "created_by": {
+    "type": "local_operator",
+    "display_label": "Synthetic Teacher"
+  },
+  "updated_at": "2027-09-14T11:00:00-04:00",
+  "updated_by": {
+    "type": "local_operator",
+    "display_label": "Synthetic Teacher"
+  }
+}

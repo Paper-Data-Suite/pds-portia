@@ -1,0 +1,12 @@
+{
+  "fixture_contract": "pds-portia.graph-invalid-expectation",
+  "fixture_version": "1",
+  "not_runtime_contract": true,
+  "scenario_id": "G22-005",
+  "primary_finding_id": "G22.IDENTITY.CROSS_CLASS_LOCAL_ID_MERGE",
+  "expected_finding_ids": [
+    "G22.IDENTITY.CROSS_CLASS_LOCAL_ID_MERGE"
+  ],
+  "structurally_valid_public_records": true,
+  "principal_defect": "A synthetic resolver collapses two class-qualified roster subjects solely because their local student_id strings match."
+}

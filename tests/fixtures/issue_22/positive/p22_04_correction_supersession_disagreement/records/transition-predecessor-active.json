@@ -1,0 +1,32 @@
+{
+  "schema_version": "1",
+  "record_type": "lifecycle_transition",
+  "module_id": "portia",
+  "class_id": "eng10_p2_2026",
+  "work_id": "evt_p22_correction_001",
+  "transition_id": "lct_p22_original_active",
+  "target": {
+    "kind": "local_record",
+    "record_ref": {
+      "record_kind": "account",
+      "record_id": "acct_p22_original_red",
+      "contract_version": "2"
+    }
+  },
+  "previous_transition": null,
+  "from_status": "proposed",
+  "to_status": "active",
+  "reason": {
+    "category": "workflow",
+    "code": "review_confirmed"
+  },
+  "effective_at": "2026-08-15T11:06:00-04:00",
+  "creation_source": {
+    "type": "digital_entry"
+  },
+  "created_at": "2026-08-15T11:07:00-04:00",
+  "created_by": {
+    "type": "local_operator",
+    "display_label": "Synthetic Teacher"
+  }
+}

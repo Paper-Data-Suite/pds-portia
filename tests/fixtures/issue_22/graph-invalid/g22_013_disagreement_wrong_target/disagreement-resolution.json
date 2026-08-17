@@ -1,0 +1,17 @@
+{
+  "fixture_contract": "pds-portia.synthetic-disagreement-resolution",
+  "fixture_version": "1",
+  "not_runtime_contract": true,
+  "disagreement_id": "sod_g22_013",
+  "intended_target": {
+    "record_kind": "account",
+    "record_id": "acct_g22_013_a",
+    "contract_version": "2"
+  },
+  "actual_target": {
+    "record_kind": "account",
+    "record_id": "acct_g22_013_b",
+    "contract_version": "2"
+  },
+  "basis": "fixture_declared_contested_record"
+}

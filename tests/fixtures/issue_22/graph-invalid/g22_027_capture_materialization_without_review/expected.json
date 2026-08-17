@@ -1,0 +1,12 @@
+{
+  "fixture_contract": "pds-portia.graph-invalid-expectation",
+  "fixture_version": "1",
+  "not_runtime_contract": true,
+  "scenario_id": "G22-027",
+  "primary_finding_id": "G22.PAPER.MATERIALIZATION_REVIEW_UNRESOLVED",
+  "expected_finding_ids": [
+    "G22.PAPER.MATERIALIZATION_REVIEW_UNRESOLVED"
+  ],
+  "structurally_valid_public_records": true,
+  "principal_defect": "Capture materialization claims an accepted canonical result while its required exact Capture Review does not resolve."
+}

@@ -1,0 +1,73 @@
+{
+  "fixture_contract": "pds-portia.representative-contract-graph-scenario",
+  "fixture_version": "1",
+  "not_runtime_contract": true,
+  "scenario_id": "G22-034",
+  "title": "Derived incoming-reference index disagrees with canonical forward edge",
+  "scenario_kind": "graph_invalid",
+  "synthetic": true,
+  "records": [
+    {
+      "fixture_path": "event-primary.json",
+      "contract": "event",
+      "version": "2",
+      "logical_identity": "event:evt_p22_derived_001",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "event",
+        "work_id": "evt_p22_derived_001"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/evt_p22_derived_001/work.json"
+    },
+    {
+      "fixture_path": "event-context.json",
+      "contract": "event",
+      "version": "2",
+      "logical_identity": "event:evt_p22_derived_context",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "event",
+        "work_id": "evt_p22_derived_context"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/evt_p22_derived_context/work.json"
+    },
+    {
+      "fixture_path": "work-relationship.json",
+      "contract": "work_relationship",
+      "version": "2",
+      "logical_identity": "work_relationship:rel_p22_derived_context",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "event",
+        "work_id": "evt_p22_derived_001"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/evt_p22_derived_001/records/work_relationship/rel_p22_derived_context.json"
+    }
+  ],
+  "context": [
+    {
+      "context_kind": "synthetic_incoming_reference_index",
+      "fixture_path": "incoming-index.json"
+    }
+  ],
+  "required_distinctions": [
+    "Canonical forward Work Relationship is authority.",
+    "Incoming indexes are rebuildable reverse views and may not retarget the edge."
+  ],
+  "expected_graph_result": "invalid",
+  "expected_finding_ids": [
+    "G22.DERIVED.INCOMING_INDEX_DISAGREES_FORWARD_REFS"
+  ],
+  "primary_finding_id": "G22.DERIVED.INCOMING_INDEX_DISAGREES_FORWARD_REFS",
+  "principal_defect": "The derived incoming-reference index attributes a canonical Work Relationship to the wrong target work.",
+  "structurally_valid_reason": "Every public Portia contract fixture is structurally valid; the defect exists only in combined projection/export/derived/custody application semantics.",
+  "records_must_remain_unmodified": [
+    "event-primary.json",
+    "event-context.json",
+    "work-relationship.json"
+  ],
+  "expected_path": "expected.json"
+}

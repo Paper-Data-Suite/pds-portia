@@ -1,0 +1,23 @@
+{
+  "fixture_contract": "pds-portia.synthetic-identity-resolution",
+  "fixture_version": "1",
+  "not_runtime_contract": true,
+  "resolution_kind": "same_person",
+  "basis": "display_name",
+  "subjects": [
+    {
+      "kind": "roster_student",
+      "class_id": "eng10_g22_name_a",
+      "student_id": "stu_g22_name_a",
+      "display_name": "Synthetic Same Name"
+    },
+    {
+      "kind": "roster_student",
+      "class_id": "eng11_g22_name_b",
+      "student_id": "stu_g22_name_b",
+      "display_name": "Synthetic Same Name"
+    }
+  ],
+  "resolved_identity": "synthetic_person_g22_006",
+  "accepted_explicit_link": false
+}

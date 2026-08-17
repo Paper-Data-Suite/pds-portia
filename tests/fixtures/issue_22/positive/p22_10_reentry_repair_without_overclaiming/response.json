@@ -1,0 +1,41 @@
+{
+  "schema_version": "1",
+  "record_type": "response",
+  "module_id": "portia",
+  "class_id": "eng10_p2_2026",
+  "work_id": "evt_p22_reentry_repair_001",
+  "response_id": "rsp_p22_reentry_repair_001",
+  "status": "active",
+  "target": {
+    "kind": "event_participant",
+    "record_ref": {
+      "record_kind": "event_participant",
+      "record_id": "ep_p22_reentry_repair_a",
+      "contract_version": "3"
+    }
+  },
+  "provider": {
+    "kind": "local_operator",
+    "display_label": "Synthetic Teacher"
+  },
+  "action": {
+    "family": "environmental_or_instructional",
+    "description": "Teacher moved Student A to a separate work location for the remainder of the paired-work block so both students could continue the assignment."
+  },
+  "execution_state": "completed",
+  "started_at": "2026-09-14T10:08:00-04:00",
+  "ended_at": "2026-09-14T10:09:00-04:00",
+  "creation_source": {
+    "type": "digital_entry"
+  },
+  "created_at": "2026-09-14T10:24:00-04:00",
+  "created_by": {
+    "type": "local_operator",
+    "display_label": "Synthetic Teacher"
+  },
+  "updated_at": "2026-09-14T10:24:00-04:00",
+  "updated_by": {
+    "type": "local_operator",
+    "display_label": "Synthetic Teacher"
+  }
+}

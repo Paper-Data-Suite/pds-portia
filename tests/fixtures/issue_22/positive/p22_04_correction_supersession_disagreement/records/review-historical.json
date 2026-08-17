@@ -1,0 +1,56 @@
+{
+  "schema_version": "1",
+  "record_type": "review",
+  "module_id": "portia",
+  "class_id": "eng10_p2_2026",
+  "work_id": "evt_p22_correction_001",
+  "review_id": "rvw_p22_before_correction",
+  "status": "active",
+  "review_state": "completed",
+  "trigger": {
+    "kind": "routine_review"
+  },
+  "question": {
+    "kind": "evidence_review",
+    "text": "What statement was recorded before the later correction request?"
+  },
+  "target": {
+    "kind": "event"
+  },
+  "reviewer": {
+    "kind": "local_operator",
+    "display_label": "Synthetic Teacher"
+  },
+  "evidence_considered": [
+    {
+      "kind": "portia_record",
+      "work_record_ref": {
+        "work_ref": {
+          "module_id": "portia",
+          "class_id": "eng10_p2_2026",
+          "work_id": "evt_p22_correction_001",
+          "work_kind": "event",
+          "contract_version": "2"
+        },
+        "record_ref": {
+          "record_kind": "account",
+          "record_id": "acct_p22_original_red",
+          "contract_version": "2"
+        }
+      }
+    }
+  ],
+  "creation_source": {
+    "type": "digital_entry"
+  },
+  "created_at": "2026-08-15T11:12:00-04:00",
+  "created_by": {
+    "type": "local_operator",
+    "display_label": "Synthetic Teacher"
+  },
+  "updated_at": "2026-08-15T11:12:00-04:00",
+  "updated_by": {
+    "type": "local_operator",
+    "display_label": "Synthetic Teacher"
+  }
+}

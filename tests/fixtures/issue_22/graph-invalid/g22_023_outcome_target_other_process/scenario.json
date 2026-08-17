@@ -1,0 +1,158 @@
+{
+  "fixture_contract": "pds-portia.representative-contract-graph-scenario",
+  "fixture_version": "1",
+  "not_runtime_contract": true,
+  "scenario_id": "G22-023",
+  "title": "Outcome target resolves only in another Support Process",
+  "scenario_kind": "graph_invalid",
+  "synthetic": true,
+  "records": [
+    {
+      "fixture_path": "process-a.json",
+      "contract": "support_process",
+      "version": "1",
+      "logical_identity": "support_process:sup_g22_023_a",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_g22_023",
+        "work_kind": "support_process",
+        "work_id": "sup_g22_023_a"
+      },
+      "canonical_path": "classes/eng10_g22_023/modules/portia/work/sup_g22_023_a/work.json"
+    },
+    {
+      "fixture_path": "student-a.json",
+      "contract": "support_process_participant",
+      "version": "1",
+      "logical_identity": "support_process_participant:spp_g22_023_student_a",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_g22_023",
+        "work_kind": "support_process",
+        "work_id": "sup_g22_023_a"
+      },
+      "canonical_path": "classes/eng10_g22_023/modules/portia/work/sup_g22_023_a/records/support_process_participant/spp_g22_023_student_a.json"
+    },
+    {
+      "fixture_path": "teacher-a.json",
+      "contract": "support_process_participant",
+      "version": "1",
+      "logical_identity": "support_process_participant:spp_g22_023_teacher_a",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_g22_023",
+        "work_kind": "support_process",
+        "work_id": "sup_g22_023_a"
+      },
+      "canonical_path": "classes/eng10_g22_023/modules/portia/work/sup_g22_023_a/records/support_process_participant/spp_g22_023_teacher_a.json"
+    },
+    {
+      "fixture_path": "need-a.json",
+      "contract": "support_need",
+      "version": "1",
+      "logical_identity": "support_need:spn_g22_023_a",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_g22_023",
+        "work_kind": "support_process",
+        "work_id": "sup_g22_023_a"
+      },
+      "canonical_path": "classes/eng10_g22_023/modules/portia/work/sup_g22_023_a/records/support_need/spn_g22_023_a.json"
+    },
+    {
+      "fixture_path": "goal-a.json",
+      "contract": "support_goal",
+      "version": "1",
+      "logical_identity": "support_goal:spg_g22_023_a",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_g22_023",
+        "work_kind": "support_process",
+        "work_id": "sup_g22_023_a"
+      },
+      "canonical_path": "classes/eng10_g22_023/modules/portia/work/sup_g22_023_a/records/support_goal/spg_g22_023_a.json"
+    },
+    {
+      "fixture_path": "support-a.json",
+      "contract": "support",
+      "version": "1",
+      "logical_identity": "support:spt_g22_023_a",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_g22_023",
+        "work_kind": "support_process",
+        "work_id": "sup_g22_023_a"
+      },
+      "canonical_path": "classes/eng10_g22_023/modules/portia/work/sup_g22_023_a/records/support/spt_g22_023_a.json"
+    },
+    {
+      "fixture_path": "implementation-a.json",
+      "contract": "implementation",
+      "version": "1",
+      "logical_identity": "implementation:imp_g22_023_a",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_g22_023",
+        "work_kind": "support_process",
+        "work_id": "sup_g22_023_a"
+      },
+      "canonical_path": "classes/eng10_g22_023/modules/portia/work/sup_g22_023_a/records/implementation/imp_g22_023_a.json"
+    },
+    {
+      "fixture_path": "outcome-a.json",
+      "contract": "outcome",
+      "version": "1",
+      "logical_identity": "outcome:out_g22_023_a",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_g22_023",
+        "work_kind": "support_process",
+        "work_id": "sup_g22_023_a"
+      },
+      "canonical_path": "classes/eng10_g22_023/modules/portia/work/sup_g22_023_a/records/outcome/out_g22_023_a.json"
+    },
+    {
+      "fixture_path": "process-b.json",
+      "contract": "support_process",
+      "version": "1",
+      "logical_identity": "support_process:sup_g22_023_b",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_g22_023",
+        "work_kind": "support_process",
+        "work_id": "sup_g22_023_b"
+      },
+      "canonical_path": "classes/eng10_g22_023/modules/portia/work/sup_g22_023_b/work.json"
+    },
+    {
+      "fixture_path": "student-b.json",
+      "contract": "support_process_participant",
+      "version": "1",
+      "logical_identity": "support_process_participant:spp_g22_023_student_b",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_g22_023",
+        "work_kind": "support_process",
+        "work_id": "sup_g22_023_b"
+      },
+      "canonical_path": "classes/eng10_g22_023/modules/portia/work/sup_g22_023_b/records/support_process_participant/spp_g22_023_student_b.json"
+    }
+  ],
+  "context": [],
+  "required_distinctions": [
+    "Outcome target identity is exact and work-scoped.",
+    "Evidence and evaluation context do not authorize crossing the owning Support Process target boundary."
+  ],
+  "expected_graph_result": "invalid",
+  "expected_finding_ids": [
+    "G22.OUTCOME.TARGET_WRONG_PROCESS"
+  ],
+  "primary_finding_id": "G22.OUTCOME.TARGET_WRONG_PROCESS",
+  "principal_defect": "The Outcome is owned by Support Process A, while its support_process_participant target exists only under Support Process B.",
+  "structurally_valid_reason": "The target ref is a structurally valid exact local participant reference. The application graph must enforce owning Support Process resolution.",
+  "records_must_remain_unmodified": [
+    "outcome-a.json",
+    "student-b.json"
+  ],
+  "expected_path": "expected.json"
+}

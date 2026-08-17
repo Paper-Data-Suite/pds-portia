@@ -1,0 +1,170 @@
+{
+  "fixture_contract": "pds-portia.issue-22-derived-view-expectation",
+  "fixture_version": "1",
+  "not_runtime_contract": true,
+  "synthetic": true,
+  "builder_id": "p22_representative_derived_views",
+  "builder_version": "1",
+  "source_authority": "canonical_forward_records",
+  "views": {
+    "incoming_reference_index": {
+      "eng10_p2_2026/evt_p22_derived_001/account:acct_p22_derived_original@2": [
+        {
+          "source_kind": "account_supersession",
+          "record_id": "acct_p22_derived_corrected"
+        },
+        {
+          "source_kind": "lifecycle_transition",
+          "record_id": "lct_p22_derived_original_active"
+        },
+        {
+          "source_kind": "lifecycle_transition",
+          "record_id": "lct_p22_derived_original_superseded"
+        }
+      ],
+      "eng10_p2_2026/evt_p22_derived_001/lifecycle_transition:lct_p22_derived_original_active@1": [
+        {
+          "source_kind": "lifecycle_predecessor",
+          "record_id": "lct_p22_derived_original_superseded"
+        }
+      ],
+      "eng10_p2_2026/evt_p22_derived_context@2": [
+        {
+          "source_kind": "dependency",
+          "record_id": "dep_p22_derived_context",
+          "dependent_work": "eng10_p2_2026/evt_p22_derived_001@2"
+        },
+        {
+          "source_kind": "work_relationship",
+          "record_id": "rel_p22_derived_context",
+          "source_work": "eng10_p2_2026/evt_p22_derived_001@2"
+        }
+      ]
+    },
+    "work_relationship_reverse_index": {
+      "eng10_p2_2026/evt_p22_derived_context@2": [
+        {
+          "relationship_id": "rel_p22_derived_context",
+          "source_work": "eng10_p2_2026/evt_p22_derived_001@2",
+          "relationship_type": "draws_context_from"
+        }
+      ]
+    },
+    "replacement_current_frontier": {
+      "account": {
+        "predecessors": [
+          "eng10_p2_2026/evt_p22_derived_001/account:acct_p22_derived_original@2"
+        ],
+        "current": [
+          "eng10_p2_2026/evt_p22_derived_001/account:acct_p22_derived_corrected@2"
+        ],
+        "selection_basis": "canonical_supersedes"
+      }
+    },
+    "dependency_graph": {
+      "nodes": [
+        "eng10_p2_2026/evt_p22_derived_001@2",
+        "eng10_p2_2026/evt_p22_derived_context@2"
+      ],
+      "edges": [
+        {
+          "dependency_id": "dep_p22_derived_context",
+          "dependent": "eng10_p2_2026/evt_p22_derived_001@2",
+          "dependency": "eng10_p2_2026/evt_p22_derived_context@2",
+          "strength": "advisory",
+          "applies_to": "current_use",
+          "purpose": "contextual_support"
+        }
+      ]
+    },
+    "lifecycle_timeline": {
+      "target": "eng10_p2_2026/evt_p22_derived_001/account:acct_p22_derived_original@2",
+      "selected_head": "lct_p22_derived_original_superseded",
+      "transitions": [
+        {
+          "transition_id": "lct_p22_derived_original_active",
+          "from_status": "proposed",
+          "to_status": "active",
+          "previous_transition": null
+        },
+        {
+          "transition_id": "lct_p22_derived_original_superseded",
+          "from_status": "active",
+          "to_status": "superseded",
+          "previous_transition": "lct_p22_derived_original_active"
+        }
+      ],
+      "ordering_basis": "canonical_previous_transition_chain"
+    },
+    "work_summary": {
+      "work_ref": "eng10_p2_2026/evt_p22_derived_001@2",
+      "status": "active",
+      "participant_ids": [
+        "ep_p22_derived_student"
+      ],
+      "account_frontier": {
+        "predecessors": [
+          "eng10_p2_2026/evt_p22_derived_001/account:acct_p22_derived_original@2"
+        ],
+        "current": [
+          "eng10_p2_2026/evt_p22_derived_001/account:acct_p22_derived_corrected@2"
+        ],
+        "selection_basis": "canonical_supersedes"
+      },
+      "relationship_ids": [
+        "rel_p22_derived_context"
+      ],
+      "dependency_ids": [
+        "dep_p22_derived_context"
+      ],
+      "authority": "derived_summary_only"
+    },
+    "class_summary": {
+      "class_id": "eng10_p2_2026",
+      "work_count": 2,
+      "works": [
+        {
+          "work_id": "evt_p22_derived_001",
+          "work_kind": "event",
+          "status": "active"
+        },
+        {
+          "work_id": "evt_p22_derived_context",
+          "work_kind": "event",
+          "status": "active"
+        }
+      ],
+      "student_global_history": false,
+      "authority": "derived_summary_only"
+    },
+    "participant_specific_history": {
+      "scope": {
+        "work_ref": {
+          "module_id": "portia",
+          "class_id": "eng10_p2_2026",
+          "work_id": "evt_p22_derived_001",
+          "work_kind": "event",
+          "contract_version": "2"
+        },
+        "focal_participant_ref": {
+          "record_kind": "event_participant",
+          "record_id": "ep_p22_derived_student",
+          "contract_version": "3"
+        }
+      },
+      "account_history": [
+        {
+          "account_id": "acct_p22_derived_original",
+          "status": "superseded"
+        },
+        {
+          "account_id": "acct_p22_derived_corrected",
+          "status": "active"
+        }
+      ],
+      "cross_work_or_cross_year_dossier": false,
+      "authority": "derived_participant_view_only"
+    }
+  },
+  "semantic_digest": "ea2d36b448a40277d340e57f4c8552cc43593e4e4f5f8ebc40e06c52d94fdf2a"
+}

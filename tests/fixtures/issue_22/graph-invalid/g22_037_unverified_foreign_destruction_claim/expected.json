@@ -1,0 +1,10 @@
+{
+  "scenario_id": "G22-037",
+  "expected_graph_result": "invalid",
+  "expected_finding_ids": [
+    "G22.CUSTODY.FOREIGN_DESTRUCTION_UNVERIFIED"
+  ],
+  "primary_finding_id": "G22.CUSTODY.FOREIGN_DESTRUCTION_UNVERIFIED",
+  "structurally_valid_public_records": true,
+  "reason": "A Portia-local completed disposition is reported as global destruction across Core, Vitrine, email/download, and external backup custody without owner verification."
+}

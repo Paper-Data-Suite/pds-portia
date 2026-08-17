@@ -1,0 +1,212 @@
+{
+  "fixture_contract": "pds-portia.representative-contract-graph-scenario",
+  "fixture_version": "1",
+  "not_runtime_contract": true,
+  "scenario_id": "P22-15",
+  "title": "Teacher-reviewed Classification, tentative Hypothesis, and bounded Intervention",
+  "scenario_kind": "positive",
+  "synthetic": true,
+  "records": [
+    {
+      "fixture_path": "event.json",
+      "contract": "event",
+      "version": "2",
+      "logical_identity": "event:evt_p22_judgment_support_001",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "event",
+        "work_id": "evt_p22_judgment_support_001"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/evt_p22_judgment_support_001/work.json"
+    },
+    {
+      "fixture_path": "participant.json",
+      "contract": "event_participant",
+      "version": "3",
+      "logical_identity": "event_participant:ep_p22_judgment_support_001",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "event",
+        "work_id": "evt_p22_judgment_support_001"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/evt_p22_judgment_support_001/records/event_participant/ep_p22_judgment_support_001.json"
+    },
+    {
+      "fixture_path": "account.json",
+      "contract": "account",
+      "version": "2",
+      "logical_identity": "account:acct_p22_judgment_support_001",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "event",
+        "work_id": "evt_p22_judgment_support_001"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/evt_p22_judgment_support_001/records/account/acct_p22_judgment_support_001.json"
+    },
+    {
+      "fixture_path": "observation.json",
+      "contract": "observation",
+      "version": "2",
+      "logical_identity": "observation:obs_p22_judgment_support_001",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "event",
+        "work_id": "evt_p22_judgment_support_001"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/evt_p22_judgment_support_001/records/observation/obs_p22_judgment_support_001.json"
+    },
+    {
+      "fixture_path": "review.json",
+      "contract": "review",
+      "version": "1",
+      "logical_identity": "review:rvw_p22_judgment_support_001",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "event",
+        "work_id": "evt_p22_judgment_support_001"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/evt_p22_judgment_support_001/records/review/rvw_p22_judgment_support_001.json"
+    },
+    {
+      "fixture_path": "classification.json",
+      "contract": "classification",
+      "version": "1",
+      "logical_identity": "classification:cls_p22_judgment_support_001",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "event",
+        "work_id": "evt_p22_judgment_support_001"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/evt_p22_judgment_support_001/records/classification/cls_p22_judgment_support_001.json"
+    },
+    {
+      "fixture_path": "hypothesis.json",
+      "contract": "hypothesis",
+      "version": "1",
+      "logical_identity": "hypothesis:hyp_p22_judgment_support_001",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "event",
+        "work_id": "evt_p22_judgment_support_001"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/evt_p22_judgment_support_001/records/hypothesis/hyp_p22_judgment_support_001.json"
+    },
+    {
+      "fixture_path": "support-process.json",
+      "contract": "support_process",
+      "version": "1",
+      "logical_identity": "support_process:sup_p22_judgment_support_001",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "support_process",
+        "work_id": "sup_p22_judgment_support_001"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/sup_p22_judgment_support_001/work.json"
+    },
+    {
+      "fixture_path": "support-participant-student.json",
+      "contract": "support_process_participant",
+      "version": "1",
+      "logical_identity": "support_process_participant:spp_p22_judgment_student_001",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "support_process",
+        "work_id": "sup_p22_judgment_support_001"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/sup_p22_judgment_support_001/records/support_process_participant/spp_p22_judgment_student_001.json"
+    },
+    {
+      "fixture_path": "support-participant-teacher.json",
+      "contract": "support_process_participant",
+      "version": "1",
+      "logical_identity": "support_process_participant:spp_p22_judgment_teacher_001",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "support_process",
+        "work_id": "sup_p22_judgment_support_001"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/sup_p22_judgment_support_001/records/support_process_participant/spp_p22_judgment_teacher_001.json"
+    },
+    {
+      "fixture_path": "support-need.json",
+      "contract": "support_need",
+      "version": "1",
+      "logical_identity": "support_need:spn_p22_judgment_support_001",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "support_process",
+        "work_id": "sup_p22_judgment_support_001"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/sup_p22_judgment_support_001/records/support_need/spn_p22_judgment_support_001.json"
+    },
+    {
+      "fixture_path": "support-goal.json",
+      "contract": "support_goal",
+      "version": "1",
+      "logical_identity": "support_goal:spg_p22_judgment_support_001",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "support_process",
+        "work_id": "sup_p22_judgment_support_001"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/sup_p22_judgment_support_001/records/support_goal/spg_p22_judgment_support_001.json"
+    },
+    {
+      "fixture_path": "intervention.json",
+      "contract": "intervention",
+      "version": "1",
+      "logical_identity": "intervention:int_p22_judgment_support_001",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "support_process",
+        "work_id": "sup_p22_judgment_support_001"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/sup_p22_judgment_support_001/records/intervention/int_p22_judgment_support_001.json"
+    },
+    {
+      "fixture_path": "implementation.json",
+      "contract": "implementation",
+      "version": "1",
+      "logical_identity": "implementation:imp_p22_judgment_support_001",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "support_process",
+        "work_id": "sup_p22_judgment_support_001"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/sup_p22_judgment_support_001/records/implementation/imp_p22_judgment_support_001.json"
+    }
+  ],
+  "context": [
+    {
+      "context_kind": "synthetic_core_roster",
+      "fixture_path": "../../shared/core-context/roster.json"
+    }
+  ],
+  "required_distinctions": [
+    "Classification is attributable human categorization under an exact local definition snapshot, not Determination.",
+    "Hypothesis remains a tentative proposition under consideration and does not become diagnosis, function, intent, credibility, or risk.",
+    "Review, Classification, and Hypothesis remain participant-targeted and Event-local.",
+    "Classification and Hypothesis evidence resolves to exact Account/Observation records.",
+    "Support Process initiation references the exact reviewed Event without transferring Event ownership.",
+    "Intervention is a plan owned by the Support Process and links exact Need, Goal, target, and assigned provider.",
+    "Recurring Intervention schedule remains planning and never auto-creates Implementation.",
+    "Implementation records one actual occurrence of the exact Intervention and does not imply Fidelity, Goal attainment, or Outcome."
+  ],
+  "expected_graph_result": "valid",
+  "expected_finding_ids": [],
+  "expected_path": "expected.json"
+}

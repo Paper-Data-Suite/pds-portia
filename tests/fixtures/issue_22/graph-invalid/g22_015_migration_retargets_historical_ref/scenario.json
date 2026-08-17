@@ -1,0 +1,74 @@
+{
+  "fixture_contract": "pds-portia.representative-contract-graph-scenario",
+  "fixture_version": "1",
+  "not_runtime_contract": true,
+  "scenario_id": "G22-015",
+  "title": "Migration is used to retarget historical exact refs after substantive correction",
+  "scenario_kind": "graph_invalid",
+  "synthetic": true,
+  "records": [
+    {
+      "fixture_path": "event-v1.json",
+      "contract": "event",
+      "version": "1",
+      "logical_identity": "event_v1:evt_g22_015",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_g22_015",
+        "work_kind": "event",
+        "work_id": "evt_g22_015"
+      },
+      "canonical_path": "classes/eng10_g22_015/modules/portia/work/evt_g22_015/work.json"
+    },
+    {
+      "fixture_path": "event-v2.json",
+      "contract": "event",
+      "version": "2",
+      "logical_identity": "event_v2:evt_g22_015",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_g22_015",
+        "work_kind": "event",
+        "work_id": "evt_g22_015"
+      },
+      "canonical_path": "classes/eng10_g22_015/modules/portia/work/evt_g22_015/work.json"
+    },
+    {
+      "fixture_path": "migration.json",
+      "contract": "record_migration",
+      "version": "1",
+      "logical_identity": "record_migration:mig_g22_015",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_g22_015",
+        "work_kind": "event",
+        "work_id": "evt_g22_015"
+      },
+      "canonical_path": "classes/eng10_g22_015/modules/portia/work/evt_g22_015/records/record_migration/mig_g22_015.json"
+    }
+  ],
+  "context": [
+    {
+      "context_kind": "synthetic_migration_resolution",
+      "fixture_path": "migration-resolution.json"
+    }
+  ],
+  "required_distinctions": [
+    "Migration != semantic correction.",
+    "Representation-only migration never rewrites an exact historical reference.",
+    "Material correction must preserve exact historical binding."
+  ],
+  "expected_graph_result": "invalid",
+  "expected_finding_ids": [
+    "G22.MIGRATION.HISTORICAL_RETARGET"
+  ],
+  "primary_finding_id": "G22.MIGRATION.HISTORICAL_RETARGET",
+  "principal_defect": "A representation-only Record Migration is used to make an exact historical Event@1 reference resolve to Event@2 even though the accepted summary changed substantively.",
+  "structurally_valid_reason": "Event@1, Event@2, and record_migration@1 are each structurally valid. Exact-reference stability and representation-only semantic equivalence are application invariants.",
+  "records_must_remain_unmodified": [
+    "event-v1.json",
+    "event-v2.json",
+    "migration.json"
+  ],
+  "expected_path": "expected.json"
+}

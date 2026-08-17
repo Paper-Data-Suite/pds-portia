@@ -1,0 +1,75 @@
+{
+  "fixture_contract": "pds-portia.representative-contract-graph-scenario",
+  "fixture_version": "1",
+  "not_runtime_contract": true,
+  "scenario_id": "G22-016",
+  "title": "Cross-year Support continuation is encoded as migration",
+  "scenario_kind": "graph_invalid",
+  "synthetic": true,
+  "records": [
+    {
+      "fixture_path": "process-2026.json",
+      "contract": "support_process",
+      "version": "1",
+      "logical_identity": "support_process:sup_g22_016_2026",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_g22_016_2026",
+        "work_kind": "support_process",
+        "work_id": "sup_g22_016_2026"
+      },
+      "canonical_path": "classes/eng10_g22_016_2026/modules/portia/work/sup_g22_016_2026/work.json"
+    },
+    {
+      "fixture_path": "process-2027.json",
+      "contract": "support_process",
+      "version": "1",
+      "logical_identity": "support_process:sup_g22_016_2027",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng11_g22_016_2027",
+        "work_kind": "support_process",
+        "work_id": "sup_g22_016_2027"
+      },
+      "canonical_path": "classes/eng11_g22_016_2027/modules/portia/work/sup_g22_016_2027/work.json"
+    },
+    {
+      "fixture_path": "migration.json",
+      "contract": "record_migration",
+      "version": "1",
+      "logical_identity": "record_migration:mig_g22_016_crossyear",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng11_g22_016_2027",
+        "work_kind": "support_process",
+        "work_id": "sup_g22_016_2027"
+      },
+      "canonical_path": "classes/eng11_g22_016_2027/modules/portia/work/sup_g22_016_2027/records/record_migration/mig_g22_016_crossyear.json"
+    }
+  ],
+  "context": [
+    {
+      "context_kind": "synthetic_cross_year_continuation_resolution",
+      "fixture_path": "continuation-resolution.json"
+    }
+  ],
+  "required_distinctions": [
+    "Cross-year continuation is a new Support Process work item.",
+    "Continuation != migration.",
+    "Continuation != ownership correction.",
+    "Historical predecessor identity remains exact."
+  ],
+  "expected_graph_result": "invalid",
+  "expected_finding_ids": [
+    "G22.SUPPORT.CONTINUATION_ENCODED_AS_MIGRATION"
+  ],
+  "primary_finding_id": "G22.SUPPORT.CONTINUATION_ENCODED_AS_MIGRATION",
+  "principal_defect": "A new-year Support Process omits continues_from and is instead linked to the predecessor by a Record Migration, collapsing continuation into representation migration.",
+  "structurally_valid_reason": "Both Support Process roots and the Record Migration certificate are structurally valid; the invalidity is using migration semantics for a new class/year workflow that requires explicit continues_from.",
+  "records_must_remain_unmodified": [
+    "process-2026.json",
+    "process-2027.json",
+    "migration.json"
+  ],
+  "expected_path": "expected.json"
+}

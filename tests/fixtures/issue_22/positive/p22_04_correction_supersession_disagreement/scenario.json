@@ -1,0 +1,146 @@
+{
+  "fixture_contract": "pds-portia.representative-contract-graph-scenario",
+  "fixture_version": "1",
+  "not_runtime_contract": true,
+  "scenario_id": "P22-04",
+  "title": "Correction, supersession, disagreement, and exact history",
+  "scenario_kind": "positive",
+  "synthetic": true,
+  "records": [
+    {
+      "fixture_path": "records/event.json",
+      "contract": "event",
+      "version": "2",
+      "logical_identity": "event:evt_p22_correction_001",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "event",
+        "work_id": "evt_p22_correction_001"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/evt_p22_correction_001/work.json"
+    },
+    {
+      "fixture_path": "records/participant.json",
+      "contract": "event_participant",
+      "version": "3",
+      "logical_identity": "event_participant:ep_p22_correction_001",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "event",
+        "work_id": "evt_p22_correction_001"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/evt_p22_correction_001/records/event_participant/ep_p22_correction_001.json"
+    },
+    {
+      "fixture_path": "records/account-predecessor.json",
+      "contract": "account",
+      "version": "2",
+      "logical_identity": "account:acct_p22_original_red",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "event",
+        "work_id": "evt_p22_correction_001"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/evt_p22_correction_001/records/account/acct_p22_original_red.json"
+    },
+    {
+      "fixture_path": "records/review-historical.json",
+      "contract": "review",
+      "version": "1",
+      "logical_identity": "review:rvw_p22_before_correction",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "event",
+        "work_id": "evt_p22_correction_001"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/evt_p22_correction_001/records/review/rvw_p22_before_correction.json"
+    },
+    {
+      "fixture_path": "records/disagreement.json",
+      "contract": "statement_of_disagreement",
+      "version": "1",
+      "logical_identity": "statement_of_disagreement:sod_p22_original_red",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "event",
+        "work_id": "evt_p22_correction_001"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/evt_p22_correction_001/records/statement_of_disagreement/sod_p22_original_red.json"
+    },
+    {
+      "fixture_path": "records/account-successor.json",
+      "contract": "account",
+      "version": "2",
+      "logical_identity": "account:acct_p22_corrected_blue",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "event",
+        "work_id": "evt_p22_correction_001"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/evt_p22_correction_001/records/account/acct_p22_corrected_blue.json"
+    },
+    {
+      "fixture_path": "records/transition-predecessor-active.json",
+      "contract": "lifecycle_transition",
+      "version": "1",
+      "logical_identity": "lifecycle_transition:lct_p22_original_active",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "event",
+        "work_id": "evt_p22_correction_001"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/evt_p22_correction_001/records/lifecycle_transition/lct_p22_original_active.json"
+    },
+    {
+      "fixture_path": "records/transition-predecessor-superseded.json",
+      "contract": "lifecycle_transition",
+      "version": "1",
+      "logical_identity": "lifecycle_transition:lct_p22_original_superseded",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "event",
+        "work_id": "evt_p22_correction_001"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/evt_p22_correction_001/records/lifecycle_transition/lct_p22_original_superseded.json"
+    },
+    {
+      "fixture_path": "records/transition-successor-active.json",
+      "contract": "lifecycle_transition",
+      "version": "1",
+      "logical_identity": "lifecycle_transition:lct_p22_corrected_active",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "event",
+        "work_id": "evt_p22_correction_001"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/evt_p22_correction_001/records/lifecycle_transition/lct_p22_corrected_active.json"
+    }
+  ],
+  "context": [
+    {
+      "context_kind": "synthetic_core_roster",
+      "fixture_path": "../../shared/core-context/roster.json"
+    }
+  ],
+  "required_distinctions": [
+    "Material correction preserves the predecessor Account.",
+    "Successor identity differs from predecessor identity.",
+    "Statement of Disagreement does not mutate or adjudicate the target.",
+    "Historical Review remains exactly bound to the predecessor.",
+    "Current replacement frontier selects the active successor.",
+    "Lifecycle history is append-only and reconciles with final status.",
+    "Exact historical references never silently follow a successor."
+  ],
+  "expected_graph_result": "valid",
+  "expected_finding_ids": [],
+  "expected_path": "expected.json"
+}

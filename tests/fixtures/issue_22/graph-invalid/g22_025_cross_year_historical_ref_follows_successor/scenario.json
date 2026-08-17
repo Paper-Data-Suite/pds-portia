@@ -1,0 +1,59 @@
+{
+  "fixture_contract": "pds-portia.representative-contract-graph-scenario",
+  "fixture_version": "1",
+  "not_runtime_contract": true,
+  "scenario_id": "G22-025",
+  "title": "Cross-year successor silently replaces an exact historical Support Process reference",
+  "scenario_kind": "graph_invalid",
+  "synthetic": true,
+  "records": [
+    {
+      "fixture_path": "process-2026.json",
+      "contract": "support_process",
+      "version": "1",
+      "logical_identity": "support_process:sup_g22_025_2026",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_g22_025_2026",
+        "work_kind": "support_process",
+        "work_id": "sup_g22_025_2026"
+      },
+      "canonical_path": "classes/eng10_g22_025_2026/modules/portia/work/sup_g22_025_2026/work.json"
+    },
+    {
+      "fixture_path": "process-2027.json",
+      "contract": "support_process",
+      "version": "1",
+      "logical_identity": "support_process:sup_g22_025_2027",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng11_g22_025_2027",
+        "work_kind": "support_process",
+        "work_id": "sup_g22_025_2027"
+      },
+      "canonical_path": "classes/eng11_g22_025_2027/modules/portia/work/sup_g22_025_2027/work.json"
+    }
+  ],
+  "context": [
+    {
+      "context_kind": "synthetic_support_process_reference_resolution",
+      "fixture_path": "reference-resolution.json"
+    }
+  ],
+  "required_distinctions": [
+    "continues_from creates continuity; it does not alias or replace the predecessor Support Process.",
+    "Historical exact refs remain pinned to the predecessor even after a successor exists."
+  ],
+  "expected_graph_result": "invalid",
+  "expected_finding_ids": [
+    "G22.SUPPORT.HISTORICAL_PROCESS_SUCCESSOR_FOLLOW"
+  ],
+  "primary_finding_id": "G22.SUPPORT.HISTORICAL_PROCESS_SUCCESSOR_FOLLOW",
+  "principal_defect": "The resolver receives an exact reference to the 2026-2027 Support Process but silently follows continues_from/current semantics to the distinct 2027-2028 successor.",
+  "structurally_valid_reason": "Both Support Process roots and their exact continues_from edge are valid. The defect is the noncanonical resolver behavior represented by closed test-only metadata.",
+  "records_must_remain_unmodified": [
+    "process-2026.json",
+    "process-2027.json"
+  ],
+  "expected_path": "expected.json"
+}

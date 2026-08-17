@@ -1,0 +1,46 @@
+{
+  "schema_version": "2",
+  "record_type": "observation",
+  "module_id": "portia",
+  "work_kind": "event",
+  "class_id": "eng10_p2_2026",
+  "work_id": "evt_p22_outcome_limited_001",
+  "observation_id": "obs_p22_outcome_limited_001",
+  "status": "active",
+  "target": {
+    "kind": "event_participant",
+    "record_ref": {
+      "record_kind": "event_participant",
+      "record_id": "ep_p22_outcome_limited_001",
+      "contract_version": "3"
+    }
+  },
+  "observer": {
+    "kind": "human",
+    "human_attribution": {
+      "kind": "local_operator",
+      "display_label": "Synthetic Teacher"
+    }
+  },
+  "method": "live_direct",
+  "content": {
+    "narrative": "The participant selected the quieter-work location, opened the assigned document, and wrote two sentences during approximately three minutes before a schoolwide drill ended the observation opportunity."
+  },
+  "observation_time": {
+    "precision": "exact",
+    "at": "2026-09-03T10:06:00-04:00"
+  },
+  "creation_source": {
+    "type": "digital_entry"
+  },
+  "created_at": "2026-09-03T10:27:00-04:00",
+  "created_by": {
+    "type": "local_operator",
+    "display_label": "Synthetic Teacher"
+  },
+  "updated_at": "2026-09-03T10:27:00-04:00",
+  "updated_by": {
+    "type": "local_operator",
+    "display_label": "Synthetic Teacher"
+  }
+}

@@ -1,0 +1,272 @@
+{
+  "fixture_contract": "pds-portia.representative-contract-graph-corpus",
+  "fixture_version": "1",
+  "not_runtime_contract": true,
+  "synthetic": true,
+  "issue": 22,
+  "graph_finding_namespace": "G22",
+  "scenarios": [
+    {
+      "scenario_id": "P22-01",
+      "scenario_kind": "positive",
+      "path": "positive/p22_01_positive_classroom_event/scenario.json"
+    },
+    {
+      "scenario_id": "P22-02",
+      "scenario_kind": "positive",
+      "path": "positive/p22_02_multi_participant_conflicting_accounts/scenario.json"
+    },
+    {
+      "scenario_id": "P22-03",
+      "scenario_kind": "positive",
+      "path": "positive/p22_03_cross_class_participant/scenario.json"
+    },
+    {
+      "scenario_id": "P22-04",
+      "scenario_kind": "positive",
+      "path": "positive/p22_04_correction_supersession_disagreement/scenario.json"
+    },
+    {
+      "scenario_id": "P22-05",
+      "scenario_kind": "positive",
+      "path": "positive/p22_05_paper_capture_materialization/scenario.json"
+    },
+    {
+      "scenario_id": "P22-06",
+      "scenario_kind": "positive",
+      "path": "positive/p22_06_structured_import/scenario.json"
+    },
+    {
+      "scenario_id": "P22-07",
+      "scenario_kind": "positive",
+      "path": "positive/p22_07_response_family_communication/scenario.json"
+    },
+    {
+      "scenario_id": "P22-08",
+      "scenario_kind": "positive",
+      "path": "positive/p22_08_support_positive_outcome/scenario.json"
+    },
+    {
+      "scenario_id": "P22-09",
+      "scenario_kind": "positive",
+      "path": "positive/p22_09_inconclusive_adverse_outcomes/scenario.json"
+    },
+    {
+      "scenario_id": "P22-10",
+      "scenario_kind": "positive",
+      "path": "positive/p22_10_reentry_repair_without_overclaiming/scenario.json"
+    },
+    {
+      "scenario_id": "P22-11",
+      "scenario_kind": "positive",
+      "path": "positive/p22_11_cross_year_support_continuation/scenario.json"
+    },
+    {
+      "scenario_id": "P22-12",
+      "scenario_kind": "positive",
+      "path": "positive/p22_12_participant_privacy_export/scenario.json"
+    },
+    {
+      "scenario_id": "P22-13",
+      "scenario_kind": "positive",
+      "path": "positive/p22_13_rebuildable_derived_retention_custody/scenario.json"
+    },
+    {
+      "scenario_id": "P22-14",
+      "scenario_kind": "positive",
+      "path": "positive/p22_14_coordinated_operation_recovery/scenario.json"
+    },
+    {
+      "scenario_id": "P22-15",
+      "scenario_kind": "positive",
+      "path": "positive/p22_15_classification_hypothesis_intervention/scenario.json"
+    },
+    {
+      "scenario_id": "G22-001",
+      "scenario_kind": "graph_invalid",
+      "path": "graph-invalid/g22_001_same_id_other_work/scenario.json"
+    },
+    {
+      "scenario_id": "G22-002",
+      "scenario_kind": "graph_invalid",
+      "path": "graph-invalid/g22_002_wrong_owning_class/scenario.json"
+    },
+    {
+      "scenario_id": "G22-003",
+      "scenario_kind": "graph_invalid",
+      "path": "graph-invalid/g22_003_canonical_path_owner_mismatch/scenario.json"
+    },
+    {
+      "scenario_id": "G22-004",
+      "scenario_kind": "graph_invalid",
+      "path": "graph-invalid/g22_004_wrong_contract_version_ref/scenario.json"
+    },
+    {
+      "scenario_id": "G22-005",
+      "scenario_kind": "graph_invalid",
+      "path": "graph-invalid/g22_005_cross_class_local_id_merge/scenario.json"
+    },
+    {
+      "scenario_id": "G22-006",
+      "scenario_kind": "graph_invalid",
+      "path": "graph-invalid/g22_006_display_name_merge/scenario.json"
+    },
+    {
+      "scenario_id": "G22-007",
+      "scenario_kind": "graph_invalid",
+      "path": "graph-invalid/g22_007_actor_replaces_roster_identity/scenario.json"
+    },
+    {
+      "scenario_id": "G22-008",
+      "scenario_kind": "graph_invalid",
+      "path": "graph-invalid/g22_008_participant_target_outside_work/scenario.json"
+    },
+    {
+      "scenario_id": "G22-009",
+      "scenario_kind": "graph_invalid",
+      "path": "graph-invalid/g22_009_foreign_core_substituted_local/scenario.json"
+    },
+    {
+      "scenario_id": "G22-010",
+      "scenario_kind": "graph_invalid",
+      "path": "graph-invalid/g22_010_historical_ref_follows_successor/scenario.json"
+    },
+    {
+      "scenario_id": "G22-011",
+      "scenario_kind": "graph_invalid",
+      "path": "graph-invalid/g22_011_supersession_cycle/scenario.json"
+    },
+    {
+      "scenario_id": "G22-012",
+      "scenario_kind": "graph_invalid",
+      "path": "graph-invalid/g22_012_derived_current_selects_predecessor/scenario.json"
+    },
+    {
+      "scenario_id": "G22-013",
+      "scenario_kind": "graph_invalid",
+      "path": "graph-invalid/g22_013_disagreement_wrong_target/scenario.json"
+    },
+    {
+      "scenario_id": "G22-014",
+      "scenario_kind": "graph_invalid",
+      "path": "graph-invalid/g22_014_required_dependency_wrong_work/scenario.json"
+    },
+    {
+      "scenario_id": "G22-015",
+      "scenario_kind": "graph_invalid",
+      "path": "graph-invalid/g22_015_migration_retargets_historical_ref/scenario.json"
+    },
+    {
+      "scenario_id": "G22-016",
+      "scenario_kind": "graph_invalid",
+      "path": "graph-invalid/g22_016_cross_year_continuation_as_migration/scenario.json"
+    },
+    {
+      "scenario_id": "G22-017",
+      "scenario_kind": "graph_invalid",
+      "path": "graph-invalid/g22_017_reported_involvement_missing_account_provenance/scenario.json"
+    },
+    {
+      "scenario_id": "G22-018",
+      "scenario_kind": "graph_invalid",
+      "path": "graph-invalid/g22_018_judgment_evidence_wrong_work/scenario.json"
+    },
+    {
+      "scenario_id": "G22-019",
+      "scenario_kind": "graph_invalid",
+      "path": "graph-invalid/g22_019_import_judgment_without_review/scenario.json"
+    },
+    {
+      "scenario_id": "G22-020",
+      "scenario_kind": "graph_invalid",
+      "path": "graph-invalid/g22_020_import_assertion_as_determination/scenario.json"
+    },
+    {
+      "scenario_id": "G22-021",
+      "scenario_kind": "graph_invalid",
+      "path": "graph-invalid/g22_021_implementation_plan_other_process/scenario.json"
+    },
+    {
+      "scenario_id": "G22-022",
+      "scenario_kind": "graph_invalid",
+      "path": "graph-invalid/g22_022_fidelity_implementation_other_process/scenario.json"
+    },
+    {
+      "scenario_id": "G22-023",
+      "scenario_kind": "graph_invalid",
+      "path": "graph-invalid/g22_023_outcome_target_other_process/scenario.json"
+    },
+    {
+      "scenario_id": "G22-024",
+      "scenario_kind": "graph_invalid",
+      "path": "graph-invalid/g22_024_outcome_identity_reused_later_timeframe/scenario.json"
+    },
+    {
+      "scenario_id": "G22-025",
+      "scenario_kind": "graph_invalid",
+      "path": "graph-invalid/g22_025_cross_year_historical_ref_follows_successor/scenario.json"
+    },
+    {
+      "scenario_id": "G22-026",
+      "scenario_kind": "graph_invalid",
+      "path": "graph-invalid/g22_026_duplicate_accepted_import_materialization/scenario.json"
+    },
+    {
+      "scenario_id": "G22-027",
+      "scenario_kind": "graph_invalid",
+      "path": "graph-invalid/g22_027_capture_materialization_without_review/scenario.json"
+    },
+    {
+      "scenario_id": "G22-028",
+      "scenario_kind": "graph_invalid",
+      "path": "graph-invalid/g22_028_committed_operation_missing_result/scenario.json"
+    },
+    {
+      "scenario_id": "G22-029",
+      "scenario_kind": "graph_invalid",
+      "path": "graph-invalid/g22_029_restart_replays_committed_write/scenario.json"
+    },
+    {
+      "scenario_id": "G22-030",
+      "scenario_kind": "graph_invalid",
+      "path": "graph-invalid/g22_030_projection_leaks_unrelated_data/scenario.json"
+    },
+    {
+      "scenario_id": "G22-031",
+      "scenario_kind": "graph_invalid",
+      "path": "graph-invalid/g22_031_projection_state_collapse/scenario.json"
+    },
+    {
+      "scenario_id": "G22-032",
+      "scenario_kind": "graph_invalid",
+      "path": "graph-invalid/g22_032_export_inventory_binds_successor/scenario.json"
+    },
+    {
+      "scenario_id": "G22-033",
+      "scenario_kind": "graph_invalid",
+      "path": "graph-invalid/g22_033_export_output_path_contains_pii/scenario.json"
+    },
+    {
+      "scenario_id": "G22-034",
+      "scenario_kind": "graph_invalid",
+      "path": "graph-invalid/g22_034_incoming_index_disagrees_forward_refs/scenario.json"
+    },
+    {
+      "scenario_id": "G22-035",
+      "scenario_kind": "graph_invalid",
+      "path": "graph-invalid/g22_035_current_view_includes_predecessor_successor/scenario.json"
+    },
+    {
+      "scenario_id": "G22-036",
+      "scenario_kind": "graph_invalid",
+      "path": "graph-invalid/g22_036_stale_source_snapshot_accepted/scenario.json"
+    },
+    {
+      "scenario_id": "G22-037",
+      "scenario_kind": "graph_invalid",
+      "path": "graph-invalid/g22_037_unverified_foreign_destruction_claim/scenario.json"
+    }
+  ],
+  "planned_positive_scenarios": [],
+  "planned_graph_invalid_scenarios": []
+}

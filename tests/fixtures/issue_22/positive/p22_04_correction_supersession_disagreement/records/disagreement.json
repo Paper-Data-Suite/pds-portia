@@ -1,0 +1,47 @@
+{
+  "schema_version": "1",
+  "record_type": "statement_of_disagreement",
+  "module_id": "portia",
+  "class_id": "eng10_p2_2026",
+  "work_id": "evt_p22_correction_001",
+  "disagreement_id": "sod_p22_original_red",
+  "status": "active",
+  "target": {
+    "kind": "local_record",
+    "record_ref": {
+      "record_kind": "account",
+      "record_id": "acct_p22_original_red",
+      "contract_version": "2"
+    }
+  },
+  "source": {
+    "kind": "roster_student",
+    "roster_student_ref": {
+      "class_id": "eng10_p2_2026",
+      "student_id": "stu_p22_001"
+    },
+    "display_snapshot": {
+      "display_name": "Synthetic Student A"
+    }
+  },
+  "positions": [
+    "disputes_accuracy"
+  ],
+  "statement": {
+    "representation": "verbatim_quote",
+    "text": "I said the notebook was blue, not red."
+  },
+  "creation_source": {
+    "type": "digital_entry"
+  },
+  "created_at": "2026-08-15T11:20:00-04:00",
+  "created_by": {
+    "type": "local_operator",
+    "display_label": "Synthetic Teacher"
+  },
+  "updated_at": "2026-08-15T11:20:00-04:00",
+  "updated_by": {
+    "type": "local_operator",
+    "display_label": "Synthetic Teacher"
+  }
+}

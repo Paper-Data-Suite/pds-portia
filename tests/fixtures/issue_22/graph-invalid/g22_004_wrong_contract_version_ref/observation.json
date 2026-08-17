@@ -1,0 +1,46 @@
+{
+  "schema_version": "2",
+  "record_type": "observation",
+  "module_id": "portia",
+  "work_kind": "event",
+  "class_id": "eng10_g22_version",
+  "work_id": "evt_g22_version_001",
+  "observation_id": "obs_g22_version_001",
+  "status": "active",
+  "target": {
+    "kind": "event_participant",
+    "record_ref": {
+      "record_kind": "event_participant",
+      "record_id": "ep_g22_version_001",
+      "contract_version": "2"
+    }
+  },
+  "observer": {
+    "kind": "human",
+    "human_attribution": {
+      "kind": "local_operator",
+      "display_label": "Synthetic Teacher"
+    }
+  },
+  "method": "live_direct",
+  "content": {
+    "narrative": "Synthetic observation used only to exercise graph-reference validation."
+  },
+  "observation_time": {
+    "precision": "exact",
+    "at": "2026-08-14T10:16:00-04:00"
+  },
+  "creation_source": {
+    "type": "digital_entry"
+  },
+  "created_at": "2026-08-14T10:32:00-04:00",
+  "created_by": {
+    "type": "local_operator",
+    "display_label": "Synthetic Teacher"
+  },
+  "updated_at": "2026-08-14T10:32:00-04:00",
+  "updated_by": {
+    "type": "local_operator",
+    "display_label": "Synthetic Teacher"
+  }
+}

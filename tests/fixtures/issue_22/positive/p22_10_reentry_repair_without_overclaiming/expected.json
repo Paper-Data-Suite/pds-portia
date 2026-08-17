@@ -1,0 +1,24 @@
+{
+  "event_id": "evt_p22_reentry_repair_001",
+  "participant_ids": [
+    "ep_p22_reentry_repair_a",
+    "ep_p22_reentry_repair_b"
+  ],
+  "account_ids": [
+    "acct_p22_reentry_repair_a",
+    "acct_p22_reentry_repair_b"
+  ],
+  "response_id": "rsp_p22_reentry_repair_001",
+  "communication_id": "comm_p22_reentry_repair_001",
+  "reentry_id": "ren_p22_reentry_repair_001",
+  "reentry_workflow_state": "completed",
+  "repair_id": "rpr_p22_reentry_repair_001",
+  "repair_workflow_state": "completed",
+  "repair_participation": {
+    "student_a": "participated",
+    "student_b": "declined"
+  },
+  "follow_up_id": "fup_p22_reentry_repair_001",
+  "follow_up_workflow_state": "completed",
+  "outcome_record_count": 0
+}

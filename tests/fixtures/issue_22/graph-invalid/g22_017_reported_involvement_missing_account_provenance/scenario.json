@@ -1,0 +1,72 @@
+{
+  "fixture_contract": "pds-portia.representative-contract-graph-scenario",
+  "fixture_version": "1",
+  "not_runtime_contract": true,
+  "scenario_id": "G22-017",
+  "title": "Active reported involvement lacks resolvable source Account provenance",
+  "scenario_kind": "graph_invalid",
+  "synthetic": true,
+  "records": [
+    {
+      "fixture_path": "event.json",
+      "contract": "event",
+      "version": "2",
+      "logical_identity": "event:evt_g22_017",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_g22_017",
+        "work_kind": "event",
+        "work_id": "evt_g22_017"
+      },
+      "canonical_path": "classes/eng10_g22_017/modules/portia/work/evt_g22_017/work.json"
+    },
+    {
+      "fixture_path": "participant.json",
+      "contract": "event_participant",
+      "version": "3",
+      "logical_identity": "event_participant:ep_g22_017",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_g22_017",
+        "work_kind": "event",
+        "work_id": "evt_g22_017"
+      },
+      "canonical_path": "classes/eng10_g22_017/modules/portia/work/evt_g22_017/records/event_participant/ep_g22_017.json"
+    },
+    {
+      "fixture_path": "role.json",
+      "contract": "event_participant_role",
+      "version": "3",
+      "logical_identity": "event_participant_role:epr_g22_017_reported",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_g22_017",
+        "work_kind": "event",
+        "work_id": "evt_g22_017"
+      },
+      "canonical_path": "classes/eng10_g22_017/modules/portia/work/evt_g22_017/records/event_participant_role/epr_g22_017_reported.json"
+    }
+  ],
+  "context": [
+    {
+      "context_kind": "synthetic_core_roster",
+      "fixture_path": "roster.json"
+    }
+  ],
+  "required_distinctions": [
+    "Reported involvement != direct observation.",
+    "Active reported involvement requires resolvable source Account provenance."
+  ],
+  "expected_graph_result": "invalid",
+  "expected_finding_ids": [
+    "G22.EVIDENCE.ROLE_BASIS_UNRESOLVED"
+  ],
+  "primary_finding_id": "G22.EVIDENCE.ROLE_BASIS_UNRESOLVED",
+  "principal_defect": "The active reported-involvement role carries the structurally required Account basis reference, but that exact Account does not exist in the owning Event.",
+  "structurally_valid_reason": "Event Participant Role@3 structurally requires and accepts an Account basis reference for active reported involvement; exact Account existence and basis resolution are application invariants.",
+  "records_must_remain_unmodified": [
+    "event.json",
+    "participant.json"
+  ],
+  "expected_path": "expected.json"
+}

@@ -1,0 +1,162 @@
+{
+  "fixture_contract": "pds-portia.representative-contract-graph-scenario",
+  "fixture_version": "1",
+  "not_runtime_contract": true,
+  "scenario_id": "P22-14",
+  "title": "Coordinated Operation and Recovery Boundary",
+  "scenario_kind": "positive",
+  "synthetic": true,
+  "records": [
+    {
+      "fixture_path": "event-primary.json",
+      "contract": "event",
+      "version": "2",
+      "logical_identity": "event:evt_p22_recovery_primary",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "event",
+        "work_id": "evt_p22_recovery_primary"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/evt_p22_recovery_primary/work.json"
+    },
+    {
+      "fixture_path": "event-context.json",
+      "contract": "event",
+      "version": "2",
+      "logical_identity": "event:evt_p22_recovery_context",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "event",
+        "work_id": "evt_p22_recovery_context"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/evt_p22_recovery_context/work.json"
+    },
+    {
+      "fixture_path": "relationship-original.json",
+      "contract": "work_relationship",
+      "version": "2",
+      "logical_identity": "work_relationship:rel_p22_recovery_original",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "event",
+        "work_id": "evt_p22_recovery_primary"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/evt_p22_recovery_primary/records/work_relationship/rel_p22_recovery_original.json"
+    },
+    {
+      "fixture_path": "relationship-corrected.json",
+      "contract": "work_relationship",
+      "version": "2",
+      "logical_identity": "work_relationship:rel_p22_recovery_corrected",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "event",
+        "work_id": "evt_p22_recovery_primary"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/evt_p22_recovery_primary/records/work_relationship/rel_p22_recovery_corrected.json"
+    }
+  ],
+  "context": [
+    {
+      "context_kind": "preflight_canonical_representation",
+      "fixture_path": "preflight-old-active.json"
+    },
+    {
+      "context_kind": "staged_candidate",
+      "fixture_path": "staged-corrected-relationship.json"
+    },
+    {
+      "context_kind": "staged_candidate",
+      "fixture_path": "staged-original-superseded.json"
+    },
+    {
+      "context_kind": "recovery_expectation",
+      "fixture_path": "recovery-expectation.json"
+    }
+  ],
+  "operational_contract_fixtures": [
+    {
+      "fixture_path": "operation-journal-r1.json",
+      "contract": "operation_journal",
+      "version": "2",
+      "authority": "durable_operational_not_domain_truth",
+      "canonical_path": "portia/operations/op_p22_recovery_relationship/revisions/1.json"
+    },
+    {
+      "fixture_path": "operation-journal-r2.json",
+      "contract": "operation_journal",
+      "version": "2",
+      "authority": "durable_operational_not_domain_truth",
+      "canonical_path": "portia/operations/op_p22_recovery_relationship/revisions/2.json"
+    },
+    {
+      "fixture_path": "operation-journal-r3.json",
+      "contract": "operation_journal",
+      "version": "2",
+      "authority": "durable_operational_not_domain_truth",
+      "canonical_path": "portia/operations/op_p22_recovery_relationship/revisions/3.json"
+    },
+    {
+      "fixture_path": "operation-journal-r4.json",
+      "contract": "operation_journal",
+      "version": "2",
+      "authority": "durable_operational_not_domain_truth",
+      "canonical_path": "portia/operations/op_p22_recovery_relationship/revisions/4.json"
+    },
+    {
+      "fixture_path": "operation-journal-r5.json",
+      "contract": "operation_journal",
+      "version": "2",
+      "authority": "durable_operational_not_domain_truth",
+      "canonical_path": "portia/operations/op_p22_recovery_relationship/revisions/5.json"
+    },
+    {
+      "fixture_path": "operation-journal-r6.json",
+      "contract": "operation_journal",
+      "version": "2",
+      "authority": "durable_operational_not_domain_truth",
+      "canonical_path": "portia/operations/op_p22_recovery_relationship/revisions/6.json"
+    },
+    {
+      "fixture_path": "operation-current.json",
+      "contract": "operation_current_pointer",
+      "version": "1",
+      "authority": "operational_selection_only",
+      "canonical_path": "portia/operations/op_p22_recovery_relationship/current.json"
+    },
+    {
+      "fixture_path": "operation-lock.json",
+      "contract": "operation_lock",
+      "version": "2",
+      "authority": "durable_operational_coordination",
+      "canonical_path": "portia/locks/lock_e20044d6233f5ed120c2372f50fce015eb2d3d1b5824296fbda8325e23ffad4f.json"
+    },
+    {
+      "fixture_path": "work-lock.json",
+      "contract": "operation_lock",
+      "version": "2",
+      "authority": "durable_operational_coordination",
+      "canonical_path": "portia/locks/lock_e9b9720187cd1a2e78d845c17762e1b65de48e6ff1e57c4307e0f9d5aad4451b.json"
+    }
+  ],
+  "recovery_expectation": {
+    "fixture_path": "recovery-expectation.json",
+    "canonical": false
+  },
+  "required_distinctions": [
+    "Successful preflight is recorded before any canonical mutation begins.",
+    "Operation Journal revisions record exact operational intent/progress and do not replace canonical Work Relationship domain records.",
+    "An accepted successor remains canonical across interruption and is never deleted merely to simulate rollback.",
+    "Restart enters recovery and reconciles the exact already-accepted successor representation before completing remaining writes.",
+    "Partial success names the accepted successor and the still-remaining predecessor replacement separately.",
+    "Recovery does not create a second successor or duplicate an already committed semantic relationship.",
+    "The final current journal pointer is explicit and locks are released only after canonical completion."
+  ],
+  "expected_graph_result": "valid",
+  "expected_finding_ids": [],
+  "expected_path": "expected.json"
+}

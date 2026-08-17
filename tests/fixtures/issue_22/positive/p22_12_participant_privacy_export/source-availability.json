@@ -1,0 +1,9 @@
+{
+  "fixture_kind": "synthetic_projection_source_availability",
+  "not_runtime_contract": true,
+  "source_key": "external_context_p22_privacy_001",
+  "requested_for_projection": true,
+  "availability": "unavailable",
+  "reason": "Referenced external context is intentionally not resolvable in this repository-local fixture.",
+  "semantic_assertion": "unavailable is not false/no and is not absent"
+}

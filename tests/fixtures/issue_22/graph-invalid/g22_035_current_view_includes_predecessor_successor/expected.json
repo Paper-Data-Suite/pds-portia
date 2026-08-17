@@ -1,0 +1,10 @@
+{
+  "scenario_id": "G22-035",
+  "expected_graph_result": "invalid",
+  "expected_finding_ids": [
+    "G22.DERIVED.CURRENT_VIEW_INCLUDES_PREDECESSOR"
+  ],
+  "primary_finding_id": "G22.DERIVED.CURRENT_VIEW_INCLUDES_PREDECESSOR",
+  "structurally_valid_public_records": true,
+  "reason": "The derived replacement/current view presents both the superseded Account predecessor and its active successor as current."
+}

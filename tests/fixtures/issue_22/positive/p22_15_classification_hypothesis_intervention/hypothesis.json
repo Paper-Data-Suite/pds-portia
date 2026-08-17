@@ -1,0 +1,92 @@
+{
+  "schema_version": "1",
+  "record_type": "hypothesis",
+  "module_id": "portia",
+  "class_id": "eng10_p2_2026",
+  "work_id": "evt_p22_judgment_support_001",
+  "hypothesis_id": "hyp_p22_judgment_support_001",
+  "status": "active",
+  "target": {
+    "kind": "event_participant",
+    "record_ref": {
+      "record_kind": "event_participant",
+      "record_id": "ep_p22_judgment_support_001",
+      "contract_version": "3"
+    }
+  },
+  "author": {
+    "kind": "local_operator",
+    "display_label": "Synthetic Teacher"
+  },
+  "proposition": "Abrupt task transitions may be relevant to delayed starts in this bounded classroom context.",
+  "consideration_state": "under_consideration",
+  "evidence": [
+    {
+      "relation": "supporting",
+      "evidence_ref": {
+        "kind": "portia_record",
+        "work_record_ref": {
+          "work_ref": {
+            "module_id": "portia",
+            "class_id": "eng10_p2_2026",
+            "work_id": "evt_p22_judgment_support_001",
+            "work_kind": "event",
+            "contract_version": "2"
+          },
+          "record_ref": {
+            "record_kind": "account",
+            "record_id": "acct_p22_judgment_support_001",
+            "contract_version": "2"
+          }
+        }
+      }
+    },
+    {
+      "relation": "contextual",
+      "evidence_ref": {
+        "kind": "portia_record",
+        "work_record_ref": {
+          "work_ref": {
+            "module_id": "portia",
+            "class_id": "eng10_p2_2026",
+            "work_id": "evt_p22_judgment_support_001",
+            "work_kind": "event",
+            "contract_version": "2"
+          },
+          "record_ref": {
+            "record_kind": "observation",
+            "record_id": "obs_p22_judgment_support_001",
+            "contract_version": "2"
+          }
+        }
+      }
+    }
+  ],
+  "review_ref": {
+    "work_ref": {
+      "module_id": "portia",
+      "class_id": "eng10_p2_2026",
+      "work_id": "evt_p22_judgment_support_001",
+      "work_kind": "event",
+      "contract_version": "2"
+    },
+    "record_ref": {
+      "record_kind": "review",
+      "record_id": "rvw_p22_judgment_support_001",
+      "contract_version": "1"
+    }
+  },
+  "creation_source": {
+    "type": "digital_entry"
+  },
+  "created_at": "2026-08-10T10:39:00-04:00",
+  "created_by": {
+    "type": "local_operator",
+    "display_label": "Synthetic Teacher"
+  },
+  "updated_at": "2026-08-10T10:39:00-04:00",
+  "updated_by": {
+    "type": "local_operator",
+    "display_label": "Synthetic Teacher"
+  }
+}

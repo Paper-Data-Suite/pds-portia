@@ -1,0 +1,18 @@
+{
+  "fixture_contract": "pds-portia.synthetic-projection-state-serialization",
+  "fixture_version": "1",
+  "not_runtime_contract": true,
+  "items": [
+    {
+      "item_id": "third_party_identity",
+      "source_disposition": "withheld",
+      "serialized_representation": "absent"
+    },
+    {
+      "item_id": "external_context",
+      "source_disposition": "unavailable",
+      "serialized_representation": false
+    }
+  ],
+  "accepted_output": true
+}

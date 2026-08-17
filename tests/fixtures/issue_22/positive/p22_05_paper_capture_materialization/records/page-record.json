@@ -1,0 +1,26 @@
+{
+  "schema_version": "1",
+  "record_type": "capture_page_record",
+  "module_id": "portia",
+  "class_id": "eng10_p2_2026",
+  "work_id": "cbat_p22_paper_001",
+  "page_target_id": "ptgt_p22_paper_001",
+  "page_record_id": "prec_p22_paper_001",
+  "route_id": "route_p22_portia_paper_001",
+  "source_ref": {
+    "source_scan_id": "scan_p22_portia_paper_001",
+    "source_sha256": "75f767d36c35c9d42ed81dd6a2f45c652244c8a66291a50b1228ac32ed125251",
+    "source_page_number": 1
+  },
+  "processing_state": "processed",
+  "created_at": "2026-08-15T10:55:00-04:00",
+  "created_by": {
+    "type": "system_process",
+    "process_id": "issue22_paper_capture"
+  },
+  "updated_at": "2026-08-15T11:02:00-04:00",
+  "updated_by": {
+    "type": "system_process",
+    "process_id": "issue22_paper_capture"
+  }
+}

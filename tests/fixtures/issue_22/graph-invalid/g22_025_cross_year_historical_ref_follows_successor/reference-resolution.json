@@ -1,0 +1,21 @@
+{
+  "fixture_contract": "pds-portia.synthetic-support-process-reference-resolution",
+  "fixture_version": "1",
+  "not_runtime_contract": true,
+  "resolution_kind": "historical_exact_follow",
+  "requested": {
+    "class_id": "eng10_g22_025_2026",
+    "work_id": "sup_g22_025_2026",
+    "record_kind": "support_process",
+    "record_id": "sup_g22_025_2026",
+    "contract_version": "1"
+  },
+  "resolved": {
+    "class_id": "eng11_g22_025_2027",
+    "work_id": "sup_g22_025_2027",
+    "record_kind": "support_process",
+    "record_id": "sup_g22_025_2027",
+    "contract_version": "1"
+  },
+  "resolution_mode": "follow_current"
+}

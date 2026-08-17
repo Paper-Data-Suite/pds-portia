@@ -1,0 +1,33 @@
+{
+  "schema_version": "1",
+  "record_type": "support_goal",
+  "module_id": "portia",
+  "class_id": "eng11_p3_2027",
+  "work_id": "sup_p22_crossyear_2027",
+  "goal_id": "spg_p22_crossyear_2027",
+  "status": "active",
+  "target": {
+    "kind": "support_process_participant",
+    "record_ref": {
+      "record_kind": "support_process_participant",
+      "record_id": "spp_p22_crossyear_student_2027",
+      "contract_version": "1"
+    }
+  },
+  "description": "A current-year research planning template will be available when a documented multi-stage research task begins.",
+  "planned_criteria": "Review bounded current-year opportunities for whether the research template was available and how it was used.",
+  "measurement_approach": "Teacher review of current-year Implementation and direct Observation records; predecessor Outcomes remain historical context only.",
+  "creation_source": {
+    "type": "digital_entry"
+  },
+  "created_at": "2027-08-30T14:07:00-04:00",
+  "created_by": {
+    "type": "local_operator",
+    "display_label": "Synthetic Teacher"
+  },
+  "updated_at": "2027-08-30T14:07:00-04:00",
+  "updated_by": {
+    "type": "local_operator",
+    "display_label": "Synthetic Teacher"
+  }
+}

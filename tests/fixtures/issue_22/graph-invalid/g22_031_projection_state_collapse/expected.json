@@ -1,0 +1,10 @@
+{
+  "scenario_id": "G22-031",
+  "expected_graph_result": "invalid",
+  "expected_finding_ids": [
+    "G22.PRIVACY.PROJECTION_STATE_COLLAPSE"
+  ],
+  "primary_finding_id": "G22.PRIVACY.PROJECTION_STATE_COLLAPSE",
+  "structurally_valid_public_records": true,
+  "reason": "An outward projection collapses privacy/missingness semantics by serializing withheld as absent and unavailable as false."
+}

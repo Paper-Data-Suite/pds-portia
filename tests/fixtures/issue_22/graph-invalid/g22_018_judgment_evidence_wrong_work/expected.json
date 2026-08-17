@@ -1,0 +1,12 @@
+{
+  "fixture_contract": "pds-portia.graph-invalid-expectation",
+  "fixture_version": "1",
+  "not_runtime_contract": true,
+  "scenario_id": "G22-018",
+  "primary_finding_id": "G22.EVIDENCE.WRONG_WORK",
+  "expected_finding_ids": [
+    "G22.EVIDENCE.WRONG_WORK"
+  ],
+  "structurally_valid_public_records": true,
+  "principal_defect": "A Determination owned by Event A cites an exact Observation that correctly exists in Event B, outside the Determination's accepted owning Event scope."
+}

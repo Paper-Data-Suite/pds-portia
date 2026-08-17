@@ -1,0 +1,24 @@
+{
+  "fixture_contract": "pds-portia.representative-contract-graph-expected",
+  "fixture_version": "1",
+  "not_runtime_contract": true,
+  "scenario_id": "P22-13",
+  "expected_graph_result": "valid",
+  "expected_finding_ids": [],
+  "expected_view_count": 8,
+  "expected_semantic_digest": "ea2d36b448a40277d340e57f4c8552cc43593e4e4f5f8ebc40e06c52d94fdf2a",
+  "expected_current_generation_id": "dgen_p22_frontier_001",
+  "assertions": [
+    "canonical_forward_records_remain_authority",
+    "derived_reverse_links_are_not_hand_authored_authority",
+    "missing_derived_index_is_not_empty_canonical_graph",
+    "deleting_rebuildable_index_does_not_delete_canonical_records",
+    "unchanged_source_rebuild_is_semantically_deterministic",
+    "changed_source_invalidates_snapshot",
+    "current_pointer_never_silently_follows_unsupported_successor",
+    "derived_cache_retention_differs_from_canonical_retention",
+    "export_bytes_differs_from_export_provenance",
+    "portia_custody_differs_from_core_retained_source_custody",
+    "portia_does_not_claim_core_sibling_external_destruction"
+  ]
+}

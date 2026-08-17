@@ -1,0 +1,41 @@
+{
+  "schema_version": "1",
+  "record_type": "dependency",
+  "module_id": "portia",
+  "class_id": "eng10_p2_2026",
+  "work_id": "evt_p22_derived_001",
+  "dependency_id": "dep_p22_derived_context",
+  "status": "active",
+  "dependent": {
+    "kind": "work",
+    "work_kind": "event",
+    "contract_version": "2"
+  },
+  "dependency": {
+    "kind": "portia_work",
+    "work_ref": {
+      "module_id": "portia",
+      "class_id": "eng10_p2_2026",
+      "work_id": "evt_p22_derived_context",
+      "work_kind": "event",
+      "contract_version": "2"
+    }
+  },
+  "strength": "advisory",
+  "applies_to": "current_use",
+  "purpose": "contextual_support",
+  "detail": "Current interpretation may consult the exact earlier Event as bounded context; the dependency does not retarget or merge either work.",
+  "creation_source": {
+    "type": "digital_entry"
+  },
+  "created_at": "2026-10-06T09:05:00-04:00",
+  "created_by": {
+    "type": "local_operator",
+    "display_label": "Synthetic Teacher"
+  },
+  "updated_at": "2026-10-06T09:05:00-04:00",
+  "updated_by": {
+    "type": "local_operator",
+    "display_label": "Synthetic Teacher"
+  }
+}

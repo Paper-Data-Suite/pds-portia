@@ -1,0 +1,51 @@
+{
+  "predecessor": {
+    "class_id": "eng10_p2_2026",
+    "school_year": "2026-2027",
+    "work_id": "sup_p22_crossyear_2026",
+    "workflow_state": "completed"
+  },
+  "successor": {
+    "class_id": "eng11_p3_2027",
+    "school_year": "2027-2028",
+    "work_id": "sup_p22_crossyear_2027",
+    "workflow_state": "active",
+    "continues_from": {
+      "class_id": "eng10_p2_2026",
+      "work_id": "sup_p22_crossyear_2026",
+      "contract_version": "1"
+    }
+  },
+  "participant_ids": {
+    "predecessor": [
+      "spp_p22_crossyear_student_2026",
+      "spp_p22_crossyear_teacher_2026"
+    ],
+    "successor": [
+      "spp_p22_crossyear_student_2027",
+      "spp_p22_crossyear_teacher_2027"
+    ]
+  },
+  "child_record_ids": {
+    "predecessor": [
+      "spn_p22_crossyear_2026",
+      "spg_p22_crossyear_2026",
+      "spt_p22_crossyear_2026",
+      "imp_p22_crossyear_2026",
+      "obs_p22_crossyear_2026",
+      "out_p22_crossyear_2026"
+    ],
+    "successor": [
+      "spn_p22_crossyear_2027",
+      "spg_p22_crossyear_2027",
+      "spt_p22_crossyear_2027",
+      "imp_p22_crossyear_2027",
+      "obs_p22_crossyear_2027",
+      "out_p22_crossyear_2027"
+    ]
+  },
+  "forbidden_contracts": [
+    "record_migration",
+    "ownership_correction"
+  ]
+}

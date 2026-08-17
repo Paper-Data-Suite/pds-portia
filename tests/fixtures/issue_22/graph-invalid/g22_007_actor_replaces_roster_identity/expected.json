@@ -1,0 +1,12 @@
+{
+  "fixture_contract": "pds-portia.graph-invalid-expectation",
+  "fixture_version": "1",
+  "not_runtime_contract": true,
+  "scenario_id": "G22-007",
+  "primary_finding_id": "G22.IDENTITY.ACTOR_ROSTER_SUBSTITUTION",
+  "expected_finding_ids": [
+    "G22.IDENTITY.ACTOR_ROSTER_SUBSTITUTION"
+  ],
+  "structurally_valid_public_records": true,
+  "principal_defect": "The same-looking roster student is duplicated as a workspace Actor and the synthetic identity resolver claims the Actor can replace the roster identity without an accepted explicit link."
+}

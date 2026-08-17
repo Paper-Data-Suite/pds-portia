@@ -1,0 +1,40 @@
+{
+  "fixture_contract": "pds-portia.representative-contract-graph-scenario",
+  "fixture_version": "1",
+  "not_runtime_contract": true,
+  "scenario_id": "G22-003",
+  "title": "Canonical path inconsistent with owner",
+  "scenario_kind": "graph_invalid",
+  "synthetic": true,
+  "records": [
+    {
+      "fixture_path": "event.json",
+      "contract": "event",
+      "version": "2",
+      "logical_identity": "event:evt_g22_path_001",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_g22_path",
+        "work_kind": "event",
+        "work_id": "evt_g22_path_001"
+      },
+      "canonical_path": "classes/eng10_g22_path/modules/portia/work/evt_g22_wrong_path/work.json"
+    }
+  ],
+  "context": [],
+  "required_distinctions": [
+    "Canonical path is derived from exact owner identity.",
+    "Fixture metadata cannot move a record to a different work root."
+  ],
+  "expected_graph_result": "invalid",
+  "expected_finding_ids": [
+    "G22.OWNERSHIP.CANONICAL_PATH_MISMATCH"
+  ],
+  "primary_finding_id": "G22.OWNERSHIP.CANONICAL_PATH_MISMATCH",
+  "principal_defect": "The scenario descriptor declares a canonical work path whose work_id differs from the Event's persisted owner identity.",
+  "structurally_valid_reason": "The Event JSON itself is schema-valid; canonical storage-path agreement is an application invariant.",
+  "records_must_remain_unmodified": [
+    "event.json"
+  ],
+  "expected_path": "expected.json"
+}

@@ -1,0 +1,10 @@
+{
+  "scenario_id": "G22-033",
+  "expected_graph_result": "invalid",
+  "expected_finding_ids": [
+    "G22.PRIVACY.EXPORT_OUTPUT_PATH_PII"
+  ],
+  "primary_finding_id": "G22.PRIVACY.EXPORT_OUTPUT_PATH_PII",
+  "structurally_valid_public_records": true,
+  "reason": "The deliberate-export path is correctly scoped beneath its opaque export ID but embeds unnecessary synthetic person/class/behavior labels."
+}

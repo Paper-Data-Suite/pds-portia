@@ -1,0 +1,37 @@
+{
+  "schema_version": "1",
+  "record_type": "support_process_participant",
+  "module_id": "portia",
+  "class_id": "eng10_g22_023",
+  "work_id": "sup_g22_023_b",
+  "participant_id": "spp_g22_023_student_b",
+  "status": "active",
+  "person": {
+    "kind": "roster_student",
+    "roster_student_ref": {
+      "class_id": "eng10_g22_023",
+      "student_id": "stu_g22_023_b"
+    },
+    "display_snapshot": {
+      "display_name": "Synthetic Student A"
+    }
+  },
+  "contexts": [
+    {
+      "kind": "supported_person"
+    }
+  ],
+  "creation_source": {
+    "type": "digital_entry"
+  },
+  "created_at": "2026-09-04T15:02:00-04:00",
+  "created_by": {
+    "type": "local_operator",
+    "display_label": "Synthetic Teacher"
+  },
+  "updated_at": "2026-09-04T15:02:00-04:00",
+  "updated_by": {
+    "type": "local_operator",
+    "display_label": "Synthetic Teacher"
+  }
+}

@@ -1,0 +1,48 @@
+{
+  "schema_version": "1",
+  "record_type": "dependency",
+  "module_id": "portia",
+  "class_id": "eng10_g22_014",
+  "work_id": "evt_g22_014_a",
+  "dependency_id": "dep_g22_014_required",
+  "status": "active",
+  "dependent": {
+    "kind": "work",
+    "work_kind": "event",
+    "contract_version": "2"
+  },
+  "dependency": {
+    "kind": "portia_record",
+    "work_record_ref": {
+      "work_ref": {
+        "module_id": "portia",
+        "class_id": "eng10_g22_014",
+        "work_id": "evt_g22_014_a",
+        "work_kind": "event",
+        "contract_version": "2"
+      },
+      "record_ref": {
+        "record_kind": "account",
+        "record_id": "acct_g22_014_only_b",
+        "contract_version": "2"
+      }
+    }
+  },
+  "strength": "required",
+  "applies_to": "current_use",
+  "purpose": "workflow_prerequisite",
+  "detail": "Required synthetic dependency deliberately names Event A while using an Account ID that exists only in Event B.",
+  "creation_source": {
+    "type": "digital_entry"
+  },
+  "created_at": "2026-10-10T09:05:00-04:00",
+  "created_by": {
+    "type": "local_operator",
+    "display_label": "Synthetic Teacher"
+  },
+  "updated_at": "2026-10-10T09:05:00-04:00",
+  "updated_by": {
+    "type": "local_operator",
+    "display_label": "Synthetic Teacher"
+  }
+}

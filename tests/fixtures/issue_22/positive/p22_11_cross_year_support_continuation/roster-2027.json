@@ -1,0 +1,14 @@
+{
+  "fixture_contract": "pds-portia.synthetic-core-roster-context",
+  "fixture_version": "1",
+  "not_runtime_contract": true,
+  "synthetic": true,
+  "class_id": "eng11_p3_2027",
+  "school_year": "2027-2028",
+  "students": [
+    {
+      "student_id": "stu_p22_crossyear_001",
+      "display_name": "Synthetic Student A"
+    }
+  ]
+}

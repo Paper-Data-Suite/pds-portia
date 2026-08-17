@@ -1,0 +1,38 @@
+{
+  "schema_version": "1",
+  "record_type": "actor_contact_point",
+  "module_id": "portia",
+  "actor_id": "actr_p22_family_001",
+  "contact_point_id": "acp_p22_family_email_001",
+  "status": "active",
+  "contact": {
+    "kind": "email",
+    "address": "family.p22@example.invalid",
+    "label": "personal"
+  },
+  "use_preference": "preferred",
+  "source": {
+    "kind": "actor_statement"
+  },
+  "verification": {
+    "kind": "locally_confirmed",
+    "verified_at": "2026-08-15T12:02:00-04:00",
+    "verified_by": {
+      "type": "local_operator",
+      "display_label": "Synthetic Teacher"
+    }
+  },
+  "creation_source": {
+    "type": "digital_entry"
+  },
+  "created_at": "2026-08-15T12:01:00-04:00",
+  "created_by": {
+    "type": "local_operator",
+    "display_label": "Synthetic Teacher"
+  },
+  "updated_at": "2026-08-15T12:02:00-04:00",
+  "updated_by": {
+    "type": "local_operator",
+    "display_label": "Synthetic Teacher"
+  }
+}

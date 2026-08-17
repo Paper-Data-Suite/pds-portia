@@ -1,0 +1,8 @@
+{
+  "expected_graph_result": "invalid",
+  "expected_finding_ids": [
+    "G22.OUTCOME.IDENTITY_REUSED_FOR_LATER_EVALUATION"
+  ],
+  "primary_finding_id": "G22.OUTCOME.IDENTITY_REUSED_FOR_LATER_EVALUATION",
+  "structurally_valid_public_records": true
+}

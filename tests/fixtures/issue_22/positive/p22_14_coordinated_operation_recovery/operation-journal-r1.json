@@ -1,0 +1,370 @@
+{
+  "schema_version": "2",
+  "record_type": "operation_journal",
+  "module_id": "portia",
+  "operation_id": "op_p22_recovery_relationship",
+  "operation_kind": "activate_successor",
+  "intent_digest": "d8c1ee313decbd7d90e785efd75f5871ea2edb07029d585521b525fee067de92",
+  "scope": "work",
+  "primary_target": {
+    "kind": "work_record",
+    "work_record_ref": {
+      "work_ref": {
+        "module_id": "portia",
+        "class_id": "eng10_p2_2026",
+        "work_id": "evt_p22_recovery_primary",
+        "work_kind": "event",
+        "contract_version": "2"
+      },
+      "record_ref": {
+        "record_kind": "work_relationship",
+        "record_id": "rel_p22_recovery_corrected",
+        "contract_version": "2"
+      }
+    }
+  },
+  "affected_targets": [
+    {
+      "kind": "work_record",
+      "work_record_ref": {
+        "work_ref": {
+          "module_id": "portia",
+          "class_id": "eng10_p2_2026",
+          "work_id": "evt_p22_recovery_primary",
+          "work_kind": "event",
+          "contract_version": "2"
+        },
+        "record_ref": {
+          "record_kind": "work_relationship",
+          "record_id": "rel_p22_recovery_original",
+          "contract_version": "2"
+        }
+      }
+    }
+  ],
+  "intent_facts": [
+    {
+      "name": "correction_family",
+      "kind": "token",
+      "value": "work_relationship"
+    },
+    {
+      "name": "correction_reason",
+      "kind": "token",
+      "value": "material_detail_corrected"
+    },
+    {
+      "name": "predecessor_id",
+      "kind": "identifier",
+      "value": "rel_p22_recovery_original"
+    },
+    {
+      "name": "successor_id",
+      "kind": "identifier",
+      "value": "rel_p22_recovery_corrected"
+    }
+  ],
+  "initiated_at": "2026-10-12T10:00:00-04:00",
+  "initiated_by": {
+    "type": "local_operator",
+    "display_label": "Synthetic Teacher"
+  },
+  "authorization_references": [],
+  "journal_revision": 1,
+  "previous_journal_revision": null,
+  "state": "prepared",
+  "preflight_snapshot_digest": "9cb0b532a25b1caaa17dea4563ef89dfbbb428bf406520dfdb4e1e904f63a4d0",
+  "preflight_snapshot": [
+    {
+      "target": {
+        "kind": "work_record",
+        "work_record_ref": {
+          "work_ref": {
+            "module_id": "portia",
+            "class_id": "eng10_p2_2026",
+            "work_id": "evt_p22_recovery_primary",
+            "work_kind": "event",
+            "contract_version": "2"
+          },
+          "record_ref": {
+            "record_kind": "work_relationship",
+            "record_id": "rel_p22_recovery_original",
+            "contract_version": "2"
+          }
+        }
+      },
+      "representation_role": "canonical_domain",
+      "expected_state": {
+        "presence": "must_match",
+        "fingerprint": {
+          "algorithm": "sha256",
+          "digest": "7eed358d2f22b699c4d3e920b7702085970ddd968657d87a33f2fddbf6f4709c",
+          "byte_length": 1051
+        },
+        "semantic_checks": [
+          {
+            "name": "status",
+            "kind": "token",
+            "value": "active"
+          },
+          {
+            "name": "relationship_id",
+            "kind": "identifier",
+            "value": "rel_p22_recovery_original"
+          }
+        ]
+      },
+      "workspace_relative_path": "classes/eng10_p2_2026/modules/portia/work/evt_p22_recovery_primary/records/work_relationship/rel_p22_recovery_original.json",
+      "contract_version": "2",
+      "source_basis": "canonical",
+      "source_projection": null,
+      "selected_state": [
+        {
+          "name": "status",
+          "kind": "token",
+          "value": "active"
+        },
+        {
+          "name": "relationship_id",
+          "kind": "identifier",
+          "value": "rel_p22_recovery_original"
+        }
+      ],
+      "observed_at": "2026-10-12T10:00:01-04:00"
+    },
+    {
+      "target": {
+        "kind": "work_record",
+        "work_record_ref": {
+          "work_ref": {
+            "module_id": "portia",
+            "class_id": "eng10_p2_2026",
+            "work_id": "evt_p22_recovery_primary",
+            "work_kind": "event",
+            "contract_version": "2"
+          },
+          "record_ref": {
+            "record_kind": "work_relationship",
+            "record_id": "rel_p22_recovery_corrected",
+            "contract_version": "2"
+          }
+        }
+      },
+      "representation_role": "canonical_domain",
+      "expected_state": {
+        "presence": "must_be_absent"
+      },
+      "workspace_relative_path": "classes/eng10_p2_2026/modules/portia/work/evt_p22_recovery_primary/records/work_relationship/rel_p22_recovery_corrected.json",
+      "contract_version": "2",
+      "source_basis": "canonical",
+      "source_projection": null,
+      "selected_state": [],
+      "observed_at": "2026-10-12T10:00:02-04:00"
+    }
+  ],
+  "lock_set": [
+    {
+      "lock_id": "lock_e20044d6233f5ed120c2372f50fce015eb2d3d1b5824296fbda8325e23ffad4f",
+      "sequence": 1,
+      "lock_scope": "operation",
+      "protected_target": {
+        "kind": "operation",
+        "operation_ref": {
+          "operation_id": "op_p22_recovery_relationship"
+        }
+      },
+      "lock_path": "portia/locks/lock_e20044d6233f5ed120c2372f50fce015eb2d3d1b5824296fbda8325e23ffad4f.json",
+      "disposition": "planned",
+      "fingerprint": null,
+      "acquired_at": null,
+      "released_at": null
+    },
+    {
+      "lock_id": "lock_e9b9720187cd1a2e78d845c17762e1b65de48e6ff1e57c4307e0f9d5aad4451b",
+      "sequence": 2,
+      "lock_scope": "work",
+      "protected_target": {
+        "kind": "work",
+        "work_ref": {
+          "module_id": "portia",
+          "class_id": "eng10_p2_2026",
+          "work_id": "evt_p22_recovery_primary",
+          "work_kind": "event",
+          "contract_version": "2"
+        }
+      },
+      "lock_path": "portia/locks/lock_e9b9720187cd1a2e78d845c17762e1b65de48e6ff1e57c4307e0f9d5aad4451b.json",
+      "disposition": "planned",
+      "fingerprint": null,
+      "acquired_at": null,
+      "released_at": null
+    }
+  ],
+  "write_set": [
+    {
+      "step_id": "step_create_successor",
+      "sequence": 1,
+      "phase": "canonical_gate",
+      "action": "exclusive_create",
+      "target": {
+        "kind": "work_record",
+        "work_record_ref": {
+          "work_ref": {
+            "module_id": "portia",
+            "class_id": "eng10_p2_2026",
+            "work_id": "evt_p22_recovery_primary",
+            "work_kind": "event",
+            "contract_version": "2"
+          },
+          "record_ref": {
+            "record_kind": "work_relationship",
+            "record_id": "rel_p22_recovery_corrected",
+            "contract_version": "2"
+          }
+        }
+      },
+      "representation_role": "canonical_domain",
+      "destination_path": "classes/eng10_p2_2026/modules/portia/work/evt_p22_recovery_primary/records/work_relationship/rel_p22_recovery_corrected.json",
+      "precondition": {
+        "presence": "must_be_absent"
+      },
+      "intended_result": {
+        "contract_version": "2",
+        "fingerprint": {
+          "algorithm": "sha256",
+          "digest": "a880644dbdd01c21c14f9711061ffc3c6d21fe0b8b48105c4fb452eaf5d4ef05",
+          "byte_length": 1631
+        },
+        "selected_state": [
+          {
+            "name": "status",
+            "kind": "token",
+            "value": "active"
+          },
+          {
+            "name": "relationship_id",
+            "kind": "identifier",
+            "value": "rel_p22_recovery_corrected"
+          }
+        ]
+      },
+      "disposition": "pending",
+      "observed_result": null,
+      "compensation_step_id": null,
+      "reason_code": null
+    },
+    {
+      "step_id": "step_supersede_original",
+      "sequence": 2,
+      "phase": "canonical_gate",
+      "action": "revision_aware_replace",
+      "target": {
+        "kind": "work_record",
+        "work_record_ref": {
+          "work_ref": {
+            "module_id": "portia",
+            "class_id": "eng10_p2_2026",
+            "work_id": "evt_p22_recovery_primary",
+            "work_kind": "event",
+            "contract_version": "2"
+          },
+          "record_ref": {
+            "record_kind": "work_relationship",
+            "record_id": "rel_p22_recovery_original",
+            "contract_version": "2"
+          }
+        }
+      },
+      "representation_role": "canonical_domain",
+      "destination_path": "classes/eng10_p2_2026/modules/portia/work/evt_p22_recovery_primary/records/work_relationship/rel_p22_recovery_original.json",
+      "precondition": {
+        "presence": "must_match",
+        "fingerprint": {
+          "algorithm": "sha256",
+          "digest": "7eed358d2f22b699c4d3e920b7702085970ddd968657d87a33f2fddbf6f4709c",
+          "byte_length": 1051
+        },
+        "contract_version": "2",
+        "semantic_checks": [
+          {
+            "name": "status",
+            "kind": "token",
+            "value": "active"
+          },
+          {
+            "name": "relationship_id",
+            "kind": "identifier",
+            "value": "rel_p22_recovery_original"
+          }
+        ]
+      },
+      "intended_result": {
+        "contract_version": "2",
+        "fingerprint": {
+          "algorithm": "sha256",
+          "digest": "2ccd20eeae7afaa8b2718fa89c4b40a0eb130a60c84cb58e20fc827c824d180f",
+          "byte_length": 1055
+        },
+        "selected_state": [
+          {
+            "name": "status",
+            "kind": "token",
+            "value": "superseded"
+          },
+          {
+            "name": "relationship_id",
+            "kind": "identifier",
+            "value": "rel_p22_recovery_original"
+          }
+        ]
+      },
+      "disposition": "pending",
+      "observed_result": null,
+      "compensation_step_id": null,
+      "reason_code": null
+    }
+  ],
+  "staged_artifacts": [],
+  "commit_point": {
+    "reached": false,
+    "reached_at": null
+  },
+  "compensation_plan": [
+    {
+      "trigger_code": "successor_activation_partial",
+      "affected_steps": [
+        "step_create_successor",
+        "step_supersede_original"
+      ],
+      "disposition": "complete_remaining_steps",
+      "required_authorization": [],
+      "planned_actions": [
+        "revision_aware_replace"
+      ]
+    }
+  ],
+  "recovery_plan": [
+    "resume",
+    "complete_remaining_steps",
+    "require_manual_review"
+  ],
+  "partial_state": {
+    "durability_assessment": "none",
+    "accepted_steps": [],
+    "verified_steps": [],
+    "durable_unverified_steps": [],
+    "indeterminate_steps": [],
+    "remaining_canonical_steps": [
+      "step_create_successor",
+      "step_supersede_original"
+    ],
+    "remaining_post_commit_steps": [],
+    "current_pointer_changes": [],
+    "held_or_possible_locks": [],
+    "quarantined_targets": [],
+    "active_finding_keys": [],
+    "recommended_disposition": "resume"
+  },
+  "created_at": "2026-10-12T10:00:03-04:00",
+  "updated_at": "2026-10-12T10:00:03-04:00"
+}

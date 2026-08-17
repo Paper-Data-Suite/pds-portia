@@ -1,0 +1,17 @@
+{
+  "fixture_contract": "pds-portia.synthetic-capture-materialization-resolution",
+  "fixture_version": "1",
+  "not_runtime_contract": true,
+  "materialization_operation_id": "op_g22_027_materialize",
+  "proposal_ref": {
+    "proposal_id": "cprp_g22_027",
+    "contract_version": "1"
+  },
+  "proposal_resolves": true,
+  "review_ref": {
+    "review_id": "crev_g22_027_missing",
+    "review_sequence": 1,
+    "contract_version": "1"
+  },
+  "review_resolves": false
+}

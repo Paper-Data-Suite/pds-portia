@@ -1,0 +1,146 @@
+{
+  "schema_version": "1",
+  "record_type": "deliberate_export",
+  "module_id": "portia",
+  "export_id": "pexp_g22_032_exact_consumption",
+  "projection_purpose": "participant_specific",
+  "export_scope": {
+    "scope": "work",
+    "work_ref": {
+      "module_id": "portia",
+      "class_id": "eng10_p2_2026",
+      "work_id": "evt_p22_derived_001",
+      "work_kind": "event",
+      "contract_version": "2"
+    }
+  },
+  "focal_subject_ref": {
+    "work_ref": {
+      "module_id": "portia",
+      "class_id": "eng10_p2_2026",
+      "work_id": "evt_p22_derived_001",
+      "work_kind": "event",
+      "contract_version": "2"
+    },
+    "record_ref": {
+      "record_kind": "event_participant",
+      "record_id": "ep_p22_derived_student",
+      "contract_version": "3"
+    }
+  },
+  "projection_policy": {
+    "policy_id": "g22_projection_policy",
+    "policy_version": "1",
+    "policy_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  },
+  "authorization": {
+    "kind": "policy_rule",
+    "result": "authorized",
+    "authorization_scope_id": "authscope_g22_fixture",
+    "policy_rule_id": "g22_fixture_rule",
+    "policy_rule_version": "1",
+    "policy_rule_digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "evaluated_at": "2026-10-07T09:00:00-04:00",
+    "recorded_by": {
+      "type": "local_operator",
+      "display_label": "Synthetic Teacher"
+    }
+  },
+  "source_inventory": {
+    "schema_version": "1",
+    "record_type": "export_source_inventory",
+    "module_id": "portia",
+    "inventory_algorithm": "portia_export_source_inventory_v1",
+    "entries": [
+      {
+        "source_kind": "portia_record",
+        "source_role": "projected_domain",
+        "work_record_ref": {
+          "work_ref": {
+            "module_id": "portia",
+            "class_id": "eng10_p2_2026",
+            "work_id": "evt_p22_derived_001",
+            "work_kind": "event",
+            "contract_version": "2"
+          },
+          "record_ref": {
+            "record_kind": "account",
+            "record_id": "acct_p22_derived_corrected",
+            "contract_version": "2"
+          }
+        },
+        "representation_digest": "0ab8f01a7c2db1733a328f7c96aa1f67d8bdfdcfafa91dbdac237102369df5ad",
+        "byte_length": 1825
+      },
+      {
+        "source_kind": "portia_record",
+        "source_role": "projected_domain",
+        "work_record_ref": {
+          "work_ref": {
+            "module_id": "portia",
+            "class_id": "eng10_p2_2026",
+            "work_id": "evt_p22_derived_001",
+            "work_kind": "event",
+            "contract_version": "2"
+          },
+          "record_ref": {
+            "record_kind": "event_participant",
+            "record_id": "ep_p22_derived_student",
+            "contract_version": "3"
+          }
+        },
+        "representation_digest": "07296da78f6949a9ec5c8d611e1d38fc4cc031d03cf1ea5112356391f389c59c",
+        "byte_length": 790
+      },
+      {
+        "source_kind": "portia_work",
+        "source_role": "projection_context",
+        "work_ref": {
+          "module_id": "portia",
+          "class_id": "eng10_p2_2026",
+          "work_id": "evt_p22_derived_001",
+          "work_kind": "event",
+          "contract_version": "2"
+        },
+        "representation_digest": "0cb65ea40127bd6b04d3a157cf737c94f3463212000962146dce58dc0a438eef",
+        "byte_length": 894
+      }
+    ],
+    "inventory_digest": "bceec6b941d752c28fd69ad34a510c40ec7a6e2543fe315d1d7bb1ddfb4f232d"
+  },
+  "projection_decision_algorithm": "portia_projection_decision_v1",
+  "projection_decision_digest": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+  "disposition_summary": {
+    "count_unit": "projection_item",
+    "included": 2,
+    "withheld": 1,
+    "unavailable": 0,
+    "absent": 0,
+    "manual_review_resolved": 0
+  },
+  "manual_review": {
+    "status": "not_required"
+  },
+  "output": {
+    "format": "csv",
+    "media_type": "text/csv",
+    "workspace_relative_path": "portia/exports/pexp_g22_032_exact_consumption/artifact.csv",
+    "byte_length": 56,
+    "sha256_digest": "29a233c05cf4debb8b95b79245f805f8f966f6e9095d1de838d5ed1dd1b6125c"
+  },
+  "operation_journal_ref": {
+    "operation_id": "op_g22_032_exact_consumption",
+    "journal_revision": 1,
+    "contract_version": "1"
+  },
+  "requested_at": "2026-10-07T09:00:00-04:00",
+  "requested_by": {
+    "type": "local_operator",
+    "display_label": "Synthetic Teacher"
+  },
+  "generated_at": "2026-10-07T09:01:00-04:00",
+  "generated_by": {
+    "type": "system_process",
+    "process_id": "privacy_export"
+  }
+}

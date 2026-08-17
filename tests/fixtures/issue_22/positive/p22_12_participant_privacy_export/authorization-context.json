@@ -1,0 +1,34 @@
+{
+  "fixture_kind": "synthetic_authorization_context",
+  "not_runtime_contract": true,
+  "authorization_scope_id": "authscope_p22_student_b_event_001",
+  "work_ref": {
+    "module_id": "portia",
+    "class_id": "eng10_p2_2026",
+    "work_id": "evt_p22_privacy_001",
+    "work_kind": "event",
+    "contract_version": "2"
+  },
+  "focal_subject_ref": {
+    "work_ref": {
+      "module_id": "portia",
+      "class_id": "eng10_p2_2026",
+      "work_id": "evt_p22_privacy_001",
+      "work_kind": "event",
+      "contract_version": "2"
+    },
+    "record_ref": {
+      "record_kind": "event_participant",
+      "record_id": "ep_p22_privacy_b",
+      "contract_version": "3"
+    }
+  },
+  "projection_purpose": "student_facing",
+  "export_authorized": true,
+  "source_artifact_authorized": false,
+  "policy_rule_id": "p22_student_facing_export_rule",
+  "policy_rule_version": "1",
+  "policy_rule_digest": "93e03314a2759f63b9c9a2fce03ac7f09a5e578efa35bf62da801ea1098fcf01",
+  "evaluated_at": "2026-09-22T10:29:00-04:00",
+  "note": "The audience purpose selects a projection policy; this separate rule authorizes only the exact export scope and does not authorize source-artifact bytes."
+}

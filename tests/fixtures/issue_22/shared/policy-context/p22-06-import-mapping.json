@@ -1,0 +1,25 @@
+{
+  "fixture_contract": "pds-portia.synthetic-import-mapping-context",
+  "fixture_version": "1",
+  "not_runtime_contract": true,
+  "synthetic": true,
+  "mapping_profile_id": "issue22_event_csv",
+  "mapping_version": "1",
+  "record_kind": "event",
+  "proposal_key": "event",
+  "field_bindings": [
+    {
+      "source_field_key": "event_time",
+      "target_path": "/occurrence/started_at",
+      "value_source": "source_value"
+    },
+    {
+      "source_field_key": "summary",
+      "target_path": "/summary",
+      "value_source": "source_value"
+    }
+  ],
+  "ignored_source_fields": [
+    "source_status"
+  ]
+}

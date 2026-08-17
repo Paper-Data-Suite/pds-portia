@@ -1,0 +1,23 @@
+{
+  "fixture_contract": "pds-portia.synthetic-derived-current-selection",
+  "fixture_version": "1",
+  "not_runtime_contract": true,
+  "projection_kind": "replacement_frontier_index",
+  "record_contract": "account",
+  "selected": {
+    "class_id": "eng10_g22_012",
+    "work_id": "evt_g22_012",
+    "record_kind": "account",
+    "record_id": "acct_g22_012_original",
+    "contract_version": "2"
+  },
+  "expected_current": {
+    "class_id": "eng10_g22_012",
+    "work_id": "evt_g22_012",
+    "record_kind": "account",
+    "record_id": "acct_g22_012_corrected",
+    "contract_version": "2"
+  },
+  "selection_basis": "stale_derived_generation",
+  "derived_pointer_fixture": "derived-current-pointer.json"
+}

@@ -1,0 +1,76 @@
+{
+  "fixture_contract": "pds-portia.representative-contract-graph-scenario",
+  "fixture_version": "1",
+  "not_runtime_contract": true,
+  "scenario_id": "G22-007",
+  "title": "Actor identity replaces roster identity",
+  "scenario_kind": "graph_invalid",
+  "synthetic": true,
+  "records": [
+    {
+      "fixture_path": "actor.json",
+      "contract": "actor",
+      "version": "1",
+      "logical_identity": "actor:actr_g22_student_shadow",
+      "authority": "portia",
+      "owner": {
+        "owner_kind": "actor",
+        "actor_id": "actr_g22_student_shadow"
+      },
+      "canonical_path": "portia/actors/actr_g22_student_shadow/actor.json"
+    },
+    {
+      "fixture_path": "event.json",
+      "contract": "event",
+      "version": "2",
+      "logical_identity": "event:evt_g22_actor_shadow",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_g22_actor_shadow",
+        "work_kind": "event",
+        "work_id": "evt_g22_actor_shadow"
+      },
+      "canonical_path": "classes/eng10_g22_actor_shadow/modules/portia/work/evt_g22_actor_shadow/work.json"
+    },
+    {
+      "fixture_path": "participant.json",
+      "contract": "event_participant",
+      "version": "3",
+      "logical_identity": "event_participant:ep_g22_actor_shadow",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_g22_actor_shadow",
+        "work_kind": "event",
+        "work_id": "evt_g22_actor_shadow"
+      },
+      "canonical_path": "classes/eng10_g22_actor_shadow/modules/portia/work/evt_g22_actor_shadow/records/event_participant/ep_g22_actor_shadow.json"
+    }
+  ],
+  "context": [
+    {
+      "context_kind": "synthetic_core_roster",
+      "fixture_path": "roster.json"
+    },
+    {
+      "context_kind": "synthetic_identity_resolution",
+      "fixture_path": "identity-resolution.json"
+    }
+  ],
+  "required_distinctions": [
+    "Actor identity does not replace class-qualified roster identity.",
+    "Display equality does not create an Actor-to-student identity equivalence."
+  ],
+  "expected_graph_result": "invalid",
+  "expected_finding_ids": [
+    "G22.IDENTITY.ACTOR_ROSTER_SUBSTITUTION"
+  ],
+  "primary_finding_id": "G22.IDENTITY.ACTOR_ROSTER_SUBSTITUTION",
+  "principal_defect": "The same-looking roster student is duplicated as a workspace Actor and the synthetic identity resolver claims the Actor can replace the roster identity without an accepted explicit link.",
+  "structurally_valid_reason": "Actor and Event Participant are each valid public records; the prohibited equivalence is an application-resolution claim.",
+  "records_must_remain_unmodified": [
+    "actor.json",
+    "event.json",
+    "participant.json"
+  ],
+  "expected_path": "expected.json"
+}

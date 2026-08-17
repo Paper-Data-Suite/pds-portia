@@ -1,0 +1,14 @@
+{
+  "fixture_contract": "pds-core.synthetic-roster-context",
+  "fixture_version": "1",
+  "not_runtime_contract": true,
+  "authority": "core",
+  "class_id": "eng10_g22_013",
+  "school_year": "2026-2027",
+  "students": [
+    {
+      "student_id": "stu_g22_013",
+      "display_name": "Synthetic Student A"
+    }
+  ]
+}

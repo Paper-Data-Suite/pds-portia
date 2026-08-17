@@ -1,0 +1,12 @@
+{
+  "fixture_contract": "pds-portia.graph-invalid-expectation",
+  "fixture_version": "1",
+  "not_runtime_contract": true,
+  "scenario_id": "G22-015",
+  "primary_finding_id": "G22.MIGRATION.HISTORICAL_RETARGET",
+  "expected_finding_ids": [
+    "G22.MIGRATION.HISTORICAL_RETARGET"
+  ],
+  "structurally_valid_public_records": true,
+  "principal_defect": "A representation-only Record Migration is used to make an exact historical Event@1 reference resolve to Event@2 even though the accepted summary changed substantively."
+}

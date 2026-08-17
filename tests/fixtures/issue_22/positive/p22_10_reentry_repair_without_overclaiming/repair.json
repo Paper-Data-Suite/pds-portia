@@ -1,0 +1,156 @@
+{
+  "schema_version": "1",
+  "record_type": "repair",
+  "module_id": "portia",
+  "class_id": "eng10_p2_2026",
+  "work_kind": "event",
+  "work_id": "evt_p22_reentry_repair_001",
+  "repair_id": "rpr_p22_reentry_repair_001",
+  "status": "active",
+  "target": {
+    "kind": "event_participant",
+    "record_ref": {
+      "record_kind": "event_participant",
+      "record_id": "ep_p22_reentry_repair_a",
+      "contract_version": "3"
+    }
+  },
+  "facilitator": {
+    "kind": "represented_human",
+    "person": {
+      "kind": "local_operator",
+      "display_label": "Synthetic Teacher"
+    }
+  },
+  "focus": "Bounded teacher-local opportunity to address represented impact and future shared-work routines without deciding which Account is true or requiring admission, apology, remorse, or forgiveness.",
+  "context_refs": [
+    {
+      "kind": "record",
+      "record_ref": {
+        "work_ref": {
+          "module_id": "portia",
+          "class_id": "eng10_p2_2026",
+          "work_id": "evt_p22_reentry_repair_001",
+          "work_kind": "event",
+          "contract_version": "2"
+        },
+        "record_ref": {
+          "record_kind": "account",
+          "record_id": "acct_p22_reentry_repair_a",
+          "contract_version": "2"
+        }
+      }
+    },
+    {
+      "kind": "record",
+      "record_ref": {
+        "work_ref": {
+          "module_id": "portia",
+          "class_id": "eng10_p2_2026",
+          "work_id": "evt_p22_reentry_repair_001",
+          "work_kind": "event",
+          "contract_version": "2"
+        },
+        "record_ref": {
+          "record_kind": "account",
+          "record_id": "acct_p22_reentry_repair_b",
+          "contract_version": "2"
+        }
+      }
+    },
+    {
+      "kind": "record",
+      "record_ref": {
+        "work_ref": {
+          "module_id": "portia",
+          "class_id": "eng10_p2_2026",
+          "work_id": "evt_p22_reentry_repair_001",
+          "work_kind": "event",
+          "contract_version": "2"
+        },
+        "record_ref": {
+          "record_kind": "communication",
+          "record_id": "comm_p22_reentry_repair_001",
+          "contract_version": "1"
+        }
+      }
+    }
+  ],
+  "participants": [
+    {
+      "participant_key": "student_a",
+      "person": {
+        "kind": "represented_human",
+        "person": {
+          "kind": "roster_student",
+          "roster_student_ref": {
+            "class_id": "eng10_p2_2026",
+            "student_id": "stu_p22_001"
+          },
+          "display_snapshot": {
+            "display_name": "Synthetic Student A"
+          }
+        }
+      },
+      "roles": [
+        {
+          "kind": "person_addressing_impact"
+        }
+      ],
+      "participation_state": "participated"
+    },
+    {
+      "participant_key": "student_b",
+      "person": {
+        "kind": "represented_human",
+        "person": {
+          "kind": "roster_student",
+          "roster_student_ref": {
+            "class_id": "eng10_p2_2026",
+            "student_id": "stu_p22_002"
+          },
+          "display_snapshot": {
+            "display_name": "Synthetic Student B"
+          }
+        }
+      },
+      "roles": [
+        {
+          "kind": "affected_person"
+        }
+      ],
+      "participation_state": "declined"
+    }
+  ],
+  "actions": [
+    {
+      "action_key": "future_shared_work",
+      "action_type": "restorative_action",
+      "description": "Student A completed a teacher-facilitated written plan naming one neutral routine to use if a future shared-material disagreement occurs.",
+      "agreed_by": [
+        "student_a"
+      ],
+      "responsible_participant_keys": [
+        "student_a"
+      ],
+      "agreed_at": "2026-09-15T10:05:00-04:00",
+      "completion_state": "completed",
+      "completed_at": "2026-09-15T10:12:00-04:00"
+    }
+  ],
+  "workflow_state": "completed",
+  "completed_at": "2026-09-15T10:12:00-04:00",
+  "creation_source": {
+    "type": "digital_entry"
+  },
+  "created_at": "2026-09-15T10:03:00-04:00",
+  "created_by": {
+    "type": "local_operator",
+    "display_label": "Synthetic Teacher"
+  },
+  "updated_at": "2026-09-15T10:13:00-04:00",
+  "updated_by": {
+    "type": "local_operator",
+    "display_label": "Synthetic Teacher"
+  }
+}

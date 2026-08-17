@@ -1,0 +1,12 @@
+{
+  "fixture_contract": "pds-portia.graph-invalid-expectation",
+  "fixture_version": "1",
+  "not_runtime_contract": true,
+  "scenario_id": "G22-016",
+  "primary_finding_id": "G22.SUPPORT.CONTINUATION_ENCODED_AS_MIGRATION",
+  "expected_finding_ids": [
+    "G22.SUPPORT.CONTINUATION_ENCODED_AS_MIGRATION"
+  ],
+  "structurally_valid_public_records": true,
+  "principal_defect": "A new-year Support Process omits continues_from and is instead linked to the predecessor by a Record Migration, collapsing continuation into representation migration."
+}

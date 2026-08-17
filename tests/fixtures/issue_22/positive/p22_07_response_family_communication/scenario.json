@@ -1,0 +1,122 @@
+{
+  "fixture_contract": "pds-portia.representative-contract-graph-scenario",
+  "fixture_version": "1",
+  "not_runtime_contract": true,
+  "scenario_id": "P22-07",
+  "title": "Immediate Response and family Communication",
+  "scenario_kind": "positive",
+  "synthetic": true,
+  "records": [
+    {
+      "fixture_path": "records/actor.json",
+      "contract": "actor",
+      "version": "1",
+      "logical_identity": "actor:actr_p22_family_001",
+      "authority": "portia",
+      "owner": {
+        "owner_kind": "actor",
+        "actor_id": "actr_p22_family_001"
+      },
+      "canonical_path": "portia/actors/actr_p22_family_001/actor.json"
+    },
+    {
+      "fixture_path": "records/actor-contact-point.json",
+      "contract": "actor_contact_point",
+      "version": "1",
+      "logical_identity": "actor_contact_point:acp_p22_family_email_001",
+      "authority": "portia",
+      "owner": {
+        "owner_kind": "actor",
+        "actor_id": "actr_p22_family_001"
+      },
+      "canonical_path": "portia/actors/actr_p22_family_001/records/actor_contact_point/acp_p22_family_email_001.json"
+    },
+    {
+      "fixture_path": "records/actor-student-relationship.json",
+      "contract": "actor_student_relationship",
+      "version": "1",
+      "logical_identity": "actor_student_relationship:asrel_p22_family_001",
+      "authority": "portia",
+      "owner": {
+        "owner_kind": "actor",
+        "actor_id": "actr_p22_family_001"
+      },
+      "canonical_path": "portia/actors/actr_p22_family_001/records/actor_student_relationship/asrel_p22_family_001.json"
+    },
+    {
+      "fixture_path": "records/event.json",
+      "contract": "event",
+      "version": "2",
+      "logical_identity": "event:evt_p22_family_comm_001",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "event",
+        "work_id": "evt_p22_family_comm_001"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/evt_p22_family_comm_001/work.json"
+    },
+    {
+      "fixture_path": "records/participant.json",
+      "contract": "event_participant",
+      "version": "3",
+      "logical_identity": "event_participant:ep_p22_family_comm_001",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "event",
+        "work_id": "evt_p22_family_comm_001"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/evt_p22_family_comm_001/records/event_participant/ep_p22_family_comm_001.json"
+    },
+    {
+      "fixture_path": "records/response.json",
+      "contract": "response",
+      "version": "1",
+      "logical_identity": "response:rsp_p22_family_001",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "event",
+        "work_id": "evt_p22_family_comm_001"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/evt_p22_family_comm_001/records/response/rsp_p22_family_001.json"
+    },
+    {
+      "fixture_path": "records/communication.json",
+      "contract": "communication",
+      "version": "1",
+      "logical_identity": "communication:comm_p22_family_001",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "event",
+        "work_id": "evt_p22_family_comm_001"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/evt_p22_family_comm_001/records/communication/comm_p22_family_001.json"
+    }
+  ],
+  "context": [
+    {
+      "context_kind": "synthetic_core_roster",
+      "fixture_path": "../../shared/core-context/roster.json"
+    }
+  ],
+  "required_distinctions": [
+    "Response is action, not evidence or Outcome.",
+    "Non-consequence Response does not require Determination.",
+    "Actor identity is workspace-scoped, not class-owned.",
+    "Actor category is not relationship or authority.",
+    "Contact Point is not Actor identity.",
+    "Locally confirmed Contact Point is not consent or delivery.",
+    "Actor-to-Student Relationship is not legal guardianship.",
+    "Relationship does not grant disclosure permission.",
+    "Communication recipient is not Event participant.",
+    "Listed recipient does not itself establish participation.",
+    "Completed communication act is not proof of delivery or read status.",
+    "Communication relation to Response does not prove Response effectiveness."
+  ],
+  "expected_graph_result": "valid",
+  "expected_finding_ids": [],
+  "expected_path": "expected.json"
+}

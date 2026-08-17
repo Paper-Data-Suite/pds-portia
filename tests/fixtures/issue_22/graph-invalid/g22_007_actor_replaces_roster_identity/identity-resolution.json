@@ -1,0 +1,12 @@
+{
+  "fixture_contract": "pds-portia.synthetic-identity-resolution",
+  "fixture_version": "1",
+  "not_runtime_contract": true,
+  "resolution_kind": "actor_replaces_roster_identity",
+  "actor_id": "actr_g22_student_shadow",
+  "roster_student_ref": {
+    "class_id": "eng10_g22_actor_shadow",
+    "student_id": "stu_g22_actor_shadow"
+  },
+  "accepted_explicit_link": false
+}

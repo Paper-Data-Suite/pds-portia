@@ -1,0 +1,118 @@
+{
+  "schema_version": "1",
+  "record_type": "determination",
+  "module_id": "portia",
+  "class_id": "eng10_p2_2026",
+  "work_id": "evt_p22_conflict_001",
+  "determination_id": "det_p22_conflict_001",
+  "status": "active",
+  "target": {
+    "kind": "event"
+  },
+  "question": "Does the available Event-local evidence support a bounded conclusion about who handled the blue folder before it fell?",
+  "decision_maker": {
+    "kind": "local_operator",
+    "display_label": "Synthetic Teacher"
+  },
+  "authority_context": {
+    "kind": "teacher_local",
+    "scope": "teacher_review"
+  },
+  "process_basis": {
+    "kind": "teacher_local",
+    "process_label": "Local teacher evidence review"
+  },
+  "outcome": {
+    "kind": "insufficient_information"
+  },
+  "rationale": "The two firsthand Accounts conflict, and the direct Observation begins after the disputed handling would have occurred.",
+  "review_ref": {
+    "work_ref": {
+      "module_id": "portia",
+      "class_id": "eng10_p2_2026",
+      "work_id": "evt_p22_conflict_001",
+      "work_kind": "event",
+      "contract_version": "2"
+    },
+    "record_ref": {
+      "record_kind": "review",
+      "record_id": "rvw_p22_conflict_001",
+      "contract_version": "1"
+    }
+  },
+  "basis": [
+    {
+      "relation": "supporting",
+      "evidence_ref": {
+        "kind": "portia_record",
+        "work_record_ref": {
+          "work_ref": {
+            "module_id": "portia",
+            "class_id": "eng10_p2_2026",
+            "work_id": "evt_p22_conflict_001",
+            "work_kind": "event",
+            "contract_version": "2"
+          },
+          "record_ref": {
+            "record_kind": "account",
+            "record_id": "acct_p22_conflict_a",
+            "contract_version": "2"
+          }
+        }
+      }
+    },
+    {
+      "relation": "contrary",
+      "evidence_ref": {
+        "kind": "portia_record",
+        "work_record_ref": {
+          "work_ref": {
+            "module_id": "portia",
+            "class_id": "eng10_p2_2026",
+            "work_id": "evt_p22_conflict_001",
+            "work_kind": "event",
+            "contract_version": "2"
+          },
+          "record_ref": {
+            "record_kind": "account",
+            "record_id": "acct_p22_conflict_c",
+            "contract_version": "2"
+          }
+        }
+      }
+    },
+    {
+      "relation": "contextual",
+      "evidence_ref": {
+        "kind": "portia_record",
+        "work_record_ref": {
+          "work_ref": {
+            "module_id": "portia",
+            "class_id": "eng10_p2_2026",
+            "work_id": "evt_p22_conflict_001",
+            "work_kind": "event",
+            "contract_version": "2"
+          },
+          "record_ref": {
+            "record_kind": "observation",
+            "record_id": "obs_p22_conflict_001",
+            "contract_version": "2"
+          }
+        }
+      }
+    }
+  ],
+  "creation_source": {
+    "type": "digital_entry"
+  },
+  "created_at": "2026-08-15T09:23:00-04:00",
+  "created_by": {
+    "type": "local_operator",
+    "display_label": "Synthetic Teacher"
+  },
+  "updated_at": "2026-08-15T09:23:00-04:00",
+  "updated_by": {
+    "type": "local_operator",
+    "display_label": "Synthetic Teacher"
+  }
+}

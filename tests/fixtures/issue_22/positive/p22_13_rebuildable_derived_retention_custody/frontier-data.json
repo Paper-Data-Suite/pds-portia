@@ -1,0 +1,19 @@
+{
+  "fixture_contract": "pds-portia.issue-22-derived-projection-data",
+  "fixture_version": "1",
+  "not_runtime_contract": true,
+  "synthetic": true,
+  "projection_kind": "replacement_frontier_index",
+  "projection_contract_version": "fixture-1",
+  "data": {
+    "account": {
+      "predecessors": [
+        "eng10_p2_2026/evt_p22_derived_001/account:acct_p22_derived_original@2"
+      ],
+      "current": [
+        "eng10_p2_2026/evt_p22_derived_001/account:acct_p22_derived_corrected@2"
+      ],
+      "selection_basis": "canonical_supersedes"
+    }
+  }
+}

@@ -1,0 +1,98 @@
+{
+  "fixture_contract": "pds-portia.representative-contract-graph-scenario",
+  "fixture_version": "1",
+  "not_runtime_contract": true,
+  "scenario_id": "G22-012",
+  "title": "Derived current selection chooses superseded predecessor",
+  "scenario_kind": "graph_invalid",
+  "synthetic": true,
+  "records": [
+    {
+      "fixture_path": "event.json",
+      "contract": "event",
+      "version": "2",
+      "logical_identity": "event:evt_g22_012",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_g22_012",
+        "work_kind": "event",
+        "work_id": "evt_g22_012"
+      },
+      "canonical_path": "classes/eng10_g22_012/modules/portia/work/evt_g22_012/work.json"
+    },
+    {
+      "fixture_path": "participant.json",
+      "contract": "event_participant",
+      "version": "3",
+      "logical_identity": "event_participant:ep_g22_012_student",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_g22_012",
+        "work_kind": "event",
+        "work_id": "evt_g22_012"
+      },
+      "canonical_path": "classes/eng10_g22_012/modules/portia/work/evt_g22_012/records/event_participant/ep_g22_012_student.json"
+    },
+    {
+      "fixture_path": "account-original.json",
+      "contract": "account",
+      "version": "2",
+      "logical_identity": "account:acct_g22_012_original",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_g22_012",
+        "work_kind": "event",
+        "work_id": "evt_g22_012"
+      },
+      "canonical_path": "classes/eng10_g22_012/modules/portia/work/evt_g22_012/records/account/acct_g22_012_original.json"
+    },
+    {
+      "fixture_path": "account-corrected.json",
+      "contract": "account",
+      "version": "2",
+      "logical_identity": "account:acct_g22_012_corrected",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_g22_012",
+        "work_kind": "event",
+        "work_id": "evt_g22_012"
+      },
+      "canonical_path": "classes/eng10_g22_012/modules/portia/work/evt_g22_012/records/account/acct_g22_012_corrected.json"
+    }
+  ],
+  "context": [
+    {
+      "context_kind": "synthetic_core_roster",
+      "fixture_path": "roster.json"
+    },
+    {
+      "context_kind": "synthetic_derived_current_selection",
+      "fixture_path": "derived-selection.json"
+    }
+  ],
+  "required_distinctions": [
+    "Derived current state is not canonical authority.",
+    "A current/replacement view must not select a superseded predecessor when the exact active successor exists."
+  ],
+  "expected_graph_result": "invalid",
+  "expected_finding_ids": [
+    "G22.DERIVED.CURRENT_SELECTS_PREDECESSOR"
+  ],
+  "primary_finding_id": "G22.DERIVED.CURRENT_SELECTS_PREDECESSOR",
+  "principal_defect": "A schema-valid derived current pointer selects a generation whose declared replacement result still chooses the superseded Account predecessor rather than the active successor.",
+  "structurally_valid_reason": "Canonical Event/Participant/Account records and the separate derived_current_pointer@1 are structurally valid; the invalidity is the derived semantic selection.",
+  "records_must_remain_unmodified": [
+    "event.json",
+    "participant.json",
+    "account-original.json",
+    "account-corrected.json"
+  ],
+  "expected_path": "expected.json",
+  "derived_contract_fixtures": [
+    {
+      "fixture_path": "derived-current-pointer.json",
+      "contract": "derived_current_pointer",
+      "version": "1"
+    }
+  ]
+}

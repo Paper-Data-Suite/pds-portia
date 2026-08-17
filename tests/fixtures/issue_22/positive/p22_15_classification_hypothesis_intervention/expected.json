@@ -1,0 +1,18 @@
+{
+  "event_id": "evt_p22_judgment_support_001",
+  "event_participant_id": "ep_p22_judgment_support_001",
+  "review_id": "rvw_p22_judgment_support_001",
+  "classification_id": "cls_p22_judgment_support_001",
+  "classification_stage": "reviewer_selected",
+  "classification_category_code": "transition_delay",
+  "hypothesis_id": "hyp_p22_judgment_support_001",
+  "hypothesis_consideration_state": "under_consideration",
+  "support_process_id": "sup_p22_judgment_support_001",
+  "support_participant_id": "spp_p22_judgment_student_001",
+  "provider_participant_id": "spp_p22_judgment_teacher_001",
+  "need_id": "spn_p22_judgment_support_001",
+  "goal_id": "spg_p22_judgment_support_001",
+  "intervention_id": "int_p22_judgment_support_001",
+  "implementation_id": "imp_p22_judgment_support_001",
+  "implementation_plan_kind": "intervention"
+}

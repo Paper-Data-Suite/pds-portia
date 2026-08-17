@@ -1,0 +1,53 @@
+{
+  "schema_version": "2",
+  "record_type": "account",
+  "module_id": "portia",
+  "class_id": "eng10_g22_013",
+  "work_kind": "event",
+  "work_id": "evt_g22_013",
+  "account_id": "acct_g22_013_a",
+  "status": "active",
+  "target": {
+    "kind": "event_participant",
+    "record_ref": {
+      "record_kind": "event_participant",
+      "record_id": "ep_g22_013_student",
+      "contract_version": "3"
+    }
+  },
+  "source": {
+    "kind": "roster_student",
+    "roster_student_ref": {
+      "class_id": "eng10_g22_013",
+      "student_id": "stu_g22_013"
+    },
+    "display_snapshot": {
+      "display_name": "Synthetic Student A"
+    }
+  },
+  "information_origin": "firsthand",
+  "source_certainty": "stated_certain",
+  "content": [
+    {
+      "representation": "recorded_summary",
+      "text": "First synthetic Account; this is the intended contested record."
+    }
+  ],
+  "provided_time": {
+    "precision": "exact",
+    "at": "2026-10-10T08:55:00-04:00"
+  },
+  "creation_source": {
+    "type": "digital_entry"
+  },
+  "created_at": "2026-10-10T09:02:00-04:00",
+  "created_by": {
+    "type": "local_operator",
+    "display_label": "Synthetic Teacher"
+  },
+  "updated_at": "2026-10-10T09:02:00-04:00",
+  "updated_by": {
+    "type": "local_operator",
+    "display_label": "Synthetic Teacher"
+  }
+}

@@ -1,0 +1,56 @@
+{
+  "schema_version": "1",
+  "record_type": "review",
+  "module_id": "portia",
+  "class_id": "eng10_g22_owner",
+  "work_id": "evt_g22_owner_class",
+  "review_id": "rvw_g22_wrong_class",
+  "status": "active",
+  "review_state": "completed",
+  "trigger": {
+    "kind": "routine_review"
+  },
+  "question": {
+    "kind": "evidence_review",
+    "text": "What exact synthetic record was considered for this graph-validation case?"
+  },
+  "target": {
+    "kind": "event"
+  },
+  "reviewer": {
+    "kind": "local_operator",
+    "display_label": "Synthetic Teacher"
+  },
+  "evidence_considered": [
+    {
+      "kind": "portia_record",
+      "work_record_ref": {
+        "work_ref": {
+          "module_id": "portia",
+          "class_id": "eng10_g22_foreign",
+          "work_id": "evt_g22_foreign_class",
+          "work_kind": "event",
+          "contract_version": "2"
+        },
+        "record_ref": {
+          "record_kind": "account",
+          "record_id": "acct_g22_foreign_class",
+          "contract_version": "2"
+        }
+      }
+    }
+  ],
+  "creation_source": {
+    "type": "digital_entry"
+  },
+  "created_at": "2026-08-15T09:20:00-04:00",
+  "created_by": {
+    "type": "local_operator",
+    "display_label": "Synthetic Teacher"
+  },
+  "updated_at": "2026-08-15T09:20:00-04:00",
+  "updated_by": {
+    "type": "local_operator",
+    "display_label": "Synthetic Teacher"
+  }
+}

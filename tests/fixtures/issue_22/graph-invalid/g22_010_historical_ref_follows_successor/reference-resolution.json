@@ -1,0 +1,21 @@
+{
+  "fixture_contract": "pds-portia.synthetic-reference-resolution",
+  "fixture_version": "1",
+  "not_runtime_contract": true,
+  "resolution_kind": "historical_exact_follow",
+  "requested": {
+    "class_id": "eng10_g22_history",
+    "work_id": "evt_g22_history_primary",
+    "record_kind": "work_relationship",
+    "record_id": "rel_g22_history_original",
+    "contract_version": "2"
+  },
+  "resolved": {
+    "class_id": "eng10_g22_history",
+    "work_id": "evt_g22_history_primary",
+    "record_kind": "work_relationship",
+    "record_id": "rel_g22_history_corrected",
+    "contract_version": "2"
+  },
+  "resolution_mode": "follow_current"
+}

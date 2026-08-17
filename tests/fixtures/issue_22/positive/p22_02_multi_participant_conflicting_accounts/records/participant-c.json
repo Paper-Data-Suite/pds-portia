@@ -1,0 +1,32 @@
+{
+  "schema_version": "3",
+  "record_type": "event_participant",
+  "module_id": "portia",
+  "class_id": "eng10_p2_2026",
+  "work_id": "evt_p22_conflict_001",
+  "participant_id": "ep_p22_conflict_c",
+  "status": "active",
+  "subject": {
+    "kind": "roster_student",
+    "roster_student_ref": {
+      "class_id": "eng10_p2_2026",
+      "student_id": "stu_p22_003"
+    },
+    "display_snapshot": {
+      "display_name": "Synthetic Student C"
+    }
+  },
+  "creation_source": {
+    "type": "digital_entry"
+  },
+  "created_at": "2026-08-15T09:11:00-04:00",
+  "created_by": {
+    "type": "local_operator",
+    "display_label": "Synthetic Teacher"
+  },
+  "updated_at": "2026-08-15T09:11:00-04:00",
+  "updated_by": {
+    "type": "local_operator",
+    "display_label": "Synthetic Teacher"
+  }
+}

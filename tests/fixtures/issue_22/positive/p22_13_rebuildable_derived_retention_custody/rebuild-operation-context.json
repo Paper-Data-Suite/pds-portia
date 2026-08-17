@@ -1,0 +1,12 @@
+{
+  "fixture_contract": "pds-portia.synthetic-operation-context",
+  "fixture_version": "1",
+  "not_runtime_contract": true,
+  "synthetic": true,
+  "operation_id": "op_p22_derived_rebuild_001",
+  "journal_revision": 2,
+  "operation_kind": "rebuild_projection",
+  "state": "completed",
+  "authority": "portia_operational",
+  "domain_truth": false
+}

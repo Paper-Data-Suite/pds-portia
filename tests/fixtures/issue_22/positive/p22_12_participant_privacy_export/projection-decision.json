@@ -1,0 +1,121 @@
+{
+  "fixture_kind": "pds-portia.noncanonical-projection-expectation",
+  "fixture_version": "1",
+  "not_runtime_contract": true,
+  "canonical": false,
+  "projection_purpose": "student_facing",
+  "scope": {
+    "kind": "work",
+    "work_ref": {
+      "module_id": "portia",
+      "class_id": "eng10_p2_2026",
+      "work_id": "evt_p22_privacy_001",
+      "work_kind": "event",
+      "contract_version": "2"
+    }
+  },
+  "focal_subject_ref": {
+    "work_ref": {
+      "module_id": "portia",
+      "class_id": "eng10_p2_2026",
+      "work_id": "evt_p22_privacy_001",
+      "work_kind": "event",
+      "contract_version": "2"
+    },
+    "record_ref": {
+      "record_kind": "event_participant",
+      "record_id": "ep_p22_privacy_b",
+      "contract_version": "3"
+    }
+  },
+  "policy": {
+    "policy_id": "p22_student_facing_event",
+    "policy_version": "1",
+    "policy_digest": "bd22c201d5cd98183e5ed7164342f6564a329950e973392f3bcb9a857745c5de"
+  },
+  "items": [
+    {
+      "projection_key": "event_summary",
+      "source": "event.summary",
+      "disposition": "included",
+      "value": "Synthetic classroom occurrence involving shared materials during group work."
+    },
+    {
+      "projection_key": "focal_display_name",
+      "source": "participant-b.subject.display_snapshot.display_name",
+      "disposition": "included",
+      "value": "Synthetic Student B"
+    },
+    {
+      "projection_key": "focal_account_summary",
+      "source": "account-b.content[0]",
+      "disposition": "included",
+      "value": "Student B stated that they stayed at the side table and asked the teacher before moving materials."
+    },
+    {
+      "projection_key": "focal_direct_observation",
+      "source": "observation.content.narrative",
+      "disposition": "included",
+      "value": "The teacher observed Student B at the side table with hands away from the shared folder when the teacher turned toward the group."
+    },
+    {
+      "projection_key": "focal_native_ids",
+      "source": "participant-b exact identity fields",
+      "disposition": "withheld",
+      "reason": "stable native IDs are identifiers, not safe pseudonyms"
+    },
+    {
+      "projection_key": "third_party_identity",
+      "source": "participant-a.subject",
+      "disposition": "withheld",
+      "reason": "unrelated participant identity"
+    },
+    {
+      "projection_key": "third_party_account_source",
+      "source": "account-a.source",
+      "disposition": "withheld",
+      "reason": "third-party source identity"
+    },
+    {
+      "projection_key": "third_party_account_text",
+      "source": "account-a.content[0]",
+      "disposition": "requires_manual_review",
+      "reason": "removing source attribution would alter the proposition/evidence relationship",
+      "manual_review_resolution": "withheld",
+      "paraphrased": false
+    },
+    {
+      "projection_key": "focal_source_artifact",
+      "source": "account-b.source_artifacts[0]",
+      "disposition": "withheld",
+      "reason": "record projection authorization does not authorize source-artifact bytes"
+    },
+    {
+      "projection_key": "participant_role",
+      "source": "event_participant_role for focal participant",
+      "disposition": "absent",
+      "reason": "no such canonical role record exists in this source graph"
+    },
+    {
+      "projection_key": "external_context",
+      "source": "external_context_p22_privacy_001",
+      "disposition": "unavailable",
+      "reason": "referenced source cannot currently be resolved"
+    }
+  ],
+  "manual_review": {
+    "status": "resolved",
+    "reviewed_item_keys": [
+      "third_party_account_text"
+    ],
+    "resolution": "withhold_without_paraphrase"
+  },
+  "assertions": [
+    "projection is noncanonical and does not modify source records",
+    "withheld, absent, unavailable, and requires_manual_review remain distinct",
+    "student-facing purpose does not establish authorization",
+    "stable IDs are not emitted as pseudonyms",
+    "safe record projection does not authorize raw source artifact",
+    "export generation does not establish disclosure, delivery, receipt, read, consent, or external acceptance"
+  ]
+}

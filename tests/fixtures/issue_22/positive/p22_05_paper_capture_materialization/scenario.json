@@ -1,0 +1,146 @@
+{
+  "fixture_contract": "pds-portia.representative-contract-graph-scenario",
+  "fixture_version": "1",
+  "not_runtime_contract": true,
+  "scenario_id": "P22-05",
+  "title": "Paper-derived proposal, teacher review, and Event materialization",
+  "scenario_kind": "positive",
+  "synthetic": true,
+  "records": [
+    {
+      "fixture_path": "records/capture-batch.json",
+      "contract": "capture_batch",
+      "version": "1",
+      "logical_identity": "capture_batch:cbat_p22_paper_001",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "capture_batch",
+        "work_id": "cbat_p22_paper_001"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/cbat_p22_paper_001/work.json"
+    },
+    {
+      "fixture_path": "records/page-target.json",
+      "contract": "page_target",
+      "version": "1",
+      "logical_identity": "capture_page_target:ptgt_p22_paper_001",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "capture_batch",
+        "work_id": "cbat_p22_paper_001"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/cbat_p22_paper_001/records/capture_page_target/ptgt_p22_paper_001.json"
+    },
+    {
+      "fixture_path": "records/page-record.json",
+      "contract": "page_record",
+      "version": "1",
+      "logical_identity": "capture_page_record:prec_p22_paper_001",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "capture_batch",
+        "work_id": "cbat_p22_paper_001"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/cbat_p22_paper_001/records/capture_page_record/prec_p22_paper_001.json"
+    },
+    {
+      "fixture_path": "records/paper-interpretation.json",
+      "contract": "paper_interpretation",
+      "version": "1",
+      "logical_identity": "paper_interpretation:pint_p22_paper_001",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "capture_batch",
+        "work_id": "cbat_p22_paper_001"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/cbat_p22_paper_001/records/paper_interpretation/pint_p22_paper_001.json"
+    },
+    {
+      "fixture_path": "records/capture-proposal.json",
+      "contract": "capture_proposal",
+      "version": "1",
+      "logical_identity": "capture_proposal:cprp_p22_paper_001",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "capture_batch",
+        "work_id": "cbat_p22_paper_001"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/cbat_p22_paper_001/records/capture_proposal/cprp_p22_paper_001.json"
+    },
+    {
+      "fixture_path": "records/capture-review.json",
+      "contract": "capture_review",
+      "version": "1",
+      "logical_identity": "capture_review:crev_p22_paper_001",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "capture_batch",
+        "work_id": "cbat_p22_paper_001"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/cbat_p22_paper_001/records/capture_review/crev_p22_paper_001.json"
+    },
+    {
+      "fixture_path": "records/materialized-event.json",
+      "contract": "event",
+      "version": "2",
+      "logical_identity": "event:evt_p22_paper_001",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "event",
+        "work_id": "evt_p22_paper_001"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/evt_p22_paper_001/work.json"
+    },
+    {
+      "fixture_path": "records/capture-materialization.json",
+      "contract": "capture_materialization",
+      "version": "1",
+      "logical_identity": "capture_materialization:op_p22_paper_create_event_001--r3--crev_p22_paper_001--s1",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "capture_batch",
+        "work_id": "cbat_p22_paper_001"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/cbat_p22_paper_001/records/capture_materialization/op_p22_paper_create_event_001--r3--crev_p22_paper_001--s1.json"
+    }
+  ],
+  "context": [
+    {
+      "context_kind": "synthetic_core_pds2",
+      "fixture_path": "../../shared/core-context/p22-05-pds2.json"
+    },
+    {
+      "context_kind": "synthetic_operation_acceptance",
+      "fixture_path": "../../shared/policy-context/p22-05-operation-acceptance.json"
+    },
+    {
+      "context_kind": "synthetic_paper_layout",
+      "fixture_path": "../../shared/policy-context/p22-05-event-intake-layout.json"
+    }
+  ],
+  "required_distinctions": [
+    "Capture Batch and Page Target do not establish an Event.",
+    "Core route success does not establish semantic acceptance.",
+    "Core retained source bytes remain Core-owned context.",
+    "Page Record processing does not create a domain record.",
+    "Paper Interpretation candidate does not confirm a domain value.",
+    "Capture Proposal is noncanonical staging.",
+    "Human Capture Review gates materialization.",
+    "Capture Review is not a domain judgment.",
+    "Canonical Event receives paper_capture ingested provenance.",
+    "Capture Materialization receipt follows canonical acceptance.",
+    "Paper workflow timestamps do not become Event occurrence time.",
+    "Reprocessing the same physical source identity does not create a second Event."
+  ],
+  "expected_graph_result": "valid",
+  "expected_finding_ids": [],
+  "expected_path": "expected.json"
+}

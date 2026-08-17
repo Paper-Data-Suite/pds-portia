@@ -1,0 +1,23 @@
+{
+  "fixture_contract": "pds-portia.synthetic-paper-layout-context",
+  "fixture_version": "1",
+  "not_runtime_contract": true,
+  "synthetic": true,
+  "template_id": "portia_issue22_event_intake",
+  "template_version": "1.0.0",
+  "layout_version": "layout_1",
+  "capture_spec_version": "capture_1",
+  "page_role": "event_intake",
+  "page_ordinal": 1,
+  "entry_key": "entry",
+  "fields": [
+    {
+      "field_key": "event_time",
+      "target_path": "/occurrence/started_at"
+    },
+    {
+      "field_key": "summary",
+      "target_path": "/summary"
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "fixture_contract": "pds-portia.graph-invalid-expectation",
+  "fixture_version": "1",
+  "not_runtime_contract": true,
+  "scenario_id": "G22-020",
+  "primary_finding_id": "G22.JUDGMENT.IMPORT_ASSERTION_AS_DETERMINATION",
+  "expected_finding_ids": [
+    "G22.JUDGMENT.IMPORT_ASSERTION_AS_DETERMINATION"
+  ],
+  "structurally_valid_public_records": true,
+  "principal_defect": "The imported source assertion is copied into an active Determination even though the completed review covered source mapping only and no human decision actually occurred."
+}

@@ -1,0 +1,44 @@
+{
+  "schema_version": "1",
+  "record_type": "import_batch",
+  "module_id": "portia",
+  "class_id": "eng10_p2_2026",
+  "import_batch_id": "ibat_p22_import_002",
+  "source_profile": {
+    "source_system_id": "synthetic_student_system",
+    "profile_id": "event_export",
+    "profile_version": "1",
+    "display_label": "Synthetic event export"
+  },
+  "source_snapshot": {
+    "locator": {
+      "kind": "workspace_file",
+      "path": "imports/issue22/p22-06/source-v2.csv"
+    },
+    "fingerprint": {
+      "algorithm": "sha256",
+      "digest": "916b6eadc141fffa4789d897f67a57c17b71f6ed7a396a9ac93c0bd451430f9a",
+      "byte_length": 44
+    },
+    "observed_at": "2026-08-16T10:10:00-04:00"
+  },
+  "mapping_profile": {
+    "mapping_profile_id": "issue22_event_csv",
+    "mapping_version": "1",
+    "mapping_digest": "cc464edfccfc3b49d879ea27581f929709cf8f856f641832afe3d7d60f35c889"
+  },
+  "comparison_to_previous": {
+    "previous_import_batch_id": "ibat_p22_import_001",
+    "relationship": "changed_source_same_mapping"
+  },
+  "status": "completed",
+  "failure_codes": [],
+  "started_at": "2026-08-16T10:11:00-04:00",
+  "finished_at": "2026-08-16T10:12:00-04:00",
+  "created_at": "2026-08-16T10:11:00-04:00",
+  "created_by": {
+    "type": "system_process",
+    "process_id": "issue22_structured_import"
+  },
+  "import_identity_digest": "c83c23eb1322a6e83494521b3808180224d7bc2e8c7ccc6360e6ce5db790e47a"
+}

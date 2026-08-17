@@ -1,0 +1,110 @@
+{
+  "fixture_contract": "pds-portia.representative-contract-graph-scenario",
+  "fixture_version": "1",
+  "not_runtime_contract": true,
+  "scenario_id": "P22-03",
+  "title": "Cross-class participant identity",
+  "scenario_kind": "positive",
+  "synthetic": true,
+  "records": [
+    {
+      "fixture_path": "records/event.json",
+      "contract": "event",
+      "version": "2",
+      "logical_identity": "event:evt_p22_crossclass_001",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "event",
+        "work_id": "evt_p22_crossclass_001"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/evt_p22_crossclass_001/work.json"
+    },
+    {
+      "fixture_path": "records/participant-owner.json",
+      "contract": "event_participant",
+      "version": "3",
+      "logical_identity": "event_participant:ep_p22_cross_owner",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "event",
+        "work_id": "evt_p22_crossclass_001"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/evt_p22_crossclass_001/records/event_participant/ep_p22_cross_owner.json"
+    },
+    {
+      "fixture_path": "records/participant-cross.json",
+      "contract": "event_participant",
+      "version": "3",
+      "logical_identity": "event_participant:ep_p22_cross_foreign",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "event",
+        "work_id": "evt_p22_crossclass_001"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/evt_p22_crossclass_001/records/event_participant/ep_p22_cross_foreign.json"
+    },
+    {
+      "fixture_path": "records/role-owner.json",
+      "contract": "event_participant_role",
+      "version": "3",
+      "logical_identity": "event_participant_role:epr_p22_cross_owner",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "event",
+        "work_id": "evt_p22_crossclass_001"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/evt_p22_crossclass_001/records/event_participant_role/epr_p22_cross_owner.json"
+    },
+    {
+      "fixture_path": "records/role-cross.json",
+      "contract": "event_participant_role",
+      "version": "3",
+      "logical_identity": "event_participant_role:epr_p22_cross_foreign",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "event",
+        "work_id": "evt_p22_crossclass_001"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/evt_p22_crossclass_001/records/event_participant_role/epr_p22_cross_foreign.json"
+    },
+    {
+      "fixture_path": "records/observation.json",
+      "contract": "observation",
+      "version": "2",
+      "logical_identity": "observation:obs_p22_cross_foreign",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "event",
+        "work_id": "evt_p22_crossclass_001"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/evt_p22_crossclass_001/records/observation/obs_p22_cross_foreign.json"
+    }
+  ],
+  "context": [
+    {
+      "context_kind": "synthetic_core_roster",
+      "fixture_path": "../../shared/core-context/roster.json"
+    },
+    {
+      "context_kind": "synthetic_core_roster",
+      "fixture_path": "../../shared/core-context/roster-journalism.json"
+    }
+  ],
+  "required_distinctions": [
+    "Event ownership remains with exactly one Core class.",
+    "Participant source roster may differ from Event owning class.",
+    "Matching student_id across rosters does not establish one identity.",
+    "Matching display name across rosters does not establish one identity.",
+    "Cross-class participant does not create cross-class Event ownership.",
+    "Work-local participant records target Event Participant identity, not an unqualified student."
+  ],
+  "expected_graph_result": "valid",
+  "expected_finding_ids": [],
+  "expected_path": "expected.json"
+}
