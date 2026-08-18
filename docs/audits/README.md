@@ -10,7 +10,7 @@ Current Issue #23 artifacts:
 - `portia-foundation-findings.md` — permanent findings register.
 - `portia-foundation-traceability.md` — foundation-to-evidence and exit-condition traceability.
 - `portia-foundation-audit.json` — machine-readable audit state used by the offline validator.
-- `portia-foundation-approval.json` — created only after a `ready_for_implementation` verdict can bind the exact final audited commit.
+- `portia-foundation-approval.json` — final `ready_for_implementation` governance attestation binding exact audited substantive commit `834c2e00a07bccfbccf18ecca1ca926af4275b94`.
 
 The repository-level validator is:
 
@@ -18,6 +18,8 @@ The repository-level validator is:
 python scripts\validate_portia_foundation.py
 ```
 
-A `not_ready` audit is valid without an approval record. A `ready_for_implementation` audit is invalid without one.
+A `not_ready` audit is valid without an approval record. A `ready_for_implementation` audit is invalid without one. The final Issue #23 state is `ready_for_implementation`; its approval target is `834c2e00a07bccfbccf18ecca1ca926af4275b94`.
+
+The approval uses a post-commit governance attestation: the approval file necessarily lives in a later governance-only commit because a Git commit cannot contain its own final SHA. The later commit does not move the approved substantive target.
 
 Historical construction checkpoints remain historical evidence. They are not rewritten merely because sibling repositories later advance.

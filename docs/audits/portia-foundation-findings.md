@@ -139,126 +139,65 @@ Slice 1 changes the sentence to record 'what an attributable human decided withi
 - Guarded README patch in apply_slice.py
 - Audit report teacher-local authority conclusion.
 
-## PF-AUD-004 — Final post-audit repository validation and final audited commit binding are not yet available.
+## PF-AUD-004 — Final post-audit repository validation and final audited commit binding are complete.
 
 - **Audit domain:** final validation / approval binding
 - **Classification:** `milestone_blocker`
-- **Status:** `open`
-- **Disposition:** `deferred_with_issue`
-- **Affected surfaces:** `docs/audits/portia-foundation-audit.json`, `docs/audits/portia-foundation-approval.json`, `docs/validation/issue-23-portia-foundation-validation.md`
-- **Follow-up:** #23 closeout slice
-
-### Evidence
-
-- The #22 handoff reports 1451/1451 complete schema-validation tests on the pre-#23 baseline.
-- Issue #23 changes audit documentation, tests, validator code, README language, and schema documentation; the final suite must therefore be rerun in the actual checkout.
-- The explicit ready approval record must bind the exact final audited commit, which does not exist until the repaired worktree is validated and committed.
-
-### Expected architecture
-
-A ready verdict is issued only after the actual post-audit checkout passes the full suite and the approval record can bind the exact audited commit.
-
-### Observed problem
-
-At Slice 1 authoring time only the merged #22 baseline is available as complete-suite evidence.
-
-### Risk / consequence
-
-Issuing approval now would make the approval record self-inconsistent and would inherit test evidence across an untested diff.
-
-### Required disposition
-
-Run the full current suite, Issue #22 regression, audit validator, and git diff --check in the user's checkout; then resolve this finding and create the approval record in a closeout slice.
-
-### Resolution
-
-Open. See required disposition.
-
-### Validation evidence
-
-- Pending user-local confirmation after Slice 1 application.
-
-## PF-AUD-013 — Issue #22 exact-byte fixture evidence is not checkout-portable without an LF policy.
-
-- **Audit domain:** cross-platform checkout / exact-byte fixture integrity
-- **Classification:** `milestone_blocker`
 - **Status:** `resolved`
 - **Disposition:** `fixed_in_audit`
-- **Affected surfaces:** `.gitattributes`, `tests/fixtures/issue_22`, Issue #22 exact-byte validation tests
+- **Affected surfaces:** `docs/audits/portia-foundation-audit.json`, `docs/audits/portia-foundation-approval.json`, `docs/validation/issue-23-portia-foundation-validation.md`
 - **Follow-up:** None
 
 ### Evidence
 
-The first complete post-audit run on the Windows checkout reported:
+The final repaired user-local Windows checkout passed all required substantive gates:
 
 ```text
-Ran 1466 tests in 248.967s
-
-FAILED (failures=24)
+Issue #23 focused audit tests: 19 / 19 — OK
+Issue #22 regression tests:     356 / 356 — OK
+Complete schema validation:     1470 / 1470 — OK
+git diff --cached --check:      clean
 ```
 
-One failure was a Slice 1 README exact-wording compatibility regression. The remaining failure cluster was exact-byte provenance/recovery evidence. Representative expected/observed byte-length pairs were:
+The exact tested state was then committed as:
 
 ```text
-1051 -> 1089
-581  -> 600
-1825 -> 1897
-558  -> 577
+834c2e00a07bccfbccf18ecca1ca926af4275b94
 ```
 
-Each delta is consistent with one extra carriage-return byte per line when an LF file is materialized as CRLF.
-
-The affected tests span:
-
-```text
-P22-06  structured import source/mapping provenance
-P22-12  privacy projection / deliberate export provenance
-P22-13  source snapshots / derived output metadata
-P22-14  preflight, lock, accepted-successor, and restart fingerprints
-G22-032/G22-033 privacy/export negative cases
-```
-
-Git still reports the fixture tree clean because checkout line-ending conversion does not require an indexed semantic change.
-
-The repository had no `.gitattributes` policy on the Issue #22 baseline.
+Post-commit `git status --short` and `git diff --check` produced no output.
 
 ### Expected architecture
 
-The same committed synthetic byte fixture must materialize with the same bytes on supported developer platforms when its SHA-256 and byte length are architectural evidence.
+A ready verdict is issued only after the actual post-audit checkout passes the full suite and the approval record can bind the exact audited substantive commit.
 
 ### Observed problem
 
-A Windows checkout may convert LF text fixtures to CRLF. JSON/text semantics remain equivalent, but exact byte fingerprints become false. Positive graphs then acquire integrity findings and negative graphs acquire unrelated fingerprint findings.
+Earlier audit slices did not yet have a fully validated, immutable post-repair commit to bind.
 
 ### Risk / consequence
 
-The foundation's strongest provenance, export, derived-state, import, and operation-recovery assertions become platform-dependent while `git status` remains clean. That can both block legitimate Windows development and conceal actual integrity regressions behind checkout noise.
+Approving an uncommitted or incompletely tested state would make the approval non-reproducible and could silently inherit evidence across later changes.
 
 ### Required disposition
 
-1. Pin repository text checkout to LF.
-2. Re-materialize the Issue #22 fixture tree from the accepted `HEAD` blobs after the LF policy is installed, so the working tree matches the canonical LF bytes without introducing content changes.
-3. Make the Issue #23 validator fail if the LF policy disappears or CRLF reappears in Issue #22 text fixtures.
+Complete all user-local gates, commit the exact tested substantive state, and bind the approval to that immutable SHA.
 
 ### Resolution
 
-Slices 2–3:
-
-- add `.gitattributes` with `* text=auto eol=lf`;
-- explicitly mark common binary artifact types as binary;
-- re-materialize `tests/fixtures/issue_22` from the accepted `HEAD` blobs after the policy is present, rather than editing the historical corpus;
-- extend `scripts/validate_portia_foundation.py` to enforce the policy and fixture bytes;
-- make the Issue #23 temporary-repository writer emit LF explicitly on every platform;
-- and add focused regression tests for both checkout policy and deterministic test-fixture writing.
-
-This does not change any accepted fixture semantics or expected fingerprints. It restores deterministic materialization of the already-accepted LF bytes.
+Resolved. Commit `834c2e00a07bccfbccf18ecca1ca926af4275b94` is the exact audited substantive state. `docs/audits/portia-foundation-approval.json` binds that SHA with a post-commit governance attestation. The approval record necessarily lives in a later governance-only commit because a commit cannot contain its own final SHA.
 
 ### Validation evidence
 
-The first post-Slice-2 rerun removed the broad Issue #22 fingerprint failure cluster but exposed two repair-mechanics defects: Slice 2 had rewritten the full historical fixture working tree, and the Issue #23 temporary test writer itself emitted CRLF on Windows. Slice 3 corrects both without changing accepted Issue #22 content or fingerprints.
+- 19/19 Issue #23 focused audit tests passed.
+- Foundation validator passed in the pre-approval state and correctly reported `not_ready`, 13 findings, 1 unresolved.
+- 356/356 Issue #22 regression tests passed.
+- 1470/1470 complete schema-validation tests passed.
+- `git diff --cached --check` was clean before the audited commit.
+- Post-commit working tree and diff checks were clean.
+- Exact audited substantive commit: `834c2e00a07bccfbccf18ecca1ca926af4275b94`.
 
-The post-Slice-3 Windows rerun executed **1,470 tests** and left **no `tests/fixtures/issue_22` paths modified**. The five remaining failures are historical README exact-string compatibility assertions rather than exact-byte, schema, graph, or persistence failures. This confirms PF-AUD-013 remains resolved. Slice 4 restores the historical strings in context while preserving the current ADR 0001–0017 inventory. PF-AUD-004 remains open until the repaired branch passes the complete suite.
-
+---
 ## PF-AUD-005 — The executable milestone must implement append-preserving recovery without pretending multi-file or cross-module actions are magically atomic.
 
 - **Audit domain:** coordinated persistence / recovery

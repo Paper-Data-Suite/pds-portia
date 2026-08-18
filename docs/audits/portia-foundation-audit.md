@@ -4,23 +4,33 @@
 **Umbrella:** #10 — Complete the Portia foundations milestone
 **Audit date:** 2026-08-17
 **Starting Portia commit:** `523cfd6dd75eef9cb10930e328bb7d98b8924bdf`
-**Current Slice 1 verdict:** `not_ready`
+**Final audited substantive commit:** `834c2e00a07bccfbccf18ecca1ca926af4275b94`
+**Closeout date:** 2026-08-18
+**Final verdict:** `ready_for_implementation`
 
 ## Executive conclusion
 
-The Portia foundation is architecturally coherent enough to proceed toward implementation **after one remaining closeout gate**: the actual post-audit branch must pass the complete repository validation and the final approval record must bind the exact audited commit.
+The Portia foundation is **ready for implementation**. The skeptical Issue #23 audit found five milestone blockers in total; all five are resolved. The exact substantive state approved by this audit is:
 
-The skeptical review found three genuine active-documentation blockers, and the first Windows full-suite run exposed a fourth blocker in exact-byte fixture portability:
+```text
+834c2e00a07bccfbccf18ecca1ca926af4275b94
+```
 
-1. the README's top-level foundation inventory still described a #16-era state even though #17–#22 were merged;
-2. the README gave a future `pds-sunset` component stronger ownership language than ADR 0017 permits;
-3. the README product-position sentence described Determinations as what "the institution decided," which is broader than Portia's accepted teacher-local and explicitly attributable authority model.
+The final user-local Windows validation of that state passed:
 
-Slice 1 repairs the three documentation/authority contradictions. Slices 2–3 repair the cross-platform exact-byte portability blocker exposed by the first Windows full-suite run. Slice 4 reconciles the remaining historical README checkpoint strings without weakening the current foundation inventory.
+```text
+Issue #23 focused audit tests: 19 / 19
+Issue #22 regression tests:     356 / 356
+Complete schema validation:     1470 / 1470
+git diff --cached --check:      clean
+post-commit worktree:           clean
+```
 
-No public schema defect, missing foundational record family, incompatible canonical-path rule, or new architecture decision was identified that requires ADR 0018.
+The audit's earlier failed runs remain part of the permanent evidence trail. They exposed and drove repairs for stale README authority/status language, cross-platform LF/CRLF exact-byte fixture portability, repair-mechanics problems, and historical README checkpoint compatibility. Those failures are not rewritten as passes.
 
-The real-checkout validation sequence did exactly what this audit was meant to do. The first run exposed the LF/CRLF defect plus a README compatibility regression; the second confirmed the broad fingerprint cluster was gone but exposed repair-mechanics problems; the third executed 1,470 tests with only five historical README exact-string assertions remaining and no Issue #22 fixture-tree modifications. Slice 4 restores those historical checkpoint strings in explicit context. The remaining blocker is evidentiary rather than conceptual: the repaired repository state still needs a fresh complete schema/application-validation run and cannot yet be bound to an exact final audited commit. Therefore no `portia-foundation-approval.json` is created yet.
+No public schema defect, missing foundational record family, incompatible canonical-path rule, or new architecture decision was identified that requires ADR 0018. Remaining findings are explicitly nonblocking implementation concerns, future enhancements, one institutional-policy dependency, or deliberate scope boundaries.
+
+The approval uses a **post-commit governance attestation**. A Git commit cannot contain its own final SHA, so `docs/audits/portia-foundation-approval.json` is necessarily added in a later governance-only commit while binding the immutable tested substantive commit above. The governance commit carries the attestation; it does not replace or silently move the approved target.
 
 ## Scope
 
@@ -607,7 +617,7 @@ The representative corpus identifies itself as synthetic. Issue #23 adds only go
 
 No real student record is required by the audit.
 
-The final local closeout should still include repository-level secret/PII hygiene checks appropriate to the project before approval.
+The approval confirms architecture-foundation readiness only; it is not a legal/compliance certification or a substitute for future operational secret/PII controls.
 
 ## Sibling-boundary conclusions
 
@@ -640,17 +650,14 @@ The suite repository supplies planning/sequence context. It does not become runt
 The permanent findings register contains:
 
 ```text
-5 milestone blockers
-  4 resolved across Slices 1–2
-  1 open pending final local validation/commit binding
-
-3 implementation concerns
+5 milestone blockers — all resolved
+3 implementation concerns — accepted as nonblocking
 2 future enhancements
 1 institutional-policy dependency
 2 deliberately out-of-scope findings
 ```
 
-No unresolved conceptual architecture blocker is known after the Slice 2 repairs.
+There are **no unresolved findings** and no unresolved milestone blockers. The nonblocking findings remain visible so implementation work does not erase known constraints or future work.
 
 ## Institutional-policy dependencies
 
@@ -710,38 +717,61 @@ The executable milestone should treat the following as non-negotiable inherited 
 
 ## Exit-condition evaluation
 
-Seventeen of eighteen Issue #23 closeout conditions are structurally or architecturally satisfied after Slice 1.
+All eighteen Issue #23 closeout conditions are satisfied.
 
-Two entries are represented as blocked in the machine-readable audit because they are one coupled final gate:
+The final coupled gate is now complete:
 
 ```text
-EC-17 complete post-audit validation passes
-EC-18 ready approval binds exact audited commit
+EC-17 complete post-audit validation passes       satisfied
+EC-18 ready approval binds exact audited commit  satisfied
 ```
 
-They remain blocked by PF-AUD-004.
-
-The approval record is intentionally absent while the verdict is `not_ready`.
+PF-AUD-004 is resolved. The approval record binds `834c2e00a07bccfbccf18ecca1ca926af4275b94`.
 
 ## Validation status
 
-Real-checkout post-audit validation progression:
+The real-checkout progression is retained in full:
 
 ```text
 Run 1: 1466 tests — FAILED (failures=24)
 Run 2: 1469 tests — FAILED (failures=6)
 Run 3: 1470 tests — FAILED (failures=5)
+Final audited run: 1470 tests — OK
 ```
 
-Run 1 exposed one README compatibility regression plus the PF-AUD-013 LF/CRLF exact-byte portability defect affecting P22-06, P22-12, P22-13, P22-14, G22-032, and G22-033 evidence.
+Run 1 exposed one README compatibility regression plus PF-AUD-013, the LF/CRLF exact-byte portability defect. Run 2 removed the broad fingerprint cluster but exposed repair-mechanics problems. Run 3 confirmed the fixture portability repair and isolated five historical README exact-string compatibility assertions. Slice 4 restored those historical checkpoint phrases without weakening current ADR 0001–0017 authority.
 
-Run 2 confirmed the broad Issue #22 fingerprint cluster was removed, while exposing a corpus-wide working-tree rewrite and a platform-native temporary Issue #23 fixture writer.
+The final audited substantive state then passed:
 
-Run 3 confirmed the Slice-3 portability mechanics: no Issue #22 fixture paths remained modified. Its five failures are entirely historical README exact-string assertions from Issues #12–#16. Slice 4 restores the required phrases as explicitly historical checkpoint language while keeping ADRs 0001–0017 and the current catalog authoritative.
+```text
+python -m unittest tests.schema_validation.test_issue_23_foundation_audit
+19 / 19 — OK
 
-All failed results are retained as audit evidence rather than overwritten or described as a pass.
+python scripts\validate_portia_foundation.py
+OK — pre-approval state correctly reported not_ready / 13 findings / 1 unresolved
 
-Historical Issue #22 evidence:
+python -m unittest discover -s tests\schema_validation -p "test_issue_22_*.py"
+356 / 356 — OK
+
+python -m unittest discover -s tests\schema_validation -p "test_*.py"
+1470 / 1470 — OK
+
+git diff --cached --check
+clean
+
+post-commit git status --short / git diff --check
+clean
+```
+
+The exact tested state was committed as:
+
+```text
+834c2e00a07bccfbccf18ecca1ca926af4275b94
+```
+
+The foundation approval intentionally targets that commit rather than the later governance-only commit that contains the approval record. This avoids impossible self-reference while preserving exact attestation semantics.
+
+Historical Issue #22 handoff evidence remains historical:
 
 ```text
 11 / 11 focused closeout tests
@@ -750,36 +780,14 @@ Historical Issue #22 evidence:
 git diff --check clean
 ```
 
-These numbers are not inherited as final Issue #23 evidence.
-
-After applying Slice 1, run:
-
-```powershell
-python -m unittest discover -s tests\schema_validation -p "test_*.py"
-python scripts\validate_portia_foundation.py
-git diff --check
-```
-
-The Issue #22 regression/corpus suite should also be rerun in its repository-supported form.
+Those handoff counts are not substituted for the final Issue #23 evidence above.
 
 ## Final verdict
 
 ```text
-not_ready
+ready_for_implementation
 ```
 
-Reason:
+The Portia foundation satisfies the milestone's architecture exit criteria. Executable implementation may begin subject to the accepted architecture, the three nonblocking implementation concerns, the institutional-policy dependency, and the documented deliberate scope boundaries.
 
-All identified repairable architecture/documentation/checkout-portability blockers are repaired across Slices 1–2, but the audit cannot issue `ready_for_implementation` until the repaired branch passes the complete validation gates and the approval record can bind the exact final audited commit.
-
-If those gates pass without exposing a new blocker, the expected closeout action is narrow:
-
-1. resolve PF-AUD-004;
-2. record the observed final test counts;
-3. record the exact audited commit;
-4. switch the audit verdict to `ready_for_implementation`;
-5. add `docs/audits/portia-foundation-approval.json`;
-6. rerun the audit validator;
-7. confirm `git diff --check`.
-
-No additional domain redesign is currently indicated.
+This verdict does **not** claim that a working Portia runtime exists, that legal/institutional policy questions are resolved, or that Portia has received regulatory/compliance certification.

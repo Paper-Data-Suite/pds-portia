@@ -35,6 +35,9 @@ class FoundationAuditValidatorTests(unittest.TestCase):
     def _build_minimal_repo(self) -> None:
         for relpath in validator.REQUIRED_AUDIT_FILES:
             self._copy(relpath)
+        approval = ROOT / "docs/audits/portia-foundation-approval.json"
+        if approval.is_file():
+            self._copy("docs/audits/portia-foundation-approval.json")
         self._copy(".gitattributes")
 
         decisions_dir = self.root / "docs" / "decisions"
@@ -162,13 +165,19 @@ class FoundationAuditValidatorTests(unittest.TestCase):
         audit = self._audit()
         audit["final_verdict"] = "ready_for_implementation"
         audit["final_audited_portia_commit"] = "a" * 40
-        if resolve_blocker:
-            for finding in audit["findings"]:
-                if finding["finding_id"] == "PF-AUD-004":
-                    finding["status"] = "resolved"
-                    finding["disposition"] = "fixed_in_audit"
-                    finding["resolution"] = "validated"
-            audit["unresolved_finding_ids"] = []
+        for finding in audit["findings"]:
+            if finding["finding_id"] != "PF-AUD-004":
+                continue
+            if resolve_blocker:
+                finding["status"] = "resolved"
+                finding["disposition"] = "fixed_in_audit"
+                finding["resolution"] = "validated"
+                audit["unresolved_finding_ids"] = []
+            else:
+                finding["status"] = "open"
+                finding["disposition"] = "deferred_with_issue"
+                finding["resolution"] = "pending validation"
+                audit["unresolved_finding_ids"] = ["PF-AUD-004"]
         return audit
 
     def _write_ready_approval(self) -> None:
@@ -197,7 +206,7 @@ class FoundationAuditValidatorTests(unittest.TestCase):
             msg=f"expected error containing {fragment!r}; got {errors}",
         )
 
-    def test_completed_not_ready_audit_is_valid(self) -> None:
+    def test_completed_ready_audit_is_valid(self) -> None:
         self.assertEqual([], validator.validate_repo(self.root))
 
     def test_duplicate_finding_id_rejected(self) -> None:
@@ -226,10 +235,14 @@ class FoundationAuditValidatorTests(unittest.TestCase):
     def test_ready_without_approval_rejected(self) -> None:
         audit = self._ready_audit(resolve_blocker=True)
         self._write_audit(audit)
+        (self.root / "docs/audits/portia-foundation-approval.json").unlink()
         self.assert_has_error("requires docs/audits/portia-foundation-approval.json")
 
     def test_not_ready_with_ready_approval_rejected(self) -> None:
-        self._write_ready_approval()
+        audit = self._audit()
+        audit["final_verdict"] = "not_ready"
+        audit["final_audited_portia_commit"] = None
+        self._write_audit(audit)
         self.assert_has_error("not_ready audit cannot coexist with a ready foundation approval record")
 
     def test_missing_adr_disposition_rejected(self) -> None:

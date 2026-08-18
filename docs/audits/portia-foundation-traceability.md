@@ -2,6 +2,8 @@
 
 **Issue:** #23 — final foundations architecture audit
 **Starting audit baseline:** `523cfd6dd75eef9cb10930e328bb7d98b8924bdf`
+**Final audited substantive commit:** `834c2e00a07bccfbccf18ecca1ca926af4275b94`
+**Final verdict:** `ready_for_implementation`
 
 This document maps the foundation outcome to controlling decisions and executable evidence. It is intentionally repository-local and network-independent.
 
@@ -9,7 +11,7 @@ This document maps the foundation outcome to controlling decisions and executabl
 
 | Issue | Foundation area | Governing ADR(s) | Principal active design / contract surface | Representative / focused evidence | Audit conclusion |
 | --- | --- | --- | --- | --- | --- |
-| #10 | Complete Portia foundations milestone | 0001–0017 | README, all foundation designs, schema catalog | #11–#22 deliverables, Issue #23 audit | Foundation is architecturally coherent; final post-audit validation remains. |
+| #10 | Complete Portia foundations milestone | 0001–0017 | README, all foundation designs, schema catalog | #11–#22 deliverables, Issue #23 audit + approval | Foundation approved `ready_for_implementation` at exact audited substantive commit. |
 | #11 | Shared references, targeting, relationships | 0007 | shared refs, targets, `work_relationship` | Issue #11 focused validation; P22-03/P22-04; G22-001..010 | Accepted. Exact identity dominates convenience matching. |
 | #12 | Lifecycle, amendment, correction, migration | 0008 | lifecycle transition, history correction, amendment, disagreement, dependency, migration, ownership correction, exceptional removal | Issue #12 matrices; P22-04; G22-010..016 | Accepted. Correction preserves history; migration is not correction. |
 | #13 | Coordinated persistence, recovery, derived indexes | 0009 | Operation Journal/Lock, Quarantine, Integrity Finding, finding admin, source snapshots, derived generations/current pointers | Issue #13 focused suites; P22-14; G22-012/G22-028/G22-029/G22-034..036 | Accepted with runtime implementation concern. |
@@ -21,7 +23,7 @@ This document maps the foundation outcome to controlling decisions and executabl
 | #19 | Follow-Up, Outcome, Reentry, Repair | 0015 | follow-up/outcome/reentry/repair plus Account/Observation v2 owner expansion | Issue #19 validation; P22-08..11; G22-023..025 | Accepted. Evaluation does not manufacture causation, clearance, remorse, or restoration. |
 | #20 | Paper-assisted capture, PDS2 routing, import | 0016 | capture/import families, Core route/retained-source boundary | Issue #20 validation; P22-05/P22-06; G22-026..029 | Accepted with runtime replay/human-review concern. |
 | #21 | Privacy, redaction, export, retention, Sunset boundary | 0017 | deliberate export, source inventory, privacy/retention designs, future Sunset adapter boundary | Issue #21 matrices; P22-12/P22-13; G22-030..037 | Accepted after README authority wording repair. |
-| #22 | Representative end-to-end synthetic graphs | 0001–0017 | `tests/fixtures/issue_22/corpus.json`, contract coverage, graph validator | 15 positive + 37 graph-invalid; 161/161 contract-family coverage at handoff | Accepted as integration evidence; final #23 rerun pending. |
+| #22 | Representative end-to-end synthetic graphs | 0001–0017 | `tests/fixtures/issue_22/corpus.json`, contract coverage, graph validator | 15 positive + 37 graph-invalid; 161/161 contract-family coverage; 356/356 final regression pass | Accepted as final integration evidence. |
 
 ## ADR-to-evidence traceability
 
@@ -92,7 +94,7 @@ This is accepted coverage, not a gap, when the coverage manifest explicitly says
 
 ## Foundation exit-condition traceability
 
-| Exit ID | Exit condition | Evidence | Slice 1 status |
+| Exit ID | Exit condition | Evidence | Final status |
 | --- | --- | --- | --- |
 | EC-01 | Preceding foundation issues #11–#22 complete | merged architecture + Issue #22 handoff | `satisfied` |
 | EC-02 | Foundational record families defined | ADRs 0004–0017 + catalog + coverage map | `satisfied` |
@@ -110,8 +112,8 @@ This is accepted coverage, not a gap, when the coverage manifest explicitly says
 | EC-14 | ADRs 0001–0017 have audit dispositions | `docs/decisions/README.md` + audit JSON | `satisfied` |
 | EC-15 | Active documentation internally consistent | PF-AUD-001..003 repair + Slice 2 Issue #16 exact-phrase compatibility repair | `satisfied_after_audit_repair` |
 | EC-16 | Synthetic-data-only foundation | Issue #22 `synthetic: true`; #23 adds no real records | `satisfied_on_reviewed_corpus` |
-| EC-17 | Complete post-audit validation passes | first run exposed PF-AUD-013; Slice 2 removed the broad fingerprint cluster; fresh post-Slice-3 full suite + Issue #22 regression + audit validator required | `blocked` |
-| EC-18 | Approval binds exact final audited commit | final commit SHA + ready approval record | `blocked` |
+| EC-17 | Complete post-audit validation passes | `834c2e00a07bccfbccf18ecca1ca926af4275b94`: Issue #23 19/19; Issue #22 356/356; complete schema validation 1470/1470; diff checks clean | `satisfied` |
+| EC-18 | Approval binds exact final audited commit | approval record binds `834c2e00a07bccfbccf18ecca1ca926af4275b94` via post-commit governance attestation | `satisfied` |
 
 ## Findings-to-exit traceability
 
@@ -120,7 +122,7 @@ This is accepted coverage, not a gap, when the coverage manifest explicitly says
 | PF-AUD-001 | EC-15 | `fixed_in_audit` |
 | PF-AUD-002 | EC-11, EC-12, EC-15 | `fixed_in_audit` |
 | PF-AUD-003 | EC-08, EC-12, EC-15 | `fixed_in_audit` |
-| PF-AUD-004 | EC-13, EC-15, EC-17, EC-18 | open; #23 closeout |
+| PF-AUD-004 | EC-13, EC-15, EC-17, EC-18 | `fixed_in_audit`; final gates passed and approval binds `834c2e00a07bccfbccf18ecca1ca926af4275b94` |
 | PF-AUD-005 | EC-06 | nonblocking implementation concern |
 | PF-AUD-006 | EC-11 | nonblocking implementation concern |
 | PF-AUD-007 | EC-04..EC-11 | nonblocking application-validation implementation concern |
@@ -131,19 +133,19 @@ This is accepted coverage, not a gap, when the coverage manifest explicitly says
 | PF-AUD-012 | foundation approval non-claim | accepted out of scope |
 | PF-AUD-013 | EC-06, EC-10, EC-11, EC-13, EC-17 | fixed in Slices 2–3; LF checkout policy + HEAD re-materialization + deterministic LF test writer |
 
-## Closeout traceability still required
+## Final closeout traceability
 
-After Slice 1 is applied, #23 must add final evidence for:
+Issue #23 final evidence is now fixed to the exact substantive commit `834c2e00a07bccfbccf18ecca1ca926af4275b94`:
 
 ```text
-full schema/application-validation test count and result
-Issue #22 regression result
-foundation validator result
-git diff --check result
-exact final audited commit
-PF-AUD-004 resolution
-ready_for_implementation verdict
-foundation approval record
+Issue #23 focused audit tests       19 / 19 — OK
+Issue #22 regression tests          356 / 356 — OK
+complete schema-validation tests    1470 / 1470 — OK
+git diff --cached --check           clean
+post-commit worktree/diff            clean
+PF-AUD-004                           resolved
+final verdict                        ready_for_implementation
+approval target                      834c2e00a07bccfbccf18ecca1ca926af4275b94
 ```
 
-Until those are present, the machine-readable audit correctly remains `not_ready`.
+The approval record is a post-commit governance attestation. Its containing governance commit is intentionally distinct from the approved substantive commit; this is necessary to avoid impossible Git self-reference and does not weaken the immutable binding.
