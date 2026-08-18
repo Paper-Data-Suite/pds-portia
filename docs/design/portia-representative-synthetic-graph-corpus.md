@@ -189,12 +189,12 @@ This is a first proof of the wider Issue #22 rule:
 derived view != canonical authority
 ```
 
-Later slices extend derived-state testing to reverse references, lifecycle
+Later slices extended derived-state testing to reverse references, lifecycle
 frontiers, dependencies, histories, and stale-source detection.
 
-## Planned extension
+## Completed extension
 
-The same corpus/harness is extended through the remaining positive stories:
+The same corpus/harness was extended through the complete positive story set:
 
 ```text
 P22-02  multi-participant Event / conflicting Accounts
@@ -210,10 +210,13 @@ P22-11  cross-year Support continuation
 P22-12  privacy projection / deliberate export
 P22-13  derived rebuild / retention-custody boundary
 P22-14  coordinated operation / recovery
+P22-15  Classification / Hypothesis / Intervention coverage
 ```
 
-A substantial schema-valid/graph-invalid corpus is added alongside those
-positive stories.
+The completed corpus also contains all 37 enumerated schema-valid /
+graph-invalid scenarios, for 52 total synthetic scenarios with no planned
+scenario remaining. The final catalog mapping and execution evidence are
+recorded under `docs/validation/`.
 
 ## No new public contract by default
 

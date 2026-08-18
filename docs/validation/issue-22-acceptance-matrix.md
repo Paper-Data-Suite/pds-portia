@@ -1,6 +1,6 @@
 # Issue #22 Acceptance Matrix
 
-**Status:** Complete closeout candidate — Slice 23 evidence package
+**Status:** Complete implementation — PR-review traceability repair pending confirmation gates
 **Date:** 2026-08-17
 
 ## Implemented acceptance evidence through Slice 14
@@ -351,8 +351,8 @@ The enumerated graph-invalid corpus is complete.
 - [x] Coordinated recovery story is complete.
 - [x] Initial local schema-validation baseline is recorded from actual execution — pristine starting commit: 1095/1095 OK.
 - [x] Final repository drift check is recorded — Portia/Core unchanged; Vitrine/Quillan sibling drift documented as non-blocking.
-- [x] Full Issue #22 validation and closeout evidence is recorded — 345/345 Issue #22 regression and 1440/1440 complete schema-validation gate before evidence-only Slice 23.
-- [x] Handoff package for #23 is complete — `docs/validation/issue-22-handoff-to-issue-23.md` plus final coverage, graph-invalid, and repository-checkpoint evidence.
+- [x] Full Issue #22 validation and closeout evidence is recorded — 356/356 Issue #22 regression and 1451/1451 complete schema-validation gate on the committed PR tree before the PR-review traceability repair.
+- [x] Handoff package for #23 is complete — `docs/validation/issue-22-handoff-to-issue-23.md` plus final coverage, graph-invalid, end-to-end validation, acceptance, and repository-checkpoint evidence.
 
 
 ## Final closeout evidence (authoritative)
@@ -368,15 +368,28 @@ intermediate counts.
 | Current Classification/Hypothesis/Intervention positive coverage | PASS | P22-15 + `test_issue_22_classification_hypothesis_intervention.py` |
 | Current Operation Journal/Lock version coverage | PASS | P22-14 uses `operation_journal@2` and `operation_lock@2` |
 | Complete graph-invalid traceability | PASS | `issue-22-graph-invalid-matrix.md` + exact-finding-set tests |
-| Public record/operational family disposition | PASS | `issue-22-contract-coverage-matrix.md`; no relevant `planned` state |
+| Public catalog coverage disposition | PASS | `issue-22-contract-coverage-matrix.md` + `tests/fixtures/issue_22/contract-coverage.json`; 161/161 current catalog families machine-mapped, no `planned` state |
 | Pristine implementation-start baseline | PASS | exact start commit; 1095/1095 |
 | Final Portia/Core drift | PASS | both unchanged from starting anchors |
 | Sibling drift | REVIEWED / NON-BLOCKING | Vitrine and Quillan moved in sibling-owned workflow/release work; final hashes recorded |
-| Issue #22 regression | PASS | 345/345 before evidence-only Slice 23 |
-| Complete schema-validation suite | PASS | 1440/1440 before evidence-only Slice 23; repeated clean run also recorded |
+| Issue #22 regression | PASS | 356/356 after closeout/ADR wording repair |
+| Complete schema-validation suite | PASS | 1451/1451 after closeout/ADR wording repair |
 | Public schema/catalog/ADR delta | NONE | Issue #22 remains integration/test evidence only |
-| #23 handoff | READY AFTER SLICE 23 GATE | dedicated handoff document + all closeout evidence |
+| Required end-to-end validation record | PASS | `issue-22-end-to-end-validation.md` |
+| Post-review repaired-head execution | PASS | 11/11 closeout; 356/356 Issue #22; 1451/1451 full suite; `git diff --check` clean |
+| #23 handoff | READY FOR UPDATED-HEAD REVIEW | dedicated handoff document + all closeout evidence; repaired-head confirmation gates passed |
 
-Slice 23 itself changes only validation/handoff documentation and adds one focused
-closeout test module. The focused closeout test and complete suite must pass after
-application before merge/Issue #23 entry.
+The PR-review traceability repair adds no scenario-semantic, schema, catalog, or
+runtime change. It adds the ticket-required end-to-end validation record, a
+machine-readable mapping of all 161 current catalog families, stronger assertions
+inside the existing 11-test closeout module, and final documentation-state
+normalization.
+
+Before merge/Issue #23 entry, the repaired head must retain:
+
+```text
+11 / 11 closeout tests
+356 / 356 Issue #22 regression tests
+1451 / 1451 complete schema-validation tests
+git diff --check clean
+```

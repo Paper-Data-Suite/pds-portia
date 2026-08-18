@@ -17,6 +17,34 @@ not_applicable_with_rationale
 
 No relevant family remains `planned`.
 
+## Machine-checkable catalog mapping
+
+The human-readable tables below are paired with the repository-local machine-readable
+coverage manifest:
+
+```text
+tests/fixtures/issue_22/contract-coverage.json
+```
+
+That manifest maps **every contract key in the current `schemas/schema-catalog.json`**
+to one of the allowed Issue #22 dispositions and records the cataloged version set
+and current version for each contract. The closeout test compares the manifest
+contract-for-contract and version-for-version against the live repository catalog,
+so a newly added, removed, or version-advanced public contract cannot silently fall
+outside Issue #22 coverage accounting.
+
+Current checked inventory:
+
+```text
+161 catalog contract families total
+ 67 independently persisted record/operational families
+ 94 supporting identifier/reference/target/common/embedded families
+```
+
+The 94 supporting families are explicitly dispositioned in the manifest as
+`not_applicable_with_rationale`; they remain transitively exercised but are not
+misrepresented as independently persisted graph records.
+
 ## Positive end-to-end graph families
 
 | Contract family | Current exercised version | Disposition | Scenario(s) | Integration evidence |
@@ -133,4 +161,11 @@ P22-14 uses `operation_journal@2` and `operation_lock@2`, the highest current ca
 
 ## Completion statement
 
-The final relevant record/operational family inventory contains **67 explicit dispositions: 50 `positive_graph` and 17 `existing_focused_fixture_only`**. No relevant family is left in a `planned` state. Foreign/context-only and helper/embedded scopes are documented separately above rather than being miscounted as Portia-owned persisted record families.
+The machine-readable catalog mapping contains **161 / 161 current public catalog
+contract families**. Of those, **67 independently persisted record/operational
+families** receive explicit table rows here: 50 `positive_graph` and 17
+`existing_focused_fixture_only`. The remaining 94 supporting catalog families are
+explicit `not_applicable_with_rationale` entries in
+`tests/fixtures/issue_22/contract-coverage.json` and are exercised transitively.
+No current catalog family is unclassified and no coverage entry is left in a
+`planned` state.

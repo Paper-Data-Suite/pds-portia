@@ -2,7 +2,7 @@
 
 **Issue:** #22 — Build representative end-to-end synthetic contract examples
 **Date:** 2026-08-17
-**Status:** Closeout candidate validated before evidence-only Slice 23
+**Status:** Final implementation checkpoint — PR-review traceability repair pending confirmation gates
 
 ## Starting anchors
 
@@ -73,7 +73,7 @@ python -m unittest discover `
 
 This is the authoritative Issue #22 pristine-main baseline.
 
-## Final implementation validation before closeout-evidence slice
+## Pre-closeout implementation validation
 
 After P22-15 filled the Classification/Hypothesis/Intervention positive-coverage
 gap and P22-14 was normalized to current `operation_journal@2` /
@@ -132,10 +132,94 @@ Issue #22 adds executable integration evidence and test-only graph validation. I
 does not convert fixture descriptors, finding IDs, privacy projections, derived
 expectations, or synthetic context objects into public Portia contracts.
 
-## Closeout evidence-only slice
+## Final branch validation
 
-The final Slice 23 adds/updates only Issue #22 validation and handoff documents
-plus `test_issue_22_closeout.py`. It does not alter corpus semantics. The focused
-closeout test and the complete suite must still pass after application before the
-branch is merged; their observed counts are acceptance execution evidence rather
-than a reason to rewrite the semantic checkpoint above.
+After the closeout evidence package was applied:
+
+```text
+closeout focused gate
+Ran 11 tests in 0.661s
+OK
+```
+
+The initial-checkpoint ADR wording invariant was then restored, after which:
+
+```text
+corpus-foundation gate
+Ran 12 tests in 1.507s
+OK
+```
+
+The complete Issue #22 regression then produced:
+
+```text
+Ran 356 tests in 47.168s
+
+OK
+```
+
+The complete repository schema-validation suite then produced:
+
+```text
+Ran 1451 tests in 211.912s
+
+OK
+```
+
+`git diff --check` emitted no output. `git status --short` showed only the
+expected Issue #22 additions before commit.
+
+These are the latest observed branch-wide validation results and supersede the
+pre-closeout 345/1440 counts above for merge-readiness evidence.
+
+## PR-review traceability repair
+
+Final PR review found no corpus-semantic or public-contract defect. It did find
+closeout evidence gaps: the ticket-required
+`issue-22-end-to-end-validation.md` was absent, public-catalog coverage was not
+mechanically compared against every catalog key, and several human-readable
+documents retained pre-closeout status/count wording.
+
+The review repair therefore changes only documentation/test traceability:
+
+```text
+new required end-to-end validation record
+machine-readable 161-contract catalog coverage manifest
+stronger assertions inside the existing closeout test module
+final walkthrough/checkpoint/handoff status normalization
+```
+
+It does not alter scenario semantics, public schemas, catalog entries, graph
+finding behavior, or runtime code. Because no new test method is added, the
+expected repaired-head discovery counts remain 11 closeout / 356 Issue #22 /
+1451 complete schema-validation tests. Those gates must remain green on the
+repaired PR head before merge.
+
+
+## Post-review repaired-head confirmation
+
+After the PR-review traceability repair was applied, the repaired working tree
+was revalidated before commit. The observed results were:
+
+```text
+closeout gate
+Ran 11 tests in 0.037s
+OK
+
+Issue #22 regression
+Ran 356 tests in 42.655s
+OK
+
+complete schema-validation suite
+Ran 1451 tests in 233.551s
+OK
+```
+
+`git diff --check` emitted no output. `git status --short` showed only the eight
+expected modified review-repair files and the two expected new review-repair
+artifacts. Git also emitted informational LF-to-CRLF working-copy warnings on
+Windows; those warnings are not whitespace-check failures.
+
+This subsection is the authoritative merge-readiness execution evidence for the
+PR-review repaired tree. The earlier exact timings above are retained as
+historical validation checkpoints.

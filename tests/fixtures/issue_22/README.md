@@ -514,3 +514,29 @@ graph-invalid scenarios**. Both planned scenario lists remain empty. Final Issue
 invalid matrix document, repository checkpoint, end-to-end validation record,
 and Issue #23 handoff.
 
+## Final closeout state
+
+Issue #22 closes with:
+
+```text
+15 positive scenarios       P22-01..P22-15
+37 graph-invalid scenarios  G22-001..G22-037
+52 total scenarios
+0 planned scenarios
+```
+
+The machine-readable public-catalog disposition is
+`contract-coverage.json`; it maps all 161 current catalog contract families and
+is checked against the live repository catalog by `test_issue_22_closeout.py`.
+
+The authoritative validation record is:
+
+```text
+docs/validation/issue-22-end-to-end-validation.md
+```
+
+The latest observed committed-tree gates before the PR-review traceability
+repair were 356/356 Issue #22 tests and 1451/1451 complete schema-validation
+tests. The repair changes documentation/test traceability only and must retain
+those same discovery counts before merge.
+

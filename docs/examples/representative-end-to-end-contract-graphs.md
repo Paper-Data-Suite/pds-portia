@@ -2,7 +2,7 @@
 
 ## Status
 
-**Issue #22 — in progress**
+**Issue #22 — complete representative corpus; PR-review closeout**
 
 This document is the human-readable walkthrough for the repository-local
 synthetic graph corpus under:
@@ -13,6 +13,18 @@ tests/fixtures/issue_22/
 
 The fixture descriptors are development/test metadata, not public Portia
 serialization contracts.
+
+Final corpus state:
+
+```text
+15 positive scenarios
+37 graph-invalid scenarios
+52 total scenarios
+0 planned scenarios
+```
+
+Final validation and catalog-coverage evidence live under `docs/validation/`,
+including `issue-22-end-to-end-validation.md`.
 
 ## Scenario inventory
 
@@ -31,7 +43,8 @@ serialization contracts.
 | P22-11 | Implemented in Slice 11 | cross-year Support continuation with new work/child identities and predecessor-pinned exact refs |
 | P22-12 | Implemented in Slice 12 | participant-specific privacy projection and deliberate export |
 | P22-13 | Implemented in Slice 13 | rebuildable derived views and retention/custody boundary |
-| P22-14 | Planned | coordinated operation and recovery |
+| P22-14 | Implemented in Slice 14 | coordinated operation and recovery |
+| P22-15 | Implemented in Slice 21 | reviewer-selected Classification, tentative Hypothesis, and bounded Intervention with one actual Implementation |
 
 ## P22-01 — Positive classroom Event
 

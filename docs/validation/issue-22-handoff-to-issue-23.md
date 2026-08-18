@@ -3,7 +3,7 @@
 **Source:** #22 — Build representative end-to-end synthetic contract examples
 **Consumer:** #23 — final Portia foundations architecture audit
 **Date:** 2026-08-17
-**Status:** Ready for architecture-audit consumption after Slice 23 validation
+**Status:** Ready for architecture-audit consumption after PR-review confirmation gates
 
 ## What #23 receives
 
@@ -121,9 +121,11 @@ records.
 
 ```text
 pristine pds-portia starting baseline: 1095 / 1095 OK
-final Issue #22 regression before closeout docs: 345 / 345 OK
-full schema-validation before closeout docs: 1440 / 1440 OK
-repeated full schema-validation: 1440 / 1440 OK
+focused closeout gate:                 11 / 11 OK
+repaired corpus-foundation gate:       12 / 12 OK
+final Issue #22 regression:           356 / 356 OK
+final complete schema validation:    1451 / 1451 OK
+git diff --check:                         clean
 ```
 
 See:
@@ -131,10 +133,16 @@ See:
 ```text
 docs/validation/issue-22-initial-repository-checkpoint.md
 docs/validation/issue-22-final-repository-checkpoint.md
+docs/validation/issue-22-end-to-end-validation.md
 docs/validation/issue-22-acceptance-matrix.md
 docs/validation/issue-22-contract-coverage-matrix.md
 docs/validation/issue-22-graph-invalid-matrix.md
+tests/fixtures/issue_22/contract-coverage.json
 ```
+
+The catalog-coverage manifest is machine-checked against the live
+`schemas/schema-catalog.json`; the current mapping covers 161 / 161 catalog
+contract families.
 
 ## Scope / non-claims
 
@@ -147,7 +155,32 @@ is detected by explicit application validation.
 
 ## #23 entry condition
 
-#23 may begin final approval work when the Slice 23 closeout test and the complete
-schema-validation suite pass after these evidence documents are applied. Any #23
-finding that contradicts a corpus invariant should be treated as an architecture
-finding, not patched by weakening a fixture expectation.
+#23 may begin final approval work when the PR-review repair retains all three
+confirmation gates on the PR head:
+
+```text
+11 / 11 closeout tests
+356 / 356 Issue #22 regression tests
+1451 / 1451 complete schema-validation tests
+```
+
+and `git diff --check` remains clean. Any #23 finding that contradicts a corpus
+invariant should be treated as an architecture finding, not patched by weakening
+a fixture expectation.
+
+
+## PR-review repaired-head confirmation
+
+The PR-review traceability repair introduced no semantic corpus change. Its
+post-application confirmation gates passed:
+
+```text
+11 / 11 closeout tests
+356 / 356 Issue #22 regression tests
+1451 / 1451 complete schema-validation tests
+git diff --check clean
+```
+
+Observed timings were 0.037s, 42.655s, and 233.551s respectively. The repaired
+branch is therefore ready to be committed and pushed for one final review of the
+updated PR head before merge and Issue #23 entry.
