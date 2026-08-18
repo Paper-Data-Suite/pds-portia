@@ -567,4 +567,3 @@ Accepted deliberate scope boundary.
 ### Validation evidence
 
 - Audit report scope/non-claims.
-
