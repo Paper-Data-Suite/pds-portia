@@ -27,10 +27,12 @@ conceptual contract name and schema version to the canonical schema `$id` and
 the repository-relative source path.
 
 The catalog contains the retained Event-family contracts, versioned shared
-contracts, the Actor Directory record family, the Account and Observation
-version-1 evidence contracts, the Review/Classification/Hypothesis/Determination
-version-1 judgment contracts, and additive Actor-aware operational version-2
-contracts implemented by Portia.
+contracts, the Actor Directory, evidence and human-judgment families,
+Response/Communication, Support Process planning/implementation/fidelity,
+Follow-Up/Outcome/Reentry/Repair, paper/import staging and materialization,
+deliberate-export provenance, lifecycle/correction, operation/recovery,
+integrity/finding administration, and derived-state contracts implemented by
+the completed foundation.
 
 ## Identifier contracts
 
@@ -92,6 +94,7 @@ The initial prefixes are:
 - Import Source Record: `isrc_`
 - Import Proposal: `iprp_`
 - Import Review: `irev_`
+- Deliberate Export: `pexp_`
 
 The operation, step, Quarantine, acknowledgement, suppression, and generation
 suffixes are opaque. `portia-lock-id` is specialized: `lock_` is followed by

@@ -11,14 +11,16 @@ Portia is in its initial research and architecture phase.
 The repository currently contains:
 
 * evidence-based research on responsible K–12 behavior documentation and management;
-* accepted design analyses defining Portia’s role, identity model, ownership rules, canonical storage, references, lifecycle, correction, migration, removal, integrity diagnostics, coordinated persistence, recovery, Quarantine, finding administration, derived rebuilding, the initial Event family, the teacher-local Actor Directory, and the Account/Observation source-evidence layer, and the Review/Classification/Hypothesis/Determination human-judgment layer;
-* Architecture Decision Records through ADR 0009, plus accepted ADR 0010 for the Actor Directory and ADR 0011 for Accounts and Observations, and accepted ADR 0012 for Review, Classification, Hypothesis, and Determination;
+* accepted design analyses defining Portia’s role, identity model, ownership rules, canonical storage, references, lifecycle, correction, migration, removal, integrity diagnostics, coordinated persistence, recovery, Quarantine, finding administration, derived rebuilding, the Event and Support Process work families, the teacher-local Actor Directory, source-evidence and human-judgment layers, Response/Communication, Support/Intervention/Implementation/Fidelity, Follow-Up/Outcome/Reentry/Repair, paper/import staging, privacy projections, deliberate export, retention hooks, and future retention-orchestration boundaries;
+* accepted Architecture Decision Records ADR 0001 through ADR 0017;
 * independently versioned Draft 2020-12 identifier, reference, target, Actor, Account, Observation, Review, Classification, Hypothesis, Determination, attribution, provenance, lifecycle, correction, disagreement, dependency, migration, ownership-correction, removal, relationship, operational, and derived-projection schemas;
-* retained historical Event-family version-1 schemas, Event version 2, Event Participant and Role version 3, Work Relationship version 2, Actor Directory version-1 contracts, Account and Observation version-1 contracts, Review/Classification/Hypothesis/Determination version-1 contracts, and Actor-aware operational version-2 contracts;
-* validated synthetic examples, migration fixtures, and comprehensive Issue #12, Issue #13, Issue #14, Issue #15, and Issue #16 application-invalid matrices;
+* retained historical Event-family version-1 schemas, Event version 2, Event Participant and Role version 3, Work Relationship version 2, Actor Directory version-1 contracts, Account and Observation version-1 contracts, Review v1, Classification v1, Hypothesis v1, and Determination v1 contracts, and Actor-aware operational version-2 contracts;
+* validated synthetic examples, focused application-invalid matrices across the foundation issues, and the Issue #22 representative graph corpus with 15 positive and 37 schema-valid graph-invalid scenarios;
 * and automated offline schema-validation, state-machine, compatibility, privacy, example, and documentation-consistency tests.
 
-Portia does not yet contain an executable application. The current domain implementation targets are Event v2, Event Participant v3, Event Participant Role v3, Work Relationship v2, the Actor Directory version-1 record family, Account v1, Observation v1, Review v1, Classification v1, Hypothesis v1, and Determination v1. Issue #14 completes the public teacher-local Actor identity family. Issue #15 completes attributed Account and direct/instrumented Observation identity, targeting, attribution, provenance, lifecycle, correction, retraction, migration/removal compatibility, operational/derived reuse, and privacy contracts. Issue #16 completes bounded Review, attributed Classification, tentative Hypothesis, and authority-scoped Determination contracts plus shared-infrastructure compatibility. Production filesystem services and teacher-facing workflows remain assigned to a later executable milestone.
+Portia does not yet contain an executable application. The current foundation is defined by ADRs 0001–0017, the public contract versions listed in `schemas/schema-catalog.json`, the focused validation suites for Issues #11–#21, and the combined representative graph corpus added by Issue #22. Production Python models, filesystem services, application validation, and teacher-facing workflows remain assigned to a later executable milestone.
+
+Historical closeout compatibility is intentionally retained without redefining current authority. Issue #12, Issue #13, and Issue #14 checkpoint tests use the phrases **Architecture Decision Records through ADR 0009** and **Actor Directory version-1 record family** for their then-current milestones. Those phrases describe historical checkpoints only; the current foundation inventory above, ADRs 0001–0017, and the current schema catalog remain authoritative.
 
 ### Issue #17 current implementation
 
@@ -174,11 +176,32 @@ cross-module dry-run planning, safe ordering, recovery, and bounded results, but
 each module retains semantic authority and performs/verifies mutation of its own
 custody.
 
+### Issue #22 current implementation
+
+Issue #22 adds the repository-local integration corpus consumed by the final
+foundations audit:
+
+```text
+15 positive synthetic graphs
+37 schema-valid graph-invalid graphs
+52 total scenarios
+0 planned scenarios
+```
+
+The coverage manifest maps every live schema-catalog contract family to a
+representative, graph-invalid, focused-only, foreign-context, or explicitly
+not-applicable disposition. The graph validator is test-only evidence of
+application invariants: schema validity alone does not establish correct
+ownership, exact reference resolution, lifecycle compatibility, provenance,
+operation recovery, privacy safety, or foreign-custody truth.
+
+Issue #22 does not add a runtime application or a new ADR.
+
 ## Product Position
 
 Portia is designed as:
 
-> **Paper Data Suite’s contextual behavior-support and response module. It records what was observed, who said what, what the institution decided, what support was provided, and what happened afterward. It may reference instructional and assessment context from other modules, but it neither evaluates academic work nor calculates grades.**
+> **Paper Data Suite’s contextual behavior-support and response module. It records what was observed, who said what, what an attributable human decided within documented authority, what support was provided, and what happened afterward. It may reference instructional and assessment context from other modules, but it neither evaluates academic work nor calculates grades.**
 
 Portia should function as a student-support and decision-documentation system, not as a digital punishment ledger.
 
@@ -285,7 +308,7 @@ Portia does not duplicate sibling-module workflows:
 * `pds-meridian` owns academic evidence policy, proficiency, Grade calculation, and formal academic reporting;
 * `pds-vitrine` owns student-work curation, portfolio composition, presentation, and regulated portfolio workflows;
 * a future planning module will own Units, Lessons, Assignments, objectives, and instructional sequencing;
-* `pds-sunset` will own suite-wide archival orchestration.
+* a future Sunset-like module may orchestrate suite-wide retention/disposition planning and recovery, while each module retains semantic and mutation authority over its own custody.
 
 Portia may reference records from other modules through durable, typed, module-qualified references. The originating module remains authoritative for its record.
 
@@ -698,6 +721,8 @@ The earlier Event/Participant/Role design and Role example documents predate the
 ## Accepted Review, Classification, Hypothesis, and Determination Contracts
 
 ADR 0012 defines Portia's Event-local human review and judgment layer.
+
+For historical Issue #16 validation compatibility, the foundation records **accepted ADR 0012 for Review, Classification, Hypothesis, and Determination** and the implementation targets **Review v1, Classification v1, Hypothesis v1, and Determination v1**. The Issue #16 handoff language remains explicit: Account/Observation v1 remain the evidence layer; Response/Communication remains #17; Support-Process/FBA ownership remains #18. Later sections document completion of #17 and #18 and therefore supersede those issue-number assignments for current planning without changing the historical boundary.
 
 The principal public contracts are:
 

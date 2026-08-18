@@ -1,0 +1,685 @@
+{
+  "audit_record_kind": "pds-portia.foundation-architecture-audit",
+  "audit_record_version": "1",
+  "audit_issue": 23,
+  "umbrella_issue": 10,
+  "audit_date": "2026-08-17",
+  "starting_portia_commit": "523cfd6dd75eef9cb10930e328bb7d98b8924bdf",
+  "final_audited_portia_commit": null,
+  "historical_issue_22_baseline": {
+    "portia_commit": "523cfd6dd75eef9cb10930e328bb7d98b8924bdf",
+    "complete_schema_validation": {
+      "passed": 1451,
+      "failed": 0,
+      "status": "historical_handoff_evidence"
+    },
+    "issue_22_regression": {
+      "passed": 356,
+      "failed": 0,
+      "status": "historical_handoff_evidence"
+    },
+    "focused_closeout": {
+      "passed": 11,
+      "failed": 0,
+      "status": "historical_handoff_evidence"
+    },
+    "git_diff_check": "clean"
+  },
+  "reviewed_repository_baselines": [
+    {
+      "repository": "pds-portia",
+      "commit": "523cfd6dd75eef9cb10930e328bb7d98b8924bdf"
+    },
+    {
+      "repository": "pds-core",
+      "commit": "6c507213618b68a6dd3ea096e1a898201ff029e6"
+    },
+    {
+      "repository": "pds-scoreform",
+      "commit": "047e47f60730b8a5540b5e1d92f008ffad37eede"
+    },
+    {
+      "repository": "pds-quillan",
+      "commit": "268fe0ab6f3d74848bf71f1aa1b939adbe242452"
+    },
+    {
+      "repository": "pds-concord",
+      "commit": "a742d7bb5e46f44d1fb0af3ff1bc77799427559e"
+    },
+    {
+      "repository": "pds-meridian",
+      "commit": "bdd652f699be303418375f71ab9c2179fefe2143"
+    },
+    {
+      "repository": "pds-vitrine",
+      "commit": "8e05250b04e8ed7b916e57637213a5875a55fd78"
+    },
+    {
+      "repository": "pds-paper-data-suite",
+      "commit": "8207d9f3db495913df5e42f1f6aa87734d8933c5"
+    }
+  ],
+  "adr_dispositions": [
+    {
+      "adr": "0001",
+      "path": "docs/decisions/0001-separate-observations-interpretations-and-determinations.md",
+      "repository_status": "Accepted",
+      "audit_disposition": "accepted"
+    },
+    {
+      "adr": "0002",
+      "path": "docs/decisions/0002-define-portia-module-boundaries.md",
+      "repository_status": "Accepted",
+      "audit_disposition": "accepted"
+    },
+    {
+      "adr": "0003",
+      "path": "docs/decisions/0003-adopt-teacher-local-initial-deployment.md",
+      "repository_status": "Accepted",
+      "audit_disposition": "accepted"
+    },
+    {
+      "adr": "0004",
+      "path": "docs/decisions/0004-define-portia-identity-ownership-and-storage.md",
+      "repository_status": "Accepted",
+      "audit_disposition": "accepted"
+    },
+    {
+      "adr": "0005",
+      "path": "docs/decisions/0005-define-event-and-participant-domain-model.md",
+      "repository_status": "Accepted",
+      "audit_disposition": "accepted"
+    },
+    {
+      "adr": "0006",
+      "path": "docs/decisions/0006-define-event-participant-role-domain-model.md",
+      "repository_status": "Accepted",
+      "audit_disposition": "accepted"
+    },
+    {
+      "adr": "0007",
+      "path": "docs/decisions/0007-define-shared-reference-targeting-and-relationship-contracts.md",
+      "repository_status": "Accepted",
+      "audit_disposition": "accepted"
+    },
+    {
+      "adr": "0008",
+      "path": "docs/decisions/0008-define-lifecycle-correction-and-migration-contracts.md",
+      "repository_status": "Accepted",
+      "audit_disposition": "accepted"
+    },
+    {
+      "adr": "0009",
+      "path": "docs/decisions/0009-define-coordinated-persistence-recovery-and-derived-index-contracts.md",
+      "repository_status": "Accepted",
+      "audit_disposition": "accepted_with_nonblocking_implementation_concern"
+    },
+    {
+      "adr": "0010",
+      "path": "docs/decisions/0010-define-actor-directory-domain-model-and-lifecycle.md",
+      "repository_status": "Accepted",
+      "audit_disposition": "accepted"
+    },
+    {
+      "adr": "0011",
+      "path": "docs/decisions/0011-define-account-and-observation-domain-models.md",
+      "repository_status": "Accepted",
+      "audit_disposition": "accepted"
+    },
+    {
+      "adr": "0012",
+      "path": "docs/decisions/0012-define-review-classification-hypothesis-and-determination-domain-models.md",
+      "repository_status": "Accepted",
+      "audit_disposition": "accepted"
+    },
+    {
+      "adr": "0013",
+      "path": "docs/decisions/0013-define-response-and-communication-domain-models.md",
+      "repository_status": "Accepted",
+      "audit_disposition": "accepted"
+    },
+    {
+      "adr": "0014",
+      "path": "docs/decisions/0014-define-support-process-support-intervention-implementation-and-fidelity-contracts.md",
+      "repository_status": "Accepted",
+      "audit_disposition": "accepted"
+    },
+    {
+      "adr": "0015",
+      "path": "docs/decisions/0015-define-follow-up-outcome-reentry-and-repair-domain-models.md",
+      "repository_status": "Accepted",
+      "audit_disposition": "accepted"
+    },
+    {
+      "adr": "0016",
+      "path": "docs/decisions/0016-define-paper-assisted-capture-pds2-routing-and-import-contracts.md",
+      "repository_status": "Accepted",
+      "audit_disposition": "accepted_with_nonblocking_implementation_concern"
+    },
+    {
+      "adr": "0017",
+      "path": "docs/decisions/0017-define-privacy-projections-redaction-export-retention-and-sunset-boundaries.md",
+      "repository_status": "Accepted",
+      "audit_disposition": "accepted_with_nonblocking_implementation_concern"
+    }
+  ],
+  "finding_counts": {
+    "milestone_blocker": 5,
+    "implementation_concern": 3,
+    "future_enhancement": 2,
+    "institutional_policy_dependency": 1,
+    "deliberately_out_of_scope": 2
+  },
+  "findings": [
+    {
+      "finding_id": "PF-AUD-001",
+      "audit_domain": "documentation consistency / foundation inventory",
+      "classification": "milestone_blocker",
+      "summary": "README top-level status inventory is stale relative to the merged #17–#22 foundation.",
+      "exact_evidence": [
+        "README.md Current Status lists accepted ADRs only through ADR 0012 and application-invalid matrices only through Issue #16.",
+        "The same README later contains Issue #17–#21 implementation sections, creating an internally inconsistent active status description.",
+        "Issue #22 is absent from the README even though its 52-scenario representative corpus is merged on the audit baseline."
+      ],
+      "affected_files_or_contracts": [
+        "README.md"
+      ],
+      "expected_architecture": "Active status documentation must describe the complete accepted foundation through ADR 0017 and the Issue #22 integration corpus without implying that the foundation stops at Issue #16.",
+      "observed_problem": "The README contains both an older top-level foundation inventory and newer issue-specific sections.",
+      "risk_or_consequence": "An implementation agent could incorrectly treat later record families as provisional or overlook the representative graph corpus when planning runtime work.",
+      "required_disposition": "Reconcile the README status inventory with the merged foundation and add an Issue #22 current-implementation section.",
+      "resolution": "Slice 1 updates README Current Status to cover ADRs 0001–0017, contract families through Issue #21, and the Issue #22 15-positive/37-negative integration corpus.",
+      "validation_evidence": [
+        "Guarded README patch in apply_slice.py",
+        "Issue #23 foundation validator checks required audit artifacts and traceability."
+      ],
+      "follow_up_issue_if_any": null,
+      "status": "resolved",
+      "disposition": "fixed_in_audit"
+    },
+    {
+      "finding_id": "PF-AUD-002",
+      "audit_domain": "suite authority / retention boundary",
+      "classification": "milestone_blocker",
+      "summary": "README assigns future pds-sunset suite-wide archival ownership more broadly than ADR 0017 permits.",
+      "exact_evidence": [
+        "README.md sibling-module list says `pds-sunset` will own suite-wide archival orchestration.",
+        "ADR 0017 says no pds-sunset repository exists, a future Sunset-like component is orchestration-only, Portia retains semantic authority, and Portia performs/verifies mutations of Portia-owned custody."
+      ],
+      "affected_files_or_contracts": [
+        "README.md",
+        "docs/decisions/0017-define-privacy-projections-redaction-export-retention-and-sunset-boundaries.md",
+        "docs/design/portia-future-sunset-retention-adapter-boundary.md"
+      ],
+      "expected_architecture": "A future retention/disposition orchestrator coordinates policy-fed cross-module planning and fan-out; each module retains semantic and mutation authority over its own custody.",
+      "observed_problem": "The README verb `own` can be read as transferring archival/destruction authority to a future module.",
+      "risk_or_consequence": "A later implementation could centralize destructive authority contrary to the accepted fail-closed module-side contract.",
+      "required_disposition": "Narrow README language to orchestration-only and preserve the absence of a current runtime dependency.",
+      "resolution": "Slice 1 replaces the ownership statement with the ADR 0017 orchestration-only boundary.",
+      "validation_evidence": [
+        "Guarded README patch in apply_slice.py",
+        "ADR disposition/traceability records ADR 0017 as controlling."
+      ],
+      "follow_up_issue_if_any": null,
+      "status": "resolved",
+      "disposition": "fixed_in_audit"
+    },
+    {
+      "finding_id": "PF-AUD-003",
+      "audit_domain": "teacher-local authority / terminology neutrality",
+      "classification": "milestone_blocker",
+      "summary": "README product-position language overstates Portia as recording what 'the institution decided'.",
+      "exact_evidence": [
+        "README Product Position describes Portia as recording 'what the institution decided'.",
+        "The accepted teacher-local architecture requires explicit decision authority and prohibits teacher-local judgments from masquerading as institution-wide findings."
+      ],
+      "affected_files_or_contracts": [
+        "README.md",
+        "docs/decisions/0003-adopt-teacher-local-initial-deployment.md",
+        "docs/decisions/0012-define-review-classification-hypothesis-and-determination-domain-models.md"
+      ],
+      "expected_architecture": "Portia records attributable decisions and the authority/scope under which they were made; it does not upgrade a teacher-local record into institutional truth.",
+      "observed_problem": "The unqualified product-position phrase is broader than the accepted authority model.",
+      "risk_or_consequence": "Downstream UI/reporting could present local Determinations as institutionally authoritative.",
+      "required_disposition": "Use authority-bounded wording in the product position.",
+      "resolution": "Slice 1 changes the sentence to record 'what an attributable human decided within documented authority'.",
+      "validation_evidence": [
+        "Guarded README patch in apply_slice.py",
+        "Audit report teacher-local authority conclusion."
+      ],
+      "follow_up_issue_if_any": null,
+      "status": "resolved",
+      "disposition": "fixed_in_audit"
+    },
+    {
+      "finding_id": "PF-AUD-004",
+      "audit_domain": "final validation / approval binding",
+      "classification": "milestone_blocker",
+      "summary": "Final post-audit repository validation and final audited commit binding are not yet available.",
+      "exact_evidence": [
+        "The #22 handoff reports 1451/1451 complete schema-validation tests on the pre-#23 baseline.",
+        "Issue #23 changes audit documentation, tests, validator code, README language, and schema documentation; the final suite must therefore be rerun in the actual checkout.",
+        "The explicit ready approval record must bind the exact final audited commit, which does not exist until the repaired worktree is validated and committed."
+      ],
+      "affected_files_or_contracts": [
+        "docs/audits/portia-foundation-audit.json",
+        "docs/audits/portia-foundation-approval.json",
+        "docs/validation/issue-23-portia-foundation-validation.md"
+      ],
+      "expected_architecture": "A ready verdict is issued only after the actual post-audit checkout passes the full suite and the approval record can bind the exact audited commit.",
+      "observed_problem": "At Slice 1 authoring time only the merged #22 baseline is available as complete-suite evidence.",
+      "risk_or_consequence": "Issuing approval now would make the approval record self-inconsistent and would inherit test evidence across an untested diff.",
+      "required_disposition": "Run the full current suite, Issue #22 regression, audit validator, and git diff --check in the user's checkout; then resolve this finding and create the approval record in a closeout slice.",
+      "resolution": null,
+      "validation_evidence": [
+        "Pending user-local confirmation after Slice 1 application."
+      ],
+      "follow_up_issue_if_any": "#23 closeout slice",
+      "status": "open",
+      "disposition": "deferred_with_issue"
+    },
+    {
+      "finding_id": "PF-AUD-005",
+      "audit_domain": "coordinated persistence / recovery",
+      "classification": "implementation_concern",
+      "summary": "The executable milestone must implement append-preserving recovery without pretending multi-file or cross-module actions are magically atomic.",
+      "exact_evidence": [
+        "ADR 0009 uses immutable journals, pointers, exact fingerprints, ordered writes, locks, and reconciliation.",
+        "ADR 0017 explicitly allows partial cross-module success and rejects reconstruction of deleted content as rollback."
+      ],
+      "affected_files_or_contracts": [
+        "docs/decisions/0009-define-coordinated-persistence-recovery-and-derived-index-contracts.md",
+        "docs/decisions/0017-define-privacy-projections-redaction-export-retention-and-sunset-boundaries.md"
+      ],
+      "expected_architecture": "Runtime services reconcile exact durable state and preserve accepted history.",
+      "observed_problem": "No executable persistence layer exists yet, so this correctness property is architectural rather than runtime-proven.",
+      "risk_or_consequence": "Naive rollback/retry logic could duplicate accepted records or erase accepted history.",
+      "required_disposition": "Carry the invariant directly into production persistence/recovery acceptance tests.",
+      "resolution": "Accepted as implementation guidance; no foundation change required.",
+      "validation_evidence": [
+        "Issue #22 P22-14 and G22-028..G22-029",
+        "Existing Issue #13 focused suites."
+      ],
+      "follow_up_issue_if_any": "Executable Portia persistence/recovery milestone",
+      "status": "accepted",
+      "disposition": "deferred_with_issue"
+    },
+    {
+      "finding_id": "PF-AUD-006",
+      "audit_domain": "privacy / teacher workload",
+      "classification": "implementation_concern",
+      "summary": "Privacy-safe handling of free text and multi-party records requires fail-closed/manual-review paths that must not become routine technical administration for teachers.",
+      "exact_evidence": [
+        "ADR 0017 requires manual review when mechanical redaction would alter proposition, attribution, evidence basis, or practical meaning.",
+        "The foundation separately requires proportionate teacher workload."
+      ],
+      "affected_files_or_contracts": [
+        "docs/decisions/0017-define-privacy-projections-redaction-export-retention-and-sunset-boundaries.md"
+      ],
+      "expected_architecture": "The runtime automates safe structural handling and surfaces concise, semantic review decisions only when required.",
+      "observed_problem": "The architecture deliberately leaves UI/workflow implementation to the next milestone.",
+      "risk_or_consequence": "A literal low-level implementation could force teachers to manage field policies, identifiers, provenance, or redaction mechanics directly.",
+      "required_disposition": "Design later workflows around concise review decisions while keeping low-level policy/provenance generation automatic.",
+      "resolution": "Accepted as implementation guidance.",
+      "validation_evidence": [
+        "Issue #22 P22-12 and G22-030..G22-033",
+        "ADR 0017 fail-closed rules."
+      ],
+      "follow_up_issue_if_any": "Teacher-facing privacy/export workflow implementation",
+      "status": "accepted",
+      "disposition": "deferred_with_issue"
+    },
+    {
+      "finding_id": "PF-AUD-007",
+      "audit_domain": "application validation",
+      "classification": "implementation_concern",
+      "summary": "Issue #22 proves application invariants through a test-only graph validator; production runtime validation still has to be implemented.",
+      "exact_evidence": [
+        "tests/schema_validation/issue_22_graph_validation.py is explicitly a test-only integration validator.",
+        "37 individually schema-valid graphs are intentionally rejected only at application-validation level."
+      ],
+      "affected_files_or_contracts": [
+        "tests/schema_validation/issue_22_graph_validation.py",
+        "tests/fixtures/issue_22/corpus.json"
+      ],
+      "expected_architecture": "The executable milestone must enforce the same exact-reference, ownership, lifecycle, provenance, recovery, privacy, and custody invariants at runtime boundaries.",
+      "observed_problem": "There is intentionally no executable Portia application in the foundation milestone.",
+      "risk_or_consequence": "Treating JSON Schema as sufficient would admit graphs the foundation has already defined as invalid.",
+      "required_disposition": "Translate the stable graph invariants into production validation/services without making the test helper a runtime API by accident.",
+      "resolution": "Accepted as implementation guidance.",
+      "validation_evidence": [
+        "Issue #22 37 graph-invalid scenarios",
+        "Schema/application separation documented throughout the foundation."
+      ],
+      "follow_up_issue_if_any": "Executable application-validation milestone",
+      "status": "accepted",
+      "disposition": "deferred_with_issue"
+    },
+    {
+      "finding_id": "PF-AUD-008",
+      "audit_domain": "retention / disclosure / institutional authority",
+      "classification": "institutional_policy_dependency",
+      "summary": "Retention periods, legal holds, requester entitlement, disclosure authorization, and destruction approval remain external policy decisions.",
+      "exact_evidence": [
+        "ADR 0017 deliberately defines semantic retention classes and policy hooks rather than legal durations.",
+        "Portia cannot prove guardianship, entitlement, legal-hold state, institution destruction approval, or purge of external copies."
+      ],
+      "affected_files_or_contracts": [
+        "docs/decisions/0017-define-privacy-projections-redaction-export-retention-and-sunset-boundaries.md"
+      ],
+      "expected_architecture": "Portia accepts bounded externally authoritative inputs and fails closed when required policy facts are unavailable.",
+      "observed_problem": "No generic local-first module can infer institution- and jurisdiction-specific policy truth from the record graph alone.",
+      "risk_or_consequence": "Hard-coded legal assumptions would create false authority and unsafe deletion/disclosure behavior.",
+      "required_disposition": "Preserve external policy provenance and blocked/unresolved states in future runtime work.",
+      "resolution": "Accepted policy dependency; not a Portia foundation defect.",
+      "validation_evidence": [
+        "Issue #21 retention/privacy matrices",
+        "Issue #22 P22-13 and G22-037."
+      ],
+      "follow_up_issue_if_any": "Institution/deployment policy integration",
+      "status": "accepted",
+      "disposition": "accepted_policy_dependency"
+    },
+    {
+      "finding_id": "PF-AUD-009",
+      "audit_domain": "future suite retention orchestration",
+      "classification": "future_enhancement",
+      "summary": "The shared Sunset-like adapter protocol remains intentionally undefined.",
+      "exact_evidence": [
+        "ADR 0017 defines conceptual Portia capabilities but publishes no premature shared protocol.",
+        "At the audited checkpoint no pds-sunset repository is required by Portia."
+      ],
+      "affected_files_or_contracts": [
+        "docs/design/portia-future-sunset-retention-adapter-boundary.md",
+        "docs/decisions/0017-define-privacy-projections-redaction-export-retention-and-sunset-boundaries.md"
+      ],
+      "expected_architecture": "A future suite-level protocol can negotiate capabilities while preserving module-local semantics and mutation authority.",
+      "observed_problem": "There is no accepted suite protocol yet.",
+      "risk_or_consequence": "Premature Portia-only wire contracts would likely create cross-module coupling and protocol drift.",
+      "required_disposition": "Define the shared protocol only when the suite is ready to design the orchestrator.",
+      "resolution": "Accepted future enhancement.",
+      "validation_evidence": [
+        "ADR 0017 sections 28–33."
+      ],
+      "follow_up_issue_if_any": "Future suite retention/disposition orchestration milestone",
+      "status": "accepted",
+      "disposition": "deferred_with_issue"
+    },
+    {
+      "finding_id": "PF-AUD-010",
+      "audit_domain": "Core publication / downstream consumers",
+      "classification": "future_enhancement",
+      "summary": "A privacy-minimized Core intervention publication projection remains future integration work.",
+      "exact_evidence": [
+        "ADR 0014/README preserve Portia-native support/intervention authority and identify Core v0.6 intervention_record_set only as a future projection.",
+        "Issue #18 explicitly does not create academic registration, results, Grades, automatic Meridian publication, or automatic portfolio publication."
+      ],
+      "affected_files_or_contracts": [
+        "docs/decisions/0014-define-support-process-support-intervention-implementation-and-fidelity-contracts.md",
+        "README.md"
+      ],
+      "expected_architecture": "Any future publication remains consumer-neutral and privacy-minimized while Portia stays authoritative for native records.",
+      "observed_problem": "No live producer projection is required by the foundation milestone.",
+      "risk_or_consequence": "Implementing publication prematurely could leak behavior/support detail or conflate behavior support with academic evidence.",
+      "required_disposition": "Defer until an explicit integration issue defines the projection and authorization policy.",
+      "resolution": "Accepted future enhancement.",
+      "validation_evidence": [
+        "ADR 0014 and README Issue #18 boundary."
+      ],
+      "follow_up_issue_if_any": "Future Core intervention publication integration issue",
+      "status": "accepted",
+      "disposition": "deferred_with_issue"
+    },
+    {
+      "finding_id": "PF-AUD-011",
+      "audit_domain": "runtime scope",
+      "classification": "deliberately_out_of_scope",
+      "summary": "A working Portia application, production persistence services, GUI/CLI workflows, and live sibling adapters are deliberately outside the foundations milestone.",
+      "exact_evidence": [
+        "Umbrella #10 explicitly states that the completed foundation does not require a working Portia application.",
+        "Current README likewise identifies production filesystem services and teacher-facing workflows as later executable work."
+      ],
+      "affected_files_or_contracts": [
+        "README.md",
+        "#10"
+      ],
+      "expected_architecture": "The foundation must constrain later implementation without pretending the runtime already exists.",
+      "observed_problem": "No runtime exists by design.",
+      "risk_or_consequence": "Treating runtime absence as a blocker would expand #23 into a different milestone; treating architecture as runtime proof would be equally incorrect.",
+      "required_disposition": "Preserve the non-goal while carrying audit constraints into the executable milestone.",
+      "resolution": "Accepted deliberate scope boundary.",
+      "validation_evidence": [
+        "#10 milestone outcome",
+        "Issue #23 audit scope."
+      ],
+      "follow_up_issue_if_any": "Next executable Portia milestone",
+      "status": "accepted",
+      "disposition": "accepted_out_of_scope"
+    },
+    {
+      "finding_id": "PF-AUD-012",
+      "audit_domain": "legal/regulatory claims",
+      "classification": "deliberately_out_of_scope",
+      "summary": "The foundation audit does not certify FERPA, state-law, district-policy, clinical, special-education, or records-management compliance.",
+      "exact_evidence": [
+        "ADR 0017 treats legal entitlement, policy interpretation, legal holds, and destruction authorization as institution/deployment responsibilities.",
+        "Portia explicitly rejects institutional discipline, clinical, IEP, threat-assessment, and district case-management scope."
+      ],
+      "affected_files_or_contracts": [
+        "docs/decisions/0002-define-portia-module-boundaries.md",
+        "docs/decisions/0003-adopt-teacher-local-initial-deployment.md",
+        "docs/decisions/0017-define-privacy-projections-redaction-export-retention-and-sunset-boundaries.md"
+      ],
+      "expected_architecture": "Portia exposes truthful boundaries and policy hooks without claiming legal conclusions it cannot establish.",
+      "observed_problem": "Compliance depends on deployment context and institutional policy beyond the repository.",
+      "risk_or_consequence": "A foundation-approval record could be misread as legal certification if the non-claim is not explicit.",
+      "required_disposition": "State the non-claim prominently in audit and approval documentation.",
+      "resolution": "Accepted deliberate scope boundary.",
+      "validation_evidence": [
+        "Audit report scope/non-claims."
+      ],
+      "follow_up_issue_if_any": null,
+      "status": "accepted",
+      "disposition": "accepted_out_of_scope"
+    },
+    {
+      "finding_id": "PF-AUD-013",
+      "audit_domain": "cross-platform checkout / exact-byte fixture integrity",
+      "classification": "milestone_blocker",
+      "summary": "Issue #22 exact-byte fixture evidence is not checkout-portable because the repository does not pin text files to LF.",
+      "exact_evidence": [
+        "The first Windows post-audit full-suite run executed 1466 tests and reported 24 failures.",
+        "The exact-byte failures show byte-length deltas equal to inserted carriage-return counts, including 1051→1089, 581→600, 1825→1897, and 558→577.",
+        "Failures span P22-06 import provenance, P22-12 privacy/export provenance, P22-13 derived snapshots, P22-14 coordinated-operation recovery, and G22-032/G22-033 privacy negatives.",
+        "Git reports the affected fixture files clean because line-ending normalization can materialize CRLF in the working tree while the index retains LF.",
+        "No .gitattributes file exists on the Issue #22 baseline."
+      ],
+      "affected_files_or_contracts": [
+        ".gitattributes",
+        "tests/fixtures/issue_22",
+        "tests/schema_validation/test_issue_22_structured_import.py",
+        "tests/schema_validation/test_issue_22_participant_privacy_export.py",
+        "tests/schema_validation/test_issue_22_rebuildable_derived_retention_custody.py",
+        "tests/schema_validation/test_issue_22_coordinated_operation_recovery.py",
+        "tests/schema_validation/test_issue_22_graph_invalid_privacy_export_derived_custody.py"
+      ],
+      "expected_architecture": "Exact-byte provenance and recovery fixtures must materialize identically on supported developer platforms; repository checkout policy must preserve the LF bytes against which the accepted SHA-256 and byte-length evidence was computed.",
+      "observed_problem": "On a normal Windows checkout, text fixtures can be materialized as CRLF. Their semantic JSON/text content is unchanged, but exact bytes no longer match the accepted fingerprints, causing valid positive graphs to fail and negative graphs to acquire unrelated fingerprint findings.",
+      "risk_or_consequence": "The foundation's exact-byte provenance tests become platform-dependent. A Windows implementation agent can receive a clean Git tree that nevertheless fails the canonical recovery/privacy/import evidence, obscuring genuine integrity defects behind checkout behavior.",
+      "required_disposition": "Pin repository text checkout to LF with .gitattributes, re-materialize the current Issue #22 fixture working tree from the accepted HEAD blobs under that policy, and make the Issue #23 validator reject missing LF policy or CRLF materialization inside the exact-byte corpus.",
+      "resolution": "Slices 2–3 add a repository LF checkout policy, re-materialize Issue #22 fixtures from the accepted HEAD blobs instead of editing the historical corpus, make the Issue #23 temporary fixture writer emit LF explicitly on every platform, and extend the audit validator/regression tests so this portability invariant cannot silently regress.",
+      "validation_evidence": [
+        "First user-local post-audit full-suite run: Ran 1466 tests; FAILED (failures=24).",
+        "Observed fingerprint byte-length deltas have the exact CRLF signature.",
+        "Second user-local rerun after Slice 2: Ran 1469 tests; FAILED (failures=6); the broad Issue #22 fingerprint cluster was removed.",
+        "The remaining visible Issue #23 validator failure was caused by its own platform-native Path.write_text temporary fixture writer.",
+        "Issue #23 validator requires '* text=auto eol=lf' and rejects CRLF in Issue #22 text fixtures.",
+        "Slice 3 restores tests/fixtures/issue_22 from HEAD after installing .gitattributes and uses explicit LF writes in the focused validator tests.",
+        "Third user-local rerun after Slice 3: Ran 1470 tests; FAILED (failures=5).",
+        "No tests/fixtures/issue_22 paths were reported modified after Slice 3, confirming the raw-HEAD LF re-materialization removed the corpus-wide working-tree rewrite.",
+        "All five remaining failures are historical README compatibility assertions: the Issue #12/#13 checkpoint phrase 'Architecture Decision Records through ADR 0009', the Issue #14 checkpoint phrases 'Architecture Decision Records through ADR 0009' and 'Actor Directory version-1 record family', and the Issue #16 phrase 'accepted ADR 0012 for Review'.",
+        "Slice 4 restores those exact strings as explicitly historical checkpoint language while preserving ADRs 0001–0017 and the current schema catalog as present authority."
+      ],
+      "follow_up_issue_if_any": null,
+      "status": "resolved",
+      "disposition": "fixed_in_audit"
+    }
+  ],
+  "unresolved_finding_ids": [
+    "PF-AUD-004"
+  ],
+  "exit_condition_results": [
+    {
+      "id": "EC-01",
+      "name": "Preceding foundation issues #11–#22 complete",
+      "status": "satisfied",
+      "evidence": "Merged foundation and Issue #22 handoff corpus."
+    },
+    {
+      "id": "EC-02",
+      "name": "Foundational record families defined",
+      "status": "satisfied",
+      "evidence": "ADRs 0004–0017, schema catalog, Issue #22 161-family coverage."
+    },
+    {
+      "id": "EC-03",
+      "name": "Identity, ownership, canonical storage coherent",
+      "status": "satisfied",
+      "evidence": "ADR 0004 plus G22-001..010 and P22-03."
+    },
+    {
+      "id": "EC-04",
+      "name": "Reference and targeting contracts coherent",
+      "status": "satisfied",
+      "evidence": "ADR 0007 plus G22-001..010."
+    },
+    {
+      "id": "EC-05",
+      "name": "Lifecycle/correction/dependency contracts coherent",
+      "status": "satisfied",
+      "evidence": "ADR 0008 plus P22-04 and G22-011..016."
+    },
+    {
+      "id": "EC-06",
+      "name": "Coordinated persistence/recovery contract explicit",
+      "status": "satisfied",
+      "evidence": "ADR 0009, P22-14, G22-028..029."
+    },
+    {
+      "id": "EC-07",
+      "name": "Actor Directory coherent",
+      "status": "satisfied",
+      "evidence": "ADR 0010, Issue #14 focused fixtures, P22-07, G22-007."
+    },
+    {
+      "id": "EC-08",
+      "name": "Evidence and human-judgment layers remain distinct",
+      "status": "satisfied",
+      "evidence": "ADRs 0011–0012, P22-02/P22-15, G22-017..020."
+    },
+    {
+      "id": "EC-09",
+      "name": "Response/support/evaluation layers remain distinct",
+      "status": "satisfied",
+      "evidence": "ADRs 0013–0015, P22-07..10/P22-15, G22-021..025."
+    },
+    {
+      "id": "EC-10",
+      "name": "Paper/PDS2/import boundary coherent",
+      "status": "satisfied",
+      "evidence": "ADR 0016, P22-05/P22-06, G22-026..029."
+    },
+    {
+      "id": "EC-11",
+      "name": "Privacy/export/retention boundary coherent",
+      "status": "satisfied",
+      "evidence": "ADR 0017, P22-12/P22-13, G22-030..037."
+    },
+    {
+      "id": "EC-12",
+      "name": "Core and sibling ownership descriptions current",
+      "status": "satisfied_after_audit_repair",
+      "evidence": "Current sibling baseline review plus PF-AUD-002/PF-AUD-003 README repairs."
+    },
+    {
+      "id": "EC-13",
+      "name": "Schema catalog coverage complete",
+      "status": "satisfied_after_audit_repair",
+      "evidence": "Issue #22 maps 161/161 catalog contract families; PF-AUD-013 pins exact-byte fixture materialization to LF."
+    },
+    {
+      "id": "EC-14",
+      "name": "ADRs 0001–0017 have audit dispositions",
+      "status": "satisfied",
+      "evidence": "docs/decisions/README.md and audit JSON."
+    },
+    {
+      "id": "EC-15",
+      "name": "Active documentation internally consistent",
+      "status": "satisfied_after_audit_repair",
+      "evidence": "PF-AUD-001..003 documentation repairs plus Slice 2 preservation of the Issue #16 README compatibility phrase."
+    },
+    {
+      "id": "EC-16",
+      "name": "Synthetic-data-only foundation",
+      "status": "satisfied_on_reviewed_corpus",
+      "evidence": "Issue #22 corpus declares synthetic=true; no real-data addition in #23."
+    },
+    {
+      "id": "EC-17",
+      "name": "Complete post-audit validation passes",
+      "status": "blocked",
+      "evidence": "First run exposed PF-AUD-013; Slice 2 removed the broad fingerprint cluster; fresh post-Slice-3 full suite + Issue #22 regression + audit validator required."
+    },
+    {
+      "id": "EC-18",
+      "name": "Explicit ready foundation approval binds exact audited commit",
+      "status": "blocked",
+      "evidence": "PF-AUD-004: approval record intentionally absent until final commit can be bound."
+    }
+  ],
+  "schema_catalog_coverage": {
+    "issue_22_reported_contract_families": 161,
+    "issue_23_adds_public_schema_contracts": false,
+    "status": "pending_final_validator_confirmation"
+  },
+  "representative_corpus_result": {
+    "positive_scenarios": 15,
+    "graph_invalid_scenarios": 37,
+    "planned_scenarios": 0,
+    "status": "historical_issue_22_pass_pending_post_audit_confirmation"
+  },
+  "complete_validation_result": {
+    "status": "repair_required_after_first_local_run",
+    "first_local_attempt": {
+      "tests_run": 1466,
+      "failures": 24,
+      "result": "failed",
+      "observed_causes": [
+        "one Slice 1 README exact-wording compatibility regression",
+        "cross-platform LF-to-CRLF materialization invalidating Issue #22 exact-byte fingerprints"
+      ]
+    },
+    "required_command": "python -m unittest discover -s tests/schema_validation -p \"test_*.py\"",
+    "next_required_state": "fresh post-Slice-2 rerun must pass before PF-AUD-004 can resolve"
+  },
+  "traceability_issues": [
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22
+  ],
+  "synthetic_data_confirmation": true,
+  "sibling_repository_modification_confirmation": true,
+  "final_verdict": "not_ready",
+  "verdict_reason": "All identified repairable architecture/documentation/checkout-portability blockers are resolved across Slices 1–2, but final post-repair repository validation and exact final commit binding remain mandatory before ready_for_implementation can be issued."
+}
