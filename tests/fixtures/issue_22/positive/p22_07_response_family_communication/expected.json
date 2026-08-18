@@ -1,0 +1,35 @@
+{
+  "actor_id": "actr_p22_family_001",
+  "actor_display_name": "Synthetic Family Contact",
+  "actor_category": "family_or_caregiver",
+  "contact_point_id": "acp_p22_family_email_001",
+  "contact_kind": "email",
+  "contact_address": "family.p22@example.invalid",
+  "contact_verification": "locally_confirmed",
+  "relationship_id": "asrel_p22_family_001",
+  "relationship_type": "family_contact",
+  "relationship_student_ref": {
+    "class_id": "eng10_p2_2026",
+    "student_id": "stu_p22_001"
+  },
+  "event_id": "evt_p22_family_comm_001",
+  "participant_id": "ep_p22_family_comm_001",
+  "response_id": "rsp_p22_family_001",
+  "response_family": "environmental_or_instructional",
+  "response_execution_state": "completed",
+  "communication_id": "comm_p22_family_001",
+  "communication_method": "email",
+  "communication_purpose": "response_coordination",
+  "communication_act_state": "completed",
+  "recipient_participation": "not_established",
+  "communication_response_relation": "relates_to_response",
+  "forbidden_contracts": [
+    "review",
+    "classification",
+    "hypothesis",
+    "determination",
+    "support",
+    "intervention",
+    "outcome"
+  ]
+}

@@ -1,0 +1,76 @@
+{
+  "schema_version": "1",
+  "record_type": "support",
+  "module_id": "portia",
+  "class_id": "eng10_g22_022",
+  "work_id": "sup_g22_022_b",
+  "support_id": "spt_g22_022_b",
+  "status": "active",
+  "target": {
+    "kind": "support_process_participant",
+    "record_ref": {
+      "record_kind": "support_process_participant",
+      "record_id": "spp_g22_022_student_b",
+      "contract_version": "1"
+    }
+  },
+  "need_refs": [
+    {
+      "record_kind": "support_need",
+      "record_id": "spn_g22_022_b",
+      "contract_version": "1"
+    }
+  ],
+  "goal_refs": [
+    {
+      "record_kind": "support_goal",
+      "record_id": "spg_g22_022_b",
+      "contract_version": "1"
+    }
+  ],
+  "strategy": {
+    "kind": "organizational",
+    "procedure": "At the start of a documented multi-step independent assignment, provide a short written sequence naming the first two task steps and offer one brief check-in after the first step."
+  },
+  "provider_plan": {
+    "kind": "assigned",
+    "participant_refs": [
+      {
+        "record_kind": "support_process_participant",
+        "record_id": "spp_g22_022_teacher_b",
+        "contract_version": "1"
+      }
+    ]
+  },
+  "schedule": {
+    "kind": "recurring",
+    "window": {
+      "starts_on": "2026-09-08",
+      "ends_on": "2027-06-10",
+      "review_on": "2027-05-25"
+    },
+    "frequency": {
+      "occurrences": 1,
+      "interval_count": 1,
+      "interval_unit": "week"
+    },
+    "selected_days": [
+      "tuesday"
+    ],
+    "timing_detail": "During a selected documented multi-step independent assignment."
+  },
+  "plan_state": "active",
+  "creation_source": {
+    "type": "digital_entry"
+  },
+  "created_at": "2026-09-04T15:10:00-04:00",
+  "created_by": {
+    "type": "local_operator",
+    "display_label": "Synthetic Teacher"
+  },
+  "updated_at": "2027-06-10T15:00:00-04:00",
+  "updated_by": {
+    "type": "local_operator",
+    "display_label": "Synthetic Teacher"
+  }
+}

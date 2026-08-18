@@ -1,0 +1,105 @@
+{
+  "fixture_contract": "pds-portia.representative-contract-graph-scenario",
+  "fixture_version": "1",
+  "not_runtime_contract": true,
+  "scenario_id": "G22-030",
+  "title": "Participant-specific projection leaks unrelated participant data",
+  "scenario_kind": "graph_invalid",
+  "synthetic": true,
+  "records": [
+    {
+      "fixture_path": "event.json",
+      "contract": "event",
+      "version": "2",
+      "logical_identity": "event:evt_p22_privacy_001",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "event",
+        "work_id": "evt_p22_privacy_001"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/evt_p22_privacy_001/work.json"
+    },
+    {
+      "fixture_path": "participant-a.json",
+      "contract": "event_participant",
+      "version": "3",
+      "logical_identity": "event_participant:ep_p22_privacy_a",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "event",
+        "work_id": "evt_p22_privacy_001"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/evt_p22_privacy_001/records/event_participant/ep_p22_privacy_a.json"
+    },
+    {
+      "fixture_path": "participant-b.json",
+      "contract": "event_participant",
+      "version": "3",
+      "logical_identity": "event_participant:ep_p22_privacy_b",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "event",
+        "work_id": "evt_p22_privacy_001"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/evt_p22_privacy_001/records/event_participant/ep_p22_privacy_b.json"
+    },
+    {
+      "fixture_path": "account-a.json",
+      "contract": "account",
+      "version": "2",
+      "logical_identity": "account:acct_p22_privacy_a",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "event",
+        "work_id": "evt_p22_privacy_001"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/evt_p22_privacy_001/records/account/acct_p22_privacy_a.json"
+    },
+    {
+      "fixture_path": "account-b.json",
+      "contract": "account",
+      "version": "2",
+      "logical_identity": "account:acct_p22_privacy_b",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "event",
+        "work_id": "evt_p22_privacy_001"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/evt_p22_privacy_001/records/account/acct_p22_privacy_b.json"
+    }
+  ],
+  "context": [
+    {
+      "context_kind": "synthetic_participant_projection_result",
+      "fixture_path": "projection-result.json"
+    },
+    {
+      "context_kind": "synthetic_core_roster",
+      "fixture_path": "../../shared/core-context/roster.json"
+    }
+  ],
+  "required_distinctions": [
+    "Focal projection scope does not authorize unrelated participant identity or stable IDs.",
+    "Safe focal content does not make a third-party Account segment safe."
+  ],
+  "expected_graph_result": "invalid",
+  "expected_finding_ids": [
+    "G22.PRIVACY.PROJECTION_LEAKS_UNRELATED_DATA"
+  ],
+  "primary_finding_id": "G22.PRIVACY.PROJECTION_LEAKS_UNRELATED_DATA",
+  "principal_defect": "A participant-specific projection emits an unrelated participant stable ID and unsafe Account content.",
+  "structurally_valid_reason": "Every public Portia contract fixture is structurally valid; the defect exists only in combined projection/export/derived/custody application semantics.",
+  "records_must_remain_unmodified": [
+    "event.json",
+    "participant-a.json",
+    "participant-b.json",
+    "account-a.json",
+    "account-b.json"
+  ],
+  "expected_path": "expected.json"
+}

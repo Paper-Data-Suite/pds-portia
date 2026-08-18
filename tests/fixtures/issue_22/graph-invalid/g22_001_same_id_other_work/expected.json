@@ -1,0 +1,12 @@
+{
+  "fixture_contract": "pds-portia.graph-invalid-expectation",
+  "fixture_version": "1",
+  "not_runtime_contract": true,
+  "scenario_id": "G22-001",
+  "primary_finding_id": "G22.EVIDENCE.ROLE_BASIS_UNRESOLVED",
+  "expected_finding_ids": [
+    "G22.EVIDENCE.ROLE_BASIS_UNRESOLVED"
+  ],
+  "structurally_valid_public_records": true,
+  "principal_defect": "The reported-involvement Role in Event A references acct_g22_same_001, but that exact Account exists only in Event B."
+}

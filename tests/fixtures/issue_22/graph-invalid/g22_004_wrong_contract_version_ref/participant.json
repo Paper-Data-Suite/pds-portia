@@ -1,0 +1,32 @@
+{
+  "schema_version": "3",
+  "record_type": "event_participant",
+  "module_id": "portia",
+  "class_id": "eng10_g22_version",
+  "work_id": "evt_g22_version_001",
+  "participant_id": "ep_g22_version_001",
+  "status": "active",
+  "subject": {
+    "kind": "roster_student",
+    "roster_student_ref": {
+      "class_id": "eng10_g22_version",
+      "student_id": "stu_g22_version"
+    },
+    "display_snapshot": {
+      "display_name": "Synthetic Version Student"
+    }
+  },
+  "creation_source": {
+    "type": "digital_entry"
+  },
+  "created_at": "2026-08-14T10:30:00-04:00",
+  "created_by": {
+    "type": "local_operator",
+    "display_label": "Synthetic Teacher"
+  },
+  "updated_at": "2026-08-14T10:30:00-04:00",
+  "updated_by": {
+    "type": "local_operator",
+    "display_label": "Synthetic Teacher"
+  }
+}

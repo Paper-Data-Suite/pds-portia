@@ -1,0 +1,27 @@
+{
+  "fixture_contract": "pds-portia.synthetic-import-assertion-judgment-resolution",
+  "fixture_version": "1",
+  "not_runtime_contract": true,
+  "source_assertion": {
+    "source_label": "Synthetic legacy export",
+    "external_reference": "legacy_g22_020",
+    "asserted_value": "resolved"
+  },
+  "determination_ref": {
+    "class_id": "eng10_g22_020",
+    "work_id": "evt_g22_020",
+    "record_kind": "determination",
+    "record_id": "det_g22_020_from_assertion",
+    "contract_version": "1"
+  },
+  "review_ref": {
+    "class_id": "eng10_g22_020",
+    "work_id": "evt_g22_020",
+    "record_kind": "review",
+    "record_id": "rvw_g22_020_mapping",
+    "contract_version": "1"
+  },
+  "review_scope": "source_mapping_only",
+  "source_assertion_used_as_determination": true,
+  "human_decision_occurred": false
+}

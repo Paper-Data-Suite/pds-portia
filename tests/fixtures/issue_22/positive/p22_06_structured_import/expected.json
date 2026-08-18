@@ -1,0 +1,40 @@
+{
+  "fixture_digest_recipe": "issue22_fixture_canonical_json_v1",
+  "source_v1_fixture_path": "tests/fixtures/issue_22/shared/source-bytes/p22-06-structured-import-v1.csv",
+  "source_v1_sha256": "a18156ec10efd8aa046beb4e94afc30d94c9e3b6101a866fab511399ed93e987",
+  "source_v1_byte_length": 158,
+  "source_v2_fixture_path": "tests/fixtures/issue_22/shared/source-bytes/p22-06-structured-import-v2-missing-row.csv",
+  "source_v2_sha256": "916b6eadc141fffa4789d897f67a57c17b71f6ed7a396a9ac93c0bd451430f9a",
+  "source_v2_byte_length": 44,
+  "mapping_fixture_path": "tests/fixtures/issue_22/shared/policy-context/p22-06-import-mapping.json",
+  "mapping_sha256": "cc464edfccfc3b49d879ea27581f929709cf8f856f641832afe3d7d60f35c889",
+  "original_import_batch_id": "ibat_p22_import_001",
+  "later_import_batch_id": "ibat_p22_import_002",
+  "original_import_identity_digest": "27a195010727fd3731dbe326b5554f0c640956a7d16ef7dd5de1f3e459127081",
+  "later_import_identity_digest": "c83c23eb1322a6e83494521b3808180224d7bc2e8c7ccc6360e6ce5db790e47a",
+  "source_record_id": "isrc_p22_import_event_001",
+  "source_record_key": "SRC-EVENT-001",
+  "source_record_digest": "05d4d80b1a74e5380d3e9034cb9633b2caa7eff1b0fe4c5366461f5717d5c22c",
+  "source_record_identity_digest": "d74c0484b900816f8371201b7e145187b168413e50ec16ce5ae4b8d34f029b80",
+  "proposal_id": "iprp_p22_import_event_001",
+  "proposal_identity_digest": "3821dcede90e0fb865a93413d0499f4244d09bfa7220be428f2707d89be6de2c",
+  "review_id": "irev_p22_import_event_001",
+  "review_disposition": "accepted",
+  "operation_id": "op_p22_import_create_event_001",
+  "operation_revision": 4,
+  "event_id": "evt_p22_import_001",
+  "event_occurrence_started_at": "2026-08-15T09:05:00-04:00",
+  "event_summary": "Student requested a brief hallway break during independent work.",
+  "event_creation_source": {
+    "type": "import",
+    "source_label": "Synthetic event export",
+    "external_reference": "SRC-EVENT-001"
+  },
+  "ignored_source_assertion": {
+    "field_key": "source_status",
+    "value": "resolved"
+  },
+  "later_snapshot_relationship": "changed_source_same_mapping",
+  "later_snapshot_row_count": 0,
+  "current_event_status_after_later_snapshot": "active"
+}

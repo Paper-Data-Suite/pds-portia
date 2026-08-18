@@ -1,0 +1,160 @@
+{
+  "fixture_contract": "pds-portia.representative-contract-graph-scenario",
+  "fixture_version": "1",
+  "not_runtime_contract": true,
+  "scenario_id": "P22-10",
+  "title": "Reentry and Repair Without Overclaiming",
+  "scenario_kind": "positive",
+  "synthetic": true,
+  "records": [
+    {
+      "fixture_path": "event.json",
+      "contract": "event",
+      "version": "2",
+      "logical_identity": "event:evt_p22_reentry_repair_001",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "event",
+        "work_id": "evt_p22_reentry_repair_001"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/evt_p22_reentry_repair_001/work.json"
+    },
+    {
+      "fixture_path": "participant-a.json",
+      "contract": "event_participant",
+      "version": "3",
+      "logical_identity": "event_participant:ep_p22_reentry_repair_a",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "event",
+        "work_id": "evt_p22_reentry_repair_001"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/evt_p22_reentry_repair_001/records/event_participant/ep_p22_reentry_repair_a.json"
+    },
+    {
+      "fixture_path": "participant-b.json",
+      "contract": "event_participant",
+      "version": "3",
+      "logical_identity": "event_participant:ep_p22_reentry_repair_b",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "event",
+        "work_id": "evt_p22_reentry_repair_001"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/evt_p22_reentry_repair_001/records/event_participant/ep_p22_reentry_repair_b.json"
+    },
+    {
+      "fixture_path": "account-a.json",
+      "contract": "account",
+      "version": "2",
+      "logical_identity": "account:acct_p22_reentry_repair_a",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "event",
+        "work_id": "evt_p22_reentry_repair_001"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/evt_p22_reentry_repair_001/records/account/acct_p22_reentry_repair_a.json"
+    },
+    {
+      "fixture_path": "account-b.json",
+      "contract": "account",
+      "version": "2",
+      "logical_identity": "account:acct_p22_reentry_repair_b",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "event",
+        "work_id": "evt_p22_reentry_repair_001"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/evt_p22_reentry_repair_001/records/account/acct_p22_reentry_repair_b.json"
+    },
+    {
+      "fixture_path": "response.json",
+      "contract": "response",
+      "version": "1",
+      "logical_identity": "response:rsp_p22_reentry_repair_001",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "event",
+        "work_id": "evt_p22_reentry_repair_001"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/evt_p22_reentry_repair_001/records/response/rsp_p22_reentry_repair_001.json"
+    },
+    {
+      "fixture_path": "communication.json",
+      "contract": "communication",
+      "version": "1",
+      "logical_identity": "communication:comm_p22_reentry_repair_001",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "event",
+        "work_id": "evt_p22_reentry_repair_001"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/evt_p22_reentry_repair_001/records/communication/comm_p22_reentry_repair_001.json"
+    },
+    {
+      "fixture_path": "reentry.json",
+      "contract": "reentry",
+      "version": "1",
+      "logical_identity": "reentry:ren_p22_reentry_repair_001",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "event",
+        "work_id": "evt_p22_reentry_repair_001"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/evt_p22_reentry_repair_001/records/reentry/ren_p22_reentry_repair_001.json"
+    },
+    {
+      "fixture_path": "repair.json",
+      "contract": "repair",
+      "version": "1",
+      "logical_identity": "repair:rpr_p22_reentry_repair_001",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "event",
+        "work_id": "evt_p22_reentry_repair_001"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/evt_p22_reentry_repair_001/records/repair/rpr_p22_reentry_repair_001.json"
+    },
+    {
+      "fixture_path": "follow-up.json",
+      "contract": "follow_up",
+      "version": "1",
+      "logical_identity": "follow_up:fup_p22_reentry_repair_001",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "event",
+        "work_id": "evt_p22_reentry_repair_001"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/evt_p22_reentry_repair_001/records/follow_up/fup_p22_reentry_repair_001.json"
+    }
+  ],
+  "context": [
+    {
+      "context_kind": "synthetic_core_roster",
+      "fixture_path": "../../shared/core-context/roster.json"
+    }
+  ],
+  "required_distinctions": [
+    "Reentry planning facts and actual completion facts remain distinct within one bounded Reentry process.",
+    "Reentry completion does not establish safety clearance or rehabilitation.",
+    "Participant Accounts remain first-class perspectives and are not converted into findings or admissions.",
+    "Repair participation is neutral workflow history and does not establish admission of wrongdoing.",
+    "One participant may decline while another completes an agreed action; Repair completion does not imply mutual participation.",
+    "Repair completion does not establish remorse, forgiveness, or restored relationship.",
+    "Response and Communication remain distinct exact context for downstream Reentry and Repair.",
+    "Later Follow-Up completion is workflow review context and does not create a favorable Outcome."
+  ],
+  "expected_graph_result": "valid",
+  "expected_finding_ids": [],
+  "expected_path": "expected.json"
+}

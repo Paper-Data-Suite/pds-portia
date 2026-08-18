@@ -1,0 +1,197 @@
+{
+  "fixture_contract": "pds-portia.representative-contract-graph-scenario",
+  "fixture_version": "1",
+  "not_runtime_contract": true,
+  "scenario_id": "P22-13",
+  "title": "Rebuildable Derived Views and Retention/Custody Boundary",
+  "scenario_kind": "positive",
+  "synthetic": true,
+  "records": [
+    {
+      "fixture_path": "event-primary.json",
+      "contract": "event",
+      "version": "2",
+      "logical_identity": "event:evt_p22_derived_001",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "event",
+        "work_id": "evt_p22_derived_001"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/evt_p22_derived_001/work.json"
+    },
+    {
+      "fixture_path": "event-context.json",
+      "contract": "event",
+      "version": "2",
+      "logical_identity": "event:evt_p22_derived_context",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "event",
+        "work_id": "evt_p22_derived_context"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/evt_p22_derived_context/work.json"
+    },
+    {
+      "fixture_path": "participant.json",
+      "contract": "event_participant",
+      "version": "3",
+      "logical_identity": "event_participant:ep_p22_derived_student",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "event",
+        "work_id": "evt_p22_derived_001"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/evt_p22_derived_001/records/event_participant/ep_p22_derived_student.json"
+    },
+    {
+      "fixture_path": "account-original.json",
+      "contract": "account",
+      "version": "2",
+      "logical_identity": "account:acct_p22_derived_original",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "event",
+        "work_id": "evt_p22_derived_001"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/evt_p22_derived_001/records/account/acct_p22_derived_original.json"
+    },
+    {
+      "fixture_path": "account-corrected.json",
+      "contract": "account",
+      "version": "2",
+      "logical_identity": "account:acct_p22_derived_corrected",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "event",
+        "work_id": "evt_p22_derived_001"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/evt_p22_derived_001/records/account/acct_p22_derived_corrected.json"
+    },
+    {
+      "fixture_path": "lifecycle-original-active.json",
+      "contract": "lifecycle_transition",
+      "version": "1",
+      "logical_identity": "lifecycle_transition:lct_p22_derived_original_active",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "event",
+        "work_id": "evt_p22_derived_001"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/evt_p22_derived_001/records/lifecycle_transition/lct_p22_derived_original_active.json"
+    },
+    {
+      "fixture_path": "lifecycle-original-superseded.json",
+      "contract": "lifecycle_transition",
+      "version": "1",
+      "logical_identity": "lifecycle_transition:lct_p22_derived_original_superseded",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "event",
+        "work_id": "evt_p22_derived_001"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/evt_p22_derived_001/records/lifecycle_transition/lct_p22_derived_original_superseded.json"
+    },
+    {
+      "fixture_path": "work-relationship.json",
+      "contract": "work_relationship",
+      "version": "2",
+      "logical_identity": "work_relationship:rel_p22_derived_context",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "event",
+        "work_id": "evt_p22_derived_001"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/evt_p22_derived_001/records/work_relationship/rel_p22_derived_context.json"
+    },
+    {
+      "fixture_path": "dependency.json",
+      "contract": "dependency",
+      "version": "1",
+      "logical_identity": "dependency:dep_p22_derived_context",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "event",
+        "work_id": "evt_p22_derived_001"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/evt_p22_derived_001/records/dependency/dep_p22_derived_context.json"
+    }
+  ],
+  "context": [
+    {
+      "context_kind": "synthetic_core_roster",
+      "fixture_path": "roster-context.json"
+    },
+    {
+      "context_kind": "synthetic_foreign_custody",
+      "fixture_path": "core-retained-source-context.json"
+    },
+    {
+      "context_kind": "synthetic_operation_context",
+      "fixture_path": "rebuild-operation-context.json"
+    }
+  ],
+  "derived_contract_fixtures": [
+    {
+      "fixture_path": "source-snapshot.json",
+      "contract": "source_snapshot",
+      "version": "1",
+      "authority": "derived_nonauthoritative",
+      "workspace_role": "generation_source_snapshot"
+    },
+    {
+      "fixture_path": "derived-index-metadata.json",
+      "contract": "derived_index_metadata",
+      "version": "1",
+      "authority": "derived_nonauthoritative",
+      "workspace_role": "generation_metadata"
+    },
+    {
+      "fixture_path": "derived-current-pointer.json",
+      "contract": "derived_current_pointer",
+      "version": "1",
+      "authority": "derived_selection_only",
+      "workspace_role": "current_pointer"
+    }
+  ],
+  "derived_expectations": [
+    {
+      "fixture_path": "derived-views.json",
+      "canonical": false,
+      "view_count": 8
+    },
+    {
+      "fixture_path": "frontier-data.json",
+      "canonical": false,
+      "projection_kind": "replacement_frontier_index"
+    }
+  ],
+  "retention_custody_expectation": {
+    "fixture_path": "retention-custody.json",
+    "canonical": false
+  },
+  "required_distinctions": [
+    "Canonical forward records remain authority; reverse indexes and summaries are rebuildable derived state.",
+    "A missing or deleted derived index does not prove an empty canonical graph and does not delete canonical records.",
+    "Rebuilding from unchanged exact source bytes reproduces the same semantic views.",
+    "Changed source bytes invalidate the prior source snapshot before a new generation may become current.",
+    "The explicit current pointer selects one immutable generation and never silently follows a newer or unsupported generation.",
+    "Replacement frontier derives from exact canonical supersedes links while historical exact references remain bound to the predecessor.",
+    "Lifecycle timeline derives from the canonical previous_transition chain rather than timestamp sorting.",
+    "Participant-specific history is work-scoped and does not become a cross-work or longitudinal student dossier.",
+    "Derived-cache retention is independent from canonical behavior/support retention.",
+    "Export bytes and export provenance are distinct retention classes.",
+    "Portia-owned custody is distinct from Core retained-source custody and Portia does not claim destruction in Core, sibling, or external systems."
+  ],
+  "expected_graph_result": "valid",
+  "expected_finding_ids": [],
+  "expected_path": "expected.json"
+}

@@ -1,0 +1,44 @@
+{
+  "schema_version": "1",
+  "record_type": "capture_materialization",
+  "module_id": "portia",
+  "class_id": "eng10_g22_027",
+  "work_id": "cbat_g22_027",
+  "page_target_id": "ptgt_g22_027",
+  "page_record_id": "prec_g22_027",
+  "proposal_ref": {
+    "contract_version": "1",
+    "proposal_id": "cprp_g22_027"
+  },
+  "review_ref": {
+    "contract_version": "1",
+    "review_id": "crev_g22_027_missing",
+    "review_sequence": 1
+  },
+  "operation_journal_ref": {
+    "operation_id": "op_g22_027_materialize",
+    "journal_revision": 4,
+    "contract_version": "1"
+  },
+  "canonical_results": [
+    {
+      "result_relation": "produced",
+      "target": {
+        "kind": "work",
+        "work_ref": {
+          "module_id": "portia",
+          "class_id": "eng10_g22_027",
+          "work_id": "evt_g22_027",
+          "work_kind": "event",
+          "contract_version": "2"
+        }
+      }
+    }
+  ],
+  "materialized_at": "2026-11-03T10:30:00-05:00",
+  "recorded_at": "2026-11-03T10:30:00-05:00",
+  "recorded_by": {
+    "type": "system_process",
+    "process_id": "paper_capture_materializer"
+  }
+}

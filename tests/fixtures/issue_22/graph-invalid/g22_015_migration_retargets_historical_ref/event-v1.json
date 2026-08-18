@@ -1,0 +1,28 @@
+{
+  "schema_version": "1",
+  "record_type": "portia_work",
+  "work_kind": "event",
+  "module_id": "portia",
+  "class_id": "eng10_g22_015",
+  "work_id": "evt_g22_015",
+  "school_year": "2026-2027",
+  "status": "superseded",
+  "occurrence": {
+    "precision": "exact",
+    "started_at": "2026-10-10T08:40:00-04:00"
+  },
+  "summary": "Original accepted Event summary: the draft was placed in the blue tray.",
+  "creation_source": {
+    "type": "digital_entry"
+  },
+  "created_at": "2026-10-10T09:00:00-04:00",
+  "created_by": {
+    "type": "local_operator",
+    "display_label": "Synthetic Teacher"
+  },
+  "updated_at": "2026-10-10T09:10:00-04:00",
+  "updated_by": {
+    "type": "local_operator",
+    "display_label": "Synthetic Teacher"
+  }
+}

@@ -1,0 +1,87 @@
+{
+  "fixture_contract": "pds-portia.representative-contract-graph-scenario",
+  "fixture_version": "1",
+  "not_runtime_contract": true,
+  "scenario_id": "G22-010",
+  "title": "Historical exact ref silently follows successor",
+  "scenario_kind": "graph_invalid",
+  "synthetic": true,
+  "records": [
+    {
+      "fixture_path": "event-primary.json",
+      "contract": "event",
+      "version": "2",
+      "logical_identity": "event:evt_g22_history_primary",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_g22_history",
+        "work_kind": "event",
+        "work_id": "evt_g22_history_primary"
+      },
+      "canonical_path": "classes/eng10_g22_history/modules/portia/work/evt_g22_history_primary/work.json"
+    },
+    {
+      "fixture_path": "event-context.json",
+      "contract": "event",
+      "version": "2",
+      "logical_identity": "event:evt_g22_history_context",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_g22_history",
+        "work_kind": "event",
+        "work_id": "evt_g22_history_context"
+      },
+      "canonical_path": "classes/eng10_g22_history/modules/portia/work/evt_g22_history_context/work.json"
+    },
+    {
+      "fixture_path": "relationship-original.json",
+      "contract": "work_relationship",
+      "version": "2",
+      "logical_identity": "work_relationship:rel_g22_history_original",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_g22_history",
+        "work_kind": "event",
+        "work_id": "evt_g22_history_primary"
+      },
+      "canonical_path": "classes/eng10_g22_history/modules/portia/work/evt_g22_history_primary/records/work_relationship/rel_g22_history_original.json"
+    },
+    {
+      "fixture_path": "relationship-corrected.json",
+      "contract": "work_relationship",
+      "version": "2",
+      "logical_identity": "work_relationship:rel_g22_history_corrected",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_g22_history",
+        "work_kind": "event",
+        "work_id": "evt_g22_history_primary"
+      },
+      "canonical_path": "classes/eng10_g22_history/modules/portia/work/evt_g22_history_primary/records/work_relationship/rel_g22_history_corrected.json"
+    }
+  ],
+  "context": [
+    {
+      "context_kind": "synthetic_reference_resolution",
+      "fixture_path": "reference-resolution.json"
+    }
+  ],
+  "required_distinctions": [
+    "Exact historical references remain pinned to the requested representation.",
+    "Current/successor selection is explicit derived behavior, not exact-ref resolution."
+  ],
+  "expected_graph_result": "invalid",
+  "expected_finding_ids": [
+    "G22.REFERENCE.HISTORICAL_SUCCESSOR_FOLLOW"
+  ],
+  "primary_finding_id": "G22.REFERENCE.HISTORICAL_SUCCESSOR_FOLLOW",
+  "principal_defect": "A synthetic resolver receives an exact predecessor Work Relationship reference but returns its active successor under follow-current behavior.",
+  "structurally_valid_reason": "Both historical and successor Work Relationship records are structurally valid and coexist; the invalidity is silent retargeting of exact history.",
+  "records_must_remain_unmodified": [
+    "event-primary.json",
+    "event-context.json",
+    "relationship-original.json",
+    "relationship-corrected.json"
+  ],
+  "expected_path": "expected.json"
+}

@@ -1,0 +1,18 @@
+{
+  "fixture_contract": "pds-portia.synthetic-reference-resolution",
+  "fixture_version": "1",
+  "not_runtime_contract": true,
+  "resolution_kind": "foreign_substitution",
+  "requested": {
+    "authority": "core",
+    "kind": "roster_student",
+    "class_id": "eng10_g22_foreign",
+    "student_id": "stu_g22_foreign_sub"
+  },
+  "resolved": {
+    "authority": "portia",
+    "kind": "actor",
+    "actor_id": "actr_g22_foreign_sub"
+  },
+  "resolution_mode": "substitute_local"
+}

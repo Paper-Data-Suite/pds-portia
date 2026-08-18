@@ -1,0 +1,36 @@
+{
+  "schema_version": "2",
+  "record_type": "portia_work",
+  "work_kind": "event",
+  "module_id": "portia",
+  "class_id": "eng10_p2_2026",
+  "work_id": "evt_p22_import_001",
+  "school_year": "2026-2027",
+  "status": "active",
+  "creation_source": {
+    "type": "import",
+    "source_label": "Synthetic event export",
+    "external_reference": "SRC-EVENT-001"
+  },
+  "created_at": "2026-08-15T10:26:00-04:00",
+  "created_by": {
+    "type": "system_process",
+    "process_id": "issue22_import_materializer"
+  },
+  "updated_at": "2026-08-15T10:26:00-04:00",
+  "updated_by": {
+    "type": "system_process",
+    "process_id": "issue22_import_materializer"
+  },
+  "occurrence": {
+    "precision": "exact",
+    "started_at": "2026-08-15T09:05:00-04:00"
+  },
+  "summary": "Student requested a brief hallway break during independent work.",
+  "location": {
+    "type": "classroom"
+  },
+  "instructional_context": {
+    "type": "independent_work"
+  }
+}

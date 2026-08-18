@@ -1,0 +1,8 @@
+{
+  "expected_graph_result": "invalid",
+  "expected_finding_ids": [
+    "G22.SUPPORT.HISTORICAL_PROCESS_SUCCESSOR_FOLLOW"
+  ],
+  "primary_finding_id": "G22.SUPPORT.HISTORICAL_PROCESS_SUCCESSOR_FOLLOW",
+  "structurally_valid_public_records": true
+}

@@ -1,0 +1,36 @@
+{
+  "schema_version": "1",
+  "record_type": "lifecycle_transition",
+  "module_id": "portia",
+  "class_id": "eng10_p2_2026",
+  "work_id": "evt_p22_correction_001",
+  "transition_id": "lct_p22_original_superseded",
+  "target": {
+    "kind": "local_record",
+    "record_ref": {
+      "record_kind": "account",
+      "record_id": "acct_p22_original_red",
+      "contract_version": "2"
+    }
+  },
+  "previous_transition": {
+    "record_kind": "lifecycle_transition",
+    "record_id": "lct_p22_original_active",
+    "contract_version": "1"
+  },
+  "from_status": "active",
+  "to_status": "superseded",
+  "reason": {
+    "category": "correction",
+    "code": "replacement_accepted"
+  },
+  "effective_at": "2026-08-15T11:31:00-04:00",
+  "creation_source": {
+    "type": "digital_entry"
+  },
+  "created_at": "2026-08-15T11:32:00-04:00",
+  "created_by": {
+    "type": "local_operator",
+    "display_label": "Synthetic Teacher"
+  }
+}

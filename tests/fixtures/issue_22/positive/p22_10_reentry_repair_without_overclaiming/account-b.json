@@ -1,0 +1,53 @@
+{
+  "schema_version": "2",
+  "record_type": "account",
+  "module_id": "portia",
+  "class_id": "eng10_p2_2026",
+  "work_kind": "event",
+  "work_id": "evt_p22_reentry_repair_001",
+  "account_id": "acct_p22_reentry_repair_b",
+  "status": "active",
+  "target": {
+    "kind": "event_participant",
+    "record_ref": {
+      "record_kind": "event_participant",
+      "record_id": "ep_p22_reentry_repair_a",
+      "contract_version": "3"
+    }
+  },
+  "source": {
+    "kind": "roster_student",
+    "roster_student_ref": {
+      "class_id": "eng10_p2_2026",
+      "student_id": "stu_p22_002"
+    },
+    "display_snapshot": {
+      "display_name": "Synthetic Student B"
+    }
+  },
+  "information_origin": "firsthand",
+  "source_certainty": "stated_certain",
+  "content": [
+    {
+      "representation": "recorded_summary",
+      "text": "Student B stated that Student A had finished with the shared folder, that Student B picked it up, and that the disagreement began when Student A asked for it back."
+    }
+  ],
+  "provided_time": {
+    "precision": "exact",
+    "at": "2026-09-14T10:16:00-04:00"
+  },
+  "creation_source": {
+    "type": "digital_entry"
+  },
+  "created_at": "2026-09-14T10:23:00-04:00",
+  "created_by": {
+    "type": "local_operator",
+    "display_label": "Synthetic Teacher"
+  },
+  "updated_at": "2026-09-14T10:23:00-04:00",
+  "updated_by": {
+    "type": "local_operator",
+    "display_label": "Synthetic Teacher"
+  }
+}

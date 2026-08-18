@@ -1,0 +1,12 @@
+{
+  "fixture_contract": "pds-portia.graph-invalid-expectation",
+  "fixture_version": "1",
+  "not_runtime_contract": true,
+  "scenario_id": "G22-004",
+  "primary_finding_id": "G22.REFERENCE.PARTICIPANT_VERSION_MISMATCH",
+  "expected_finding_ids": [
+    "G22.REFERENCE.PARTICIPANT_VERSION_MISMATCH"
+  ],
+  "structurally_valid_public_records": true,
+  "principal_defect": "The Observation requests Event Participant contract version 2 while the exact fixture representation is version 3."
+}

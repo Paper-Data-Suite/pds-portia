@@ -1,0 +1,79 @@
+{
+  "fixture_contract": "pds-portia.representative-contract-graph-scenario",
+  "fixture_version": "1",
+  "not_runtime_contract": true,
+  "scenario_id": "P22-01",
+  "title": "Positive classroom Event",
+  "scenario_kind": "positive",
+  "synthetic": true,
+  "records": [
+    {
+      "fixture_path": "records/event.json",
+      "contract": "event",
+      "version": "2",
+      "logical_identity": "event:evt_p22_positive_001",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "event",
+        "work_id": "evt_p22_positive_001"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/evt_p22_positive_001/work.json"
+    },
+    {
+      "fixture_path": "records/participant.json",
+      "contract": "event_participant",
+      "version": "3",
+      "logical_identity": "event_participant:ep_p22_positive_001",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "event",
+        "work_id": "evt_p22_positive_001"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/evt_p22_positive_001/records/event_participant/ep_p22_positive_001.json"
+    },
+    {
+      "fixture_path": "records/role.json",
+      "contract": "event_participant_role",
+      "version": "3",
+      "logical_identity": "event_participant_role:epr_p22_positive_001",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "event",
+        "work_id": "evt_p22_positive_001"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/evt_p22_positive_001/records/event_participant_role/epr_p22_positive_001.json"
+    },
+    {
+      "fixture_path": "records/observation.json",
+      "contract": "observation",
+      "version": "2",
+      "logical_identity": "observation:obs_p22_positive_001",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "event",
+        "work_id": "evt_p22_positive_001"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/evt_p22_positive_001/records/observation/obs_p22_positive_001.json"
+    }
+  ],
+  "context": [
+    {
+      "context_kind": "synthetic_core_roster",
+      "fixture_path": "../../shared/core-context/roster.json"
+    }
+  ],
+  "required_distinctions": [
+    "Event existence does not imply misconduct.",
+    "Participant presence does not imply responsibility.",
+    "Observation does not become a Determination.",
+    "Display snapshot does not establish identity.",
+    "Derived teacher-current summary is not canonical."
+  ],
+  "expected_graph_result": "valid",
+  "expected_finding_ids": [],
+  "expected_path": "expected.json"
+}

@@ -1,0 +1,12 @@
+{
+  "fixture_contract": "pds-portia.graph-invalid-expectation",
+  "fixture_version": "1",
+  "not_runtime_contract": true,
+  "scenario_id": "G22-028",
+  "primary_finding_id": "G22.OPERATION.COMMITTED_RESULT_UNRESOLVED",
+  "expected_finding_ids": [
+    "G22.OPERATION.COMMITTED_RESULT_UNRESOLVED"
+  ],
+  "structurally_valid_public_records": true,
+  "principal_defect": "A completed Operation Journal marks a canonical write accepted even though the exact committed successor record is absent from canonical readback."
+}

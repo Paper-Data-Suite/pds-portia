@@ -1,0 +1,14 @@
+{
+  "fixture_contract": "pds-portia.synthetic-export-path-privacy-context",
+  "fixture_version": "1",
+  "not_runtime_contract": true,
+  "export_id": "pexp_g22_033_path_privacy",
+  "output_path": "portia/exports/pexp_g22_033_path_privacy/student-b_eng10-p2_behavior-report.csv",
+  "synthetic_sensitive_labels": [
+    "student-b",
+    "eng10-p2",
+    "behavior"
+  ],
+  "path_is_export_id_scoped": true,
+  "pii_minimized_path_required": true
+}

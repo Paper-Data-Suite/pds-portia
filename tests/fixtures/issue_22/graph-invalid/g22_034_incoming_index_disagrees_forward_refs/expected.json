@@ -1,0 +1,10 @@
+{
+  "scenario_id": "G22-034",
+  "expected_graph_result": "invalid",
+  "expected_finding_ids": [
+    "G22.DERIVED.INCOMING_INDEX_DISAGREES_FORWARD_REFS"
+  ],
+  "primary_finding_id": "G22.DERIVED.INCOMING_INDEX_DISAGREES_FORWARD_REFS",
+  "structurally_valid_public_records": true,
+  "reason": "The derived incoming-reference index attributes a canonical Work Relationship to the wrong target work."
+}

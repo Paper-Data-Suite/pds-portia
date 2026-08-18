@@ -1,0 +1,10 @@
+{
+  "scenario_id": "G22-032",
+  "expected_graph_result": "invalid",
+  "expected_finding_ids": [
+    "G22.PRIVACY.EXPORT_INVENTORY_WRONG_REPRESENTATION"
+  ],
+  "primary_finding_id": "G22.PRIVACY.EXPORT_INVENTORY_WRONG_REPRESENTATION",
+  "structurally_valid_public_records": true,
+  "reason": "The export actually consumed the historical Account predecessor but its truthful source inventory names the corrected successor instead."
+}

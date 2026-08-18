@@ -1,0 +1,8 @@
+{
+  "expected_graph_result": "invalid",
+  "expected_finding_ids": [
+    "G22.SUPPORT.FIDELITY_IMPLEMENTATION_WRONG_PROCESS"
+  ],
+  "primary_finding_id": "G22.SUPPORT.FIDELITY_IMPLEMENTATION_WRONG_PROCESS",
+  "structurally_valid_public_records": true
+}

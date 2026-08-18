@@ -1,0 +1,48 @@
+{
+  "fixture_contract": "pds-portia.issue-22-retention-custody-expectation",
+  "fixture_version": "1",
+  "not_runtime_contract": true,
+  "synthetic": true,
+  "expectations": [
+    {
+      "subject": "canonical_event_and_records",
+      "retention_class": "canonical_behavior_support",
+      "custody": "portia",
+      "rebuildable": false,
+      "destruction_authority_claim": "not_evaluated_here"
+    },
+    {
+      "subject": "derived_generation_and_views",
+      "retention_class": "derived_cache",
+      "custody": "portia",
+      "rebuildable": true,
+      "destruction_of_cache_implies_canonical_deletion": false
+    },
+    {
+      "subject": "p22_12_export_bytes",
+      "retention_class": "export_bytes",
+      "custody": "portia",
+      "same_retention_unit_as_export_provenance": false
+    },
+    {
+      "subject": "p22_12_export_provenance",
+      "retention_class": "export_provenance",
+      "custody": "portia",
+      "same_retention_unit_as_export_bytes": false
+    },
+    {
+      "subject": "core_retained_source",
+      "retention_class": null,
+      "custody": "core_retained_source",
+      "portia_destruction_authority": false
+    }
+  ],
+  "foreign_destruction_claims": {
+    "core": false,
+    "sibling_modules": false,
+    "external_systems": false
+  },
+  "legal_duration_calculated": false,
+  "sunset_public_record_created": false,
+  "blocker_or_unresolved_expectation": "Portia must report foreign custody as outside Portia destruction authority rather than claim global completion."
+}

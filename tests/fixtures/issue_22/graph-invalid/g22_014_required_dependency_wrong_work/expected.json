@@ -1,0 +1,12 @@
+{
+  "fixture_contract": "pds-portia.graph-invalid-expectation",
+  "fixture_version": "1",
+  "not_runtime_contract": true,
+  "scenario_id": "G22-014",
+  "primary_finding_id": "G22.DEPENDENCY.REQUIRED_TARGET_UNRESOLVED",
+  "expected_finding_ids": [
+    "G22.DEPENDENCY.REQUIRED_TARGET_UNRESOLVED"
+  ],
+  "structurally_valid_public_records": true,
+  "principal_defect": "A required Dependency names Account acct_g22_014_only_b inside Event A, but that exact Account exists only in Event B."
+}

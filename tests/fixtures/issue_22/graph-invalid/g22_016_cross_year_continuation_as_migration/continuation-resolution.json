@@ -1,0 +1,22 @@
+{
+  "fixture_contract": "pds-portia.synthetic-cross-year-continuation-resolution",
+  "fixture_version": "1",
+  "not_runtime_contract": true,
+  "intended_relationship": "cross_year_continuation",
+  "encoding": "record_migration",
+  "migration_id": "mig_g22_016_crossyear",
+  "predecessor": {
+    "class_id": "eng10_g22_016_2026",
+    "work_id": "sup_g22_016_2026",
+    "record_kind": "support_process",
+    "record_id": "sup_g22_016_2026",
+    "contract_version": "1"
+  },
+  "successor": {
+    "class_id": "eng11_g22_016_2027",
+    "work_id": "sup_g22_016_2027",
+    "record_kind": "support_process",
+    "record_id": "sup_g22_016_2027",
+    "contract_version": "1"
+  }
+}

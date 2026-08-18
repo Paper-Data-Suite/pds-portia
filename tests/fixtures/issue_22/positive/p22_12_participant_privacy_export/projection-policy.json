@@ -1,0 +1,17 @@
+{
+  "fixture_kind": "synthetic_projection_policy",
+  "not_runtime_contract": true,
+  "policy_id": "p22_student_facing_event",
+  "policy_version": "1",
+  "purpose": "student_facing",
+  "scope": "work",
+  "decision_algorithm": "portia_projection_decision_v1",
+  "rules": [
+    "allow neutral Event summary for exact focal work",
+    "allow focal display label but never substitute stable native IDs as pseudonyms",
+    "allow focal Account summary and focal direct Observation when otherwise safe",
+    "withhold unrelated participant identity and source identity",
+    "require manual review when removing third-party attribution would alter Account meaning",
+    "source-artifact access requires independent authorization"
+  ]
+}

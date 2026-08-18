@@ -1,0 +1,45 @@
+{
+  "participant_ids": [
+    "ep_p22_conflict_a",
+    "ep_p22_conflict_b",
+    "ep_p22_conflict_c"
+  ],
+  "role_types": [
+    "directly_involved",
+    "reported_involved",
+    "present"
+  ],
+  "reported_role_basis_account_id": "acct_p22_conflict_a",
+  "account_ids": [
+    "acct_p22_conflict_a",
+    "acct_p22_conflict_c"
+  ],
+  "account_target_participant_id": "ep_p22_conflict_b",
+  "observation_id": "obs_p22_conflict_001",
+  "observation_target_participant_id": "ep_p22_conflict_b",
+  "review_id": "rvw_p22_conflict_001",
+  "review_state": "completed",
+  "review_evidence_record_ids": [
+    "acct_p22_conflict_a",
+    "acct_p22_conflict_c",
+    "obs_p22_conflict_001"
+  ],
+  "determination_id": "det_p22_conflict_001",
+  "determination_outcome": "insufficient_information",
+  "determination_review_id": "rvw_p22_conflict_001",
+  "determination_basis": {
+    "supporting": [
+      "acct_p22_conflict_a"
+    ],
+    "contrary": [
+      "acct_p22_conflict_c"
+    ],
+    "contextual": [
+      "obs_p22_conflict_001"
+    ]
+  },
+  "forbidden_contracts": [
+    "classification",
+    "hypothesis"
+  ]
+}

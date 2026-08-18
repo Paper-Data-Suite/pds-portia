@@ -1,0 +1,31 @@
+{
+  "schema_version": "1",
+  "record_type": "import_review",
+  "module_id": "portia",
+  "class_id": "eng10_p2_2026",
+  "import_batch_id": "ibat_p22_import_001",
+  "source_record_ref": {
+    "contract_version": "1",
+    "source_record_id": "isrc_p22_import_event_001"
+  },
+  "review_id": "irev_p22_import_event_001",
+  "review_sequence": 1,
+  "proposal_ref": {
+    "contract_version": "1",
+    "proposal_id": "iprp_p22_import_event_001",
+    "proposal_identity_digest": "3821dcede90e0fb865a93413d0499f4244d09bfa7220be428f2707d89be6de2c"
+  },
+  "reviewer": {
+    "kind": "local_operator",
+    "display_label": "Synthetic Teacher"
+  },
+  "disposition": "accepted",
+  "field_reviews": [],
+  "reason_codes": [],
+  "reviewed_at": "2026-08-15T10:20:00-04:00",
+  "created_at": "2026-08-15T10:20:00-04:00",
+  "created_by": {
+    "type": "system_process",
+    "process_id": "issue22_structured_import"
+  }
+}

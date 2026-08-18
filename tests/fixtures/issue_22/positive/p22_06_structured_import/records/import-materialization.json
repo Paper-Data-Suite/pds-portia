@@ -1,0 +1,52 @@
+{
+  "schema_version": "1",
+  "record_type": "import_materialization",
+  "module_id": "portia",
+  "class_id": "eng10_p2_2026",
+  "import_batch_ref": {
+    "contract_version": "1",
+    "import_batch_id": "ibat_p22_import_001",
+    "import_identity_digest": "27a195010727fd3731dbe326b5554f0c640956a7d16ef7dd5de1f3e459127081"
+  },
+  "source_record_ref": {
+    "contract_version": "1",
+    "source_record_id": "isrc_p22_import_event_001",
+    "source_record_identity_digest": "d74c0484b900816f8371201b7e145187b168413e50ec16ce5ae4b8d34f029b80"
+  },
+  "proposal_ref": {
+    "contract_version": "1",
+    "proposal_id": "iprp_p22_import_event_001",
+    "proposal_identity_digest": "3821dcede90e0fb865a93413d0499f4244d09bfa7220be428f2707d89be6de2c"
+  },
+  "review_ref": {
+    "contract_version": "1",
+    "review_id": "irev_p22_import_event_001",
+    "review_sequence": 1
+  },
+  "operation_journal_ref": {
+    "operation_id": "op_p22_import_create_event_001",
+    "journal_revision": 4,
+    "contract_version": "1"
+  },
+  "canonical_results": [
+    {
+      "result_relation": "produced",
+      "target": {
+        "kind": "work",
+        "work_ref": {
+          "module_id": "portia",
+          "class_id": "eng10_p2_2026",
+          "work_id": "evt_p22_import_001",
+          "work_kind": "event",
+          "contract_version": "2"
+        }
+      }
+    }
+  ],
+  "materialized_at": "2026-08-15T10:27:00-04:00",
+  "recorded_at": "2026-08-15T10:27:30-04:00",
+  "recorded_by": {
+    "type": "system_process",
+    "process_id": "issue22_import_materializer"
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "fixture_contract": "pds-portia.synthetic-outcome-identity-write",
+  "fixture_version": "1",
+  "not_runtime_contract": true,
+  "operation": "overwrite_existing_identity",
+  "semantic_relationship": "distinct_later_timeframe_evaluation",
+  "timeframe_changed": true,
+  "existing_outcome": {
+    "class_id": "eng10_g22_024",
+    "work_id": "sup_g22_024",
+    "record_kind": "outcome",
+    "record_id": "out_g22_024",
+    "contract_version": "1"
+  },
+  "attempted_later_evaluation": {
+    "class_id": "eng10_g22_024",
+    "work_id": "sup_g22_024",
+    "record_kind": "outcome",
+    "record_id": "out_g22_024",
+    "contract_version": "1"
+  },
+  "existing_timeframe": {
+    "precision": "range",
+    "started_at": "2027-05-18T10:05:00-04:00",
+    "ended_at": "2027-05-18T10:20:00-04:00"
+  },
+  "attempted_timeframe": {
+    "precision": "range",
+    "started_at": "2027-01-15T09:00:00-05:00",
+    "ended_at": "2027-01-31T09:00:00-05:00"
+  }
+}

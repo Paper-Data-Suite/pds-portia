@@ -1,0 +1,32 @@
+{
+  "schema_version": "1",
+  "record_type": "support_need",
+  "module_id": "portia",
+  "class_id": "eng10_g22_022",
+  "work_id": "sup_g22_022_a",
+  "need_id": "spn_g22_022_a",
+  "status": "active",
+  "target": {
+    "kind": "support_process_participant",
+    "record_ref": {
+      "record_kind": "support_process_participant",
+      "record_id": "spp_g22_022_student_a",
+      "contract_version": "1"
+    }
+  },
+  "need_kind": "organizational_or_routine",
+  "description": "During independent multi-step assignments, provide a bounded task-sequencing aid that makes the next task step visible without characterizing the participant as having a permanent deficit.",
+  "creation_source": {
+    "type": "digital_entry"
+  },
+  "created_at": "2026-09-04T15:05:00-04:00",
+  "created_by": {
+    "type": "local_operator",
+    "display_label": "Synthetic Teacher"
+  },
+  "updated_at": "2026-09-04T15:05:00-04:00",
+  "updated_by": {
+    "type": "local_operator",
+    "display_label": "Synthetic Teacher"
+  }
+}

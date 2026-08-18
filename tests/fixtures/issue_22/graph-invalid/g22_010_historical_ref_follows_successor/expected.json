@@ -1,0 +1,12 @@
+{
+  "fixture_contract": "pds-portia.graph-invalid-expectation",
+  "fixture_version": "1",
+  "not_runtime_contract": true,
+  "scenario_id": "G22-010",
+  "primary_finding_id": "G22.REFERENCE.HISTORICAL_SUCCESSOR_FOLLOW",
+  "expected_finding_ids": [
+    "G22.REFERENCE.HISTORICAL_SUCCESSOR_FOLLOW"
+  ],
+  "structurally_valid_public_records": true,
+  "principal_defect": "A synthetic resolver receives an exact predecessor Work Relationship reference but returns its active successor under follow-current behavior."
+}

@@ -1,0 +1,46 @@
+{
+  "schema_version": "2",
+  "record_type": "observation",
+  "module_id": "portia",
+  "work_kind": "event",
+  "class_id": "eng10_p2_2026",
+  "work_id": "evt_p22_privacy_001",
+  "observation_id": "obs_p22_privacy_001",
+  "status": "active",
+  "target": {
+    "kind": "event_participant",
+    "record_ref": {
+      "record_kind": "event_participant",
+      "record_id": "ep_p22_privacy_b",
+      "contract_version": "3"
+    }
+  },
+  "observer": {
+    "kind": "human",
+    "human_attribution": {
+      "kind": "local_operator",
+      "display_label": "Synthetic Teacher"
+    }
+  },
+  "method": "live_direct",
+  "content": {
+    "narrative": "The teacher observed Student B at the side table with hands away from the shared folder when the teacher turned toward the group."
+  },
+  "observation_time": {
+    "precision": "exact",
+    "at": "2026-09-22T09:49:00-04:00"
+  },
+  "creation_source": {
+    "type": "digital_entry"
+  },
+  "created_at": "2026-09-22T10:15:00-04:00",
+  "created_by": {
+    "type": "local_operator",
+    "display_label": "Synthetic Teacher"
+  },
+  "updated_at": "2026-09-22T10:15:00-04:00",
+  "updated_by": {
+    "type": "local_operator",
+    "display_label": "Synthetic Teacher"
+  }
+}

@@ -1,0 +1,53 @@
+{
+  "fixture_contract": "pds-portia.representative-contract-graph-scenario",
+  "fixture_version": "1",
+  "not_runtime_contract": true,
+  "scenario_id": "G22-019",
+  "title": "Imported judgment proposal is activated without required review history",
+  "scenario_kind": "graph_invalid",
+  "synthetic": true,
+  "records": [
+    {
+      "fixture_path": "event.json",
+      "contract": "event",
+      "version": "2",
+      "logical_identity": "event:evt_g22_019",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_g22_019",
+        "work_kind": "event",
+        "work_id": "evt_g22_019"
+      },
+      "canonical_path": "classes/eng10_g22_019/modules/portia/work/evt_g22_019/work.json"
+    },
+    {
+      "fixture_path": "determination.json",
+      "contract": "determination",
+      "version": "1",
+      "logical_identity": "determination:det_g22_019_unreviewed_import",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_g22_019",
+        "work_kind": "event",
+        "work_id": "evt_g22_019"
+      },
+      "canonical_path": "classes/eng10_g22_019/modules/portia/work/evt_g22_019/records/determination/det_g22_019_unreviewed_import.json"
+    }
+  ],
+  "context": [],
+  "required_distinctions": [
+    "Imported proposal != accepted active human judgment.",
+    "Import provenance does not substitute for human review and attribution."
+  ],
+  "expected_graph_result": "invalid",
+  "expected_finding_ids": [
+    "G22.JUDGMENT.IMPORT_ACTIVE_WITHOUT_REVIEW"
+  ],
+  "primary_finding_id": "G22.JUDGMENT.IMPORT_ACTIVE_WITHOUT_REVIEW",
+  "principal_defect": "An import-origin Determination is already active even though no review_ref records the required human review gate.",
+  "structurally_valid_reason": "Determination@1 structurally permits import provenance, active status, human attribution, and omission of review_ref; accepted Issue #16 application semantics require review history before an import-origin judgment becomes active.",
+  "records_must_remain_unmodified": [
+    "event.json"
+  ],
+  "expected_path": "expected.json"
+}

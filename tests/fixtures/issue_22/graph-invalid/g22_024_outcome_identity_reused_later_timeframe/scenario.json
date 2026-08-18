@@ -1,0 +1,136 @@
+{
+  "fixture_contract": "pds-portia.representative-contract-graph-scenario",
+  "fixture_version": "1",
+  "not_runtime_contract": true,
+  "scenario_id": "G22-024",
+  "title": "Later-timeframe Outcome overwrites an earlier Outcome identity",
+  "scenario_kind": "graph_invalid",
+  "synthetic": true,
+  "records": [
+    {
+      "fixture_path": "process.json",
+      "contract": "support_process",
+      "version": "1",
+      "logical_identity": "support_process:sup_g22_024",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_g22_024",
+        "work_kind": "support_process",
+        "work_id": "sup_g22_024"
+      },
+      "canonical_path": "classes/eng10_g22_024/modules/portia/work/sup_g22_024/work.json"
+    },
+    {
+      "fixture_path": "student.json",
+      "contract": "support_process_participant",
+      "version": "1",
+      "logical_identity": "support_process_participant:spp_g22_024_student",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_g22_024",
+        "work_kind": "support_process",
+        "work_id": "sup_g22_024"
+      },
+      "canonical_path": "classes/eng10_g22_024/modules/portia/work/sup_g22_024/records/support_process_participant/spp_g22_024_student.json"
+    },
+    {
+      "fixture_path": "teacher.json",
+      "contract": "support_process_participant",
+      "version": "1",
+      "logical_identity": "support_process_participant:spp_g22_024_teacher",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_g22_024",
+        "work_kind": "support_process",
+        "work_id": "sup_g22_024"
+      },
+      "canonical_path": "classes/eng10_g22_024/modules/portia/work/sup_g22_024/records/support_process_participant/spp_g22_024_teacher.json"
+    },
+    {
+      "fixture_path": "need.json",
+      "contract": "support_need",
+      "version": "1",
+      "logical_identity": "support_need:spn_g22_024",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_g22_024",
+        "work_kind": "support_process",
+        "work_id": "sup_g22_024"
+      },
+      "canonical_path": "classes/eng10_g22_024/modules/portia/work/sup_g22_024/records/support_need/spn_g22_024.json"
+    },
+    {
+      "fixture_path": "goal.json",
+      "contract": "support_goal",
+      "version": "1",
+      "logical_identity": "support_goal:spg_g22_024",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_g22_024",
+        "work_kind": "support_process",
+        "work_id": "sup_g22_024"
+      },
+      "canonical_path": "classes/eng10_g22_024/modules/portia/work/sup_g22_024/records/support_goal/spg_g22_024.json"
+    },
+    {
+      "fixture_path": "support.json",
+      "contract": "support",
+      "version": "1",
+      "logical_identity": "support:spt_g22_024",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_g22_024",
+        "work_kind": "support_process",
+        "work_id": "sup_g22_024"
+      },
+      "canonical_path": "classes/eng10_g22_024/modules/portia/work/sup_g22_024/records/support/spt_g22_024.json"
+    },
+    {
+      "fixture_path": "implementation.json",
+      "contract": "implementation",
+      "version": "1",
+      "logical_identity": "implementation:imp_g22_024",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_g22_024",
+        "work_kind": "support_process",
+        "work_id": "sup_g22_024"
+      },
+      "canonical_path": "classes/eng10_g22_024/modules/portia/work/sup_g22_024/records/implementation/imp_g22_024.json"
+    },
+    {
+      "fixture_path": "outcome.json",
+      "contract": "outcome",
+      "version": "1",
+      "logical_identity": "outcome:out_g22_024",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_g22_024",
+        "work_kind": "support_process",
+        "work_id": "sup_g22_024"
+      },
+      "canonical_path": "classes/eng10_g22_024/modules/portia/work/sup_g22_024/records/outcome/out_g22_024.json"
+    }
+  ],
+  "context": [
+    {
+      "context_kind": "synthetic_outcome_identity_write",
+      "fixture_path": "outcome-write.json"
+    }
+  ],
+  "required_distinctions": [
+    "A later evaluation is a new Outcome, not an in-place update of an earlier valid Outcome.",
+    "Correction/supersession is reserved for correcting the earlier representation, not extending its evaluation timeframe."
+  ],
+  "expected_graph_result": "invalid",
+  "expected_finding_ids": [
+    "G22.OUTCOME.IDENTITY_REUSED_FOR_LATER_EVALUATION"
+  ],
+  "primary_finding_id": "G22.OUTCOME.IDENTITY_REUSED_FOR_LATER_EVALUATION",
+  "principal_defect": "A persistence operation attempts to write a distinct later-timeframe evaluation over the exact identity of an already accepted Outcome.",
+  "structurally_valid_reason": "The accepted earlier Outcome and its supporting public graph are schema-valid. The defect exists in write/identity semantics and therefore is represented by closed nonruntime fixture metadata rather than a fabricated public contract.",
+  "records_must_remain_unmodified": [
+    "outcome.json"
+  ],
+  "expected_path": "expected.json"
+}

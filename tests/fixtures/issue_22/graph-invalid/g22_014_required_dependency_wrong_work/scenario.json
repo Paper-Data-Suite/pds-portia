@@ -1,0 +1,100 @@
+{
+  "fixture_contract": "pds-portia.representative-contract-graph-scenario",
+  "fixture_version": "1",
+  "not_runtime_contract": true,
+  "scenario_id": "G22-014",
+  "title": "Required Dependency points to a record that exists only in another work",
+  "scenario_kind": "graph_invalid",
+  "synthetic": true,
+  "records": [
+    {
+      "fixture_path": "event-a.json",
+      "contract": "event",
+      "version": "2",
+      "logical_identity": "event:evt_g22_014_a",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_g22_014",
+        "work_kind": "event",
+        "work_id": "evt_g22_014_a"
+      },
+      "canonical_path": "classes/eng10_g22_014/modules/portia/work/evt_g22_014_a/work.json"
+    },
+    {
+      "fixture_path": "event-b.json",
+      "contract": "event",
+      "version": "2",
+      "logical_identity": "event:evt_g22_014_b",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_g22_014",
+        "work_kind": "event",
+        "work_id": "evt_g22_014_b"
+      },
+      "canonical_path": "classes/eng10_g22_014/modules/portia/work/evt_g22_014_b/work.json"
+    },
+    {
+      "fixture_path": "participant-b.json",
+      "contract": "event_participant",
+      "version": "3",
+      "logical_identity": "event_participant:ep_g22_014_b",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_g22_014",
+        "work_kind": "event",
+        "work_id": "evt_g22_014_b"
+      },
+      "canonical_path": "classes/eng10_g22_014/modules/portia/work/evt_g22_014_b/records/event_participant/ep_g22_014_b.json"
+    },
+    {
+      "fixture_path": "account-b.json",
+      "contract": "account",
+      "version": "2",
+      "logical_identity": "account:acct_g22_014_only_b",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_g22_014",
+        "work_kind": "event",
+        "work_id": "evt_g22_014_b"
+      },
+      "canonical_path": "classes/eng10_g22_014/modules/portia/work/evt_g22_014_b/records/account/acct_g22_014_only_b.json"
+    },
+    {
+      "fixture_path": "dependency.json",
+      "contract": "dependency",
+      "version": "1",
+      "logical_identity": "dependency:dep_g22_014_required",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_g22_014",
+        "work_kind": "event",
+        "work_id": "evt_g22_014_a"
+      },
+      "canonical_path": "classes/eng10_g22_014/modules/portia/work/evt_g22_014_a/records/dependency/dep_g22_014_required.json"
+    }
+  ],
+  "context": [
+    {
+      "context_kind": "synthetic_core_roster",
+      "fixture_path": "roster.json"
+    }
+  ],
+  "required_distinctions": [
+    "Required dependency != same-looking record anywhere in Portia.",
+    "Exact dependency targets do not silently follow or cross work roots."
+  ],
+  "expected_graph_result": "invalid",
+  "expected_finding_ids": [
+    "G22.DEPENDENCY.REQUIRED_TARGET_UNRESOLVED"
+  ],
+  "primary_finding_id": "G22.DEPENDENCY.REQUIRED_TARGET_UNRESOLVED",
+  "principal_defect": "A required Dependency names Account acct_g22_014_only_b inside Event A, but that exact Account exists only in Event B.",
+  "structurally_valid_reason": "Dependency@1 structurally permits a complete version-aware Portia work-record reference; target existence and work-qualified resolution are application invariants.",
+  "records_must_remain_unmodified": [
+    "event-a.json",
+    "event-b.json",
+    "participant-b.json",
+    "account-b.json"
+  ],
+  "expected_path": "expected.json"
+}

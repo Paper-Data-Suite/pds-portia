@@ -1,0 +1,72 @@
+{
+  "fixture_contract": "pds-portia.representative-contract-graph-scenario",
+  "fixture_version": "1",
+  "not_runtime_contract": true,
+  "scenario_id": "G22-004",
+  "title": "Exact ref requests wrong contract version",
+  "scenario_kind": "graph_invalid",
+  "synthetic": true,
+  "records": [
+    {
+      "fixture_path": "event.json",
+      "contract": "event",
+      "version": "2",
+      "logical_identity": "event:evt_g22_version_001",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_g22_version",
+        "work_kind": "event",
+        "work_id": "evt_g22_version_001"
+      },
+      "canonical_path": "classes/eng10_g22_version/modules/portia/work/evt_g22_version_001/work.json"
+    },
+    {
+      "fixture_path": "participant.json",
+      "contract": "event_participant",
+      "version": "3",
+      "logical_identity": "event_participant:ep_g22_version_001",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_g22_version",
+        "work_kind": "event",
+        "work_id": "evt_g22_version_001"
+      },
+      "canonical_path": "classes/eng10_g22_version/modules/portia/work/evt_g22_version_001/records/event_participant/ep_g22_version_001.json"
+    },
+    {
+      "fixture_path": "observation.json",
+      "contract": "observation",
+      "version": "2",
+      "logical_identity": "observation:obs_g22_version_001",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_g22_version",
+        "work_kind": "event",
+        "work_id": "evt_g22_version_001"
+      },
+      "canonical_path": "classes/eng10_g22_version/modules/portia/work/evt_g22_version_001/records/observation/obs_g22_version_001.json"
+    }
+  ],
+  "context": [
+    {
+      "context_kind": "synthetic_core_roster",
+      "fixture_path": "roster.json"
+    }
+  ],
+  "required_distinctions": [
+    "Exact references include contract version.",
+    "Supported version token does not authorize silent version coercion."
+  ],
+  "expected_graph_result": "invalid",
+  "expected_finding_ids": [
+    "G22.REFERENCE.PARTICIPANT_VERSION_MISMATCH"
+  ],
+  "primary_finding_id": "G22.REFERENCE.PARTICIPANT_VERSION_MISMATCH",
+  "principal_defect": "The Observation requests Event Participant contract version 2 while the exact fixture representation is version 3.",
+  "structurally_valid_reason": "Version 2 is structurally accepted for the participant reference family; exact resolution still must match the represented version.",
+  "records_must_remain_unmodified": [
+    "event.json",
+    "participant.json"
+  ],
+  "expected_path": "expected.json"
+}

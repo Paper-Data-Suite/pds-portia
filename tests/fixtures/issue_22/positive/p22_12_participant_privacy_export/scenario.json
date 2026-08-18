@@ -1,0 +1,165 @@
+{
+  "fixture_contract": "pds-portia.representative-contract-graph-scenario",
+  "fixture_version": "1",
+  "not_runtime_contract": true,
+  "scenario_id": "P22-12",
+  "title": "Participant-Specific Privacy Projection and Deliberate Export",
+  "scenario_kind": "positive",
+  "synthetic": true,
+  "records": [
+    {
+      "fixture_path": "event.json",
+      "contract": "event",
+      "version": "2",
+      "logical_identity": "event:evt_p22_privacy_001",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "event",
+        "work_id": "evt_p22_privacy_001"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/evt_p22_privacy_001/work.json"
+    },
+    {
+      "fixture_path": "participant-a.json",
+      "contract": "event_participant",
+      "version": "3",
+      "logical_identity": "event_participant:ep_p22_privacy_a",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "event",
+        "work_id": "evt_p22_privacy_001"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/evt_p22_privacy_001/records/event_participant/ep_p22_privacy_a.json"
+    },
+    {
+      "fixture_path": "participant-b.json",
+      "contract": "event_participant",
+      "version": "3",
+      "logical_identity": "event_participant:ep_p22_privacy_b",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "event",
+        "work_id": "evt_p22_privacy_001"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/evt_p22_privacy_001/records/event_participant/ep_p22_privacy_b.json"
+    },
+    {
+      "fixture_path": "account-a.json",
+      "contract": "account",
+      "version": "2",
+      "logical_identity": "account:acct_p22_privacy_a",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "event",
+        "work_id": "evt_p22_privacy_001"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/evt_p22_privacy_001/records/account/acct_p22_privacy_a.json"
+    },
+    {
+      "fixture_path": "account-b.json",
+      "contract": "account",
+      "version": "2",
+      "logical_identity": "account:acct_p22_privacy_b",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "event",
+        "work_id": "evt_p22_privacy_001"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/evt_p22_privacy_001/records/account/acct_p22_privacy_b.json"
+    },
+    {
+      "fixture_path": "observation.json",
+      "contract": "observation",
+      "version": "2",
+      "logical_identity": "observation:obs_p22_privacy_001",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "event",
+        "work_id": "evt_p22_privacy_001"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/evt_p22_privacy_001/records/observation/obs_p22_privacy_001.json"
+    },
+    {
+      "fixture_path": "deliberate-export.json",
+      "contract": "deliberate_export",
+      "version": "1",
+      "logical_identity": "deliberate_export:pexp_p22_student_b_event_001",
+      "authority": "portia",
+      "owner": {
+        "owner_kind": "deliberate_export",
+        "export_id": "pexp_p22_student_b_event_001"
+      },
+      "canonical_path": "portia/exports/pexp_p22_student_b_event_001/export.json"
+    }
+  ],
+  "context": [
+    {
+      "context_kind": "synthetic_core_roster",
+      "fixture_path": "../../shared/core-context/roster.json"
+    },
+    {
+      "context_kind": "synthetic_projection_policy",
+      "fixture_path": "projection-policy.json"
+    },
+    {
+      "context_kind": "synthetic_authorization_context",
+      "fixture_path": "authorization-context.json"
+    },
+    {
+      "context_kind": "synthetic_projection_source_availability",
+      "fixture_path": "source-availability.json"
+    }
+  ],
+  "byte_fixtures": [
+    {
+      "fixture_path": "focal-source-note.txt",
+      "workspace_relative_path": "classes/eng10_p2_2026/modules/portia/work/evt_p22_privacy_001/attachments/focal-source-note.txt",
+      "media_type": "text/plain",
+      "role": "source_artifact"
+    },
+    {
+      "fixture_path": "authorization-rule.txt",
+      "workspace_relative_path": "portia/policy-fixtures/p22_student_facing_export_rule-v1.txt",
+      "media_type": "text/plain",
+      "role": "authorization_rule"
+    },
+    {
+      "fixture_path": "artifact.csv",
+      "workspace_relative_path": "portia/exports/pexp_p22_student_b_event_001/artifact.csv",
+      "media_type": "text/csv",
+      "role": "deliberate_export_output"
+    }
+  ],
+  "projection_expectation": {
+    "fixture_path": "projection-decision.json",
+    "digest_algorithm": "sha256_exact_fixture_bytes",
+    "canonical": false
+  },
+  "required_distinctions": [
+    "Projection is a noncanonical purpose-bounded representation and does not modify or replace canonical source records.",
+    "Student-facing purpose selects a projection policy but does not itself authorize export or disclosure.",
+    "Withheld is not absent; unavailable is not false/no; requires_manual_review is not safe-to-include.",
+    "Stable participant and roster IDs are identifiers and are not emitted as safe pseudonyms.",
+    "Third-party identity and source attribution remain canonical at source but are withheld from the focal artifact.",
+    "Third-party free text that cannot be safely singularized requires manual review and is withheld without paraphrase.",
+    "Safe projection of the focal Account does not authorize its raw source-artifact bytes.",
+    "Export source inventory contains only exact representations that materially contributed to the accepted output.",
+    "The deliberate export binds exact policy, authorization, decision, source-inventory, and output digest/length evidence.",
+    "Export generation is not disclosure, delivery, receipt, read, consent, legal notice, or external acceptance."
+  ],
+  "privacy_checks": [
+    "no third-party display name in output bytes",
+    "no third-party local student ID in output bytes",
+    "no Portia participant/account stable IDs in output bytes",
+    "no raw source-artifact text in output bytes"
+  ],
+  "expected_graph_result": "valid",
+  "expected_finding_ids": [],
+  "expected_path": "expected.json"
+}

@@ -1,0 +1,12 @@
+{
+  "fixture_contract": "pds-portia.synthetic-core-roster-context",
+  "fixture_version": "1",
+  "not_runtime_contract": true,
+  "class_id": "eng11_g22_name_b",
+  "students": [
+    {
+      "student_id": "stu_g22_name_b",
+      "display_name": "Synthetic Same Name"
+    }
+  ]
+}

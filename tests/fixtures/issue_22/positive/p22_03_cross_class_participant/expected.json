@@ -1,0 +1,22 @@
+{
+  "event_owner_class_id": "eng10_p2_2026",
+  "collision_student_id": "stu_collision_001",
+  "collision_display_name": "Synthetic Alex",
+  "roster_subject_keys": [
+    [
+      "eng10_p2_2026",
+      "stu_collision_001"
+    ],
+    [
+      "journalism_p6_2026",
+      "stu_collision_001"
+    ]
+  ],
+  "participant_ids": [
+    "ep_p22_cross_owner",
+    "ep_p22_cross_foreign"
+  ],
+  "cross_class_participant_id": "ep_p22_cross_foreign",
+  "cross_class_source_class_id": "journalism_p6_2026",
+  "cross_class_observation_id": "obs_p22_cross_foreign"
+}

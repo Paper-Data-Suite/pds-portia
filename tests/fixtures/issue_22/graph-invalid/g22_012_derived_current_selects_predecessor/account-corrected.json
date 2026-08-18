@@ -1,0 +1,72 @@
+{
+  "schema_version": "2",
+  "record_type": "account",
+  "module_id": "portia",
+  "class_id": "eng10_g22_012",
+  "work_kind": "event",
+  "work_id": "evt_g22_012",
+  "account_id": "acct_g22_012_corrected",
+  "status": "active",
+  "target": {
+    "kind": "event_participant",
+    "record_ref": {
+      "record_kind": "event_participant",
+      "record_id": "ep_g22_012_student",
+      "contract_version": "3"
+    }
+  },
+  "source": {
+    "kind": "roster_student",
+    "roster_student_ref": {
+      "class_id": "eng10_g22_012",
+      "student_id": "stu_g22_012"
+    },
+    "display_snapshot": {
+      "display_name": "Synthetic Student A"
+    }
+  },
+  "information_origin": "firsthand",
+  "source_certainty": "stated_certain",
+  "content": [
+    {
+      "representation": "recorded_summary",
+      "text": "Corrected synthetic statement selected by the canonical replacement frontier."
+    }
+  ],
+  "provided_time": {
+    "precision": "exact",
+    "at": "2026-10-10T08:55:00-04:00"
+  },
+  "supersedes": [
+    {
+      "work_record_ref": {
+        "work_ref": {
+          "module_id": "portia",
+          "class_id": "eng10_g22_012",
+          "work_id": "evt_g22_012",
+          "work_kind": "event",
+          "contract_version": "2"
+        },
+        "record_ref": {
+          "record_kind": "account",
+          "record_id": "acct_g22_012_original",
+          "contract_version": "2"
+        }
+      },
+      "reason": "statement_corrected"
+    }
+  ],
+  "creation_source": {
+    "type": "digital_entry"
+  },
+  "created_at": "2026-10-10T09:02:00-04:00",
+  "created_by": {
+    "type": "local_operator",
+    "display_label": "Synthetic Teacher"
+  },
+  "updated_at": "2026-10-10T09:02:00-04:00",
+  "updated_by": {
+    "type": "local_operator",
+    "display_label": "Synthetic Teacher"
+  }
+}

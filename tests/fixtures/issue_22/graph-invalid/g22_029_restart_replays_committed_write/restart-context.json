@@ -1,0 +1,13 @@
+{
+  "fixture_contract": "pds-portia.synthetic-operation-restart-resolution",
+  "fixture_version": "1",
+  "not_runtime_contract": true,
+  "operation_id": "op_p22_recovery_relationship",
+  "journal_revision": 5,
+  "journal_state": "committed",
+  "step_id": "step_create_successor",
+  "prior_disposition": "accepted",
+  "restart_action": "replay_semantic_write",
+  "required_restart_action": "reconcile_exact_readback",
+  "semantic_write_already_durable": true
+}

@@ -1,0 +1,12 @@
+{
+  "fixture_contract": "pds-portia.graph-invalid-expectation",
+  "fixture_version": "1",
+  "not_runtime_contract": true,
+  "scenario_id": "G22-011",
+  "primary_finding_id": "G22.CORRECTION.SUPERSESSION_CYCLE",
+  "expected_finding_ids": [
+    "G22.CORRECTION.SUPERSESSION_CYCLE"
+  ],
+  "structurally_valid_public_records": true,
+  "principal_defect": "Two schema-valid Account replacements supersede each other, forming a material replacement cycle with no acyclic current frontier."
+}

@@ -1,0 +1,46 @@
+{
+  "schema_version": "2",
+  "record_type": "observation",
+  "module_id": "portia",
+  "class_id": "eng11_p3_2027",
+  "work_kind": "support_process",
+  "work_id": "sup_p22_crossyear_2027",
+  "observation_id": "obs_p22_crossyear_2027",
+  "status": "active",
+  "target": {
+    "kind": "support_process_participant",
+    "record_ref": {
+      "record_kind": "support_process_participant",
+      "record_id": "spp_p22_crossyear_student_2027",
+      "contract_version": "1"
+    }
+  },
+  "observer": {
+    "kind": "human",
+    "human_attribution": {
+      "kind": "local_operator",
+      "display_label": "Synthetic Teacher"
+    }
+  },
+  "method": "live_direct",
+  "content": {
+    "narrative": "During the bounded current-year observation, the participant entered two candidate sources in the research template, asked one clarifying question, and began note-taking before the observation window ended."
+  },
+  "observation_time": {
+    "precision": "exact",
+    "at": "2027-09-14T09:20:00-04:00"
+  },
+  "creation_source": {
+    "type": "digital_entry"
+  },
+  "created_at": "2027-09-14T09:28:00-04:00",
+  "created_by": {
+    "type": "local_operator",
+    "display_label": "Synthetic Teacher"
+  },
+  "updated_at": "2027-09-14T09:28:00-04:00",
+  "updated_by": {
+    "type": "local_operator",
+    "display_label": "Synthetic Teacher"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "fixture_contract": "pds-portia.graph-invalid-expectation",
+  "fixture_version": "1",
+  "not_runtime_contract": true,
+  "scenario_id": "G22-019",
+  "primary_finding_id": "G22.JUDGMENT.IMPORT_ACTIVE_WITHOUT_REVIEW",
+  "expected_finding_ids": [
+    "G22.JUDGMENT.IMPORT_ACTIVE_WITHOUT_REVIEW"
+  ],
+  "structurally_valid_public_records": true,
+  "principal_defect": "An import-origin Determination is already active even though no review_ref records the required human review gate."
+}

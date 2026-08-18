@@ -1,0 +1,19 @@
+{
+  "fixture_contract": "pds-portia.synthetic-disposition-custody-result",
+  "fixture_version": "1",
+  "not_runtime_contract": true,
+  "portia_local_disposition": "completed",
+  "foreign_destruction_claims": {
+    "core_retained_source": "destroyed",
+    "vitrine_copy": "destroyed",
+    "email_download": "destroyed",
+    "external_backup": "destroyed"
+  },
+  "owner_verification": {
+    "core_retained_source": false,
+    "vitrine_copy": false,
+    "email_download": false,
+    "external_backup": false
+  },
+  "global_completion_reported": true
+}

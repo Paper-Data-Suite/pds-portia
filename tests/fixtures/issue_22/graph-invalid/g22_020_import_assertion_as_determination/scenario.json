@@ -1,0 +1,73 @@
+{
+  "fixture_contract": "pds-portia.representative-contract-graph-scenario",
+  "fixture_version": "1",
+  "not_runtime_contract": true,
+  "scenario_id": "G22-020",
+  "title": "Imported source assertion is used as though it were a Portia Determination",
+  "scenario_kind": "graph_invalid",
+  "synthetic": true,
+  "records": [
+    {
+      "fixture_path": "event.json",
+      "contract": "event",
+      "version": "2",
+      "logical_identity": "event:evt_g22_020",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_g22_020",
+        "work_kind": "event",
+        "work_id": "evt_g22_020"
+      },
+      "canonical_path": "classes/eng10_g22_020/modules/portia/work/evt_g22_020/work.json"
+    },
+    {
+      "fixture_path": "review.json",
+      "contract": "review",
+      "version": "1",
+      "logical_identity": "review:rvw_g22_020_mapping",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_g22_020",
+        "work_kind": "event",
+        "work_id": "evt_g22_020"
+      },
+      "canonical_path": "classes/eng10_g22_020/modules/portia/work/evt_g22_020/records/review/rvw_g22_020_mapping.json"
+    },
+    {
+      "fixture_path": "determination.json",
+      "contract": "determination",
+      "version": "1",
+      "logical_identity": "determination:det_g22_020_from_assertion",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_g22_020",
+        "work_kind": "event",
+        "work_id": "evt_g22_020"
+      },
+      "canonical_path": "classes/eng10_g22_020/modules/portia/work/evt_g22_020/records/determination/det_g22_020_from_assertion.json"
+    }
+  ],
+  "context": [
+    {
+      "context_kind": "synthetic_import_assertion_judgment_resolution",
+      "fixture_path": "import-assertion-resolution.json"
+    }
+  ],
+  "required_distinctions": [
+    "Source-system assertion != Portia judgment.",
+    "Review of import mapping != a human Determination.",
+    "Attribution fields do not manufacture a human decision that did not occur."
+  ],
+  "expected_graph_result": "invalid",
+  "expected_finding_ids": [
+    "G22.JUDGMENT.IMPORT_ASSERTION_AS_DETERMINATION"
+  ],
+  "primary_finding_id": "G22.JUDGMENT.IMPORT_ASSERTION_AS_DETERMINATION",
+  "principal_defect": "The imported source assertion is copied into an active Determination even though the completed review covered source mapping only and no human decision actually occurred.",
+  "structurally_valid_reason": "The Event, completed Review, and active imported Determination are individually schema-valid and resolve exactly. The graph is invalid because fixture evidence states no human decision occurred: a source assertion was promoted into Determination semantics.",
+  "records_must_remain_unmodified": [
+    "event.json",
+    "review.json"
+  ],
+  "expected_path": "expected.json"
+}

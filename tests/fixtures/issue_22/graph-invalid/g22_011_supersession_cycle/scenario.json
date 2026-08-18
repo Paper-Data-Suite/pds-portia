@@ -1,0 +1,87 @@
+{
+  "fixture_contract": "pds-portia.representative-contract-graph-scenario",
+  "fixture_version": "1",
+  "not_runtime_contract": true,
+  "scenario_id": "G22-011",
+  "title": "Material Account supersession graph contains a cycle",
+  "scenario_kind": "graph_invalid",
+  "synthetic": true,
+  "records": [
+    {
+      "fixture_path": "event.json",
+      "contract": "event",
+      "version": "2",
+      "logical_identity": "event:evt_g22_011",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_g22_011",
+        "work_kind": "event",
+        "work_id": "evt_g22_011"
+      },
+      "canonical_path": "classes/eng10_g22_011/modules/portia/work/evt_g22_011/work.json"
+    },
+    {
+      "fixture_path": "participant.json",
+      "contract": "event_participant",
+      "version": "3",
+      "logical_identity": "event_participant:ep_g22_011_student",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_g22_011",
+        "work_kind": "event",
+        "work_id": "evt_g22_011"
+      },
+      "canonical_path": "classes/eng10_g22_011/modules/portia/work/evt_g22_011/records/event_participant/ep_g22_011_student.json"
+    },
+    {
+      "fixture_path": "account-a.json",
+      "contract": "account",
+      "version": "2",
+      "logical_identity": "account:acct_g22_011_a",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_g22_011",
+        "work_kind": "event",
+        "work_id": "evt_g22_011"
+      },
+      "canonical_path": "classes/eng10_g22_011/modules/portia/work/evt_g22_011/records/account/acct_g22_011_a.json"
+    },
+    {
+      "fixture_path": "account-b.json",
+      "contract": "account",
+      "version": "2",
+      "logical_identity": "account:acct_g22_011_b",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_g22_011",
+        "work_kind": "event",
+        "work_id": "evt_g22_011"
+      },
+      "canonical_path": "classes/eng10_g22_011/modules/portia/work/evt_g22_011/records/account/acct_g22_011_b.json"
+    }
+  ],
+  "context": [
+    {
+      "context_kind": "synthetic_core_roster",
+      "fixture_path": "roster.json"
+    }
+  ],
+  "required_distinctions": [
+    "Material supersession must be acyclic.",
+    "Supersession preserves immutable predecessors but cannot create a circular frontier."
+  ],
+  "expected_graph_result": "invalid",
+  "expected_finding_ids": [
+    "G22.CORRECTION.SUPERSESSION_CYCLE"
+  ],
+  "primary_finding_id": "G22.CORRECTION.SUPERSESSION_CYCLE",
+  "principal_defect": "Two schema-valid Account replacements supersede each other, forming a material replacement cycle with no acyclic current frontier.",
+  "structurally_valid_reason": "Each Account independently satisfies account@2; acyclicity is an application invariant over the combined replacement graph.",
+  "records_must_remain_unmodified": [
+    "event.json",
+    "participant.json",
+    "account-a.json",
+    "account-b.json"
+  ],
+  "expected_path": "expected.json"
+}

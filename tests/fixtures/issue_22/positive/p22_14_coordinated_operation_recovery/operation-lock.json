@@ -1,0 +1,19 @@
+{
+  "schema_version": "2",
+  "record_type": "operation_lock",
+  "module_id": "portia",
+  "lock_id": "lock_e20044d6233f5ed120c2372f50fce015eb2d3d1b5824296fbda8325e23ffad4f",
+  "lock_scope": "operation",
+  "protected_target": {
+    "kind": "operation",
+    "operation_ref": {
+      "operation_id": "op_p22_recovery_relationship"
+    }
+  },
+  "owning_operation": {
+    "operation_id": "op_p22_recovery_relationship"
+  },
+  "acquired_at": "2026-10-12T10:00:04-04:00",
+  "deployment_instance_id": "deploy_p22_recovery_fixture",
+  "process_instance_id": "process_p22_recovery_fixture"
+}

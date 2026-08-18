@@ -1,0 +1,59 @@
+{
+  "fixture_contract": "pds-portia.representative-contract-graph-scenario",
+  "fixture_version": "1",
+  "not_runtime_contract": true,
+  "scenario_id": "G22-026",
+  "title": "Unchanged import replay creates a second accepted canonical Event",
+  "scenario_kind": "graph_invalid",
+  "synthetic": true,
+  "records": [
+    {
+      "fixture_path": "event-original.json",
+      "contract": "event",
+      "version": "2",
+      "logical_identity": "event:evt_g22_026_original",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_g22_026",
+        "work_kind": "event",
+        "work_id": "evt_g22_026_original"
+      },
+      "canonical_path": "classes/eng10_g22_026/modules/portia/work/evt_g22_026_original/work.json"
+    },
+    {
+      "fixture_path": "event-duplicate.json",
+      "contract": "event",
+      "version": "2",
+      "logical_identity": "event:evt_g22_026_duplicate",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_g22_026",
+        "work_kind": "event",
+        "work_id": "evt_g22_026_duplicate"
+      },
+      "canonical_path": "classes/eng10_g22_026/modules/portia/work/evt_g22_026_duplicate/work.json"
+    }
+  ],
+  "context": [
+    {
+      "context_kind": "synthetic_import_replay_resolution",
+      "fixture_path": "duplicate-materialization-context.json"
+    }
+  ],
+  "required_distinctions": [
+    "Same accepted proposal identity != permission to create another canonical record.",
+    "Retry/reprocessing must reconcile an existing accepted result rather than duplicate it."
+  ],
+  "expected_graph_result": "invalid",
+  "expected_finding_ids": [
+    "G22.IMPORT.ACCEPTED_PROPOSAL_DUPLICATE_MATERIALIZATION"
+  ],
+  "primary_finding_id": "G22.IMPORT.ACCEPTED_PROPOSAL_DUPLICATE_MATERIALIZATION",
+  "principal_defect": "Unchanged retained-source replay materializes a second accepted Event for the same accepted proposal identity instead of reconciling the existing canonical result.",
+  "structurally_valid_reason": "Both Event@2 records are individually valid; the invalidity is the replay/materialization decision binding both distinct domain identities to one unchanged accepted proposal identity.",
+  "records_must_remain_unmodified": [
+    "event-original.json",
+    "event-duplicate.json"
+  ],
+  "expected_path": "expected.json"
+}

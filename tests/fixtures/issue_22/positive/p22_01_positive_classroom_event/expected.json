@@ -1,0 +1,39 @@
+{
+  "expected_current_work_id": "evt_p22_positive_001",
+  "expected_participant_ids": [
+    "ep_p22_positive_001"
+  ],
+  "expected_role_ids": [
+    "epr_p22_positive_001"
+  ],
+  "expected_role_types": [
+    "present"
+  ],
+  "expected_observation_ids": [
+    "obs_p22_positive_001"
+  ],
+  "forbidden_record_types": [
+    "account",
+    "review",
+    "classification",
+    "hypothesis",
+    "determination",
+    "response",
+    "communication",
+    "support_process",
+    "follow_up",
+    "outcome"
+  ],
+  "expected_teacher_current": {
+    "work_id": "evt_p22_positive_001",
+    "participant_ids": [
+      "ep_p22_positive_001"
+    ],
+    "role_ids": [
+      "epr_p22_positive_001"
+    ],
+    "observation_ids": [
+      "obs_p22_positive_001"
+    ]
+  }
+}

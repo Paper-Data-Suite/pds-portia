@@ -1,0 +1,41 @@
+{
+  "fixture_contract": "pds-portia.representative-recovery-expectation",
+  "fixture_version": "1",
+  "not_runtime_contract": true,
+  "scenario_id": "P22-14",
+  "interruption_after_journal_revision": 3,
+  "interruption_observed_state": {
+    "accepted_canonical": [
+      "rel_p22_recovery_corrected"
+    ],
+    "remaining_canonical": [
+      "rel_p22_recovery_original"
+    ],
+    "rollback_delete_permitted": false
+  },
+  "restart_reconciliation": {
+    "journal_revision": 4,
+    "existing_successor_disposition": "reconciled_exact_replay",
+    "duplicate_successor_create": false,
+    "next_safe_action": "complete_remaining_steps"
+  },
+  "final_safe_state": {
+    "selected_journal_revision": 6,
+    "active_relationship_ids": [
+      "rel_p22_recovery_corrected"
+    ],
+    "superseded_relationship_ids": [
+      "rel_p22_recovery_original"
+    ],
+    "duplicate_semantic_records": false,
+    "locks_released": true
+  },
+  "assertions": [
+    "preflight_occurs_before_mutation",
+    "operation_journal_is_operational_not_domain_truth",
+    "accepted_canonical_record_is_not_deleted_as_rollback",
+    "restart_reconciles_observed_state_before_replay",
+    "partial_success_is_explicit",
+    "recovery_does_not_duplicate_committed_semantic_record"
+  ]
+}

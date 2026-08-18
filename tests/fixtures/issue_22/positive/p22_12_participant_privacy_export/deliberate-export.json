@@ -1,0 +1,172 @@
+{
+  "schema_version": "1",
+  "record_type": "deliberate_export",
+  "module_id": "portia",
+  "export_id": "pexp_p22_student_b_event_001",
+  "projection_purpose": "student_facing",
+  "export_scope": {
+    "scope": "work",
+    "work_ref": {
+      "module_id": "portia",
+      "class_id": "eng10_p2_2026",
+      "work_id": "evt_p22_privacy_001",
+      "work_kind": "event",
+      "contract_version": "2"
+    }
+  },
+  "focal_subject_ref": {
+    "work_ref": {
+      "module_id": "portia",
+      "class_id": "eng10_p2_2026",
+      "work_id": "evt_p22_privacy_001",
+      "work_kind": "event",
+      "contract_version": "2"
+    },
+    "record_ref": {
+      "record_kind": "event_participant",
+      "record_id": "ep_p22_privacy_b",
+      "contract_version": "3"
+    }
+  },
+  "projection_policy": {
+    "policy_id": "p22_student_facing_event",
+    "policy_version": "1",
+    "policy_digest": "bd22c201d5cd98183e5ed7164342f6564a329950e973392f3bcb9a857745c5de"
+  },
+  "authorization": {
+    "kind": "policy_rule",
+    "result": "authorized",
+    "authorization_scope_id": "authscope_p22_student_b_event_001",
+    "policy_rule_id": "p22_student_facing_export_rule",
+    "policy_rule_version": "1",
+    "policy_rule_digest": "93e03314a2759f63b9c9a2fce03ac7f09a5e578efa35bf62da801ea1098fcf01",
+    "evaluated_at": "2026-09-22T10:29:00-04:00",
+    "recorded_by": {
+      "type": "local_operator",
+      "display_label": "Synthetic Teacher"
+    }
+  },
+  "source_inventory": {
+    "schema_version": "1",
+    "record_type": "export_source_inventory",
+    "module_id": "portia",
+    "inventory_algorithm": "portia_export_source_inventory_v1",
+    "entries": [
+      {
+        "source_kind": "portia_record",
+        "source_role": "projected_domain",
+        "work_record_ref": {
+          "work_ref": {
+            "module_id": "portia",
+            "class_id": "eng10_p2_2026",
+            "work_id": "evt_p22_privacy_001",
+            "work_kind": "event",
+            "contract_version": "2"
+          },
+          "record_ref": {
+            "record_kind": "account",
+            "record_id": "acct_p22_privacy_b",
+            "contract_version": "2"
+          }
+        },
+        "representation_digest": "2303466b9067e8a45e465fff272ceaf3e3588f177376ebd9e53da4cc84e87ae3",
+        "byte_length": 1703
+      },
+      {
+        "source_kind": "portia_record",
+        "source_role": "projected_domain",
+        "work_record_ref": {
+          "work_ref": {
+            "module_id": "portia",
+            "class_id": "eng10_p2_2026",
+            "work_id": "evt_p22_privacy_001",
+            "work_kind": "event",
+            "contract_version": "2"
+          },
+          "record_ref": {
+            "record_kind": "observation",
+            "record_id": "obs_p22_privacy_001",
+            "contract_version": "2"
+          }
+        },
+        "representation_digest": "2bc1c53e30c582e11c9c1ffaee9ecc3db78e2cd66dced7097ecd80501b1fe668",
+        "byte_length": 1203
+      },
+      {
+        "source_kind": "portia_record",
+        "source_role": "projected_domain",
+        "work_record_ref": {
+          "work_ref": {
+            "module_id": "portia",
+            "class_id": "eng10_p2_2026",
+            "work_id": "evt_p22_privacy_001",
+            "work_kind": "event",
+            "contract_version": "2"
+          },
+          "record_ref": {
+            "record_kind": "event_participant",
+            "record_id": "ep_p22_privacy_b",
+            "contract_version": "3"
+          }
+        },
+        "representation_digest": "f2df90dae70aab9eadb5e2d20ad65a41787b3579186b33108fa7f573cc6d4f6d",
+        "byte_length": 784
+      },
+      {
+        "source_kind": "portia_work",
+        "source_role": "projection_context",
+        "work_ref": {
+          "module_id": "portia",
+          "class_id": "eng10_p2_2026",
+          "work_id": "evt_p22_privacy_001",
+          "work_kind": "event",
+          "contract_version": "2"
+        },
+        "representation_digest": "e2cf643b118aee59ff5d2f949f2dfa68b3ee3b31e25b5dc3e98b4173f5b8e32c",
+        "byte_length": 854
+      }
+    ],
+    "inventory_digest": "4d5dd0d59db96258cd84b05756e8c126aede6a090d4dc039001c890074e6aed2"
+  },
+  "projection_decision_algorithm": "portia_projection_decision_v1",
+  "projection_decision_digest": "0577d8703556105d83630c7fdab0097b9ff0b14019781bf34768e0b34586dc7f",
+  "disposition_summary": {
+    "count_unit": "projection_item",
+    "included": 4,
+    "withheld": 5,
+    "unavailable": 1,
+    "absent": 1,
+    "manual_review_resolved": 1
+  },
+  "manual_review": {
+    "status": "resolved",
+    "reviewed_projection_digest": "0577d8703556105d83630c7fdab0097b9ff0b14019781bf34768e0b34586dc7f",
+    "reviewed_at": "2026-09-22T10:31:00-04:00",
+    "reviewed_by": {
+      "type": "local_operator",
+      "display_label": "Synthetic Teacher"
+    }
+  },
+  "output": {
+    "format": "csv",
+    "media_type": "text/csv",
+    "workspace_relative_path": "portia/exports/pexp_p22_student_b_event_001/artifact.csv",
+    "byte_length": 398,
+    "sha256_digest": "e8483452ed9e1334e5dddf39eb0935a13bf9e79f9052ef695e67ab1facd0d719"
+  },
+  "operation_journal_ref": {
+    "operation_id": "op_p22_privacy_export_001",
+    "journal_revision": 3,
+    "contract_version": "1"
+  },
+  "requested_at": "2026-09-22T10:28:30-04:00",
+  "requested_by": {
+    "type": "local_operator",
+    "display_label": "Synthetic Teacher"
+  },
+  "generated_at": "2026-09-22T10:32:00-04:00",
+  "generated_by": {
+    "type": "system_process",
+    "process_id": "privacy_export"
+  }
+}

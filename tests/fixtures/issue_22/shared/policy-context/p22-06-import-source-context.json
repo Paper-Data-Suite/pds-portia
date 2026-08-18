@@ -1,0 +1,18 @@
+{
+  "fixture_contract": "pds-portia.synthetic-import-source-context",
+  "fixture_version": "1",
+  "not_runtime_contract": true,
+  "synthetic": true,
+  "snapshots": [
+    {
+      "workspace_path": "imports/issue22/p22-06/source-v1.csv",
+      "fixture_path": "shared/source-bytes/p22-06-structured-import-v1.csv"
+    },
+    {
+      "workspace_path": "imports/issue22/p22-06/source-v2.csv",
+      "fixture_path": "shared/source-bytes/p22-06-structured-import-v2-missing-row.csv"
+    }
+  ],
+  "mapping_fixture_path": "shared/policy-context/p22-06-import-mapping.json",
+  "digest_recipe": "issue22_fixture_canonical_json_v1"
+}

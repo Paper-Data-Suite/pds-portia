@@ -1,0 +1,114 @@
+{
+  "fixture_contract": "pds-portia.representative-contract-graph-scenario",
+  "fixture_version": "1",
+  "not_runtime_contract": true,
+  "scenario_id": "G22-001",
+  "title": "Exact local ref resolves only to same-looking ID in another work",
+  "scenario_kind": "graph_invalid",
+  "synthetic": true,
+  "records": [
+    {
+      "fixture_path": "event-a.json",
+      "contract": "event",
+      "version": "2",
+      "logical_identity": "event:evt_g22_ref_a",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_g22_a",
+        "work_kind": "event",
+        "work_id": "evt_g22_ref_a"
+      },
+      "canonical_path": "classes/eng10_g22_a/modules/portia/work/evt_g22_ref_a/work.json"
+    },
+    {
+      "fixture_path": "participant-a.json",
+      "contract": "event_participant",
+      "version": "3",
+      "logical_identity": "event_participant:ep_g22_ref_a",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_g22_a",
+        "work_kind": "event",
+        "work_id": "evt_g22_ref_a"
+      },
+      "canonical_path": "classes/eng10_g22_a/modules/portia/work/evt_g22_ref_a/records/event_participant/ep_g22_ref_a.json"
+    },
+    {
+      "fixture_path": "role-a.json",
+      "contract": "event_participant_role",
+      "version": "3",
+      "logical_identity": "event_participant_role:epr_g22_ref_a",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_g22_a",
+        "work_kind": "event",
+        "work_id": "evt_g22_ref_a"
+      },
+      "canonical_path": "classes/eng10_g22_a/modules/portia/work/evt_g22_ref_a/records/event_participant_role/epr_g22_ref_a.json"
+    },
+    {
+      "fixture_path": "event-b.json",
+      "contract": "event",
+      "version": "2",
+      "logical_identity": "event:evt_g22_ref_b",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_g22_a",
+        "work_kind": "event",
+        "work_id": "evt_g22_ref_b"
+      },
+      "canonical_path": "classes/eng10_g22_a/modules/portia/work/evt_g22_ref_b/work.json"
+    },
+    {
+      "fixture_path": "participant-b.json",
+      "contract": "event_participant",
+      "version": "3",
+      "logical_identity": "event_participant:ep_g22_ref_b",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_g22_a",
+        "work_kind": "event",
+        "work_id": "evt_g22_ref_b"
+      },
+      "canonical_path": "classes/eng10_g22_a/modules/portia/work/evt_g22_ref_b/records/event_participant/ep_g22_ref_b.json"
+    },
+    {
+      "fixture_path": "account-b.json",
+      "contract": "account",
+      "version": "2",
+      "logical_identity": "account:acct_g22_same_001",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_g22_a",
+        "work_kind": "event",
+        "work_id": "evt_g22_ref_b"
+      },
+      "canonical_path": "classes/eng10_g22_a/modules/portia/work/evt_g22_ref_b/records/account/acct_g22_same_001.json"
+    }
+  ],
+  "context": [
+    {
+      "context_kind": "synthetic_core_roster",
+      "fixture_path": "roster.json"
+    }
+  ],
+  "required_distinctions": [
+    "Exact local record identity is work-qualified.",
+    "Same-looking record_id in another work is not a valid resolution target."
+  ],
+  "expected_graph_result": "invalid",
+  "expected_finding_ids": [
+    "G22.EVIDENCE.ROLE_BASIS_UNRESOLVED"
+  ],
+  "primary_finding_id": "G22.EVIDENCE.ROLE_BASIS_UNRESOLVED",
+  "principal_defect": "The reported-involvement Role in Event A references acct_g22_same_001, but that exact Account exists only in Event B.",
+  "structurally_valid_reason": "Every Event, Participant, Account, and Role remains structurally valid; the failure appears only after owner-work-qualified resolution.",
+  "records_must_remain_unmodified": [
+    "event-a.json",
+    "participant-a.json",
+    "event-b.json",
+    "participant-b.json",
+    "account-b.json"
+  ],
+  "expected_path": "expected.json"
+}

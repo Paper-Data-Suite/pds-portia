@@ -1,0 +1,41 @@
+{
+  "schema_version": "1",
+  "record_type": "statement_of_disagreement",
+  "module_id": "portia",
+  "class_id": "eng10_g22_013",
+  "work_id": "evt_g22_013",
+  "disagreement_id": "sod_g22_013",
+  "status": "active",
+  "target": {
+    "kind": "local_record",
+    "record_ref": {
+      "record_kind": "account",
+      "record_id": "acct_g22_013_b",
+      "contract_version": "2"
+    }
+  },
+  "source": {
+    "kind": "local_operator",
+    "display_label": "Synthetic Teacher"
+  },
+  "positions": [
+    "disputes_accuracy"
+  ],
+  "statement": {
+    "representation": "recorded_summary",
+    "text": "The synthetic source disputes the intended Account A, but this record is deliberately bound to Account B."
+  },
+  "creation_source": {
+    "type": "digital_entry"
+  },
+  "created_at": "2026-10-10T09:10:00-04:00",
+  "created_by": {
+    "type": "local_operator",
+    "display_label": "Synthetic Teacher"
+  },
+  "updated_at": "2026-10-10T09:10:00-04:00",
+  "updated_by": {
+    "type": "local_operator",
+    "display_label": "Synthetic Teacher"
+  }
+}

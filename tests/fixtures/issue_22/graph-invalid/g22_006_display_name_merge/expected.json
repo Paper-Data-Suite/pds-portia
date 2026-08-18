@@ -1,0 +1,12 @@
+{
+  "fixture_contract": "pds-portia.graph-invalid-expectation",
+  "fixture_version": "1",
+  "not_runtime_contract": true,
+  "scenario_id": "G22-006",
+  "primary_finding_id": "G22.IDENTITY.DISPLAY_NAME_MERGE",
+  "expected_finding_ids": [
+    "G22.IDENTITY.DISPLAY_NAME_MERGE"
+  ],
+  "structurally_valid_public_records": true,
+  "principal_defect": "A synthetic resolver collapses two different class-qualified roster subjects solely because their display snapshots are equal."
+}

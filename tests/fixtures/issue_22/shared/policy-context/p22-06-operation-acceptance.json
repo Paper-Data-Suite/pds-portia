@@ -1,0 +1,20 @@
+{
+  "fixture_contract": "pds-portia.synthetic-operation-acceptance-context",
+  "fixture_version": "1",
+  "not_runtime_contract": true,
+  "synthetic": true,
+  "operation_id": "op_p22_import_create_event_001",
+  "journal_revision": 4,
+  "contract_version": "1",
+  "state": "committed",
+  "accepted_results": [
+    {
+      "kind": "work",
+      "module_id": "portia",
+      "class_id": "eng10_p2_2026",
+      "work_id": "evt_p22_import_001",
+      "work_kind": "event",
+      "contract_version": "2"
+    }
+  ]
+}

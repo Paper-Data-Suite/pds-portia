@@ -1,0 +1,1 @@
+Synthetic policy rule p22_student_facing_export_rule@1: authorize one student-facing export for the exact focal participant and exact Event work; do not authorize raw source-artifact access.

@@ -1,0 +1,12 @@
+{
+  "fixture_contract": "pds-portia.graph-invalid-expectation",
+  "fixture_version": "1",
+  "not_runtime_contract": true,
+  "scenario_id": "G22-002",
+  "primary_finding_id": "G22.EVIDENCE.WRONG_WORK",
+  "expected_finding_ids": [
+    "G22.EVIDENCE.WRONG_WORK"
+  ],
+  "structurally_valid_public_records": true,
+  "principal_defect": "An Event-A Review uses an exact Account reference whose work_ref names another owning class/work."
+}

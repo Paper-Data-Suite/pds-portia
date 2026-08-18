@@ -1,0 +1,7 @@
+{
+  "schema_version": "1",
+  "record_type": "operation_current_pointer",
+  "module_id": "portia",
+  "operation_id": "op_p22_recovery_relationship",
+  "journal_revision": 6
+}

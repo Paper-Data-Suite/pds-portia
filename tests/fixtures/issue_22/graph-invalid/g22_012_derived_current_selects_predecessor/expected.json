@@ -1,0 +1,12 @@
+{
+  "fixture_contract": "pds-portia.graph-invalid-expectation",
+  "fixture_version": "1",
+  "not_runtime_contract": true,
+  "scenario_id": "G22-012",
+  "primary_finding_id": "G22.DERIVED.CURRENT_SELECTS_PREDECESSOR",
+  "expected_finding_ids": [
+    "G22.DERIVED.CURRENT_SELECTS_PREDECESSOR"
+  ],
+  "structurally_valid_public_records": true,
+  "principal_defect": "A schema-valid derived current pointer selects a generation whose declared replacement result still chooses the superseded Account predecessor rather than the active successor."
+}

@@ -1,0 +1,43 @@
+{
+  "scenario_id": "P22-12",
+  "expected_graph_result": "valid",
+  "focal_participant_id": "ep_p22_privacy_b",
+  "projection_policy_digest": "bd22c201d5cd98183e5ed7164342f6564a329950e973392f3bcb9a857745c5de",
+  "authorization_rule_digest": "93e03314a2759f63b9c9a2fce03ac7f09a5e578efa35bf62da801ea1098fcf01",
+  "projection_decision_digest": "0577d8703556105d83630c7fdab0097b9ff0b14019781bf34768e0b34586dc7f",
+  "source_artifact": {
+    "sha256_digest": "cc95e0ee8cad61d700e03a74873a315c19083f218efaf6a0886942dd4438a305",
+    "byte_length": 120,
+    "authorized_for_export": false
+  },
+  "source_inventory": {
+    "inventory_digest": "4d5dd0d59db96258cd84b05756e8c126aede6a090d4dc039001c890074e6aed2",
+    "entry_count": 4,
+    "excluded_record_ids": [
+      "ep_p22_privacy_a",
+      "acct_p22_privacy_a"
+    ]
+  },
+  "output": {
+    "workspace_relative_path": "portia/exports/pexp_p22_student_b_event_001/artifact.csv",
+    "sha256_digest": "e8483452ed9e1334e5dddf39eb0935a13bf9e79f9052ef695e67ab1facd0d719",
+    "byte_length": 398
+  },
+  "disposition_summary": {
+    "count_unit": "projection_item",
+    "included": 4,
+    "withheld": 5,
+    "unavailable": 1,
+    "absent": 1,
+    "manual_review_resolved": 1
+  },
+  "forbidden_output_tokens": [
+    "Synthetic Student A",
+    "stu_p22_001",
+    "ep_p22_privacy_a",
+    "acct_p22_privacy_a",
+    "ep_p22_privacy_b",
+    "stu_p22_002",
+    "Synthetic Student B first-person source note.\nI stayed at the side table and asked the teacher before moving materials."
+  ]
+}

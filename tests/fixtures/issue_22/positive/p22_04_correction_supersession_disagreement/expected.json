@@ -1,0 +1,24 @@
+{
+  "predecessor_account_id": "acct_p22_original_red",
+  "predecessor_status": "superseded",
+  "successor_account_id": "acct_p22_corrected_blue",
+  "successor_status": "active",
+  "supersession_reason": "statement_corrected",
+  "disagreement_id": "sod_p22_original_red",
+  "disagreement_target_id": "acct_p22_original_red",
+  "historical_review_id": "rvw_p22_before_correction",
+  "historical_review_evidence_id": "acct_p22_original_red",
+  "current_account_frontier": [
+    "acct_p22_corrected_blue"
+  ],
+  "lifecycle_heads": {
+    "acct_p22_original_red": {
+      "transition_id": "lct_p22_original_superseded",
+      "to_status": "superseded"
+    },
+    "acct_p22_corrected_blue": {
+      "transition_id": "lct_p22_corrected_active",
+      "to_status": "active"
+    }
+  }
+}

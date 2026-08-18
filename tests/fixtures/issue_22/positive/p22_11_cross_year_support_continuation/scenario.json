@@ -1,0 +1,270 @@
+{
+  "fixture_contract": "pds-portia.representative-contract-graph-scenario",
+  "fixture_version": "1",
+  "not_runtime_contract": true,
+  "scenario_id": "P22-11",
+  "title": "Cross-Year Support Continuation",
+  "scenario_kind": "positive",
+  "synthetic": true,
+  "records": [
+    {
+      "fixture_path": "process-2026.json",
+      "contract": "support_process",
+      "version": "1",
+      "logical_identity": "support_process:sup_p22_crossyear_2026",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "support_process",
+        "work_id": "sup_p22_crossyear_2026"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/sup_p22_crossyear_2026/work.json"
+    },
+    {
+      "fixture_path": "participant-student-2026.json",
+      "contract": "support_process_participant",
+      "version": "1",
+      "logical_identity": "support_process_participant:spp_p22_crossyear_student_2026",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "support_process",
+        "work_id": "sup_p22_crossyear_2026"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/sup_p22_crossyear_2026/records/support_process_participant/spp_p22_crossyear_student_2026.json"
+    },
+    {
+      "fixture_path": "participant-teacher-2026.json",
+      "contract": "support_process_participant",
+      "version": "1",
+      "logical_identity": "support_process_participant:spp_p22_crossyear_teacher_2026",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "support_process",
+        "work_id": "sup_p22_crossyear_2026"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/sup_p22_crossyear_2026/records/support_process_participant/spp_p22_crossyear_teacher_2026.json"
+    },
+    {
+      "fixture_path": "need-2026.json",
+      "contract": "support_need",
+      "version": "1",
+      "logical_identity": "support_need:spn_p22_crossyear_2026",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "support_process",
+        "work_id": "sup_p22_crossyear_2026"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/sup_p22_crossyear_2026/records/support_need/spn_p22_crossyear_2026.json"
+    },
+    {
+      "fixture_path": "goal-2026.json",
+      "contract": "support_goal",
+      "version": "1",
+      "logical_identity": "support_goal:spg_p22_crossyear_2026",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "support_process",
+        "work_id": "sup_p22_crossyear_2026"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/sup_p22_crossyear_2026/records/support_goal/spg_p22_crossyear_2026.json"
+    },
+    {
+      "fixture_path": "support-2026.json",
+      "contract": "support",
+      "version": "1",
+      "logical_identity": "support:spt_p22_crossyear_2026",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "support_process",
+        "work_id": "sup_p22_crossyear_2026"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/sup_p22_crossyear_2026/records/support/spt_p22_crossyear_2026.json"
+    },
+    {
+      "fixture_path": "implementation-2026.json",
+      "contract": "implementation",
+      "version": "1",
+      "logical_identity": "implementation:imp_p22_crossyear_2026",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "support_process",
+        "work_id": "sup_p22_crossyear_2026"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/sup_p22_crossyear_2026/records/implementation/imp_p22_crossyear_2026.json"
+    },
+    {
+      "fixture_path": "observation-2026.json",
+      "contract": "observation",
+      "version": "2",
+      "logical_identity": "observation:obs_p22_crossyear_2026",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "support_process",
+        "work_id": "sup_p22_crossyear_2026"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/sup_p22_crossyear_2026/records/observation/obs_p22_crossyear_2026.json"
+    },
+    {
+      "fixture_path": "outcome-2026.json",
+      "contract": "outcome",
+      "version": "1",
+      "logical_identity": "outcome:out_p22_crossyear_2026",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "support_process",
+        "work_id": "sup_p22_crossyear_2026"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/sup_p22_crossyear_2026/records/outcome/out_p22_crossyear_2026.json"
+    },
+    {
+      "fixture_path": "process-2027.json",
+      "contract": "support_process",
+      "version": "1",
+      "logical_identity": "support_process:sup_p22_crossyear_2027",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng11_p3_2027",
+        "work_kind": "support_process",
+        "work_id": "sup_p22_crossyear_2027"
+      },
+      "canonical_path": "classes/eng11_p3_2027/modules/portia/work/sup_p22_crossyear_2027/work.json"
+    },
+    {
+      "fixture_path": "participant-student-2027.json",
+      "contract": "support_process_participant",
+      "version": "1",
+      "logical_identity": "support_process_participant:spp_p22_crossyear_student_2027",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng11_p3_2027",
+        "work_kind": "support_process",
+        "work_id": "sup_p22_crossyear_2027"
+      },
+      "canonical_path": "classes/eng11_p3_2027/modules/portia/work/sup_p22_crossyear_2027/records/support_process_participant/spp_p22_crossyear_student_2027.json"
+    },
+    {
+      "fixture_path": "participant-teacher-2027.json",
+      "contract": "support_process_participant",
+      "version": "1",
+      "logical_identity": "support_process_participant:spp_p22_crossyear_teacher_2027",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng11_p3_2027",
+        "work_kind": "support_process",
+        "work_id": "sup_p22_crossyear_2027"
+      },
+      "canonical_path": "classes/eng11_p3_2027/modules/portia/work/sup_p22_crossyear_2027/records/support_process_participant/spp_p22_crossyear_teacher_2027.json"
+    },
+    {
+      "fixture_path": "need-2027.json",
+      "contract": "support_need",
+      "version": "1",
+      "logical_identity": "support_need:spn_p22_crossyear_2027",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng11_p3_2027",
+        "work_kind": "support_process",
+        "work_id": "sup_p22_crossyear_2027"
+      },
+      "canonical_path": "classes/eng11_p3_2027/modules/portia/work/sup_p22_crossyear_2027/records/support_need/spn_p22_crossyear_2027.json"
+    },
+    {
+      "fixture_path": "goal-2027.json",
+      "contract": "support_goal",
+      "version": "1",
+      "logical_identity": "support_goal:spg_p22_crossyear_2027",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng11_p3_2027",
+        "work_kind": "support_process",
+        "work_id": "sup_p22_crossyear_2027"
+      },
+      "canonical_path": "classes/eng11_p3_2027/modules/portia/work/sup_p22_crossyear_2027/records/support_goal/spg_p22_crossyear_2027.json"
+    },
+    {
+      "fixture_path": "support-2027.json",
+      "contract": "support",
+      "version": "1",
+      "logical_identity": "support:spt_p22_crossyear_2027",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng11_p3_2027",
+        "work_kind": "support_process",
+        "work_id": "sup_p22_crossyear_2027"
+      },
+      "canonical_path": "classes/eng11_p3_2027/modules/portia/work/sup_p22_crossyear_2027/records/support/spt_p22_crossyear_2027.json"
+    },
+    {
+      "fixture_path": "implementation-2027.json",
+      "contract": "implementation",
+      "version": "1",
+      "logical_identity": "implementation:imp_p22_crossyear_2027",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng11_p3_2027",
+        "work_kind": "support_process",
+        "work_id": "sup_p22_crossyear_2027"
+      },
+      "canonical_path": "classes/eng11_p3_2027/modules/portia/work/sup_p22_crossyear_2027/records/implementation/imp_p22_crossyear_2027.json"
+    },
+    {
+      "fixture_path": "observation-2027.json",
+      "contract": "observation",
+      "version": "2",
+      "logical_identity": "observation:obs_p22_crossyear_2027",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng11_p3_2027",
+        "work_kind": "support_process",
+        "work_id": "sup_p22_crossyear_2027"
+      },
+      "canonical_path": "classes/eng11_p3_2027/modules/portia/work/sup_p22_crossyear_2027/records/observation/obs_p22_crossyear_2027.json"
+    },
+    {
+      "fixture_path": "outcome-2027.json",
+      "contract": "outcome",
+      "version": "1",
+      "logical_identity": "outcome:out_p22_crossyear_2027",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng11_p3_2027",
+        "work_kind": "support_process",
+        "work_id": "sup_p22_crossyear_2027"
+      },
+      "canonical_path": "classes/eng11_p3_2027/modules/portia/work/sup_p22_crossyear_2027/records/outcome/out_p22_crossyear_2027.json"
+    }
+  ],
+  "context": [
+    {
+      "context_kind": "synthetic_core_roster",
+      "fixture_path": "roster-2026.json"
+    },
+    {
+      "context_kind": "synthetic_core_roster",
+      "fixture_path": "roster-2027.json"
+    }
+  ],
+  "required_distinctions": [
+    "Cross-year continuation is explicit Support Process continuity, not migration or ownership correction.",
+    "The successor is a new Support Process work identity under a new owning class and school year; the predecessor is not moved.",
+    "Each year has new Support Process Participant identities even when roster-local labels look the same.",
+    "Repeated local student_id and display name across class-qualified rosters do not establish a workspace-global student identity.",
+    "Selected predecessor context is reviewed through continues_from without cloning predecessor child records as current-year authority.",
+    "Predecessor and successor Need, Goal, Support, Implementation, Observation, and Outcome identities are disjoint.",
+    "Historical exact Outcome evidence references remain pinned to the predecessor work root after the successor exists.",
+    "Successor Outcome evidence references only successor-year records; continuation does not retarget old exact references.",
+    "New-year plan, implementation, observation, and outcome facts require new canonical records rather than reuse of predecessor child identity.",
+    "Neither Support Process uses supersession to represent ordinary cross-year continuation."
+  ],
+  "expected_graph_result": "valid",
+  "expected_finding_ids": [],
+  "expected_path": "expected.json"
+}

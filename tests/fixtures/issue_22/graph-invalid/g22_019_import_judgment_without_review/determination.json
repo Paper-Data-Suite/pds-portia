@@ -1,0 +1,44 @@
+{
+  "schema_version": "1",
+  "record_type": "determination",
+  "module_id": "portia",
+  "class_id": "eng10_g22_019",
+  "work_id": "evt_g22_019",
+  "determination_id": "det_g22_019_unreviewed_import",
+  "status": "active",
+  "target": {
+    "kind": "event"
+  },
+  "question": "What bounded conclusion is supported for this Event-local review?",
+  "decision_maker": {
+    "kind": "local_operator",
+    "display_label": "Synthetic Teacher"
+  },
+  "authority_context": {
+    "kind": "teacher_local",
+    "scope": "teacher_review"
+  },
+  "process_basis": {
+    "kind": "teacher_local",
+    "process_label": "Local teacher review"
+  },
+  "outcome": {
+    "kind": "conclusion",
+    "text": "Synthetic imported proposal was improperly activated as a human judgment."
+  },
+  "creation_source": {
+    "type": "import",
+    "source_label": "Synthetic legacy export",
+    "external_reference": "legacy_g22_019"
+  },
+  "created_at": "2026-10-22T09:10:00-04:00",
+  "created_by": {
+    "type": "local_operator",
+    "display_label": "Synthetic Teacher"
+  },
+  "updated_at": "2026-10-22T09:10:00-04:00",
+  "updated_by": {
+    "type": "local_operator",
+    "display_label": "Synthetic Teacher"
+  }
+}

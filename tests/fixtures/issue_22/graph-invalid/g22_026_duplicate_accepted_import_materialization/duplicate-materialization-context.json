@@ -1,0 +1,27 @@
+{
+  "fixture_contract": "pds-portia.synthetic-import-replay-resolution",
+  "fixture_version": "1",
+  "not_runtime_contract": true,
+  "resolution_kind": "accepted_proposal_replayed_as_new_domain_record",
+  "retained_source_identity": "retained-row-g22-026",
+  "proposal_identity_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "accepted_review": {
+    "review_id": "irev_g22_026",
+    "review_sequence": 1
+  },
+  "first_result": {
+    "class_id": "eng10_g22_026",
+    "work_id": "evt_g22_026_original",
+    "record_kind": "event",
+    "record_id": "evt_g22_026_original",
+    "contract_version": "2"
+  },
+  "replayed_result": {
+    "class_id": "eng10_g22_026",
+    "work_id": "evt_g22_026_duplicate",
+    "record_kind": "event",
+    "record_id": "evt_g22_026_duplicate",
+    "contract_version": "2"
+  },
+  "unchanged_source_and_mapping": true
+}

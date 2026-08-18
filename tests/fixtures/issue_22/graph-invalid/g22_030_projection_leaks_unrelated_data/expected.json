@@ -1,0 +1,10 @@
+{
+  "scenario_id": "G22-030",
+  "expected_graph_result": "invalid",
+  "expected_finding_ids": [
+    "G22.PRIVACY.PROJECTION_LEAKS_UNRELATED_DATA"
+  ],
+  "primary_finding_id": "G22.PRIVACY.PROJECTION_LEAKS_UNRELATED_DATA",
+  "structurally_valid_public_records": true,
+  "reason": "A participant-specific projection emits an unrelated participant stable ID and unsafe Account content."
+}

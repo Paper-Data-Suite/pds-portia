@@ -1,0 +1,132 @@
+{
+  "fixture_contract": "pds-portia.representative-contract-graph-scenario",
+  "fixture_version": "1",
+  "not_runtime_contract": true,
+  "scenario_id": "P22-06",
+  "title": "Structured import to reviewed Event",
+  "scenario_kind": "positive",
+  "synthetic": true,
+  "records": [
+    {
+      "fixture_path": "records/import-batch-original.json",
+      "contract": "import_batch",
+      "version": "1",
+      "logical_identity": "import_batch:ibat_p22_import_001",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "owner_kind": "import_batch",
+        "import_batch_id": "ibat_p22_import_001"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/imports/ibat_p22_import_001/batch.json"
+    },
+    {
+      "fixture_path": "records/import-source-record.json",
+      "contract": "import_source_record",
+      "version": "1",
+      "logical_identity": "import_source_record:isrc_p22_import_event_001",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "owner_kind": "import_batch",
+        "import_batch_id": "ibat_p22_import_001"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/imports/ibat_p22_import_001/source-records/isrc_p22_import_event_001.json"
+    },
+    {
+      "fixture_path": "records/import-proposal.json",
+      "contract": "import_proposal",
+      "version": "1",
+      "logical_identity": "import_proposal:iprp_p22_import_event_001",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "owner_kind": "import_batch",
+        "import_batch_id": "ibat_p22_import_001"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/imports/ibat_p22_import_001/proposals/iprp_p22_import_event_001.json"
+    },
+    {
+      "fixture_path": "records/import-review.json",
+      "contract": "import_review",
+      "version": "1",
+      "logical_identity": "import_review:irev_p22_import_event_001:1",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "owner_kind": "import_batch",
+        "import_batch_id": "ibat_p22_import_001"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/imports/ibat_p22_import_001/reviews/irev_p22_import_event_001--s1.json"
+    },
+    {
+      "fixture_path": "records/materialized-event.json",
+      "contract": "event",
+      "version": "2",
+      "logical_identity": "event:evt_p22_import_001",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "work_kind": "event",
+        "work_id": "evt_p22_import_001"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/work/evt_p22_import_001/work.json"
+    },
+    {
+      "fixture_path": "records/import-materialization.json",
+      "contract": "import_materialization",
+      "version": "1",
+      "logical_identity": "import_materialization:op_p22_import_create_event_001--r4--irev_p22_import_event_001--s1",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "owner_kind": "import_batch",
+        "import_batch_id": "ibat_p22_import_001"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/imports/ibat_p22_import_001/materializations/op_p22_import_create_event_001--r4--irev_p22_import_event_001--s1.json"
+    },
+    {
+      "fixture_path": "records/import-batch-later-missing-row.json",
+      "contract": "import_batch",
+      "version": "1",
+      "logical_identity": "import_batch:ibat_p22_import_002",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_p2_2026",
+        "owner_kind": "import_batch",
+        "import_batch_id": "ibat_p22_import_002"
+      },
+      "canonical_path": "classes/eng10_p2_2026/modules/portia/imports/ibat_p22_import_002/batch.json"
+    }
+  ],
+  "context": [
+    {
+      "context_kind": "synthetic_import_source",
+      "fixture_path": "../../shared/policy-context/p22-06-import-source-context.json"
+    },
+    {
+      "context_kind": "synthetic_import_mapping",
+      "fixture_path": "../../shared/policy-context/p22-06-import-mapping.json"
+    },
+    {
+      "context_kind": "synthetic_operation_acceptance",
+      "fixture_path": "../../shared/policy-context/p22-06-operation-acceptance.json"
+    }
+  ],
+  "required_distinctions": [
+    "Import Batch is class-local operational state, not Event work.",
+    "Import Source Record is source-side data, not a Portia Event.",
+    "Source-system assertion does not become Portia judgment.",
+    "Import Proposal references source fields rather than copying values.",
+    "Attributable Import Review accepts mapping, not source truth.",
+    "Accepted Import Review does not itself materialize Event.",
+    "Canonical Event uses creation_source.type import.",
+    "Import timestamps do not become Event occurrence time.",
+    "Stable source key and digest identity do not use row order.",
+    "Unchanged replay must reconcile rather than duplicate Event.",
+    "Source record absent from later snapshot is not deletion."
+  ],
+  "expected_graph_result": "valid",
+  "expected_finding_ids": [],
+  "expected_path": "expected.json"
+}

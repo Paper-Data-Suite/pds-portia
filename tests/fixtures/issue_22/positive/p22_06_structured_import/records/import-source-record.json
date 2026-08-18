@@ -1,0 +1,32 @@
+{
+  "schema_version": "1",
+  "record_type": "import_source_record",
+  "module_id": "portia",
+  "class_id": "eng10_p2_2026",
+  "import_batch_id": "ibat_p22_import_001",
+  "source_record_id": "isrc_p22_import_event_001",
+  "source_record_key_origin": "source_provided",
+  "source_record_key": "SRC-EVENT-001",
+  "source_record_digest": "05d4d80b1a74e5380d3e9034cb9633b2caa7eff1b0fe4c5366461f5717d5c22c",
+  "source_record_identity_digest": "d74c0484b900816f8371201b7e145187b168413e50ec16ce5ae4b8d34f029b80",
+  "source_fields": [
+    {
+      "field_key": "event_time",
+      "value": "2026-08-15T09:05:00-04:00"
+    },
+    {
+      "field_key": "summary",
+      "value": "Student requested a brief hallway break during independent work."
+    },
+    {
+      "field_key": "source_status",
+      "value": "resolved"
+    }
+  ],
+  "observed_at": "2026-08-15T10:10:00-04:00",
+  "created_at": "2026-08-15T10:12:00-04:00",
+  "created_by": {
+    "type": "system_process",
+    "process_id": "issue22_structured_import"
+  }
+}

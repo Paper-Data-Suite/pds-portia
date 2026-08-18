@@ -1,0 +1,12 @@
+{
+  "fixture_contract": "pds-portia.synthetic-derived-current-view",
+  "fixture_version": "1",
+  "not_runtime_contract": true,
+  "record_contract": "account",
+  "current_record_ids": [
+    "acct_p22_derived_original",
+    "acct_p22_derived_corrected"
+  ],
+  "selection_basis": "canonical_supersedes",
+  "accepted_as_current": true
+}

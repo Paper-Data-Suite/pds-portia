@@ -1,0 +1,22 @@
+{
+  "fixture_contract": "pds-portia.synthetic-export-consumption-resolution",
+  "fixture_version": "1",
+  "not_runtime_contract": true,
+  "export_id": "pexp_g22_032_exact_consumption",
+  "consumed_exact_source": {
+    "class_id": "eng10_p2_2026",
+    "work_id": "evt_p22_derived_001",
+    "record_kind": "account",
+    "record_id": "acct_p22_derived_original",
+    "contract_version": "2"
+  },
+  "inventory_bound_source": {
+    "class_id": "eng10_p2_2026",
+    "work_id": "evt_p22_derived_001",
+    "record_kind": "account",
+    "record_id": "acct_p22_derived_corrected",
+    "contract_version": "2"
+  },
+  "successor_relationship": "supersedes",
+  "inventory_fingerprint_truthful_for_bound_source": true
+}

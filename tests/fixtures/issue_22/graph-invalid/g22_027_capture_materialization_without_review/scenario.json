@@ -1,0 +1,58 @@
+{
+  "fixture_contract": "pds-portia.representative-contract-graph-scenario",
+  "fixture_version": "1",
+  "not_runtime_contract": true,
+  "scenario_id": "G22-027",
+  "title": "Paper materialization claims acceptance without a resolvable review",
+  "scenario_kind": "graph_invalid",
+  "synthetic": true,
+  "records": [
+    {
+      "fixture_path": "capture-batch.json",
+      "contract": "capture_batch",
+      "version": "1",
+      "logical_identity": "capture_batch:cbat_g22_027",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_g22_027",
+        "work_kind": "capture_batch",
+        "work_id": "cbat_g22_027"
+      },
+      "canonical_path": "classes/eng10_g22_027/modules/portia/work/cbat_g22_027/work.json"
+    },
+    {
+      "fixture_path": "capture-materialization.json",
+      "contract": "capture_materialization",
+      "version": "1",
+      "logical_identity": "capture_materialization:op_g22_027_materialize--r4--crev_g22_027_missing--s1",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_g22_027",
+        "work_kind": "capture_batch",
+        "work_id": "cbat_g22_027"
+      },
+      "canonical_path": "classes/eng10_g22_027/modules/portia/work/cbat_g22_027/records/capture_materialization/op_g22_027_materialize--r4--crev_g22_027_missing--s1.json"
+    }
+  ],
+  "context": [
+    {
+      "context_kind": "synthetic_capture_materialization_resolution",
+      "fixture_path": "resolution-context.json"
+    }
+  ],
+  "required_distinctions": [
+    "Proposal staging != accepted materialization.",
+    "Materialization requires a resolvable accepted human Capture Review."
+  ],
+  "expected_graph_result": "invalid",
+  "expected_finding_ids": [
+    "G22.PAPER.MATERIALIZATION_REVIEW_UNRESOLVED"
+  ],
+  "primary_finding_id": "G22.PAPER.MATERIALIZATION_REVIEW_UNRESOLVED",
+  "principal_defect": "Capture materialization claims an accepted canonical result while its required exact Capture Review does not resolve.",
+  "structurally_valid_reason": "Capture Materialization@1 structurally carries exact proposal/review/operation/result references; application validation must resolve and authorize those references before acceptance.",
+  "records_must_remain_unmodified": [
+    "capture-batch.json"
+  ],
+  "expected_path": "expected.json"
+}

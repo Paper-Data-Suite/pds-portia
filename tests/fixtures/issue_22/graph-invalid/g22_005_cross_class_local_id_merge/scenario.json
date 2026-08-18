@@ -1,0 +1,95 @@
+{
+  "fixture_contract": "pds-portia.representative-contract-graph-scenario",
+  "fixture_version": "1",
+  "not_runtime_contract": true,
+  "scenario_id": "G22-005",
+  "title": "Repeated local student_id merged across classes",
+  "scenario_kind": "graph_invalid",
+  "synthetic": true,
+  "records": [
+    {
+      "fixture_path": "event-a.json",
+      "contract": "event",
+      "version": "2",
+      "logical_identity": "event:evt_g22_merge_a",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_g22_merge_a",
+        "work_kind": "event",
+        "work_id": "evt_g22_merge_a"
+      },
+      "canonical_path": "classes/eng10_g22_merge_a/modules/portia/work/evt_g22_merge_a/work.json"
+    },
+    {
+      "fixture_path": "participant-a.json",
+      "contract": "event_participant",
+      "version": "3",
+      "logical_identity": "event_participant:ep_g22_merge_a",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_g22_merge_a",
+        "work_kind": "event",
+        "work_id": "evt_g22_merge_a"
+      },
+      "canonical_path": "classes/eng10_g22_merge_a/modules/portia/work/evt_g22_merge_a/records/event_participant/ep_g22_merge_a.json"
+    },
+    {
+      "fixture_path": "event-b.json",
+      "contract": "event",
+      "version": "2",
+      "logical_identity": "event:evt_g22_merge_b",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng11_g22_merge_b",
+        "work_kind": "event",
+        "work_id": "evt_g22_merge_b"
+      },
+      "canonical_path": "classes/eng11_g22_merge_b/modules/portia/work/evt_g22_merge_b/work.json"
+    },
+    {
+      "fixture_path": "participant-b.json",
+      "contract": "event_participant",
+      "version": "3",
+      "logical_identity": "event_participant:ep_g22_merge_b",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng11_g22_merge_b",
+        "work_kind": "event",
+        "work_id": "evt_g22_merge_b"
+      },
+      "canonical_path": "classes/eng11_g22_merge_b/modules/portia/work/evt_g22_merge_b/records/event_participant/ep_g22_merge_b.json"
+    }
+  ],
+  "context": [
+    {
+      "context_kind": "synthetic_core_roster",
+      "fixture_path": "roster-a.json"
+    },
+    {
+      "context_kind": "synthetic_core_roster",
+      "fixture_path": "roster-b.json"
+    },
+    {
+      "context_kind": "synthetic_identity_resolution",
+      "fixture_path": "identity-resolution.json"
+    }
+  ],
+  "required_distinctions": [
+    "Roster student identity is class-qualified.",
+    "Repeated local student_id does not establish cross-class person identity."
+  ],
+  "expected_graph_result": "invalid",
+  "expected_finding_ids": [
+    "G22.IDENTITY.CROSS_CLASS_LOCAL_ID_MERGE"
+  ],
+  "primary_finding_id": "G22.IDENTITY.CROSS_CLASS_LOCAL_ID_MERGE",
+  "principal_defect": "A synthetic resolver collapses two class-qualified roster subjects solely because their local student_id strings match.",
+  "structurally_valid_reason": "Both Events and Participants resolve exactly and are individually valid; the invalidity is the noncanonical identity-resolution claim.",
+  "records_must_remain_unmodified": [
+    "event-a.json",
+    "participant-a.json",
+    "event-b.json",
+    "participant-b.json"
+  ],
+  "expected_path": "expected.json"
+}

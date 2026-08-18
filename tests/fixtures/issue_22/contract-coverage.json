@@ -1,0 +1,1800 @@
+{
+  "fixture_contract": "pds-portia.issue-22-contract-coverage",
+  "fixture_version": "1",
+  "not_runtime_contract": true,
+  "synthetic": true,
+  "issue": 22,
+  "source_catalog": "schemas/schema-catalog.json",
+  "allowed_dispositions": [
+    "positive_graph",
+    "graph_invalid",
+    "existing_focused_fixture_only",
+    "foreign_context_only",
+    "not_applicable_with_rationale"
+  ],
+  "contracts": [
+    {
+      "contract": "event",
+      "catalog_versions": [
+        "1",
+        "2"
+      ],
+      "current_version": "2",
+      "record_operational_family": true,
+      "disposition": "positive_graph",
+      "evidence": "P22-01, P22-02, P22-05, P22-06, P22-07, P22-09, P22-10, P22-12, P22-13, P22-14, P22-15",
+      "rationale": "Event-owned graph roots; neutral, disputed, imported, corrected, privacy, recovery, and support-initiation stories"
+    },
+    {
+      "contract": "support_process",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": true,
+      "disposition": "positive_graph",
+      "evidence": "P22-08, P22-09, P22-11, P22-15",
+      "rationale": "bounded class-owned Support Process; cross-year continuation uses a new work root"
+    },
+    {
+      "contract": "event_participant",
+      "catalog_versions": [
+        "1",
+        "2",
+        "3"
+      ],
+      "current_version": "3",
+      "record_operational_family": true,
+      "disposition": "positive_graph",
+      "evidence": "P22-01, P22-02, P22-03, P22-05, P22-06, P22-07, P22-09, P22-10, P22-12, P22-13, P22-14, P22-15",
+      "rationale": "exact work-local participant identity; cross-class source-roster behavior remains explicit"
+    },
+    {
+      "contract": "support_process_participant",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": true,
+      "disposition": "positive_graph",
+      "evidence": "P22-08, P22-11, P22-15",
+      "rationale": "exact supported-person/provider process participants"
+    },
+    {
+      "contract": "support_need",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": true,
+      "disposition": "positive_graph",
+      "evidence": "P22-08, P22-11, P22-15",
+      "rationale": "bounded planning need, not a judgment or diagnosis"
+    },
+    {
+      "contract": "support_goal",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": true,
+      "disposition": "positive_graph",
+      "evidence": "P22-08, P22-11, P22-15",
+      "rationale": "planning criteria distinct from outcome"
+    },
+    {
+      "contract": "support",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": true,
+      "disposition": "positive_graph",
+      "evidence": "P22-08, P22-11",
+      "rationale": "planned Support distinct from actual Implementation"
+    },
+    {
+      "contract": "intervention",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": true,
+      "disposition": "positive_graph",
+      "evidence": "P22-15",
+      "rationale": "recurring Intervention plan distinct from actual occurrence"
+    },
+    {
+      "contract": "implementation",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": true,
+      "disposition": "positive_graph",
+      "evidence": "P22-08, P22-11, P22-15",
+      "rationale": "actual occurrence bound to an exact same-process plan"
+    },
+    {
+      "contract": "fidelity",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": true,
+      "disposition": "positive_graph",
+      "evidence": "P22-08",
+      "rationale": "adherence/implementation evaluation, not effectiveness"
+    },
+    {
+      "contract": "event_participant_role",
+      "catalog_versions": [
+        "1",
+        "2",
+        "3"
+      ],
+      "current_version": "3",
+      "record_operational_family": true,
+      "disposition": "positive_graph",
+      "evidence": "P22-01, P22-02, P22-07",
+      "rationale": "relationship semantics without fault/guilt inference"
+    },
+    {
+      "contract": "actor",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": true,
+      "disposition": "positive_graph",
+      "evidence": "P22-07",
+      "rationale": "workspace-scoped external/family identity without roster substitution"
+    },
+    {
+      "contract": "actor_contact_point",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": true,
+      "disposition": "positive_graph",
+      "evidence": "P22-07",
+      "rationale": "contact endpoint distinct from identity, consent, delivery, or authorization"
+    },
+    {
+      "contract": "actor_student_relationship",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": true,
+      "disposition": "positive_graph",
+      "evidence": "P22-07",
+      "rationale": "reviewed local relationship assertion without legal-authority inference"
+    },
+    {
+      "contract": "actor_roster_student_collision",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": true,
+      "disposition": "existing_focused_fixture_only",
+      "evidence": "Issue #14 Actor Directory fixtures",
+      "rationale": "collision record is exceptional identity-integrity evidence; P22-03/G22-005..007 exercise the integration invariant without manufacturing a positive collision record"
+    },
+    {
+      "contract": "actor_directory_lifecycle_transition",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": true,
+      "disposition": "existing_focused_fixture_only",
+      "evidence": "Issue #14 Actor Directory lifecycle fixtures",
+      "rationale": "Actor Directory lifecycle is workspace-scoped and already has dedicated structural/application coverage"
+    },
+    {
+      "contract": "actor_directory_lifecycle_history_correction",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": true,
+      "disposition": "existing_focused_fixture_only",
+      "evidence": "Issue #14 Actor Directory lifecycle fixtures",
+      "rationale": "specialized Actor Directory history correction is not needed to tell a representative teacher-local positive story"
+    },
+    {
+      "contract": "actor_directory_amendment",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": true,
+      "disposition": "existing_focused_fixture_only",
+      "evidence": "Issue #14 Actor Directory correction fixtures",
+      "rationale": "Actor Directory-specific amendment remains focused coverage"
+    },
+    {
+      "contract": "actor_directory_record_migration",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": true,
+      "disposition": "existing_focused_fixture_only",
+      "evidence": "Issue #14 / Issue #12 migration fixtures",
+      "rationale": "specialized Actor Directory representation migration; negative corpus protects migration-vs-correction semantics"
+    },
+    {
+      "contract": "actor_directory_exceptional_removal",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": true,
+      "disposition": "existing_focused_fixture_only",
+      "evidence": "Issue #14 / Issue #12 removal fixtures",
+      "rationale": "exceptional, non-routine removal must not be normalized into an ordinary positive story"
+    },
+    {
+      "contract": "portia_event_id",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": false,
+      "disposition": "not_applicable_with_rationale",
+      "evidence": "transitive Issue #22 graph coverage and original focused schema-validation suites",
+      "rationale": "Supporting identifier, reference, target, primitive/common, attribution, fingerprint, or embedded value schema; it is not an independently persisted graph record family and therefore does not require a standalone positive story."
+    },
+    {
+      "contract": "portia_support_process_id",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": false,
+      "disposition": "not_applicable_with_rationale",
+      "evidence": "transitive Issue #22 graph coverage and original focused schema-validation suites",
+      "rationale": "Supporting identifier, reference, target, primitive/common, attribution, fingerprint, or embedded value schema; it is not an independently persisted graph record family and therefore does not require a standalone positive story."
+    },
+    {
+      "contract": "portia_support_process_participant_id",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": false,
+      "disposition": "not_applicable_with_rationale",
+      "evidence": "transitive Issue #22 graph coverage and original focused schema-validation suites",
+      "rationale": "Supporting identifier, reference, target, primitive/common, attribution, fingerprint, or embedded value schema; it is not an independently persisted graph record family and therefore does not require a standalone positive story."
+    },
+    {
+      "contract": "portia_support_need_id",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": false,
+      "disposition": "not_applicable_with_rationale",
+      "evidence": "transitive Issue #22 graph coverage and original focused schema-validation suites",
+      "rationale": "Supporting identifier, reference, target, primitive/common, attribution, fingerprint, or embedded value schema; it is not an independently persisted graph record family and therefore does not require a standalone positive story."
+    },
+    {
+      "contract": "portia_support_goal_id",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": false,
+      "disposition": "not_applicable_with_rationale",
+      "evidence": "transitive Issue #22 graph coverage and original focused schema-validation suites",
+      "rationale": "Supporting identifier, reference, target, primitive/common, attribution, fingerprint, or embedded value schema; it is not an independently persisted graph record family and therefore does not require a standalone positive story."
+    },
+    {
+      "contract": "portia_support_id",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": false,
+      "disposition": "not_applicable_with_rationale",
+      "evidence": "transitive Issue #22 graph coverage and original focused schema-validation suites",
+      "rationale": "Supporting identifier, reference, target, primitive/common, attribution, fingerprint, or embedded value schema; it is not an independently persisted graph record family and therefore does not require a standalone positive story."
+    },
+    {
+      "contract": "portia_intervention_id",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": false,
+      "disposition": "not_applicable_with_rationale",
+      "evidence": "transitive Issue #22 graph coverage and original focused schema-validation suites",
+      "rationale": "Supporting identifier, reference, target, primitive/common, attribution, fingerprint, or embedded value schema; it is not an independently persisted graph record family and therefore does not require a standalone positive story."
+    },
+    {
+      "contract": "portia_implementation_id",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": false,
+      "disposition": "not_applicable_with_rationale",
+      "evidence": "transitive Issue #22 graph coverage and original focused schema-validation suites",
+      "rationale": "Supporting identifier, reference, target, primitive/common, attribution, fingerprint, or embedded value schema; it is not an independently persisted graph record family and therefore does not require a standalone positive story."
+    },
+    {
+      "contract": "portia_fidelity_id",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": false,
+      "disposition": "not_applicable_with_rationale",
+      "evidence": "transitive Issue #22 graph coverage and original focused schema-validation suites",
+      "rationale": "Supporting identifier, reference, target, primitive/common, attribution, fingerprint, or embedded value schema; it is not an independently persisted graph record family and therefore does not require a standalone positive story."
+    },
+    {
+      "contract": "portia_actor_id",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": false,
+      "disposition": "not_applicable_with_rationale",
+      "evidence": "transitive Issue #22 graph coverage and original focused schema-validation suites",
+      "rationale": "Supporting identifier, reference, target, primitive/common, attribution, fingerprint, or embedded value schema; it is not an independently persisted graph record family and therefore does not require a standalone positive story."
+    },
+    {
+      "contract": "portia_actor_contact_point_id",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": false,
+      "disposition": "not_applicable_with_rationale",
+      "evidence": "transitive Issue #22 graph coverage and original focused schema-validation suites",
+      "rationale": "Supporting identifier, reference, target, primitive/common, attribution, fingerprint, or embedded value schema; it is not an independently persisted graph record family and therefore does not require a standalone positive story."
+    },
+    {
+      "contract": "portia_actor_student_relationship_id",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": false,
+      "disposition": "not_applicable_with_rationale",
+      "evidence": "transitive Issue #22 graph coverage and original focused schema-validation suites",
+      "rationale": "Supporting identifier, reference, target, primitive/common, attribution, fingerprint, or embedded value schema; it is not an independently persisted graph record family and therefore does not require a standalone positive story."
+    },
+    {
+      "contract": "portia_actor_roster_student_collision_id",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": false,
+      "disposition": "not_applicable_with_rationale",
+      "evidence": "transitive Issue #22 graph coverage and original focused schema-validation suites",
+      "rationale": "Supporting identifier, reference, target, primitive/common, attribution, fingerprint, or embedded value schema; it is not an independently persisted graph record family and therefore does not require a standalone positive story."
+    },
+    {
+      "contract": "portia_event_participant_id",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": false,
+      "disposition": "not_applicable_with_rationale",
+      "evidence": "transitive Issue #22 graph coverage and original focused schema-validation suites",
+      "rationale": "Supporting identifier, reference, target, primitive/common, attribution, fingerprint, or embedded value schema; it is not an independently persisted graph record family and therefore does not require a standalone positive story."
+    },
+    {
+      "contract": "portia_event_participant_role_id",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": false,
+      "disposition": "not_applicable_with_rationale",
+      "evidence": "transitive Issue #22 graph coverage and original focused schema-validation suites",
+      "rationale": "Supporting identifier, reference, target, primitive/common, attribution, fingerprint, or embedded value schema; it is not an independently persisted graph record family and therefore does not require a standalone positive story."
+    },
+    {
+      "contract": "portia_work_relationship_id",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": false,
+      "disposition": "not_applicable_with_rationale",
+      "evidence": "transitive Issue #22 graph coverage and original focused schema-validation suites",
+      "rationale": "Supporting identifier, reference, target, primitive/common, attribution, fingerprint, or embedded value schema; it is not an independently persisted graph record family and therefore does not require a standalone positive story."
+    },
+    {
+      "contract": "portia_lifecycle_transition_id",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": false,
+      "disposition": "not_applicable_with_rationale",
+      "evidence": "transitive Issue #22 graph coverage and original focused schema-validation suites",
+      "rationale": "Supporting identifier, reference, target, primitive/common, attribution, fingerprint, or embedded value schema; it is not an independently persisted graph record family and therefore does not require a standalone positive story."
+    },
+    {
+      "contract": "portia_lifecycle_history_correction_id",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": false,
+      "disposition": "not_applicable_with_rationale",
+      "evidence": "transitive Issue #22 graph coverage and original focused schema-validation suites",
+      "rationale": "Supporting identifier, reference, target, primitive/common, attribution, fingerprint, or embedded value schema; it is not an independently persisted graph record family and therefore does not require a standalone positive story."
+    },
+    {
+      "contract": "portia_amendment_id",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": false,
+      "disposition": "not_applicable_with_rationale",
+      "evidence": "transitive Issue #22 graph coverage and original focused schema-validation suites",
+      "rationale": "Supporting identifier, reference, target, primitive/common, attribution, fingerprint, or embedded value schema; it is not an independently persisted graph record family and therefore does not require a standalone positive story."
+    },
+    {
+      "contract": "portia_statement_of_disagreement_id",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": false,
+      "disposition": "not_applicable_with_rationale",
+      "evidence": "transitive Issue #22 graph coverage and original focused schema-validation suites",
+      "rationale": "Supporting identifier, reference, target, primitive/common, attribution, fingerprint, or embedded value schema; it is not an independently persisted graph record family and therefore does not require a standalone positive story."
+    },
+    {
+      "contract": "portia_dependency_id",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": false,
+      "disposition": "not_applicable_with_rationale",
+      "evidence": "transitive Issue #22 graph coverage and original focused schema-validation suites",
+      "rationale": "Supporting identifier, reference, target, primitive/common, attribution, fingerprint, or embedded value schema; it is not an independently persisted graph record family and therefore does not require a standalone positive story."
+    },
+    {
+      "contract": "portia_record_migration_id",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": false,
+      "disposition": "not_applicable_with_rationale",
+      "evidence": "transitive Issue #22 graph coverage and original focused schema-validation suites",
+      "rationale": "Supporting identifier, reference, target, primitive/common, attribution, fingerprint, or embedded value schema; it is not an independently persisted graph record family and therefore does not require a standalone positive story."
+    },
+    {
+      "contract": "portia_ownership_correction_id",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": false,
+      "disposition": "not_applicable_with_rationale",
+      "evidence": "transitive Issue #22 graph coverage and original focused schema-validation suites",
+      "rationale": "Supporting identifier, reference, target, primitive/common, attribution, fingerprint, or embedded value schema; it is not an independently persisted graph record family and therefore does not require a standalone positive story."
+    },
+    {
+      "contract": "portia_exceptional_removal_id",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": false,
+      "disposition": "not_applicable_with_rationale",
+      "evidence": "transitive Issue #22 graph coverage and original focused schema-validation suites",
+      "rationale": "Supporting identifier, reference, target, primitive/common, attribution, fingerprint, or embedded value schema; it is not an independently persisted graph record family and therefore does not require a standalone positive story."
+    },
+    {
+      "contract": "structurally_safe_external_id",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": false,
+      "disposition": "not_applicable_with_rationale",
+      "evidence": "transitive Issue #22 graph coverage and original focused schema-validation suites",
+      "rationale": "Supporting identifier, reference, target, primitive/common, attribution, fingerprint, or embedded value schema; it is not an independently persisted graph record family and therefore does not require a standalone positive story."
+    },
+    {
+      "contract": "roster_student_ref",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": false,
+      "disposition": "not_applicable_with_rationale",
+      "evidence": "transitive Issue #22 graph coverage and original focused schema-validation suites",
+      "rationale": "Supporting identifier, reference, target, primitive/common, attribution, fingerprint, or embedded value schema; it is not an independently persisted graph record family and therefore does not require a standalone positive story."
+    },
+    {
+      "contract": "actor_ref",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": false,
+      "disposition": "not_applicable_with_rationale",
+      "evidence": "transitive Issue #22 graph coverage and original focused schema-validation suites",
+      "rationale": "Supporting identifier, reference, target, primitive/common, attribution, fingerprint, or embedded value schema; it is not an independently persisted graph record family and therefore does not require a standalone positive story."
+    },
+    {
+      "contract": "exact_actor_ref",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": false,
+      "disposition": "not_applicable_with_rationale",
+      "evidence": "transitive Issue #22 graph coverage and original focused schema-validation suites",
+      "rationale": "Supporting identifier, reference, target, primitive/common, attribution, fingerprint, or embedded value schema; it is not an independently persisted graph record family and therefore does not require a standalone positive story."
+    },
+    {
+      "contract": "exact_actor_contact_point_ref",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": false,
+      "disposition": "not_applicable_with_rationale",
+      "evidence": "transitive Issue #22 graph coverage and original focused schema-validation suites",
+      "rationale": "Supporting identifier, reference, target, primitive/common, attribution, fingerprint, or embedded value schema; it is not an independently persisted graph record family and therefore does not require a standalone positive story."
+    },
+    {
+      "contract": "exact_actor_student_relationship_ref",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": false,
+      "disposition": "not_applicable_with_rationale",
+      "evidence": "transitive Issue #22 graph coverage and original focused schema-validation suites",
+      "rationale": "Supporting identifier, reference, target, primitive/common, attribution, fingerprint, or embedded value schema; it is not an independently persisted graph record family and therefore does not require a standalone positive story."
+    },
+    {
+      "contract": "exact_actor_roster_student_collision_ref",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": false,
+      "disposition": "not_applicable_with_rationale",
+      "evidence": "transitive Issue #22 graph coverage and original focused schema-validation suites",
+      "rationale": "Supporting identifier, reference, target, primitive/common, attribution, fingerprint, or embedded value schema; it is not an independently persisted graph record family and therefore does not require a standalone positive story."
+    },
+    {
+      "contract": "exact_actor_directory_record_ref",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": false,
+      "disposition": "not_applicable_with_rationale",
+      "evidence": "transitive Issue #22 graph coverage and original focused schema-validation suites",
+      "rationale": "Supporting identifier, reference, target, primitive/common, attribution, fingerprint, or embedded value schema; it is not an independently persisted graph record family and therefore does not require a standalone positive story."
+    },
+    {
+      "contract": "local_record_ref",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": false,
+      "disposition": "not_applicable_with_rationale",
+      "evidence": "transitive Issue #22 graph coverage and original focused schema-validation suites",
+      "rationale": "Supporting identifier, reference, target, primitive/common, attribution, fingerprint, or embedded value schema; it is not an independently persisted graph record family and therefore does not require a standalone positive story."
+    },
+    {
+      "contract": "exact_local_record_ref",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": false,
+      "disposition": "not_applicable_with_rationale",
+      "evidence": "transitive Issue #22 graph coverage and original focused schema-validation suites",
+      "rationale": "Supporting identifier, reference, target, primitive/common, attribution, fingerprint, or embedded value schema; it is not an independently persisted graph record family and therefore does not require a standalone positive story."
+    },
+    {
+      "contract": "portia_work_ref",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": false,
+      "disposition": "not_applicable_with_rationale",
+      "evidence": "transitive Issue #22 graph coverage and original focused schema-validation suites",
+      "rationale": "Supporting identifier, reference, target, primitive/common, attribution, fingerprint, or embedded value schema; it is not an independently persisted graph record family and therefore does not require a standalone positive story."
+    },
+    {
+      "contract": "exact_portia_work_ref",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": false,
+      "disposition": "not_applicable_with_rationale",
+      "evidence": "transitive Issue #22 graph coverage and original focused schema-validation suites",
+      "rationale": "Supporting identifier, reference, target, primitive/common, attribution, fingerprint, or embedded value schema; it is not an independently persisted graph record family and therefore does not require a standalone positive story."
+    },
+    {
+      "contract": "portia_work_record_ref",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": false,
+      "disposition": "not_applicable_with_rationale",
+      "evidence": "transitive Issue #22 graph coverage and original focused schema-validation suites",
+      "rationale": "Supporting identifier, reference, target, primitive/common, attribution, fingerprint, or embedded value schema; it is not an independently persisted graph record family and therefore does not require a standalone positive story."
+    },
+    {
+      "contract": "exact_portia_work_record_ref",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": false,
+      "disposition": "not_applicable_with_rationale",
+      "evidence": "transitive Issue #22 graph coverage and original focused schema-validation suites",
+      "rationale": "Supporting identifier, reference, target, primitive/common, attribution, fingerprint, or embedded value schema; it is not an independently persisted graph record family and therefore does not require a standalone positive story."
+    },
+    {
+      "contract": "exceptional_removal_ref",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": false,
+      "disposition": "not_applicable_with_rationale",
+      "evidence": "transitive Issue #22 graph coverage and original focused schema-validation suites",
+      "rationale": "Supporting identifier, reference, target, primitive/common, attribution, fingerprint, or embedded value schema; it is not an independently persisted graph record family and therefore does not require a standalone positive story."
+    },
+    {
+      "contract": "module_work_record_ref",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": false,
+      "disposition": "not_applicable_with_rationale",
+      "evidence": "transitive Issue #22 graph coverage and original focused schema-validation suites",
+      "rationale": "Supporting identifier, reference, target, primitive/common, attribution, fingerprint, or embedded value schema; it is not an independently persisted graph record family and therefore does not require a standalone positive story."
+    },
+    {
+      "contract": "person_display_snapshot",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": false,
+      "disposition": "not_applicable_with_rationale",
+      "evidence": "transitive Issue #22 graph coverage and original focused schema-validation suites",
+      "rationale": "Supporting identifier, reference, target, primitive/common, attribution, fingerprint, or embedded value schema; it is not an independently persisted graph record family and therefore does not require a standalone positive story."
+    },
+    {
+      "contract": "portia_target_ref",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": false,
+      "disposition": "not_applicable_with_rationale",
+      "evidence": "transitive Issue #22 graph coverage and original focused schema-validation suites",
+      "rationale": "Supporting identifier, reference, target, primitive/common, attribution, fingerprint, or embedded value schema; it is not an independently persisted graph record family and therefore does not require a standalone positive story."
+    },
+    {
+      "contract": "support_process_target_ref",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": false,
+      "disposition": "not_applicable_with_rationale",
+      "evidence": "transitive Issue #22 graph coverage and original focused schema-validation suites",
+      "rationale": "Supporting identifier, reference, target, primitive/common, attribution, fingerprint, or embedded value schema; it is not an independently persisted graph record family and therefore does not require a standalone positive story."
+    },
+    {
+      "contract": "portia_local_work_target",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": false,
+      "disposition": "not_applicable_with_rationale",
+      "evidence": "transitive Issue #22 graph coverage and original focused schema-validation suites",
+      "rationale": "Supporting identifier, reference, target, primitive/common, attribution, fingerprint, or embedded value schema; it is not an independently persisted graph record family and therefore does not require a standalone positive story."
+    },
+    {
+      "contract": "exact_portia_work_or_record_target",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": false,
+      "disposition": "not_applicable_with_rationale",
+      "evidence": "transitive Issue #22 graph coverage and original focused schema-validation suites",
+      "rationale": "Supporting identifier, reference, target, primitive/common, attribution, fingerprint, or embedded value schema; it is not an independently persisted graph record family and therefore does not require a standalone positive story."
+    },
+    {
+      "contract": "actor_target",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": false,
+      "disposition": "not_applicable_with_rationale",
+      "evidence": "transitive Issue #22 graph coverage and original focused schema-validation suites",
+      "rationale": "Supporting identifier, reference, target, primitive/common, attribution, fingerprint, or embedded value schema; it is not an independently persisted graph record family and therefore does not require a standalone positive story."
+    },
+    {
+      "contract": "lifecycle_transition",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": true,
+      "disposition": "positive_graph",
+      "evidence": "P22-04, P22-13, P22-14",
+      "rationale": "append-preserving status history and material-successor topology"
+    },
+    {
+      "contract": "lifecycle_history_correction",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": true,
+      "disposition": "existing_focused_fixture_only",
+      "evidence": "Issue #12 lifecycle/correction fixtures",
+      "rationale": "history-repair administrative record is covered in focused validation; P22-04/P22-14 exercise ordinary append-preserving correction"
+    },
+    {
+      "contract": "amendment",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": true,
+      "disposition": "existing_focused_fixture_only",
+      "evidence": "Issue #12 amendment fixtures",
+      "rationale": "P22-04 uses Statement of Disagreement for its coherent story; forcing an Amendment as well would be redundant; dedicated Issue #12 fixtures cover Amendment semantics"
+    },
+    {
+      "contract": "statement_of_disagreement",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": true,
+      "disposition": "positive_graph",
+      "evidence": "P22-04",
+      "rationale": "exact contested-predecessor binding without truth adjudication"
+    },
+    {
+      "contract": "non_empty_text",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": false,
+      "disposition": "not_applicable_with_rationale",
+      "evidence": "transitive Issue #22 graph coverage and original focused schema-validation suites",
+      "rationale": "Supporting identifier, reference, target, primitive/common, attribution, fingerprint, or embedded value schema; it is not an independently persisted graph record family and therefore does not require a standalone positive story."
+    },
+    {
+      "contract": "explicit_offset_timestamp",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": false,
+      "disposition": "not_applicable_with_rationale",
+      "evidence": "transitive Issue #22 graph coverage and original focused schema-validation suites",
+      "rationale": "Supporting identifier, reference, target, primitive/common, attribution, fingerprint, or embedded value schema; it is not an independently persisted graph record family and therefore does not require a standalone positive story."
+    },
+    {
+      "contract": "lowercase_token",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": false,
+      "disposition": "not_applicable_with_rationale",
+      "evidence": "transitive Issue #22 graph coverage and original focused schema-validation suites",
+      "rationale": "Supporting identifier, reference, target, primitive/common, attribution, fingerprint, or embedded value schema; it is not an independently persisted graph record family and therefore does not require a standalone positive story."
+    },
+    {
+      "contract": "json_pointer",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": false,
+      "disposition": "not_applicable_with_rationale",
+      "evidence": "transitive Issue #22 graph coverage and original focused schema-validation suites",
+      "rationale": "Supporting identifier, reference, target, primitive/common, attribution, fingerprint, or embedded value schema; it is not an independently persisted graph record family and therefore does not require a standalone positive story."
+    },
+    {
+      "contract": "creation_source",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": false,
+      "disposition": "not_applicable_with_rationale",
+      "evidence": "transitive Issue #22 graph coverage and original focused schema-validation suites",
+      "rationale": "Supporting identifier, reference, target, primitive/common, attribution, fingerprint, or embedded value schema; it is not an independently persisted graph record family and therefore does not require a standalone positive story."
+    },
+    {
+      "contract": "attribution_agent",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": false,
+      "disposition": "not_applicable_with_rationale",
+      "evidence": "transitive Issue #22 graph coverage and original focused schema-validation suites",
+      "rationale": "Supporting identifier, reference, target, primitive/common, attribution, fingerprint, or embedded value schema; it is not an independently persisted graph record family and therefore does not require a standalone positive story."
+    },
+    {
+      "contract": "work_relationship",
+      "catalog_versions": [
+        "1",
+        "2"
+      ],
+      "current_version": "2",
+      "record_operational_family": true,
+      "disposition": "positive_graph",
+      "evidence": "P22-11, P22-13, P22-14",
+      "rationale": "canonical forward relationship and cross-year continuation/context topology"
+    },
+    {
+      "contract": "dependency",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": true,
+      "disposition": "positive_graph",
+      "evidence": "P22-13",
+      "rationale": "exact canonical dependency; derived reverse/index views remain nonauthoritative"
+    },
+    {
+      "contract": "record_migration",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": true,
+      "disposition": "existing_focused_fixture_only",
+      "evidence": "Issue #12 migration fixtures",
+      "rationale": "migration is representation change, not semantic correction; G22-015/G22-016 guard misuse"
+    },
+    {
+      "contract": "ownership_correction",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": true,
+      "disposition": "existing_focused_fixture_only",
+      "evidence": "Issue #12 ownership-correction fixtures",
+      "rationale": "ownership repair is an exceptional administrative correction; canonical owner/path invariants are exercised by G22-002/G22-003"
+    },
+    {
+      "contract": "exceptional_removal",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": true,
+      "disposition": "existing_focused_fixture_only",
+      "evidence": "Issue #12 exceptional-removal fixtures",
+      "rationale": "explicitly exceptional and distinct from routine retention disposition"
+    },
+    {
+      "contract": "integrity_finding",
+      "catalog_versions": [
+        "1",
+        "2"
+      ],
+      "current_version": "2",
+      "record_operational_family": true,
+      "disposition": "existing_focused_fixture_only",
+      "evidence": "Issue #13 + Issue #14 actor-aware operation fixtures",
+      "rationale": "diagnostic administrative evidence, not ordinary domain judgment; ordinary uncertainty must not manufacture findings"
+    },
+    {
+      "contract": "portia_operation_id",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": false,
+      "disposition": "not_applicable_with_rationale",
+      "evidence": "transitive Issue #22 graph coverage and original focused schema-validation suites",
+      "rationale": "Supporting identifier, reference, target, primitive/common, attribution, fingerprint, or embedded value schema; it is not an independently persisted graph record family and therefore does not require a standalone positive story."
+    },
+    {
+      "contract": "portia_operation_step_id",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": false,
+      "disposition": "not_applicable_with_rationale",
+      "evidence": "transitive Issue #22 graph coverage and original focused schema-validation suites",
+      "rationale": "Supporting identifier, reference, target, primitive/common, attribution, fingerprint, or embedded value schema; it is not an independently persisted graph record family and therefore does not require a standalone positive story."
+    },
+    {
+      "contract": "portia_lock_id",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": false,
+      "disposition": "not_applicable_with_rationale",
+      "evidence": "transitive Issue #22 graph coverage and original focused schema-validation suites",
+      "rationale": "Supporting identifier, reference, target, primitive/common, attribution, fingerprint, or embedded value schema; it is not an independently persisted graph record family and therefore does not require a standalone positive story."
+    },
+    {
+      "contract": "portia_quarantine_id",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": false,
+      "disposition": "not_applicable_with_rationale",
+      "evidence": "transitive Issue #22 graph coverage and original focused schema-validation suites",
+      "rationale": "Supporting identifier, reference, target, primitive/common, attribution, fingerprint, or embedded value schema; it is not an independently persisted graph record family and therefore does not require a standalone positive story."
+    },
+    {
+      "contract": "portia_finding_acknowledgement_id",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": false,
+      "disposition": "not_applicable_with_rationale",
+      "evidence": "transitive Issue #22 graph coverage and original focused schema-validation suites",
+      "rationale": "Supporting identifier, reference, target, primitive/common, attribution, fingerprint, or embedded value schema; it is not an independently persisted graph record family and therefore does not require a standalone positive story."
+    },
+    {
+      "contract": "portia_finding_suppression_id",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": false,
+      "disposition": "not_applicable_with_rationale",
+      "evidence": "transitive Issue #22 graph coverage and original focused schema-validation suites",
+      "rationale": "Supporting identifier, reference, target, primitive/common, attribution, fingerprint, or embedded value schema; it is not an independently persisted graph record family and therefore does not require a standalone positive story."
+    },
+    {
+      "contract": "portia_derived_generation_id",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": false,
+      "disposition": "not_applicable_with_rationale",
+      "evidence": "transitive Issue #22 graph coverage and original focused schema-validation suites",
+      "rationale": "Supporting identifier, reference, target, primitive/common, attribution, fingerprint, or embedded value schema; it is not an independently persisted graph record family and therefore does not require a standalone positive story."
+    },
+    {
+      "contract": "workspace_relative_path",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": false,
+      "disposition": "not_applicable_with_rationale",
+      "evidence": "transitive Issue #22 graph coverage and original focused schema-validation suites",
+      "rationale": "Supporting identifier, reference, target, primitive/common, attribution, fingerprint, or embedded value schema; it is not an independently persisted graph record family and therefore does not require a standalone positive story."
+    },
+    {
+      "contract": "sha256_digest",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": false,
+      "disposition": "not_applicable_with_rationale",
+      "evidence": "transitive Issue #22 graph coverage and original focused schema-validation suites",
+      "rationale": "Supporting identifier, reference, target, primitive/common, attribution, fingerprint, or embedded value schema; it is not an independently persisted graph record family and therefore does not require a standalone positive story."
+    },
+    {
+      "contract": "content_fingerprint",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": false,
+      "disposition": "not_applicable_with_rationale",
+      "evidence": "transitive Issue #22 graph coverage and original focused schema-validation suites",
+      "rationale": "Supporting identifier, reference, target, primitive/common, attribution, fingerprint, or embedded value schema; it is not an independently persisted graph record family and therefore does not require a standalone positive story."
+    },
+    {
+      "contract": "operation_ref",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": false,
+      "disposition": "not_applicable_with_rationale",
+      "evidence": "transitive Issue #22 graph coverage and original focused schema-validation suites",
+      "rationale": "Supporting identifier, reference, target, primitive/common, attribution, fingerprint, or embedded value schema; it is not an independently persisted graph record family and therefore does not require a standalone positive story."
+    },
+    {
+      "contract": "operation_journal_ref",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": false,
+      "disposition": "not_applicable_with_rationale",
+      "evidence": "transitive Issue #22 graph coverage and original focused schema-validation suites",
+      "rationale": "Supporting identifier, reference, target, primitive/common, attribution, fingerprint, or embedded value schema; it is not an independently persisted graph record family and therefore does not require a standalone positive story."
+    },
+    {
+      "contract": "quarantine_ref",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": false,
+      "disposition": "not_applicable_with_rationale",
+      "evidence": "transitive Issue #22 graph coverage and original focused schema-validation suites",
+      "rationale": "Supporting identifier, reference, target, primitive/common, attribution, fingerprint, or embedded value schema; it is not an independently persisted graph record family and therefore does not require a standalone positive story."
+    },
+    {
+      "contract": "derived_generation_ref",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": false,
+      "disposition": "not_applicable_with_rationale",
+      "evidence": "transitive Issue #22 graph coverage and original focused schema-validation suites",
+      "rationale": "Supporting identifier, reference, target, primitive/common, attribution, fingerprint, or embedded value schema; it is not an independently persisted graph record family and therefore does not require a standalone positive story."
+    },
+    {
+      "contract": "operation_journal",
+      "catalog_versions": [
+        "1",
+        "2"
+      ],
+      "current_version": "2",
+      "record_operational_family": true,
+      "disposition": "positive_graph",
+      "evidence": "P22-14",
+      "rationale": "current version; prepared→staged→committing→recovering→committed→completed recovery evidence"
+    },
+    {
+      "contract": "operation_current_pointer",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": true,
+      "disposition": "positive_graph",
+      "evidence": "P22-14",
+      "rationale": "explicit terminal revision selection; no newest-revision inference"
+    },
+    {
+      "contract": "operation_lock",
+      "catalog_versions": [
+        "1",
+        "2"
+      ],
+      "current_version": "2",
+      "record_operational_family": true,
+      "disposition": "positive_graph",
+      "evidence": "P22-14",
+      "rationale": "current version; deterministic operation/work lock identity and release evidence"
+    },
+    {
+      "contract": "quarantine_record",
+      "catalog_versions": [
+        "1",
+        "2"
+      ],
+      "current_version": "2",
+      "record_operational_family": true,
+      "disposition": "existing_focused_fixture_only",
+      "evidence": "Issue #13 + Issue #14 actor-aware operation fixtures",
+      "rationale": "exceptional isolation mechanism, not an ordinary review/lifecycle state"
+    },
+    {
+      "contract": "quarantine_current_pointer",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": true,
+      "disposition": "existing_focused_fixture_only",
+      "evidence": "Issue #13 coordinated-operation fixtures",
+      "rationale": "administrative current-selection helper for quarantine history"
+    },
+    {
+      "contract": "finding_acknowledgement",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": true,
+      "disposition": "existing_focused_fixture_only",
+      "evidence": "Issue #13 integrity-administration fixtures",
+      "rationale": "administrative acknowledgement of a finding; no representative domain story requires one"
+    },
+    {
+      "contract": "finding_suppression",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": true,
+      "disposition": "existing_focused_fixture_only",
+      "evidence": "Issue #13 integrity-administration fixtures",
+      "rationale": "administrative suppression decision with dedicated focused invariants"
+    },
+    {
+      "contract": "finding_suppression_current_pointer",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": true,
+      "disposition": "existing_focused_fixture_only",
+      "evidence": "Issue #13 integrity-administration fixtures",
+      "rationale": "administrative selection helper for suppression history"
+    },
+    {
+      "contract": "source_snapshot",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": true,
+      "disposition": "positive_graph",
+      "evidence": "P22-13",
+      "rationale": "truthful snapshot of exact canonical source representations"
+    },
+    {
+      "contract": "derived_index_metadata",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": true,
+      "disposition": "positive_graph",
+      "evidence": "P22-13",
+      "rationale": "immutable rebuild-generation metadata and exact source/data fingerprints"
+    },
+    {
+      "contract": "derived_current_pointer",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": true,
+      "disposition": "positive_graph",
+      "evidence": "P22-13",
+      "rationale": "explicit derived-generation selection without authority/freshness claim"
+    },
+    {
+      "contract": "portia_account_id",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": false,
+      "disposition": "not_applicable_with_rationale",
+      "evidence": "transitive Issue #22 graph coverage and original focused schema-validation suites",
+      "rationale": "Supporting identifier, reference, target, primitive/common, attribution, fingerprint, or embedded value schema; it is not an independently persisted graph record family and therefore does not require a standalone positive story."
+    },
+    {
+      "contract": "portia_observation_id",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": false,
+      "disposition": "not_applicable_with_rationale",
+      "evidence": "transitive Issue #22 graph coverage and original focused schema-validation suites",
+      "rationale": "Supporting identifier, reference, target, primitive/common, attribution, fingerprint, or embedded value schema; it is not an independently persisted graph record family and therefore does not require a standalone positive story."
+    },
+    {
+      "contract": "represented_human_attribution",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": false,
+      "disposition": "not_applicable_with_rationale",
+      "evidence": "transitive Issue #22 graph coverage and original focused schema-validation suites",
+      "rationale": "Supporting identifier, reference, target, primitive/common, attribution, fingerprint, or embedded value schema; it is not an independently persisted graph record family and therefore does not require a standalone positive story."
+    },
+    {
+      "contract": "evidence_time",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": false,
+      "disposition": "not_applicable_with_rationale",
+      "evidence": "transitive Issue #22 graph coverage and original focused schema-validation suites",
+      "rationale": "Supporting identifier, reference, target, primitive/common, attribution, fingerprint, or embedded value schema; it is not an independently persisted graph record family and therefore does not require a standalone positive story."
+    },
+    {
+      "contract": "planned_schedule",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": false,
+      "disposition": "not_applicable_with_rationale",
+      "evidence": "transitive Issue #22 graph coverage and original focused schema-validation suites",
+      "rationale": "Supporting identifier, reference, target, primitive/common, attribution, fingerprint, or embedded value schema; it is not an independently persisted graph record family and therefore does not require a standalone positive story."
+    },
+    {
+      "contract": "source_artifact_ref",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": false,
+      "disposition": "not_applicable_with_rationale",
+      "evidence": "transitive Issue #22 graph coverage and original focused schema-validation suites",
+      "rationale": "Supporting identifier, reference, target, primitive/common, attribution, fingerprint, or embedded value schema; it is not an independently persisted graph record family and therefore does not require a standalone positive story."
+    },
+    {
+      "contract": "account",
+      "catalog_versions": [
+        "1",
+        "2"
+      ],
+      "current_version": "2",
+      "record_operational_family": true,
+      "disposition": "positive_graph",
+      "evidence": "P22-02, P22-10, P22-12, P22-13, P22-15",
+      "rationale": "firsthand/source-attributed evidence, conflicting perspectives, privacy filtering"
+    },
+    {
+      "contract": "observation",
+      "catalog_versions": [
+        "1",
+        "2"
+      ],
+      "current_version": "2",
+      "record_operational_family": true,
+      "disposition": "positive_graph",
+      "evidence": "P22-01, P22-02, P22-08, P22-09, P22-11, P22-13, P22-15",
+      "rationale": "direct evidence distinct from Accounts and judgments"
+    },
+    {
+      "contract": "portia_review_id",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": false,
+      "disposition": "not_applicable_with_rationale",
+      "evidence": "transitive Issue #22 graph coverage and original focused schema-validation suites",
+      "rationale": "Supporting identifier, reference, target, primitive/common, attribution, fingerprint, or embedded value schema; it is not an independently persisted graph record family and therefore does not require a standalone positive story."
+    },
+    {
+      "contract": "portia_classification_id",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": false,
+      "disposition": "not_applicable_with_rationale",
+      "evidence": "transitive Issue #22 graph coverage and original focused schema-validation suites",
+      "rationale": "Supporting identifier, reference, target, primitive/common, attribution, fingerprint, or embedded value schema; it is not an independently persisted graph record family and therefore does not require a standalone positive story."
+    },
+    {
+      "contract": "portia_hypothesis_id",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": false,
+      "disposition": "not_applicable_with_rationale",
+      "evidence": "transitive Issue #22 graph coverage and original focused schema-validation suites",
+      "rationale": "Supporting identifier, reference, target, primitive/common, attribution, fingerprint, or embedded value schema; it is not an independently persisted graph record family and therefore does not require a standalone positive story."
+    },
+    {
+      "contract": "portia_determination_id",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": false,
+      "disposition": "not_applicable_with_rationale",
+      "evidence": "transitive Issue #22 graph coverage and original focused schema-validation suites",
+      "rationale": "Supporting identifier, reference, target, primitive/common, attribution, fingerprint, or embedded value schema; it is not an independently persisted graph record family and therefore does not require a standalone positive story."
+    },
+    {
+      "contract": "judgment_evidence_ref",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": false,
+      "disposition": "not_applicable_with_rationale",
+      "evidence": "transitive Issue #22 graph coverage and original focused schema-validation suites",
+      "rationale": "Supporting identifier, reference, target, primitive/common, attribution, fingerprint, or embedded value schema; it is not an independently persisted graph record family and therefore does not require a standalone positive story."
+    },
+    {
+      "contract": "review",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": true,
+      "disposition": "positive_graph",
+      "evidence": "P22-02, P22-09, P22-10, P22-15",
+      "rationale": "bounded human review with exact evidence/target scope"
+    },
+    {
+      "contract": "classification",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": true,
+      "disposition": "positive_graph",
+      "evidence": "P22-15",
+      "rationale": "human-selected contextual categorization; no weight/proof/diagnosis claim"
+    },
+    {
+      "contract": "hypothesis",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": true,
+      "disposition": "positive_graph",
+      "evidence": "P22-15",
+      "rationale": "tentative review-bound explanation with supporting/contrary evidence roles"
+    },
+    {
+      "contract": "determination",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": true,
+      "disposition": "positive_graph",
+      "evidence": "P22-02",
+      "rationale": "bounded insufficient-information judgment; source assertions do not become decisions"
+    },
+    {
+      "contract": "portia_response_id",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": false,
+      "disposition": "not_applicable_with_rationale",
+      "evidence": "transitive Issue #22 graph coverage and original focused schema-validation suites",
+      "rationale": "Supporting identifier, reference, target, primitive/common, attribution, fingerprint, or embedded value schema; it is not an independently persisted graph record family and therefore does not require a standalone positive story."
+    },
+    {
+      "contract": "portia_communication_id",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": false,
+      "disposition": "not_applicable_with_rationale",
+      "evidence": "transitive Issue #22 graph coverage and original focused schema-validation suites",
+      "rationale": "Supporting identifier, reference, target, primitive/common, attribution, fingerprint, or embedded value schema; it is not an independently persisted graph record family and therefore does not require a standalone positive story."
+    },
+    {
+      "contract": "response",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": true,
+      "disposition": "positive_graph",
+      "evidence": "P22-07, P22-10",
+      "rationale": "immediate action distinct from Support and effectiveness"
+    },
+    {
+      "contract": "communication",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": true,
+      "disposition": "positive_graph",
+      "evidence": "P22-07, P22-10",
+      "rationale": "attributable communication act distinct from recipient participation/delivery"
+    },
+    {
+      "contract": "portia_follow_up_id",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": false,
+      "disposition": "not_applicable_with_rationale",
+      "evidence": "transitive Issue #22 graph coverage and original focused schema-validation suites",
+      "rationale": "Supporting identifier, reference, target, primitive/common, attribution, fingerprint, or embedded value schema; it is not an independently persisted graph record family and therefore does not require a standalone positive story."
+    },
+    {
+      "contract": "portia_outcome_id",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": false,
+      "disposition": "not_applicable_with_rationale",
+      "evidence": "transitive Issue #22 graph coverage and original focused schema-validation suites",
+      "rationale": "Supporting identifier, reference, target, primitive/common, attribution, fingerprint, or embedded value schema; it is not an independently persisted graph record family and therefore does not require a standalone positive story."
+    },
+    {
+      "contract": "portia_reentry_id",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": false,
+      "disposition": "not_applicable_with_rationale",
+      "evidence": "transitive Issue #22 graph coverage and original focused schema-validation suites",
+      "rationale": "Supporting identifier, reference, target, primitive/common, attribution, fingerprint, or embedded value schema; it is not an independently persisted graph record family and therefore does not require a standalone positive story."
+    },
+    {
+      "contract": "portia_repair_id",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": false,
+      "disposition": "not_applicable_with_rationale",
+      "evidence": "transitive Issue #22 graph coverage and original focused schema-validation suites",
+      "rationale": "Supporting identifier, reference, target, primitive/common, attribution, fingerprint, or embedded value schema; it is not an independently persisted graph record family and therefore does not require a standalone positive story."
+    },
+    {
+      "contract": "follow_up",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": true,
+      "disposition": "positive_graph",
+      "evidence": "P22-08",
+      "rationale": "completed follow-up distinct from favorable Outcome"
+    },
+    {
+      "contract": "outcome",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": true,
+      "disposition": "positive_graph",
+      "evidence": "P22-08, P22-09, P22-11",
+      "rationale": "new bounded attributable evaluation; positive/inconclusive/adverse without causal inference"
+    },
+    {
+      "contract": "reentry",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": true,
+      "disposition": "positive_graph",
+      "evidence": "P22-10",
+      "rationale": "plan/completion without safety-clearance or rehabilitation overclaim"
+    },
+    {
+      "contract": "repair",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": true,
+      "disposition": "positive_graph",
+      "evidence": "P22-10",
+      "rationale": "offer/participation/action without admission, remorse, forgiveness, or restored-relationship inference"
+    },
+    {
+      "contract": "capture_batch",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": true,
+      "disposition": "positive_graph",
+      "evidence": "P22-05",
+      "rationale": "paper capture operation root"
+    },
+    {
+      "contract": "page_target",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": true,
+      "disposition": "positive_graph",
+      "evidence": "P22-05",
+      "rationale": "exact pre-print Core/PDS2 route and layout target"
+    },
+    {
+      "contract": "page_record",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": true,
+      "disposition": "positive_graph",
+      "evidence": "P22-05",
+      "rationale": "returned physical-page/source processing record"
+    },
+    {
+      "contract": "portia_capture_batch_id",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": false,
+      "disposition": "not_applicable_with_rationale",
+      "evidence": "transitive Issue #22 graph coverage and original focused schema-validation suites",
+      "rationale": "Supporting identifier, reference, target, primitive/common, attribution, fingerprint, or embedded value schema; it is not an independently persisted graph record family and therefore does not require a standalone positive story."
+    },
+    {
+      "contract": "portia_page_target_id",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": false,
+      "disposition": "not_applicable_with_rationale",
+      "evidence": "transitive Issue #22 graph coverage and original focused schema-validation suites",
+      "rationale": "Supporting identifier, reference, target, primitive/common, attribution, fingerprint, or embedded value schema; it is not an independently persisted graph record family and therefore does not require a standalone positive story."
+    },
+    {
+      "contract": "portia_page_record_id",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": false,
+      "disposition": "not_applicable_with_rationale",
+      "evidence": "transitive Issue #22 graph coverage and original focused schema-validation suites",
+      "rationale": "Supporting identifier, reference, target, primitive/common, attribution, fingerprint, or embedded value schema; it is not an independently persisted graph record family and therefore does not require a standalone positive story."
+    },
+    {
+      "contract": "paper_interpretation",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": true,
+      "disposition": "positive_graph",
+      "evidence": "P22-05",
+      "rationale": "machine candidate, not confirmed domain fact"
+    },
+    {
+      "contract": "portia_paper_interpretation_id",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": false,
+      "disposition": "not_applicable_with_rationale",
+      "evidence": "transitive Issue #22 graph coverage and original focused schema-validation suites",
+      "rationale": "Supporting identifier, reference, target, primitive/common, attribution, fingerprint, or embedded value schema; it is not an independently persisted graph record family and therefore does not require a standalone positive story."
+    },
+    {
+      "contract": "capture_proposal",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": true,
+      "disposition": "positive_graph",
+      "evidence": "P22-05",
+      "rationale": "noncanonical field-binding proposal"
+    },
+    {
+      "contract": "capture_review",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": true,
+      "disposition": "positive_graph",
+      "evidence": "P22-05",
+      "rationale": "human capture/materialization gate, distinct from domain Review"
+    },
+    {
+      "contract": "portia_capture_proposal_id",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": false,
+      "disposition": "not_applicable_with_rationale",
+      "evidence": "transitive Issue #22 graph coverage and original focused schema-validation suites",
+      "rationale": "Supporting identifier, reference, target, primitive/common, attribution, fingerprint, or embedded value schema; it is not an independently persisted graph record family and therefore does not require a standalone positive story."
+    },
+    {
+      "contract": "portia_capture_review_id",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": false,
+      "disposition": "not_applicable_with_rationale",
+      "evidence": "transitive Issue #22 graph coverage and original focused schema-validation suites",
+      "rationale": "Supporting identifier, reference, target, primitive/common, attribution, fingerprint, or embedded value schema; it is not an independently persisted graph record family and therefore does not require a standalone positive story."
+    },
+    {
+      "contract": "capture_materialization",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": true,
+      "disposition": "positive_graph",
+      "evidence": "P22-05",
+      "rationale": "receipt only after canonical record acceptance; replay-safe"
+    },
+    {
+      "contract": "import_batch",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": true,
+      "disposition": "positive_graph",
+      "evidence": "P22-06",
+      "rationale": "structured-source snapshot/mapping attempt"
+    },
+    {
+      "contract": "import_source_record",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": true,
+      "disposition": "positive_graph",
+      "evidence": "P22-06",
+      "rationale": "source-system record/assertion preserved as source context"
+    },
+    {
+      "contract": "portia_import_batch_id",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": false,
+      "disposition": "not_applicable_with_rationale",
+      "evidence": "transitive Issue #22 graph coverage and original focused schema-validation suites",
+      "rationale": "Supporting identifier, reference, target, primitive/common, attribution, fingerprint, or embedded value schema; it is not an independently persisted graph record family and therefore does not require a standalone positive story."
+    },
+    {
+      "contract": "portia_import_source_record_id",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": false,
+      "disposition": "not_applicable_with_rationale",
+      "evidence": "transitive Issue #22 graph coverage and original focused schema-validation suites",
+      "rationale": "Supporting identifier, reference, target, primitive/common, attribution, fingerprint, or embedded value schema; it is not an independently persisted graph record family and therefore does not require a standalone positive story."
+    },
+    {
+      "contract": "import_proposal",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": true,
+      "disposition": "positive_graph",
+      "evidence": "P22-06",
+      "rationale": "noncanonical mapping proposal"
+    },
+    {
+      "contract": "import_review",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": true,
+      "disposition": "positive_graph",
+      "evidence": "P22-06",
+      "rationale": "human import staging gate, not domain judgment"
+    },
+    {
+      "contract": "portia_import_proposal_id",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": false,
+      "disposition": "not_applicable_with_rationale",
+      "evidence": "transitive Issue #22 graph coverage and original focused schema-validation suites",
+      "rationale": "Supporting identifier, reference, target, primitive/common, attribution, fingerprint, or embedded value schema; it is not an independently persisted graph record family and therefore does not require a standalone positive story."
+    },
+    {
+      "contract": "portia_import_review_id",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": false,
+      "disposition": "not_applicable_with_rationale",
+      "evidence": "transitive Issue #22 graph coverage and original focused schema-validation suites",
+      "rationale": "Supporting identifier, reference, target, primitive/common, attribution, fingerprint, or embedded value schema; it is not an independently persisted graph record family and therefore does not require a standalone positive story."
+    },
+    {
+      "contract": "import_materialization",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": true,
+      "disposition": "positive_graph",
+      "evidence": "P22-06",
+      "rationale": "replay-safe receipt after canonical Event acceptance"
+    },
+    {
+      "contract": "portia_deliberate_export_id",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": false,
+      "disposition": "not_applicable_with_rationale",
+      "evidence": "transitive Issue #22 graph coverage and original focused schema-validation suites",
+      "rationale": "Supporting identifier, reference, target, primitive/common, attribution, fingerprint, or embedded value schema; it is not an independently persisted graph record family and therefore does not require a standalone positive story."
+    },
+    {
+      "contract": "export_source_inventory",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": true,
+      "disposition": "positive_graph",
+      "evidence": "P22-12",
+      "rationale": "exact contributing immutable representations and truthful fingerprints"
+    },
+    {
+      "contract": "deliberate_export",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": true,
+      "disposition": "positive_graph",
+      "evidence": "P22-12",
+      "rationale": "privacy decision + authorization + immutable output provenance; generation != disclosure"
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "schema_version": "1",
+  "record_type": "portia_work",
+  "work_kind": "support_process",
+  "module_id": "portia",
+  "class_id": "eng10_g22_024",
+  "work_id": "sup_g22_024",
+  "school_year": "2026-2027",
+  "status": "active",
+  "workflow_state": "active",
+  "summary": "Synthetic Support Process single for Issue #22 graph-invalid validation.",
+  "initiation": {
+    "kind": "teacher_identified_need",
+    "detail": "Teacher identified a bounded classroom planning need during multi-step independent work."
+  },
+  "planned_start_date": "2026-09-08",
+  "review_on": "2027-05-25",
+  "creation_source": {
+    "type": "digital_entry"
+  },
+  "created_at": "2026-09-04T15:00:00-04:00",
+  "created_by": {
+    "type": "local_operator",
+    "display_label": "Synthetic Teacher"
+  },
+  "updated_at": "2027-06-10T15:00:00-04:00",
+  "updated_by": {
+    "type": "local_operator",
+    "display_label": "Synthetic Teacher"
+  }
+}

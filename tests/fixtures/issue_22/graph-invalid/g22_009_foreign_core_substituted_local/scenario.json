@@ -1,0 +1,76 @@
+{
+  "fixture_contract": "pds-portia.representative-contract-graph-scenario",
+  "fixture_version": "1",
+  "not_runtime_contract": true,
+  "scenario_id": "G22-009",
+  "title": "Exact foreign/Core ref silently substituted by Portia record",
+  "scenario_kind": "graph_invalid",
+  "synthetic": true,
+  "records": [
+    {
+      "fixture_path": "actor.json",
+      "contract": "actor",
+      "version": "1",
+      "logical_identity": "actor:actr_g22_foreign_sub",
+      "authority": "portia",
+      "owner": {
+        "owner_kind": "actor",
+        "actor_id": "actr_g22_foreign_sub"
+      },
+      "canonical_path": "portia/actors/actr_g22_foreign_sub/actor.json"
+    },
+    {
+      "fixture_path": "event.json",
+      "contract": "event",
+      "version": "2",
+      "logical_identity": "event:evt_g22_foreign_sub",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_g22_foreign",
+        "work_kind": "event",
+        "work_id": "evt_g22_foreign_sub"
+      },
+      "canonical_path": "classes/eng10_g22_foreign/modules/portia/work/evt_g22_foreign_sub/work.json"
+    },
+    {
+      "fixture_path": "participant.json",
+      "contract": "event_participant",
+      "version": "3",
+      "logical_identity": "event_participant:ep_g22_foreign_sub",
+      "authority": "portia",
+      "owner": {
+        "class_id": "eng10_g22_foreign",
+        "work_kind": "event",
+        "work_id": "evt_g22_foreign_sub"
+      },
+      "canonical_path": "classes/eng10_g22_foreign/modules/portia/work/evt_g22_foreign_sub/records/event_participant/ep_g22_foreign_sub.json"
+    }
+  ],
+  "context": [
+    {
+      "context_kind": "synthetic_core_roster",
+      "fixture_path": "roster.json"
+    },
+    {
+      "context_kind": "synthetic_reference_resolution",
+      "fixture_path": "reference-resolution.json"
+    }
+  ],
+  "required_distinctions": [
+    "Foreign/Core identity remains foreign-owned.",
+    "Local Portia records cannot silently substitute for exact Core references."
+  ],
+  "expected_graph_result": "invalid",
+  "expected_finding_ids": [
+    "G22.REFERENCE.FOREIGN_SUBSTITUTION"
+  ],
+  "primary_finding_id": "G22.REFERENCE.FOREIGN_SUBSTITUTION",
+  "principal_defect": "The participant's exact Core-owned roster reference exists, but a synthetic resolver reports a local Portia Actor as its resolved authority.",
+  "structurally_valid_reason": "The Event, Participant, and Actor records are individually valid; foreign authority cannot be satisfied by a local look-alike.",
+  "records_must_remain_unmodified": [
+    "actor.json",
+    "event.json",
+    "participant.json"
+  ],
+  "expected_path": "expected.json"
+}

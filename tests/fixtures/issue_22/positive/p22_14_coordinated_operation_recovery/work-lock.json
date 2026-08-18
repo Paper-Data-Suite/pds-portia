@@ -1,0 +1,23 @@
+{
+  "schema_version": "2",
+  "record_type": "operation_lock",
+  "module_id": "portia",
+  "lock_id": "lock_e9b9720187cd1a2e78d845c17762e1b65de48e6ff1e57c4307e0f9d5aad4451b",
+  "lock_scope": "work",
+  "protected_target": {
+    "kind": "work",
+    "work_ref": {
+      "module_id": "portia",
+      "class_id": "eng10_p2_2026",
+      "work_id": "evt_p22_recovery_primary",
+      "work_kind": "event",
+      "contract_version": "2"
+    }
+  },
+  "owning_operation": {
+    "operation_id": "op_p22_recovery_relationship"
+  },
+  "acquired_at": "2026-10-12T10:00:04-04:00",
+  "deployment_instance_id": "deploy_p22_recovery_fixture",
+  "process_instance_id": "process_p22_recovery_fixture"
+}

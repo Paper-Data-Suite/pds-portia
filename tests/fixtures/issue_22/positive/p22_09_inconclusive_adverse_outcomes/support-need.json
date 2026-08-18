@@ -1,0 +1,32 @@
+{
+  "schema_version": "1",
+  "record_type": "support_need",
+  "module_id": "portia",
+  "class_id": "eng10_p2_2026",
+  "work_id": "sup_p22_outcome_review_001",
+  "need_id": "spn_p22_outcome_001",
+  "status": "active",
+  "target": {
+    "kind": "support_process_participant",
+    "record_ref": {
+      "record_kind": "support_process_participant",
+      "record_id": "spp_p22_outcome_student_001",
+      "contract_version": "1"
+    }
+  },
+  "need_kind": "environmental_or_instructional",
+  "description": "During independent work, provide a predictable lower-distraction location option when the participant chooses it.",
+  "creation_source": {
+    "type": "digital_entry"
+  },
+  "created_at": "2026-09-01T15:05:00-04:00",
+  "created_by": {
+    "type": "local_operator",
+    "display_label": "Synthetic Teacher"
+  },
+  "updated_at": "2026-09-01T15:05:00-04:00",
+  "updated_by": {
+    "type": "local_operator",
+    "display_label": "Synthetic Teacher"
+  }
+}

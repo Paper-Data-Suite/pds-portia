@@ -1,0 +1,31 @@
+{
+  "fixture_contract": "pds-portia.synthetic-participant-projection-result",
+  "fixture_version": "1",
+  "not_runtime_contract": true,
+  "projection_purpose": "participant_specific",
+  "focal_subject": {
+    "class_id": "eng10_p2_2026",
+    "work_id": "evt_p22_privacy_001",
+    "record_kind": "event_participant",
+    "record_id": "ep_p22_privacy_b",
+    "contract_version": "3"
+  },
+  "emitted_unrelated_refs": [
+    {
+      "class_id": "eng10_p2_2026",
+      "work_id": "evt_p22_privacy_001",
+      "record_kind": "event_participant",
+      "record_id": "ep_p22_privacy_a",
+      "contract_version": "3"
+    },
+    {
+      "class_id": "eng10_p2_2026",
+      "work_id": "evt_p22_privacy_001",
+      "record_kind": "account",
+      "record_id": "acct_p22_privacy_a",
+      "contract_version": "2"
+    }
+  ],
+  "emitted_unrelated_stable_id": "ep_p22_privacy_a",
+  "unsafe_account_segment_included": true
+}

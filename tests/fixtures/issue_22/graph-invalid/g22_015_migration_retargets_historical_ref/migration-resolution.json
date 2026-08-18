@@ -1,0 +1,23 @@
+{
+  "fixture_contract": "pds-portia.synthetic-migration-resolution",
+  "fixture_version": "1",
+  "not_runtime_contract": true,
+  "migration_id": "mig_g22_015",
+  "semantic_change": true,
+  "semantic_change_detail": "The accepted Event summary changes blue tray to red tray; this is a substantive correction, not representation-only migration.",
+  "historical_reference": {
+    "class_id": "eng10_g22_015",
+    "work_id": "evt_g22_015",
+    "record_kind": "event",
+    "record_id": "evt_g22_015",
+    "contract_version": "1"
+  },
+  "resolved_after_migration": {
+    "class_id": "eng10_g22_015",
+    "work_id": "evt_g22_015",
+    "record_kind": "event",
+    "record_id": "evt_g22_015",
+    "contract_version": "2"
+  },
+  "rewrite_exact_reference": true
+}

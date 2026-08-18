@@ -1,0 +1,20 @@
+{
+  "schema_version": "1",
+  "record_type": "derived_current_pointer",
+  "module_id": "portia",
+  "projection_kind": "replacement_frontier_index",
+  "projection_scope": {
+    "scope": "work",
+    "work_ref": {
+      "module_id": "portia",
+      "class_id": "eng10_g22_012",
+      "work_id": "evt_g22_012",
+      "work_kind": "event",
+      "contract_version": "2"
+    }
+  },
+  "generation_ref": {
+    "generation_id": "dgen_g22_012_stale",
+    "contract_version": "1"
+  }
+}
