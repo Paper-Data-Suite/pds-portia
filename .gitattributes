@@ -1,0 +1,22 @@
+# Normalize repository text to LF.
+#
+# Several Issue #22 synthetic fixtures intentionally bind exact SHA-256 and byte
+# length evidence. A clean checkout must therefore materialize text bytes
+# identically on Windows, macOS, and Linux.
+* text=auto eol=lf
+
+# Explicit binary/artifact exclusions.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.pdf binary
+*.zip binary
+*.gz binary
+*.tar binary
+*.7z binary
+*.xlsx binary
+*.xls binary
+*.docx binary
+*.pptx binary
