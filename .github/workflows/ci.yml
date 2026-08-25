@@ -1,0 +1,108 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PYTHONDONTWRITEBYTECODE: "1"
+  PIP_DISABLE_PIP_VERSION_CHECK: "1"
+
+jobs:
+  qualification:
+    name: Qualification (${{ matrix.os }}, Python ${{ matrix.python }}, Core ${{ matrix.core }})
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            python: "3.11"
+            core: "0.6.3"
+          - os: windows-latest
+            python: "3.11"
+            core: "0.6.3"
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+
+      - name: Configure Core wheel path
+        shell: pwsh
+        run: |
+          $coreDirectory = Join-Path $env:RUNNER_TEMP "core"
+          New-Item -ItemType Directory -Force -Path $coreDirectory | Out-Null
+          $coreWheel = Join-Path $coreDirectory "pds_core-${{ matrix.core }}-py3-none-any.whl"
+          "PDS_CORE_WHEEL=$coreWheel" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+      - name: Download official Core release wheel
+        shell: pwsh
+        run: |
+          Invoke-WebRequest `
+            -Uri "https://github.com/Paper-Data-Suite/pds-core/releases/download/v${{ matrix.core }}/pds_core-${{ matrix.core }}-py3-none-any.whl" `
+            -OutFile $env:PDS_CORE_WHEEL `
+            -ErrorAction Stop
+
+      - name: Authenticate and install Core
+        shell: pwsh
+        run: |
+          python scripts/verify_core_wheel.py "$env:PDS_CORE_WHEEL"
+          python -m pip install "$env:PDS_CORE_WHEEL"
+
+      - name: Install Portia development dependencies
+        run: python -m pip install -e ".[dev]"
+
+      - name: Run complete Issue 36 qualification
+        shell: pwsh
+        run: python scripts/validate_repository.py --core-wheel "$env:PDS_CORE_WHEEL"
+
+  minimum-core:
+    name: Minimum Core floor (Ubuntu, Python 3.11, Core 0.6.0)
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Configure Core wheel path
+        shell: pwsh
+        run: |
+          $coreDirectory = Join-Path $env:RUNNER_TEMP "core"
+          New-Item -ItemType Directory -Force -Path $coreDirectory | Out-Null
+          $coreWheel = Join-Path $coreDirectory "pds_core-0.6.0-py3-none-any.whl"
+          "PDS_CORE_WHEEL=$coreWheel" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+      - name: Download official Core 0.6.0 wheel
+        shell: pwsh
+        run: |
+          Invoke-WebRequest `
+            -Uri "https://github.com/Paper-Data-Suite/pds-core/releases/download/v0.6.0/pds_core-0.6.0-py3-none-any.whl" `
+            -OutFile $env:PDS_CORE_WHEEL `
+            -ErrorAction Stop
+
+      - name: Authenticate and install Core 0.6.0
+        shell: pwsh
+        run: |
+          python scripts/verify_core_wheel.py "$env:PDS_CORE_WHEEL"
+          python -m pip install "$env:PDS_CORE_WHEEL"
+
+      - name: Install Portia development dependencies
+        run: python -m pip install -e ".[dev]"
+
+      - name: Verify declared dependency floor
+        run: |
+          python -m pip check
+          python -m pytest
+          portia status
+          git diff --check
