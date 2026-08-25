@@ -1,0 +1,10 @@
+include LICENSE
+include README.md
+include pyproject.toml
+include MANIFEST.in
+recursive-include docs *.md *.json
+recursive-include schemas *.json
+recursive-include scripts *.py *.ps1 *.sh
+recursive-include tests *.py *.json *.md *.txt *.csv *.yaml *.yml
+recursive-include portia *.py py.typed
+global-exclude __pycache__ *.py[cod]

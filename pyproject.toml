@@ -1,0 +1,84 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pds-portia"
+dynamic = ["version"]
+description = "Teacher-local behavior-support, response, and follow-up tooling for Paper Data Suite."
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.11"
+authors = [
+    { name = "Stephen Severino" }
+]
+dependencies = [
+    "pds-core>=0.6,<0.7"
+]
+classifiers = [
+    "Development Status :: 2 - Pre-Alpha",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Typing :: Typed"
+]
+
+[project.scripts]
+portia = "portia.cli:main"
+
+[project.urls]
+Documentation = "https://github.com/Paper-Data-Suite/pds-portia/tree/main/docs"
+Repository = "https://github.com/Paper-Data-Suite/pds-portia"
+
+[project.optional-dependencies]
+dev = [
+    "build>=1.2",
+    "jsonschema>=4.23,<5",
+    "mypy>=1.11",
+    "packaging>=24",
+    "pytest>=8.2",
+    "referencing>=0.35",
+    "ruff>=0.6",
+    "twine>=5.1"
+]
+
+[tool.setuptools.dynamic]
+version = { attr = "portia._version.__version__" }
+
+[tool.setuptools.packages.find]
+include = ["portia", "portia.*"]
+namespaces = false
+
+[tool.setuptools.package-data]
+portia = ["py.typed"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"
+
+[tool.ruff]
+line-length = 88
+target-version = "py311"
+extend-exclude = [
+    "scripts/validate_portia_foundation.py",
+    "tests/schema_validation",
+]
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F", "I"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+explicit_package_bases = true
+files = [
+    "portia",
+    "scripts/check_package.py",
+    "scripts/smoke_test_wheel.py",
+    "scripts/repair_pip_residue.py",
+    "scripts/validate_repository.py",
+    "scripts/verify_core_wheel.py",
+]
+
+[[tool.mypy.overrides]]
+module = ["pds_core", "pds_core.*"]
+follow_untyped_imports = true
