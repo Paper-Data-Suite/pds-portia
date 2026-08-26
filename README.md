@@ -6,7 +6,7 @@ Portia is intended to help teachers document behavior-related events, preserve m
 
 ## Current Status
 
-Portia is in its initial research and architecture phase.
+Portia is in its executable v0.2.0 implementation phase.
 
 The repository currently contains:
 
@@ -16,11 +16,29 @@ The repository currently contains:
 * independently versioned Draft 2020-12 identifier, reference, target, Actor, Account, Observation, Review, Classification, Hypothesis, Determination, attribution, provenance, lifecycle, correction, disagreement, dependency, migration, ownership-correction, removal, relationship, operational, and derived-projection schemas;
 * retained historical Event-family version-1 schemas, Event version 2, Event Participant and Role version 3, Work Relationship version 2, Actor Directory version-1 contracts, Account and Observation version-1 contracts, Review v1, Classification v1, Hypothesis v1, and Determination v1 contracts, and Actor-aware operational version-2 contracts;
 * validated synthetic examples, focused application-invalid matrices across the foundation issues, and the Issue #22 representative graph corpus with 15 positive and 37 schema-valid graph-invalid scenarios;
+* an installable, strictly typed `pds-portia` package with immutable version-explicit runtime models, exact JSON-native conversion, and in-memory application validation;
 * and automated offline schema-validation, state-machine, compatibility, privacy, example, and documentation-consistency tests.
 
-Portia does not yet contain an executable application. The current foundation is defined by ADRs 0001–0017, the public contract versions listed in `schemas/schema-catalog.json`, the focused validation suites for Issues #11–#21, and the combined representative graph corpus added by Issue #22. Production Python models, filesystem services, application validation, and teacher-facing workflows remain assigned to a later executable milestone.
+Portia now contains an installable executable package and the first production runtime model/application-validation layer. The accepted foundation remains defined by ADRs 0001–0017, the public contract versions listed in `schemas/schema-catalog.json`, the focused validation suites for Issues #11–#21, and the combined representative graph corpus added by Issue #22. Filesystem persistence/recovery, live Core-backed identity resolution, and teacher-facing workflows remain assigned to later v0.2.0 issues.
 
 Historical closeout compatibility is intentionally retained without redefining current authority. Issue #12, Issue #13, and Issue #14 checkpoint tests use the phrases **Architecture Decision Records through ADR 0009** and **Actor Directory version-1 record family** for their then-current milestones. Those phrases describe historical checkpoints only; the current foundation inventory above, ADRs 0001–0017, and the current schema catalog remain authoritative.
+
+### Issue #37 current implementation
+
+Issue #37 translates the accepted v0.2 contract subset into immutable,
+version-explicit Python runtime models with exact `from_dict`/`to_dict`
+round-tripping and no silent historical migration. The installed wheel carries a
+compact generated closure of the accepted runtime schemas and validates them with
+stdlib-only runtime code; `jsonschema` remains a development/test oracle.
+
+`portia.validation` adds deterministic in-memory application findings for graph
+invariants that are knowable without storage or external resolution. The runtime
+coverage and Issue #22 parity matrices explicitly separate v0.2 model coverage,
+historical reads, Core-owned values, v0.3 paper/import deferrals, and invariants
+that require later persistence, resolver, projection, or custody services. Public
+operation/integrity/derived-state records needed by Issue #38 are modeled, but
+#37 does not implement filesystem persistence, replay, recovery, or derived-state
+rebuilding. See `docs/runtime-models.md`.
 
 ### Issue #17 current implementation
 

@@ -1,7 +1,8 @@
 # Portia development baseline
 
-This document defines the executable-development baseline established by Issue #36.
-It does not change Portia's accepted ADRs, schemas, ownership rules, or domain
+This document defines the executable-development baseline established by Issue #36
+and extended with immutable runtime models/application validation in Issue #37. It
+does not change Portia's accepted ADRs, schemas, ownership rules, or domain
 semantics.
 
 ## Supported baseline
@@ -118,6 +119,7 @@ Run these gates from an activated `.venv` after installing Core and
 
 ```powershell
 python scripts\validate_portia_foundation.py
+python scripts\validate_runtime_models.py
 python -m pytest
 python -m ruff check .
 python -m mypy
@@ -159,10 +161,13 @@ python -m twine check dist\*
 python scripts\check_package.py dist
 ```
 
-The wheel intentionally contains only the runtime `portia` package and package
-metadata. Repository ADRs, schemas, audit evidence, tests, and development tools
-remain source-distribution/repository material; #36 does not turn those files
-into runtime authority.
+The wheel contains the runtime `portia` package, the explicit runtime-coverage
+matrix, and one compact generated closure of the accepted schemas required by the
+Issue #37 runtime model surface. It does not ship the repository schema tree.
+`jsonschema` remains a development/test dependency; installed model conversion and
+validation use the standard library runtime validator. Repository ADRs, audit
+evidence, tests, and development tools remain source-distribution/repository
+material rather than runtime authority. See [`runtime-models.md`](runtime-models.md).
 
 ## Architecture and privacy boundary
 
