@@ -1,4 +1,4 @@
-"""Run the complete Issue #36 Portia repository qualification."""
+"""Run the complete Issue #37 Portia repository qualification."""
 
 from __future__ import annotations
 
@@ -53,6 +53,7 @@ def qualify(root: Path, core_wheel: Path) -> None:
     )
 
     _run([sys.executable, "scripts/validate_portia_foundation.py"], root)
+    _run([sys.executable, "scripts/validate_runtime_models.py"], root)
     _run([sys.executable, "-m", "pytest"], root)
     _run([sys.executable, "-m", "ruff", "check", "."], root)
     _run([sys.executable, "-m", "mypy"], root)
@@ -95,7 +96,7 @@ def main() -> int:
     except (OSError, RuntimeError, ValueError, subprocess.CalledProcessError) as exc:
         print(f"Repository qualification failed: {exc}", file=sys.stderr)
         return 1
-    print("Portia Issue #36 repository qualification passed")
+    print("Portia Issue #37 repository qualification passed")
     return 0
 
 

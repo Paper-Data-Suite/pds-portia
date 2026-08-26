@@ -1,4 +1,4 @@
-"""Install Core and Portia wheels in isolation and smoke the #36 baseline."""
+"""Install Core and Portia wheels in isolation and smoke the Issue #37 baseline."""
 
 from __future__ import annotations
 
@@ -42,6 +42,47 @@ def _console_path(python: Path) -> Path:
     )
     scripts = Path(json.loads(result.stdout))
     return scripts / ("portia.exe" if os.name == "nt" else "portia")
+
+
+def _model_smoke(python: Path, *, cwd: Path, env: dict[str, str]) -> None:
+    code = r'''
+import json
+from portia.models import EventV2, parse_portia_record, portia_record_to_dict
+from portia.validation import GraphValidationOptions, validate_record_graph
+
+wire = {
+    "schema_version": "2",
+    "record_type": "portia_work",
+    "work_kind": "event",
+    "module_id": "portia",
+    "class_id": "class_smoke",
+    "work_id": "evt_smoke",
+    "school_year": "2026-2027",
+    "status": "draft",
+    "creation_source": {"type": "digital_entry"},
+    "created_at": "2026-08-25T12:00:00-04:00",
+    "created_by": {"type": "system_process", "process_id": "wheel_smoke"},
+    "updated_at": "2026-08-25T12:00:00-04:00",
+    "updated_by": {"type": "system_process", "process_id": "wheel_smoke"},
+}
+record = parse_portia_record("event", "2", wire)
+assert isinstance(record, EventV2)
+assert portia_record_to_dict(record) == wire
+assert validate_record_graph(
+    [record], options=GraphValidationOptions(require_internal_resolution=True)
+) == ()
+try:
+    record._data["status"] = "closed"
+except TypeError:
+    pass
+else:
+    raise AssertionError("runtime record payload is not deeply immutable")
+print(json.dumps({"contract": record.contract, "version": record.contract_version}))
+'''
+    result = _run([str(python), "-c", code], cwd=cwd, env=env)
+    payload = json.loads(result.stdout)
+    if payload != {"contract": "event", "version": "2"}:
+        raise RuntimeError(f"unexpected runtime-model smoke result: {payload!r}")
 
 
 def smoke(portia_wheel: Path, core_wheel: Path) -> None:
@@ -96,6 +137,12 @@ def smoke(portia_wheel: Path, core_wheel: Path) -> None:
             raise RuntimeError(f"unexpected installed Portia version: {package_info['version']}")
         if not (installed_path / "py.typed").is_file():
             raise RuntimeError("installed Portia wheel is missing py.typed")
+        if not (installed_path / "_runtime_contract_bundle.json").is_file():
+            raise RuntimeError("installed Portia wheel is missing the runtime contract bundle")
+        if (installed_path / "schemas").exists():
+            raise RuntimeError("installed Portia wheel unexpectedly contains repository schemas")
+
+        _model_smoke(python, cwd=work, env=env)
 
         before = sorted(path.relative_to(work).as_posix() for path in work.rglob("*"))
         console = _console_path(python)

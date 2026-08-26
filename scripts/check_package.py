@@ -10,25 +10,52 @@ import zipfile
 from pathlib import Path, PurePosixPath
 
 EXPECTED_VERSION = "0.2.0"
-ALLOWED_RUNTIME_FILES = {
+REQUIRED_RUNTIME_FILES = {
     "portia/__init__.py",
     "portia/__main__.py",
     "portia/_version.py",
+    "portia/_bundle_builder.py",
+    "portia/_runtime_contract_bundle.json",
     "portia/cli.py",
     "portia/py.typed",
+    "portia/runtime-coverage.json",
+    "portia/models/__init__.py",
+    "portia/models/base.py",
+    "portia/models/common.py",
+    "portia/models/coverage.py",
+    "portia/models/errors.py",
+    "portia/models/identifiers.py",
+    "portia/models/json_values.py",
+    "portia/models/records.py",
+    "portia/models/references.py",
+    "portia/models/schema_runtime.py",
+    "portia/validation/__init__.py",
+    "portia/validation/context.py",
+    "portia/validation/findings.py",
+    "portia/validation/graph.py",
+    "portia/validation/issue22_parity.py",
 }
 REQUIRED_SDIST_FILES = {
     "LICENSE",
     "MANIFEST.in",
     "README.md",
     "pyproject.toml",
+    "setup.py",
     "docs/development.md",
+    "docs/runtime-models.md",
     "docs/synthetic-data-policy.md",
     "portia/__init__.py",
     "portia/__main__.py",
     "portia/_version.py",
+    "portia/_bundle_builder.py",
     "portia/cli.py",
     "portia/py.typed",
+    "portia/runtime-coverage.json",
+    "portia/models/__init__.py",
+    "portia/models/records.py",
+    "portia/models/schema_runtime.py",
+    "portia/validation/__init__.py",
+    "portia/validation/graph.py",
     "scripts/bootstrap_dev.ps1",
     "scripts/bootstrap_dev.sh",
     "scripts/check_package.py",
@@ -36,6 +63,7 @@ REQUIRED_SDIST_FILES = {
     "scripts/smoke_test_wheel.py",
     "scripts/validate_portia_foundation.py",
     "scripts/validate_repository.py",
+    "scripts/validate_runtime_models.py",
     "scripts/verify_core_wheel.py",
 }
 
@@ -61,6 +89,8 @@ def _metadata_findings(content: bytes) -> list[str]:
     runtime_requirements = [item.lower() for item in requirements if "extra==" not in item.lower()]
     if any(any(name in item for name in sibling_names) for item in runtime_requirements):
         findings.append(f"unexpected sibling runtime dependency: {runtime_requirements}")
+    if any("jsonschema" in item.lower() for item in runtime_requirements):
+        findings.append("jsonschema must remain a development/test dependency, not runtime")
     return findings
 
 
@@ -76,12 +106,20 @@ def validate_wheel(path: Path) -> list[str]:
             return [f"corrupt wheel member: {corrupt}"]
         names = set(archive.namelist())
         runtime = {name for name in names if name.startswith("portia/")}
-        missing = sorted(ALLOWED_RUNTIME_FILES - runtime)
-        unexpected = sorted(runtime - ALLOWED_RUNTIME_FILES)
+        missing = sorted(REQUIRED_RUNTIME_FILES - runtime)
         if missing:
             findings.append(f"missing runtime files: {missing}")
-        if unexpected:
-            findings.append(f"unexpected runtime files: {unexpected}")
+        for name in runtime:
+            if name.endswith("/"):
+                continue
+            if not (
+                name.endswith(".py")
+                or name.endswith(".json")
+                or name == "portia/py.typed"
+            ):
+                findings.append(f"unexpected runtime file type: {name}")
+            if name.startswith("portia/schemas/"):
+                findings.append(f"repository schema tree leaked into runtime wheel: {name}")
         for name in names:
             if _unsafe_path(name):
                 findings.append(f"unsafe wheel path: {name}")
@@ -102,9 +140,16 @@ def validate_wheel(path: Path) -> list[str]:
             if "portia = portia.cli:main" not in entries:
                 findings.append("missing portia console entry point")
             if "paper_data_suite.modules" in entries:
-                findings.append("suite routing entry point is premature in #36")
+                findings.append("suite routing entry point is premature in #37")
             if "paper_data_suite.publication_producers" in entries:
-                findings.append("publication producer entry point is premature in #36")
+                findings.append("publication producer entry point is premature in #37")
+        try:
+            bundle = archive.read("portia/_runtime_contract_bundle.json")
+        except KeyError:
+            findings.append("compiled runtime contract bundle is missing")
+        else:
+            if b'"bundle_contract": "pds-portia.runtime-contract-bundle"' not in bundle:
+                findings.append("compiled runtime contract bundle has unexpected identity")
     return findings
 
 
