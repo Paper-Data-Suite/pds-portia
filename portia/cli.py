@@ -9,7 +9,7 @@ from typing import Sequence
 from portia._version import __version__
 
 CORE_DISTRIBUTION = "pds-core"
-CORE_REQUIREMENT = "pds-core>=0.6,<0.7"
+CORE_REQUIREMENT = "pds-core>=0.6.3,<0.7"
 
 _BOOTSTRAP_MENU = (
     "Record Event",

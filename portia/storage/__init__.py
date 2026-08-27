@@ -4,6 +4,7 @@ from portia.storage.acknowledgements import (
     FindingAcknowledgementStore,
     StoredAcknowledgement,
 )
+from portia.storage.actor_directory import ActorDirectoryRepository
 from portia.storage.derived import (
     DerivedCurrentState,
     DerivedGeneration,
@@ -48,6 +49,7 @@ from portia.storage.series import (
 )
 
 __all__ = [
+    "ActorDirectoryRepository",
     "ContentFingerprint",
     "DerivedCurrentState",
     "DerivedGeneration",

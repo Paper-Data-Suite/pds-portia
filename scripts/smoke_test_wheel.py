@@ -1,4 +1,4 @@
-"""Install Core and Portia wheels in isolation and smoke the Issue #38 baseline."""
+"""Install Core and Portia wheels in isolation and smoke the Issue #39 baseline."""
 
 from __future__ import annotations
 
@@ -95,7 +95,7 @@ from portia.models import parse_portia_record
 from portia.models.references import ExactPortiaWorkRef
 from portia.storage import PortiaConflictError, PortiaRepository
 
-workspace = ensure_workspace_root(Path("synthetic-workspace"))
+workspace = ensure_workspace_root(Path("synthetic-workspace-storage"))
 repository = PortiaRepository(workspace)
 work = ExactPortiaWorkRef(
     class_id="class_storage_smoke",
@@ -152,8 +152,119 @@ print(json.dumps({
         raise RuntimeError("storage replacement did not change the representation fingerprint")
 
 
+def _identity_smoke(python: Path, *, cwd: Path, env: dict[str, str]) -> None:
+    code = r'''
+import json
+from pathlib import Path
+
+from pds_core.classes import write_class_roster
+from pds_core.rosters import create_roster
+from pds_core.workspace import ensure_workspace_root
+from portia.identity import (
+    ActorDirectoryService,
+    CoreRosterResolver,
+    ResolvedIdentityValidationContext,
+)
+from portia.models import parse_portia_record
+from portia.models.references import ExactActorStudentRelationshipRef
+
+workspace = ensure_workspace_root(Path("synthetic-workspace-identity"))
+roster = create_roster(
+    "class_identity_smoke",
+    [{
+        "student_id": "student_17",
+        "last_name": "Example",
+        "first_name": "Student",
+        "period": "2",
+        "preferred_name": "Sam",
+    }],
+)
+write_class_roster(workspace, roster)
+resolver = CoreRosterResolver(workspace)
+resolved = resolver.resolve("class_identity_smoke", "student_17")
+assert resolved.reference.class_id == "class_identity_smoke"
+assert resolved.reference.student_id == "student_17"
+assert not (workspace / "portia").exists(), "roster lookup created Portia canonical state"
+context = ResolvedIdentityValidationContext.from_resolutions(resolved)
+assert context.roster_student_exists(resolved.reference) is True
+
+agent = {"type": "system_process", "process_id": "wheel_identity_smoke"}
+actor_wire = {
+    "schema_version": "1",
+    "record_type": "actor",
+    "module_id": "portia",
+    "actor_id": "actr_identity_smoke",
+    "status": "active",
+    "display": {"display_name": "Synthetic Caregiver"},
+    "actor_category": {"kind": "family_or_caregiver"},
+    "creation_source": {"type": "digital_entry"},
+    "created_at": "2026-08-26T12:00:00-04:00",
+    "created_by": agent,
+    "updated_at": "2026-08-26T12:00:00-04:00",
+    "updated_by": agent,
+}
+relationship_wire = {
+    "schema_version": "1",
+    "record_type": "actor_student_relationship",
+    "module_id": "portia",
+    "actor_id": "actr_identity_smoke",
+    "relationship_id": "asrel_identity_smoke",
+    "status": "active",
+    "student_ref": {
+        "class_id": "class_identity_smoke",
+        "student_id": "student_17",
+    },
+    "relationship": {"type": "caregiver"},
+    "basis": {"kind": "local_operator_knowledge"},
+    "review": {
+        "kind": "locally_reviewed",
+        "reviewed_at": "2026-08-26T12:00:00-04:00",
+        "reviewed_by": agent,
+    },
+    "creation_source": {"type": "digital_entry"},
+    "created_at": "2026-08-26T12:00:00-04:00",
+    "created_by": agent,
+    "updated_at": "2026-08-26T12:00:00-04:00",
+    "updated_by": agent,
+}
+service = ActorDirectoryService(workspace)
+service.create_actor(parse_portia_record("actor", "1", actor_wire))
+service.create_actor_child(
+    "actr_identity_smoke",
+    parse_portia_record("actor_student_relationship", "1", relationship_wire),
+)
+relationship_ref = ExactActorStudentRelationshipRef(
+    actor_id="actr_identity_smoke",
+    relationship_id="asrel_identity_smoke",
+    contract_version="1",
+)
+linked = service.resolve_student_relationship(
+    relationship_ref,
+    require_current_use=True,
+)
+assert linked.roster_student.reference == resolved.reference
+assert linked.relationship.record.logical_id == "asrel_identity_smoke"
+print(json.dumps({
+    "class_id": linked.roster_student.reference.class_id,
+    "student_id": linked.roster_student.reference.student_id,
+    "relationship_id": linked.relationship.record.logical_id,
+}))
+'''
+    result = _run([str(python), "-c", code], cwd=cwd, env=env)
+    payload = json.loads(result.stdout)
+    expected = {
+        "class_id": "class_identity_smoke",
+        "student_id": "student_17",
+        "relationship_id": "asrel_identity_smoke",
+    }
+    if payload != expected:
+        raise RuntimeError(f"unexpected identity smoke result: {payload!r}")
+
+
 def smoke(portia_wheel: Path, core_wheel: Path) -> None:
     repository = Path(__file__).resolve().parents[1]
+    if "0.6.3" not in core_wheel.name:
+        raise RuntimeError("Issue #39 installed-wheel smoke requires Core 0.6.3")
     with tempfile.TemporaryDirectory(prefix="portia-wheel-smoke-") as temporary:
         root = Path(temporary)
         environment = root / "venv"
@@ -208,11 +319,16 @@ def smoke(portia_wheel: Path, core_wheel: Path) -> None:
             raise RuntimeError("installed Portia wheel is missing the runtime contract bundle")
         if not (installed_path / "storage" / "repository.py").is_file():
             raise RuntimeError("installed Portia wheel is missing the Issue #38 storage package")
+        if not (installed_path / "storage" / "actor_directory.py").is_file():
+            raise RuntimeError("installed Portia wheel is missing Actor Directory storage inventory")
+        if not (installed_path / "identity" / "roster.py").is_file():
+            raise RuntimeError("installed Portia wheel is missing the Issue #39 identity package")
         if (installed_path / "schemas").exists():
             raise RuntimeError("installed Portia wheel unexpectedly contains repository schemas")
 
         _model_smoke(python, cwd=work, env=env)
         _storage_smoke(python, cwd=work, env=env)
+        _identity_smoke(python, cwd=work, env=env)
 
         before = sorted(path.relative_to(work).as_posix() for path in work.rglob("*"))
         console = _console_path(python)
@@ -221,8 +337,8 @@ def smoke(portia_wheel: Path, core_wheel: Path) -> None:
         if "Portia 0.2.0" not in version.stdout:
             raise RuntimeError(f"unexpected --version output: {version.stdout!r}")
         status = _run([str(console), "status"], cwd=work, env=env)
-        if "Core requirement: pds-core>=0.6,<0.7" not in status.stdout:
-            raise RuntimeError("status output is missing the bounded Core requirement")
+        if "Core requirement: pds-core>=0.6.3,<0.7" not in status.stdout:
+            raise RuntimeError("status output is missing the Core 0.6.3 requirement")
         if "Teacher data access: none" not in status.stdout:
             raise RuntimeError("status output does not preserve the non-mutating bootstrap boundary")
         menu = _run([str(console), "menu"], cwd=work, env=env)
@@ -251,7 +367,7 @@ def main() -> int:
             if exc.stderr:
                 print(exc.stderr, file=sys.stderr)
         return 1
-    print("Portia installed-wheel Issue #38 smoke test passed")
+    print("Portia installed-wheel Issue #39 smoke test passed")
     return 0
 
 

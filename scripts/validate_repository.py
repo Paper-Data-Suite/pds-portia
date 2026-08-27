@@ -1,4 +1,4 @@
-"""Run the complete Issue #38 Portia repository qualification."""
+"""Run the complete Issue #39 Portia repository qualification."""
 
 from __future__ import annotations
 
@@ -37,11 +37,16 @@ def _core_version_from_wheel(core_wheel: Path) -> str:
 
 
 def qualify(root: Path, core_wheel: Path) -> None:
+    expected_core_version = _core_version_from_wheel(core_wheel)
+    if expected_core_version != "0.6.3":
+        raise ValueError(
+            "Issue #39 qualification requires the authenticated Core 0.6.3 wheel; "
+            f"received {expected_core_version}"
+        )
     _run(
         [sys.executable, "scripts/verify_core_wheel.py", str(core_wheel.resolve())],
         root,
     )
-    expected_core_version = _core_version_from_wheel(core_wheel)
     _run(
         [
             sys.executable,
@@ -55,6 +60,7 @@ def qualify(root: Path, core_wheel: Path) -> None:
     _run([sys.executable, "scripts/validate_portia_foundation.py"], root)
     _run([sys.executable, "scripts/validate_runtime_models.py"], root)
     _run([sys.executable, "scripts/validate_storage.py"], root)
+    _run([sys.executable, "scripts/validate_identity.py"], root)
     _run([sys.executable, "-m", "pytest"], root)
     _run([sys.executable, "-m", "ruff", "check", "."], root)
     _run([sys.executable, "-m", "mypy"], root)
@@ -97,7 +103,7 @@ def main() -> int:
     except (OSError, RuntimeError, ValueError, subprocess.CalledProcessError) as exc:
         print(f"Repository qualification failed: {exc}", file=sys.stderr)
         return 1
-    print("Portia Issue #38 repository qualification passed")
+    print("Portia Issue #39 repository qualification passed")
     return 0
 
 
