@@ -1,9 +1,9 @@
 # Portia development baseline
 
-This document defines the executable-development baseline established by Issue #36
-and extended with immutable runtime models/application validation in Issue #37. It
-does not change Portia's accepted ADRs, schemas, ownership rules, or domain
-semantics.
+This document defines the executable-development baseline established by Issue #36,
+extended with immutable runtime models/application validation in Issue #37, and
+extended with canonical storage/guarded persistence in Issue #38. It does not
+change Portia's accepted ADRs, schemas, ownership rules, or domain semantics.
 
 ## Supported baseline
 
@@ -18,11 +18,11 @@ semantics.
 development branch does not by itself mean that the v0.2.0 release has been
 qualified, tagged, or published.
 
-Issue #36 consumes no Core API introduced after Core 0.6.0, so Portia keeps the
-established Core 0.6 floor rather than raising it speculatively. CI verifies the
-Core 0.6.0 floor and separately qualifies against the current Core 0.6.3 release.
-A later Portia issue must raise the floor if it begins to require a newer public
-Core API.
+Issue #38 still consumes no Core API introduced after Core 0.6.0, so Portia keeps
+the established Core 0.6 floor rather than raising it speculatively. CI verifies
+the Core 0.6.0 floor and separately qualifies against the current Core 0.6.3
+release. A later Portia issue must raise the floor if it begins to require a newer
+public Core API.
 
 ## Create the local virtual environment
 
@@ -97,7 +97,7 @@ python -m pip check
 
 ## Bootstrap CLI
 
-The Issue #36 command surface is deliberately non-mutating:
+The Issue #36 command surface remains deliberately non-mutating:
 
 ```powershell
 portia --help
@@ -112,6 +112,10 @@ does not implement Event, Response, Communication, Support, Follow-Up, timeline,
 correction, attention, or export workflows. Those remain assigned to later
 v0.2.0 issues.
 
+Issue #38 adds reusable persistence APIs under `portia.storage`; it does not wire
+those APIs into the bootstrap CLI or create teacher data merely because Portia is
+imported or a status/menu command is run.
+
 ## Local validation
 
 Run these gates from an activated `.venv` after installing Core and
@@ -120,6 +124,7 @@ Run these gates from an activated `.venv` after installing Core and
 ```powershell
 python scripts\validate_portia_foundation.py
 python scripts\validate_runtime_models.py
+python scripts\validate_storage.py
 python -m pytest
 python -m ruff check .
 python -m mypy
@@ -137,8 +142,8 @@ Ruff intentionally excludes `tests/schema_validation/` and
 `scripts/validate_portia_foundation.py`. Those files are the accepted Phase 1
 foundation validation corpus and predate the executable-package lint baseline;
 they remain exercised by the foundation validator and full pytest suite. Ruff
-continues to cover the executable `portia/` package, Issue #36 scripts, and the
-new top-level package tests.
+continues to cover the executable `portia/` package, executable scripts, and the
+top-level package/storage tests.
 
 The consolidated validator performs the same repository checks and rebuilds the
 distributions before the wheel smoke test:
@@ -147,8 +152,10 @@ distributions before the wheel smoke test:
 python scripts\validate_repository.py --core-wheel $coreWheel
 ```
 
-The smoke test creates its own temporary virtual environment and verifies that
-the wheel works independently of the source checkout.
+The smoke test creates its own temporary virtual environment. In addition to the
+Issue #37 immutable-model checks, it initializes a synthetic Core workspace,
+persists and exact-reads a typed Event, performs an expected-fingerprint guarded
+replacement, and verifies stale replacement rejection from the installed wheel.
 
 ## Build and release artifacts
 
@@ -161,13 +168,37 @@ python -m twine check dist\*
 python scripts\check_package.py dist
 ```
 
-The wheel contains the runtime `portia` package, the explicit runtime-coverage
-matrix, and one compact generated closure of the accepted schemas required by the
-Issue #37 runtime model surface. It does not ship the repository schema tree.
-`jsonschema` remains a development/test dependency; installed model conversion and
-validation use the standard library runtime validator. Repository ADRs, audit
-evidence, tests, and development tools remain source-distribution/repository
-material rather than runtime authority. See [`runtime-models.md`](runtime-models.md).
+The wheel contains the runtime `portia` package, including `portia.storage`, the
+explicit runtime-coverage matrix, and one compact generated closure of the
+accepted schemas required by the modeled contract surface. It does not ship the
+repository schema tree. `jsonschema` remains a development/test dependency;
+installed model conversion and validation use the standard-library runtime
+validator.
+
+Repository ADRs, audit evidence, tests, validation records, and development tools
+remain source-distribution/repository material rather than runtime authority. See
+[`runtime-models.md`](runtime-models.md) and [`storage.md`](storage.md).
+
+## Storage development boundary
+
+Later Portia domain services should consume `PortiaRepository`, the typed
+operation/recovery stores, `QuarantineGuard`, and `DerivedStore` rather than
+writing canonical JSON directly.
+
+Important implementation constraints include:
+
+- canonical work paths remain Core-backed;
+- Actor Directory state remains workspace-scoped under Portia's accepted root;
+- workspace-derived state does not invent a logical workspace ID from a path;
+- normal reads never repair pointers or rebuild derived state;
+- new identities use exclusive creation;
+- replacement requires an exact expected fingerprint;
+- accepted canonical bytes are never deleted to simulate graph-wide rollback;
+- lock age alone never proves staleness; and
+- missing derived state never proves an empty canonical graph.
+
+Private technical storage history is recovery evidence only. It is not a new
+public lifecycle, Amendment, correction, migration, or supersession contract.
 
 ## Architecture and privacy boundary
 

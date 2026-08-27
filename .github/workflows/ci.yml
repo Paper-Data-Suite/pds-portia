@@ -60,7 +60,7 @@ jobs:
       - name: Install Portia development dependencies
         run: python -m pip install -e ".[dev]"
 
-      - name: Run complete Issue 36 qualification
+      - name: Run complete Issue 38 qualification
         shell: pwsh
         run: python scripts/validate_repository.py --core-wheel "$env:PDS_CORE_WHEEL"
 
@@ -103,6 +103,7 @@ jobs:
       - name: Verify declared dependency floor
         run: |
           python -m pip check
+          python scripts/validate_storage.py
           python -m pytest
           portia status
           git diff --check

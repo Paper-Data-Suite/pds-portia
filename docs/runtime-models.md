@@ -204,18 +204,26 @@ Their accepted schemas remain frozen foundation inputs. They will receive
 production runtime/workflow treatment with Portia v0.3 paper and structured
 import work.
 
-## Issue #38 handoff
+## Issue #38 persistence boundary
 
 Issue #37 does model the public operation, integrity, quarantine, source
 snapshot, derived-state pointer/metadata, and related supporting contracts that
-canonical persistence needs. It does **not** execute those contracts. The
-accepted catalog does not define a standalone persisted `derived_generation`
-record; generation identity is represented through the accepted generation
-references, source snapshots, metadata, and current-pointer contracts. #37 does
-not invent an additional record family.
+canonical persistence needs. Issue #38 now executes that persistence boundary
+without changing those contracts. The accepted catalog does not define a
+standalone persisted `derived_generation` record; generation identity is
+represented through the accepted generation references, source snapshots,
+metadata, and current-pointer contracts. #37 does not invent an additional
+record family.
 
-Issue #38 must consume these immutable models while implementing deterministic
-workspace paths, immutable revisions, current pointers, expected-revision
-checks, append-preserving coordinated writes, exact readback, recovery, and
-derived-state rebuilding. It must not bypass the model/validation layer by
-writing anonymous dictionaries directly.
+`portia.storage` consumes the immutable models while implementing deterministic
+workspace paths, immutable operational revisions, explicit current pointers,
+expected-fingerprint checks, append-preserving coordinated writes, exact
+readback, explicit recovery, Quarantine controls, and rebuildable derived-state
+generation storage. Canonical repository methods parse through the exact runtime
+model registry rather than treating anonymous dictionaries as domain authority.
+
+Storage-level Issue #22 parity is tracked separately in
+`portia.storage.issue22_parity`: persistence-owned cases are executed here while
+resolver, privacy/export, projection-builder, domain-intent, and foreign-custody
+cases remain with their owning later services. See `storage.md` for the detailed
+filesystem and recovery contract.

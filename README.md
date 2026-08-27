@@ -19,7 +19,7 @@ The repository currently contains:
 * an installable, strictly typed `pds-portia` package with immutable version-explicit runtime models, exact JSON-native conversion, and in-memory application validation;
 * and automated offline schema-validation, state-machine, compatibility, privacy, example, and documentation-consistency tests.
 
-Portia now contains an installable executable package and the first production runtime model/application-validation layer. The accepted foundation remains defined by ADRs 0001–0017, the public contract versions listed in `schemas/schema-catalog.json`, the focused validation suites for Issues #11–#21, and the combined representative graph corpus added by Issue #22. Filesystem persistence/recovery, live Core-backed identity resolution, and teacher-facing workflows remain assigned to later v0.2.0 issues.
+Portia now contains an installable executable package, immutable runtime models/application validation, and the first production canonical-storage/recovery layer. The accepted foundation remains defined by ADRs 0001–0017, the public contract versions listed in `schemas/schema-catalog.json`, the focused validation suites for Issues #11–#21, and the combined representative graph corpus added by Issue #22. Live Core-backed identity resolution and teacher-facing workflows remain assigned to later v0.2.0 issues.
 
 Historical closeout compatibility is intentionally retained without redefining current authority. Issue #12, Issue #13, and Issue #14 checkpoint tests use the phrases **Architecture Decision Records through ADR 0009** and **Actor Directory version-1 record family** for their then-current milestones. Those phrases describe historical checkpoints only; the current foundation inventory above, ADRs 0001–0017, and the current schema catalog remain authoritative.
 
@@ -39,6 +39,24 @@ that require later persistence, resolver, projection, or custody services. Publi
 operation/integrity/derived-state records needed by Issue #38 are modeled, but
 #37 does not implement filesystem persistence, replay, recovery, or derived-state
 rebuilding. See `docs/runtime-models.md`.
+
+### Issue #38 current implementation
+
+Issue #38 implements canonical Portia storage and guarded persistence without
+claiming graph-wide filesystem transactions. `portia.storage` provides
+Core-backed work paths, workspace-scoped Actor paths, exact typed loads,
+exclusive creation, expected-fingerprint replacement, target-adjacent staging,
+deterministic locks, immutable operation/quarantine/suppression revision series,
+explicit current pointers, recovery inspection, Quarantine enforcement, finding
+administration, and immutable derived generations with Source Snapshot freshness
+checks.
+
+Accepted canonical bytes are never deleted merely to simulate rollback after a
+partial multi-file operation. Derived state remains rebuildable and
+nonauthoritative; missing or stale derived state never means an empty canonical
+graph. Normal reads do not migrate, repair pointers, follow successors, rebuild
+projections, or clear locks. See `docs/storage.md` and the Issue #38 validation
+record under `docs/validation/`.
 
 ### Issue #17 current implementation
 
