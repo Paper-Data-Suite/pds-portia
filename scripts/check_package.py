@@ -19,6 +19,12 @@ REQUIRED_RUNTIME_FILES = {
     "portia/cli.py",
     "portia/py.typed",
     "portia/runtime-coverage.json",
+    "portia/identity/__init__.py",
+    "portia/identity/actors.py",
+    "portia/identity/context.py",
+    "portia/identity/errors.py",
+    "portia/identity/issue22_parity.py",
+    "portia/identity/roster.py",
     "portia/models/__init__.py",
     "portia/models/base.py",
     "portia/models/common.py",
@@ -31,6 +37,7 @@ REQUIRED_RUNTIME_FILES = {
     "portia/models/schema_runtime.py",
     "portia/storage/__init__.py",
     "portia/storage/acknowledgements.py",
+    "portia/storage/actor_directory.py",
     "portia/storage/derived.py",
     "portia/storage/errors.py",
     "portia/storage/fingerprint.py",
@@ -58,21 +65,28 @@ REQUIRED_SDIST_FILES = {
     "pyproject.toml",
     "setup.py",
     "docs/development.md",
+    "docs/identity-and-actor-directory.md",
     "docs/runtime-models.md",
     "docs/storage.md",
     "docs/synthetic-data-policy.md",
     "docs/validation/issue-38-canonical-storage-and-guarded-persistence-validation.md",
+    "docs/validation/issue-39-actor-directory-and-core-roster-linking-validation.md",
     "portia/__init__.py",
     "portia/__main__.py",
     "portia/_version.py",
     "portia/_bundle_builder.py",
     "portia/cli.py",
-    "portia/py.typed",
-    "portia/runtime-coverage.json",
+    "portia/identity/__init__.py",
+    "portia/identity/actors.py",
+    "portia/identity/context.py",
+    "portia/identity/errors.py",
+    "portia/identity/issue22_parity.py",
+    "portia/identity/roster.py",
     "portia/models/__init__.py",
     "portia/models/records.py",
     "portia/models/schema_runtime.py",
     "portia/storage/__init__.py",
+    "portia/storage/actor_directory.py",
     "portia/storage/issue22_parity.py",
     "portia/storage/orchestration.py",
     "portia/storage/repository.py",
@@ -83,6 +97,7 @@ REQUIRED_SDIST_FILES = {
     "scripts/check_package.py",
     "scripts/repair_pip_residue.py",
     "scripts/smoke_test_wheel.py",
+    "scripts/validate_identity.py",
     "scripts/validate_portia_foundation.py",
     "scripts/validate_repository.py",
     "scripts/validate_runtime_models.py",
@@ -106,8 +121,8 @@ def _metadata_findings(content: bytes) -> list[str]:
     if message.get("Requires-Python") != ">=3.11":
         findings.append(f"unexpected Requires-Python: {message.get('Requires-Python')!r}")
     requirements = [item.replace(" ", "") for item in message.get_all("Requires-Dist", [])]
-    if not any("pds-core<0.7,>=0.6" in item for item in requirements):
-        findings.append(f"missing Core dependency range: {requirements}")
+    if not any("pds-core<0.7,>=0.6.3" in item for item in requirements):
+        findings.append(f"missing Core 0.6.3 dependency floor: {requirements}")
     sibling_names = ("scoreform", "quillan", "concord", "meridian", "vitrine")
     runtime_requirements = [item.lower() for item in requirements if "extra==" not in item.lower()]
     if any(any(name in item for name in sibling_names) for item in runtime_requirements):
@@ -163,9 +178,9 @@ def validate_wheel(path: Path) -> list[str]:
             if "portia = portia.cli:main" not in entries:
                 findings.append("missing portia console entry point")
             if "paper_data_suite.modules" in entries:
-                findings.append("suite routing entry point is premature in #38")
+                findings.append("suite routing entry point is premature in #39")
             if "paper_data_suite.publication_producers" in entries:
-                findings.append("publication producer entry point is premature in #38")
+                findings.append("publication producer entry point is premature in #39")
         try:
             bundle = archive.read("portia/_runtime_contract_bundle.json")
         except KeyError:

@@ -13,7 +13,7 @@ authors = [
     { name = "Stephen Severino" }
 ]
 dependencies = [
-    "pds-core>=0.6,<0.7"
+    "pds-core>=0.6.3,<0.7"
 ]
 classifiers = [
     "Development Status :: 2 - Pre-Alpha",
@@ -75,6 +75,7 @@ files = [
     "scripts/check_package.py",
     "scripts/smoke_test_wheel.py",
     "scripts/repair_pip_residue.py",
+    "scripts/validate_identity.py",
     "scripts/validate_repository.py",
     "scripts/validate_runtime_models.py",
     "scripts/validate_storage.py",

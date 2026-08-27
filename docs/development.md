@@ -1,14 +1,15 @@
 # Portia development baseline
 
 This document defines the executable-development baseline established by Issue #36,
-extended with immutable runtime models/application validation in Issue #37, and
-extended with canonical storage/guarded persistence in Issue #38. It does not
-change Portia's accepted ADRs, schemas, ownership rules, or domain semantics.
+extended with immutable runtime models/application validation in Issue #37,
+canonical storage/guarded persistence in Issue #38, and production Core-roster /
+Actor Directory identity services in Issue #39. It does not change Portia's
+accepted ADRs, schemas, ownership rules, or domain semantics.
 
 ## Supported baseline
 
 - Python: `>=3.11`
-- Core compatibility: `pds-core>=0.6,<0.7`
+- Core compatibility: `pds-core>=0.6.3,<0.7`
 - Distribution: `pds-portia`
 - Import package: `portia`
 - Console command: `portia`
@@ -18,11 +19,11 @@ change Portia's accepted ADRs, schemas, ownership rules, or domain semantics.
 development branch does not by itself mean that the v0.2.0 release has been
 qualified, tagged, or published.
 
-Issue #38 still consumes no Core API introduced after Core 0.6.0, so Portia keeps
-the established Core 0.6 floor rather than raising it speculatively. CI verifies
-the Core 0.6.0 floor and separately qualifies against the current Core 0.6.3
-release. A later Portia issue must raise the floor if it begins to require a newer
-public Core API.
+Issue #39 intentionally raises the Core floor to 0.6.3 because the production
+identity layer now consumes the current public Core roster surface. Core 0.6.0
+is no longer an active Portia qualification target. CI qualifies the supported
+Ubuntu/Python 3.11 and Windows/Python 3.11 combinations against the authenticated
+Core 0.6.3 release wheel.
 
 ## Create the local virtual environment
 
@@ -54,8 +55,7 @@ py -3.11 -m venv .venv
 python -m pip install --upgrade pip
 ```
 
-Install an official supported Core 0.6 wheel before installing Portia. For the
-current supported Core release:
+Install the official Core 0.6.3 wheel before installing Portia:
 
 ```powershell
 $coreWheel = Join-Path $HOME "Downloads\pds_core-0.6.3-py3-none-any.whl"
@@ -112,19 +112,20 @@ does not implement Event, Response, Communication, Support, Follow-Up, timeline,
 correction, attention, or export workflows. Those remain assigned to later
 v0.2.0 issues.
 
-Issue #38 adds reusable persistence APIs under `portia.storage`; it does not wire
-those APIs into the bootstrap CLI or create teacher data merely because Portia is
-imported or a status/menu command is run.
+Issues #38 and #39 add reusable persistence and identity APIs; neither wires
+teacher data access into the bootstrap CLI or creates teacher data merely because
+Portia is imported or a status/menu command is run.
 
 ## Local validation
 
-Run these gates from an activated `.venv` after installing Core and
+Run these gates from an activated `.venv` after installing Core 0.6.3 and
 `-e ".[dev]"`:
 
 ```powershell
 python scripts\validate_portia_foundation.py
 python scripts\validate_runtime_models.py
 python scripts\validate_storage.py
+python scripts\validate_identity.py
 python -m pytest
 python -m ruff check .
 python -m mypy
@@ -143,7 +144,7 @@ Ruff intentionally excludes `tests/schema_validation/` and
 foundation validation corpus and predate the executable-package lint baseline;
 they remain exercised by the foundation validator and full pytest suite. Ruff
 continues to cover the executable `portia/` package, executable scripts, and the
-top-level package/storage tests.
+top-level package/storage/identity tests.
 
 The consolidated validator performs the same repository checks and rebuilds the
 distributions before the wheel smoke test:
@@ -152,10 +153,12 @@ distributions before the wheel smoke test:
 python scripts\validate_repository.py --core-wheel $coreWheel
 ```
 
-The smoke test creates its own temporary virtual environment. In addition to the
-Issue #37 immutable-model checks, it initializes a synthetic Core workspace,
-persists and exact-reads a typed Event, performs an expected-fingerprint guarded
-replacement, and verifies stale replacement rejection from the installed wheel.
+The smoke test creates its own temporary virtual environment. It retains the
+Issue #37 immutable-model and Issue #38 guarded-storage checks, then initializes
+a synthetic Core roster, proves an exact roster lookup has no Portia write side
+effect, builds an I/O-free identity validation context, creates an Actor and
+explicit Actor–Student Relationship through guarded storage, and resolves that
+Relationship back to the exact class-qualified Core student.
 
 ## Build and release artifacts
 
@@ -168,22 +171,23 @@ python -m twine check dist\*
 python scripts\check_package.py dist
 ```
 
-The wheel contains the runtime `portia` package, including `portia.storage`, the
-explicit runtime-coverage matrix, and one compact generated closure of the
-accepted schemas required by the modeled contract surface. It does not ship the
-repository schema tree. `jsonschema` remains a development/test dependency;
-installed model conversion and validation use the standard-library runtime
-validator.
+The wheel contains the runtime `portia` package, including `portia.identity`,
+`portia.storage`, the explicit runtime-coverage matrix, and one compact generated
+closure of the accepted schemas required by the modeled contract surface. It
+does not ship the repository schema tree. `jsonschema` remains a development/test
+dependency; installed model conversion and validation use the standard-library
+runtime validator.
 
 Repository ADRs, audit evidence, tests, validation records, and development tools
 remain source-distribution/repository material rather than runtime authority. See
-[`runtime-models.md`](runtime-models.md) and [`storage.md`](storage.md).
+[`runtime-models.md`](runtime-models.md), [`storage.md`](storage.md), and
+[`identity-and-actor-directory.md`](identity-and-actor-directory.md).
 
 ## Storage development boundary
 
-Later Portia domain services should consume `PortiaRepository`, the typed
-operation/recovery stores, `QuarantineGuard`, and `DerivedStore` rather than
-writing canonical JSON directly.
+Later Portia domain services should consume `PortiaRepository`,
+`ActorDirectoryRepository`, the typed operation/recovery stores,
+`QuarantineGuard`, and `DerivedStore` rather than writing canonical JSON directly.
 
 Important implementation constraints include:
 
@@ -199,6 +203,25 @@ Important implementation constraints include:
 
 Private technical storage history is recovery evidence only. It is not a new
 public lifecycle, Amendment, correction, migration, or supersession contract.
+
+## Identity development boundary
+
+Later teacher workflows should consume `CoreRosterResolver` and
+`ActorDirectoryService` rather than parsing Core roster files, matching students
+by name, or inspecting Actor Directory paths directly.
+
+Important identity constraints include:
+
+- `class_id + student_id` is the complete Core roster identity;
+- the same local student ID in different classes remains different identity;
+- names and preferred names are display data only;
+- Actor identity never substitutes for roster identity;
+- Actor–student association requires an explicit accepted Relationship record;
+- roster reads never create Portia canonical records;
+- current-use Quarantine does not erase historical exact readability;
+- exceptional removal remains distinct from historical nonexistence; and
+- graph validation remains I/O-free and receives bounded authoritative facts
+  through a validation context.
 
 ## Architecture and privacy boundary
 

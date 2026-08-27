@@ -127,6 +127,15 @@ context reports external existence as unknown. `KnownValidationContext` is a
 deterministic in-memory implementation for callers that have already obtained
 authoritative Core facts. Validation itself performs no I/O.
 
+Issue #39 provides that production bridge without changing this boundary.
+`CoreRosterResolver` performs exact Core 0.6.3 roster I/O outside
+`portia.validation`; `ResolvedIdentityValidationContext` carries successful exact
+student resolutions as positive facts, while `RosterSnapshotValidationContext`
+may report absence only inside classes whose complete rosters were successfully
+loaded. Unchecked classes remain unknown. This preserves the distinction between
+"not resolved" and "authoritatively absent" while keeping
+`validate_record_graph()` deterministic and I/O-free.
+
 ## Application findings
 
 `validate_record_graph()` returns immutable `ApplicationFinding` values instead

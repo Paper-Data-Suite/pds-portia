@@ -13,8 +13,8 @@ def test_version_matches_installed_distribution() -> None:
 
 def test_status_reports_bounded_core_requirement() -> None:
     status = render_status()
-    assert CORE_REQUIREMENT == "pds-core>=0.6,<0.7"
-    assert "Core requirement: pds-core>=0.6,<0.7" in status
+    assert CORE_REQUIREMENT == "pds-core>=0.6.3,<0.7"
+    assert "Core requirement: pds-core>=0.6.3,<0.7" in status
     assert "Teacher data access: none" in status
 
 

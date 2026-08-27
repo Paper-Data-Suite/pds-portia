@@ -19,7 +19,7 @@ The repository currently contains:
 * an installable, strictly typed `pds-portia` package with immutable version-explicit runtime models, exact JSON-native conversion, and in-memory application validation;
 * and automated offline schema-validation, state-machine, compatibility, privacy, example, and documentation-consistency tests.
 
-Portia now contains an installable executable package, immutable runtime models/application validation, and the first production canonical-storage/recovery layer. The accepted foundation remains defined by ADRs 0001–0017, the public contract versions listed in `schemas/schema-catalog.json`, the focused validation suites for Issues #11–#21, and the combined representative graph corpus added by Issue #22. Live Core-backed identity resolution and teacher-facing workflows remain assigned to later v0.2.0 issues.
+Portia now contains an installable executable package, immutable runtime models/application validation, the production canonical-storage/recovery layer, and the Issue #39 Core-roster / Actor Directory identity service. The accepted foundation remains defined by ADRs 0001–0017, the public contract versions listed in `schemas/schema-catalog.json`, the focused validation suites for Issues #11–#21, and the combined representative graph corpus added by Issue #22. Teacher-facing Event and Participant workflows begin in Issue #40; they consume the identity service rather than performing roster or Actor filesystem resolution themselves.
 
 Historical closeout compatibility is intentionally retained without redefining current authority. Issue #12, Issue #13, and Issue #14 checkpoint tests use the phrases **Architecture Decision Records through ADR 0009** and **Actor Directory version-1 record family** for their then-current milestones. Those phrases describe historical checkpoints only; the current foundation inventory above, ADRs 0001–0017, and the current schema catalog remain authoritative.
 
@@ -57,6 +57,25 @@ nonauthoritative; missing or stale derived state never means an empty canonical
 graph. Normal reads do not migrate, repair pointers, follow successors, rebuild
 projections, or clear locks. See `docs/storage.md` and the Issue #38 validation
 record under `docs/validation/`.
+
+### Issue #39 current implementation
+
+Issue #39 adds the bounded production identity/application-service layer in
+`portia.identity`. `CoreRosterResolver` reads only the explicitly requested Core
+class roster through public Core 0.6.3 APIs and resolves students by the exact
+`class_id + student_id` tuple. Names, preferred names, Actor IDs, and fuzzy
+similarity never establish roster identity, and roster lookup performs no Portia
+canonical writes.
+
+`ActorDirectoryService` composes the Issue #38 guarded repository and Quarantine
+services for exact Actor, Contact Point, and Actor–Student Relationship access.
+Actor identity remains separate from roster identity; student association exists
+only through an explicit relationship record. Exact historical references never
+follow successors silently, and exceptional removal remains distinguishable from
+historical nonexistence. Successfully resolved roster facts can be converted into
+an in-memory validation context without adding filesystem or Core I/O to
+`validate_record_graph()`. See `docs/identity-and-actor-directory.md` and the
+Issue #39 validation record under `docs/validation/`.
 
 ### Issue #17 current implementation
 

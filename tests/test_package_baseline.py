@@ -19,7 +19,7 @@ def test_package_metadata_baseline() -> None:
     project = _project()
     assert project["name"] == "pds-portia"
     assert project["requires-python"] == ">=3.11"
-    assert project["dependencies"] == ["pds-core>=0.6,<0.7"]
+    assert project["dependencies"] == ["pds-core>=0.6.3,<0.7"]
 
 
 def test_console_entry_point_is_bounded_to_portia_cli() -> None:
