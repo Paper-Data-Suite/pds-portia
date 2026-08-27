@@ -1,4 +1,4 @@
-"""Install Core and Portia wheels in isolation and smoke the Issue #37 baseline."""
+"""Install Core and Portia wheels in isolation and smoke the Issue #38 baseline."""
 
 from __future__ import annotations
 
@@ -85,6 +85,73 @@ print(json.dumps({"contract": record.contract, "version": record.contract_versio
         raise RuntimeError(f"unexpected runtime-model smoke result: {payload!r}")
 
 
+def _storage_smoke(python: Path, *, cwd: Path, env: dict[str, str]) -> None:
+    code = r'''
+import json
+from pathlib import Path
+
+from pds_core.workspace import ensure_workspace_root
+from portia.models import parse_portia_record
+from portia.models.references import ExactPortiaWorkRef
+from portia.storage import PortiaConflictError, PortiaRepository
+
+workspace = ensure_workspace_root(Path("synthetic-workspace"))
+repository = PortiaRepository(workspace)
+work = ExactPortiaWorkRef(
+    class_id="class_storage_smoke",
+    work_id="evt_storage_smoke",
+    work_kind="event",
+    contract_version="2",
+)
+base = {
+    "schema_version": "2",
+    "record_type": "portia_work",
+    "work_kind": "event",
+    "module_id": "portia",
+    "class_id": "class_storage_smoke",
+    "work_id": "evt_storage_smoke",
+    "school_year": "2026-2027",
+    "status": "draft",
+    "creation_source": {"type": "digital_entry"},
+    "created_at": "2026-08-26T12:00:00-04:00",
+    "created_by": {"type": "system_process", "process_id": "wheel_storage_smoke"},
+    "updated_at": "2026-08-26T12:00:00-04:00",
+    "updated_by": {"type": "system_process", "process_id": "wheel_storage_smoke"},
+}
+created_record = parse_portia_record("event", "2", base)
+created = repository.create_work(work, created_record)
+loaded = repository.load_work(work)
+assert loaded.record.to_dict() == base
+assert loaded.fingerprint == created.fingerprint
+
+updated_wire = dict(base)
+updated_wire["updated_at"] = "2026-08-26T12:05:00-04:00"
+updated_record = parse_portia_record("event", "2", updated_wire)
+replaced = repository.replace_work(work, updated_record, expected=created.fingerprint)
+assert repository.load_work(work).record.to_dict() == updated_wire
+assert replaced.fingerprint != created.fingerprint
+
+try:
+    repository.replace_work(work, updated_record, expected=created.fingerprint)
+except PortiaConflictError:
+    conflict = "rejected"
+else:
+    raise AssertionError("stale expected-state replacement was not rejected")
+
+print(json.dumps({
+    "created": created.fingerprint.digest,
+    "replaced": replaced.fingerprint.digest,
+    "stale_conflict": conflict,
+}))
+'''
+    result = _run([str(python), "-c", code], cwd=cwd, env=env)
+    payload = json.loads(result.stdout)
+    if payload.get("stale_conflict") != "rejected":
+        raise RuntimeError(f"unexpected storage smoke result: {payload!r}")
+    if payload.get("created") == payload.get("replaced"):
+        raise RuntimeError("storage replacement did not change the representation fingerprint")
+
+
 def smoke(portia_wheel: Path, core_wheel: Path) -> None:
     repository = Path(__file__).resolve().parents[1]
     with tempfile.TemporaryDirectory(prefix="portia-wheel-smoke-") as temporary:
@@ -139,10 +206,13 @@ def smoke(portia_wheel: Path, core_wheel: Path) -> None:
             raise RuntimeError("installed Portia wheel is missing py.typed")
         if not (installed_path / "_runtime_contract_bundle.json").is_file():
             raise RuntimeError("installed Portia wheel is missing the runtime contract bundle")
+        if not (installed_path / "storage" / "repository.py").is_file():
+            raise RuntimeError("installed Portia wheel is missing the Issue #38 storage package")
         if (installed_path / "schemas").exists():
             raise RuntimeError("installed Portia wheel unexpectedly contains repository schemas")
 
         _model_smoke(python, cwd=work, env=env)
+        _storage_smoke(python, cwd=work, env=env)
 
         before = sorted(path.relative_to(work).as_posix() for path in work.rglob("*"))
         console = _console_path(python)
@@ -181,7 +251,7 @@ def main() -> int:
             if exc.stderr:
                 print(exc.stderr, file=sys.stderr)
         return 1
-    print("Portia installed-wheel smoke test passed")
+    print("Portia installed-wheel Issue #38 smoke test passed")
     return 0
 
 

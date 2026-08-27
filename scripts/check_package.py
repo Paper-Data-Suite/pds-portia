@@ -29,6 +29,22 @@ REQUIRED_RUNTIME_FILES = {
     "portia/models/records.py",
     "portia/models/references.py",
     "portia/models/schema_runtime.py",
+    "portia/storage/__init__.py",
+    "portia/storage/acknowledgements.py",
+    "portia/storage/derived.py",
+    "portia/storage/errors.py",
+    "portia/storage/fingerprint.py",
+    "portia/storage/integrity.py",
+    "portia/storage/io.py",
+    "portia/storage/issue22_parity.py",
+    "portia/storage/locks.py",
+    "portia/storage/orchestration.py",
+    "portia/storage/paths.py",
+    "portia/storage/quarantine.py",
+    "portia/storage/recovery.py",
+    "portia/storage/repository.py",
+    "portia/storage/series.py",
+    "portia/storage/staging.py",
     "portia/validation/__init__.py",
     "portia/validation/context.py",
     "portia/validation/findings.py",
@@ -43,7 +59,9 @@ REQUIRED_SDIST_FILES = {
     "setup.py",
     "docs/development.md",
     "docs/runtime-models.md",
+    "docs/storage.md",
     "docs/synthetic-data-policy.md",
+    "docs/validation/issue-38-canonical-storage-and-guarded-persistence-validation.md",
     "portia/__init__.py",
     "portia/__main__.py",
     "portia/_version.py",
@@ -54,6 +72,10 @@ REQUIRED_SDIST_FILES = {
     "portia/models/__init__.py",
     "portia/models/records.py",
     "portia/models/schema_runtime.py",
+    "portia/storage/__init__.py",
+    "portia/storage/issue22_parity.py",
+    "portia/storage/orchestration.py",
+    "portia/storage/repository.py",
     "portia/validation/__init__.py",
     "portia/validation/graph.py",
     "scripts/bootstrap_dev.ps1",
@@ -64,6 +86,7 @@ REQUIRED_SDIST_FILES = {
     "scripts/validate_portia_foundation.py",
     "scripts/validate_repository.py",
     "scripts/validate_runtime_models.py",
+    "scripts/validate_storage.py",
     "scripts/verify_core_wheel.py",
 }
 
@@ -140,9 +163,9 @@ def validate_wheel(path: Path) -> list[str]:
             if "portia = portia.cli:main" not in entries:
                 findings.append("missing portia console entry point")
             if "paper_data_suite.modules" in entries:
-                findings.append("suite routing entry point is premature in #37")
+                findings.append("suite routing entry point is premature in #38")
             if "paper_data_suite.publication_producers" in entries:
-                findings.append("publication producer entry point is premature in #37")
+                findings.append("publication producer entry point is premature in #38")
         try:
             bundle = archive.read("portia/_runtime_contract_bundle.json")
         except KeyError:
