@@ -1,4 +1,4 @@
-"""Run the complete Issue #40 Portia repository qualification."""
+"""Run the complete Issue #41 Portia repository qualification."""
 
 from __future__ import annotations
 
@@ -60,7 +60,7 @@ def qualify(root: Path, core_wheel: Path) -> None:
     expected_core_version = _core_version_from_wheel(core_wheel)
     if expected_core_version != "0.6.3":
         raise ValueError(
-            "Issue #40 qualification requires the authenticated Core 0.6.3 wheel; "
+            "Issue #41 qualification requires the authenticated Core 0.6.3 wheel; "
             f"received {expected_core_version}"
         )
     _run(
@@ -97,6 +97,7 @@ def qualify(root: Path, core_wheel: Path) -> None:
         root,
     )
     _run([sys.executable, "scripts/check_package.py", "dist"], root)
+    _run([sys.executable, "scripts/check_issue41_package.py", "dist"], root)
 
     wheels = sorted((root / "dist").glob("pds_portia-*.whl"))
     if len(wheels) != 1:
@@ -105,6 +106,15 @@ def qualify(root: Path, core_wheel: Path) -> None:
         [
             sys.executable,
             "scripts/smoke_test_wheel.py",
+            str(wheels[0]),
+            str(core_wheel.resolve()),
+        ],
+        root,
+    )
+    _run(
+        [
+            sys.executable,
+            "scripts/smoke_test_issue41_wheel.py",
             str(wheels[0]),
             str(core_wheel.resolve()),
         ],
@@ -124,7 +134,7 @@ def main() -> int:
     except (OSError, RuntimeError, ValueError, subprocess.CalledProcessError) as exc:
         print(f"Repository qualification failed: {exc}", file=sys.stderr)
         return 1
-    print("Portia Issue #40 repository qualification passed")
+    print("Portia Issue #41 repository qualification passed")
     return 0
 
 

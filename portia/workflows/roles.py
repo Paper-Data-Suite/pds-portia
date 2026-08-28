@@ -10,7 +10,11 @@ from portia.models.references import (
     ExactPortiaWorkRecordRef,
     ExactPortiaWorkRef,
 )
-from portia.storage.errors import PortiaCorruptionError, PortiaNotFoundError
+from portia.storage.errors import (
+    PortiaCorruptionError,
+    PortiaNotFoundError,
+    PortiaQuarantinedError,
+)
 from portia.storage.fingerprint import ContentFingerprint
 from portia.storage.repository import StoredRecord
 from portia.workflows.common import (
@@ -80,7 +84,9 @@ class RoleWorkflowService(WorkflowServiceBase):
             record_kind = reference.get("record_kind")
             record_id = reference.get("record_id")
             version = reference.get("contract_version")
-            if not all(isinstance(value, str) for value in (record_kind, record_id, version)):
+            if not all(
+                isinstance(value, str) for value in (record_kind, record_id, version)
+            ):
                 continue
             try:
                 loaded.append(
@@ -94,7 +100,8 @@ class RoleWorkflowService(WorkflowServiceBase):
                 ) from exc
             except PortiaCorruptionError as exc:
                 raise WorkflowPrerequisiteError(
-                    f"{record_kind} {record_id!r} does not satisfy requested contract version {version!r}"
+                    f"{record_kind} {record_id!r} does not satisfy requested "
+                    f"contract version {version!r}"
                 ) from exc
         return tuple(loaded)
 
@@ -119,13 +126,18 @@ class RoleWorkflowService(WorkflowServiceBase):
         return record
 
     @staticmethod
-    def _target_contains(account: PortiaRecord, participant_id: str, version: str) -> bool:
+    def _target_contains(
+        account: PortiaRecord, participant_id: str, version: str
+    ) -> bool:
         target = account.field("target")
         if not isinstance(target, Mapping):
             return False
 
         def matches(value: object) -> bool:
-            if not isinstance(value, Mapping) or value.get("kind") != "event_participant":
+            if (
+                not isinstance(value, Mapping)
+                or value.get("kind") != "event_participant"
+            ):
                 return False
             ref = value.get("record_ref")
             return (
@@ -145,6 +157,11 @@ class RoleWorkflowService(WorkflowServiceBase):
     ) -> None:
         if role.field("role_type") != "reported_involved" or role.status != "active":
             return
+
+        # Local import avoids the existing module dependency cycle:
+        # accounts -> evidence_transition -> coordinated -> roles.
+        from portia.workflows.accounts import AccountWorkflowService
+
         participant_id, participant_version = participant_id_from_target(role)
         accounts = tuple(
             item
@@ -155,22 +172,44 @@ class RoleWorkflowService(WorkflowServiceBase):
             raise WorkflowPrerequisiteError(
                 "active reported_involved requires an exact qualifying Account"
             )
+
+        account_service = AccountWorkflowService(
+            self.workspace_root,
+            repository=self.repository,
+            quarantine=self.quarantine,
+            context_assembler=self.contexts,
+        )
         for stored in accounts:
             account = stored.record
-            if account.status != "active":
-                continue
             source = account.field("source")
             source_kind = source.get("kind") if isinstance(source, Mapping) else None
             if source_kind not in _QUALIFYING_ACCOUNT_SOURCES:
                 continue
             if not self._target_contains(account, participant_id, participant_version):
                 continue
-            self.quarantine.require_allowed(
-                record_target(work, account), "block_current_use"
+            if account.logical_id is None:
+                continue
+            reference = ExactPortiaWorkRecordRef(
+                work_ref=work,
+                record_ref=ExactLocalRecordRef(
+                    record_kind="account",
+                    record_id=account.logical_id,
+                    contract_version=account.contract_version,
+                ),
             )
+            try:
+                account_service.require_current_use(reference)
+            except (
+                WorkflowOwnershipError,
+                WorkflowPrerequisiteError,
+                PortiaQuarantinedError,
+            ):
+                continue
             return
+
         raise WorkflowPrerequisiteError(
-            "reported_involved Account must be active, attributable, same-Event, and target-aligned"
+            "reported_involved Account must be active, attributable, same-Event, "
+            "target-aligned, and eligible for current use"
         )
 
     def _require_active_compatibility(
@@ -227,7 +266,9 @@ class RoleWorkflowService(WorkflowServiceBase):
             graph, require_actor_current_use=candidate.status == "active"
         )
         self.quarantine.require_allowed(work_target(work), "block_work_writes")
-        self.quarantine.require_allowed(record_target(work, candidate), "block_work_writes")
+        self.quarantine.require_allowed(
+            record_target(work, candidate), "block_work_writes"
+        )
         return self.repository.create_work_record(work, candidate)
 
     def load_exact(self, reference: ExactPortiaWorkRecordRef) -> StoredRecord:
@@ -285,10 +326,10 @@ class RoleWorkflowService(WorkflowServiceBase):
             graph, require_actor_current_use=candidate.status == "active"
         )
         self.quarantine.require_allowed(work_target(work), "block_work_writes")
-        self.quarantine.require_allowed(record_target(work, candidate), "block_work_writes")
-        return self.repository.replace_work_record(
-            work, candidate, expected=expected
+        self.quarantine.require_allowed(
+            record_target(work, candidate), "block_work_writes"
         )
+        return self.repository.replace_work_record(work, candidate, expected=expected)
 
     revise = replace
 

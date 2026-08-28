@@ -73,6 +73,25 @@ def _validate_work_owner(record: PortiaRecord, work: PortiaWorkRef | ExactPortia
             raise PortiaOwnershipError("child record work_ref does not agree with canonical path")
 
 
+def _validate_evidence_work_owner(
+    record: PortiaRecord, work: PortiaWorkRef | ExactPortiaWorkRef
+) -> None:
+    """Apply Account/Observation owner-version rules in addition to path ownership."""
+    _validate_work_owner(record, work)
+    if record.contract not in {"account", "observation"}:
+        raise PortiaOwnershipError("record is not Account or Observation evidence")
+    if record.contract_version == "1":
+        if work.work_kind != "event":
+            raise PortiaOwnershipError(
+                f"{record.contract}@1 is Event-local and cannot belong to {work.work_kind}"
+            )
+        return
+    if record.contract_version == "2" and record.work_kind != work.work_kind:
+        raise PortiaOwnershipError(
+            "evidence work_kind does not agree with canonical work ownership"
+        )
+
+
 def _validate_actor_owner(record: PortiaRecord, actor_id: str) -> None:
     if record.module_id != "portia":
         raise PortiaOwnershipError('persisted record module_id must be "portia"')
@@ -249,7 +268,10 @@ class PortiaRepository:
         path = work_record_path(self.workspace_root, work, contract, record_id)
         value, _bytes, fingerprint = read_json(path)
         record = _parse_exact(contract, version, value, path)
-        _validate_work_owner(record, work)
+        if contract in {"account", "observation"}:
+            _validate_evidence_work_owner(record, work)
+        else:
+            _validate_work_owner(record, work)
         if record.logical_id != record_id:
             raise PortiaOwnershipError("record identity does not agree with canonical filename")
         return StoredRecord(record, path, fingerprint)
@@ -276,6 +298,12 @@ class PortiaRepository:
             )
         records: list[StoredRecord] = []
         for path in sorted(collection.iterdir(), key=lambda item: item.name):
+            if (
+                path.name == ".portia-staging"
+                and path.is_dir()
+                and not path.is_symlink()
+            ):
+                continue
             if not path.is_file() or path.suffix != ".json":
                 raise PortiaCorruptionError(
                     f"unexpected artifact in work-record collection: {path}"
@@ -295,6 +323,89 @@ class PortiaRepository:
                 )
             )
         return tuple(records)
+
+    def list_work_records_mixed_versions(
+        self,
+        work: ExactPortiaWorkRef,
+        contract: str,
+        *,
+        supported_versions: frozenset[str],
+    ) -> tuple[StoredRecord, ...]:
+        """Strictly enumerate a bounded child collection with explicit versions."""
+        self.load_work(work)
+        kind = validate_external_id(contract, "record_kind")
+        versions = frozenset(
+            validate_external_id(version, "contract_version")
+            for version in supported_versions
+        )
+        if not versions:
+            raise PortiaOwnershipError(
+                "mixed-version enumeration requires at least one supported version"
+            )
+        collection = work_record_path(
+            self.workspace_root, work, kind, "bounded_collection_probe"
+        ).parent
+        if not collection.exists():
+            return ()
+        if not collection.is_dir():
+            raise PortiaCorruptionError(
+                f"work-record collection is not a directory: {collection}"
+            )
+
+        records: list[StoredRecord] = []
+        for path in sorted(collection.iterdir(), key=lambda item: item.name):
+            if (
+                path.name == ".portia-staging"
+                and path.is_dir()
+                and not path.is_symlink()
+            ):
+                continue
+            if not path.is_file() or path.suffix != ".json":
+                raise PortiaCorruptionError(
+                    f"unexpected artifact in work-record collection: {path}"
+                )
+            try:
+                record_id = validate_external_id(path.stem, "record_id")
+            except Exception as exc:
+                raise PortiaCorruptionError(
+                    f"work-record filename has invalid identity: {path}"
+                ) from exc
+            value, _bytes, fingerprint = read_json(path)
+            if not isinstance(value, Mapping):
+                raise PortiaCorruptionError(
+                    f"work-record collection member is not an object: {path}"
+                )
+            declared_kind = value.get("record_type")
+            declared_version = value.get("schema_version")
+            if declared_kind != kind:
+                raise PortiaCorruptionError(
+                    f"work-record collection member declares wrong contract: {path}"
+                )
+            if not isinstance(declared_version, str) or declared_version not in versions:
+                raise PortiaCorruptionError(
+                    f"work-record collection member declares unsupported version: {path}"
+                )
+            record = _parse_exact(kind, declared_version, value, path)
+            if kind in {"account", "observation"}:
+                _validate_evidence_work_owner(record, work)
+            else:
+                _validate_work_owner(record, work)
+            if record.logical_id != record_id:
+                raise PortiaOwnershipError(
+                    "record identity does not agree with canonical filename"
+                )
+            records.append(StoredRecord(record, path, fingerprint))
+        return tuple(records)
+
+    def list_accounts(self, work: ExactPortiaWorkRef) -> tuple[StoredRecord, ...]:
+        return self.list_work_records_mixed_versions(
+            work, "account", supported_versions=frozenset({"1", "2"})
+        )
+
+    def list_observations(self, work: ExactPortiaWorkRef) -> tuple[StoredRecord, ...]:
+        return self.list_work_records_mixed_versions(
+            work, "observation", supported_versions=frozenset({"1", "2"})
+        )
 
     def list_event_participants(
         self, work: ExactPortiaWorkRef, *, version: str = "3"
@@ -320,7 +431,10 @@ class PortiaRepository:
     ) -> StoredRecord:
         if record.contract in _WORK_CONTRACTS or record.logical_id is None:
             raise PortiaOwnershipError("record is not a canonical work child")
-        _validate_work_owner(record, work)
+        if record.contract in {"account", "observation"}:
+            _validate_evidence_work_owner(record, work)
+        else:
+            _validate_work_owner(record, work)
         # A child write is never accepted into a missing or contradictory work root.
         self.load_work(work)
         path = work_record_path(
@@ -340,7 +454,10 @@ class PortiaRepository:
         if record.logical_id is None:
             raise PortiaOwnershipError("record has no canonical logical identifier")
         record_id = record.logical_id
-        _validate_work_owner(record, work)
+        if record.contract in {"account", "observation"}:
+            _validate_evidence_work_owner(record, work)
+        else:
+            _validate_work_owner(record, work)
         self.load_work(work)
         path = work_record_path(
             self.workspace_root, work, record.contract, record_id
