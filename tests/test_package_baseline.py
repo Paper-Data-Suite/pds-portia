@@ -68,3 +68,16 @@ def test_synthetic_data_policy_states_real_records_are_prohibited() -> None:
     policy = (ROOT / "docs" / "synthetic-data-policy.md").read_text(encoding="utf-8")
     assert "synthetic data only" in policy
     assert "Do not commit real or anonymized-from-real school records" in policy
+
+
+def test_security_policy_has_required_portia_sections() -> None:
+    policy = (ROOT / "SECURITY.md").read_text(encoding="utf-8")
+    for heading in (
+        "# Security Policy",
+        "## Student Data / Privacy",
+        "## Reporting a Vulnerability",
+        "## Supported Versions",
+    ):
+        assert heading in policy
+    assert "Real student or staff data is prohibited" in policy
+    assert "0.2.x" in policy

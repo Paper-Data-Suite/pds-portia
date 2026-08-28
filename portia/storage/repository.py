@@ -2,11 +2,13 @@
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Callable
 
 from portia.models import PortiaRecord, parse_portia_record
+from portia.models.identifiers import validate_external_id, validate_portia_id
 from portia.models.references import ExactPortiaWorkRef, PortiaWorkRef
 from portia.storage.errors import (
     PortiaConflictError,
@@ -20,6 +22,7 @@ from portia.storage.paths import (
     actor_directory_removal_path,
     actor_record_path,
     actor_storage_history_path,
+    work_collection_root,
     work_manifest_path,
     work_record_path,
     work_storage_history_path,
@@ -117,6 +120,85 @@ class PortiaRepository:
         _validate_work_owner(record, work)
         return StoredRecord(record, path, fingerprint)
 
+    def list_works(
+        self,
+        class_id: str,
+        *,
+        work_kind: str = "event",
+        version: str = "2",
+    ) -> tuple[StoredRecord, ...]:
+        """Strictly enumerate one contract in one class's Portia work collection."""
+        validate_external_id(class_id, "class_id")
+        kind = validate_external_id(work_kind, "work_kind")
+        requested_version = validate_external_id(version, "contract_version")
+        if kind not in _WORK_CONTRACTS:
+            raise PortiaOwnershipError("unsupported Portia work-root contract")
+        collection = work_collection_root(self.workspace_root, class_id)
+        if not collection.exists():
+            return ()
+        if not collection.is_dir():
+            raise PortiaCorruptionError(
+                f"Portia work collection is not a directory: {collection}"
+            )
+
+        records: list[StoredRecord] = []
+        for child in sorted(collection.iterdir(), key=lambda item: item.name):
+            if not child.is_dir():
+                raise PortiaCorruptionError(
+                    f"unexpected artifact in Portia work collection: {child}"
+                )
+            manifest = child / "work.json"
+            try:
+                value, _bytes, _fingerprint = read_json(manifest)
+            except Exception as exc:
+                raise PortiaCorruptionError(
+                    f"Portia work root lacks a readable canonical manifest: {child}"
+                ) from exc
+            if not isinstance(value, Mapping):
+                raise PortiaCorruptionError(
+                    f"Portia work manifest is not an object: {manifest}"
+                )
+            declared_kind = value.get("work_kind")
+            declared_version = value.get("schema_version")
+            work_id = value.get("work_id")
+            if (
+                declared_kind not in _WORK_CONTRACTS
+                or not isinstance(declared_version, str)
+                or not isinstance(work_id, str)
+            ):
+                raise PortiaCorruptionError(
+                    f"Portia work manifest has incomplete canonical identity: {manifest}"
+                )
+            try:
+                if declared_kind == "event":
+                    validate_portia_id(work_id, "evt_", "work_id")
+                else:
+                    validate_portia_id(work_id, "sup_", "work_id")
+            except Exception as exc:
+                raise PortiaCorruptionError(
+                    f"Portia work directory has invalid identity: {child}"
+                ) from exc
+            if child.name != work_id:
+                raise PortiaOwnershipError(
+                    "work identity does not agree with canonical directory name"
+                )
+            exact = ExactPortiaWorkRef(
+                class_id=class_id,
+                work_id=work_id,
+                work_kind=declared_kind,
+                contract_version=declared_version,
+            )
+            stored = self.load_work(exact)
+            if declared_kind == kind and declared_version == requested_version:
+                records.append(stored)
+        return tuple(records)
+
+    def list_events(
+        self, class_id: str, *, version: str = "2"
+    ) -> tuple[StoredRecord, ...]:
+        """Strictly enumerate Event roots in one explicit class scope."""
+        return self.list_works(class_id, work_kind="event", version=version)
+
     def create_work(self, work: ExactPortiaWorkRef, record: PortiaRecord) -> StoredRecord:
         if record.contract != work.work_kind or record.contract_version != work.contract_version:
             raise PortiaOwnershipError("work model does not match exact work reference")
@@ -171,6 +253,65 @@ class PortiaRepository:
         if record.logical_id != record_id:
             raise PortiaOwnershipError("record identity does not agree with canonical filename")
         return StoredRecord(record, path, fingerprint)
+
+    def list_work_records(
+        self,
+        work: ExactPortiaWorkRef,
+        contract: str,
+        *,
+        version: str,
+    ) -> tuple[StoredRecord, ...]:
+        """Strictly enumerate one exact child collection beneath one exact work."""
+        self.load_work(work)
+        kind = validate_external_id(contract, "record_kind")
+        requested_version = validate_external_id(version, "contract_version")
+        collection = work_record_path(
+            self.workspace_root, work, kind, "bounded_collection_probe"
+        ).parent
+        if not collection.exists():
+            return ()
+        if not collection.is_dir():
+            raise PortiaCorruptionError(
+                f"work-record collection is not a directory: {collection}"
+            )
+        records: list[StoredRecord] = []
+        for path in sorted(collection.iterdir(), key=lambda item: item.name):
+            if not path.is_file() or path.suffix != ".json":
+                raise PortiaCorruptionError(
+                    f"unexpected artifact in work-record collection: {path}"
+                )
+            try:
+                record_id = validate_external_id(path.stem, "record_id")
+            except Exception as exc:
+                raise PortiaCorruptionError(
+                    f"work-record filename has invalid identity: {path}"
+                ) from exc
+            records.append(
+                self.load_work_record(
+                    work,
+                    kind,
+                    requested_version,
+                    record_id,
+                )
+            )
+        return tuple(records)
+
+    def list_event_participants(
+        self, work: ExactPortiaWorkRef, *, version: str = "3"
+    ) -> tuple[StoredRecord, ...]:
+        return self.list_work_records(work, "event_participant", version=version)
+
+    def list_event_participant_roles(
+        self, work: ExactPortiaWorkRef, *, version: str = "3"
+    ) -> tuple[StoredRecord, ...]:
+        return self.list_work_records(
+            work, "event_participant_role", version=version
+        )
+
+    def list_work_relationships(
+        self, work: ExactPortiaWorkRef, *, version: str = "2"
+    ) -> tuple[StoredRecord, ...]:
+        return self.list_work_records(work, "work_relationship", version=version)
 
     def create_work_record(
         self,

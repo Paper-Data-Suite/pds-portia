@@ -1,4 +1,4 @@
-"""Run the complete Issue #39 Portia repository qualification."""
+"""Run the complete Issue #40 Portia repository qualification."""
 
 from __future__ import annotations
 
@@ -8,10 +8,29 @@ import subprocess
 import sys
 from pathlib import Path
 
+_REQUIRED_SECURITY_HEADINGS = (
+    "# Security Policy",
+    "## Student Data / Privacy",
+    "## Reporting a Vulnerability",
+    "## Supported Versions",
+)
+
 
 def _run(command: list[str], root: Path) -> None:
     print(f"+ {' '.join(command)}", flush=True)
     subprocess.run(command, cwd=root, check=True)
+
+
+def _validate_security_policy(root: Path) -> None:
+    path = root / "SECURITY.md"
+    try:
+        policy = path.read_text(encoding="utf-8")
+    except OSError as exc:
+        raise RuntimeError(f"required root security policy is unavailable: {exc}") from exc
+    missing = [heading for heading in _REQUIRED_SECURITY_HEADINGS if heading not in policy]
+    if missing:
+        raise RuntimeError(f"SECURITY.md is missing required headings: {missing}")
+    print("Portia security policy validation passed", flush=True)
 
 
 def _clean_build_artifacts(root: Path) -> None:
@@ -37,10 +56,11 @@ def _core_version_from_wheel(core_wheel: Path) -> str:
 
 
 def qualify(root: Path, core_wheel: Path) -> None:
+    _validate_security_policy(root)
     expected_core_version = _core_version_from_wheel(core_wheel)
     if expected_core_version != "0.6.3":
         raise ValueError(
-            "Issue #39 qualification requires the authenticated Core 0.6.3 wheel; "
+            "Issue #40 qualification requires the authenticated Core 0.6.3 wheel; "
             f"received {expected_core_version}"
         )
     _run(
@@ -61,6 +81,7 @@ def qualify(root: Path, core_wheel: Path) -> None:
     _run([sys.executable, "scripts/validate_runtime_models.py"], root)
     _run([sys.executable, "scripts/validate_storage.py"], root)
     _run([sys.executable, "scripts/validate_identity.py"], root)
+    _run([sys.executable, "scripts/validate_workflows.py"], root)
     _run([sys.executable, "-m", "pytest"], root)
     _run([sys.executable, "-m", "ruff", "check", "."], root)
     _run([sys.executable, "-m", "mypy"], root)
@@ -103,7 +124,7 @@ def main() -> int:
     except (OSError, RuntimeError, ValueError, subprocess.CalledProcessError) as exc:
         print(f"Repository qualification failed: {exc}", file=sys.stderr)
         return 1
-    print("Portia Issue #39 repository qualification passed")
+    print("Portia Issue #40 repository qualification passed")
     return 0
 
 

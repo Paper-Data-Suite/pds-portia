@@ -6,6 +6,7 @@ from pathlib import Path, PurePosixPath, PureWindowsPath
 
 from pds_core.routes import (
     class_module_dir,
+    module_work_collection_dir,
     module_work_dir,
     safe_module_work_descendant,
 )
@@ -22,6 +23,11 @@ def _work_model(work: PortiaWorkRef | ExactPortiaWorkRef) -> ModuleWorkRef:
 
 def work_root(root: str | Path, work: PortiaWorkRef | ExactPortiaWorkRef) -> Path:
     return module_work_dir(root, _work_model(work))
+
+
+def work_collection_root(root: str | Path, class_id: str) -> Path:
+    """Return the bounded canonical Portia work collection for one class."""
+    return module_work_collection_dir(root, class_id, "portia")
 
 
 def work_manifest_path(root: str | Path, work: PortiaWorkRef | ExactPortiaWorkRef) -> Path:

@@ -57,11 +57,22 @@ REQUIRED_RUNTIME_FILES = {
     "portia/validation/findings.py",
     "portia/validation/graph.py",
     "portia/validation/issue22_parity.py",
+    "portia/workflows/__init__.py",
+    "portia/workflows/common.py",
+    "portia/workflows/context.py",
+    "portia/workflows/coordinated.py",
+    "portia/workflows/errors.py",
+    "portia/workflows/events.py",
+    "portia/workflows/issue22_parity.py",
+    "portia/workflows/participants.py",
+    "portia/workflows/relationships.py",
+    "portia/workflows/roles.py",
 }
 REQUIRED_SDIST_FILES = {
     "LICENSE",
     "MANIFEST.in",
     "README.md",
+    "SECURITY.md",
     "pyproject.toml",
     "setup.py",
     "docs/development.md",
@@ -71,6 +82,8 @@ REQUIRED_SDIST_FILES = {
     "docs/synthetic-data-policy.md",
     "docs/validation/issue-38-canonical-storage-and-guarded-persistence-validation.md",
     "docs/validation/issue-39-actor-directory-and-core-roster-linking-validation.md",
+    "docs/event-participant-role-and-relationship-workflows.md",
+    "docs/validation/issue-40-event-participant-role-and-relationship-workflows-validation.md",
     "portia/__init__.py",
     "portia/__main__.py",
     "portia/_version.py",
@@ -92,6 +105,16 @@ REQUIRED_SDIST_FILES = {
     "portia/storage/repository.py",
     "portia/validation/__init__.py",
     "portia/validation/graph.py",
+    "portia/workflows/__init__.py",
+    "portia/workflows/common.py",
+    "portia/workflows/context.py",
+    "portia/workflows/coordinated.py",
+    "portia/workflows/errors.py",
+    "portia/workflows/events.py",
+    "portia/workflows/issue22_parity.py",
+    "portia/workflows/participants.py",
+    "portia/workflows/relationships.py",
+    "portia/workflows/roles.py",
     "scripts/bootstrap_dev.ps1",
     "scripts/bootstrap_dev.sh",
     "scripts/check_package.py",
@@ -102,6 +125,7 @@ REQUIRED_SDIST_FILES = {
     "scripts/validate_repository.py",
     "scripts/validate_runtime_models.py",
     "scripts/validate_storage.py",
+    "scripts/validate_workflows.py",
     "scripts/verify_core_wheel.py",
 }
 
@@ -178,9 +202,9 @@ def validate_wheel(path: Path) -> list[str]:
             if "portia = portia.cli:main" not in entries:
                 findings.append("missing portia console entry point")
             if "paper_data_suite.modules" in entries:
-                findings.append("suite routing entry point is premature in #39")
+                findings.append("suite routing entry point is premature in #40")
             if "paper_data_suite.publication_producers" in entries:
-                findings.append("publication producer entry point is premature in #39")
+                findings.append("publication producer entry point is premature in #40")
         try:
             bundle = archive.read("portia/_runtime_contract_bundle.json")
         except KeyError:

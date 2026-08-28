@@ -3,7 +3,8 @@
 This document defines the executable-development baseline established by Issue #36,
 extended with immutable runtime models/application validation in Issue #37,
 canonical storage/guarded persistence in Issue #38, and production Core-roster /
-Actor Directory identity services in Issue #39. It does not change Portia's
+Actor Directory identity services in Issue #39 and the Event-family workflow
+services in Issue #40. It does not change Portia's
 accepted ADRs, schemas, ownership rules, or domain semantics.
 
 ## Supported baseline
@@ -206,7 +207,7 @@ public lifecycle, Amendment, correction, migration, or supersession contract.
 
 ## Identity development boundary
 
-Later teacher workflows should consume `CoreRosterResolver` and
+Event-family and later teacher workflows should consume `CoreRosterResolver` and
 `ActorDirectoryService` rather than parsing Core roster files, matching students
 by name, or inspecting Actor Directory paths directly.
 
