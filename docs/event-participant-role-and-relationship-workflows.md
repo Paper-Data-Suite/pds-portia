@@ -174,19 +174,19 @@ P22-01, consumes #39 for P22-03, assembles authority for G22-009, and guarantees
 no successor following for G22-010. G22-017 is shared with #41 because #40
 validates existing Account authority while #41 owns Account mutation.
 
-## Issue #41 handoff
+## Issue #41 integration
 
-Issue #41 should use `EventWorkflowService.load_exact`/`require_current_use`,
-`ParticipantWorkflowService.load_exact`/`require_current_use`, and the exact
-reference helpers to enforce Event ownership. It may reuse
-`WorkflowContextAssembler` when validating complete Account/Observation graphs.
-After creating a qualifying Account, it should call
-`RoleWorkflowService.require_current_use` (or submit a guarded coordinated
-proposal) to revalidate `reported_involved`.
+Issue #41 now consumes `EventWorkflowService`, `ParticipantWorkflowService`,
+`WorkflowContextAssembler`, exact reference helpers, `PortiaRepository`, and the
+existing Issue #38 coordinated persistence machinery. Account and Observation
+workflows therefore reuse #40 Event/Participant ownership rather than parsing or
+rewriting those records through a second path.
 
-Issue #41 must use `PortiaRepository` and the existing coordinated persistence
-machinery rather than creating another Event identity, transaction, lock,
-staging, or journal layer. Issue #41 owns Account creation, editing/revision,
-review/retraction workflows, and Observation creation/editing. Issue #40 owns
-the Event, Participant, Role, and Work Relationship services those workflows
-consume.
+`RoleWorkflowService.require_current_use()` now delegates exact qualifying Account
+authority to `AccountWorkflowService.require_current_use()`. A qualifying Account
+that later becomes retracted, invalidated, superseded, or current-use quarantined
+causes the Role current-use check to fail without mutating, deleting, retargeting,
+or cascading the historical Role. Issue #40 remains the owner of Role mutation;
+Issue #41 remains the owner of Account mutation.
+
+See `account-and-observation-workflows.md` for the complete evidence boundary.

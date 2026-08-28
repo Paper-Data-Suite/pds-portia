@@ -19,7 +19,7 @@ The repository currently contains:
 * an installable, strictly typed `pds-portia` package with immutable version-explicit runtime models, exact JSON-native conversion, and in-memory application validation;
 * and automated offline schema-validation, state-machine, compatibility, privacy, example, and documentation-consistency tests.
 
-Portia now contains an installable executable package, immutable runtime models/application validation, the production canonical-storage/recovery layer, the Issue #39 Core-roster / Actor Directory identity service, and Issue #40 Event, Participant, Role, and exact Work Relationship application services. The accepted foundation remains defined by ADRs 0001–0017, the public contract versions listed in `schemas/schema-catalog.json`, the focused validation suites for Issues #11–#21, and the combined representative graph corpus added by Issue #22. Account and Observation teacher workflows remain assigned to Issue #41 and consume the stable #40 services.
+Portia now contains an installable executable package, immutable runtime models/application validation, the production canonical-storage/recovery layer, the Issue #39 Core-roster / Actor Directory identity service, Issue #40 Event/Participant/Role/Work Relationship services, and Issue #41 production Account and Observation workflows. The accepted foundation remains defined by ADRs 0001–0017, the public contract versions listed in `schemas/schema-catalog.json`, the focused validation suites for Issues #11–#21, and the combined representative graph corpus added by Issue #22. Account/Observation workflows now provide guarded digital-entry evidence creation, exact v1/v2 reads, lifecycle history, correction/supersession, Account retraction/relations, source-artifact authority, Support Process ownership parity, and Role current-use integration without moving judgment or paper/import execution into v0.2.
 
 Historical closeout compatibility is intentionally retained without redefining current authority. Issue #12, Issue #13, and Issue #14 checkpoint tests use the phrases **Architecture Decision Records through ADR 0009** and **Actor Directory version-1 record family** for their then-current milestones. Those phrases describe historical checkpoints only; the current foundation inventory above, ADRs 0001–0017, and the current schema catalog remain authoritative.
 
@@ -84,10 +84,23 @@ Relationship, authoritative-context, and coordinated Event-bundle services.
 All proposed graphs are validated before canonical mutation; roster and Actor
 authority comes exclusively from Issue #39; exact historical reads do not
 follow successors; and lifecycle eligibility remains separate from Quarantine.
-The Role service reads qualifying Account authority for `reported_involved` but
-does not implement the Issue #41 Account workflow. See
+The Role service now consumes Issue #41 Account current-use authority for
+`reported_involved` without mutating Account history or cascading lifecycle. See
 `docs/event-participant-role-and-relationship-workflows.md` and the Issue #40
 validation record under `docs/validation/`.
+
+### Issue #41 current implementation
+
+`AccountWorkflowService` and `ObservationWorkflowService` now provide guarded
+digital-entry evidence creation, exact v1/v2 reads, strict mixed-version
+enumeration, current-use resolution, lifecycle transitions, and material
+correction through v2 successors. Account additionally supports exact
+`reports_from`/`clarifies` lineage and source-evidenced retraction. Source and
+observer authority reuse Issue #39 identity services; source-artifact use is
+verified only through currently supported local/public authority and otherwise
+fails closed. Event and Support Process ownership are both supported without
+creating a Support Process workflow. See `docs/account-and-observation-workflows.md`
+and the Issue #41 validation record under `docs/validation/`.
 
 ### Issue #17 current implementation
 

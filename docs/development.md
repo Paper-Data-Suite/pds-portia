@@ -2,9 +2,10 @@
 
 This document defines the executable-development baseline established by Issue #36,
 extended with immutable runtime models/application validation in Issue #37,
-canonical storage/guarded persistence in Issue #38, and production Core-roster /
-Actor Directory identity services in Issue #39 and the Event-family workflow
-services in Issue #40. It does not change Portia's
+canonical storage/guarded persistence in Issue #38, production Core-roster /
+Actor Directory identity services in Issue #39, Event-family workflow services
+in Issue #40, and production Account/Observation evidence workflows in Issue #41.
+It does not change Portia's
 accepted ADRs, schemas, ownership rules, or domain semantics.
 
 ## Supported baseline
@@ -134,7 +135,11 @@ python -m pip check
 python -m build
 python -m twine check dist\*
 python scripts\check_package.py dist
+python scripts\check_issue41_package.py dist
 python scripts\smoke_test_wheel.py `
+  dist\pds_portia-0.2.0-py3-none-any.whl `
+  $coreWheel
+python scripts\smoke_test_issue41_wheel.py `
   dist\pds_portia-0.2.0-py3-none-any.whl `
   $coreWheel
 git diff --check
@@ -154,12 +159,16 @@ distributions before the wheel smoke test:
 python scripts\validate_repository.py --core-wheel $coreWheel
 ```
 
-The smoke test creates its own temporary virtual environment. It retains the
-Issue #37 immutable-model and Issue #38 guarded-storage checks, then initializes
+The baseline smoke test creates its own temporary virtual environment. It retains
+the Issue #37 immutable-model and Issue #38 guarded-storage checks, then initializes
 a synthetic Core roster, proves an exact roster lookup has no Portia write side
 effect, builds an I/O-free identity validation context, creates an Actor and
 explicit Actor–Student Relationship through guarded storage, and resolves that
-Relationship back to the exact class-qualified Core student.
+Relationship back to the exact class-qualified Core student. The separate Issue
+#41 installed-wheel smoke then creates synthetic Event-local Account and Observation
+evidence through the public production services, reloads each exact v2 record,
+proves current-use eligibility, and confirms that no judgment records are created
+as side effects.
 
 ## Build and release artifacts
 
@@ -173,7 +182,8 @@ python scripts\check_package.py dist
 ```
 
 The wheel contains the runtime `portia` package, including `portia.identity`,
-`portia.storage`, the explicit runtime-coverage matrix, and one compact generated
+`portia.storage`, `portia.workflows` (including the Issue #41 Account/Observation
+evidence services), the explicit runtime-coverage matrix, and one compact generated
 closure of the accepted schemas required by the modeled contract surface. It
 does not ship the repository schema tree. `jsonschema` remains a development/test
 dependency; installed model conversion and validation use the standard-library
@@ -181,8 +191,9 @@ runtime validator.
 
 Repository ADRs, audit evidence, tests, validation records, and development tools
 remain source-distribution/repository material rather than runtime authority. See
-[`runtime-models.md`](runtime-models.md), [`storage.md`](storage.md), and
-[`identity-and-actor-directory.md`](identity-and-actor-directory.md).
+[`runtime-models.md`](runtime-models.md), [`storage.md`](storage.md),
+[`identity-and-actor-directory.md`](identity-and-actor-directory.md), and
+[`account-and-observation-workflows.md`](account-and-observation-workflows.md).
 
 ## Storage development boundary
 

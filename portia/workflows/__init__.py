@@ -1,5 +1,6 @@
 """Public Event-family application services."""
 
+from portia.workflows.accounts import AccountWorkflowService, account_reference
 from portia.workflows.context import (
     AuthoritativeWorkflowContext,
     WorkflowContextAssembler,
@@ -12,6 +13,10 @@ from portia.workflows.errors import (
     WorkflowValidationError,
 )
 from portia.workflows.events import EventWorkflowService, event_reference
+from portia.workflows.observations import (
+    ObservationWorkflowService,
+    observation_reference,
+)
 from portia.workflows.participants import (
     ParticipantPersonResolution,
     ParticipantWorkflowService,
@@ -25,10 +30,12 @@ from portia.workflows.relationships import (
 from portia.workflows.roles import RoleWorkflowService, role_reference
 
 __all__ = [
+    "AccountWorkflowService",
     "AuthoritativeWorkflowContext",
     "EventWorkflowService",
     "EventBundle",
     "EventBundleWorkflowService",
+    "ObservationWorkflowService",
     "ParticipantPersonResolution",
     "ParticipantWorkflowService",
     "PortiaWorkflowError",
@@ -39,7 +46,9 @@ __all__ = [
     "WorkflowPrerequisiteError",
     "WorkflowValidationError",
     "WorkRelationshipService",
+    "account_reference",
     "event_reference",
+    "observation_reference",
     "participant_reference",
     "relationship_reference",
     "role_reference",
