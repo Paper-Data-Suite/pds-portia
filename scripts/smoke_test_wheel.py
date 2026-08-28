@@ -1,4 +1,4 @@
-"""Install Core and Portia wheels in isolation and smoke the Issue #39 baseline."""
+"""Install Core and Portia wheels in isolation and smoke the Issue #40 baseline."""
 
 from __future__ import annotations
 
@@ -261,10 +261,258 @@ print(json.dumps({
         raise RuntimeError(f"unexpected identity smoke result: {payload!r}")
 
 
+def _workflow_smoke(python: Path, *, cwd: Path, env: dict[str, str]) -> None:
+    code = r'''
+import json
+from pathlib import Path
+
+from pds_core.classes import write_class_roster
+from pds_core.rosters import create_roster
+from pds_core.workspace import ensure_workspace_root
+from portia.identity import ActorDirectoryService
+from portia.models import parse_portia_record
+from portia.models.references import ExactPortiaWorkRef
+from portia.workflows import (
+    EventWorkflowService,
+    ParticipantWorkflowService,
+    RoleWorkflowService,
+    WorkRelationshipService,
+    participant_reference,
+    relationship_reference,
+    role_reference,
+)
+
+workspace = ensure_workspace_root(Path("synthetic-workspace-workflows"))
+write_class_roster(workspace, create_roster("class_workflow_smoke", [{
+    "student_id": "student_17",
+    "last_name": "Example",
+    "first_name": "Student",
+    "period": "2",
+}]))
+agent = {"type": "system_process", "process_id": "wheel_workflow_smoke"}
+timestamp = "2026-08-26T12:00:00-04:00"
+
+def event(event_id, *, status="draft", updated_at=timestamp):
+    return parse_portia_record("event", "2", {
+        "schema_version": "2",
+        "record_type": "portia_work",
+        "work_kind": "event",
+        "module_id": "portia",
+        "class_id": "class_workflow_smoke",
+        "work_id": event_id,
+        "school_year": "2026-2027",
+        "status": status,
+        "occurrence": {"precision": "exact", "started_at": timestamp},
+        "summary": "Synthetic neutral workflow smoke context.",
+        "creation_source": {"type": "digital_entry"},
+        "created_at": timestamp,
+        "created_by": agent,
+        "updated_at": updated_at,
+        "updated_by": agent,
+    })
+
+event_service = EventWorkflowService(workspace)
+source_event = event("evt_workflow_smoke")
+target_event = event("evt_workflow_context")
+source_created = event_service.create(source_event)
+target_created = event_service.create(target_event)
+source_ref = ExactPortiaWorkRef(
+    class_id="class_workflow_smoke",
+    work_id="evt_workflow_smoke",
+    work_kind="event",
+    contract_version="2",
+)
+target_ref = ExactPortiaWorkRef(
+    class_id="class_workflow_smoke",
+    work_id="evt_workflow_context",
+    work_kind="event",
+    contract_version="2",
+)
+
+roster_participant = parse_portia_record("event_participant", "3", {
+    "schema_version": "3",
+    "record_type": "event_participant",
+    "module_id": "portia",
+    "class_id": "class_workflow_smoke",
+    "work_id": "evt_workflow_smoke",
+    "participant_id": "ep_roster_smoke",
+    "status": "active",
+    "subject": {
+        "kind": "roster_student",
+        "roster_student_ref": {
+            "class_id": "class_workflow_smoke",
+            "student_id": "student_17",
+        },
+        "display_snapshot": {"display_name": "Synthetic Student"},
+    },
+    "creation_source": {"type": "digital_entry"},
+    "created_at": timestamp,
+    "created_by": agent,
+    "updated_at": timestamp,
+    "updated_by": agent,
+})
+participants = ParticipantWorkflowService(workspace)
+participants.create(source_ref, roster_participant)
+
+target_participant = parse_portia_record("event_participant", "3", {
+    "schema_version": "3",
+    "record_type": "event_participant",
+    "module_id": "portia",
+    "class_id": "class_workflow_smoke",
+    "work_id": "evt_workflow_context",
+    "participant_id": "ep_context_smoke",
+    "status": "active",
+    "subject": {"kind": "unknown_person", "reason": "identity_not_known"},
+    "creation_source": {"type": "digital_entry"},
+    "created_at": timestamp,
+    "created_by": agent,
+    "updated_at": timestamp,
+    "updated_by": agent,
+})
+participants.create(target_ref, target_participant)
+
+actor = parse_portia_record("actor", "1", {
+    "schema_version": "1",
+    "record_type": "actor",
+    "module_id": "portia",
+    "actor_id": "actr_workflow_smoke",
+    "status": "active",
+    "display": {"display_name": "Synthetic Visitor"},
+    "actor_category": {"kind": "other", "detail": "Synthetic visitor"},
+    "creation_source": {"type": "digital_entry"},
+    "created_at": timestamp,
+    "created_by": agent,
+    "updated_at": timestamp,
+    "updated_by": agent,
+})
+ActorDirectoryService(workspace).create_actor(actor)
+actor_participant = parse_portia_record("event_participant", "3", {
+    "schema_version": "3",
+    "record_type": "event_participant",
+    "module_id": "portia",
+    "class_id": "class_workflow_smoke",
+    "work_id": "evt_workflow_smoke",
+    "participant_id": "ep_actor_smoke",
+    "status": "active",
+    "subject": {
+        "kind": "actor",
+        "actor_ref": {"actor_id": "actr_workflow_smoke"},
+        "display_snapshot": {"display_name": "Synthetic Visitor"},
+    },
+    "creation_source": {"type": "digital_entry"},
+    "created_at": timestamp,
+    "created_by": agent,
+    "updated_at": timestamp,
+    "updated_by": agent,
+})
+participants.create(source_ref, actor_participant)
+
+event_service.replace(
+    event(
+        "evt_workflow_smoke",
+        status="active",
+        updated_at="2026-08-26T12:05:00-04:00",
+    ),
+    expected=source_created.fingerprint,
+)
+event_service.replace(
+    event(
+        "evt_workflow_context",
+        status="active",
+        updated_at="2026-08-26T12:05:00-04:00",
+    ),
+    expected=target_created.fingerprint,
+)
+
+role = parse_portia_record("event_participant_role", "3", {
+    "schema_version": "3",
+    "record_type": "event_participant_role",
+    "module_id": "portia",
+    "class_id": "class_workflow_smoke",
+    "work_id": "evt_workflow_smoke",
+    "role_id": "epr_present_smoke",
+    "target": {
+        "kind": "event_participant",
+        "record_ref": {
+            "record_kind": "event_participant",
+            "record_id": "ep_roster_smoke",
+            "contract_version": "3",
+        },
+    },
+    "status": "active",
+    "role_type": "present",
+    "creation_source": {"type": "digital_entry"},
+    "created_at": timestamp,
+    "created_by": agent,
+    "updated_at": timestamp,
+    "updated_by": agent,
+})
+roles = RoleWorkflowService(workspace)
+roles.create(source_ref, role)
+
+relationship = parse_portia_record("work_relationship", "2", {
+    "schema_version": "2",
+    "record_type": "work_relationship",
+    "module_id": "portia",
+    "class_id": "class_workflow_smoke",
+    "work_id": "evt_workflow_smoke",
+    "relationship_id": "rel_workflow_smoke",
+    "status": "active",
+    "relationship_type": "draws_context_from",
+    "source": source_ref.to_dict(),
+    "target": target_ref.to_dict(),
+    "creation_source": {"type": "digital_entry"},
+    "created_at": timestamp,
+    "created_by": agent,
+    "updated_at": timestamp,
+    "updated_by": agent,
+})
+relationships = WorkRelationshipService(workspace)
+relationships.create(relationship)
+
+roster_resolution = participants.require_current_use(
+    participant_reference(source_ref, "ep_roster_smoke")
+)
+actor_resolution = participants.require_current_use(
+    participant_reference(source_ref, "ep_actor_smoke")
+)
+assert roster_resolution.authority.reference.class_id == "class_workflow_smoke"
+assert roster_resolution.authority.reference.student_id == "student_17"
+assert actor_resolution.authority.record.logical_id == "actr_workflow_smoke"
+assert roles.resolve_exact(role_reference(source_ref, "epr_present_smoke")).record.status == "active"
+exact_relationship = relationships.resolve_exact(
+    relationship_reference(source_ref, "rel_workflow_smoke")
+)
+assert exact_relationship.target.record.logical_id == "evt_workflow_context"
+assert event_service.resolve_exact(source_ref).record.logical_id == "evt_workflow_smoke"
+
+records_root = workspace / "classes/class_workflow_smoke/modules/portia/work/evt_workflow_smoke/records"
+for absent in ("account", "observation", "determination"):
+    assert not (records_root / absent).exists()
+actor_roots = list((workspace / "portia/actors").iterdir())
+assert [path.name for path in actor_roots] == ["actr_workflow_smoke"]
+print(json.dumps({
+    "roster_class": roster_resolution.authority.reference.class_id,
+    "actor_id": actor_resolution.authority.record.logical_id,
+    "role": roles.load_exact(role_reference(source_ref, "epr_present_smoke")).record.field("role_type"),
+    "relationship": exact_relationship.relationship.record.logical_id,
+}))
+'''
+    result = _run([str(python), "-c", code], cwd=cwd, env=env)
+    payload = json.loads(result.stdout)
+    if payload != {
+        "roster_class": "class_workflow_smoke",
+        "actor_id": "actr_workflow_smoke",
+        "role": "present",
+        "relationship": "rel_workflow_smoke",
+    }:
+        raise RuntimeError(f"unexpected workflow smoke result: {payload!r}")
+
+
 def smoke(portia_wheel: Path, core_wheel: Path) -> None:
     repository = Path(__file__).resolve().parents[1]
     if "0.6.3" not in core_wheel.name:
-        raise RuntimeError("Issue #39 installed-wheel smoke requires Core 0.6.3")
+        raise RuntimeError("Issue #40 installed-wheel smoke requires Core 0.6.3")
     with tempfile.TemporaryDirectory(prefix="portia-wheel-smoke-") as temporary:
         root = Path(temporary)
         environment = root / "venv"
@@ -323,12 +571,15 @@ def smoke(portia_wheel: Path, core_wheel: Path) -> None:
             raise RuntimeError("installed Portia wheel is missing Actor Directory storage inventory")
         if not (installed_path / "identity" / "roster.py").is_file():
             raise RuntimeError("installed Portia wheel is missing the Issue #39 identity package")
+        if not (installed_path / "workflows" / "events.py").is_file():
+            raise RuntimeError("installed Portia wheel is missing the Issue #40 workflow package")
         if (installed_path / "schemas").exists():
             raise RuntimeError("installed Portia wheel unexpectedly contains repository schemas")
 
         _model_smoke(python, cwd=work, env=env)
         _storage_smoke(python, cwd=work, env=env)
         _identity_smoke(python, cwd=work, env=env)
+        _workflow_smoke(python, cwd=work, env=env)
 
         before = sorted(path.relative_to(work).as_posix() for path in work.rglob("*"))
         console = _console_path(python)
@@ -367,7 +618,7 @@ def main() -> int:
             if exc.stderr:
                 print(exc.stderr, file=sys.stderr)
         return 1
-    print("Portia installed-wheel Issue #39 smoke test passed")
+    print("Portia installed-wheel Issue #40 smoke test passed")
     return 0
 
 

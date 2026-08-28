@@ -19,7 +19,7 @@ The repository currently contains:
 * an installable, strictly typed `pds-portia` package with immutable version-explicit runtime models, exact JSON-native conversion, and in-memory application validation;
 * and automated offline schema-validation, state-machine, compatibility, privacy, example, and documentation-consistency tests.
 
-Portia now contains an installable executable package, immutable runtime models/application validation, the production canonical-storage/recovery layer, and the Issue #39 Core-roster / Actor Directory identity service. The accepted foundation remains defined by ADRs 0001–0017, the public contract versions listed in `schemas/schema-catalog.json`, the focused validation suites for Issues #11–#21, and the combined representative graph corpus added by Issue #22. Teacher-facing Event and Participant workflows begin in Issue #40; they consume the identity service rather than performing roster or Actor filesystem resolution themselves.
+Portia now contains an installable executable package, immutable runtime models/application validation, the production canonical-storage/recovery layer, the Issue #39 Core-roster / Actor Directory identity service, and Issue #40 Event, Participant, Role, and exact Work Relationship application services. The accepted foundation remains defined by ADRs 0001–0017, the public contract versions listed in `schemas/schema-catalog.json`, the focused validation suites for Issues #11–#21, and the combined representative graph corpus added by Issue #22. Account and Observation teacher workflows remain assigned to Issue #41 and consume the stable #40 services.
 
 Historical closeout compatibility is intentionally retained without redefining current authority. Issue #12, Issue #13, and Issue #14 checkpoint tests use the phrases **Architecture Decision Records through ADR 0009** and **Actor Directory version-1 record family** for their then-current milestones. Those phrases describe historical checkpoints only; the current foundation inventory above, ADRs 0001–0017, and the current schema catalog remain authoritative.
 
@@ -76,6 +76,18 @@ historical nonexistence. Successfully resolved roster facts can be converted int
 an in-memory validation context without adding filesystem or Core I/O to
 `validate_record_graph()`. See `docs/identity-and-actor-directory.md` and the
 Issue #39 validation record under `docs/validation/`.
+
+### Issue #40 current implementation
+
+`portia.workflows` now provides typed Event, Participant, Role, Work
+Relationship, authoritative-context, and coordinated Event-bundle services.
+All proposed graphs are validated before canonical mutation; roster and Actor
+authority comes exclusively from Issue #39; exact historical reads do not
+follow successors; and lifecycle eligibility remains separate from Quarantine.
+The Role service reads qualifying Account authority for `reported_involved` but
+does not implement the Issue #41 Account workflow. See
+`docs/event-participant-role-and-relationship-workflows.md` and the Issue #40
+validation record under `docs/validation/`.
 
 ### Issue #17 current implementation
 

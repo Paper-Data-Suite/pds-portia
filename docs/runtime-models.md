@@ -128,6 +128,8 @@ deterministic in-memory implementation for callers that have already obtained
 authoritative Core facts. Validation itself performs no I/O.
 
 Issue #39 provides that production bridge without changing this boundary.
+Issue #40 composes it with the I/O-free validator and guarded storage through
+`portia.workflows`; validation itself still performs no I/O.
 `CoreRosterResolver` performs exact Core 0.6.3 roster I/O outside
 `portia.validation`; `ResolvedIdentityValidationContext` carries successful exact
 student resolutions as positive facts, while `RosterSnapshotValidationContext`
