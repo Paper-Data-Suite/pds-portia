@@ -19,7 +19,7 @@ The repository currently contains:
 * an installable, strictly typed `pds-portia` package with immutable version-explicit runtime models, exact JSON-native conversion, and in-memory application validation;
 * and automated offline schema-validation, state-machine, compatibility, privacy, example, and documentation-consistency tests.
 
-Portia now contains an installable executable package, immutable runtime models/application validation, the production canonical-storage/recovery layer, the Issue #39 Core-roster / Actor Directory identity service, Issue #40 Event/Participant/Role/Work Relationship services, and Issue #41 production Account and Observation workflows. The accepted foundation remains defined by ADRs 0001–0017, the public contract versions listed in `schemas/schema-catalog.json`, the focused validation suites for Issues #11–#21, and the combined representative graph corpus added by Issue #22. Account/Observation workflows now provide guarded digital-entry evidence creation, exact v1/v2 reads, lifecycle history, correction/supersession, Account retraction/relations, source-artifact authority, Support Process ownership parity, and Role current-use integration without moving judgment or paper/import execution into v0.2.
+Portia now contains an installable executable package, immutable runtime models/application validation, the production canonical-storage/recovery layer, the Issue #39 Core-roster / Actor Directory identity service, Issue #40 Event/Participant/Role/Work Relationship services, Issue #41 production Account and Observation workflows, and Issue #42 production Review, Classification, Hypothesis, and Determination workflows. The accepted foundation remains defined by ADRs 0001–0017, the public contract versions listed in `schemas/schema-catalog.json`, the focused validation suites for Issues #11–#21, and the combined representative graph corpus added by Issue #22. Judgment workflows now add guarded digital-entry creation, exact historical reads, current-use qualification, Review progression, lifecycle/correction history, Determination reconsideration/reversal, Quarantine enforcement, and explicit sibling-module evidence authority while preserving the evidence-versus-human-judgment boundary.
 
 Historical closeout compatibility is intentionally retained without redefining current authority. Issue #12, Issue #13, and Issue #14 checkpoint tests use the phrases **Architecture Decision Records through ADR 0009** and **Actor Directory version-1 record family** for their then-current milestones. Those phrases describe historical checkpoints only; the current foundation inventory above, ADRs 0001–0017, and the current schema catalog remain authoritative.
 
@@ -101,6 +101,23 @@ verified only through currently supported local/public authority and otherwise
 fails closed. Event and Support Process ownership are both supported without
 creating a Support Process workflow. See `docs/account-and-observation-workflows.md`
 and the Issue #41 validation record under `docs/validation/`.
+
+### Issue #42 current implementation
+
+`ReviewWorkflowService`, `ClassificationWorkflowService`,
+`HypothesisWorkflowService`, and `DeterminationWorkflowService` implement the
+Event-local ADR 0012 judgment layer through guarded public workflows. Exact
+historical resolution remains separate from current/consequential eligibility:
+accepted evidence references do not silently follow later Account/Observation
+successors, while new evidence acceptance still requires current authority.
+
+Review progression, family-specific lifecycle/correction handling, Determination
+reconsideration/reversal, represented-human authority, Quarantine, documented
+authority/process artifacts, and explicit sibling-module evidence adapters all
+fail closed at the current-use boundary. Schema-valid paper/import history remains
+readable but cannot masquerade as reviewed v0.2 materialization. See
+`docs/review-classification-hypothesis-determination-workflows.md`; validation
+evidence is recorded under `docs/validation/`.
 
 ### Issue #17 current implementation
 
