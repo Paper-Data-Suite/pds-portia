@@ -21,9 +21,7 @@ from portia.workflows.errors import (
     WorkflowPrerequisiteError,
 )
 
-_SUPPORTED_CURRENT_ARTIFACT_KINDS = frozenset(
-    {"workspace_file", "portia_work_record"}
-)
+_SUPPORTED_CURRENT_ARTIFACT_KINDS = frozenset({"workspace_file", "portia_work_record"})
 _DEFERRED_CURRENT_ARTIFACT_KINDS = frozenset(
     {"paper_capture", "module_work_record", "external_record"}
 )
@@ -111,7 +109,6 @@ def _workspace_file_authority(
     try:
         candidate = resolve_workspace_relative(workspace_root, relative_path)
         resolved = candidate.resolve(strict=True)
-        # Resolving the target before re-relativizing closes the symlink escape case.
         workspace_relative(workspace_root, resolved)
     except (OSError, PortiaPathError) as exc:
         raise WorkflowPrerequisiteError(
@@ -172,8 +169,6 @@ def _portia_work_record_authority(
     artifact: Mapping[str, object],
 ) -> StoredRecord:
     reference = _exact_portia_artifact_reference(artifact)
-    # Exact reads intentionally do not normalize, migrate, follow successors, or
-    # require current lifecycle eligibility.  The artifact is a provenance locator.
     repository.load_work(reference.work_ref)
     return repository.load_work_record(
         reference.work_ref,
@@ -181,6 +176,44 @@ def _portia_work_record_authority(
         reference.record_ref.contract_version,
         reference.record_ref.record_id,
     )
+
+
+def require_source_artifact_refs_authority(
+    workspace_root: str | Path,
+    repository: PortiaRepository,
+    artifacts: Sequence[object],
+    *,
+    require_current_use: bool,
+) -> tuple[StoredRecord, ...]:
+    """Verify an explicit sequence of ``source_artifact_ref@1`` values.
+
+    This is the shared locator-authority primitive used by source evidence and by
+    judgment authority/process provenance. It verifies only supported local locator
+    authority; it never claims authenticity, legal sufficiency, applicability,
+    credibility, or evidentiary weight.
+    """
+    resolved_portia: list[StoredRecord] = []
+    for artifact_value in artifacts:
+        if not isinstance(artifact_value, Mapping):
+            raise WorkflowOwnershipError("source artifact entry is malformed")
+        artifact = artifact_value
+        kind = artifact.get("kind")
+        if kind == "workspace_file":
+            _workspace_file_authority(Path(workspace_root), artifact)
+            continue
+        if kind == "portia_work_record":
+            resolved_portia.append(_portia_work_record_authority(repository, artifact))
+            continue
+        if kind in _DEFERRED_CURRENT_ARTIFACT_KINDS:
+            if require_current_use:
+                raise WorkflowPrerequisiteError(
+                    f"{kind} source artifact requires authority outside "
+                    "Issue #41 current-use execution"
+                )
+            continue
+        if kind not in _SUPPORTED_CURRENT_ARTIFACT_KINDS:
+            raise WorkflowOwnershipError(f"unsupported source artifact kind {kind!r}")
+    return tuple(resolved_portia)
 
 
 def require_source_artifact_authority(
@@ -197,24 +230,9 @@ def require_source_artifact_authority(
     without paper/PDS2 execution, sibling-module readers, or external dereferencing.
     """
     require_artifact_review_source(record)
-    resolved_portia: list[StoredRecord] = []
-    for artifact in _artifact_entries(record):
-        kind = artifact.get("kind")
-        if kind == "workspace_file":
-            _workspace_file_authority(Path(workspace_root), artifact)
-            continue
-        if kind == "portia_work_record":
-            resolved_portia.append(_portia_work_record_authority(repository, artifact))
-            continue
-        if kind in _DEFERRED_CURRENT_ARTIFACT_KINDS:
-            if require_current_use:
-                raise WorkflowPrerequisiteError(
-                    f"{kind} source artifact requires authority outside "
-                    "Issue #41 current-use execution"
-                )
-            continue
-        if kind not in _SUPPORTED_CURRENT_ARTIFACT_KINDS:
-            raise WorkflowOwnershipError(
-                f"unsupported source artifact kind {kind!r}"
-            )
-    return tuple(resolved_portia)
+    return require_source_artifact_refs_authority(
+        workspace_root,
+        repository,
+        _artifact_entries(record),
+        require_current_use=require_current_use,
+    )

@@ -1,4 +1,4 @@
-"""Mechanically validate the Issue #40/#41 production workflow boundary."""
+"""Mechanically validate the Issue #40/#41/#42 production workflow boundary."""
 
 from __future__ import annotations
 
@@ -9,14 +9,22 @@ from pathlib import Path
 from portia.storage import PortiaRepository
 from portia.workflows import (
     AccountWorkflowService,
+    ClassificationWorkflowService,
+    DeterminationWorkflowService,
     EventBundleWorkflowService,
     EventWorkflowService,
+    HypothesisWorkflowService,
     ObservationWorkflowService,
     ParticipantWorkflowService,
+    ReviewWorkflowService,
     RoleWorkflowService,
     WorkRelationshipService,
     account_reference,
+    classification_reference,
+    determination_reference,
+    hypothesis_reference,
     observation_reference,
+    review_reference,
 )
 from portia.workflows.issue22_parity import workflow_issue22_parity
 
@@ -35,6 +43,16 @@ _REQUIRED_MODULES = {
     "evidence_supersession.py",
     "evidence_transition.py",
     "issue22_parity.py",
+    "judgment_common.py",
+    "judgment_evidence.py",
+    "judgment_lifecycle.py",
+    "judgment_supersession.py",
+    "judgment_transition.py",
+    "classifications.py",
+    "determination_reconsideration.py",
+    "determinations.py",
+    "hypotheses.py",
+    "reviews.py",
     "observations.py",
     "participants.py",
     "relationships.py",
@@ -181,14 +199,99 @@ def _source_findings(root: Path) -> list[str]:
     exports = (package / "__init__.py").read_text(encoding="utf-8")
     for required in (
         "AccountWorkflowService",
+        "ClassificationWorkflowService",
+        "DeterminationWorkflowService",
+        "HypothesisWorkflowService",
         "ObservationWorkflowService",
+        "ReviewWorkflowService",
         "account_reference",
+        "classification_reference",
+        "determination_reference",
+        "hypothesis_reference",
         "observation_reference",
+        "review_reference",
     ):
         if required not in exports:
             findings.append(f"public workflow package is missing export: {required}")
     return findings
 
+
+_JUDGMENT_MODULES = {
+    "classifications.py",
+    "determination_reconsideration.py",
+    "determinations.py",
+    "hypotheses.py",
+    "judgment_common.py",
+    "judgment_evidence.py",
+    "judgment_lifecycle.py",
+    "judgment_supersession.py",
+    "judgment_transition.py",
+    "reviews.py",
+}
+_FORBIDDEN_SIBLING_IMPORT_ROOTS = {
+    "pds_concord",
+    "pds_meridian",
+    "pds_quillan",
+    "pds_scoreform",
+    "scoreform",
+}
+
+
+def _judgment_findings(root: Path) -> list[str]:
+    findings: list[str] = []
+    package = root / "portia" / "workflows"
+
+    required_markers = {
+        "judgment_common.py": (
+            'JUDGMENT_VERSION = "1"',
+            "require_judgment_current_materialization",
+            "require_represented_human_authority",
+        ),
+        "judgment_evidence.py": (
+            "ModuleJudgmentEvidenceAuthority",
+            "resolve_judgment_evidence",
+            "require_module_authority",
+        ),
+        "judgment_lifecycle.py": ("require_judgment_lifecycle_reconciled",),
+        "judgment_transition.py": ("JudgmentLifecycleCoordinator",),
+        "reviews.py": (
+            "class ReviewWorkflowService",
+            "require_judgment_current_materialization",
+        ),
+        "classifications.py": (
+            "class ClassificationWorkflowService",
+            "require_judgment_current_materialization",
+        ),
+        "hypotheses.py": (
+            "class HypothesisWorkflowService",
+            "require_judgment_current_materialization",
+        ),
+        "determinations.py": (
+            "class DeterminationWorkflowService",
+            "require_judgment_current_materialization",
+            "def reconsider(",
+        ),
+    }
+    for filename, markers in required_markers.items():
+        path = package / filename
+        source = path.read_text(encoding="utf-8")
+        for required in markers:
+            if required not in source:
+                findings.append(
+                    f"{filename} is missing Issue #42 boundary marker: {required}"
+                )
+
+    for filename in sorted(_JUDGMENT_MODULES):
+        path = package / filename
+        tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
+        for imported in _imported_module_names(tree):
+            root_name = imported.split(".", 1)[0]
+            if root_name in _FORBIDDEN_SIBLING_IMPORT_ROOTS:
+                findings.append(
+                    f"{filename} imports sibling-module runtime authority directly: "
+                    f"{imported}"
+                )
+    return findings
 
 def _api_findings() -> list[str]:
     findings: list[str] = []
@@ -237,6 +340,41 @@ def _api_findings() -> list[str]:
             "transition_lifecycle",
             "correct",
         },
+        ReviewWorkflowService: {
+            "create",
+            "load_exact",
+            "list_reviews",
+            "require_current_use",
+            "update_workflow",
+            "correct",
+            "transition_lifecycle",
+        },
+        ClassificationWorkflowService: {
+            "create",
+            "load_exact",
+            "list_classifications",
+            "require_current_use",
+            "correct",
+            "transition_lifecycle",
+        },
+        HypothesisWorkflowService: {
+            "create",
+            "load_exact",
+            "list_hypotheses",
+            "require_current_use",
+            "set_aside",
+            "correct",
+            "transition_lifecycle",
+        },
+        DeterminationWorkflowService: {
+            "create",
+            "load_exact",
+            "list_determinations",
+            "require_current_use",
+            "correct",
+            "reconsider",
+            "transition_lifecycle",
+        },
     }
     for service, methods in expected.items():
         missing = sorted(method for method in methods if not hasattr(service, method))
@@ -244,7 +382,11 @@ def _api_findings() -> list[str]:
             findings.append(f"{service.__name__} is missing methods: {missing}")
     for helper, name in (
         (account_reference, "account_reference"),
+        (classification_reference, "classification_reference"),
+        (determination_reference, "determination_reference"),
+        (hypothesis_reference, "hypothesis_reference"),
         (observation_reference, "observation_reference"),
+        (review_reference, "review_reference"),
     ):
         if not callable(helper):
             findings.append(f"public workflow helper is not callable: {name}")
@@ -286,6 +428,11 @@ def _documentation_findings(root: Path) -> list[str]:
         / "docs"
         / "validation"
         / "issue-41-account-and-observation-workflows-validation.md",
+        root / "docs" / "review-classification-hypothesis-determination-workflows.md",
+        root
+        / "docs"
+        / "validation"
+        / "issue-42-review-classification-hypothesis-determination-workflows-validation.md",
     )
     return [
         f"required workflow documentation is missing: {path}"
@@ -296,6 +443,7 @@ def _documentation_findings(root: Path) -> list[str]:
 
 def validate(root: Path) -> tuple[str, ...]:
     findings = _source_findings(root)
+    findings.extend(_judgment_findings(root))
     findings.extend(_api_findings())
     findings.extend(_parity_findings())
     findings.extend(_documentation_findings(root))
@@ -313,7 +461,7 @@ def main() -> int:
         for finding in findings:
             print(f"ERROR: {finding}", file=sys.stderr)
         return 1
-    print("Portia Issue #41 workflow validation passed")
+    print("Portia Issue #42 workflow validation passed")
     return 0
 
 
