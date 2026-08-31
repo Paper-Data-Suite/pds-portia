@@ -119,6 +119,30 @@ readable but cannot masquerade as reviewed v0.2 materialization. See
 `docs/review-classification-hypothesis-determination-workflows.md`; validation
 evidence is recorded under `docs/validation/`.
 
+### Issue #43 current implementation
+
+`ResponseWorkflowService` and `CommunicationWorkflowService` now provide the
+executable ADR 0013 Response/Communication layer. Response remains Event-local
+bounded action rather than evidence, Determination, Support, or Outcome.
+Communication records one bounded human act or attempt rather than an Account,
+mutable message thread, or proof of delivery, reading, understanding, or
+participation.
+
+The services provide exact historical reads, current-use qualification,
+lifecycle transitions, successor-based material correction, Quarantine,
+represented-human authority, exact Actor Contact Points, typed Communication
+relations, and explicit attachment resolution. Historical references never
+silently follow successors, and Response/Communication v1 expose no Amendment
+operation. Repeated contact attempts remain separate Communications rather than
+implicit corrections.
+
+Issue #43 fully implements Event-owned Communication. The published
+`support_process` owner branch remains wire-compatible but active/current use
+fails closed until Issue #44 supplies production Support Process authority. See
+`docs/response-and-communication-workflows.md`; validation evidence is recorded
+under `docs/validation/issue-43-response-and-communication-workflows-validation.md`.
+
+
 ### Issue #17 current implementation
 
 The current architecture now includes **accepted ADR 0013 for Response and Communication**.

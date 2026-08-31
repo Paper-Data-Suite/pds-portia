@@ -5,6 +5,14 @@ from portia.workflows.classifications import (
     ClassificationWorkflowService,
     classification_reference,
 )
+from portia.workflows.communication_attachments import (
+    CommunicationAttachmentResolution,
+    ModuleCommunicationAttachmentAuthority,
+)
+from portia.workflows.communications import (
+    CommunicationWorkflowService,
+    communication_reference,
+)
 from portia.workflows.context import (
     AuthoritativeWorkflowContext,
     WorkflowContextAssembler,
@@ -41,6 +49,7 @@ from portia.workflows.relationships import (
     WorkRelationshipService,
     relationship_reference,
 )
+from portia.workflows.responses import ResponseWorkflowService, response_reference
 from portia.workflows.reviews import ReviewWorkflowService, review_reference
 from portia.workflows.roles import RoleWorkflowService, role_reference
 
@@ -48,18 +57,22 @@ __all__ = [
     "AccountWorkflowService",
     "AuthoritativeWorkflowContext",
     "ClassificationWorkflowService",
+    "CommunicationAttachmentResolution",
+    "CommunicationWorkflowService",
     "DeterminationWorkflowService",
     "EventWorkflowService",
     "EventBundle",
     "EventBundleWorkflowService",
     "HypothesisWorkflowService",
     "JudgmentEvidenceResolution",
+    "ModuleCommunicationAttachmentAuthority",
     "ModuleJudgmentEvidenceAuthority",
     "ObservationWorkflowService",
     "ParticipantPersonResolution",
     "ParticipantWorkflowService",
     "PortiaWorkflowError",
     "RelationshipEndpointResolution",
+    "ResponseWorkflowService",
     "ReviewWorkflowService",
     "RoleWorkflowService",
     "WorkflowContextAssembler",
@@ -69,6 +82,7 @@ __all__ = [
     "WorkRelationshipService",
     "account_reference",
     "classification_reference",
+    "communication_reference",
     "determination_reference",
     "event_reference",
     "hypothesis_reference",
@@ -76,6 +90,7 @@ __all__ = [
     "participant_reference",
     "relationship_reference",
     "resolve_judgment_evidence",
+    "response_reference",
     "review_reference",
     "role_reference",
 ]
