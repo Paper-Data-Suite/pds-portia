@@ -30,6 +30,10 @@ from portia.workflows.errors import (
 )
 from portia.workflows.events import EventWorkflowService, event_reference
 from portia.workflows.hypotheses import HypothesisWorkflowService, hypothesis_reference
+from portia.workflows.interventions import (
+    InterventionWorkflowService,
+    intervention_reference,
+)
 from portia.workflows.judgment_evidence import (
     JudgmentEvidenceResolution,
     ModuleJudgmentEvidenceAuthority,
@@ -52,6 +56,24 @@ from portia.workflows.relationships import (
 from portia.workflows.responses import ResponseWorkflowService, response_reference
 from portia.workflows.reviews import ReviewWorkflowService, review_reference
 from portia.workflows.roles import RoleWorkflowService, role_reference
+from portia.workflows.support_goals import (
+    SupportGoalWorkflowService,
+    support_goal_reference,
+)
+from portia.workflows.support_needs import (
+    SupportNeedWorkflowService,
+    support_need_reference,
+)
+from portia.workflows.support_process_participants import (
+    SupportProcessParticipantPersonResolution,
+    SupportProcessParticipantWorkflowService,
+    support_process_participant_reference,
+)
+from portia.workflows.support_processes import (
+    SupportProcessWorkflowService,
+    support_process_reference,
+)
+from portia.workflows.supports import SupportWorkflowService, support_reference
 
 __all__ = [
     "AccountWorkflowService",
@@ -64,6 +86,7 @@ __all__ = [
     "EventBundle",
     "EventBundleWorkflowService",
     "HypothesisWorkflowService",
+    "InterventionWorkflowService",
     "JudgmentEvidenceResolution",
     "ModuleCommunicationAttachmentAuthority",
     "ModuleJudgmentEvidenceAuthority",
@@ -75,6 +98,11 @@ __all__ = [
     "ResponseWorkflowService",
     "ReviewWorkflowService",
     "RoleWorkflowService",
+    "SupportGoalWorkflowService",
+    "SupportNeedWorkflowService",
+    "SupportProcessParticipantPersonResolution",
+    "SupportProcessParticipantWorkflowService",
+    "SupportProcessWorkflowService",
     "WorkflowContextAssembler",
     "WorkflowOwnershipError",
     "WorkflowPrerequisiteError",
@@ -86,6 +114,7 @@ __all__ = [
     "determination_reference",
     "event_reference",
     "hypothesis_reference",
+    "intervention_reference",
     "observation_reference",
     "participant_reference",
     "relationship_reference",
@@ -93,4 +122,10 @@ __all__ = [
     "response_reference",
     "review_reference",
     "role_reference",
+    "support_goal_reference",
+    "support_need_reference",
+    "support_process_participant_reference",
+    "support_process_reference",
+    "SupportWorkflowService",
+    "support_reference",
 ]
