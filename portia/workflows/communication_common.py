@@ -32,9 +32,19 @@ _COMMUNICATION_IO_AUTHORITY_FINDINGS = frozenset(
 )
 
 
-def require_event_communication_write_owner(work: ExactPortiaWorkRef) -> None:
-    """Require the Issue #43 Event-owned authoring boundary."""
+def require_communication_write_owner(work: ExactPortiaWorkRef) -> None:
+    """Require one frozen Communication owner for authoring."""
     require_action_owner(work, contract="communication")
+
+
+def require_communication_current_owner(work: ExactPortiaWorkRef) -> None:
+    """Require one frozen Communication owner for current-use qualification."""
+    require_action_owner(work, contract="communication")
+
+
+def require_event_communication_write_owner(work: ExactPortiaWorkRef) -> None:
+    """Retain the Issue #43 Event-only lifecycle/correction boundary."""
+    require_communication_write_owner(work)
     if work.work_kind != "event" or work.contract_version != "2":
         raise WorkflowPrerequisiteError(
             "Support Process Communication authoring requires Issue #44 authority"
@@ -42,8 +52,8 @@ def require_event_communication_write_owner(work: ExactPortiaWorkRef) -> None:
 
 
 def require_event_communication_current_owner(work: ExactPortiaWorkRef) -> None:
-    """Fail closed on Support Process current use until Issue #44 owns it."""
-    require_action_owner(work, contract="communication")
+    """Retain the Issue #43 Event-only helper for callers that require Event scope."""
+    require_communication_current_owner(work)
     if work.work_kind != "event" or work.contract_version != "2":
         raise WorkflowPrerequisiteError(
             "Support Process Communication current use requires Issue #44 authority"
@@ -73,8 +83,8 @@ def require_communication_record_owner(
     work: ExactPortiaWorkRef,
     record: PortiaRecord,
 ) -> CommunicationV1:
-    """Require exact Event ownership for one new ``communication@1`` value."""
-    require_event_communication_write_owner(work)
+    """Require exact frozen-owner identity for one new ``communication@1`` value."""
+    require_communication_write_owner(work)
     if not isinstance(record, CommunicationV1):
         raise WorkflowOwnershipError(
             "new Communication writes require communication@1 input"
@@ -84,8 +94,9 @@ def require_communication_record_owner(
         or record.work_id != work.work_id
         or record.work_kind != work.work_kind
     ):
+        owner_label = "Event" if work.work_kind == "event" else "Support Process"
         raise WorkflowOwnershipError(
-            "Communication does not belong to the explicitly selected Event"
+            f"Communication does not belong to the explicitly selected {owner_label}"
         )
     return record
 
@@ -94,8 +105,8 @@ def require_current_communication_record_owner(
     work: ExactPortiaWorkRef,
     record: PortiaRecord,
 ) -> CommunicationV1:
-    """Require one exact Event-owned Communication for Issue #43 current use."""
-    require_event_communication_current_owner(work)
+    """Require one exact Communication under its frozen owner union."""
+    require_communication_current_owner(work)
     return _require_communication_identity(work, record)
 
 
@@ -129,24 +140,43 @@ def require_communication_current_materialization(record: PortiaRecord) -> None:
 
 
 def require_communication_owner_write_eligibility(owner: PortiaRecord) -> None:
-    if owner.contract != "event" or owner.contract_version != "2":
-        raise WorkflowOwnershipError("Communication owner must resolve to event@2")
-    if owner.status not in _COMMUNICATION_WRITE_EVENT_STATUSES:
-        expected = ", ".join(sorted(_COMMUNICATION_WRITE_EVENT_STATUSES))
-        raise WorkflowPrerequisiteError(
-            f"Communication writes require Event status in {{{expected}}}"
-        )
+    if owner.contract == "event" and owner.contract_version == "2":
+        if owner.status not in _COMMUNICATION_WRITE_EVENT_STATUSES:
+            expected = ", ".join(sorted(_COMMUNICATION_WRITE_EVENT_STATUSES))
+            raise WorkflowPrerequisiteError(
+                f"Communication writes require Event status in {{{expected}}}"
+            )
+        return
+    if owner.contract == "support_process" and owner.contract_version == "1":
+        if owner.status != "active":
+            raise WorkflowPrerequisiteError(
+                "Communication writes require active Support Process canonical lifecycle"
+            )
+        return
+    raise WorkflowOwnershipError(
+        "Communication owner must resolve to event@2 or support_process@1"
+    )
 
 
 def require_communication_owner_current_eligibility(owner: PortiaRecord) -> None:
-    if owner.contract != "event" or owner.contract_version != "2":
-        raise WorkflowOwnershipError("Communication owner must resolve to event@2")
-    if owner.status not in _COMMUNICATION_CURRENT_EVENT_STATUSES:
-        expected = ", ".join(sorted(_COMMUNICATION_CURRENT_EVENT_STATUSES))
-        raise WorkflowPrerequisiteError(
-            "active Communication creation requires Event status in "
-            f"{{{expected}}}"
-        )
+    if owner.contract == "event" and owner.contract_version == "2":
+        if owner.status not in _COMMUNICATION_CURRENT_EVENT_STATUSES:
+            expected = ", ".join(sorted(_COMMUNICATION_CURRENT_EVENT_STATUSES))
+            raise WorkflowPrerequisiteError(
+                "active Communication creation requires Event status in "
+                f"{{{expected}}}"
+            )
+        return
+    if owner.contract == "support_process" and owner.contract_version == "1":
+        if owner.status != "active":
+            raise WorkflowPrerequisiteError(
+                "current Communication use requires active Support Process "
+                "canonical lifecycle"
+            )
+        return
+    raise WorkflowOwnershipError(
+        "Communication owner must resolve to event@2 or support_process@1"
+    )
 
 
 def _parse_timestamp(value: object, *, field_name: str) -> datetime:

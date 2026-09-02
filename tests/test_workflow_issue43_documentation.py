@@ -41,12 +41,13 @@ def test_issue43_guide_preserves_epistemic_and_history_boundaries() -> None:
         assert phrase in text
 
 
-def test_issue43_guide_keeps_support_process_runtime_deferred() -> None:
+def test_issue43_guide_reconciles_support_process_runtime_activation() -> None:
     text = GUIDE.read_text(encoding="utf-8")
-    assert "Issue #43 fully implements Event-owned" in text
-    assert "Communication" in text
-    assert "fails closed until Issue #44" in text
-    assert "Issue #44 owns Support Process" in text
+    assert "Issue #43 implements the Communication" in text
+    assert "Issue #44 now supplies" in text
+    assert "Support Process Communication" in text
+    assert "without changing `communication@1`" in text
+    assert "fails closed until Issue #44" not in text
 
 
 def test_issue43_validation_records_frozen_runtime_acceptance() -> None:

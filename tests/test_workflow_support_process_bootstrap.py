@@ -7,6 +7,7 @@ import pytest
 from portia.models import PortiaRecord, parse_portia_record
 from portia.models.references import ExactPortiaWorkRef
 from portia.storage import PortiaQuarantinedError
+from portia.storage.errors import PortiaNotFoundError
 from portia.workflows import (
     SupportProcessWorkflowService,
     WorkflowOwnershipError,
@@ -216,7 +217,7 @@ def test_planned_date_chronology_is_validated(
     assert not (tmp_path / "classes").exists()
 
 
-def test_reference_initiation_fails_closed_until_context_authority_slice(
+def test_reference_initiation_missing_exact_source_is_zero_write(
     tmp_path: Path,
 ) -> None:
     event = ExactPortiaWorkRef(
@@ -226,7 +227,7 @@ def test_reference_initiation_fails_closed_until_context_authority_slice(
         contract_version="2",
     )
     initiation = {"kind": "event_context", "event_ref": event.to_dict()}
-    with pytest.raises(WorkflowPrerequisiteError, match="exact context authority"):
+    with pytest.raises(PortiaNotFoundError):
         SupportProcessWorkflowService(tmp_path).create(
             support_process_record(initiation=initiation)
         )
@@ -247,7 +248,7 @@ def test_imported_history_cannot_be_fabricated_by_digital_bootstrap(
     assert not (tmp_path / "classes").exists()
 
 
-def test_cross_year_continuation_is_deferred_from_fresh_bootstrap(
+def test_cross_year_continuation_missing_exact_predecessor_is_zero_write(
     tmp_path: Path,
 ) -> None:
     predecessor = ExactPortiaWorkRef(
@@ -256,7 +257,7 @@ def test_cross_year_continuation_is_deferred_from_fresh_bootstrap(
         work_kind="support_process",
         contract_version="1",
     )
-    with pytest.raises(WorkflowPrerequisiteError, match="continues_from authority"):
+    with pytest.raises(PortiaNotFoundError):
         SupportProcessWorkflowService(tmp_path).create(
             support_process_record(continues_from=predecessor.to_dict())
         )

@@ -12,7 +12,7 @@ from pds_core.rosters import create_roster
 from portia.models import PortiaRecord, parse_portia_record
 from portia.models.references import ExactPortiaWorkRef
 from portia.storage.errors import PortiaNotFoundError
-from portia.storage.repository import PortiaRepository
+from portia.storage.repository import PortiaRepository, StoredRecord
 from portia.workflows import (
     SupportGoalWorkflowService,
     SupportNeedWorkflowService,
@@ -21,6 +21,7 @@ from portia.workflows import (
     SupportWorkflowService,
     WorkflowPrerequisiteError,
     support_process_participant_reference,
+    support_reference,
 )
 from portia.workflows.support_process_continuation import (
     support_process_continuation_ancestry,
@@ -649,3 +650,294 @@ def test_p22_11_planning_subset_executes_through_production_services(
     assert SupportProcessWorkflowService(tmp_path).load_exact(
         successor_ref
     ).record.status == "active"
+
+
+# Slice 13b — exact P22-11 cross-year planning runtime parity.
+
+
+def _fixture_record(contract: str, name: str) -> PortiaRecord:
+    return parse_portia_record(contract, "1", _fixture(name))
+
+
+def _create_fixture_planning_children(
+    root: Path,
+    work: ExactPortiaWorkRef,
+    year: str,
+) -> None:
+    SupportNeedWorkflowService(root).create(
+        work,
+        _fixture_record("support_need", f"need-{year}.json"),
+    )
+    SupportGoalWorkflowService(root).create(
+        work,
+        _fixture_record("support_goal", f"goal-{year}.json"),
+    )
+
+    fixture_support = _fixture_record("support", f"support-{year}.json")
+    support_id = fixture_support.logical_id
+    assert support_id is not None
+    planned_wire = fixture_support.to_dict()
+    planned_wire["plan_state"] = "planned"
+    planned_wire["updated_at"] = planned_wire["created_at"]
+    planned = parse_portia_record("support", "1", planned_wire)
+
+    service = SupportWorkflowService(root)
+    created = service.create(work, planned)
+    reference = support_reference(work, support_id)
+
+    if fixture_support.field("plan_state") == "active":
+        service.transition_plan_state(
+            reference,
+            fixture_support,
+            expected=created.fingerprint,
+        )
+        return
+
+    active_wire = fixture_support.to_dict()
+    active_wire["plan_state"] = "active"
+    active_wire["updated_at"] = planned_wire["created_at"]
+    active = parse_portia_record("support", "1", active_wire)
+    active_stored = service.transition_plan_state(
+        reference,
+        active,
+        expected=created.fingerprint,
+    )
+    service.transition_plan_state(
+        reference,
+        fixture_support,
+        expected=active_stored.fingerprint,
+    )
+
+
+def _progress_fixture_root_to_final_state(
+    root: Path,
+    work: ExactPortiaWorkRef,
+    name: str,
+) -> None:
+    fixture_root = _fixture_record("support_process", name)
+    final_state = fixture_root.field("workflow_state")
+    service = SupportProcessWorkflowService(root)
+    current = service.load_exact(work)
+
+    if final_state == "active":
+        service.transition_workflow_state(
+            work,
+            fixture_root,
+            expected=current.fingerprint,
+        )
+        return
+
+    assert final_state == "completed"
+    active_wire = fixture_root.to_dict()
+    active_wire["workflow_state"] = "active"
+    active_wire["updated_at"] = current.record.field("updated_at")
+    active = parse_portia_record("support_process", "1", active_wire)
+    active_stored = service.transition_workflow_state(
+        work,
+        active,
+        expected=current.fingerprint,
+    )
+    service.transition_workflow_state(
+        work,
+        fixture_root,
+        expected=active_stored.fingerprint,
+    )
+
+
+def _materialize_p22_11_planning_subset(
+    root: Path,
+) -> tuple[ExactPortiaWorkRef, ExactPortiaWorkRef, object]:
+    _write_fixture_roster(root, "2026")
+    _write_fixture_roster(root, "2027")
+
+    prior = _proposed_fixture_record("support_process", "process-2026.json")
+    prior_ref = _activate_fixture_root(root, prior)
+    _create_fixture_planning_children(root, prior_ref, "2026")
+    _progress_fixture_root_to_final_state(
+        root,
+        prior_ref,
+        "process-2026.json",
+    )
+    prior_final = SupportProcessWorkflowService(root).load_exact(prior_ref)
+    prior_fingerprint = prior_final.fingerprint
+
+    successor = _proposed_fixture_record(
+        "support_process",
+        "process-2027.json",
+    )
+    successor_ref = _activate_fixture_root(root, successor)
+    _create_fixture_planning_children(root, successor_ref, "2027")
+    _progress_fixture_root_to_final_state(
+        root,
+        successor_ref,
+        "process-2027.json",
+    )
+
+    return prior_ref, successor_ref, prior_fingerprint
+
+
+def _records_by_id(
+    values: tuple[StoredRecord, ...],
+) -> dict[str, dict[str, object]]:
+    result: dict[str, dict[str, object]] = {}
+    for value in values:
+        logical_id = value.record.logical_id
+        assert logical_id is not None
+        result[logical_id] = value.record.to_dict()
+    return result
+
+
+def test_p22_11_exact_planning_records_round_trip_for_both_years(
+    tmp_path: Path,
+) -> None:
+    prior_ref, successor_ref, _prior_fingerprint = (
+        _materialize_p22_11_planning_subset(tmp_path)
+    )
+    processes = SupportProcessWorkflowService(tmp_path)
+
+    assert processes.require_current_use(prior_ref).record.to_dict() == (
+        _fixture_record("support_process", "process-2026.json").to_dict()
+    )
+    assert processes.require_current_use(successor_ref).record.to_dict() == (
+        _fixture_record("support_process", "process-2027.json").to_dict()
+    )
+
+    for year, work in (("2026", prior_ref), ("2027", successor_ref)):
+        student = _fixture_record(
+            "support_process_participant",
+            f"participant-student-{year}.json",
+        )
+        teacher = _fixture_record(
+            "support_process_participant",
+            f"participant-teacher-{year}.json",
+        )
+        assert student.logical_id is not None
+        assert teacher.logical_id is not None
+        participants = _records_by_id(
+            SupportProcessParticipantWorkflowService(tmp_path).list(work)
+        )
+        assert participants == {
+            student.logical_id: student.to_dict(),
+            teacher.logical_id: teacher.to_dict(),
+        }
+
+        expected_need = _fixture_record("support_need", f"need-{year}.json")
+        expected_goal = _fixture_record("support_goal", f"goal-{year}.json")
+        expected_support = _fixture_record("support", f"support-{year}.json")
+        assert expected_need.logical_id is not None
+        assert expected_goal.logical_id is not None
+        assert expected_support.logical_id is not None
+
+        assert _records_by_id(
+            SupportNeedWorkflowService(tmp_path).list(work)
+        ) == {
+            expected_need.logical_id: expected_need.to_dict(),
+        }
+        assert _records_by_id(
+            SupportGoalWorkflowService(tmp_path).list(work)
+        ) == {
+            expected_goal.logical_id: expected_goal.to_dict(),
+        }
+        assert _records_by_id(
+            SupportWorkflowService(tmp_path).list(work)
+        ) == {
+            expected_support.logical_id: expected_support.to_dict(),
+        }
+
+
+def test_p22_11_continuation_preserves_predecessor_and_new_year_identity(
+    tmp_path: Path,
+) -> None:
+    prior_ref, successor_ref, prior_fingerprint = (
+        _materialize_p22_11_planning_subset(tmp_path)
+    )
+    processes = SupportProcessWorkflowService(tmp_path)
+    prior = processes.load_exact(prior_ref)
+    successor = processes.load_exact(successor_ref)
+
+    assert prior.fingerprint == prior_fingerprint
+    assert prior_ref != successor_ref
+    assert prior.record.field("school_year") == "2026-2027"
+    assert successor.record.field("school_year") == "2027-2028"
+    assert successor.record.field("continues_from") == prior_ref.to_dict()
+    assert "continued_by" not in prior.record.to_dict()
+    assert "supersedes" not in prior.record.to_dict()
+    assert "supersedes" not in successor.record.to_dict()
+
+    prior_participants = SupportProcessParticipantWorkflowService(tmp_path).list(
+        prior_ref
+    )
+    successor_participants = SupportProcessParticipantWorkflowService(tmp_path).list(
+        successor_ref
+    )
+    prior_ids = {item.record.logical_id for item in prior_participants}
+    successor_ids = {item.record.logical_id for item in successor_participants}
+    assert prior_ids.isdisjoint(successor_ids)
+
+    prior_student = next(
+        item.record
+        for item in prior_participants
+        if item.record.logical_id == "spp_p22_crossyear_student_2026"
+    )
+    successor_student = next(
+        item.record
+        for item in successor_participants
+        if item.record.logical_id == "spp_p22_crossyear_student_2027"
+    )
+    prior_person = prior_student.to_dict()["person"]
+    successor_person = successor_student.to_dict()["person"]
+    prior_roster = prior_person["roster_student_ref"]
+    successor_roster = successor_person["roster_student_ref"]
+    assert prior_roster["student_id"] == successor_roster["student_id"]
+    assert prior_roster["class_id"] != successor_roster["class_id"]
+
+
+def test_p22_11_planning_subset_does_not_clone_or_migrate_downstream_records(
+    tmp_path: Path,
+) -> None:
+    prior_ref, successor_ref, _prior_fingerprint = (
+        _materialize_p22_11_planning_subset(tmp_path)
+    )
+    repository = PortiaRepository(tmp_path)
+
+    for work in (prior_ref, successor_ref):
+        for contract, version in (
+            ("implementation", "1"),
+            ("observation", "2"),
+            ("outcome", "1"),
+            ("record_migration", "1"),
+            ("ownership_correction", "1"),
+        ):
+            assert repository.list_work_records(
+                work,
+                contract,
+                version=version,
+            ) == ()
+
+    assert {
+        item.record.logical_id
+        for item in SupportNeedWorkflowService(tmp_path).list(prior_ref)
+    }.isdisjoint(
+        {
+            item.record.logical_id
+            for item in SupportNeedWorkflowService(tmp_path).list(successor_ref)
+        }
+    )
+    assert {
+        item.record.logical_id
+        for item in SupportGoalWorkflowService(tmp_path).list(prior_ref)
+    }.isdisjoint(
+        {
+            item.record.logical_id
+            for item in SupportGoalWorkflowService(tmp_path).list(successor_ref)
+        }
+    )
+    assert {
+        item.record.logical_id
+        for item in SupportWorkflowService(tmp_path).list(prior_ref)
+    }.isdisjoint(
+        {
+            item.record.logical_id
+            for item in SupportWorkflowService(tmp_path).list(successor_ref)
+        }
+    )
