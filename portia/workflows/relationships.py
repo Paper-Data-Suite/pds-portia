@@ -139,6 +139,19 @@ class WorkRelationshipService(WorkflowServiceBase):
                     "an active draws_context_from edge already exists for these exact endpoints"
                 )
 
+    def _require_support_process_source_current_use(
+        self,
+        source: ExactPortiaWorkRef,
+    ) -> StoredRecord:
+        from portia.workflows.support_processes import SupportProcessWorkflowService
+
+        return SupportProcessWorkflowService(
+            self.workspace_root,
+            repository=self.repository,
+            quarantine=self.quarantine,
+            context_assembler=self.contexts,
+        ).require_current_use(source)
+
     def _preflight_current(
         self,
         relationship: PortiaRecord,
@@ -147,9 +160,15 @@ class WorkRelationshipService(WorkflowServiceBase):
     ) -> None:
         if relationship.status != "active":
             return
-        source_record = self.repository.load_work(source)
+        if source.work_kind == "support_process":
+            source_record = self._require_support_process_source_current_use(source)
+        else:
+            source_record = self.repository.load_work(source)
+            self.quarantine.require_allowed(
+                work_target(source),
+                "block_current_use",
+            )
         target_record = self.repository.load_work(target)
-        self.quarantine.require_allowed(work_target(source), "block_current_use")
         self.quarantine.require_allowed(work_target(target), "block_current_use")
         self._require_endpoint_eligibility(
             source_record.record, source, position="source"

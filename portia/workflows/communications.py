@@ -23,14 +23,14 @@ from portia.workflows.communication_common import (
     require_communication_contact_point_authority,
     require_communication_creation_semantics,
     require_communication_current_materialization,
+    require_communication_current_owner,
     require_communication_owner_current_eligibility,
     require_communication_owner_write_eligibility,
     require_communication_people_authority,
     require_communication_record_owner,
+    require_communication_write_owner,
     require_current_communication_record_owner,
     require_digital_communication_creation,
-    require_event_communication_current_owner,
-    require_event_communication_write_owner,
     require_initial_communication_no_supersession,
     validate_partial_communication_graph,
 )
@@ -90,6 +90,37 @@ class CommunicationWorkflowService(ActionReadService):
         )
         self.module_attachment_authority = module_attachment_authority
 
+    def _require_support_process_owner_current_use(
+        self,
+        work: ExactPortiaWorkRef,
+    ) -> None:
+        if work.work_kind != "support_process":
+            return
+        from portia.workflows.support_processes import SupportProcessWorkflowService
+
+        SupportProcessWorkflowService(
+            self.workspace_root,
+            repository=self.repository,
+            quarantine=self.quarantine,
+            context_assembler=self.contexts,
+        ).require_current_use(work)
+
+    def _require_owner_write_eligibility(
+        self,
+        work: ExactPortiaWorkRef,
+        owner: PortiaRecord,
+    ) -> None:
+        require_communication_owner_write_eligibility(owner)
+        self._require_support_process_owner_current_use(work)
+
+    def _require_owner_current_eligibility(
+        self,
+        work: ExactPortiaWorkRef,
+        owner: PortiaRecord,
+    ) -> None:
+        require_communication_owner_current_eligibility(owner)
+        self._require_support_process_owner_current_use(work)
+
     def list_communications(
         self,
         work: ExactPortiaWorkRef,
@@ -118,7 +149,7 @@ class CommunicationWorkflowService(ActionReadService):
         """Persist one new Event-owned digital Communication after validation."""
         candidate = self._require_write_input(work, record)
         owner = self.repository.load_work(work)
-        require_communication_owner_write_eligibility(owner.record)
+        self._require_owner_write_eligibility(work, owner.record)
 
         if candidate.status == "active":
             require_communication_owner_current_eligibility(owner.record)
@@ -241,7 +272,7 @@ class CommunicationWorkflowService(ActionReadService):
         require_current_communication_record_owner(work, prior)
         require_current_communication_record_owner(work, candidate)
         owner = self.repository.load_work(work)
-        require_communication_owner_write_eligibility(owner.record)
+        self._require_owner_write_eligibility(work, owner.record)
         if candidate.status != "active":
             validate_partial_communication_graph(candidate)
             return
@@ -281,7 +312,7 @@ class CommunicationWorkflowService(ActionReadService):
         )
 
         owner = self.repository.load_work(work)
-        require_communication_owner_write_eligibility(owner.record)
+        self._require_owner_write_eligibility(work, owner.record)
         require_communication_owner_current_eligibility(owner.record)
         self._require_active_dependencies(successor)
         validate_partial_communication_graph(successor)
@@ -302,7 +333,7 @@ class CommunicationWorkflowService(ActionReadService):
         """Persist one ordinary Communication activation/invalidation."""
         if reference.record_ref.record_kind != "communication":
             raise WorkflowOwnershipError("reference is not a Communication")
-        require_event_communication_write_owner(reference.work_ref)
+        require_communication_write_owner(reference.work_ref)
         work = reference.work_ref
         coordinator = ActionLifecycleCoordinator(
             self.workspace_root,
@@ -360,7 +391,7 @@ class CommunicationWorkflowService(ActionReadService):
             raise WorkflowOwnershipError(
                 "correction predecessor is not a Communication"
             )
-        require_event_communication_write_owner(predecessor.work_ref)
+        require_communication_write_owner(predecessor.work_ref)
         work = predecessor.work_ref
         supersession_reason = require_exact_communication_correction_predecessor(
             work,
@@ -418,8 +449,8 @@ class CommunicationWorkflowService(ActionReadService):
         self,
         reference: ExactPortiaWorkRecordRef,
     ) -> StoredRecord:
-        """Qualify one exact active Event Communication for current use."""
-        require_event_communication_current_owner(reference.work_ref)
+        """Qualify one exact active Communication under its frozen owner union."""
+        require_communication_current_owner(reference.work_ref)
         communication = self.load_exact(reference)
         require_current_communication_record_owner(
             reference.work_ref,
@@ -449,7 +480,7 @@ class CommunicationWorkflowService(ActionReadService):
             )
 
         owner = self.repository.load_work(reference.work_ref)
-        require_communication_owner_current_eligibility(owner.record)
+        self._require_owner_current_eligibility(reference.work_ref, owner.record)
         self._require_active_dependencies(communication.record)
 
         self.quarantine.require_allowed(

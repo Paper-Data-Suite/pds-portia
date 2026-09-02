@@ -39,6 +39,43 @@ def require_action_owner(work: ExactPortiaWorkRef, *, contract: str) -> None:
                 "support_process@1 ownership"
             )
         return
+    if contract == "support_process_participant":
+        if (work.work_kind, work.contract_version) != ("support_process", "1"):
+            raise WorkflowOwnershipError(
+                "Support Process Participant lifecycle requires exact "
+                "support_process@1 ownership"
+            )
+        return
+    if contract == "support":
+        if (work.work_kind, work.contract_version) != ("support_process", "1"):
+            raise WorkflowOwnershipError(
+                "Support lifecycle requires exact support_process@1 ownership"
+            )
+        return
+    if contract == "intervention":
+        if (work.work_kind, work.contract_version) != ("support_process", "1"):
+            raise WorkflowOwnershipError(
+                "Intervention lifecycle requires exact support_process@1 ownership"
+            )
+        return
+    if contract == "support_need":
+        if (work.work_kind, work.contract_version) != ("support_process", "1"):
+            raise WorkflowOwnershipError(
+                "Support Need lifecycle requires exact support_process@1 ownership"
+            )
+        return
+    if contract == "support_goal":
+        if (work.work_kind, work.contract_version) != ("support_process", "1"):
+            raise WorkflowOwnershipError(
+                "Support Goal lifecycle requires exact support_process@1 ownership"
+            )
+        return
+    if contract == "support_process_participant":
+        if (work.work_kind, work.contract_version) != ("support_process", "1"):
+            raise WorkflowOwnershipError(
+                "Participant lifecycle requires exact support_process@1 ownership"
+            )
+        return
     raise WorkflowOwnershipError(f"unsupported action-layer contract {contract!r}")
 
 

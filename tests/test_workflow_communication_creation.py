@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 from types import SimpleNamespace
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
 
 import pytest
 
@@ -241,22 +241,31 @@ def test_wrong_explicit_event_owner_is_rejected_before_persistence(
     repository.create_work_record.assert_not_called()
 
 
-def test_support_process_owner_fails_closed_until_issue44(tmp_path: Path) -> None:
+def test_support_process_owner_creates_through_issue44_current_authority(
+    tmp_path: Path,
+) -> None:
     candidate = _communication(
         "support-process-owner-before-issue18.json",
         section="application-invalid",
     )
     work = _work_for(candidate)
     service, repository, _quarantine, _contexts = _service(tmp_path)
+    repository.load_work.return_value = SimpleNamespace(
+        record=SimpleNamespace(
+            contract="support_process",
+            contract_version="1",
+            status="active",
+        )
+    )
 
-    with pytest.raises(
-        WorkflowPrerequisiteError,
-        match="Issue #44 authority",
-    ):
-        service.create(work, candidate)
+    with patch(
+        "portia.workflows.support_processes.SupportProcessWorkflowService.require_current_use"
+    ) as require_support_process_current:
+        stored = service.create(work, candidate)
 
-    repository.load_work.assert_not_called()
-    repository.create_work_record.assert_not_called()
+    assert stored.record == "stored"
+    require_support_process_current.assert_called_once_with(work)
+    repository.create_work_record.assert_called_once_with(work, candidate)
 
 
 @pytest.mark.parametrize(

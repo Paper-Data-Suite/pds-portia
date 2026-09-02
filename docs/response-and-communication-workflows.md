@@ -114,14 +114,15 @@ handoff Response does not prove downstream service delivery.
 ## Communication Event ownership and Support Process boundary
 
 Communication v1 is Portia-work-local and its wire contract recognizes both
-`event` and `support_process` ownership. Issue #43 fully implements Event-owned
-Communication.
+`event` and `support_process` ownership. Issue #43 implements the Communication
+family and Event-owned authority.
 
-The Support Process branch remains wire-compatible for historical data, but
-new active/current Support Process Communication fails closed until Issue #44
-provides the production Support Process application authority. Issue #43 does
-not fabricate that authority and does not require `communication@2` merely to
-activate it later.
+Issue #44 now supplies the production `support_process@1` owner authority that
+Issue #43 intentionally deferred. Support Process Communication creation,
+current use, lifecycle, and correction delegate to that authoritative workflow
+surface without changing `communication@1` or introducing `communication@2`.
+Issue #43 still does not itself implement Support planning; it consumes the
+owner authority supplied by Issue #44.
 
 ## Sender, recipients, and Contact Points
 

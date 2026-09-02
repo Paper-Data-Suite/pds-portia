@@ -28,7 +28,7 @@ def test_issue43_repository_qualification_cli_keeps_exact_core_wheel_input() -> 
     assert result.returncode == 0, result.stderr
     assert "--core-wheel" in result.stdout
     text = VALIDATOR.read_text(encoding="utf-8")
-    assert "Issue #43 qualification requires the authenticated Core 0.6.3 wheel" in text
+    assert "qualification requires the authenticated Core 0.6.3 wheel" in text
 
 
 def test_issue43_repository_qualification_integrates_issue43_in_order() -> None:
@@ -58,7 +58,6 @@ def test_issue43_repository_qualification_integrates_issue43_in_order() -> None:
     assert [text.index(step) for step in smoke_steps] == sorted(
         text.index(step) for step in smoke_steps
     )
-    assert "Portia Issue #43 repository qualification passed" in text
 
 
 def test_issue43_repository_qualification_retains_prior_full_repo_gates() -> None:

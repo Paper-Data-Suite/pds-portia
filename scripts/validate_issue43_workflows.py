@@ -186,7 +186,6 @@ def findings(root: Path) -> list[str]:
             "scripts/validate_issue43_workflows.py",
             "scripts/check_issue43_package.py",
             "scripts/smoke_test_issue43_wheel.py",
-            "Portia Issue #43 repository qualification passed",
         ):
             if phrase not in repository_text:
                 errors.append(

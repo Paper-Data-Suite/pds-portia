@@ -143,6 +143,36 @@ fails closed until Issue #44 supplies production Support Process authority. See
 under `docs/validation/issue-43-response-and-communication-workflows-validation.md`.
 
 
+### Issue #44 current implementation
+
+`SupportProcessWorkflowService`,
+`SupportProcessParticipantWorkflowService`, `SupportNeedWorkflowService`,
+`SupportGoalWorkflowService`, `SupportWorkflowService`, and
+`InterventionWorkflowService` now provide the executable ADR 0014 planning
+layer. Digital workflow bootstrap preserves the active-supported-person
+invariant; exact historical reads remain pinned; canonical lifecycle stays
+separate from root workflow state and Support/Intervention plan state; and
+recording correction stays distinct from prospective plan adaptation.
+
+Support-Process-owned Communication now uses the real Issue #44 owner authority
+for creation, current use, lifecycle, and correction without changing
+`communication@1`. Support-Process-owned Account and Observation workflows also
+execute against current Support Process authority without fabricating Needs,
+Goals, Implementation, Fidelity, Follow-Up, or Outcome.
+
+The production layer validates exact Need/Goal/provider/target references,
+cross-class roster participation without ownership drift, planned-schedule
+chronology, structured active Intervention requirements, explicit cross-year
+continuation, Quarantine, and successor topology. The frozen Issue #18 planning
+parity guard accounts for 53 valid and 82 schema-valid/application-invalid
+runtime scenarios; P22-08 and P22-11 have production planning parity.
+
+Issue #45 remains responsible for Implementation/Fidelity and Issue #46 for
+Follow-Up/Outcome/Reentry/Repair. See
+`docs/support-process-support-intervention-workflows.md`; validation evidence is
+recorded under
+`docs/validation/issue-44-support-process-support-intervention-workflows-validation.md`.
+
 ### Issue #17 current implementation
 
 The current architecture now includes **accepted ADR 0013 for Response and Communication**.

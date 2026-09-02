@@ -1,10 +1,13 @@
 from __future__ import annotations
 
 from pathlib import Path
+from types import SimpleNamespace
+from unittest.mock import Mock, patch
 
 import pytest
 
 from portia.models import parse_portia_record
+from portia.models.references import ExactPortiaWorkRef
 from portia.storage import PortiaNotFoundError
 from portia.workflows import (
     EventWorkflowService,
@@ -166,3 +169,126 @@ def test_relationship_terminal_state_cannot_be_resurrected(tmp_path: Path) -> No
             expected=created.fingerprint,
         )
     assert created.path.read_bytes() == canonical
+
+
+def _support_process_ref() -> ExactPortiaWorkRef:
+    return ExactPortiaWorkRef(
+        class_id="class_a",
+        work_id="sup_alpha",
+        work_kind="support_process",
+        contract_version="1",
+    )
+
+
+def _support_process_relationship_record():
+    wire = relationship_record().to_dict()
+    wire["work_id"] = "sup_alpha"
+    wire["source"] = _support_process_ref().to_dict()
+    return parse_portia_record("work_relationship", "2", wire)
+
+
+def test_active_support_process_source_delegates_to_issue44_current_authority(
+    tmp_path: Path,
+) -> None:
+    candidate = _support_process_relationship_record()
+    source = _support_process_ref()
+    target = event_ref(event_id="evt_beta")
+    source_stored = SimpleNamespace(record=SimpleNamespace(status="active"))
+    target_stored = SimpleNamespace(record=event_record(event_id="evt_beta"))
+    repository = Mock()
+    repository.load_work.side_effect = [
+        source_stored,
+        target_stored,
+        target_stored,
+    ]
+    repository.list_work_relationships.return_value = ()
+    repository.create_work_record.return_value = SimpleNamespace(record=candidate)
+    service = WorkRelationshipService(
+        tmp_path,
+        repository=repository,
+        quarantine=Mock(),
+        context_assembler=Mock(),
+    )
+    service.validate_complete_graph = Mock()
+
+    with patch(
+        "portia.workflows.support_processes.SupportProcessWorkflowService.require_current_use",
+        return_value=source_stored,
+    ) as require_support_process_current:
+        stored = service.create(candidate)
+
+    assert stored.record == candidate
+    require_support_process_current.assert_called_once_with(source)
+    repository.create_work_record.assert_called_once_with(source, candidate)
+    assert repository.load_work.call_args_list[-1].args == (target,)
+
+
+def test_support_process_relationship_current_use_rechecks_issue44_owner_authority(
+    tmp_path: Path,
+) -> None:
+    candidate = _support_process_relationship_record()
+    source = _support_process_ref()
+    target = event_ref(event_id="evt_beta")
+    source_stored = SimpleNamespace(record=SimpleNamespace(status="active"))
+    target_stored = SimpleNamespace(record=event_record(event_id="evt_beta"))
+    resolution = SimpleNamespace(
+        relationship=SimpleNamespace(record=candidate),
+        source=source_stored,
+        target=target_stored,
+    )
+    repository = Mock()
+    repository.load_work.return_value = target_stored
+    repository.list_work_relationships.return_value = ()
+    service = WorkRelationshipService(
+        tmp_path,
+        repository=repository,
+        quarantine=Mock(),
+        context_assembler=Mock(),
+    )
+
+    with (
+        patch.object(service, "resolve_exact", return_value=resolution),
+        patch(
+            "portia.workflows.support_processes.SupportProcessWorkflowService.require_current_use",
+            return_value=source_stored,
+        ) as require_support_process_current,
+    ):
+        current = service.require_current_use(
+            relationship_reference(source, "rel_alpha")
+        )
+
+    assert current is resolution
+    require_support_process_current.assert_called_once_with(source)
+    repository.load_work.assert_called_once_with(target)
+
+
+def test_support_process_relationship_fails_before_target_use_when_process_not_current(
+    tmp_path: Path,
+) -> None:
+    candidate = _support_process_relationship_record()
+    source = _support_process_ref()
+    target = event_ref(event_id="evt_beta")
+    repository = Mock()
+    service = WorkRelationshipService(
+        tmp_path,
+        repository=repository,
+        quarantine=Mock(),
+        context_assembler=Mock(),
+    )
+
+    with (
+        patch(
+            "portia.workflows.support_processes.SupportProcessWorkflowService.require_current_use",
+            side_effect=WorkflowPrerequisiteError(
+                "synthetic Support Process is not current"
+            ),
+        ) as require_support_process_current,
+        pytest.raises(
+            WorkflowPrerequisiteError,
+            match="synthetic Support Process is not current",
+        ),
+    ):
+        service._preflight_current(candidate, source, target)
+
+    require_support_process_current.assert_called_once_with(source)
+    repository.load_work.assert_not_called()

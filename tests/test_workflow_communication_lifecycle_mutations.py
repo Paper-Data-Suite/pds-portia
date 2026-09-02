@@ -439,29 +439,180 @@ def test_public_correct_delegates_exact_successor_intent(tmp_path: Path) -> None
     assert call.kwargs["supersession_reason"] == "timing_corrected"
 
 
-def test_support_process_lifecycle_mutation_fails_closed(tmp_path: Path) -> None:
-    candidate = _communication(
+def _support_process_communication() -> PortiaRecord:
+    return _communication(
         "support-process-owner-before-issue18.json",
         section="application-invalid",
     )
+
+
+def _support_process_owner() -> SimpleNamespace:
+    return SimpleNamespace(
+        contract="support_process",
+        contract_version="1",
+        status="active",
+    )
+
+
+def _support_process_summary_correction(
+    prior: PortiaRecord,
+) -> PortiaRecord:
+    work = _work(prior)
+    wire = prior.to_dict()
+    wire["communication_id"] = "comm_family_call_corrected_002"
+    wire["summary"] = "Corrected synthetic Support Process Communication summary."
+    wire["updated_at"] = "2026-08-10T09:40:00-04:00"
+    wire["supersedes"] = [
+        {
+            "work_record_ref": communication_reference(
+                work,
+                prior.logical_id or "missing",
+            ).to_dict(),
+            "reason": "content_summary_corrected",
+        }
+    ]
+    return parse_portia_record("communication", "1", wire)
+
+
+def test_support_process_lifecycle_mutation_delegates_under_issue44(
+    tmp_path: Path,
+) -> None:
+    prior = _support_process_communication()
+    candidate = _revision(prior, status="invalidated")
+    work = _work(prior)
+    repository = Mock()
+    repository.load_work_record.return_value = SimpleNamespace(record=candidate)
+    repository.list_work_records.return_value = ()
     service = CommunicationWorkflowService(
         tmp_path,
-        repository=Mock(),
+        repository=repository,
         quarantine=Mock(),
         context_assembler=Mock(),
     )
 
-    with pytest.raises(WorkflowPrerequisiteError, match="Issue #44 authority"):
-        service.transition_lifecycle(
+    with (
+        patch(
+            "portia.workflows.communications.ActionLifecycleCoordinator"
+        ) as coordinator,
+        patch(
+            "portia.workflows.communications.require_communication_lifecycle_reconciled"
+        ),
+    ):
+        result = service.transition_lifecycle(
             communication_reference(
-                _work(candidate),
-                candidate.logical_id or "missing",
+                work,
+                prior.logical_id or "missing",
             ),
             candidate,
             expected=ContentFingerprint(digest="2" * 64, byte_length=0),
-            transition_id="lct_support_process_blocked",
+            transition_id="lct_support_process_invalidate",
             reason_code="recording_error",
         )
+
+    assert result is coordinator.return_value.commit.return_value
+    coordinator.return_value.commit.assert_called_once()
+
+
+def test_support_process_transition_candidate_uses_current_process_authority_once(
+    tmp_path: Path,
+) -> None:
+    prior = _support_process_communication()
+    candidate = _revision(prior, status="invalidated")
+    work = _work(prior)
+    repository = Mock()
+    repository.load_work.return_value = SimpleNamespace(
+        record=_support_process_owner()
+    )
+    service = CommunicationWorkflowService(
+        tmp_path,
+        repository=repository,
+        quarantine=Mock(),
+        context_assembler=Mock(),
+    )
+
+    with patch(
+        "portia.workflows.support_processes.SupportProcessWorkflowService.require_current_use"
+    ) as require_support_process_current:
+        service._require_transition_candidate(work, prior, candidate)
+
+    require_support_process_current.assert_called_once_with(work)
+
+
+def test_support_process_correction_delegates_under_issue44(
+    tmp_path: Path,
+) -> None:
+    prior = _support_process_communication()
+    successor = _support_process_summary_correction(prior)
+    work = _work(prior)
+    predecessor = communication_reference(
+        work,
+        prior.logical_id or "missing",
+    )
+    repository = Mock()
+    repository.load_work_record.return_value = SimpleNamespace(record=prior)
+    repository.list_work_records.return_value = ()
+    service = CommunicationWorkflowService(
+        tmp_path,
+        repository=repository,
+        quarantine=Mock(),
+        context_assembler=Mock(),
+    )
+
+    with (
+        patch(
+            "portia.workflows.communications.ActionLifecycleCoordinator"
+        ) as coordinator,
+        patch(
+            "portia.workflows.communications.require_communication_lifecycle_reconciled"
+        ),
+    ):
+        result = service.correct(
+            predecessor,
+            successor,
+            expected=ContentFingerprint(digest="3" * 64, byte_length=0),
+            transition_id="lct_support_process_correct",
+        )
+
+    assert result is coordinator.return_value.commit_correction.return_value
+    call = coordinator.return_value.commit_correction.call_args
+    assert call.args[:2] == (predecessor, successor)
+    assert call.kwargs["supersession_reason"] == "content_summary_corrected"
+
+
+def test_support_process_correction_candidate_uses_current_process_authority_once(
+    tmp_path: Path,
+) -> None:
+    prior = _support_process_communication()
+    successor = _support_process_summary_correction(prior)
+    work = _work(prior)
+    repository = Mock()
+    repository.load_work.return_value = SimpleNamespace(
+        record=_support_process_owner()
+    )
+    repository.list_work_records.return_value = ()
+    service = CommunicationWorkflowService(
+        tmp_path,
+        repository=repository,
+        quarantine=Mock(),
+        context_assembler=Mock(),
+    )
+
+    with (
+        patch(
+            "portia.workflows.support_processes.SupportProcessWorkflowService.require_current_use"
+        ) as require_support_process_current,
+        patch(
+            "portia.workflows.communications.require_communication_lifecycle_reconciled"
+        ),
+    ):
+        service._require_correction_successor(
+            work,
+            prior,
+            successor,
+            supersession_reason="content_summary_corrected",
+        )
+
+    require_support_process_current.assert_called_once_with(work)
 
 
 def test_later_attempt_without_supersedes_is_not_a_correction() -> None:

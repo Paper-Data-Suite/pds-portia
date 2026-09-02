@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 from types import SimpleNamespace
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
 
 import pytest
 
@@ -178,7 +178,9 @@ def test_active_import_fails_current_materialization(tmp_path: Path) -> None:
         service.require_current_use(_reference(communication))
 
 
-def test_support_process_current_use_fails_before_owner_io(tmp_path: Path) -> None:
+def test_support_process_current_use_uses_issue44_owner_authority(
+    tmp_path: Path,
+) -> None:
     communication = _communication(
         "support-process-owner-before-issue18.json",
         section="application-invalid",
@@ -187,12 +189,22 @@ def test_support_process_current_use_fails_before_owner_io(tmp_path: Path) -> No
         tmp_path,
         communication,
     )
+    repository.load_work.return_value = SimpleNamespace(
+        record=SimpleNamespace(
+            contract="support_process",
+            contract_version="1",
+            status="active",
+        )
+    )
 
-    with pytest.raises(WorkflowPrerequisiteError, match="Issue #44 authority"):
-        service.require_current_use(_reference(communication))
+    with patch(
+        "portia.workflows.support_processes.SupportProcessWorkflowService.require_current_use"
+    ) as require_support_process_current:
+        stored = service.require_current_use(_reference(communication))
 
-    repository.load_work.assert_not_called()
-    repository.load_work_record.assert_not_called()
+    assert stored.record is communication
+    require_support_process_current.assert_called_once_with(_work(communication))
+    assert repository.load_work_record.call_count >= 1
 
 
 def test_current_communication_requires_current_event(tmp_path: Path) -> None:
