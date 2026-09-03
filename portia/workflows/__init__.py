@@ -30,6 +30,14 @@ from portia.workflows.errors import (
 )
 from portia.workflows.events import EventWorkflowService, event_reference
 from portia.workflows.hypotheses import HypothesisWorkflowService, hypothesis_reference
+from portia.workflows.fidelity import (
+    FidelityWorkflowService,
+    fidelity_reference,
+)
+from portia.workflows.implementations import (
+    ImplementationWorkflowService,
+    implementation_reference,
+)
 from portia.workflows.interventions import (
     InterventionWorkflowService,
     intervention_reference,
@@ -85,7 +93,9 @@ __all__ = [
     "EventWorkflowService",
     "EventBundle",
     "EventBundleWorkflowService",
+    "FidelityWorkflowService",
     "HypothesisWorkflowService",
+    "ImplementationWorkflowService",
     "InterventionWorkflowService",
     "JudgmentEvidenceResolution",
     "ModuleCommunicationAttachmentAuthority",
@@ -113,7 +123,9 @@ __all__ = [
     "communication_reference",
     "determination_reference",
     "event_reference",
+    "fidelity_reference",
     "hypothesis_reference",
+    "implementation_reference",
     "intervention_reference",
     "observation_reference",
     "participant_reference",
