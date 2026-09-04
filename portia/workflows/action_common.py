@@ -46,6 +46,20 @@ def require_action_owner(work: ExactPortiaWorkRef, *, contract: str) -> None:
                 "support_process@1 ownership"
             )
         return
+    if contract == "implementation":
+        if (work.work_kind, work.contract_version) != ("support_process", "1"):
+            raise WorkflowOwnershipError(
+                "Implementation lifecycle requires exact "
+                "support_process@1 ownership"
+            )
+        return
+    if contract == "fidelity":
+        if (work.work_kind, work.contract_version) != ("support_process", "1"):
+            raise WorkflowOwnershipError(
+                "Fidelity lifecycle requires exact "
+                "support_process@1 ownership"
+            )
+        return
     if contract == "support":
         if (work.work_kind, work.contract_version) != ("support_process", "1"):
             raise WorkflowOwnershipError(

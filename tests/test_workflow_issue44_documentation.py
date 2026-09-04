@@ -19,8 +19,9 @@ def test_issue44_workflow_guide_retains_scope_boundaries() -> None:
         "Need != diagnosis or permanent deficit",
         "Goal != attainment, Grade, proficiency, or Outcome",
         "planned schedule != actual occurrence",
-        "Issue #45 owns Implementation/Fidelity",
-        "Issue #46 owns Follow-Up/Outcome",
+        "Issue #45 now owns and supplies Implementation/Fidelity",
+        "Issue #46 owns",
+        "Follow-Up/Outcome, Reentry, and Repair.",
     ):
         assert phrase in text
 

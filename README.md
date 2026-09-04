@@ -136,11 +136,11 @@ silently follow successors, and Response/Communication v1 expose no Amendment
 operation. Repeated contact attempts remain separate Communications rather than
 implicit corrections.
 
-Issue #43 fully implements Event-owned Communication. The published
-`support_process` owner branch remains wire-compatible but active/current use
-fails closed until Issue #44 supplies production Support Process authority. See
-`docs/response-and-communication-workflows.md`; validation evidence is recorded
-under `docs/validation/issue-43-response-and-communication-workflows-validation.md`.
+Issue #43 fully implements Event-owned Communication. Support-Process-owned
+Communication now delegates its owner authority to Issue #44 without changing
+`communication@1`. See `docs/response-and-communication-workflows.md`;
+validation evidence is recorded under
+`docs/validation/issue-43-response-and-communication-workflows-validation.md`.
 
 
 ### Issue #44 current implementation
@@ -167,11 +167,40 @@ continuation, Quarantine, and successor topology. The frozen Issue #18 planning
 parity guard accounts for 53 valid and 82 schema-valid/application-invalid
 runtime scenarios; P22-08 and P22-11 have production planning parity.
 
-Issue #45 remains responsible for Implementation/Fidelity and Issue #46 for
-Follow-Up/Outcome/Reentry/Repair. See
+Issue #45 now supplies the production Implementation/Fidelity layer. Issue #46
+remains responsible for Follow-Up/Outcome/Reentry/Repair. See
 `docs/support-process-support-intervention-workflows.md`; validation evidence is
 recorded under
 `docs/validation/issue-44-support-process-support-intervention-workflows-validation.md`.
+
+
+### Issue #45 current implementation
+
+`ImplementationWorkflowService` and `FidelityWorkflowService` now provide the
+executable ADR 0014 actual-occurrence and bounded implementation-quality layer.
+Every record stays under one exact Support Process and one exact historical
+Support/Intervention plan. Repeated actual occurrences remain separate
+Implementation identities; Fidelity remains a separate attributed judgment.
+
+Implementation records explicit actual target/provider facts, bounded variation,
+chronology, and factual execution state. Only `in_progress` uses ordinary
+execution progression to `completed`, `partially_completed`, or
+`unable_to_complete`; terminal factual corrections preserve successor history.
+Fidelity preserves exact evaluator, scope, basis, and source-defined
+checklist/instrument values without inventing a universal score.
+
+The Issue #18 oracle contains 10 valid plus 22 schema-valid/application-invalid
+Implementation fixtures and 9 valid plus 21 schema-valid/application-invalid
+Fidelity fixtures: **62 schema-valid runtime scenarios**. Structural-invalid
+fixtures remain schema/model cases. P22-08 and P22-11 execute the required
+representative runtime paths without fabricating Follow-Up, Outcome, Reentry, or
+Repair.
+
+Implementation remains distinct from Fidelity, and Fidelity remains distinct
+from effectiveness and Outcome. See
+`docs/implementation-and-fidelity-workflows.md`; validation evidence is recorded
+under
+`docs/validation/issue-45-implementation-and-fidelity-workflows-validation.md`.
 
 ### Issue #17 current implementation
 
