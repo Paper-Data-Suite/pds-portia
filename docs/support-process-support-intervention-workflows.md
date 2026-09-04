@@ -17,8 +17,9 @@ intervention@1
 planned_schedule@1
 ```
 
-`implementation@1` and `fidelity@1` remain Issue #45-owned. Follow-Up,
-Outcome, Reentry, and Repair remain Issue #46-owned.
+Issue #45 now supplies the production application/workflow layer for
+`implementation@1` and `fidelity@1`. Follow-Up, Outcome, Reentry, and Repair
+remain Issue #46-owned.
 
 ## Semantic boundary
 
@@ -288,8 +289,7 @@ parity guard explicitly tracks:
 ```
 
 Structural-invalid fixtures remain model/schema validation concerns.
-Implementation and Fidelity fixture families are explicitly classified as
-Issue #45-owned.
+Implementation and Fidelity runtime parity is qualified separately by Issue #45.
 
 Representative production acceptance additionally covers:
 
@@ -320,8 +320,8 @@ automatic Core/Meridian publication
 institutional authorization inference
 ```
 
-Issue #45 owns Implementation/Fidelity. Issue #46 owns Follow-Up/Outcome,
-Reentry, and Repair.
+Issue #45 now owns and supplies Implementation/Fidelity. Issue #46 owns
+Follow-Up/Outcome, Reentry, and Repair.
 
 ## Qualification
 
