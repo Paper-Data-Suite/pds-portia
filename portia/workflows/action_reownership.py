@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import hashlib
+import json
 from collections.abc import Callable, Mapping
 
 from portia.models import PortiaRecord, parse_portia_record
@@ -65,12 +66,12 @@ def _ownership_intent_digest(
     return hashlib.sha256(payload).hexdigest()
 
 
-def _work_key(work: ExactPortiaWorkRef) -> tuple[str, str, str, str]:
-    return (
-        work.class_id,
-        work.work_id,
-        work.work_kind,
-        work.contract_version,
+def _lock_target_key(target: object) -> str:
+    return json.dumps(
+        target,
+        sort_keys=True,
+        separators=(",", ":"),
+        ensure_ascii=False,
     )
 
 
@@ -85,12 +86,12 @@ def _cross_work_lock_plan(
         "operation_ref": {"operation_id": operation_id},
     }
     work_targets = sorted(
-        {source_work, destination_work},
-        key=_work_key,
+        (work_target(work) for work in {source_work, destination_work}),
+        key=_lock_target_key,
     )
     targets: list[tuple[str, dict[str, object]]] = [
         ("operation", operation_target),
-        *(("work", work_target(work)) for work in work_targets),
+        *(("work", target) for target in work_targets),
     ]
     entries: list[dict[str, object]] = []
     records: dict[str, PortiaRecord] = {}

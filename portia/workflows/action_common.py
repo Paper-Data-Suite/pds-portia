@@ -22,6 +22,15 @@ _COMMUNICATION_OWNERS = frozenset(
     }
 )
 _ACTION_CONTRACTS = frozenset({"response", "communication"})
+_DOWNSTREAM_CONTRACTS = frozenset(
+    {"follow_up", "outcome", "reentry", "repair"}
+)
+_DOWNSTREAM_OWNERS = frozenset(
+    {
+        ("event", "2"),
+        ("support_process", "1"),
+    }
+)
 
 
 def require_action_owner(work: ExactPortiaWorkRef, *, contract: str) -> None:
@@ -88,6 +97,13 @@ def require_action_owner(work: ExactPortiaWorkRef, *, contract: str) -> None:
         if (work.work_kind, work.contract_version) != ("support_process", "1"):
             raise WorkflowOwnershipError(
                 "Participant lifecycle requires exact support_process@1 ownership"
+            )
+        return
+    if contract in _DOWNSTREAM_CONTRACTS:
+        if (work.work_kind, work.contract_version) not in _DOWNSTREAM_OWNERS:
+            raise WorkflowOwnershipError(
+                "Issue #46 downstream lifecycle persistence requires exact "
+                "event@2 or support_process@1 ownership"
             )
         return
     raise WorkflowOwnershipError(f"unsupported action-layer contract {contract!r}")

@@ -168,7 +168,7 @@ parity guard accounts for 53 valid and 82 schema-valid/application-invalid
 runtime scenarios; P22-08 and P22-11 have production planning parity.
 
 Issue #45 now supplies the production Implementation/Fidelity layer. Issue #46
-remains responsible for Follow-Up/Outcome/Reentry/Repair. See
+now supplies the production Follow-Up/Outcome/Reentry/Repair layer. See
 `docs/support-process-support-intervention-workflows.md`; validation evidence is
 recorded under
 `docs/validation/issue-44-support-process-support-intervention-workflows-validation.md`.
@@ -201,6 +201,32 @@ from effectiveness and Outcome. See
 `docs/implementation-and-fidelity-workflows.md`; validation evidence is recorded
 under
 `docs/validation/issue-45-implementation-and-fidelity-workflows-validation.md`.
+
+### Issue #46 current implementation
+
+`FollowUpWorkflowService`, `OutcomeWorkflowService`, `ReentryWorkflowService`,
+and `RepairWorkflowService` now provide the executable ADR 0015 downstream
+workflow layer for exact Event- or Support-Process-local records. Shared
+downstream authority preserves exact ownership, exact historical reads,
+Quarantine, lifecycle/correction history, duplicate consolidation, and explicit
+work-root correction without silently following successors.
+
+Follow-Up, Reentry, and Repair expose bounded ordinary workflow-state
+progression; Outcome remains one bounded attributable evaluation for one explicit
+target/timeframe and deliberately has no mutable progress-state axis. Completion,
+linkage, sequence, or participant identity never fabricates causation,
+effectiveness, compliance, clearance, rehabilitation, remorse, forgiveness,
+relationship restoration, recurrence prevention, or resolution.
+
+The frozen Issue #19 oracle contains 46 valid plus 64
+schema-valid/application-invalid cases: **110 schema-valid runtime scenarios**.
+The 72 structural-invalid fixtures remain separate schema/model authority.
+P22-08 through P22-11 execute the required representative current-use paths
+without mutating the seeded graph or manufacturing downstream conclusions.
+
+See `docs/follow-up-outcome-reentry-repair-workflows.md`; observed validation
+evidence is recorded under
+`docs/validation/issue-46-follow-up-outcome-reentry-repair-workflows-validation.md`.
 
 ### Issue #17 current implementation
 

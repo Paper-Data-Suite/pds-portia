@@ -13,8 +13,10 @@ implementation@1
 fidelity@1
 ```
 
-The planning authority remains Issue #44-owned. Follow-Up, Outcome, Reentry, and
-Repair remain Issue #46-owned.
+The planning authority remains Issue #44-owned.
+Issue #46 now supplies the production Follow-Up/Outcome/Reentry/Repair layer
+while preserving the boundary that Implementation and Fidelity do not themselves
+create those records.
 
 ## Semantic boundary
 
@@ -244,7 +246,8 @@ Reentry
 Repair
 ```
 
-Those remain Issue #46 concerns.
+Issue #46 now supplies those separate downstream families; Issue #45 still does
+not fabricate them from Implementation/Fidelity facts.
 
 ## Frozen Issue #18 runtime parity
 
