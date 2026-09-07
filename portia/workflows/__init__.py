@@ -54,6 +54,12 @@ from portia.workflows.judgment_evidence import (
     ModuleJudgmentEvidenceAuthority,
     resolve_judgment_evidence,
 )
+from portia.workflows.lifecycle import (
+    LifecycleResolution,
+    LifecycleWorkflowService,
+    supported_record_lifecycle_contracts,
+)
+from portia.workflows.lifecycle_history import LifecycleHistoryCorrectionResolution
 from portia.workflows.observations import (
     ObservationWorkflowService,
     observation_reference,
@@ -113,6 +119,10 @@ __all__ = [
     "ImplementationWorkflowService",
     "InterventionWorkflowService",
     "JudgmentEvidenceResolution",
+    "LifecycleHistoryCorrectionResolution",
+    "LifecycleResolution",
+    "LifecycleWorkflowService",
+    "supported_record_lifecycle_contracts",
     "ModuleCommunicationAttachmentAuthority",
     "ModuleJudgmentEvidenceAuthority",
     "ObservationWorkflowService",
