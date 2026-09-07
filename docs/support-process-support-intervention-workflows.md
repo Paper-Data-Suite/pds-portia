@@ -18,8 +18,9 @@ planned_schedule@1
 ```
 
 Issue #45 now supplies the production application/workflow layer for
-`implementation@1` and `fidelity@1`. Follow-Up, Outcome, Reentry, and Repair
-remain Issue #46-owned.
+`implementation@1` and `fidelity@1`.
+Issue #46 now supplies the production Follow-Up/Outcome/Reentry/Repair layer
+while retaining separate runtime parity. Planning remains Issue #44 authority.
 
 ## Semantic boundary
 

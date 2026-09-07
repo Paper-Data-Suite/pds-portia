@@ -22,6 +22,12 @@ from portia.workflows.determinations import (
     DeterminationWorkflowService,
     determination_reference,
 )
+from portia.workflows.downstream_common import (
+    follow_up_reference,
+    outcome_reference,
+    reentry_reference,
+    repair_reference,
+)
 from portia.workflows.errors import (
     PortiaWorkflowError,
     WorkflowOwnershipError,
@@ -33,6 +39,7 @@ from portia.workflows.fidelity import (
     FidelityWorkflowService,
     fidelity_reference,
 )
+from portia.workflows.follow_ups import FollowUpWorkflowService
 from portia.workflows.hypotheses import HypothesisWorkflowService, hypothesis_reference
 from portia.workflows.implementations import (
     ImplementationWorkflowService,
@@ -51,16 +58,23 @@ from portia.workflows.observations import (
     ObservationWorkflowService,
     observation_reference,
 )
+from portia.workflows.outcomes import (
+    ModuleOutcomeBasisAuthority,
+    OutcomeBasisResolution,
+    OutcomeWorkflowService,
+)
 from portia.workflows.participants import (
     ParticipantPersonResolution,
     ParticipantWorkflowService,
     participant_reference,
 )
+from portia.workflows.reentries import ReentryWorkflowService
 from portia.workflows.relationships import (
     RelationshipEndpointResolution,
     WorkRelationshipService,
     relationship_reference,
 )
+from portia.workflows.repairs import RepairWorkflowService
 from portia.workflows.responses import ResponseWorkflowService, response_reference
 from portia.workflows.reviews import ReviewWorkflowService, review_reference
 from portia.workflows.roles import RoleWorkflowService, role_reference
@@ -94,6 +108,7 @@ __all__ = [
     "EventBundle",
     "EventBundleWorkflowService",
     "FidelityWorkflowService",
+    "FollowUpWorkflowService",
     "HypothesisWorkflowService",
     "ImplementationWorkflowService",
     "InterventionWorkflowService",
@@ -101,10 +116,15 @@ __all__ = [
     "ModuleCommunicationAttachmentAuthority",
     "ModuleJudgmentEvidenceAuthority",
     "ObservationWorkflowService",
+    "ModuleOutcomeBasisAuthority",
+    "OutcomeBasisResolution",
+    "OutcomeWorkflowService",
+    "ReentryWorkflowService",
     "ParticipantPersonResolution",
     "ParticipantWorkflowService",
     "PortiaWorkflowError",
     "RelationshipEndpointResolution",
+    "RepairWorkflowService",
     "ResponseWorkflowService",
     "ReviewWorkflowService",
     "RoleWorkflowService",
@@ -123,6 +143,10 @@ __all__ = [
     "communication_reference",
     "determination_reference",
     "event_reference",
+    "follow_up_reference",
+    "outcome_reference",
+    "reentry_reference",
+    "repair_reference",
     "fidelity_reference",
     "hypothesis_reference",
     "implementation_reference",
