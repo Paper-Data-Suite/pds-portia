@@ -21,13 +21,15 @@ from typing import Any, Protocol, TypeAlias, cast
 
 from portia.models import PortiaRecord
 from portia.models.references import ExactPortiaWorkRecordRef, ExactPortiaWorkRef
+from portia.storage.errors import PortiaConflictError
 from portia.storage.fingerprint import ContentFingerprint
+from portia.storage.locks import derive_lock_id
 from portia.storage.orchestration import FaultHook, OperationCommitResult
 from portia.storage.quarantine import QuarantineGuard
 from portia.storage.repository import PortiaRepository, StoredRecord
 from portia.workflows.accounts import AccountWorkflowService
 from portia.workflows.classifications import ClassificationWorkflowService
-from portia.workflows.common import WorkflowServiceBase
+from portia.workflows.common import WorkflowServiceBase, work_target
 from portia.workflows.communication_attachments import (
     ModuleCommunicationAttachmentAuthority,
 )
@@ -37,7 +39,16 @@ from portia.workflows.communication_lifecycle import (
 )
 from portia.workflows.communications import CommunicationWorkflowService
 from portia.workflows.context import WorkflowContextAssembler
+from portia.workflows.dependency_lifecycle import (
+    dependency_lifecycle_state,
+    require_dependency_lifecycle_reconciled,
+)
 from portia.workflows.determinations import DeterminationWorkflowService
+from portia.workflows.disagreement_lifecycle import (
+    disagreement_lifecycle_state,
+    require_disagreement_lifecycle_reconciled,
+)
+from portia.workflows.disagreements import StatementOfDisagreementWorkflowService
 from portia.workflows.downstream_lifecycle import (
     downstream_lifecycle_state,
     require_downstream_lifecycle_reconciled,
@@ -73,6 +84,7 @@ from portia.workflows.judgment_lifecycle import (
     require_judgment_lifecycle_reconciled,
 )
 from portia.workflows.lifecycle_history import (
+    LifecycleHistoryCorrectionCoordinator,
     LifecycleHistoryCorrectionResolution,
     load_lifecycle_history_corrections,
     resolve_corrected_lifecycle_history,
@@ -216,6 +228,14 @@ _IMPLEMENTATION = _adapter(
     require_implementation_lifecycle_reconciled,
 )
 _FIDELITY = _adapter(fidelity_lifecycle_state, require_fidelity_lifecycle_reconciled)
+_DEPENDENCY = _adapter(
+    dependency_lifecycle_state,
+    require_dependency_lifecycle_reconciled,
+)
+_DISAGREEMENT = _adapter(
+    disagreement_lifecycle_state,
+    require_disagreement_lifecycle_reconciled,
+)
 _DOWNSTREAM = _adapter(
     downstream_lifecycle_state,
     require_downstream_lifecycle_reconciled,
@@ -234,6 +254,8 @@ _RECORD_LIFECYCLE_ADAPTERS: Mapping[LifecycleContractKey, _LifecycleAdapter] = (
             ("determination", "1"): _JUDGMENT,
             ("response", "1"): _RESPONSE,
             ("communication", "1"): _COMMUNICATION,
+            ("dependency", "1"): _DEPENDENCY,
+            ("statement_of_disagreement", "1"): _DISAGREEMENT,
             ("support_process_participant", "1"): _SUPPORT_PROCESS_PARTICIPANT,
             ("support_need", "1"): _SUPPORT_NEED,
             ("support_goal", "1"): _SUPPORT_GOAL,
@@ -260,6 +282,7 @@ _CURRENT_WRITE_LIFECYCLE_CONTRACTS = frozenset(
         ("determination", "1"),
         ("response", "1"),
         ("communication", "1"),
+        ("statement_of_disagreement", "1"),
         ("support_process_participant", "1"),
         ("support_need", "1"),
         ("support_goal", "1"),
@@ -335,6 +358,133 @@ def _require_exact_candidate_identity(
         raise WorkflowOwnershipError(
             "generic lifecycle transition candidate must preserve the exact "
             "selected canonical record identity"
+        )
+
+
+def _lifecycle_target(reference: ExactPortiaWorkRecordRef) -> dict[str, object]:
+    return {
+        "kind": "local_record",
+        "record_ref": reference.record_ref.to_dict(),
+    }
+
+
+def _history_snapshot(
+    records: tuple[StoredRecord, ...],
+) -> tuple[tuple[str, ContentFingerprint], ...]:
+    values: list[tuple[str, ContentFingerprint]] = []
+    for stored in records:
+        identifier = stored.record.logical_id
+        if not isinstance(identifier, str):
+            raise WorkflowOwnershipError(
+                "correction-aware lifecycle history artifact has no exact identity"
+            )
+        values.append((identifier, stored.fingerprint))
+    return tuple(sorted(values, key=lambda item: item[0]))
+
+
+def _target_lifecycle_transitions(
+    repository: PortiaRepository,
+    reference: ExactPortiaWorkRecordRef,
+) -> tuple[StoredRecord, ...]:
+    target = _lifecycle_target(reference)
+    return tuple(
+        stored
+        for stored in repository.list_work_records(
+            reference.work_ref,
+            "lifecycle_transition",
+            version="1",
+        )
+        if stored.record.field("target") == target
+    )
+
+
+def _selected_transition_ids(
+    resolution: LifecycleHistoryCorrectionResolution,
+) -> frozenset[str]:
+    selected: set[str] = set()
+    for stored in resolution.transitions:
+        identifier = stored.record.logical_id
+        if not isinstance(identifier, str):
+            raise WorkflowOwnershipError(
+                "corrected lifecycle transition has no exact identity"
+            )
+        if identifier not in resolution.excluded_transition_ids:
+            selected.add(identifier)
+    return frozenset(selected)
+
+
+class _CorrectedLifecycleRepositoryView:
+    """Delegate repository access while hiding corrected-away target history."""
+
+    def __init__(
+        self,
+        repository: PortiaRepository,
+        reference: ExactPortiaWorkRecordRef,
+        *,
+        visible_transition_ids: frozenset[str],
+    ) -> None:
+        self._repository = repository
+        self._work = reference.work_ref
+        self._target = _lifecycle_target(reference)
+        self._visible_transition_ids = visible_transition_ids
+
+    def __getattr__(self, name: str) -> Any:
+        return getattr(self._repository, name)
+
+    def list_work_records(
+        self,
+        work: ExactPortiaWorkRef,
+        contract: str,
+        *,
+        version: str,
+    ) -> tuple[StoredRecord, ...]:
+        records = self._repository.list_work_records(
+            work,
+            contract,
+            version=version,
+        )
+        if (
+            work != self._work
+            or contract != "lifecycle_transition"
+            or version != "1"
+        ):
+            return records
+
+        selected: list[StoredRecord] = []
+        for stored in records:
+            if stored.record.field("target") != self._target:
+                selected.append(stored)
+                continue
+            identifier = stored.record.logical_id
+            if not isinstance(identifier, str):
+                # Do not hide malformed same-target evidence from the family reader.
+                selected.append(stored)
+                continue
+            if identifier in self._visible_transition_ids:
+                selected.append(stored)
+        return tuple(selected)
+
+
+def _require_locked_corrected_transition_state(
+    repository: PortiaRepository,
+    reference: ExactPortiaWorkRecordRef,
+    *,
+    expected_transitions: tuple[tuple[str, ContentFingerprint], ...],
+    expected_corrections: tuple[tuple[str, ContentFingerprint], ...],
+) -> None:
+    current_transitions = _history_snapshot(
+        _target_lifecycle_transitions(repository, reference)
+    )
+    if current_transitions != expected_transitions:
+        raise PortiaConflictError(
+            "lifecycle transition history changed after corrected transition preflight"
+        )
+    current_corrections = _history_snapshot(
+        load_lifecycle_history_corrections(repository, reference)
+    )
+    if current_corrections != expected_corrections:
+        raise PortiaConflictError(
+            "lifecycle-history correction chain changed after transition preflight"
         )
 
 
@@ -519,12 +669,87 @@ class LifecycleWorkflowService(WorkflowServiceBase):
             )
         return resolution
 
+    def correct_history(
+        self,
+        reference: ExactPortiaWorkRecordRef,
+        *,
+        expected: ContentFingerprint,
+        correction_id: str,
+        replaced_head_id: str,
+        replacement_head_id: str | None,
+        reason_code: str,
+        created_at: str,
+        created_by: Mapping[str, object],
+        reason_detail: str | None = None,
+        operation_id: str | None = None,
+        fault_hook: FaultHook | None = None,
+    ) -> OperationCommitResult:
+        """Select one already-complete replacement lifecycle branch.
+
+        Slice 4 deliberately does not route this operation through the ordinary
+        family transition state machine.  During history repair the raw transition
+        graph contains the currently selected branch plus the already-persisted
+        replacement branch, so the ordinary readers correctly fail closed on the
+        temporary fork.  This bounded coordinator validates that fork directly,
+        appends immutable selector evidence, and reconciles only canonical status.
+        """
+        key = (
+            reference.record_ref.record_kind,
+            reference.record_ref.contract_version,
+        )
+        if key not in _CURRENT_WRITE_LIFECYCLE_CONTRACTS:
+            if key in _RECORD_LIFECYCLE_ADAPTERS:
+                raise WorkflowOwnershipError(
+                    "generic lifecycle-history correction does not promote "
+                    f"historical-read {key[0]}@{key[1]} to current write authority"
+                )
+            raise WorkflowOwnershipError(
+                "generic lifecycle-history correction has no registered adapter for "
+                f"{key[0]}@{key[1]}"
+            )
+
+        self._load_exact_record(reference)
+        coordinator = LifecycleHistoryCorrectionCoordinator(
+            self.workspace_root,
+            repository=self.repository,
+            quarantine=self.quarantine,
+            context_assembler=self.contexts,
+        )
+        result = coordinator.commit(
+            reference,
+            expected=expected,
+            correction_id=correction_id,
+            replaced_head_id=replaced_head_id,
+            replacement_head_id=replacement_head_id,
+            reason_code=reason_code,
+            reason_detail=reason_detail,
+            created_at=created_at,
+            created_by=created_by,
+            operation_id=operation_id,
+            fault_hook=fault_hook,
+        )
+
+        accepted = self._load_exact_record(reference)
+        resolution = self.require_corrected_history_reconciled(reference)
+        if (
+            resolution.selected_correction is None
+            or resolution.selected_correction.record.logical_id != correction_id
+            or resolution.canonical_status != accepted.record.status
+        ):
+            raise WorkflowPrerequisiteError(
+                "generic lifecycle-history correction readback did not select "
+                "the accepted correction"
+            )
+        return result
+
     def _transition_service(
         self,
         key: LifecycleContractKey,
+        *,
+        repository: PortiaRepository | None = None,
     ) -> object:
         common: dict[str, Any] = {
-            "repository": self.repository,
+            "repository": repository if repository is not None else self.repository,
             "quarantine": self.quarantine,
             "context_assembler": self.contexts,
         }
@@ -569,6 +794,11 @@ class LifecycleWorkflowService(WorkflowServiceBase):
                 module_attachment_authority=(
                     self.module_communication_attachment_authority
                 ),
+            )
+        if key == ("statement_of_disagreement", "1"):
+            return StatementOfDisagreementWorkflowService(
+                self.workspace_root,
+                **common,
             )
         if key == ("support_process_participant", "1"):
             return SupportProcessParticipantWorkflowService(
@@ -617,7 +847,7 @@ class LifecycleWorkflowService(WorkflowServiceBase):
         operation_id: str | None = None,
         fault_hook: FaultHook | None = None,
     ) -> OperationCommitResult:
-        """Persist one ordinary family-authorized lifecycle status transition."""
+        """Persist one family-authorized transition from corrected selected history."""
         key = (
             reference.record_ref.record_kind,
             reference.record_ref.contract_version,
@@ -634,11 +864,47 @@ class LifecycleWorkflowService(WorkflowServiceBase):
             )
 
         _require_exact_candidate_identity(reference, candidate)
-        prior = self._load_exact_record(reference)
-        self.require_reconciled(reference.work_ref, prior.record)
+        corrected = self.require_corrected_history_reconciled(reference)
+
+        transition_repository = self.repository
+        transition_fault_hook = fault_hook
+        if corrected.corrections:
+            visible_ids = set(_selected_transition_ids(corrected))
+            visible_ids.add(transition_id)
+            transition_repository = cast(
+                PortiaRepository,
+                _CorrectedLifecycleRepositoryView(
+                    self.repository,
+                    reference,
+                    visible_transition_ids=frozenset(visible_ids),
+                ),
+            )
+            transition_snapshot = _history_snapshot(corrected.transitions)
+            correction_snapshot = _history_snapshot(corrected.corrections)
+            work_lock_id = derive_lock_id(
+                "work",
+                work_target(reference.work_ref),
+            )
+
+            def corrected_fault_hook(
+                event: str,
+                identifier: str | None,
+            ) -> None:
+                if event == "after_lock_acquire" and identifier == work_lock_id:
+                    _require_locked_corrected_transition_state(
+                        self.repository,
+                        reference,
+                        expected_transitions=transition_snapshot,
+                        expected_corrections=correction_snapshot,
+                    )
+                if fault_hook is not None:
+                    fault_hook(event, identifier)
+
+            transition_fault_hook = corrected_fault_hook
 
         transition_service = cast(
-            _LifecycleTransitionService, self._transition_service(key)
+            _LifecycleTransitionService,
+            self._transition_service(key, repository=transition_repository),
         )
         result = transition_service.transition_lifecycle(
             reference,
@@ -649,11 +915,11 @@ class LifecycleWorkflowService(WorkflowServiceBase):
             reason_detail=reason_detail,
             effective_at=effective_at,
             operation_id=operation_id,
-            fault_hook=fault_hook,
+            fault_hook=transition_fault_hook,
         )
 
         accepted = self._load_exact_record(reference)
-        self.require_reconciled(reference.work_ref, accepted.record)
+        self.require_corrected_history_reconciled(reference)
         if accepted.record.to_dict() != candidate.to_dict():
             raise WorkflowPrerequisiteError(
                 "generic lifecycle transition readback does not match the accepted "

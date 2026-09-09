@@ -132,6 +132,7 @@ def test_registered_record_lifecycle_adapters_are_closed_and_versioned() -> None
         ("account", "2"),
         ("classification", "1"),
         ("communication", "1"),
+        ("dependency", "1"),
         ("determination", "1"),
         ("fidelity", "1"),
         ("follow_up", "1"),
@@ -145,6 +146,7 @@ def test_registered_record_lifecycle_adapters_are_closed_and_versioned() -> None
         ("repair", "1"),
         ("response", "1"),
         ("review", "1"),
+        ("statement_of_disagreement", "1"),
         ("support", "1"),
         ("support_goal", "1"),
         ("support_need", "1"),
@@ -169,11 +171,17 @@ def test_current_write_lifecycle_transition_registry_is_closed() -> None:
         ("repair", "1"),
         ("response", "1"),
         ("review", "1"),
+        ("statement_of_disagreement", "1"),
         ("support", "1"),
         ("support_goal", "1"),
         ("support_need", "1"),
         ("support_process_participant", "1"),
     )
+
+
+def test_dependency_is_read_registered_without_generic_transition_dispatch() -> None:
+    assert ("dependency", "1") in supported_record_lifecycle_contracts()
+    assert ("dependency", "1") not in LifecycleWorkflowService.supported_transition_contracts()
 
 
 def test_real_evidence_adapter_resolves_empty_history_without_inventing_head(
@@ -231,8 +239,6 @@ def test_real_evidence_adapter_requires_reconciled_empty_history(
         ("event", "2"),
         ("support_process", "1"),
         ("event_participant", "3"),
-        ("dependency", "1"),
-        ("statement_of_disagreement", "1"),
         ("account", "99"),
     ],
 )
@@ -384,9 +390,9 @@ def test_historical_read_version_is_not_promoted_to_transition_authority(
 
 def test_generic_surface_still_exposes_no_arbitrary_mutation_or_supersession_api() -> None:
     assert "transition" in vars(LifecycleWorkflowService)
+    assert "correct_history" in vars(LifecycleWorkflowService)
     forbidden = {
         "transition_lifecycle",
-        "correct_history",
         "correct",
         "consolidate_duplicates",
         "supersede",

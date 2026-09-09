@@ -1,6 +1,14 @@
 """Public Event-family application services."""
 
 from portia.workflows.accounts import AccountWorkflowService, account_reference
+from portia.workflows.amendments import (
+    AmendmentPathPolicy,
+    AmendmentResolution,
+    AmendmentWorkflowService,
+    amendable_paths,
+    amendment_path_policies,
+    supported_amendment_contracts,
+)
 from portia.workflows.classifications import (
     ClassificationWorkflowService,
     classification_reference,
@@ -18,9 +26,19 @@ from portia.workflows.context import (
     WorkflowContextAssembler,
 )
 from portia.workflows.coordinated import EventBundle, EventBundleWorkflowService
+from portia.workflows.dependencies import (
+    DependencyEndpointResolution,
+    DependencyGraphResolution,
+    DependencyWorkflowService,
+    dependency_reference,
+)
 from portia.workflows.determinations import (
     DeterminationWorkflowService,
     determination_reference,
+)
+from portia.workflows.disagreements import (
+    StatementOfDisagreementWorkflowService,
+    disagreement_reference,
 )
 from portia.workflows.downstream_common import (
     follow_up_reference,
@@ -105,11 +123,17 @@ from portia.workflows.supports import SupportWorkflowService, support_reference
 
 __all__ = [
     "AccountWorkflowService",
+    "AmendmentPathPolicy",
+    "AmendmentResolution",
+    "AmendmentWorkflowService",
     "AuthoritativeWorkflowContext",
     "ClassificationWorkflowService",
     "CommunicationAttachmentResolution",
     "CommunicationWorkflowService",
     "DeterminationWorkflowService",
+    "DependencyEndpointResolution",
+    "DependencyGraphResolution",
+    "DependencyWorkflowService",
     "EventWorkflowService",
     "EventBundle",
     "EventBundleWorkflowService",
@@ -136,6 +160,7 @@ __all__ = [
     "RelationshipEndpointResolution",
     "RepairWorkflowService",
     "ResponseWorkflowService",
+    "StatementOfDisagreementWorkflowService",
     "ReviewWorkflowService",
     "RoleWorkflowService",
     "SupportGoalWorkflowService",
@@ -149,9 +174,13 @@ __all__ = [
     "WorkflowValidationError",
     "WorkRelationshipService",
     "account_reference",
+    "amendable_paths",
+    "amendment_path_policies",
     "classification_reference",
     "communication_reference",
     "determination_reference",
+    "dependency_reference",
+    "disagreement_reference",
     "event_reference",
     "follow_up_reference",
     "outcome_reference",
@@ -172,6 +201,7 @@ __all__ = [
     "support_need_reference",
     "support_process_participant_reference",
     "support_process_reference",
+    "supported_amendment_contracts",
     "SupportWorkflowService",
     "support_reference",
 ]

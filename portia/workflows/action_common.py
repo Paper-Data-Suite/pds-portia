@@ -48,6 +48,25 @@ def require_action_owner(work: ExactPortiaWorkRef, *, contract: str) -> None:
                 "support_process@1 ownership"
             )
         return
+    if contract == "dependency":
+        if (work.work_kind, work.contract_version) not in {
+            ("event", "2"),
+            ("support_process", "1"),
+        }:
+            raise WorkflowOwnershipError(
+                "Dependency lifecycle requires exact event@2 or support_process@1 ownership"
+            )
+        return
+    if contract == "statement_of_disagreement":
+        if (work.work_kind, work.contract_version) not in {
+            ("event", "2"),
+            ("support_process", "1"),
+        }:
+            raise WorkflowOwnershipError(
+                "Statement of Disagreement lifecycle requires exact event@2 "
+                "or support_process@1 ownership"
+            )
+        return
     if contract == "support_process_participant":
         if (work.work_kind, work.contract_version) != ("support_process", "1"):
             raise WorkflowOwnershipError(
