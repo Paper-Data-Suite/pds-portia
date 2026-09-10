@@ -516,6 +516,50 @@ class SupportProcessWorkflowService(WorkflowServiceBase):
             ),
         )
 
+    def _require_transition_candidate_with_dependencies(
+        self,
+        work: ExactPortiaWorkRef,
+        prior: PortiaRecord,
+        candidate: PortiaRecord,
+        *,
+        effective_at: str | None,
+    ) -> None:
+        """Require family activation preflight plus the declared Dependency gate."""
+        self._require_transition_candidate(work, prior, candidate)
+        if candidate.status != "active":
+            return
+        selected_time = effective_at
+        if selected_time is None:
+            updated_at = candidate.field("updated_at")
+            if not isinstance(updated_at, str):
+                raise WorkflowPrerequisiteError(
+                    "Support Process activation Dependency gate requires candidate "
+                    "updated_at"
+                )
+            selected_time = updated_at
+
+        # Local import keeps Support Process ownership separate from the generic
+        # Dependency evaluator while avoiding package-initialization cycles.
+        from portia.workflows.dependencies import DependencyWorkflowService
+
+        gate = DependencyWorkflowService(
+            self.workspace_root,
+            repository=self.repository,
+            quarantine=self.quarantine,
+            context_assembler=self.contexts,
+        ).evaluate_gate(
+            work,
+            gate="activation",
+            evaluated_at=selected_time,
+        )
+        if gate.required_gate_satisfied:
+            return
+        blockers = ", ".join(gate.required_blockers)
+        raise WorkflowPrerequisiteError(
+            "Support Process required Dependency activation gate is not satisfied; "
+            f"blockers: {blockers}"
+        )
+
     def transition_lifecycle(
         self,
         work: ExactPortiaWorkRef,
@@ -544,10 +588,13 @@ class SupportProcessWorkflowService(WorkflowServiceBase):
             reason_code=reason_code,
             operation_id=operation_id,
             fault_hook=fault_hook,
-            candidate_validator=lambda prior, value: self._require_transition_candidate(
-                work,
-                prior,
-                value,
+            candidate_validator=lambda prior, value: (
+                self._require_transition_candidate_with_dependencies(
+                    work,
+                    prior,
+                    value,
+                    effective_at=effective_at,
+                )
             ),
             transition_factory=lambda prior, value: (
                 build_support_process_lifecycle_transition(
@@ -761,7 +808,8 @@ class SupportProcessWorkflowService(WorkflowServiceBase):
 
         self.quarantine.require_allowed(work_target(work), "block_work_writes")
         if prior.status == "active":
-            self.require_current_use(work)
+            self._require_current_use_authority(work)
+            self._require_lifecycle_dependency_write_gate(work)
             active = self._active_supported_participants(
                 work,
                 for_activation=False,
@@ -814,8 +862,71 @@ class SupportProcessWorkflowService(WorkflowServiceBase):
             expected=expected,
         )
 
-    def require_current_use(self, work: ExactPortiaWorkRef) -> StoredRecord:
-        """Qualify one exact active Support Process for consequential use."""
+    def _require_current_use_dependency_gate(
+        self,
+        work: ExactPortiaWorkRef,
+    ) -> None:
+        """Require declared current-use Dependencies to permit automatic use."""
+        # Local import preserves the family/service boundary and avoids package
+        # initialization cycles.
+        from portia.workflows.dependencies import DependencyWorkflowService
+
+        gate = DependencyWorkflowService(
+            self.workspace_root,
+            repository=self.repository,
+            quarantine=self.quarantine,
+            context_assembler=self.contexts,
+        ).evaluate_gate(
+            work,
+            gate="current_use",
+        )
+        if gate.required_gate_satisfied:
+            return
+        blockers = ", ".join(gate.required_blockers)
+        raise WorkflowPrerequisiteError(
+            "Support Process required Dependency current-use gate is not satisfied; "
+            f"blockers: {blockers}"
+        )
+
+    def _require_lifecycle_dependency_write_gate(
+        self,
+        work: ExactPortiaWorkRef,
+    ) -> None:
+        """Block lifecycle-dependent writes only for required unsatisfied Dependencies."""
+        # Section 14.19 distinguishes automatic current use from lifecycle-dependent
+        # writes: review_required/indeterminate trigger review, while unsatisfied also
+        # blocks the write. Keep this family-specific rather than changing the generic
+        # Dependency gate aggregation contract.
+        from portia.workflows.dependencies import DependencyWorkflowService
+
+        gate = DependencyWorkflowService(
+            self.workspace_root,
+            repository=self.repository,
+            quarantine=self.quarantine,
+            context_assembler=self.contexts,
+        ).evaluate_gate(
+            work,
+            gate="current_use",
+        )
+        blockers = tuple(
+            evaluation.reference.record_ref.record_id
+            for evaluation in gate.conditions
+            if evaluation.strength == "required"
+            and evaluation.condition == "unsatisfied"
+        )
+        if not blockers:
+            return
+        joined = ", ".join(blockers)
+        raise WorkflowPrerequisiteError(
+            "Support Process required Dependency current-use lifecycle-write gate "
+            f"is not satisfied; blockers: {joined}"
+        )
+
+    def _require_current_use_authority(
+        self,
+        work: ExactPortiaWorkRef,
+    ) -> StoredRecord:
+        """Require established non-Dependency authority for active-root use."""
         root = self.load_exact(work)
         require_support_process_lifecycle_reconciled(
             self.repository,
@@ -849,6 +960,12 @@ class SupportProcessWorkflowService(WorkflowServiceBase):
             ),
             require_actor_current_use=True,
         )
+        return root
+
+    def require_current_use(self, work: ExactPortiaWorkRef) -> StoredRecord:
+        """Qualify one exact active Support Process for automatic current use."""
+        root = self._require_current_use_authority(work)
+        self._require_current_use_dependency_gate(work)
         return root
 
     resolve_current = require_current_use

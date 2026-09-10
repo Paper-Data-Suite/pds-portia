@@ -35,6 +35,33 @@ def event_reference(record: PortiaRecord) -> ExactPortiaWorkRef:
 class EventWorkflowService(WorkflowServiceBase):
     """Create, revise, enumerate, and resolve exact Event representations."""
 
+    def _require_completion_dependency_gate(
+        self,
+        work: ExactPortiaWorkRef,
+        *,
+        evaluated_at: str,
+    ) -> None:
+        """Require declared completion Dependencies before Event closure."""
+        from portia.workflows.dependencies import DependencyWorkflowService
+
+        gate = DependencyWorkflowService(
+            self.workspace_root,
+            repository=self.repository,
+            quarantine=self.quarantine,
+            context_assembler=self.contexts,
+        ).evaluate_gate(
+            work,
+            gate="completion",
+            evaluated_at=evaluated_at,
+        )
+        if gate.required_gate_satisfied:
+            return
+        blockers = ", ".join(gate.required_blockers)
+        raise WorkflowPrerequisiteError(
+            "Event required Dependency completion gate is not satisfied; "
+            f"blockers: {blockers}"
+        )
+
     def create(self, record: PortiaRecord) -> StoredRecord:
         work = event_reference(record)
         if record.status in {"active", "closed"}:
@@ -82,6 +109,16 @@ class EventWorkflowService(WorkflowServiceBase):
             graph,
             require_actor_current_use=record.status == "active",
         )
+        if prior.record.status == "active" and record.status == "closed":
+            updated_at = record.field("updated_at")
+            if not isinstance(updated_at, str):
+                raise WorkflowPrerequisiteError(
+                    "Event completion Dependency gate requires candidate updated_at"
+                )
+            self._require_completion_dependency_gate(
+                work,
+                evaluated_at=updated_at,
+            )
         self.quarantine.require_allowed(work_target(work), "block_work_writes")
         return self.repository.replace_work(work, record, expected=expected)
 

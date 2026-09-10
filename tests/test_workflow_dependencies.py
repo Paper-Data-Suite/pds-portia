@@ -23,7 +23,14 @@ from portia.workflows.dependency_lifecycle import (
     require_dependency_lifecycle_reconciled,
 )
 from portia.workflows.errors import WorkflowOwnershipError, WorkflowPrerequisiteError
-from tests.workflow_helpers import AGENT, event_record, event_ref, participant_record
+from tests.workflow_helpers import (
+    AGENT,
+    account_wire,
+    event_record,
+    event_ref,
+    participant_record,
+    role_record,
+)
 
 T0 = "2026-09-08T19:00:00-04:00"
 T1 = "2026-09-08T19:05:00-04:00"
@@ -748,3 +755,863 @@ def test_dependency_activation_cross_work_requires_explicit_graph_closure(
     assert service.load_exact(
         dependency_reference(work, "dep_alpha")
     ).record.status == "active"
+
+
+def test_dependency_create_persists_fresh_proposed_declaration(tmp_path: Path) -> None:
+    service = _service(tmp_path)
+    work = event_ref()
+
+    created = service.create(work, _participant_dependency(work))
+
+    assert created.record.logical_id == "dep_alpha"
+    assert created.record.status == "proposed"
+    assert service.load_exact(
+        dependency_reference(work, "dep_alpha")
+    ).fingerprint == created.fingerprint
+
+
+def test_dependency_create_accepts_active_declaration_after_full_preflight(
+    tmp_path: Path,
+) -> None:
+    service = _service(tmp_path)
+    work = event_ref()
+
+    created = service.create(
+        work,
+        _participant_dependency(work, status="active"),
+    )
+
+    assert created.record.status == "active"
+    assert service.require_graph_valid((work,)).live_edge_count == 1
+
+
+def test_dependency_create_rejects_nonfresh_lifecycle_state(tmp_path: Path) -> None:
+    service = _service(tmp_path)
+    work = event_ref()
+
+    with pytest.raises(WorkflowPrerequisiteError, match="begin proposed or active"):
+        service.create(
+            work,
+            _participant_dependency(work, status="invalidated"),
+        )
+    assert service.list(work) == ()
+
+
+def test_dependency_create_rejects_advisory_authorization_basis(
+    tmp_path: Path,
+) -> None:
+    service = _service(tmp_path)
+    work = event_ref()
+    candidate = dependency_record(
+        work,
+        status="proposed",
+        dependent=_local_record_target("event_participant", "ep_alpha", "3"),
+        dependency=_portia_record_dependency(
+            work,
+            "event_participant",
+            "ep_beta",
+            "3",
+        ),
+        strength="advisory",
+        purpose="authorization_basis",
+    )
+
+    with pytest.raises(WorkflowPrerequisiteError, match="requires required strength"):
+        service.create(work, candidate)
+    assert service.list(work) == ()
+
+
+def test_dependency_create_rejects_completion_scope_on_child_record(
+    tmp_path: Path,
+) -> None:
+    service = _service(tmp_path)
+    work = event_ref()
+    candidate = dependency_record(
+        work,
+        status="proposed",
+        dependent=_local_record_target("event_participant", "ep_alpha", "3"),
+        dependency=_portia_record_dependency(
+            work,
+            "event_participant",
+            "ep_beta",
+            "3",
+        ),
+        applies_to="completion",
+    )
+
+    with pytest.raises(WorkflowPrerequisiteError, match="not supported for this child"):
+        service.create(work, candidate)
+    assert service.list(work) == ()
+
+
+def test_dependency_create_allows_event_completion_scope(tmp_path: Path) -> None:
+    service = _service(tmp_path)
+    work = event_ref()
+    candidate = dependency_record(
+        work,
+        status="proposed",
+        dependent=_work_target(work),
+        dependency=_portia_record_dependency(
+            work,
+            "event_participant",
+            "ep_beta",
+            "3",
+        ),
+        applies_to="completion",
+    )
+
+    created = service.create(work, candidate)
+    assert created.record.field("applies_to") == "completion"
+
+
+def test_dependency_create_rejects_intrinsic_role_basis_duplicate(
+    tmp_path: Path,
+) -> None:
+    service = _service(tmp_path)
+    work = event_ref()
+    account = parse_portia_record("account", "1", account_wire())
+    service.repository.create_work_record(work, account)
+    service.repository.create_work_record(
+        work,
+        role_record(
+            role_type="reported_involved",
+            basis=[
+                {
+                    "kind": "account_ref",
+                    "record_ref": {
+                        "record_kind": "account",
+                        "record_id": "acct_alpha",
+                        "contract_version": "1",
+                    },
+                }
+            ],
+        ),
+    )
+    candidate = dependency_record(
+        work,
+        status="proposed",
+        dependent=_local_record_target("event_participant_role", "epr_alpha", "3"),
+        dependency=_portia_record_dependency(
+            work,
+            "account",
+            "acct_alpha",
+            "1",
+        ),
+        purpose="evidentiary_support",
+    )
+
+    with pytest.raises(WorkflowPrerequisiteError, match="intrinsic.*Role basis"):
+        service.create(work, candidate)
+    assert service.list(work) == ()
+
+
+def test_dependency_create_rejects_self_dependency_before_write(tmp_path: Path) -> None:
+    service = _service(tmp_path)
+    work = event_ref()
+
+    with pytest.raises(WorkflowPrerequisiteError, match="self-dependent"):
+        service.create(
+            work,
+            dependency_record(work, status="proposed"),
+        )
+    assert service.list(work) == ()
+
+
+def test_dependency_create_requires_explicit_cross_work_graph_closure(
+    tmp_path: Path,
+) -> None:
+    service = _service(tmp_path)
+    work = event_ref()
+    other = event_ref(event_id="evt_beta")
+    service.repository.create_work(
+        other,
+        event_record(event_id="evt_beta", created_at=T0, updated_at=T0),
+    )
+    candidate = dependency_record(
+        work,
+        status="proposed",
+        dependent=_local_record_target("event_participant", "ep_alpha", "3"),
+        dependency=_portia_work_dependency(other),
+    )
+
+    with pytest.raises(WorkflowPrerequisiteError, match="scope is incomplete"):
+        service.create(work, candidate)
+    assert service.list(work) == ()
+
+    created = service.create(work, candidate, graph_works=(work, other))
+    assert created.record.logical_id == "dep_alpha"
+
+
+def test_dependency_create_rejects_cycle_before_canonical_write(tmp_path: Path) -> None:
+    service = _service(tmp_path)
+    work = event_ref()
+    service.repository.create_work_record(
+        work,
+        _participant_dependency(
+            work,
+            dependency_id="dep_existing",
+            status="active",
+            dependent_id="ep_beta",
+            target_id="ep_alpha",
+        ),
+    )
+    candidate = _participant_dependency(
+        work,
+        dependency_id="dep_alpha",
+        status="proposed",
+        dependent_id="ep_alpha",
+        target_id="ep_beta",
+    )
+
+    with pytest.raises(WorkflowPrerequisiteError, match="introduce a cycle"):
+        service.create(work, candidate)
+    assert tuple(item.record.logical_id for item in service.list(work)) == (
+        "dep_existing",
+    )
+
+
+def test_dependency_create_rejects_duplicate_active_condition_before_write(
+    tmp_path: Path,
+) -> None:
+    service = _service(tmp_path)
+    work = event_ref()
+    service.repository.create_work_record(
+        work,
+        _participant_dependency(
+            work,
+            dependency_id="dep_existing",
+            status="active",
+        ),
+    )
+
+    with pytest.raises(WorkflowPrerequisiteError, match="existing active semantic"):
+        service.create(
+            work,
+            _participant_dependency(
+                work,
+                dependency_id="dep_alpha",
+                status="active",
+            ),
+        )
+    assert tuple(item.record.logical_id for item in service.list(work)) == (
+        "dep_existing",
+    )
+
+
+def test_dependency_module_read_uses_exact_core_reference_shape(tmp_path: Path) -> None:
+    service = _service(tmp_path)
+    work = event_ref()
+    module_target: dict[str, object] = {
+        "kind": "module_record",
+        "module_work_record_ref": {
+            "work_ref": {
+                "module_id": "pds-scoreform",
+                "class_id": work.class_id,
+                "work_id": "work_assessment_001",
+            },
+            "record_ref": {
+                "module_id": "pds-scoreform",
+                "record_kind": "score_result",
+                "record_id": "score_001",
+                "contract_version": "1",
+            },
+        },
+    }
+    service.repository.create_work_record(
+        work,
+        dependency_record(
+            work,
+            status="proposed",
+            dependent=_local_record_target("event_participant", "ep_alpha", "3"),
+            dependency=module_target,
+        ),
+    )
+
+    resolved = service.resolve_dependency_target(
+        dependency_reference(work, "dep_alpha")
+    )
+    assert resolved.kind == "module_record"
+    assert resolved.stored is None
+
+
+def test_dependency_create_fails_closed_for_sibling_module_target(
+    tmp_path: Path,
+) -> None:
+    service = _service(tmp_path)
+    work = event_ref()
+    module_target: dict[str, object] = {
+        "kind": "module_record",
+        "module_work_record_ref": {
+            "work_ref": {
+                "module_id": "pds-scoreform",
+                "class_id": work.class_id,
+                "work_id": "work_assessment_001",
+            },
+            "record_ref": {
+                "module_id": "pds-scoreform",
+                "record_kind": "score_result",
+                "record_id": "score_001",
+                "contract_version": "1",
+            },
+        },
+    }
+    candidate = dependency_record(
+        work,
+        status="proposed",
+        dependent=_local_record_target("event_participant", "ep_alpha", "3"),
+        dependency=module_target,
+    )
+
+    with pytest.raises(WorkflowPrerequisiteError, match="producer compatibility"):
+        service.create(work, candidate)
+    assert service.list(work) == ()
+
+
+def test_dependency_module_read_rejects_module_id_mismatch(tmp_path: Path) -> None:
+    service = _service(tmp_path)
+    work = event_ref()
+    module_target: dict[str, object] = {
+        "kind": "module_record",
+        "module_work_record_ref": {
+            "work_ref": {
+                "module_id": "pds-scoreform",
+                "class_id": work.class_id,
+                "work_id": "work_assessment_001",
+            },
+            "record_ref": {
+                "module_id": "pds-quillan",
+                "record_kind": "score_result",
+                "record_id": "score_001",
+                "contract_version": "1",
+            },
+        },
+    }
+    service.repository.create_work_record(
+        work,
+        dependency_record(
+            work,
+            status="proposed",
+            dependent=_local_record_target("event_participant", "ep_alpha", "3"),
+            dependency=module_target,
+        ),
+    )
+
+    with pytest.raises(WorkflowOwnershipError, match="disagree on module_id"):
+        service.load_exact(dependency_reference(work, "dep_alpha"))
+
+
+def _replace_participant_status(
+    service: DependencyWorkflowService,
+    participant_id: str,
+    *,
+    status: str,
+    created_at: str = T0,
+    updated_at: str = T1,
+) -> None:
+    work = event_ref()
+    prior = service.repository.load_work_record(
+        work,
+        "event_participant",
+        "3",
+        participant_id,
+    )
+    service.repository.replace_work_record(
+        work,
+        participant_record(
+            participant_id=participant_id,
+            status=status,
+            created_at=created_at,
+            updated_at=updated_at,
+        ),
+        expected=prior.fingerprint,
+    )
+
+
+def _active_disagreement_for_participant(
+    participant_id: str,
+    *,
+    disagreement_id: str = "sod_dependency_target",
+) -> PortiaRecord:
+    return parse_portia_record(
+        "statement_of_disagreement",
+        "1",
+        {
+            "schema_version": "1",
+            "record_type": "statement_of_disagreement",
+            "module_id": "portia",
+            "class_id": "class_a",
+            "work_id": "evt_alpha",
+            "disagreement_id": disagreement_id,
+            "status": "active",
+            "target": _local_record_target(
+                "event_participant",
+                participant_id,
+                "3",
+            ),
+            "source": {
+                "kind": "local_operator",
+                "display_label": "Synthetic represented source",
+            },
+            "positions": ["disputes_accuracy"],
+            "statement": {
+                "representation": "recorded_summary",
+                "text": "Synthetic disagreement for dependency evaluation.",
+            },
+            "creation_source": {"type": "digital_entry"},
+            "created_at": T0,
+            "created_by": AGENT,
+            "updated_at": T0,
+            "updated_by": AGENT,
+        },
+    )
+
+
+def test_dependency_condition_inactive_declaration_is_not_currently_evaluated(
+    tmp_path: Path,
+) -> None:
+    service = _service(tmp_path)
+    work = event_ref()
+    service.repository.create_work_record(
+        work,
+        _participant_dependency(work, status="proposed"),
+    )
+
+    evaluation = service.evaluate_condition(
+        dependency_reference(work, "dep_alpha"),
+        gate="current_use",
+    )
+    assert evaluation.condition == "not_currently_evaluated"
+    assert evaluation.reason == "declaration_not_active"
+
+
+def test_dependency_condition_scope_mismatch_is_not_currently_evaluated(
+    tmp_path: Path,
+) -> None:
+    service = _service(tmp_path)
+    work = event_ref()
+    service.repository.create_work_record(
+        work,
+        dependency_record(
+            work,
+            status="active",
+            dependent=_local_record_target("event_participant", "ep_alpha", "3"),
+            dependency=_portia_record_dependency(
+                work,
+                "event_participant",
+                "ep_beta",
+                "3",
+            ),
+            applies_to="activation",
+        ),
+    )
+
+    evaluation = service.evaluate_condition(
+        dependency_reference(work, "dep_alpha"),
+        gate="current_use",
+    )
+    assert evaluation.condition == "not_currently_evaluated"
+    assert evaluation.reason == "scope_not_selected"
+
+
+def test_dependency_condition_active_exact_target_is_satisfied(tmp_path: Path) -> None:
+    service = _service(tmp_path)
+    work = event_ref()
+    service.repository.create_work_record(
+        work,
+        _participant_dependency(work, status="active"),
+    )
+
+    evaluation = service.evaluate_condition(
+        dependency_reference(work, "dep_alpha"),
+        gate="current_use",
+    )
+    assert evaluation.condition == "satisfied"
+    assert evaluation.reason == "target_status_satisfies_initial_policy"
+
+
+def test_dependency_condition_invalidated_target_is_unsatisfied(tmp_path: Path) -> None:
+    service = _service(tmp_path)
+    work = event_ref()
+    _replace_participant_status(service, "ep_beta", status="invalidated")
+    service.repository.create_work_record(
+        work,
+        _participant_dependency(work, status="active"),
+    )
+
+    evaluation = service.evaluate_condition(
+        dependency_reference(work, "dep_alpha"),
+        gate="current_use",
+    )
+    assert evaluation.condition == "unsatisfied"
+    assert evaluation.reason == "target_status_is_ineligible"
+
+
+def test_dependency_condition_superseded_target_requires_review(tmp_path: Path) -> None:
+    service = _service(tmp_path)
+    work = event_ref()
+    _replace_participant_status(service, "ep_beta", status="superseded")
+    service.repository.create_work_record(
+        work,
+        _participant_dependency(work, status="active"),
+    )
+
+    evaluation = service.evaluate_condition(
+        dependency_reference(work, "dep_alpha"),
+        gate="current_use",
+    )
+    assert evaluation.condition == "review_required"
+    assert evaluation.reason == "target_status_requires_review"
+
+
+def test_dependency_condition_missing_exact_target_is_unsatisfied(tmp_path: Path) -> None:
+    service = _service(tmp_path)
+    work = event_ref()
+    service.repository.create_work_record(
+        work,
+        _participant_dependency(
+            work,
+            status="active",
+            target_id="ep_missing",
+        ),
+    )
+
+    evaluation = service.evaluate_condition(
+        dependency_reference(work, "dep_alpha"),
+        gate="current_use",
+    )
+    assert evaluation.condition == "unsatisfied"
+    assert evaluation.reason == "exact_target_missing"
+
+
+def test_dependency_condition_unsupported_exact_contract_is_indeterminate(
+    tmp_path: Path,
+) -> None:
+    service = _service(tmp_path)
+    work = event_ref()
+    service.repository.create_work_record(
+        work,
+        dependency_record(
+            work,
+            status="active",
+            dependent=_local_record_target("event_participant", "ep_alpha", "3"),
+            dependency=_portia_record_dependency(
+                work,
+                "event_participant",
+                "ep_beta",
+                "99",
+            ),
+        ),
+    )
+
+    evaluation = service.evaluate_condition(
+        dependency_reference(work, "dep_alpha"),
+        gate="current_use",
+    )
+    assert evaluation.condition == "indeterminate"
+    assert evaluation.reason == "target_contract_policy_unavailable"
+
+
+def test_dependency_condition_sibling_module_semantics_are_indeterminate(
+    tmp_path: Path,
+) -> None:
+    service = _service(tmp_path)
+    work = event_ref()
+    module_target: dict[str, object] = {
+        "kind": "module_record",
+        "module_work_record_ref": {
+            "work_ref": {
+                "module_id": "pds-scoreform",
+                "class_id": work.class_id,
+                "work_id": "work_assessment_001",
+            },
+            "record_ref": {
+                "module_id": "pds-scoreform",
+                "record_kind": "score_result",
+                "record_id": "score_001",
+                "contract_version": "1",
+            },
+        },
+    }
+    service.repository.create_work_record(
+        work,
+        dependency_record(
+            work,
+            status="active",
+            dependent=_local_record_target("event_participant", "ep_alpha", "3"),
+            dependency=module_target,
+        ),
+    )
+
+    evaluation = service.evaluate_condition(
+        dependency_reference(work, "dep_alpha"),
+        gate="current_use",
+    )
+    assert evaluation.condition == "indeterminate"
+    assert evaluation.reason == "external_module_semantics_unavailable"
+
+
+def test_dependency_condition_active_disagreement_requires_review(tmp_path: Path) -> None:
+    service = _service(tmp_path)
+    work = event_ref()
+    service.repository.create_work_record(
+        work,
+        _participant_dependency(work, status="active"),
+    )
+    service.repository.create_work_record(
+        work,
+        _active_disagreement_for_participant("ep_beta"),
+    )
+
+    evaluation = service.evaluate_condition(
+        dependency_reference(work, "dep_alpha"),
+        gate="current_use",
+    )
+    assert evaluation.condition == "review_required"
+    assert evaluation.reason == "target_has_active_disagreement"
+
+
+def test_dependency_gate_required_unsatisfied_condition_blocks(tmp_path: Path) -> None:
+    service = _service(tmp_path)
+    work = event_ref()
+    _replace_participant_status(service, "ep_beta", status="invalidated")
+    service.repository.create_work_record(
+        work,
+        _participant_dependency(work, status="active"),
+    )
+
+    gate = service.evaluate_gate(
+        _record_ref(work, "event_participant", "ep_alpha", "3"),
+        gate="current_use",
+    )
+    assert gate.required_gate_satisfied is False
+    assert gate.required_blockers == ("dep_alpha",)
+    assert gate.advisory_attention == ()
+
+
+def test_dependency_gate_advisory_condition_surfaces_attention_without_blocking(
+    tmp_path: Path,
+) -> None:
+    service = _service(tmp_path)
+    work = event_ref()
+    _replace_participant_status(service, "ep_beta", status="invalidated")
+    service.repository.create_work_record(
+        work,
+        dependency_record(
+            work,
+            status="active",
+            dependent=_local_record_target("event_participant", "ep_alpha", "3"),
+            dependency=_portia_record_dependency(
+                work,
+                "event_participant",
+                "ep_beta",
+                "3",
+            ),
+            strength="advisory",
+            purpose="contextual_support",
+        ),
+    )
+
+    gate = service.evaluate_gate(
+        _record_ref(work, "event_participant", "ep_alpha", "3"),
+        gate="current_use",
+    )
+    assert gate.required_gate_satisfied is True
+    assert gate.required_blockers == ()
+    assert gate.advisory_attention == ("dep_alpha",)
+
+
+def test_dependency_activation_gate_requires_exact_temporal_context(
+    tmp_path: Path,
+) -> None:
+    service = _service(tmp_path)
+    work = event_ref()
+    service.repository.create_work_record(
+        work,
+        dependency_record(
+            work,
+            status="active",
+            dependent=_local_record_target("event_participant", "ep_alpha", "3"),
+            dependency=_portia_record_dependency(
+                work,
+                "event_participant",
+                "ep_beta",
+                "3",
+            ),
+            applies_to="activation",
+        ),
+    )
+
+    evaluation = service.evaluate_condition(
+        dependency_reference(work, "dep_alpha"),
+        gate="activation",
+    )
+    assert evaluation.condition == "indeterminate"
+    assert evaluation.reason == "exact_temporal_context_required"
+
+
+def test_dependency_activation_gate_satisfies_current_revision_at_effective_time(
+    tmp_path: Path,
+) -> None:
+    service = _service(tmp_path)
+    work = event_ref()
+    service.repository.create_work_record(
+        work,
+        dependency_record(
+            work,
+            status="active",
+            dependent=_local_record_target("event_participant", "ep_alpha", "3"),
+            dependency=_portia_record_dependency(
+                work,
+                "event_participant",
+                "ep_beta",
+                "3",
+            ),
+            applies_to="activation",
+        ),
+    )
+
+    evaluation = service.evaluate_condition(
+        dependency_reference(work, "dep_alpha"),
+        gate="activation",
+        evaluated_at=T0,
+    )
+    assert evaluation.condition == "satisfied"
+
+
+def test_dependency_activation_gate_refuses_future_target_revision(tmp_path: Path) -> None:
+    service = _service(tmp_path)
+    work = event_ref()
+    _replace_participant_status(
+        service,
+        "ep_beta",
+        status="active",
+        created_at=T0,
+        updated_at=T1,
+    )
+    service.repository.create_work_record(
+        work,
+        dependency_record(
+            work,
+            status="active",
+            dependent=_local_record_target("event_participant", "ep_alpha", "3"),
+            dependency=_portia_record_dependency(
+                work,
+                "event_participant",
+                "ep_beta",
+                "3",
+            ),
+            applies_to="activation",
+        ),
+    )
+
+    evaluation = service.evaluate_condition(
+        dependency_reference(work, "dep_alpha"),
+        gate="activation",
+        evaluated_at=T0,
+    )
+    assert evaluation.condition == "indeterminate"
+    assert evaluation.reason == "target_revision_postdates_evaluation"
+
+
+def test_dependency_gate_scope_mismatch_does_not_block(tmp_path: Path) -> None:
+    service = _service(tmp_path)
+    work = event_ref()
+    service.repository.create_work_record(
+        work,
+        dependency_record(
+            work,
+            status="active",
+            dependent=_local_record_target("event_participant", "ep_alpha", "3"),
+            dependency=_portia_record_dependency(
+                work,
+                "event_participant",
+                "ep_beta",
+                "3",
+            ),
+            applies_to="activation",
+        ),
+    )
+
+    gate = service.evaluate_gate(
+        _record_ref(work, "event_participant", "ep_alpha", "3"),
+        gate="current_use",
+    )
+    assert gate.required_gate_satisfied is True
+    assert gate.required_blockers == ()
+    assert gate.conditions[0].condition == "not_currently_evaluated"
+
+
+def test_dependency_activation_gate_knows_target_did_not_yet_exist(tmp_path: Path) -> None:
+    service = _service(tmp_path)
+    work = event_ref()
+    _replace_participant_status(
+        service,
+        "ep_beta",
+        status="active",
+        created_at=T1,
+        updated_at=T1,
+    )
+    service.repository.create_work_record(
+        work,
+        dependency_record(
+            work,
+            status="active",
+            dependent=_local_record_target("event_participant", "ep_alpha", "3"),
+            dependency=_portia_record_dependency(
+                work,
+                "event_participant",
+                "ep_beta",
+                "3",
+            ),
+            applies_to="activation",
+        ),
+    )
+
+    evaluation = service.evaluate_condition(
+        dependency_reference(work, "dep_alpha"),
+        gate="activation",
+        evaluated_at=T0,
+    )
+    assert evaluation.condition == "unsatisfied"
+    assert evaluation.reason == "target_not_yet_created"
+
+
+def test_dependency_required_indeterminate_condition_blocks_selected_gate(
+    tmp_path: Path,
+) -> None:
+    service = _service(tmp_path)
+    work = event_ref()
+    service.repository.create_work_record(
+        work,
+        dependency_record(
+            work,
+            status="active",
+            dependent=_local_record_target("event_participant", "ep_alpha", "3"),
+            dependency=_portia_record_dependency(
+                work,
+                "event_participant",
+                "ep_beta",
+                "3",
+            ),
+            applies_to="activation",
+        ),
+    )
+
+    gate = service.evaluate_gate(
+        _record_ref(work, "event_participant", "ep_alpha", "3"),
+        gate="activation",
+    )
+    assert gate.required_gate_satisfied is False
+    assert gate.required_blockers == ("dep_alpha",)
+    assert gate.conditions[0].condition == "indeterminate"
+
+
+def test_dependency_gate_rejects_unknown_gate(tmp_path: Path) -> None:
+    service = _service(tmp_path)
+    work = event_ref()
+
+    with pytest.raises(WorkflowPrerequisiteError, match="unsupported Dependency gate"):
+        service.evaluate_gate(
+            _record_ref(work, "event_participant", "ep_alpha", "3"),
+            gate="retirement",
+        )
