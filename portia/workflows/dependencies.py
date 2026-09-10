@@ -24,11 +24,26 @@ from portia.storage.errors import (
 from portia.storage.fingerprint import ContentFingerprint
 from portia.storage.orchestration import FaultHook, OperationCommitResult
 from portia.storage.repository import StoredRecord
+from portia.workflows.action_consolidation import ActionConsolidationCoordinator
 from portia.workflows.action_transition import ActionLifecycleCoordinator
 from portia.workflows.common import WorkflowServiceBase, record_target, work_target
 from portia.workflows.dependency_lifecycle import (
     build_dependency_lifecycle_transition,
     require_dependency_lifecycle_reconciled,
+)
+from portia.workflows.dependency_supersession import (
+    dependency_replacement_intent_is_abandoned,
+    dependency_supersession_ancestry,
+    dependency_supersession_reason_detail,
+    dependency_supersession_records,
+    require_dependency_replacement_timing,
+    require_dependency_supersession_effective,
+    require_duplicate_dependency_consolidation_predecessors,
+    require_duplicate_dependency_equivalence,
+    require_exact_dependency_correction_predecessor,
+    require_material_dependency_correction,
+    require_no_competing_dependency_successor,
+    superseded_dependency_predecessor,
 )
 from portia.workflows.errors import WorkflowOwnershipError, WorkflowPrerequisiteError
 
@@ -476,6 +491,48 @@ class DependencyWorkflowService(WorkflowServiceBase):
                 "Dependency updated_at cannot precede created_at"
             )
 
+    @staticmethod
+    def _require_replacement_creation_semantics(candidate: PortiaRecord) -> None:
+        source = candidate.field("creation_source")
+        source_type = source.get("type") if isinstance(source, Mapping) else None
+        if source_type != "digital_entry":
+            raise WorkflowPrerequisiteError(
+                "Dependency correction/consolidation successor requires digital_entry review"
+            )
+        if candidate.status not in {"active", "invalidated"}:
+            raise WorkflowPrerequisiteError(
+                "Dependency replacement successor must begin active or invalidated"
+            )
+        if candidate.field("supersedes") is None:
+            raise WorkflowPrerequisiteError(
+                "Dependency replacement successor requires supersession history"
+            )
+        created_at = candidate.field("created_at")
+        updated_at = candidate.field("updated_at")
+        if not isinstance(created_at, str) or not isinstance(updated_at, str):
+            raise WorkflowPrerequisiteError(
+                "Dependency replacement timestamps are malformed"
+            )
+        try:
+            created = datetime.fromisoformat(
+                created_at[:-1] + "+00:00" if created_at.endswith("Z") else created_at
+            )
+            updated = datetime.fromisoformat(
+                updated_at[:-1] + "+00:00" if updated_at.endswith("Z") else updated_at
+            )
+        except ValueError as exc:
+            raise WorkflowPrerequisiteError(
+                "Dependency replacement timestamps are malformed"
+            ) from exc
+        if created.utcoffset() is None or updated.utcoffset() is None:
+            raise WorkflowPrerequisiteError(
+                "Dependency replacement timestamps require explicit offsets"
+            )
+        if updated < created:
+            raise WorkflowPrerequisiteError(
+                "Dependency replacement updated_at cannot precede created_at"
+            )
+
     def _require_declared_policy(
         self,
         candidate: PortiaRecord,
@@ -651,6 +708,164 @@ class DependencyWorkflowService(WorkflowServiceBase):
         for node in tuple(edges):
             visit(node)
 
+    def _require_replacement_graph(
+        self,
+        work: ExactPortiaWorkRef,
+        successor: PortiaRecord,
+        predecessors: Sequence[ExactPortiaWorkRecordRef],
+        graph_works: Sequence[ExactPortiaWorkRef] | None,
+    ) -> None:
+        scope = (work,) if graph_works is None else tuple(graph_works)
+        if work not in scope:
+            raise WorkflowPrerequisiteError(
+                "Dependency replacement graph scope must include the containing work"
+            )
+        works = self._bounded_work_scope(scope)
+        selected_predecessors = set(predecessors)
+        for owner in works:
+            self._require_reverse_replacement_reconciled(
+                owner,
+                self.list(owner),
+            )
+        dependent_resolution = self._dependent_endpoint(
+            work,
+            successor,
+            require_resolution=True,
+        )
+        target_resolution = self._dependency_endpoint(
+            successor,
+            require_resolution=True,
+        )
+        self._require_declared_policy(successor, dependent_resolution)
+        self._require_no_intrinsic_duplication(dependent_resolution, target_resolution)
+        if target_resolution.kind == "module_record":
+            raise WorkflowPrerequisiteError(
+                "Dependency replacement for sibling-module targets requires explicit "
+                "producer compatibility authority"
+            )
+        dependent = cast(Endpoint, dependent_resolution.reference)
+        target = cast(Endpoint, target_resolution.reference)
+        target_work = target if isinstance(target, ExactPortiaWorkRef) else target.work_ref
+        if (target_work.work_kind, target_work.contract_version) in _CURRENT_WORKS:
+            if target_work not in works:
+                raise WorkflowPrerequisiteError(
+                    "Dependency replacement graph scope is incomplete for an exact "
+                    "Portia target; supply the referenced work explicitly"
+                )
+        dependent_key = _endpoint_key(dependent)
+        target_key = _endpoint_key(target)
+        if dependent_key == target_key:
+            raise WorkflowPrerequisiteError(
+                "Dependency replacement cannot be self-dependent"
+            )
+
+        work_keys = {
+            (item.class_id, item.work_id, item.work_kind, item.contract_version)
+            for item in works
+        }
+        edges: dict[tuple[str, ...], set[tuple[str, ...]]] = {}
+        active_conditions: dict[
+            tuple[tuple[str, ...], tuple[str, ...], str, str, str],
+            str,
+        ] = {}
+        for owner in works:
+            for stored in self.list(owner):
+                identifier = stored.record.logical_id
+                if not isinstance(identifier, str):
+                    raise WorkflowOwnershipError(
+                        "Dependency record has no canonical identity"
+                    )
+                reference = dependency_reference(owner, identifier)
+                if reference in selected_predecessors:
+                    continue
+                record = stored.record
+                self._require_replacement_reconciled(owner, record)
+                if record.status not in _LIVE_GRAPH_STATUSES:
+                    continue
+                existing_dependent = self._dependent_endpoint(
+                    owner,
+                    record,
+                    require_resolution=True,
+                )
+                existing_target = self._dependency_endpoint(
+                    record,
+                    require_resolution=False,
+                )
+                if existing_target.kind == "module_record":
+                    continue
+                source = cast(Endpoint, existing_dependent.reference)
+                destination = cast(Endpoint, existing_target.reference)
+                destination_work = (
+                    destination
+                    if isinstance(destination, ExactPortiaWorkRef)
+                    else destination.work_ref
+                )
+                destination_key = (
+                    destination_work.class_id,
+                    destination_work.work_id,
+                    destination_work.work_kind,
+                    destination_work.contract_version,
+                )
+                if (
+                    destination_work.work_kind,
+                    destination_work.contract_version,
+                ) in _CURRENT_WORKS and destination_key not in work_keys:
+                    raise WorkflowPrerequisiteError(
+                        "Dependency replacement graph scope is incomplete for an exact "
+                        "Portia target; supply the referenced work explicitly"
+                    )
+                source_key = _endpoint_key(source)
+                destination_endpoint_key = _endpoint_key(destination)
+                if source_key == destination_endpoint_key:
+                    raise WorkflowPrerequisiteError(
+                        "Dependency replacement graph contains self-dependency"
+                    )
+                edges.setdefault(source_key, set()).add(destination_endpoint_key)
+                if record.status == "active":
+                    signature = self._active_condition_signature(owner, record)
+                    previous = active_conditions.get(signature)
+                    if previous is not None:
+                        raise WorkflowPrerequisiteError(
+                            "Dependency replacement graph contains duplicate active semantic "
+                            f"declarations {previous!r} and {identifier!r}"
+                        )
+                    active_conditions[signature] = identifier
+
+        if successor.status == "active":
+            successor_id = successor.logical_id
+            if not isinstance(successor_id, str):
+                raise WorkflowOwnershipError(
+                    "Dependency replacement successor has no canonical identity"
+                )
+            signature = self._active_condition_signature(work, successor)
+            previous = active_conditions.get(signature)
+            if previous is not None:
+                raise WorkflowPrerequisiteError(
+                    "Dependency replacement conflicts with an existing active semantic "
+                    f"declaration {previous!r}"
+                )
+            active_conditions[signature] = successor_id
+            edges.setdefault(dependent_key, set()).add(target_key)
+
+        visiting: set[tuple[str, ...]] = set()
+        visited: set[tuple[str, ...]] = set()
+
+        def visit(node: tuple[str, ...]) -> None:
+            if node in visiting:
+                raise WorkflowPrerequisiteError(
+                    "Dependency replacement would introduce a cycle"
+                )
+            if node in visited:
+                return
+            visiting.add(node)
+            for destination in edges.get(node, set()):
+                visit(destination)
+            visiting.remove(node)
+            visited.add(node)
+
+        for node in tuple(edges):
+            visit(node)
+
     def create(
         self,
         work: ExactPortiaWorkRef,
@@ -811,6 +1026,80 @@ class DependencyWorkflowService(WorkflowServiceBase):
                     matches.append(item)
         return tuple(matches)
 
+    def _require_replacement_reconciled(
+        self,
+        work: ExactPortiaWorkRef,
+        record: PortiaRecord,
+    ) -> None:
+        if record.field("supersedes") is None or record.status == "proposed":
+            return
+        if dependency_replacement_intent_is_abandoned(
+            self.repository,
+            work,
+            record,
+        ):
+            return
+        lineage = dependency_supersession_ancestry(
+            self.repository,
+            work,
+            record,
+        )
+        require_dependency_supersession_effective(
+            self.repository,
+            work,
+            lineage,
+        )
+
+    def _require_reverse_replacement_reconciled(
+        self,
+        work: ExactPortiaWorkRef,
+        records: Sequence[StoredRecord],
+    ) -> None:
+        declared: dict[str, list[PortiaRecord]] = {}
+        for stored in records:
+            if dependency_replacement_intent_is_abandoned(
+                self.repository,
+                work,
+                stored.record,
+            ):
+                continue
+            for resolution in dependency_supersession_records(
+                self.repository,
+                work,
+                stored.record,
+            ):
+                predecessor_id = resolution.stored.record.logical_id
+                if not isinstance(predecessor_id, str):
+                    raise WorkflowOwnershipError(
+                        "Dependency replacement predecessor has no canonical identity"
+                    )
+                declared.setdefault(predecessor_id, []).append(stored.record)
+        for predecessor_id, successors in declared.items():
+            if len(successors) > 1:
+                raise WorkflowPrerequisiteError(
+                    "Dependency predecessor has multiple declared direct successors: "
+                    f"{predecessor_id!r}"
+                )
+        for stored in records:
+            record = stored.record
+            if record.status != "superseded":
+                continue
+            identifier = record.logical_id
+            if not isinstance(identifier, str):
+                raise WorkflowOwnershipError(
+                    "superseded Dependency has no canonical identity"
+                )
+            successors = declared.get(identifier, [])
+            effective = [
+                successor
+                for successor in successors
+                if successor.status != "proposed"
+            ]
+            if len(effective) != 1:
+                raise WorkflowPrerequisiteError(
+                    "superseded Dependency requires exactly one effective direct successor"
+                )
+
     def _active_condition_signature(
         self,
         work: ExactPortiaWorkRef,
@@ -885,6 +1174,10 @@ class DependencyWorkflowService(WorkflowServiceBase):
         self._require_record_owner(work, candidate)
         self._dependent_endpoint(work, candidate, require_resolution=True)
         self._dependency_endpoint(candidate, require_resolution=True)
+        if candidate.status == "active" and candidate.field("supersedes") is not None:
+            raise WorkflowPrerequisiteError(
+                "Dependency replacement activation requires correction/consolidation authority"
+            )
         if candidate.status == "active":
             self._require_activation_graph(
                 work,
@@ -953,6 +1246,324 @@ class DependencyWorkflowService(WorkflowServiceBase):
             work,
             accepted.record,
         )
+        return result
+
+    def _require_correction_successor(
+        self,
+        work: ExactPortiaWorkRef,
+        prior: PortiaRecord,
+        successor: PortiaRecord,
+        *,
+        supersession_reason: str,
+        effective_at: str | None,
+        graph_works: Sequence[ExactPortiaWorkRef] | None,
+    ) -> None:
+        self._require_record_owner(work, prior)
+        value = self._require_record_owner(work, successor)
+        self._require_replacement_creation_semantics(value)
+        require_dependency_lifecycle_reconciled(self.repository, work, prior)
+        require_material_dependency_correction(
+            prior,
+            value,
+            supersession_reason,
+        )
+        predecessor_id = prior.logical_id
+        if not isinstance(predecessor_id, str):
+            raise WorkflowOwnershipError(
+                "Dependency predecessor has no canonical identity"
+            )
+        predecessor = dependency_reference(work, predecessor_id)
+        require_no_competing_dependency_successor(
+            self.repository,
+            work,
+            (predecessor,),
+        )
+        require_dependency_replacement_timing(
+            self.repository,
+            work,
+            (prior,),
+            value,
+            effective_at=effective_at,
+        )
+        self._require_replacement_graph(
+            work,
+            value,
+            (predecessor,),
+            graph_works,
+        )
+        self.quarantine.require_allowed(work_target(work), "block_work_writes")
+        self.quarantine.require_allowed(record_target(work, value), "block_work_writes")
+        if value.status == "active":
+            self.quarantine.require_allowed(work_target(work), "block_current_use")
+            self.quarantine.require_allowed(
+                record_target(work, value),
+                "block_current_use",
+            )
+
+    def _require_consolidation_successor(
+        self,
+        work: ExactPortiaWorkRef,
+        priors: tuple[PortiaRecord, ...],
+        successor: PortiaRecord,
+        *,
+        reason_detail: str,
+        effective_at: str | None,
+        graph_works: Sequence[ExactPortiaWorkRef] | None,
+    ) -> None:
+        value = self._require_record_owner(work, successor)
+        self._require_replacement_creation_semantics(value)
+        for prior in priors:
+            self._require_record_owner(work, prior)
+            require_dependency_lifecycle_reconciled(self.repository, work, prior)
+        require_duplicate_dependency_equivalence(
+            priors,
+            value,
+            reason_detail=reason_detail,
+        )
+        predecessor_references = tuple(
+            dependency_reference(work, identifier)
+            for identifier in (prior.logical_id for prior in priors)
+            if isinstance(identifier, str)
+        )
+        if len(predecessor_references) != len(priors):
+            raise WorkflowOwnershipError(
+                "Dependency consolidation predecessor lacks canonical identity"
+            )
+        require_no_competing_dependency_successor(
+            self.repository,
+            work,
+            predecessor_references,
+        )
+        require_dependency_replacement_timing(
+            self.repository,
+            work,
+            priors,
+            value,
+            effective_at=effective_at,
+        )
+        self._require_replacement_graph(
+            work,
+            value,
+            predecessor_references,
+            graph_works,
+        )
+        self.quarantine.require_allowed(work_target(work), "block_work_writes")
+        self.quarantine.require_allowed(record_target(work, value), "block_work_writes")
+        if value.status == "active":
+            self.quarantine.require_allowed(work_target(work), "block_current_use")
+            self.quarantine.require_allowed(
+                record_target(work, value),
+                "block_current_use",
+            )
+
+    def correct(
+        self,
+        predecessor: ExactPortiaWorkRecordRef,
+        successor: PortiaRecord,
+        *,
+        expected: ContentFingerprint,
+        transition_id: str,
+        effective_at: str | None = None,
+        operation_id: str | None = None,
+        fault_hook: FaultHook | None = None,
+        graph_works: Sequence[ExactPortiaWorkRef] | None = None,
+    ) -> OperationCommitResult:
+        """Create one reviewed material Dependency successor and supersede its predecessor."""
+        if (
+            predecessor.record_ref.record_kind != "dependency"
+            or predecessor.record_ref.contract_version != DEPENDENCY_VERSION
+        ):
+            raise WorkflowOwnershipError(
+                "Dependency correction requires an exact dependency@1 predecessor"
+            )
+        work = predecessor.work_ref
+        supersession_reason = require_exact_dependency_correction_predecessor(
+            work,
+            predecessor,
+            successor,
+        )
+        reason_detail = dependency_supersession_reason_detail(successor)
+        coordinator = ActionLifecycleCoordinator(
+            self.workspace_root,
+            repository=self.repository,
+            quarantine=self.quarantine,
+            context_assembler=self.contexts,
+        )
+        result = coordinator.commit_correction(
+            predecessor,
+            successor,
+            expected=expected,
+            transition_id=transition_id,
+            supersession_reason=supersession_reason,
+            operation_id=operation_id,
+            fault_hook=fault_hook,
+            successor_validator=lambda prior, value: self._require_correction_successor(
+                work,
+                prior,
+                value,
+                supersession_reason=supersession_reason,
+                effective_at=effective_at,
+                graph_works=graph_works,
+            ),
+            predecessor_factory=superseded_dependency_predecessor,
+            transition_factory=lambda prior, value: build_dependency_lifecycle_transition(
+                self.repository,
+                work,
+                prior,
+                value,
+                transition_id=transition_id,
+                reason_code=supersession_reason,
+                reason_detail=reason_detail,
+                effective_at=effective_at,
+                allow_supersession=True,
+            ),
+        )
+        accepted_predecessor = self.load_exact(predecessor)
+        require_dependency_lifecycle_reconciled(
+            self.repository,
+            work,
+            accepted_predecessor.record,
+        )
+        successor_id = successor.logical_id
+        if not isinstance(successor_id, str):
+            raise WorkflowOwnershipError(
+                "Dependency successor has no canonical identity"
+            )
+        accepted_successor = self.load_exact(
+            dependency_reference(work, successor_id)
+        )
+        lineage = dependency_supersession_ancestry(
+            self.repository,
+            work,
+            accepted_successor.record,
+        )
+        require_dependency_supersession_effective(
+            self.repository,
+            work,
+            lineage,
+        )
+        scope = (work,) if graph_works is None else tuple(graph_works)
+        self.require_graph_valid(scope)
+        return result
+
+    def consolidate_duplicates(
+        self,
+        work: ExactPortiaWorkRef,
+        successor: PortiaRecord,
+        *,
+        expected: Mapping[str, ContentFingerprint],
+        transition_ids: Mapping[str, str],
+        reason_detail: str,
+        effective_at: str | None = None,
+        operation_id: str | None = None,
+        fault_hook: FaultHook | None = None,
+        graph_works: Sequence[ExactPortiaWorkRef] | None = None,
+    ) -> OperationCommitResult:
+        """Create one reviewed successor for duplicate Dependency declarations."""
+        _require_current_work(work)
+        if not isinstance(reason_detail, str) or not reason_detail.strip():
+            raise WorkflowPrerequisiteError(
+                "Dependency duplicate consolidation requires review detail"
+            )
+        predecessors = require_duplicate_dependency_consolidation_predecessors(
+            work,
+            successor,
+        )
+        predecessor_ids = tuple(
+            reference.record_ref.record_id for reference in predecessors
+        )
+        if set(expected) != set(predecessor_ids):
+            raise WorkflowPrerequisiteError(
+                "Dependency consolidation requires one expected fingerprint for every predecessor"
+            )
+        if set(transition_ids) != set(predecessor_ids):
+            raise WorkflowPrerequisiteError(
+                "Dependency consolidation requires one lifecycle transition ID for every predecessor"
+            )
+        ordered_transition_ids = tuple(
+            transition_ids[identifier] for identifier in predecessor_ids
+        )
+        if len(set(ordered_transition_ids)) != len(ordered_transition_ids):
+            raise WorkflowPrerequisiteError(
+                "Dependency consolidation lifecycle transition IDs must be unique"
+            )
+
+        coordinator = ActionConsolidationCoordinator(
+            self.workspace_root,
+            repository=self.repository,
+            quarantine=self.quarantine,
+            context_assembler=self.contexts,
+        )
+
+        def validate_successor(
+            priors: tuple[PortiaRecord, ...],
+            value: PortiaRecord,
+        ) -> None:
+            self._require_consolidation_successor(
+                work,
+                priors,
+                value,
+                reason_detail=reason_detail,
+                effective_at=effective_at,
+                graph_works=graph_works,
+            )
+
+        def build_transition(
+            prior: PortiaRecord,
+            candidate: PortiaRecord,
+            selected_transition_id: str,
+        ) -> PortiaRecord:
+            return build_dependency_lifecycle_transition(
+                self.repository,
+                work,
+                prior,
+                candidate,
+                transition_id=selected_transition_id,
+                reason_code="duplicate_consolidated",
+                reason_detail=reason_detail,
+                effective_at=effective_at,
+                allow_supersession=True,
+            )
+
+        result = coordinator.commit(
+            predecessors,
+            successor,
+            expected=tuple(expected[identifier] for identifier in predecessor_ids),
+            transition_ids=ordered_transition_ids,
+            supersession_reason="duplicate_consolidated",
+            operation_id=operation_id,
+            fault_hook=fault_hook,
+            successor_validator=validate_successor,
+            predecessor_factory=superseded_dependency_predecessor,
+            transition_factory=build_transition,
+        )
+        for predecessor in predecessors:
+            accepted = self.load_exact(predecessor)
+            require_dependency_lifecycle_reconciled(
+                self.repository,
+                work,
+                accepted.record,
+            )
+        successor_id = successor.logical_id
+        if not isinstance(successor_id, str):
+            raise WorkflowOwnershipError(
+                "Dependency successor has no canonical identity"
+            )
+        accepted_successor = self.load_exact(
+            dependency_reference(work, successor_id)
+        )
+        lineage = dependency_supersession_ancestry(
+            self.repository,
+            work,
+            accepted_successor.record,
+        )
+        require_dependency_supersession_effective(
+            self.repository,
+            work,
+            lineage,
+        )
+        scope = (work,) if graph_works is None else tuple(graph_works)
+        self.require_graph_valid(scope)
         return result
 
     @staticmethod
@@ -1179,6 +1790,21 @@ class DependencyWorkflowService(WorkflowServiceBase):
             require_resolution=False,
         )
         dependent = cast(Endpoint, dependent_resolution.reference)
+        if dependency.status == "active":
+            try:
+                self._require_replacement_reconciled(
+                    reference.work_ref,
+                    dependency,
+                )
+            except (WorkflowOwnershipError, WorkflowPrerequisiteError):
+                return self._condition(
+                    reference,
+                    dependent,
+                    dependency,
+                    condition="indeterminate",
+                    reason="declaration_supersession_unreconciled",
+                    evaluated_at=evaluated_at,
+                )
         try:
             self._require_evaluation_dependent(dependent)
         except PortiaNotFoundError:
@@ -1529,6 +2155,15 @@ class DependencyWorkflowService(WorkflowServiceBase):
             for item in self.list(work)
         )
         dependencies = tuple(item for _work, item in owned_dependencies)
+        for owner in works:
+            self._require_reverse_replacement_reconciled(
+                owner,
+                tuple(
+                    item
+                    for selected_owner, item in owned_dependencies
+                    if selected_owner == owner
+                ),
+            )
 
         edges: dict[tuple[str, ...], set[tuple[str, ...]]] = {}
         active_conditions: dict[
@@ -1539,6 +2174,7 @@ class DependencyWorkflowService(WorkflowServiceBase):
 
         for owner, stored in owned_dependencies:
             record = stored.record
+            self._require_replacement_reconciled(owner, record)
             if record.status not in _LIVE_GRAPH_STATUSES:
                 continue
             dependent_resolution = self._dependent_endpoint(
