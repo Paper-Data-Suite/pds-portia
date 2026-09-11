@@ -24,6 +24,7 @@ from portia.models.references import (
     ExactPortiaWorkRecordRef,
     ExactPortiaWorkRef,
 )
+from portia.storage.orchestration import FaultHook, OperationCommitResult
 from portia.storage.quarantine import QuarantineGuard
 from portia.storage.repository import PortiaRepository, StoredRecord
 from portia.workflows.common import WorkflowServiceBase
@@ -535,4 +536,58 @@ class RecordMigrationWorkflowService(WorkflowServiceBase):
             reason_detail=reason_detail,
             effective_at=effective_at,
             created_by=MappingProxyType(validated_created_by),
+        )
+
+    def _revalidate_commit_plan(self, plan: MigrationPlan) -> MigrationPlan:
+        """Re-run registered planning authority before a new mutation begins."""
+        if not isinstance(plan.source_reference, ExactPortiaWorkRecordRef) or not isinstance(
+            plan.destination_reference,
+            ExactPortiaWorkRecordRef,
+        ):
+            raise WorkflowOwnershipError(
+                "Slice 22 journaled commit supports work-record migrations only"
+            )
+        regenerated = self.plan_migration(
+            plan.source_reference,
+            plan.destination_reference.record_ref.contract_version,
+            effective_at=plan.effective_at,
+            created_by=plan.created_by,
+            reason_detail=plan.reason_detail,
+        )
+        return regenerated
+
+    def commit_migration(
+        self,
+        plan: MigrationPlan,
+        *,
+        migration_id: str,
+        transition_id: str,
+        created_at: str,
+        operation_id: str | None = None,
+        fault_hook: FaultHook | None = None,
+    ) -> OperationCommitResult:
+        """Commit one validated work-record migration through journaled persistence.
+
+        Slice 22 intentionally fails closed when the exact source already has
+        lifecycle transition or lifecycle-history correction evidence.  Later
+        slices extend migration over selected historical branches.
+        """
+        from portia.workflows.migration_commit import (
+            RecordMigrationCommitCoordinator,
+        )
+
+        coordinator = RecordMigrationCommitCoordinator(
+            self.workspace_root,
+            repository=self.repository,
+            quarantine=self.quarantine,
+            context_assembler=self.contexts,
+        )
+        return coordinator.commit(
+            plan,
+            migration_id=migration_id,
+            transition_id=transition_id,
+            created_at=created_at,
+            operation_id=operation_id,
+            fault_hook=fault_hook,
+            plan_validator=self._revalidate_commit_plan,
         )
