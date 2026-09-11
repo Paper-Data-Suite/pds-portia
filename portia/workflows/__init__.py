@@ -78,6 +78,12 @@ from portia.workflows.lifecycle import (
     supported_record_lifecycle_contracts,
 )
 from portia.workflows.lifecycle_history import LifecycleHistoryCorrectionResolution
+from portia.workflows.migrations import (
+    MigrationPlan,
+    MigrationTransformContext,
+    MigrationTransformerSpec,
+    RecordMigrationWorkflowService,
+)
 from portia.workflows.observations import (
     ObservationWorkflowService,
     observation_reference,
@@ -146,6 +152,10 @@ __all__ = [
     "LifecycleHistoryCorrectionResolution",
     "LifecycleResolution",
     "LifecycleWorkflowService",
+    "MigrationPlan",
+    "MigrationTransformContext",
+    "MigrationTransformerSpec",
+    "RecordMigrationWorkflowService",
     "supported_record_lifecycle_contracts",
     "ModuleCommunicationAttachmentAuthority",
     "ModuleJudgmentEvidenceAuthority",

@@ -276,11 +276,15 @@ class MigrationRepresentationStore:
         *,
         expected: ContentFingerprint,
     ) -> StoredRecord:
-        """Copy exact current source bytes into the immutable version namespace."""
+        """Preserve exact final superseded work bytes before the current switch."""
         current = self.repository.load_work(source)
         if current.fingerprint != expected:
             raise PortiaConflictError(
                 "expected migration-source work fingerprint does not match current bytes"
+            )
+        if current.record.field("status") != "superseded":
+            raise PortiaConflictError(
+                "migration source work must be superseded before final representation preservation"
             )
         content = read_bytes(current.path)
         path = self._work_version_path(source)
@@ -293,7 +297,7 @@ class MigrationRepresentationStore:
         *,
         expected: ContentFingerprint,
     ) -> StoredRecord:
-        """Copy exact current child bytes into the immutable version namespace."""
+        """Preserve exact final superseded child bytes before the current switch."""
         current = self.repository.load_work_record(
             source.work_ref,
             source.record_ref.record_kind,
@@ -303,6 +307,10 @@ class MigrationRepresentationStore:
         if current.fingerprint != expected:
             raise PortiaConflictError(
                 "expected migration-source record fingerprint does not match current bytes"
+            )
+        if current.record.field("status") != "superseded":
+            raise PortiaConflictError(
+                "migration source record must be superseded before final representation preservation"
             )
         content = read_bytes(current.path)
         path = self._record_version_path(source)
@@ -314,8 +322,9 @@ class MigrationRepresentationStore:
         source: ExactPortiaWorkRef,
         destination: PortiaRecord,
     ) -> StoredRecord:
-        """Create an immutable same-identity work destination after source preservation."""
-        self.load_preserved_work_representation(source)
+        """Prepare an immutable same-identity work destination while source is current."""
+        # Prepare the destination before the source is retired.
+        self.repository.load_work(source)
         if destination.contract != source.work_kind:
             raise PortiaOwnershipError(
                 "migration destination must preserve the work semantic family"
@@ -353,8 +362,14 @@ class MigrationRepresentationStore:
         source: ExactPortiaWorkRecordRef,
         destination: PortiaRecord,
     ) -> StoredRecord:
-        """Create an immutable same-identity child destination after source preservation."""
-        self.load_preserved_work_record_representation(source)
+        """Prepare an immutable same-identity child destination while source is current."""
+        # Prepare the destination before the source is retired.
+        self.repository.load_work_record(
+            source.work_ref,
+            source.record_ref.record_kind,
+            source.record_ref.contract_version,
+            source.record_ref.record_id,
+        )
         if destination.contract != source.record_ref.record_kind:
             raise PortiaOwnershipError(
                 "migration destination must preserve the record semantic family"
