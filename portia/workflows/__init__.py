@@ -66,6 +66,7 @@ from portia.workflows.implementations import (
 from portia.workflows.integrity import (
     IntegrityWorkflowService,
     OperationIntegrityEvaluation,
+    OperationIntegrityProjection,
 )
 from portia.workflows.interventions import (
     InterventionWorkflowService,
@@ -157,6 +158,7 @@ __all__ = [
     "ImplementationWorkflowService",
     "IntegrityWorkflowService",
     "OperationIntegrityEvaluation",
+    "OperationIntegrityProjection",
     "InterventionWorkflowService",
     "JudgmentEvidenceResolution",
     "LifecycleHistoryCorrectionResolution",
