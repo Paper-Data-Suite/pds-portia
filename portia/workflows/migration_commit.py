@@ -1,9 +1,11 @@
 """Journaled commit authority for exact work-record representation migration.
 
-Slice 22 deliberately covers only work-record sources whose exact representation
-is still on its creation-baseline lifecycle branch.  Existing lifecycle
-transition or lifecycle-history-correction evidence fails closed so later slices
-can extend the selected-history topology without weakening it here.
+Slice 23 extends the already-qualified Slice 22 work-record commit over existing
+selected lifecycle history when Issue #47 has an exact registered lifecycle
+reader for the source contract/version.  Corrected-away branches remain durable,
+the migration transition extends only the selected head, destination lifecycle
+starts from its own creation baseline, and a work-lock snapshot rejects history
+or correction changes between preflight and canonical publication.
 """
 
 from __future__ import annotations
@@ -28,6 +30,7 @@ from portia.storage.fingerprint import (
     fingerprint_bytes,
 )
 from portia.storage.io import read_bytes
+from portia.storage.locks import derive_lock_id
 from portia.storage.migration_representations import (
     MigrationRepresentationStore,
     version_qualified_representation_path,
@@ -55,9 +58,14 @@ from portia.workflows.errors import (
     WorkflowOwnershipError,
     WorkflowPrerequisiteError,
 )
+from portia.workflows.lifecycle import (
+    LifecycleWorkflowService,
+    supported_record_lifecycle_contracts,
+)
 from portia.workflows.migrations import MigrationPlan
 
 PlanValidator = Callable[[MigrationPlan], MigrationPlan]
+HistorySnapshot = tuple[tuple[str, ContentFingerprint], ...]
 
 
 def _parsed_timestamp(value: str, *, description: str) -> datetime:
@@ -96,6 +104,18 @@ def _exact_transition_ref(transition_id: str) -> dict[str, object]:
     ).to_dict()
 
 
+def _history_snapshot(records: tuple[StoredRecord, ...]) -> HistorySnapshot:
+    values: list[tuple[str, ContentFingerprint]] = []
+    for stored in records:
+        identifier = stored.record.logical_id
+        if not isinstance(identifier, str):
+            raise WorkflowOwnershipError(
+                "migration lifecycle history artifact has no exact identity"
+            )
+        values.append((identifier, stored.fingerprint))
+    return tuple(sorted(values, key=lambda item: item[0]))
+
+
 def _superseded_source(source: PortiaRecord) -> PortiaRecord:
     value = source.to_dict()
     value["status"] = "superseded"
@@ -116,6 +136,7 @@ def _migration_transition(
     *,
     transition_id: str,
     created_at: str,
+    previous_transition_id: str | None,
 ) -> PortiaRecord:
     if not isinstance(plan.source_reference, ExactPortiaWorkRecordRef):
         raise WorkflowOwnershipError(
@@ -144,7 +165,11 @@ def _migration_transition(
                 "work_id": reference.work_ref.work_id,
                 "transition_id": transition_id,
                 "target": _local_lifecycle_target(reference),
-                "previous_transition": None,
+                "previous_transition": (
+                    None
+                    if previous_transition_id is None
+                    else _exact_transition_ref(previous_transition_id)
+                ),
                 "from_status": plan.source.record.status,
                 "to_status": "superseded",
                 "reason": reason,
@@ -388,33 +413,168 @@ class RecordMigrationCommitCoordinator(WorkflowServiceBase):
             "existing migration operation requires explicit #38 recovery"
         )
 
-    def _require_baseline_history(
+    def _target_history_records(
         self,
         reference: ExactPortiaWorkRecordRef,
-    ) -> None:
+        contract: str,
+    ) -> tuple[StoredRecord, ...]:
         target = _local_lifecycle_target(reference)
-        transitions = tuple(
+        return tuple(
             stored
             for stored in self.repository.list_work_records(
                 reference.work_ref,
-                "lifecycle_transition",
+                contract,
                 version="1",
             )
             if stored.record.field("target") == target
         )
-        corrections = tuple(
-            stored
-            for stored in self.repository.list_work_records(
-                reference.work_ref,
-                "lifecycle_history_correction",
-                version="1",
-            )
-            if stored.record.field("target") == target
+
+    def _selected_source_history(
+        self,
+        reference: ExactPortiaWorkRecordRef,
+    ) -> tuple[StoredRecord | None, HistorySnapshot, HistorySnapshot]:
+        transitions = self._target_history_records(
+            reference,
+            "lifecycle_transition",
         )
-        if transitions or corrections:
+        corrections = self._target_history_records(
+            reference,
+            "lifecycle_history_correction",
+        )
+        transition_snapshot = _history_snapshot(transitions)
+        correction_snapshot = _history_snapshot(corrections)
+        if not transitions and not corrections:
+            return None, transition_snapshot, correction_snapshot
+
+        key = (
+            reference.record_ref.record_kind,
+            reference.record_ref.contract_version,
+        )
+        if key not in supported_record_lifecycle_contracts():
             raise WorkflowPrerequisiteError(
-                "Slice 22 migration commit requires a source still on its "
-                "creation-baseline lifecycle branch"
+                "migration commit requires a source still on its creation-baseline "
+                "lifecycle branch when no generic lifecycle reader is registered"
+            )
+
+        lifecycle = LifecycleWorkflowService(
+            self.workspace_root,
+            repository=self.repository,
+            quarantine=self.quarantine,
+            context_assembler=self.contexts,
+        )
+        resolution = lifecycle.require_corrected_history_reconciled(reference)
+        return resolution.selected_head, transition_snapshot, correction_snapshot
+
+    def _persisted_migration_transition_predecessor(
+        self,
+        reference: ExactPortiaWorkRecordRef,
+        *,
+        transition_id: str,
+    ) -> tuple[bool, str | None]:
+        path = work_record_path(
+            self.workspace_root,
+            reference.work_ref,
+            "lifecycle_transition",
+            transition_id,
+        )
+        if not path.exists():
+            return False, None
+        stored = self.repository.load_work_record(
+            reference.work_ref,
+            "lifecycle_transition",
+            "1",
+            transition_id,
+        )
+        if stored.record.field("target") != _local_lifecycle_target(reference):
+            raise PortiaConflictError(
+                "migration lifecycle transition identity already targets another record"
+            )
+        previous = stored.record.field("previous_transition")
+        if previous is None:
+            return True, None
+        if (
+            not isinstance(previous, Mapping)
+            or previous.get("record_kind") != "lifecycle_transition"
+            or previous.get("contract_version") != "1"
+            or not isinstance(previous.get("record_id"), str)
+        ):
+            raise PortiaCorruptionError(
+                "persisted migration transition has malformed previous_transition"
+            )
+        return True, str(previous["record_id"])
+
+    def _intent_previous_transition_id(
+        self,
+        reference: ExactPortiaWorkRecordRef,
+        *,
+        transition_id: str,
+    ) -> str | None:
+        persisted, previous_id = self._persisted_migration_transition_predecessor(
+            reference,
+            transition_id=transition_id,
+        )
+        if persisted:
+            return previous_id
+
+        selected_head, _transitions, _corrections = self._selected_source_history(
+            reference
+        )
+        if selected_head is None:
+            return None
+        identifier = selected_head.record.logical_id
+        if not isinstance(identifier, str):
+            raise WorkflowOwnershipError(
+                "selected migration lifecycle head has no exact identity"
+            )
+        return identifier
+
+    def _require_locked_source_history_state(
+        self,
+        reference: ExactPortiaWorkRecordRef,
+        *,
+        expected_transitions: HistorySnapshot,
+        expected_corrections: HistorySnapshot,
+    ) -> None:
+        transitions = _history_snapshot(
+            self._target_history_records(reference, "lifecycle_transition")
+        )
+        if transitions != expected_transitions:
+            raise PortiaConflictError(
+                "migration source lifecycle transition history changed after preflight"
+            )
+        corrections = _history_snapshot(
+            self._target_history_records(
+                reference,
+                "lifecycle_history_correction",
+            )
+        )
+        if corrections != expected_corrections:
+            raise PortiaConflictError(
+                "migration source lifecycle-history correction chain changed after preflight"
+            )
+
+    @staticmethod
+    def _require_migration_after_selected_head(
+        selected_head: StoredRecord | None,
+        *,
+        effective_at: str,
+    ) -> None:
+        if selected_head is None:
+            return
+        head_effective_at = selected_head.record.field("effective_at")
+        if not isinstance(head_effective_at, str):
+            raise WorkflowOwnershipError(
+                "selected migration lifecycle head has no effective_at"
+            )
+        if _parsed_timestamp(
+            effective_at,
+            description="migration effective_at",
+        ) < _parsed_timestamp(
+            head_effective_at,
+            description="selected lifecycle head effective_at",
+        ):
+            raise WorkflowPrerequisiteError(
+                "migration effective_at cannot precede the selected lifecycle head"
             )
 
     def _require_dependency_lifecycle_write(
@@ -593,6 +753,10 @@ class RecordMigrationCommitCoordinator(WorkflowServiceBase):
                 "migration created_at cannot precede effective_at"
             )
 
+        intent_previous_transition_id = self._intent_previous_transition_id(
+            source_reference,
+            transition_id=transition_id,
+        )
         certificate = _migration_certificate(
             plan,
             migration_id=migration_id,
@@ -602,6 +766,7 @@ class RecordMigrationCommitCoordinator(WorkflowServiceBase):
             plan,
             transition_id=transition_id,
             created_at=created_at,
+            previous_transition_id=intent_previous_transition_id,
         )
         superseded_source = _superseded_source(plan.source.record)
         digest = _intent_digest(
@@ -618,7 +783,25 @@ class RecordMigrationCommitCoordinator(WorkflowServiceBase):
         validated = plan_validator(plan)
         self._require_same_plan(plan, validated)
         current = self._require_plan_current(validated)
-        self._require_baseline_history(source_reference)
+        selected_head, transition_snapshot, correction_snapshot = (
+            self._selected_source_history(source_reference)
+        )
+        selected_previous_transition_id: str | None = None
+        if selected_head is not None:
+            selected_identifier = selected_head.record.logical_id
+            if not isinstance(selected_identifier, str):
+                raise WorkflowOwnershipError(
+                    "selected migration lifecycle head has no exact identity"
+                )
+            selected_previous_transition_id = selected_identifier
+        if selected_previous_transition_id != intent_previous_transition_id:
+            raise PortiaConflictError(
+                "migration source lifecycle selection changed during commit preflight"
+            )
+        self._require_migration_after_selected_head(
+            selected_head,
+            effective_at=validated.effective_at,
+        )
         self._require_dependency_lifecycle_write(
             source_reference,
             evaluated_at=validated.effective_at,
@@ -900,13 +1083,28 @@ class RecordMigrationCommitCoordinator(WorkflowServiceBase):
             contract=source_contract,
             operation_kind="migrate_representation",
         )
+        work_lock_id = derive_lock_id("work", work_target(work))
+
+        def history_guarded_fault_hook(
+            event: str,
+            identifier: str | None,
+        ) -> None:
+            if event == "after_lock_acquire" and identifier == work_lock_id:
+                self._require_locked_source_history_state(
+                    source_reference,
+                    expected_transitions=transition_snapshot,
+                    expected_corrections=correction_snapshot,
+                )
+            if fault_hook is not None:
+                fault_hook(event, identifier)
+
         result = self._writer()._write_plan(
             plan=plan_wire,
             candidates=candidates,
             lock_records=lock_records,
             operation_id=op_id,
             digest=digest,
-            fault_hook=fault_hook,
+            fault_hook=history_guarded_fault_hook,
         )
 
         accepted_current = self.repository.load_work_record(
@@ -954,5 +1152,14 @@ class RecordMigrationCommitCoordinator(WorkflowServiceBase):
         if accepted_transition.record.to_dict() != transition.to_dict():
             raise PortiaCorruptionError(
                 "migration lifecycle-transition readback disagrees with committed transition"
+            )
+        expected_previous = (
+            None
+            if intent_previous_transition_id is None
+            else _exact_transition_ref(intent_previous_transition_id)
+        )
+        if accepted_transition.record.field("previous_transition") != expected_previous:
+            raise PortiaCorruptionError(
+                "migration lifecycle-transition readback selected the wrong predecessor"
             )
         return result

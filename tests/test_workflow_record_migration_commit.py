@@ -29,7 +29,6 @@ from portia.workflows import (
     DependencyWorkflowService,
     MigrationTransformContext,
     RecordMigrationWorkflowService,
-    WorkflowOwnershipError,
     WorkflowPrerequisiteError,
 )
 from tests.workflow_helpers import (
@@ -322,7 +321,7 @@ def test_completed_operation_id_rejects_different_migration_intent(
         )
 
 
-def test_commit_rejects_work_root_plan_in_slice22(tmp_path: Path) -> None:
+def test_commit_routes_event_work_root_plan_in_slice25(tmp_path: Path) -> None:
     repository = PortiaRepository(tmp_path)
     source = event_record()
     value = source.to_dict()
@@ -367,14 +366,18 @@ def test_commit_rejects_work_root_plan_in_slice22(tmp_path: Path) -> None:
         created_by=AGENT,
     )
 
-    with pytest.raises(WorkflowOwnershipError, match="work-record migrations only"):
-        service.commit_migration(
-            plan,
-            migration_id="mig_event_slice22",
-            transition_id="lct_event_slice22",
-            created_at=CREATED_AT,
-            operation_id="op_event_slice22",
-        )
+    result = service.commit_migration(
+        plan,
+        migration_id="mig_event_slice22",
+        transition_id="lct_event_slice22",
+        created_at=CREATED_AT,
+        operation_id="op_event_slice22",
+    )
+
+    assert result.accepted_steps[-1] == "step_current_switch"
+    assert repository.load_work(event_ref(version="2")).record.to_dict() == (
+        plan.destination.to_dict()
+    )
 
 
 def test_commit_rejects_source_changed_after_planning(tmp_path: Path) -> None:

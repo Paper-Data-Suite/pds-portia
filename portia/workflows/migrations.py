@@ -540,21 +540,43 @@ class RecordMigrationWorkflowService(WorkflowServiceBase):
 
     def _revalidate_commit_plan(self, plan: MigrationPlan) -> MigrationPlan:
         """Re-run registered planning authority before a new mutation begins."""
-        if not isinstance(plan.source_reference, ExactPortiaWorkRecordRef) or not isinstance(
-            plan.destination_reference,
-            ExactPortiaWorkRecordRef,
-        ):
-            raise WorkflowOwnershipError(
-                "Slice 22 journaled commit supports work-record migrations only"
+        if isinstance(plan.source_reference, ExactPortiaWorkRef):
+            if not isinstance(plan.destination_reference, ExactPortiaWorkRef):
+                raise WorkflowOwnershipError(
+                    "migration source and destination endpoint kinds must match"
+                )
+            if (
+                plan.source_reference.work_kind != "event"
+                or plan.source_reference.contract_version != "1"
+                or plan.destination_reference.work_kind != "event"
+                or plan.destination_reference.contract_version != "2"
+            ):
+                raise WorkflowOwnershipError(
+                    "journaled work-root migration currently supports exact "
+                    "event@1 -> event@2 only"
+                )
+            destination_version = plan.destination_reference.contract_version
+        else:
+            if not isinstance(
+                plan.source_reference,
+                ExactPortiaWorkRecordRef,
+            ) or not isinstance(
+                plan.destination_reference,
+                ExactPortiaWorkRecordRef,
+            ):
+                raise WorkflowOwnershipError(
+                    "migration source and destination endpoint kinds must match"
+                )
+            destination_version = (
+                plan.destination_reference.record_ref.contract_version
             )
-        regenerated = self.plan_migration(
+        return self.plan_migration(
             plan.source_reference,
-            plan.destination_reference.record_ref.contract_version,
+            destination_version,
             effective_at=plan.effective_at,
             created_by=plan.created_by,
             reason_detail=plan.reason_detail,
         )
-        return regenerated
 
     def commit_migration(
         self,
@@ -566,23 +588,43 @@ class RecordMigrationWorkflowService(WorkflowServiceBase):
         operation_id: str | None = None,
         fault_hook: FaultHook | None = None,
     ) -> OperationCommitResult:
-        """Commit one validated work-record migration through journaled persistence.
+        """Commit one validated exact representation migration.
 
-        Slice 22 intentionally fails closed when the exact source already has
-        lifecycle transition or lifecycle-history correction evidence.  Later
-        slices extend migration over selected historical branches.
+        Work-record migration retains the qualified Slice 23 selected-history
+        coordinator.  Work-root migration is bounded to exact ``event@1`` ->
+        ``event@2`` and delegates Event retirement semantics to the version-explicit
+        Event lifecycle authority from Slice 24.
         """
+        if isinstance(plan.source_reference, ExactPortiaWorkRef):
+            from portia.workflows.event_migration_commit import (
+                EventMigrationCommitCoordinator,
+            )
+
+            return EventMigrationCommitCoordinator(
+                self.workspace_root,
+                repository=self.repository,
+                quarantine=self.quarantine,
+                context_assembler=self.contexts,
+            ).commit(
+                plan,
+                migration_id=migration_id,
+                transition_id=transition_id,
+                created_at=created_at,
+                operation_id=operation_id,
+                fault_hook=fault_hook,
+                plan_validator=self._revalidate_commit_plan,
+            )
+
         from portia.workflows.migration_commit import (
             RecordMigrationCommitCoordinator,
         )
 
-        coordinator = RecordMigrationCommitCoordinator(
+        return RecordMigrationCommitCoordinator(
             self.workspace_root,
             repository=self.repository,
             quarantine=self.quarantine,
             context_assembler=self.contexts,
-        )
-        return coordinator.commit(
+        ).commit(
             plan,
             migration_id=migration_id,
             transition_id=transition_id,

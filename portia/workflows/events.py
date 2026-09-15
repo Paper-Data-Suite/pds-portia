@@ -5,6 +5,7 @@ from __future__ import annotations
 from portia.models import EventV2, PortiaRecord
 from portia.models.references import ExactPortiaWorkRef
 from portia.storage.fingerprint import ContentFingerprint
+from portia.storage.orchestration import FaultHook, OperationCommitResult
 from portia.storage.repository import StoredRecord
 from portia.workflows.common import (
     EVENT_STATUS_TRANSITIONS,
@@ -18,6 +19,11 @@ from portia.workflows.common import (
 from portia.workflows.errors import (
     WorkflowOwnershipError,
     WorkflowPrerequisiteError,
+)
+from portia.workflows.event_lifecycle import (
+    build_event_lifecycle_transition,
+    require_coordinated_event_transition,
+    require_event_lifecycle_reconciled,
 )
 
 
@@ -123,6 +129,120 @@ class EventWorkflowService(WorkflowServiceBase):
         return self.repository.replace_work(work, record, expected=expected)
 
     revise = replace
+
+    def _require_lifecycle_candidate(
+        self,
+        work: ExactPortiaWorkRef,
+        prior: PortiaRecord,
+        candidate: PortiaRecord,
+        *,
+        effective_at: str | None,
+    ) -> None:
+        """Apply Event-specific semantics before the shared work-root writer."""
+        if not isinstance(prior, EventV2) or not isinstance(candidate, EventV2):
+            raise WorkflowOwnershipError(
+                "ordinary Event lifecycle mutation requires event@2"
+            )
+        if event_reference(candidate) != work:
+            raise WorkflowOwnershipError(
+                "Event lifecycle candidate does not match selected work"
+            )
+        require_coordinated_event_transition(prior, candidate)
+
+        participants = self.repository.list_event_participants(
+            work,
+            version=PARTICIPANT_VERSION,
+        )
+        active_participants = tuple(
+            item.record for item in participants if item.record.status == "active"
+        )
+        if candidate.status in {"active", "closed"} and not active_participants:
+            raise WorkflowPrerequisiteError(
+                f"{candidate.status} Event requires at least one valid active Participant"
+            )
+        self.validate_complete_graph(
+            (candidate, *active_participants),
+            require_actor_current_use=candidate.status == "active",
+        )
+
+        if prior.status == "active" and candidate.status == "closed":
+            selected_time = effective_at
+            if selected_time is None:
+                updated_at = candidate.field("updated_at")
+                if not isinstance(updated_at, str):
+                    raise WorkflowPrerequisiteError(
+                        "Event completion Dependency gate requires candidate updated_at"
+                    )
+                selected_time = updated_at
+            self._require_completion_dependency_gate(
+                work,
+                evaluated_at=selected_time,
+            )
+        self.quarantine.require_allowed(work_target(work), "block_work_writes")
+
+    def transition_lifecycle(
+        self,
+        work: ExactPortiaWorkRef,
+        candidate: PortiaRecord,
+        *,
+        expected: ContentFingerprint,
+        transition_id: str,
+        reason_code: str,
+        reason_detail: str | None = None,
+        effective_at: str | None = None,
+        operation_id: str | None = None,
+        fault_hook: FaultHook | None = None,
+    ) -> OperationCommitResult:
+        """Persist one journaled ordinary ``event@2`` lifecycle transition."""
+        if work.work_kind != "event" or work.contract_version != EVENT_VERSION:
+            raise WorkflowOwnershipError(
+                "ordinary Event lifecycle mutation requires exact event@2 work"
+            )
+
+        # Import locally to preserve the existing workflow import DAG:
+        # coordinated -> events, while WorkLifecycleCoordinator reaches
+        # action_transition -> coordinated.  A module-level import here would
+        # therefore create a circular import during package initialization.
+        from portia.workflows.work_transition import WorkLifecycleCoordinator
+
+        coordinator = WorkLifecycleCoordinator(
+            self.workspace_root,
+            repository=self.repository,
+            quarantine=self.quarantine,
+            context_assembler=self.contexts,
+        )
+        result = coordinator.commit(
+            work,
+            candidate,
+            expected=expected,
+            transition_id=transition_id,
+            reason_code=reason_code,
+            operation_id=operation_id,
+            fault_hook=fault_hook,
+            candidate_validator=lambda prior, value: self._require_lifecycle_candidate(
+                work,
+                prior,
+                value,
+                effective_at=effective_at,
+            ),
+            transition_factory=lambda prior, value: build_event_lifecycle_transition(
+                self.repository,
+                work,
+                prior,
+                value,
+                transition_id=transition_id,
+                reason_code=reason_code,
+                reason_detail=reason_detail,
+                effective_at=effective_at,
+            ),
+        )
+        accepted = self.load_exact(work)
+        require_event_lifecycle_reconciled(
+            self.repository,
+            work,
+            accepted.record,
+        )
+        return result
 
     def list(self, class_id: str) -> tuple[StoredRecord, ...]:
         return self.repository.list_events(class_id, version=EVENT_VERSION)

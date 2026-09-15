@@ -63,6 +63,10 @@ from portia.workflows.implementations import (
     ImplementationWorkflowService,
     implementation_reference,
 )
+from portia.workflows.integrity import (
+    IntegrityWorkflowService,
+    OperationIntegrityEvaluation,
+)
 from portia.workflows.interventions import (
     InterventionWorkflowService,
     intervention_reference,
@@ -97,6 +101,10 @@ from portia.workflows.participants import (
     ParticipantPersonResolution,
     ParticipantWorkflowService,
     participant_reference,
+)
+from portia.workflows.recovery import (
+    RecoveryWorkflowAssessment,
+    RecoveryWorkflowService,
 )
 from portia.workflows.reentries import ReentryWorkflowService
 from portia.workflows.relationships import (
@@ -147,6 +155,8 @@ __all__ = [
     "FollowUpWorkflowService",
     "HypothesisWorkflowService",
     "ImplementationWorkflowService",
+    "IntegrityWorkflowService",
+    "OperationIntegrityEvaluation",
     "InterventionWorkflowService",
     "JudgmentEvidenceResolution",
     "LifecycleHistoryCorrectionResolution",
@@ -164,6 +174,8 @@ __all__ = [
     "OutcomeBasisResolution",
     "OutcomeWorkflowService",
     "ReentryWorkflowService",
+    "RecoveryWorkflowAssessment",
+    "RecoveryWorkflowService",
     "ParticipantPersonResolution",
     "ParticipantWorkflowService",
     "PortiaWorkflowError",
