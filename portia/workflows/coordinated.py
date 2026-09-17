@@ -400,6 +400,16 @@ class EventBundleWorkflowService(WorkflowServiceBase):
         result: OperationCommitResult,
         lock_records: Mapping[str, PortiaRecord],
     ) -> None:
+        operation_id = data.get("operation_id")
+        if not isinstance(operation_id, str):
+            raise PortiaConflictError("operation completion has no exact operation ID")
+        # Local import preserves the existing workflow import DAG.  An explicit
+        # IntegrityGuard makes this an integrity-governed completion path; once
+        # governed, missing state fails closed inside require_operation_completion.
+        from portia.workflows.integrity import IntegrityGuard
+
+        if isinstance(self.quarantine, IntegrityGuard):
+            self.quarantine.integrity.require_operation_completion(operation_id)
         timestamp = _now()
         completed = deepcopy(data)
         current_revision = current.revision.to_dict().get("journal_revision")

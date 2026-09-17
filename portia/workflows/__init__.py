@@ -64,6 +64,7 @@ from portia.workflows.implementations import (
     implementation_reference,
 )
 from portia.workflows.integrity import (
+    IntegrityGuard,
     IntegrityWorkflowService,
     OperationIntegrityEvaluation,
     OperationIntegrityProjection,
@@ -170,6 +171,7 @@ __all__ = [
     "HypothesisWorkflowService",
     "ImplementationWorkflowService",
     "IntegrityWorkflowService",
+    "IntegrityGuard",
     "IntegrityOperatorAuthority",
     "OperationIntegrityEvaluation",
     "OperationIntegrityProjection",
