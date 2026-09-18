@@ -85,6 +85,45 @@ print(json.dumps({"contract": record.contract, "version": record.contract_versio
         raise RuntimeError(f"unexpected runtime-model smoke result: {payload!r}")
 
 
+def _operation_journal_v3_smoke(
+    python: Path,
+    *,
+    cwd: Path,
+    env: dict[str, str],
+) -> None:
+    repository = Path(__file__).resolve().parents[1]
+    fixture = json.loads(
+        (
+            repository
+            / "tests"
+            / "schema_validation"
+            / "fixtures"
+            / "issue-47"
+            / "operation-journal-v3"
+            / "valid"
+            / "v3-removal-pending.json"
+        ).read_text(encoding="utf-8")
+    )
+    code = f'''
+import json
+from portia.models import OperationJournalV3, parse_portia_record
+from portia.storage.operation_journal import absence_steps
+
+wire = json.loads({json.dumps(json.dumps(fixture))})
+record = parse_portia_record("operation_journal", "3", wire)
+assert isinstance(record, OperationJournalV3)
+step = absence_steps(record)[0]
+assert step.prior_contract_version == "3"
+assert step.removal_ref["removal_id"] == "rmv_issue47_v3"
+assert step.observed_absent is False
+print(json.dumps({{"contract": record.contract, "version": record.contract_version}}))
+'''
+    result = _run([str(python), "-c", code], cwd=cwd, env=env)
+    payload = json.loads(result.stdout)
+    if payload != {"contract": "operation_journal", "version": "3"}:
+        raise RuntimeError(f"unexpected operation_journal@3 smoke result: {payload!r}")
+
+
 def _storage_smoke(python: Path, *, cwd: Path, env: dict[str, str]) -> None:
     code = r'''
 import json
@@ -577,6 +616,7 @@ def smoke(portia_wheel: Path, core_wheel: Path) -> None:
             raise RuntimeError("installed Portia wheel unexpectedly contains repository schemas")
 
         _model_smoke(python, cwd=work, env=env)
+        _operation_journal_v3_smoke(python, cwd=work, env=env)
         _storage_smoke(python, cwd=work, env=env)
         _identity_smoke(python, cwd=work, env=env)
         _workflow_smoke(python, cwd=work, env=env)

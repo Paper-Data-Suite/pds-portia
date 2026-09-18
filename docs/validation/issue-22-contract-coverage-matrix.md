@@ -79,7 +79,7 @@ misrepresented as independently persisted graph records.
 | `statement_of_disagreement` | 1 | positive_graph | P22-04 | exact contested-predecessor binding without truth adjudication |
 | `work_relationship` | 2 | positive_graph | P22-11, P22-13, P22-14 | canonical forward relationship and cross-year continuation/context topology |
 | `dependency` | 1 | positive_graph | P22-13 | exact canonical dependency; derived reverse/index views remain nonauthoritative |
-| `operation_journal` | 2 | positive_graph | P22-14 | current version; prepared→staged→committing→recovering→committed→completed recovery evidence |
+| `operation_journal` | 2 / 3 conditional | positive_graph | P22-14 + Issue #47 | v2 remains current for existing non-removal families; v3 is required for verified canonical absence |
 | `operation_current_pointer` | 1 | positive_graph | P22-14 | explicit terminal revision selection; no newest-revision inference |
 | `operation_lock` | 2 | positive_graph | P22-14 | current version; deterministic operation/work lock identity and release evidence |
 | `source_snapshot` | 1 | positive_graph | P22-13 | truthful snapshot of exact canonical source representations |
@@ -157,7 +157,14 @@ Retention classes and the future Sunset orchestration boundary are architectural
 
 ## Current-version normalization
 
-P22-14 uses `operation_journal@2` and `operation_lock@2`, the highest current catalog versions. Version 2 preserves ordinary work/record recovery semantics while adding Actor Directory target shapes. `operation_current_pointer@1` remains the current pointer contract. Older cataloged versions remain valid historical contracts; Issue #22 does not mutate or republish them.
+P22-14 uses `operation_journal@2` and `operation_lock@2`, which were the
+highest current catalog versions at Issue #22 closeout. Issue #47 later adds
+conditional `operation_journal@3` authority only for verified canonical
+absence; v2 remains current for existing non-removal families. Version 2
+preserves ordinary work/record recovery semantics while adding Actor Directory
+target shapes. `operation_current_pointer@1` remains the current pointer
+contract. Older cataloged versions remain valid historical contracts, and
+neither Issue #22 nor Issue #47 mutates them.
 
 ## Completion statement
 

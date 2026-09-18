@@ -23,6 +23,7 @@ Audit dispositions are not new runtime statuses. They record the final foundatio
 | 0015 | Define Follow-Up, Outcome, Reentry, and Repair domain models | Accepted | `accepted` | Evaluation and post-event semantics | `0015-define-follow-up-outcome-reentry-and-repair-domain-models.md` |
 | 0016 | Define paper-assisted capture, PDS2 routing, and import contracts | Accepted | `accepted_with_nonblocking_implementation_concern` | Paper/import provenance and human review | `0016-define-paper-assisted-capture-pds2-routing-and-import-contracts.md` |
 | 0017 | Define privacy projections, redaction, export, retention, and Sunset boundaries | Accepted | `accepted_with_nonblocking_implementation_concern` | Privacy/export/retention and future orchestration boundary | `0017-define-privacy-projections-redaction-export-retention-and-sunset-boundaries.md` |
+| 0018 | Represent verified canonical absence in Operation Journals | Accepted | `accepted` | Absence-capable durable operation evidence | `0018-represent-verified-canonical-absence-in-operation-journals.md` |
 
 ## Audit disposition meanings
 
@@ -30,4 +31,6 @@ Audit dispositions are not new runtime statuses. They record the final foundatio
 - `accepted_with_nonblocking_implementation_concern` — the architecture is accepted, but the executable milestone must preserve a named runtime constraint.
 - `superseded`, `deprecated`, `rejected`, and `requires_new_decision` are available audit dispositions but are not required by the current Issue #23 review.
 
-Issue #23 does not add ADR 0018 because the audit found no genuinely new foundational architectural decision. The three active-documentation blockers found by the audit are reconciliations to existing accepted decisions, not new architecture.
+Issue #23 added no ADR because that audit found no genuinely new foundational
+architectural decision. ADR 0018 was added later by Issue #47 to correct the
+published Operation Journal boundary for verified canonical absence.

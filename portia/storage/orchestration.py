@@ -27,6 +27,7 @@ from portia.storage.fingerprint import ContentFingerprint, fingerprint_bytes
 from portia.storage.integrity import expected_target_relative_path
 from portia.storage.io import read_bytes
 from portia.storage.locks import HeldLock, LockStore, derive_lock_id
+from portia.storage.operation_journal import validate_operation_journal_application
 from portia.storage.paths import lock_path, workspace_relative
 from portia.storage.staging import StagedArtifact, publish_staged, stage_bytes
 
@@ -39,6 +40,12 @@ _BYTE_ACTIONS = frozenset(
         "atomic_pointer_replace",
     }
 )
+_SPECIALIZED_ACTIONS = frozenset({"exceptional_remove"})
+
+
+def requires_specialized_persistence(action: object) -> bool:
+    """Identify actions that must never reach ordinary byte publication."""
+    return isinstance(action, str) and action in _SPECIALIZED_ACTIONS
 
 
 @dataclass(frozen=True, slots=True)
@@ -87,6 +94,14 @@ def _journal_data(journal: PortiaRecord | Mapping[str, Any]) -> Mapping[str, Any
             raise PortiaCorruptionError("coordinated execution requires an Operation Journal")
         return journal.to_dict()
     return journal
+
+
+def _validate_versioned_journal(
+    journal: PortiaRecord | Mapping[str, Any],
+) -> None:
+    """Validate complete journal records while retaining narrow plan-map callers."""
+    if isinstance(journal, PortiaRecord) or "schema_version" in journal:
+        validate_operation_journal_application(journal)
 
 
 def _as_int(value: object, description: str) -> int:
@@ -394,6 +409,7 @@ def acquire_journaled_locks(
     """Acquire the exact accepted lock plan, releasing partial acquisition on conflict."""
     root = Path(workspace_root).resolve(strict=False)
     data = _journal_data(journal)
+    _validate_versioned_journal(journal)
     operation_id = data.get("operation_id")
     if not isinstance(operation_id, str):
         raise PortiaCorruptionError("operation journal is missing operation_id")
@@ -452,6 +468,7 @@ def commit_journaled_candidates(
     """
     root = Path(workspace_root).resolve(strict=False)
     data = _journal_data(journal)
+    _validate_versioned_journal(journal)
     operation_id = data.get("operation_id")
     state = data.get("state")
     if not isinstance(operation_id, str):
@@ -473,8 +490,16 @@ def commit_journaled_candidates(
         and raw.get("action") not in _BYTE_ACTIONS
     ]
     if unsupported:
+        specialized = [
+            raw.get("step_id")
+            for raw in raw_steps
+            if isinstance(raw, dict)
+            and raw.get("phase") == "canonical_gate"
+            and requires_specialized_persistence(raw.get("action"))
+        ]
+        qualifier = "specialized canonical-removal" if specialized else "specialized"
         raise PortiaConflictError(
-            "canonical-gate write set contains actions that require a specialized "
+            f"canonical-gate write set contains actions that require a {qualifier} "
             "persistence service: " + ", ".join(str(item) for item in unsupported)
         )
     steps = tuple(

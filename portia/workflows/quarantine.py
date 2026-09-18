@@ -219,17 +219,22 @@ class QuarantineWorkflowService:
             )
         operation_id = reference.get("operation_id")
         revision = reference.get("journal_revision")
+        contract_version = reference.get("contract_version")
         if (
             not isinstance(operation_id, str)
             or not isinstance(revision, int)
             or isinstance(revision, bool)
-            or reference.get("contract_version") != "2"
+            or contract_version not in {"2", "3"}
         ):
             raise WorkflowPrerequisiteError(
-                f"{description} is not an exact operation_journal@2 reference"
+                f"{description} is not an exact supported Operation Journal reference"
             )
         try:
             current = self.operations.load_current(operation_id)
+            if current.revision.contract_version != contract_version:
+                raise WorkflowPrerequisiteError(
+                    f"{description} contract version differs from its selected series"
+                )
             selected = current.revision.to_dict().get("journal_revision")
             if not isinstance(selected, int) or revision > selected:
                 raise WorkflowPrerequisiteError(
@@ -238,7 +243,7 @@ class QuarantineWorkflowService:
             raw, _content, _fingerprint = read_json(
                 operation_revision_path(self.root, operation_id, revision)
             )
-            journal = parse_portia_record("operation_journal", "2", raw)
+            journal = parse_portia_record("operation_journal", contract_version, raw)
         except WorkflowPrerequisiteError:
             raise
         except Exception as exc:

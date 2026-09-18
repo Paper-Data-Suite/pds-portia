@@ -71,7 +71,9 @@ class OperationRecovery:
             try:
                 successor_value, _bytes, _fingerprint = read_json(successor_path)
                 successor = parse_portia_record(
-                    "operation_journal", "2", successor_value
+                    "operation_journal",
+                    current.revision.contract_version,
+                    successor_value,
                 )
             except Exception:
                 return OperationRecoveryAssessment(
@@ -168,7 +170,11 @@ class OperationRecovery:
         )
         successor_value, _successor_bytes, _successor_fp = read_json(successor_path)
         try:
-            successor = parse_portia_record("operation_journal", "2", successor_value)
+            successor = parse_portia_record(
+                "operation_journal",
+                current.revision.contract_version,
+                successor_value,
+            )
         except Exception as exc:
             raise PortiaCorruptionError(
                 "orphan successor is not a valid current journal"

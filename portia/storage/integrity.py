@@ -4,17 +4,25 @@ from __future__ import annotations
 
 import hashlib
 import json
+from collections.abc import Mapping
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from portia.models import PortiaRecord
+from portia.models import PortiaRecord, parse_portia_record
 from portia.models.references import ExactPortiaWorkRef
 from portia.storage.errors import PortiaNotFoundError, PortiaPathError
 from portia.storage.fingerprint import ContentFingerprint, fingerprint_bytes
-from portia.storage.io import read_bytes
+from portia.storage.io import read_bytes, read_json
+from portia.storage.operation_journal import (
+    AbsenceStepView,
+    absence_step_view,
+    is_absence_step,
+    validate_operation_journal_application,
+)
 from portia.storage.paths import (
     actor_child_path,
+    actor_directory_removal_path,
     actor_record_path,
     resolve_workspace_relative,
     work_manifest_path,
@@ -138,7 +146,136 @@ def expected_target_relative_path(root: str | Path, target: object) -> str | Non
             actor_child_path(workspace, actor_id, str(record_kind), record_id),
         )
 
+    if kind == "actor_directory_removal":
+        removal_ref = target.get("removal_ref")
+        if not isinstance(removal_ref, dict):
+            return None
+        removal_id = removal_ref.get("removal_id")
+        if not isinstance(removal_id, str):
+            return None
+        return workspace_relative(
+            workspace,
+            actor_directory_removal_path(workspace, removal_id),
+        )
+
     return None
+
+
+def _removal_certificate_findings(
+    root: Path,
+    *,
+    journal_data: Mapping[str, Any],
+    step: Mapping[str, Any],
+    view: AbsenceStepView,
+) -> tuple[bool, tuple[PersistenceFinding, ...]]:
+    """Resolve and validate the exact certificate linked by an absence step."""
+    relative = view.certificate_path
+    try:
+        path = resolve_workspace_relative(root, relative)
+        ensure_runtime_containment(root, path)
+    except PortiaPathError:
+        return False, (
+            PersistenceFinding(
+                "PORTIA.STORAGE.REMOVAL_CERTIFICATE_MISMATCH",
+                relative,
+                "removal certificate path is not safely contained in the workspace",
+            ),
+        )
+    try:
+        raw, _content, actual_fp = read_json(path)
+    except Exception:
+        return False, (
+            PersistenceFinding(
+                "PORTIA.STORAGE.REMOVAL_CERTIFICATE_MISSING",
+                relative,
+                "exact journal-linked removal certificate is unavailable",
+            ),
+        )
+    if actual_fp != view.certificate_fingerprint:
+        return False, (
+            PersistenceFinding(
+                "PORTIA.STORAGE.REMOVAL_CERTIFICATE_MISMATCH",
+                relative,
+                "removal certificate bytes differ from the journal-linked fingerprint",
+            ),
+        )
+
+    ref = view.removal_ref
+    contract_version = ref.get("contract_version")
+    if not isinstance(contract_version, str):
+        return False, (
+            PersistenceFinding(
+                "PORTIA.STORAGE.REMOVAL_CERTIFICATE_MISMATCH",
+                relative,
+                "removal certificate reference has no exact contract version",
+            ),
+        )
+    is_actor = "class_id" not in ref
+    contract = (
+        "actor_directory_exceptional_removal" if is_actor else "exceptional_removal"
+    )
+    try:
+        certificate = parse_portia_record(contract, contract_version, raw)
+    except Exception:
+        return False, (
+            PersistenceFinding(
+                "PORTIA.STORAGE.REMOVAL_CERTIFICATE_MISMATCH",
+                relative,
+                "journal-linked removal certificate is not a valid exact record",
+            ),
+        )
+    data = certificate.to_dict()
+    identity_matches = (
+        data.get("module_id") == ref.get("module_id")
+        and data.get("removal_id") == ref.get("removal_id")
+        and (is_actor or data.get("class_id") == ref.get("class_id"))
+    )
+    target = step.get("target")
+    if is_actor:
+        target_matches = (
+            isinstance(target, Mapping)
+            and target.get("kind") == "actor_directory_record"
+            and data.get("target") == target.get("actor_directory_record_ref")
+        )
+        expected_certificate_path = workspace_relative(
+            root,
+            actor_directory_removal_path(root, str(ref.get("removal_id"))),
+        )
+        evidence_matches = (
+            data.get("original_workspace_relative_path") == view.destination_path
+            and data.get("original_contract_version") == view.prior_contract_version
+            and data.get("original_fingerprint") == view.prior_fingerprint.digest
+            and data.get("original_byte_length") == view.prior_fingerprint.byte_length
+            and relative == expected_certificate_path
+        )
+        operation_ref = data.get("operation_ref")
+        operation_matches = (
+            isinstance(operation_ref, Mapping)
+            and operation_ref.get("operation_id") == journal_data.get("operation_id")
+            and operation_ref.get("contract_version") == "3"
+            and isinstance(operation_ref.get("journal_revision"), int)
+            and not isinstance(operation_ref.get("journal_revision"), bool)
+            and operation_ref.get("journal_revision")
+            <= journal_data.get("journal_revision", -1)
+        )
+    else:
+        target_matches = data.get("target") == target
+        content_evidence = data.get("content_evidence")
+        evidence_matches = (
+            isinstance(content_evidence, Mapping)
+            and content_evidence.get("kind") == "salted_sha256"
+            and content_evidence.get("byte_length") == view.prior_fingerprint.byte_length
+        )
+        operation_matches = True
+    if not identity_matches or not target_matches or not evidence_matches or not operation_matches:
+        return False, (
+            PersistenceFinding(
+                "PORTIA.STORAGE.REMOVAL_CERTIFICATE_MISMATCH",
+                relative,
+                "removal certificate identity, target, operation, or prior-content evidence disagrees with the absence step",
+            ),
+        )
+    return True, ()
 
 
 def validate_operation_durable_state(
@@ -146,11 +283,21 @@ def validate_operation_durable_state(
     journal: PortiaRecord,
 ) -> tuple[PersistenceFinding, ...]:
     """Reconcile durable/accepted journal evidence with exact filesystem bytes."""
-    if journal.contract != "operation_journal" or journal.contract_version != "2":
-        raise ValueError("journal must be operation_journal@2")
+    if journal.contract != "operation_journal" or journal.contract_version not in {"2", "3"}:
+        raise ValueError("journal must be operation_journal@2 or operation_journal@3")
     root = Path(workspace_root).resolve(strict=False)
     data = journal.to_dict()
     findings: list[PersistenceFinding] = []
+    try:
+        validate_operation_journal_application(journal)
+    except Exception:
+        return (
+            PersistenceFinding(
+                "PORTIA.STORAGE.OPERATION_WRITE_SET_INVALID",
+                "portia/operations",
+                "operation journal violates version-aware write semantics",
+            ),
+        )
 
     write_set = data.get("write_set")
     if not isinstance(write_set, list):
@@ -191,7 +338,71 @@ def validate_operation_durable_state(
                 )
             )
 
-        if step.get("disposition") not in {"durable", "verified", "accepted"}:
+        disposition = step.get("disposition")
+        if is_absence_step(step):
+            view = absence_step_view(step)
+            certificate_valid, certificate_findings = _removal_certificate_findings(
+                root,
+                journal_data=data,
+                step=step,
+                view=view,
+            )
+            try:
+                actual = fingerprint_bytes(read_bytes(destination))
+            except PortiaNotFoundError:
+                actual = None
+            except Exception:
+                findings.extend(certificate_findings)
+                findings.append(
+                    PersistenceFinding(
+                        "PORTIA.STORAGE.UNEXPLAINED_CANONICAL_ABSENCE",
+                        relative,
+                        "canonical removal target could not be read safely",
+                    )
+                )
+                continue
+            if disposition in {"durable", "verified", "accepted"}:
+                findings.extend(certificate_findings)
+                if actual is not None:
+                    code = (
+                        "PORTIA.STORAGE.REMOVAL_TARGET_RETAINED"
+                        if actual == view.prior_fingerprint
+                        else "PORTIA.STORAGE.REMOVAL_TARGET_CHANGED"
+                    )
+                    detail = (
+                        "journal reports accepted absence but the exact prior payload remains"
+                        if actual == view.prior_fingerprint
+                        else "canonical removal target changed after its exact preflight fingerprint"
+                    )
+                    findings.append(PersistenceFinding(code, relative, detail))
+                elif not view.observed_absent:
+                    findings.append(
+                        PersistenceFinding(
+                            "PORTIA.STORAGE.UNEXPLAINED_CANONICAL_ABSENCE",
+                            relative,
+                            "payload is absent without matching journaled absence observation",
+                        )
+                    )
+            elif actual is None and not certificate_valid:
+                findings.extend(certificate_findings)
+                findings.append(
+                    PersistenceFinding(
+                        "PORTIA.STORAGE.UNEXPLAINED_CANONICAL_ABSENCE",
+                        relative,
+                        "payload became absent before durable certificate-backed removal evidence",
+                    )
+                )
+            elif actual is not None and actual != view.prior_fingerprint:
+                findings.append(
+                    PersistenceFinding(
+                        "PORTIA.STORAGE.REMOVAL_TARGET_CHANGED",
+                        relative,
+                        "canonical removal target changed after its exact preflight fingerprint",
+                    )
+                )
+            continue
+
+        if disposition not in {"durable", "verified", "accepted"}:
             continue
         intended_result = step.get("intended_result")
         intended_fp = (
@@ -248,10 +459,11 @@ def observe_operation_durable_state(
     fingerprints in the selected journal.  It never treats existence, age, or
     revision order as proof that a write was accepted.
     """
-    if journal.contract != "operation_journal" or journal.contract_version != "2":
-        raise ValueError("journal must be operation_journal@2")
+    if journal.contract != "operation_journal" or journal.contract_version not in {"2", "3"}:
+        raise ValueError("journal must be operation_journal@2 or operation_journal@3")
     root = Path(workspace_root).resolve(strict=False)
     data = journal.to_dict()
+    validate_operation_journal_application(journal)
     raw_steps = data.get("write_set")
     if not isinstance(raw_steps, list):
         return ()
@@ -268,6 +480,41 @@ def observe_operation_durable_state(
             or not isinstance(relative, str)
             or not isinstance(intended_raw, dict)
         ):
+            continue
+        if is_absence_step(raw):
+            view = absence_step_view(raw)
+            certificate_valid, _certificate_findings = _removal_certificate_findings(
+                root,
+                journal_data=data,
+                step=raw,
+                view=view,
+            )
+            try:
+                destination = resolve_workspace_relative(root, relative)
+                ensure_runtime_containment(root, destination)
+                actual = fingerprint_bytes(read_bytes(destination))
+            except PortiaNotFoundError:
+                actual = None
+            except Exception:
+                evidence.append(
+                    OperationStepEvidence(step_id, "indeterminate", relative, None)
+                )
+                continue
+            journaled = raw.get("disposition")
+            if actual is None and certificate_valid:
+                if journaled == "accepted":
+                    disposition = "accepted"
+                elif journaled == "verified":
+                    disposition = "verified"
+                else:
+                    disposition = "durable_unverified"
+            elif actual == view.prior_fingerprint and journaled in {"pending", "staged"}:
+                disposition = "not_written"
+            else:
+                disposition = "indeterminate"
+            evidence.append(
+                OperationStepEvidence(step_id, disposition, relative, actual)
+            )
             continue
         intended = _fingerprint(intended_raw.get("fingerprint"))
         precondition = raw.get("precondition")

@@ -66,6 +66,7 @@
 
     {"contract":"operation_journal","version":"1","disposition":"historical_read","modelled":true},
     {"contract":"operation_journal","version":"2","disposition":"supporting_v0_2","modelled":true},
+    {"contract":"operation_journal","version":"3","disposition":"supporting_v0_2","modelled":true},
     {"contract":"operation_current_pointer","version":"1","disposition":"supporting_v0_2","modelled":true},
     {"contract":"operation_lock","version":"1","disposition":"historical_read","modelled":true},
     {"contract":"operation_lock","version":"2","disposition":"supporting_v0_2","modelled":true},

@@ -1155,6 +1155,29 @@ No Role v4, Operation Journal v3, Operation Lock v3, Quarantine v3, or Integrity
 Finding v3 is introduced. Application validation keeps Account/Observation prose
 out of privacy-minimized operational facts and reason detail.
 
+That statement records the Issue #15 boundary. Issue #47 later adds immutable
+`operation_journal@3` without changing versions 1 or 2:
+
+```text
+schemas/v3/operations/operation-journal.schema.json
+```
+
+Version 2 remains the write authority for existing non-removal operation
+families. Version 3 is required for a write set containing
+`action = "exceptional_remove"`; it also supports ordinary byte-present actions
+through explicit `kind = "present"` result branches. One operation series may
+not mix v2 and v3 revisions. Different explicitly selected v2 and v3 series may
+coexist in one workspace.
+
+Version 3 adds discriminated present/absent intended and observed results.
+Expected absence binds the exact prior contract version and fingerprint plus an
+exact removal-certificate reference, path, and certificate-byte fingerprint.
+Observed absence records only the checked workspace-relative path and explicit
+observation time. It has no payload fingerprint. `exceptional_remove` is a
+canonical-domain gate available only to `exceptionally_remove`; it is not a
+generic delete action, is not valid compensation, and is never equivalent to
+`remove_transient`.
+
 ## Deterministic source snapshots and derived generations
 
 The shared derived-generation contracts are:

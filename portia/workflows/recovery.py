@@ -265,7 +265,11 @@ class RecoveryWorkflowService:
         data["state"] = state
         data["updated_at"] = self._now()
         try:
-            revision = parse_portia_record("operation_journal", "2", data)
+            revision = parse_portia_record(
+                "operation_journal",
+                current.revision.contract_version,
+                data,
+            )
         except Exception as exc:
             raise PortiaCorruptionError("recovery journal successor is invalid") from exc
         return self._journals.append(

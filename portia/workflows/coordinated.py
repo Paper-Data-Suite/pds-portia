@@ -460,6 +460,8 @@ class EventBundleWorkflowService(WorkflowServiceBase):
                 "fingerprint": fingerprint.to_dict(),
                 "observed_at": timestamp,
             }
+            if current.revision.contract_version == "3":
+                step["observed_result"]["kind"] = "present"
         lock_set = completed["lock_set"]
         if not isinstance(lock_set, list):
             raise PortiaConflictError("operation lock set is invalid")
@@ -493,7 +495,7 @@ class EventBundleWorkflowService(WorkflowServiceBase):
         }
         completed["updated_at"] = timestamp
         completed_record = parse_portia_record(
-            "operation_journal", "2", completed
+            "operation_journal", current.revision.contract_version, completed
         )
         pointer = self._pointer(operation_id=str(completed["operation_id"]), revision=current_revision + 1)
         OperationJournalStore(self.workspace_root).append(
@@ -552,6 +554,8 @@ class EventBundleWorkflowService(WorkflowServiceBase):
                 "fingerprint": observed.to_dict(),
                 "observed_at": timestamp,
             }
+            if current.revision.contract_version == "3":
+                step["observed_result"]["kind"] = "present"
         held = set(error.held_lock_ids)
         lock_set = partial.get("lock_set")
         if not isinstance(lock_set, list):
@@ -616,7 +620,9 @@ class EventBundleWorkflowService(WorkflowServiceBase):
             "recommended_disposition": "resume",
         }
         partial["updated_at"] = timestamp
-        partial_record = parse_portia_record("operation_journal", "2", partial)
+        partial_record = parse_portia_record(
+            "operation_journal", current.revision.contract_version, partial
+        )
         OperationJournalStore(self.workspace_root).append(
             partial_record,
             self._pointer(error.operation_id, current_revision + 1),

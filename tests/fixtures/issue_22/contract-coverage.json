@@ -1080,13 +1080,19 @@
       "contract": "operation_journal",
       "catalog_versions": [
         "1",
-        "2"
+        "2",
+        "3"
       ],
-      "current_version": "2",
+      "current_version": null,
+      "conditional_current_versions": [
+        "2",
+        "3"
+      ],
+      "version_authority": "v2 for existing non-removal families; v3 for write sets containing verified canonical absence",
       "record_operational_family": true,
       "disposition": "positive_graph",
-      "evidence": "P22-14",
-      "rationale": "current version; prepared→staged→committing→recovering→committed→completed recovery evidence"
+      "evidence": "P22-14 + Issue #47 Slice 33.1A",
+      "rationale": "conditional current-write authority; v2 preserves existing recovery evidence and v3 adds verified canonical absence"
     },
     {
       "contract": "operation_current_pointer",

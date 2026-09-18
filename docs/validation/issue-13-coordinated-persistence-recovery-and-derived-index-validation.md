@@ -7,6 +7,15 @@
 **Examples:** [`Machine-readable manifest`](../examples/issue-13/manifest.json)
 **Application-invalid matrix:** [`issue-13-application-invalid-matrix.json`](issue-13-application-invalid-matrix.json)
 
+> **Later correction:** Issue #13's accepted version-1 contract and the
+> actor-aware `operation_journal@2` extension remain immutable, but both
+> byte-result models require a fingerprinted destination. Issue #47 ADR 0018
+> publishes `operation_journal@3` for verified canonical absence. Version 2
+> remains the current authority for existing non-removal families; v3 is
+> required when the complete write set includes `exceptional_remove`. Recovery
+> and integrity parse the selected revision's explicit version and do not infer
+> authority from timestamps, filenames, or the greatest schema version.
+
 ## Accepted public contract inventory
 
 Issue #13 adds 25 independently cataloged version-1 public contracts.

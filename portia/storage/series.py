@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from collections.abc import Callable
+from collections.abc import Callable, Mapping
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -16,6 +16,7 @@ from portia.storage.errors import (
 )
 from portia.storage.fingerprint import ContentFingerprint, canonical_json_bytes
 from portia.storage.io import exclusive_create, guarded_replace, read_json
+from portia.storage.operation_journal import validate_operation_journal_application
 from portia.storage.paths import (
     finding_suppression_current_path,
     finding_suppression_revision_path,
@@ -321,13 +322,64 @@ class OperationJournalStore(_RevisionSeries):
             pointer_path=operation_current_path,
         )
 
+    def _parse_revision(self, value: object, path: Path) -> PortiaRecord:
+        if not isinstance(value, Mapping):
+            raise PortiaCorruptionError(f"invalid immutable revision: {path}")
+        version = value.get("schema_version")
+        if version not in {"2", "3"}:
+            raise PortiaCorruptionError(
+                f"unsupported explicit Operation Journal version at {path}: {version!r}"
+            )
+        try:
+            record = parse_portia_record("operation_journal", str(version), value)
+            validate_operation_journal_application(record)
+            return record
+        except Exception as exc:
+            raise PortiaCorruptionError(f"invalid immutable revision: {path}") from exc
+
+    def _load_revisions(self, series_id: str) -> dict[int, PortiaRecord]:
+        records = super()._load_revisions(series_id)
+        versions = {record.contract_version for record in records.values()}
+        if len(versions) > 1:
+            raise PortiaCorruptionError(
+                "one operation revision series cannot mix journal contract versions"
+            )
+        return records
+
+    def _validate_absence_destinations(self, revision: PortiaRecord) -> None:
+        from portia.storage.integrity import expected_target_relative_path
+
+        raw_steps = revision.to_dict().get("write_set")
+        if not isinstance(raw_steps, list):
+            raise PortiaConflictError("operation journal write_set is not an array")
+        for step in raw_steps:
+            if not isinstance(step, Mapping) or step.get("action") != "exceptional_remove":
+                continue
+            expected = expected_target_relative_path(self.root, step.get("target"))
+            if expected is None or step.get("destination_path") != expected:
+                raise PortiaConflictError(
+                    "exceptional_remove destination does not match its exact target"
+                )
+
     def create(self, revision: PortiaRecord, pointer: PortiaRecord) -> SeriesState:
+        if revision.contract != "operation_journal" or revision.contract_version not in {
+            "2",
+            "3",
+        }:
+            raise PortiaConflictError(
+                "current operations must use operation_journal@2 or operation_journal@3"
+            )
+        try:
+            validate_operation_journal_application(revision)
+        except PortiaCorruptionError as exc:
+            raise PortiaConflictError(str(exc)) from exc
+        self._validate_absence_destinations(revision)
         if (
-            revision.contract != "operation_journal"
-            or revision.contract_version != "2"
+            revision.contract_version == "2"
+            and revision.to_dict().get("operation_kind") == "exceptionally_remove"
         ):
             raise PortiaConflictError(
-                "current operations must use operation_journal@2"
+                "new exceptionally_remove operations require operation_journal@3"
             )
         return super().create(revision, pointer)
 
@@ -342,6 +394,28 @@ class OperationJournalStore(_RevisionSeries):
         if not isinstance(operation_id, str):
             raise PortiaCorruptionError("operation journal is missing operation_id")
         current = self.load_current(operation_id)
+        if revision.contract != "operation_journal" or revision.contract_version not in {
+            "2",
+            "3",
+        }:
+            raise PortiaConflictError("successor is not a supported Operation Journal")
+        if current.revision.contract_version != revision.contract_version:
+            raise PortiaConflictError(
+                "one operation revision series cannot mix journal contract versions"
+            )
+        try:
+            validate_operation_journal_application(revision)
+        except PortiaCorruptionError as exc:
+            raise PortiaConflictError(str(exc)) from exc
+        self._validate_absence_destinations(revision)
+        if (
+            revision.contract_version == "2"
+            and revision.to_dict().get("operation_kind") == "exceptionally_remove"
+            and revision.to_dict().get("state") in {"committed", "completed"}
+        ):
+            raise PortiaConflictError(
+                "operation_journal@2 cannot complete verified canonical absence"
+            )
         if current.revision.to_dict().get("intent_digest") != revision.to_dict().get(
             "intent_digest"
         ):

@@ -196,6 +196,21 @@ _PUBLIC_DIAGNOSTICS = {
     "PORTIA.STORAGE.READBACK_RESULT_MISMATCH": _PublicDiagnostic(
         "persistence_recovery", "content_digest_mismatch", "observed_fingerprint"
     ),
+    "PORTIA.STORAGE.REMOVAL_CERTIFICATE_MISSING": _PublicDiagnostic(
+        "removal", "removal_reconciliation_broken", "removal_certificate_presence"
+    ),
+    "PORTIA.STORAGE.REMOVAL_CERTIFICATE_MISMATCH": _PublicDiagnostic(
+        "removal", "removal_reconciliation_broken", "removal_certificate_agreement"
+    ),
+    "PORTIA.STORAGE.REMOVAL_TARGET_RETAINED": _PublicDiagnostic(
+        "removal", "payload_present_after_removal", "canonical_absence"
+    ),
+    "PORTIA.STORAGE.REMOVAL_TARGET_CHANGED": _PublicDiagnostic(
+        "persistence_recovery", "content_digest_mismatch", "removal_precondition"
+    ),
+    "PORTIA.STORAGE.UNEXPLAINED_CANONICAL_ABSENCE": _PublicDiagnostic(
+        "removal", "removal_certificate_without_target_history", "canonical_absence_evidence"
+    ),
 }
 
 
@@ -358,15 +373,16 @@ class IntegrityWorkflowService:
             )
         operation_id = reference.get("operation_id")
         revision = reference.get("journal_revision")
+        contract_version = reference.get("contract_version")
         if (
             not isinstance(operation_id, str)
             or not isinstance(revision, int)
             or isinstance(revision, bool)
             or revision < 1
-            or reference.get("contract_version") != "2"
+            or contract_version not in {"2", "3"}
         ):
             raise WorkflowPrerequisiteError(
-                f"{description} is not an exact operation_journal@2 reference"
+                f"{description} is not an exact supported Operation Journal reference"
             )
         try:
             current = self._operations.load_current(operation_id)
@@ -375,6 +391,10 @@ class IntegrityWorkflowService:
                 f"{description} does not resolve through accepted Operation Journal authority"
             ) from exc
         selected_revision = current.revision.to_dict().get("journal_revision")
+        if current.revision.contract_version != contract_version:
+            raise WorkflowPrerequisiteError(
+                f"{description} contract version differs from its selected series"
+            )
         if not isinstance(selected_revision, int) or revision > selected_revision:
             raise WorkflowPrerequisiteError(
                 f"{description} names an unaccepted Operation Journal revision"
@@ -382,7 +402,7 @@ class IntegrityWorkflowService:
         path = operation_revision_path(self.root, operation_id, revision)
         try:
             raw, _bytes, _fingerprint = read_json(path)
-            journal = parse_portia_record("operation_journal", "2", raw)
+            journal = parse_portia_record("operation_journal", contract_version, raw)
         except Exception as exc:
             raise WorkflowPrerequisiteError(
                 f"{description} does not resolve to a valid immutable journal"
@@ -760,7 +780,7 @@ class IntegrityWorkflowService:
                 {
                     "name": "journal_contract_version",
                     "kind": "identifier",
-                    "value": "2",
+                    "value": current.revision.contract_version,
                 },
                 {
                     "name": "journal_revision",
@@ -825,7 +845,10 @@ class IntegrityWorkflowService:
             "discovery_roots": [workspace_relative(self.root, operation_root(self.root, operation_id))],
             "source_contracts": [
                 {"contract_name": "operation_current_pointer", "contract_version": "1"},
-                {"contract_name": "operation_journal", "contract_version": "2"},
+                {
+                    "contract_name": "operation_journal",
+                    "contract_version": current.revision.contract_version,
+                },
             ],
             "entries": [
                 {
@@ -904,7 +927,7 @@ class IntegrityWorkflowService:
                 "generating_operation": {
                     "operation_id": operation_id,
                     "journal_revision": evaluation.journal_revision,
-                    "contract_version": "2",
+                    "contract_version": current.revision.contract_version,
                 },
                 "generated_at": observed_at,
             },

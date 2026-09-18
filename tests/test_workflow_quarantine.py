@@ -34,6 +34,15 @@ from portia.workflows.common import work_target
 from tests.workflow_helpers import event_record, event_ref, participant_record
 
 
+@pytest.fixture(autouse=True)
+def _stable_operation_clock(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Keep operation creation before this module's fixed evidence timestamps."""
+    monkeypatch.setattr(
+        "portia.workflows.coordinated._now",
+        lambda: "2026-09-17T22:00:00-04:00",
+    )
+
+
 def _roster(root: Path, class_id: str = "class_a") -> None:
     write_class_roster(
         root,
