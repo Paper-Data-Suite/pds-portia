@@ -864,6 +864,18 @@ class LifecycleWorkflowService(WorkflowServiceBase):
             )
 
         _require_exact_candidate_identity(reference, candidate)
+        lifecycle_target = {
+            "kind": "work_record",
+            "work_record_ref": reference.to_dict(),
+        }
+        self.quarantine.require_allowed(
+            work_target(reference.work_ref),
+            "block_lifecycle_writes",
+        )
+        self.quarantine.require_allowed(
+            lifecycle_target,
+            "block_lifecycle_writes",
+        )
         corrected = self.require_corrected_history_reconciled(reference)
 
         transition_repository = self.repository

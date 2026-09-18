@@ -129,12 +129,18 @@ class QuarantineGuard:
 
     def require_allowed(self, requested_target: object, effect: str) -> None:
         """Raise when an active Quarantine explicitly blocks ``effect``."""
+        blocking_effects = {effect}
+        if effect == "block_work_writes":
+            # A class-write block owns the shared class/work mutation boundary.
+            # Applicability still requires the requested target to be in the
+            # exact quarantined class; this is not a workspace-wide alias.
+            blocking_effects.add("block_class_writes")
         for record in self.active_records():
             data = record.to_dict()
             effects = data.get("effects")
             if (
                 isinstance(effects, list)
-                and effect in effects
+                and blocking_effects.intersection(effects)
                 and quarantine_applies(data.get("target"), requested_target)
             ):
                 quarantine_id = data.get("quarantine_id")

@@ -184,3 +184,29 @@ def test_assess_fails_closed_when_multiple_orphan_revisions_exist(
     assert OperationJournalStore(tmp_path).load_current(
         "op_create_actor"
     ).revision.to_dict()["journal_revision"] == 1
+
+
+def test_assess_rejects_orphan_that_changes_immutable_intent(tmp_path: Path) -> None:
+    _create_operation(tmp_path)
+    data = _journal_data()
+    data["journal_revision"] = 2
+    data["previous_journal_revision"] = 1
+    data["state"] = "staged"
+    data["intent_digest"] = "0" * 64
+    data["updated_at"] = "2026-08-05T20:00:03-04:00"
+    journal = parse_portia_record("operation_journal", "2", data)
+    exclusive_create(
+        operation_revision_path(tmp_path, "op_create_actor", 2),
+        canonical_json_bytes(journal.to_dict()),
+    )
+
+    service = RecoveryWorkflowService(tmp_path)
+    assessment = service.assess("op_create_actor")
+    assert assessment.disposition == "manual_review"
+    current = OperationJournalStore(tmp_path).load_current("op_create_actor")
+    with pytest.raises(WorkflowPrerequisiteError, match="restore_pointer_candidate"):
+        service.restore_exact_orphan_pointer(
+            "op_create_actor",
+            expected_pointer=current.pointer_fingerprint,
+        )
+    assert service.assess("op_create_actor").series.selected_revision == 1

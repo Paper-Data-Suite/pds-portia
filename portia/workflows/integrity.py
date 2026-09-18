@@ -231,6 +231,7 @@ class IntegrityWorkflowService:
         workspace_root: str | Path,
         *,
         authority: IntegrityOperatorAuthority | None = None,
+        quarantine: QuarantineGuard | None = None,
     ) -> None:
         self.root = Path(workspace_root)
         self._operations = OperationJournalStore(self.root)
@@ -238,6 +239,7 @@ class IntegrityWorkflowService:
         self._acknowledgements = FindingAcknowledgementStore(self.root)
         self._suppressions = FindingSuppressionStore(self.root)
         self._authority = authority or IntegrityOperatorAuthority.teacher_local()
+        self.quarantine = quarantine or QuarantineGuard(self.root)
 
     @staticmethod
     def operation_scope(operation_id: str) -> dict[str, object]:
@@ -252,6 +254,14 @@ class IntegrityWorkflowService:
         projection_scope: Mapping[str, object],
     ) -> tuple[PortiaRecord, ...]:
         scope = dict(projection_scope)
+        self.quarantine.require_allowed(
+            {
+                "kind": "derived_projection",
+                "projection_kind": _PROJECTION_KIND,
+                "projection_scope": scope,
+            },
+            "block_projection_use",
+        )
         try:
             current = self._derived.load_current(
                 _PROJECTION_KIND,
@@ -300,6 +310,13 @@ class IntegrityWorkflowService:
             by_key[finding_key] = data
             findings.append(finding)
         return tuple(findings)
+
+    def current_findings(
+        self,
+        projection_scope: Mapping[str, object],
+    ) -> tuple[PortiaRecord, ...]:
+        """Return exact current fresh findings without mutating projection state."""
+        return self._load_current_findings(projection_scope)
 
     def _require_exact_current_finding(
         self,

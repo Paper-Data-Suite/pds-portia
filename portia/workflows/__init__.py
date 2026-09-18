@@ -117,6 +117,7 @@ from portia.workflows.participants import (
     ParticipantWorkflowService,
     participant_reference,
 )
+from portia.workflows.quarantine import QuarantineWorkflowService
 from portia.workflows.recovery import (
     RecoveryWorkflowAssessment,
     RecoveryWorkflowService,
@@ -204,6 +205,7 @@ __all__ = [
     "ReentryWorkflowService",
     "RecoveryWorkflowAssessment",
     "RecoveryWorkflowService",
+    "QuarantineWorkflowService",
     "ParticipantPersonResolution",
     "ParticipantWorkflowService",
     "PortiaWorkflowError",

@@ -10,7 +10,7 @@ from typing import Any
 
 from portia.models import PortiaRecord
 from portia.models.references import ExactPortiaWorkRef
-from portia.storage.errors import PortiaPathError
+from portia.storage.errors import PortiaNotFoundError, PortiaPathError
 from portia.storage.fingerprint import ContentFingerprint, fingerprint_bytes
 from portia.storage.io import read_bytes
 from portia.storage.paths import (
@@ -31,6 +31,16 @@ class PersistenceFinding:
     code: str
     relative_path: str
     detail: str
+
+
+@dataclass(frozen=True, slots=True, order=True)
+class OperationStepEvidence:
+    """Exact durable observation for one journaled canonical write step."""
+
+    step_id: str
+    disposition: str
+    relative_path: str
+    fingerprint: ContentFingerprint | None
 
 
 def _fingerprint(value: object) -> ContentFingerprint | None:
@@ -226,6 +236,78 @@ def validate_operation_durable_state(
             )
 
     return tuple(sorted(findings))
+
+
+def observe_operation_durable_state(
+    workspace_root: str | Path,
+    journal: PortiaRecord,
+) -> tuple[OperationStepEvidence, ...]:
+    """Classify actual bytes without changing journal or canonical state.
+
+    The classification deliberately uses the exact intended and prior
+    fingerprints in the selected journal.  It never treats existence, age, or
+    revision order as proof that a write was accepted.
+    """
+    if journal.contract != "operation_journal" or journal.contract_version != "2":
+        raise ValueError("journal must be operation_journal@2")
+    root = Path(workspace_root).resolve(strict=False)
+    data = journal.to_dict()
+    raw_steps = data.get("write_set")
+    if not isinstance(raw_steps, list):
+        return ()
+
+    evidence: list[OperationStepEvidence] = []
+    for raw in raw_steps:
+        if not isinstance(raw, dict) or raw.get("phase") != "canonical_gate":
+            continue
+        step_id = raw.get("step_id")
+        relative = raw.get("destination_path")
+        intended_raw = raw.get("intended_result")
+        if (
+            not isinstance(step_id, str)
+            or not isinstance(relative, str)
+            or not isinstance(intended_raw, dict)
+        ):
+            continue
+        intended = _fingerprint(intended_raw.get("fingerprint"))
+        precondition = raw.get("precondition")
+        prior = (
+            _fingerprint(precondition.get("fingerprint"))
+            if isinstance(precondition, dict)
+            else None
+        )
+        try:
+            destination = resolve_workspace_relative(root, relative)
+            ensure_runtime_containment(root, destination)
+            actual = fingerprint_bytes(read_bytes(destination))
+        except PortiaNotFoundError:
+            actual = None
+        except Exception:
+            evidence.append(
+                OperationStepEvidence(step_id, "indeterminate", relative, None)
+            )
+            continue
+
+        journaled = raw.get("disposition")
+        if actual is not None and intended is not None and actual == intended:
+            if journaled == "accepted":
+                disposition = "accepted"
+            elif journaled == "verified":
+                disposition = "verified"
+            else:
+                disposition = "durable_unverified"
+        elif actual is None and isinstance(precondition, dict) and precondition.get(
+            "presence"
+        ) == "must_be_absent":
+            disposition = "not_written"
+        elif actual is not None and prior is not None and actual == prior:
+            disposition = "not_written"
+        else:
+            disposition = "indeterminate"
+        evidence.append(
+            OperationStepEvidence(step_id, disposition, relative, actual)
+        )
+    return tuple(evidence)
 
 
 def source_snapshot_digest(snapshot: PortiaRecord | dict[str, Any]) -> str:

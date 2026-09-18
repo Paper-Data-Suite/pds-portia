@@ -232,6 +232,7 @@ class WorkLifecycleCoordinator(WorkflowServiceBase):
         transition = transition_factory(prior.record, candidate)
         root_target = work_target(work)
         transition_target = record_target(work, transition)
+        self.quarantine.require_allowed(root_target, "block_lifecycle_writes")
         self.quarantine.require_allowed(root_target, "block_work_writes")
         self.quarantine.require_allowed(transition_target, "block_work_writes")
 
@@ -507,6 +508,7 @@ class WorkLifecycleCoordinator(WorkflowServiceBase):
         predecessor_target = work_target(predecessor)
         successor_target = work_target(successor_work)
         transition_target = record_target(predecessor, transition)
+        self.quarantine.require_allowed(predecessor_target, "block_lifecycle_writes")
         self.quarantine.require_allowed(predecessor_target, "block_work_writes")
         self.quarantine.require_allowed(successor_target, "block_work_writes")
         self.quarantine.require_allowed(transition_target, "block_work_writes")

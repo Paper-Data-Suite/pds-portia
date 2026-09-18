@@ -358,6 +358,9 @@ class EventBundleWorkflowService(WorkflowServiceBase):
             "compensation_plan": [],
             "recovery_plan": [
                 "resume",
+                "reconcile_as_complete",
+                "complete_remaining_steps",
+                "quarantine",
                 "abandon_preacceptance_artifacts",
                 "require_manual_review",
             ],
@@ -410,6 +413,22 @@ class EventBundleWorkflowService(WorkflowServiceBase):
 
         if isinstance(self.quarantine, IntegrityGuard):
             self.quarantine.integrity.require_operation_completion(operation_id)
+        completion_targets = [
+            {
+                "kind": "operation",
+                "operation_ref": {"operation_id": operation_id},
+            },
+            data.get("primary_target"),
+        ]
+        affected = data.get("affected_targets")
+        if isinstance(affected, list):
+            completion_targets.extend(affected)
+        for target in completion_targets:
+            if isinstance(target, dict):
+                self.quarantine.require_allowed(
+                    target,
+                    "block_operation_completion",
+                )
         timestamp = _now()
         completed = deepcopy(data)
         current_revision = current.revision.to_dict().get("journal_revision")
@@ -500,7 +519,7 @@ class EventBundleWorkflowService(WorkflowServiceBase):
             )
         partial["journal_revision"] = current_revision + 1
         partial["previous_journal_revision"] = current_revision
-        partial["state"] = "failed"
+        partial["state"] = "recovering"
         write_set = partial.get("write_set")
         if not isinstance(write_set, list):
             raise PortiaRecoveryRequiredError(
@@ -594,7 +613,7 @@ class EventBundleWorkflowService(WorkflowServiceBase):
             "held_or_possible_locks": list(error.held_lock_ids),
             "quarantined_targets": [],
             "active_finding_keys": [],
-            "recommended_disposition": "require_manual_review",
+            "recommended_disposition": "resume",
         }
         partial["updated_at"] = timestamp
         partial_record = parse_portia_record("operation_journal", "2", partial)

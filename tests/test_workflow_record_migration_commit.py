@@ -529,7 +529,7 @@ def test_required_review_or_indeterminate_dependency_does_not_block_commit(
     assert result.operation_id == OPERATION_ID
 
 
-def test_partial_commit_records_failed_journal_without_retiring_source(
+def test_partial_commit_records_recovery_journal_without_retiring_source(
     tmp_path: Path,
 ) -> None:
     repository, service = _setup(tmp_path)
@@ -565,7 +565,9 @@ def test_partial_commit_records_failed_journal_without_retiring_source(
         )
 
     journal = OperationJournalStore(tmp_path).load_current(OPERATION_ID).revision
-    assert journal.field("state") == "failed"
+    journal_data = journal.to_dict()
+    assert journal_data["state"] == "recovering"
+    assert journal_data["partial_state"]["recommended_disposition"] == "resume"
 
     with pytest.raises(PortiaRecoveryRequiredError):
         _commit(service, plan)
