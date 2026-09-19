@@ -113,6 +113,32 @@ git status --short
 
 Generated `__pycache__` directories and `.pyc` files are test artifacts and must not be committed.
 
+## Issue #47 ownership-correction v2 reconciliation
+
+Corrective Slice 33.2A adds data-driven v2 fixtures and focused tests at:
+
+```text
+tests/schema_validation/fixtures/issue-47/ownership-correction-v2-cases.json
+tests/schema_validation/test_ownership_correction_v2.py
+```
+
+The fixture matrix covers Event→Event, Event→Support Process, Support
+Process→Event, Support Process→Support Process, and v2 Event class ownership.
+It also covers wrong version and typed-ID combinations, endpoint mismatch,
+malformed parent reference, unknown reason, and structurally valid application
+failures for unsupported pairs, reused identity, family mismatch, silent
+retargeting, incomplete reconciliation, unresolved Dependency/current-use
+state, parent mismatch, cycle, cross-workspace behavior, and lifecycle mismatch.
+
+The focused audit checks all six runtime families that expose
+`correct_work_root`: Fidelity, Implementation, Follow-Up, Outcome, Reentry, and
+Repair. Each successor schema uses an exact work-record predecessor and admits
+`work_root_corrected`; the v2 certificate validates the same accepted pair.
+The Follow-Up workflow test additionally proves the original Event-owned
+Follow-Up→Support Process reproduction as one reconciled certificate,
+successor, and lifecycle triple. Installed-wheel smoke parses both v1 and v2
+from the compiled bundle while repository schemas are absent.
+
 ## Acceptance Conditions
 
 Issue #12 is ready for review when:

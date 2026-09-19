@@ -394,6 +394,14 @@ class OwnershipCorrectionV1(PortiaRecord):
     CONTRACT = "ownership_correction"
     VERSION = "1"
 
+class OwnershipCorrectionV2(PortiaRecord):
+    """Exact ``ownership_correction@2`` runtime representation."""
+
+    __slots__ = ()
+
+    CONTRACT = "ownership_correction"
+    VERSION = "2"
+
 class ExceptionalRemovalV1(PortiaRecord):
     """Exact ``exceptional_removal@1`` runtime representation."""
 
@@ -603,6 +611,7 @@ _RECORD_TYPES: Final[tuple[type[PortiaRecord], ...]] = (
     DependencyV1,
     RecordMigrationV1,
     OwnershipCorrectionV1,
+    OwnershipCorrectionV2,
     ExceptionalRemovalV1,
     OperationJournalV1,
     OperationJournalV2,

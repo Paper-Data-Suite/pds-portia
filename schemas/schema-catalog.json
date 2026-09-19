@@ -503,6 +503,10 @@
       "1": {
         "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/corrections/ownership-correction.schema.json",
         "path": "schemas/v1/corrections/ownership-correction.schema.json"
+      },
+      "2": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v2/corrections/ownership-correction.schema.json",
+        "path": "schemas/v2/corrections/ownership-correction.schema.json"
       }
     },
     "exceptional_removal": {

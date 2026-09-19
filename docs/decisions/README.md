@@ -24,6 +24,7 @@ Audit dispositions are not new runtime statuses. They record the final foundatio
 | 0016 | Define paper-assisted capture, PDS2 routing, and import contracts | Accepted | `accepted_with_nonblocking_implementation_concern` | Paper/import provenance and human review | `0016-define-paper-assisted-capture-pds2-routing-and-import-contracts.md` |
 | 0017 | Define privacy projections, redaction, export, retention, and Sunset boundaries | Accepted | `accepted_with_nonblocking_implementation_concern` | Privacy/export/retention and future orchestration boundary | `0017-define-privacy-projections-redaction-export-retention-and-sunset-boundaries.md` |
 | 0018 | Represent verified canonical absence in Operation Journals | Accepted | `accepted` | Absence-capable durable operation evidence | `0018-represent-verified-canonical-absence-in-operation-journals.md` |
+| 0019 | Generalize child work-root ownership correction | Accepted | `accepted` | Event/Support Process child ownership lineage | `0019-generalize-child-work-root-ownership-correction.md` |
 
 ## Audit disposition meanings
 
@@ -34,3 +35,5 @@ Audit dispositions are not new runtime statuses. They record the final foundatio
 Issue #23 added no ADR because that audit found no genuinely new foundational
 architectural decision. ADR 0018 was added later by Issue #47 to correct the
 published Operation Journal boundary for verified canonical absence.
+ADR 0019 was added later by Issue #47 to reconcile the frozen Event-only
+ownership certificate with accepted Event/Support Process child corrections.

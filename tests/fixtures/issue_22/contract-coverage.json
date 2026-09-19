@@ -891,13 +891,14 @@
     {
       "contract": "ownership_correction",
       "catalog_versions": [
-        "1"
+        "1",
+        "2"
       ],
-      "current_version": "1",
+      "current_version": "2",
       "record_operational_family": true,
       "disposition": "existing_focused_fixture_only",
-      "evidence": "Issue #12 ownership-correction fixtures",
-      "rationale": "ownership repair is an exceptional administrative correction; canonical owner/path invariants are exercised by G22-002/G22-003"
+      "evidence": "Issue #12 v1 fixtures and Issue #47 v2 ownership-correction fixtures",
+      "rationale": "ownership repair is an exceptional administrative correction; v2 adds exact Event/Support Process child-root coverage while G22-002/G22-003 retain canonical owner/path invariants"
     },
     {
       "contract": "exceptional_removal",

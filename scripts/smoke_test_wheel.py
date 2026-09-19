@@ -47,7 +47,14 @@ def _console_path(python: Path) -> Path:
 def _model_smoke(python: Path, *, cwd: Path, env: dict[str, str]) -> None:
     code = r'''
 import json
-from portia.models import EventV2, parse_portia_record, portia_record_to_dict
+from portia.models import (
+    EventV2,
+    OwnershipCorrectionV1,
+    OwnershipCorrectionV2,
+    parse_portia_record,
+    portia_record_to_dict,
+)
+from portia.models.schema_runtime import load_runtime_contract_bundle
 from portia.validation import GraphValidationOptions, validate_record_graph
 
 wire = {
@@ -77,11 +84,79 @@ except TypeError:
     pass
 else:
     raise AssertionError("runtime record payload is not deeply immutable")
-print(json.dumps({"contract": record.contract, "version": record.contract_version}))
+
+def endpoint(work_kind, class_id, work_id, record_id):
+    return {
+        "kind": "work_record",
+        "work_record_ref": {
+            "work_ref": {
+                "module_id": "portia",
+                "class_id": class_id,
+                "work_id": work_id,
+                "work_kind": work_kind,
+                "contract_version": "2" if work_kind == "event" else "1",
+            },
+            "record_ref": {
+                "record_kind": "follow_up",
+                "record_id": record_id,
+                "contract_version": "1",
+            },
+        },
+        "observed_updated_at": "2026-09-18T12:00:00-04:00",
+    }
+
+common = {
+    "record_type": "ownership_correction",
+    "module_id": "portia",
+    "class_id": "class_smoke",
+    "correction_kind": "child_work_root",
+    "effective_at": "2026-09-18T12:00:00-04:00",
+    "creation_source": {"type": "digital_entry"},
+    "created_at": "2026-09-18T12:01:00-04:00",
+    "created_by": {"type": "system_process", "process_id": "wheel_smoke"},
+}
+v1_wire = {
+    **common,
+    "schema_version": "1",
+    "work_id": "evt_destination",
+    "correction_id": "owc_smoke_v1",
+    "source": endpoint("event", "class_smoke", "evt_source", "fup_source"),
+    "destination": endpoint(
+        "event", "class_smoke", "evt_destination", "fup_destination"
+    ),
+    "reason": {"code": "wrong_event_root"},
+}
+v2_wire = {
+    **common,
+    "schema_version": "2",
+    "work_id": "sup_destination",
+    "work_kind": "support_process",
+    "correction_id": "owc_smoke_v2",
+    "source": endpoint("event", "class_smoke", "evt_source", "fup_source"),
+    "destination": endpoint(
+        "support_process", "class_smoke", "sup_destination", "fup_destination"
+    ),
+    "reason": {"code": "wrong_work_root"},
+}
+v1 = parse_portia_record("ownership_correction", "1", v1_wire)
+v2 = parse_portia_record("ownership_correction", "2", v2_wire)
+assert isinstance(v1, OwnershipCorrectionV1)
+assert isinstance(v2, OwnershipCorrectionV2)
+bundle = load_runtime_contract_bundle()
+assert "2" in bundle.contracts["ownership_correction"]
+print(json.dumps({
+    "contract": record.contract,
+    "version": record.contract_version,
+    "ownership_versions": [v1.contract_version, v2.contract_version],
+}))
 '''
     result = _run([str(python), "-c", code], cwd=cwd, env=env)
     payload = json.loads(result.stdout)
-    if payload != {"contract": "event", "version": "2"}:
+    if payload != {
+        "contract": "event",
+        "version": "2",
+        "ownership_versions": ["1", "2"],
+    }:
         raise RuntimeError(f"unexpected runtime-model smoke result: {payload!r}")
 
 

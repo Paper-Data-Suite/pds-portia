@@ -1003,11 +1003,20 @@ The operation-evidence contracts are:
 
     schemas/v1/migrations/record-migration.schema.json
     schemas/v1/corrections/ownership-correction.schema.json
+    schemas/v2/corrections/ownership-correction.schema.json
     schemas/v1/removals/exceptional-removal.schema.json
 
 Record Migration changes representation while preserving logical identity, record family, work root, lifecycle meaning, and substantive semantics. Source and destination are exact representations and the transformer identity and version are explicit.
 
-Ownership Correction records a wrong Event class or child work root. It identifies exact source and destination representations and supports parent-child mapping without treating filesystem movement as canonical authority. References do not silently retarget.
+Ownership Correction v1 is immutable historical-read authority for the original
+Event-only certificate. Version 2 is current write authority. It preserves
+Event-only `event_class_ownership`, adds an explicit destination `work_kind`,
+and permits `child_work_root` endpoints to use the shared exact Portia
+work-record reference across Event and Support Process roots. Family policy,
+same-family lineage, destination-scope agreement, successor/lifecycle
+reconciliation, and Dependency/incoming-reference disposition remain
+application invariants. References do not silently retarget, and no mutable
+`latest` alias exists.
 
 Exceptional Removal is the narrow administrative boundary for legal, privacy, security, accepted-test-data, and unrecoverable-corruption cases. The certificate preserves exact target identity, authorization, minimal content evidence, available lifecycle evidence, and effective time without retaining prohibited payload. Removal is not a `deleted` lifecycle state.
 

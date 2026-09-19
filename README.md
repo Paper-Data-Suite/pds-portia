@@ -793,6 +793,12 @@ Current status remains practical to load directly, while append-only transition 
 
 Nonmaterial amendments preserve explicit before-and-after values. Material correction creates a successor. Invalidation differs from supersession, disagreement does not rewrite its target, migration preserves meaning and logical identity, and ownership correction is not filesystem relocation.
 
+`ownership_correction@1` remains immutable historical-read authority for the
+original Event-only certificate. `ownership_correction@2` is current write
+authority: Event class correction stays Event-only, while child work-root
+correction can name exact Event or Support Process roots under closed family
+policy. ADR 0019 records this additive reconciliation.
+
 Dependencies require explicit record-family evaluation and never create one automatic cascade. Exact references do not silently follow successors or retarget after migration, consolidation, ownership correction, or removal.
 
 Ordinary workflows do not hard-delete accepted canonical records. Narrow exceptional cases retain an authorization-bearing removal certificate and minimal content evidence without retaining prohibited substantive payload.
