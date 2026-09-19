@@ -214,15 +214,9 @@ def _actor_record_key(target: object) -> tuple[str, str, str]:
         return (kind_name, "", "")
 
     actor_id = ""
-    actor_ref = nested.get("actor_ref")
-    if isinstance(actor_ref, dict):
-        actor_id_value = actor_ref.get("actor_id")
-        if isinstance(actor_id_value, str):
-            actor_id = actor_id_value
-    else:
-        actor_id_value = nested.get("actor_id")
-        if isinstance(actor_id_value, str):
-            actor_id = actor_id_value
+    actor_id_value = nested.get("actor_id")
+    if isinstance(actor_id_value, str):
+        actor_id = actor_id_value
 
     local_id_value = nested.get(id_field) if id_field else None
     local_id = local_id_value if isinstance(local_id_value, str) else actor_id

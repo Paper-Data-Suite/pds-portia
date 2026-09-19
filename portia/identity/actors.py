@@ -20,6 +20,7 @@ from portia.models import PortiaRecord
 from portia.models.references import (
     ExactActorContactPointRef,
     ExactActorRef,
+    ExactActorRosterStudentCollisionRef,
     ExactActorStudentRelationshipRef,
     RosterStudentRef,
 )
@@ -34,7 +35,10 @@ from portia.storage import (
 from portia.storage.actor_directory import ActorDirectoryRepository
 
 ActorDirectoryExactRef: TypeAlias = (
-    ExactActorRef | ExactActorContactPointRef | ExactActorStudentRelationshipRef
+    ExactActorRef
+    | ExactActorContactPointRef
+    | ExactActorStudentRelationshipRef
+    | ExactActorRosterStudentCollisionRef
 )
 ResolutionDisposition = Literal["present", "exceptionally_removed"]
 
@@ -89,12 +93,26 @@ def _relationship_target(
     }
 
 
+def _collision_target(
+    reference: ExactActorRosterStudentCollisionRef,
+) -> dict[str, object]:
+    return {
+        "kind": "actor_directory_record",
+        "actor_directory_record_ref": {
+            "kind": "actor_roster_student_collision",
+            "collision_ref": reference.to_dict(),
+        },
+    }
+
+
 def _target_for(reference: ActorDirectoryExactRef) -> dict[str, object]:
     if isinstance(reference, ExactActorRef):
         return _actor_target(reference)
     if isinstance(reference, ExactActorContactPointRef):
         return _contact_target(reference)
-    return _relationship_target(reference)
+    if isinstance(reference, ExactActorStudentRelationshipRef):
+        return _relationship_target(reference)
+    return _collision_target(reference)
 
 
 def _record_ref(record: PortiaRecord) -> ActorDirectoryExactRef:
@@ -123,6 +141,12 @@ def _record_ref(record: PortiaRecord) -> ActorDirectoryExactRef:
         return ExactActorStudentRelationshipRef(
             actor_id=actor_id,
             relationship_id=logical_id,
+            contract_version=record.contract_version,
+        )
+    if record.contract == "actor_roster_student_collision":
+        return ExactActorRosterStudentCollisionRef(
+            actor_id=actor_id,
+            collision_id=logical_id,
             contract_version=record.contract_version,
         )
     raise ActorRelationshipMalformedError(
@@ -243,16 +267,26 @@ class ActorDirectoryService:
 
     def resolve_actor_child(
         self,
-        reference: ExactActorContactPointRef | ExactActorStudentRelationshipRef,
+        reference: (
+            ExactActorContactPointRef
+            | ExactActorStudentRelationshipRef
+            | ExactActorRosterStudentCollisionRef
+        ),
     ) -> ActorDirectoryResolution:
         """Resolve one supported exact Actor child without successor following."""
         if isinstance(reference, ExactActorContactPointRef):
             return self.resolve_contact_point(reference)
-        return self.resolve_relationship(reference)
+        if isinstance(reference, ExactActorStudentRelationshipRef):
+            return self.resolve_relationship(reference)
+        return self.resolve_collision(reference)
 
     def load_actor_child(
         self,
-        reference: ExactActorContactPointRef | ExactActorStudentRelationshipRef,
+        reference: (
+            ExactActorContactPointRef
+            | ExactActorStudentRelationshipRef
+            | ExactActorRosterStudentCollisionRef
+        ),
         *,
         require_current_use: bool = False,
         on_date: date | None = None,
@@ -262,11 +296,13 @@ class ActorDirectoryService:
             return self.load_contact_point(
                 reference, require_current_use=require_current_use
             )
-        return self.load_relationship(
-            reference,
-            require_current_use=require_current_use,
-            on_date=on_date,
-        )
+        if isinstance(reference, ExactActorStudentRelationshipRef):
+            return self.load_relationship(
+                reference,
+                require_current_use=require_current_use,
+                on_date=on_date,
+            )
+        return self.load_collision(reference)
 
     def resolve_contact_point(
         self,
@@ -318,6 +354,34 @@ class ActorDirectoryService:
         if require_current_use:
             self._require_relationship_current_use(reference, stored, on_date=on_date)
         return stored
+
+    def resolve_collision(
+        self,
+        reference: ExactActorRosterStudentCollisionRef,
+    ) -> ActorDirectoryResolution:
+        return self._resolve(
+            reference,
+            lambda: self.repository.load_actor_child(
+                reference.actor_id,
+                "actor_roster_student_collision",
+                reference.contract_version,
+                reference.collision_id,
+            ),
+        )
+
+    def load_collision(
+        self,
+        reference: ExactActorRosterStudentCollisionRef,
+    ) -> StoredRecord:
+        return self._require_present(self.resolve_collision(reference))
+
+    def list_exceptional_removals(self) -> tuple[StoredRecord, ...]:
+        """List retained Actor Directory exceptional-removal certificates."""
+        return self.repository.list_actor_directory_removals()
+
+    def create_exceptional_removal(self, record: PortiaRecord) -> StoredRecord:
+        """Persist one validated Actor Directory exceptional-removal certificate."""
+        return self.repository.create_actor_directory_removal(record)
 
     def create_actor_child(self, actor_id: str, record: PortiaRecord) -> StoredRecord:
         reference = _record_ref(record)

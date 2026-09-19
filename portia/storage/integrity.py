@@ -134,10 +134,7 @@ def expected_target_relative_path(root: str | Path, target: object) -> str | Non
         child_ref = reference.get(reference_field)
         if not isinstance(child_ref, dict):
             return None
-        actor_ref = child_ref.get("actor_ref")
-        if not isinstance(actor_ref, dict):
-            return None
-        actor_id = actor_ref.get("actor_id")
+        actor_id = child_ref.get("actor_id")
         record_id = child_ref.get(id_field)
         if not isinstance(actor_id, str) or not isinstance(record_id, str):
             return None

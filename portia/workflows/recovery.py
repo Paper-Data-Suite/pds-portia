@@ -7,7 +7,7 @@ from copy import deepcopy
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, cast
+from typing import TYPE_CHECKING, Any, cast
 
 from portia.models import PortiaRecord, parse_portia_record
 from portia.storage.errors import (
@@ -38,6 +38,12 @@ from portia.storage.staging import (
     staging_path_for,
 )
 from portia.workflows.errors import WorkflowPrerequisiteError
+
+if TYPE_CHECKING:
+    from portia.workflows.exceptional_removal import (
+        ExceptionalRemovalAuthority,
+        ExceptionalRemovalResult,
+    )
 
 
 @dataclass(frozen=True, slots=True)
@@ -82,6 +88,42 @@ class RecoveryWorkflowService:
     def assess(self, operation_id: str) -> RecoveryWorkflowAssessment:
         """Inspect one operation without mutating durable recovery state."""
         return _workflow_assessment(self._recovery.assess(operation_id))
+
+    def resume_exceptional_removal(
+        self,
+        operation_id: str,
+        *,
+        expected_pointer: ContentFingerprint,
+        authority: ExceptionalRemovalAuthority,
+        synthetic_test_data_confirmed: bool = False,
+        recovery_disposition: str | None = None,
+        fault_hook: FaultHook | None = None,
+    ) -> ExceptionalRemovalResult:
+        """Resume the specialized v3 absence path through its bounded service."""
+        current = self._journals.load_current(operation_id)
+        if current.pointer_fingerprint != expected_pointer:
+            raise PortiaConflictError("operation current pointer changed before recovery")
+        if (
+            current.revision.contract_version != "3"
+            or current.revision.to_dict().get("operation_kind")
+            != "exceptionally_remove"
+        ):
+            raise WorkflowPrerequisiteError(
+                "operation is not a v3 Exceptional Removal series"
+            )
+        from portia.workflows.exceptional_removal import (
+            ExceptionalRemovalWorkflowService,
+        )
+
+        return ExceptionalRemovalWorkflowService(
+            self.root,
+            authority=authority,
+        ).recover_operation(
+            operation_id,
+            synthetic_test_data_confirmed=synthetic_test_data_confirmed,
+            recovery_disposition=recovery_disposition,
+            fault_hook=fault_hook,
+        )
 
     def restore_exact_orphan_pointer(
         self,

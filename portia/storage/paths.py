@@ -120,6 +120,21 @@ def actor_directory_removal_path(root: str | Path, removal_id: str) -> Path:
     return portia_root(root) / "actor-directory-removals" / f"{identifier}.json"
 
 
+def exceptional_removal_path(
+    root: str | Path,
+    class_id: str,
+    removal_id: str,
+) -> Path:
+    """Return the class-module certificate path, always outside a work root."""
+    class_value = validate_external_id(class_id, "class_id")
+    identifier = validate_portia_id(removal_id, "rmv_", "removal_id")
+    return (
+        class_module_dir(root, class_value, "portia")
+        / "exceptional-removals"
+        / f"{identifier}.json"
+    )
+
+
 def operations_root(root: str | Path) -> Path:
     return portia_root(root) / "operations"
 

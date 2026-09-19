@@ -53,6 +53,14 @@ from portia.workflows.errors import (
     WorkflowValidationError,
 )
 from portia.workflows.events import EventWorkflowService, event_reference
+from portia.workflows.exceptional_removal import (
+    ExceptionalRemovalAuthority,
+    ExceptionalRemovalResolution,
+    ExceptionalRemovalResult,
+    ExceptionalRemovalWorkflowService,
+    RemovalAssessment,
+    RemovalChild,
+)
 from portia.workflows.fidelity import (
     FidelityWorkflowService,
     fidelity_reference,
@@ -165,6 +173,10 @@ __all__ = [
     "DependencyGraphResolution",
     "DependencyWorkflowService",
     "EventWorkflowService",
+    "ExceptionalRemovalAuthority",
+    "ExceptionalRemovalResolution",
+    "ExceptionalRemovalResult",
+    "ExceptionalRemovalWorkflowService",
     "EventBundle",
     "EventBundleWorkflowService",
     "FidelityWorkflowService",
@@ -205,6 +217,8 @@ __all__ = [
     "ReentryWorkflowService",
     "RecoveryWorkflowAssessment",
     "RecoveryWorkflowService",
+    "RemovalAssessment",
+    "RemovalChild",
     "QuarantineWorkflowService",
     "ParticipantPersonResolution",
     "ParticipantWorkflowService",

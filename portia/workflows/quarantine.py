@@ -130,6 +130,7 @@ _NON_FINDING_REASONS = frozenset(
         "lock_integrity",
         "authorization_limitation",
         "external_mutation",
+        "removal_reconciliation",
     }
 )
 _RELEASE_REQUIREMENTS = frozenset(
@@ -251,13 +252,23 @@ class QuarantineWorkflowService:
                 f"{description} does not resolve through Operation Journal authority"
             ) from exc
         data = journal.to_dict()
+        selected_removal_application = (
+            contract_version == "3"
+            and data.get("operation_kind") == "exceptionally_remove"
+            and data.get("state") == "prepared"
+            and revision == selected
+        )
         if (
             data.get("operation_id") != operation_id
             or data.get("journal_revision") != revision
-            or data.get("state") != "completed"
+            or (
+                data.get("state") != "completed"
+                and not selected_removal_application
+            )
         ):
             raise WorkflowPrerequisiteError(
-                f"{description} must name an accepted completed operation"
+                f"{description} must name a completed operation or the exact "
+                "selected prepared Exceptional Removal operation"
             )
         return journal
 
@@ -395,7 +406,7 @@ class QuarantineWorkflowService:
         if (
             kind in _ACTOR_KINDS
             and reason not in _ACTOR_REASONS
-            and reason != "authorization_limitation"
+            and reason not in {"authorization_limitation", "removal_reconciliation"}
         ):
             raise WorkflowPrerequisiteError(
                 "Quarantine reason is not compatible with its exact Actor target"

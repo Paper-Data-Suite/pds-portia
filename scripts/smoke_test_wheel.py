@@ -548,6 +548,92 @@ print(json.dumps({
         raise RuntimeError(f"unexpected workflow smoke result: {payload!r}")
 
 
+def _exceptional_removal_smoke(
+    python: Path,
+    *,
+    cwd: Path,
+    env: dict[str, str],
+) -> None:
+    code = r'''
+import json
+from pathlib import Path
+
+from portia.models import parse_portia_record
+from portia.models.references import ExactPortiaWorkRef
+from portia.storage.repository import PortiaRepository
+from portia.workflows import ExceptionalRemovalAuthority, ExceptionalRemovalWorkflowService
+
+workspace = Path("removal-workspace")
+timestamp = "2026-09-18T12:00:00-04:00"
+operator = {"type": "local_operator", "display_label": "Synthetic wheel operator"}
+work = ExactPortiaWorkRef(
+    class_id="class_removal_smoke",
+    work_id="evt_removal_smoke",
+    work_kind="event",
+    contract_version="2",
+)
+record = parse_portia_record("event", "2", {
+    "schema_version": "2",
+    "record_type": "portia_work",
+    "work_kind": "event",
+    "module_id": "portia",
+    "class_id": "class_removal_smoke",
+    "work_id": "evt_removal_smoke",
+    "school_year": "2026-2027",
+    "status": "draft",
+    "summary": "Synthetic installed-wheel removal target.",
+    "creation_source": {"type": "digital_entry"},
+    "created_at": timestamp,
+    "created_by": operator,
+    "updated_at": timestamp,
+    "updated_by": operator,
+})
+stored = PortiaRepository(workspace).create_work(work, record)
+target = {"kind": "work", "work_ref": work.to_dict()}
+reason = {"category": "administrative_test_data", "code": "synthetic_smoke"}
+authorization = {
+    "decision_reference": "installed-wheel-removal-smoke",
+    "authorized_by": operator,
+}
+service = ExceptionalRemovalWorkflowService(
+    workspace,
+    authority=ExceptionalRemovalAuthority(enabled=True, governance_state="clear"),
+    entropy=lambda count: b"w" * count,
+    clock=lambda: timestamp,
+)
+assessment = service.assess_removal(
+    target=target,
+    reason=reason,
+    authorization=authorization,
+    integrity_clearance="clear",
+    synthetic_test_data_confirmed=True,
+)
+result = service.exceptionally_remove(
+    assessment,
+    reason=reason,
+    authorization=authorization,
+    child_dispositions={},
+    effective_at=timestamp,
+    synthetic_test_data_confirmed=True,
+)
+print(json.dumps({
+    "payload_absent": not stored.path.exists(),
+    "certificate_present": result.certificate.path.is_file(),
+    "resolution": result.resolution.disposition,
+    "target_unchanged": result.certificate.record.field("target") == target,
+}))
+'''
+    result = _run([str(python), "-c", code], cwd=cwd, env=env)
+    payload = json.loads(result.stdout)
+    if payload != {
+        "payload_absent": True,
+        "certificate_present": True,
+        "resolution": "exceptionally_removed",
+        "target_unchanged": True,
+    }:
+        raise RuntimeError(f"unexpected Exceptional Removal smoke result: {payload!r}")
+
+
 def smoke(portia_wheel: Path, core_wheel: Path) -> None:
     repository = Path(__file__).resolve().parents[1]
     if "0.6.3" not in core_wheel.name:
@@ -612,6 +698,10 @@ def smoke(portia_wheel: Path, core_wheel: Path) -> None:
             raise RuntimeError("installed Portia wheel is missing the Issue #39 identity package")
         if not (installed_path / "workflows" / "events.py").is_file():
             raise RuntimeError("installed Portia wheel is missing the Issue #40 workflow package")
+        if not (installed_path / "storage" / "canonical_removal.py").is_file():
+            raise RuntimeError("installed Portia wheel is missing canonical removal storage")
+        if not (installed_path / "workflows" / "exceptional_removal.py").is_file():
+            raise RuntimeError("installed Portia wheel is missing Exceptional Removal workflow")
         if (installed_path / "schemas").exists():
             raise RuntimeError("installed Portia wheel unexpectedly contains repository schemas")
 
@@ -620,6 +710,7 @@ def smoke(portia_wheel: Path, core_wheel: Path) -> None:
         _storage_smoke(python, cwd=work, env=env)
         _identity_smoke(python, cwd=work, env=env)
         _workflow_smoke(python, cwd=work, env=env)
+        _exceptional_removal_smoke(python, cwd=work, env=env)
 
         before = sorted(path.relative_to(work).as_posix() for path in work.rglob("*"))
         console = _console_path(python)
