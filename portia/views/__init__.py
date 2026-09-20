@@ -1,5 +1,13 @@
 """Privacy-minimized student timeline/work-view foundations."""
 
+from portia.views.discovery import (
+    DiscoveredStudentWork,
+    FocalParticipantMatch,
+    ParticipantKind,
+    RelatedWorkContext,
+    StudentWorkDiscoveryResult,
+    StudentWorkDiscoveryService,
+)
 from portia.views.models import (
     StudentTimelineItem,
     StudentTimelineQuery,
@@ -25,6 +33,12 @@ from portia.views.policy import (
 )
 
 __all__ = [
+    "DiscoveredStudentWork",
+    "FocalParticipantMatch",
+    "ParticipantKind",
+    "RelatedWorkContext",
+    "StudentWorkDiscoveryResult",
+    "StudentWorkDiscoveryService",
     "ContractSurface",
     "ProjectionPurpose",
     "PROJECTION_DISPOSITIONS",

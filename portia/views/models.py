@@ -6,6 +6,7 @@ from dataclasses import dataclass
 from typing import Final, Literal, TypeAlias
 
 from portia.models.errors import PortiaLocalValidationError
+from portia.models.identifiers import validate_external_id
 from portia.models.references import (
     ExactPortiaWorkRecordRef,
     ExactPortiaWorkRef,
@@ -41,16 +42,18 @@ def _work_key(reference: ExactPortiaWorkRef) -> tuple[str, str, str, str]:
 class StudentViewScope:
     """Explicit authority boundary for one teacher-local student view.
 
-    Each allowed class must be represented by an exact class-qualified Core
-    roster identity.  ``allowed_works=()`` means the scope is bounded to those
-    exact classes and may discover work only inside them; a nonempty tuple
-    narrows the scope further to the listed exact works.
+    Focal people are exact class-qualified Core roster identities. Work-owner
+    class scope is separate because Portia permits cross-class participation.
+    When ``allowed_class_ids`` is empty, discovery defaults to the focal roster
+    classes. A nonempty ``allowed_works`` tuple narrows that class scope further
+    to the listed exact works.
     """
 
     focal_students: tuple[RosterStudentRef, ...]
     allowed_works: tuple[ExactPortiaWorkRef, ...] = ()
     history_allowed: bool = False
     purpose: ProjectionPurpose = "teacher_current"
+    allowed_class_ids: tuple[str, ...] = ()
 
     def __post_init__(self) -> None:
         if not isinstance(self.focal_students, tuple) or not self.focal_students:
@@ -75,6 +78,17 @@ class StudentViewScope:
                 f"unsupported student-view projection purpose: {self.purpose!r}"
             )
 
+        if not isinstance(self.allowed_class_ids, tuple):
+            raise PortiaLocalValidationError("allowed_class_ids must be a tuple")
+        validated_classes = tuple(
+            validate_external_id(class_id, "allowed_class_id")
+            for class_id in self.allowed_class_ids
+        )
+        if len(set(validated_classes)) != len(validated_classes):
+            raise PortiaLocalValidationError(
+                "student view scope cannot repeat an allowed work-owner class"
+            )
+
         if not isinstance(self.allowed_works, tuple):
             raise PortiaLocalValidationError("allowed_works must be a tuple")
         if not all(
@@ -90,12 +104,12 @@ class StudentViewScope:
                 "student view scope cannot repeat an exact work reference"
             )
 
-        class_ids = self.class_ids
+        work_class_ids = self.work_class_ids
         for work in self.allowed_works:
-            if work.class_id not in class_ids:
+            if work.class_id not in work_class_ids:
                 raise PortiaLocalValidationError(
-                    "allowed work belongs to a class without an exact focal "
-                    "roster identity"
+                    "allowed work belongs outside the explicit allowed "
+                    "work-owner class scope"
                 )
             rule = contract_rule(work.work_kind, work.contract_version)
             if rule.surface not in {
@@ -116,13 +130,21 @@ class StudentViewScope:
 
     @property
     def class_ids(self) -> frozenset[str]:
+        """Exact roster classes represented by the focal student identities."""
         return frozenset(item.class_id for item in self.focal_students)
+
+    @property
+    def work_class_ids(self) -> frozenset[str]:
+        """Explicit work-owner classes, defaulting to the focal roster classes."""
+        if self.allowed_class_ids:
+            return frozenset(self.allowed_class_ids)
+        return self.class_ids
 
     def allows_student(self, reference: RosterStudentRef) -> bool:
         return any(reference == item for item in self.focal_students)
 
     def allows_work(self, reference: ExactPortiaWorkRef) -> bool:
-        if reference.class_id not in self.class_ids:
+        if reference.class_id not in self.work_class_ids:
             return False
         if not self.allowed_works:
             return True

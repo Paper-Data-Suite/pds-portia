@@ -108,15 +108,40 @@ def test_scope_preserves_class_qualified_roster_identity() -> None:
     assert not scope.allows_work(event(class_id="class_c", work_id="evt_other"))
 
 
-def test_scope_rejects_work_without_exact_focal_identity_for_class() -> None:
+def test_scope_rejects_work_outside_explicit_owner_class_scope() -> None:
     student = RosterStudentRef(class_id="class_a", student_id="student_17")
     with pytest.raises(
         PortiaLocalValidationError,
-        match="without an exact focal roster identity",
+        match="outside the explicit allowed work-owner class scope",
     ):
         StudentViewScope(
             focal_students=(student,),
             allowed_works=(event(class_id="class_b"),),
+        )
+
+
+def test_scope_can_deliberately_separate_focal_and_work_owner_class() -> None:
+    student = RosterStudentRef(class_id="class_b", student_id="student_17")
+    cross_class_event = event(class_id="class_a")
+    scope = StudentViewScope(
+        focal_students=(student,),
+        allowed_class_ids=("class_a",),
+        allowed_works=(cross_class_event,),
+    )
+
+    assert scope.class_ids == frozenset({"class_b"})
+    assert scope.work_class_ids == frozenset({"class_a"})
+    assert scope.allows_student(student)
+    assert scope.allows_work(cross_class_event)
+    assert not scope.allows_work(event(class_id="class_b", work_id="evt_other"))
+
+
+def test_scope_rejects_duplicate_allowed_owner_class() -> None:
+    student = RosterStudentRef(class_id="class_a", student_id="student_17")
+    with pytest.raises(PortiaLocalValidationError, match="cannot repeat"):
+        StudentViewScope(
+            focal_students=(student,),
+            allowed_class_ids=("class_a", "class_a"),
         )
 
 
