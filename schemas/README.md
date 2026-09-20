@@ -1003,11 +1003,20 @@ The operation-evidence contracts are:
 
     schemas/v1/migrations/record-migration.schema.json
     schemas/v1/corrections/ownership-correction.schema.json
+    schemas/v2/corrections/ownership-correction.schema.json
     schemas/v1/removals/exceptional-removal.schema.json
 
 Record Migration changes representation while preserving logical identity, record family, work root, lifecycle meaning, and substantive semantics. Source and destination are exact representations and the transformer identity and version are explicit.
 
-Ownership Correction records a wrong Event class or child work root. It identifies exact source and destination representations and supports parent-child mapping without treating filesystem movement as canonical authority. References do not silently retarget.
+Ownership Correction v1 is immutable historical-read authority for the original
+Event-only certificate. Version 2 is current write authority. It preserves
+Event-only `event_class_ownership`, adds an explicit destination `work_kind`,
+and permits `child_work_root` endpoints to use the shared exact Portia
+work-record reference across Event and Support Process roots. Family policy,
+same-family lineage, destination-scope agreement, successor/lifecycle
+reconciliation, and Dependency/incoming-reference disposition remain
+application invariants. References do not silently retarget, and no mutable
+`latest` alias exists.
 
 Exceptional Removal is the narrow administrative boundary for legal, privacy, security, accepted-test-data, and unrecoverable-corruption cases. The certificate preserves exact target identity, authorization, minimal content evidence, available lifecycle evidence, and effective time without retaining prohibited payload. Removal is not a `deleted` lifecycle state.
 
@@ -1154,6 +1163,50 @@ already accept `record_kind = "account"` and `record_kind = "observation"`.
 No Role v4, Operation Journal v3, Operation Lock v3, Quarantine v3, or Integrity
 Finding v3 is introduced. Application validation keeps Account/Observation prose
 out of privacy-minimized operational facts and reason detail.
+
+That statement records the Issue #15 boundary. Issue #47 later adds immutable
+`operation_journal@3` without changing versions 1 or 2:
+
+```text
+schemas/v3/operations/operation-journal.schema.json
+```
+
+Version 2 remains the write authority for existing non-removal operation
+families. Version 3 is required for a write set containing
+`action = "exceptional_remove"`; it also supports ordinary byte-present actions
+through explicit `kind = "present"` result branches. One operation series may
+not mix v2 and v3 revisions. Different explicitly selected v2 and v3 series may
+coexist in one workspace.
+
+Version 3 adds discriminated present/absent intended and observed results.
+Expected absence binds the exact prior contract version and fingerprint plus an
+exact removal-certificate reference, path, and certificate-byte fingerprint.
+Observed absence records only the checked workspace-relative path and explicit
+observation time. It has no payload fingerprint. `exceptional_remove` is a
+canonical-domain gate available only to `exceptionally_remove`; it is not a
+generic delete action, is not valid compensation, and is never equivalent to
+`remove_transient`.
+
+### Issue #47 executable authority
+
+The published contracts are enforced by bounded production services for
+lifecycle/history correction, Amendment, Statement of Disagreement,
+Dependency, migration, Ownership Correction, Exceptional Removal, Recovery,
+Integrity, and Quarantine, with parallel Actor Directory maintenance.
+`ownership_correction@1` remains historical-read authority and
+`ownership_correction@2` is current-write authority. Ownership Correction uses
+`operation_journal@2`; verified canonical absence uses
+`operation_journal@3`. Exact historical references are never silently
+retargeted to successors.
+
+Acknowledgement is historical review evidence and suppression affects only
+presentation; neither changes Integrity guard results nor releases Quarantine.
+Quarantine release and recovery mutation require accepted exact evidence.
+Teacher-local manual boundaries include ambiguous recovery, unverifiable lock
+clearing, unsupported compensation, pre-certificate emergency destruction,
+unsupported ownership families/pairs, and Event class-ownership correction.
+Issue #49, not Issue #47, owns teacher-facing unresolved-attention query and
+presentation.
 
 ## Deterministic source snapshots and derived generations
 

@@ -18,7 +18,10 @@ from portia.storage.orchestration import FaultHook, OperationCommitResult
 from portia.storage.quarantine import QuarantineGuard
 from portia.storage.repository import PortiaRepository, StoredRecord
 from portia.workflows.action_consolidation import ActionConsolidationCoordinator
-from portia.workflows.action_reownership import ActionOwnershipCorrectionCoordinator
+from portia.workflows.action_reownership import (
+    ActionOwnershipCorrectionCoordinator,
+    OwnershipCorrectionEvidence,
+)
 from portia.workflows.action_transition import ActionLifecycleCoordinator
 from portia.workflows.common import (
     WorkflowServiceBase,
@@ -193,9 +196,7 @@ def _participant_refs_from_provider(
             f"unsupported Implementation provider kind {kind!r}"
         )
     refs = value.get("participant_refs")
-    if not isinstance(refs, Sequence) or isinstance(
-        refs, (str, bytes, bytearray)
-    ):
+    if not isinstance(refs, Sequence) or isinstance(refs, (str, bytes, bytearray)):
         raise WorkflowOwnershipError(
             "Implementation provider participant_refs are malformed"
         )
@@ -212,9 +213,7 @@ def _participant_refs_from_provider(
 def _strong_person_identity(record: PortiaRecord) -> tuple[object, ...] | None:
     person = record.field("person")
     if not isinstance(person, Mapping):
-        raise WorkflowOwnershipError(
-            "Support Process Participant person is malformed"
-        )
+        raise WorkflowOwnershipError("Support Process Participant person is malformed")
     kind = person.get("kind")
     if kind == "roster_student":
         reference = person.get("roster_student_ref")
@@ -263,9 +262,7 @@ def _has_variation_kind(record: PortiaRecord, kind: str) -> bool:
     if not isinstance(variation, Mapping):
         return False
     kinds = variation.get("kinds")
-    if not isinstance(kinds, Sequence) or isinstance(
-        kinds, (str, bytes, bytearray)
-    ):
+    if not isinstance(kinds, Sequence) or isinstance(kinds, (str, bytes, bytearray)):
         raise WorkflowOwnershipError("Implementation variation is malformed")
     return kind in kinds
 
@@ -340,9 +337,7 @@ class ImplementationWorkflowService(WorkflowServiceBase):
             raise WorkflowOwnershipError("Implementation creation_source is malformed")
         source_type = source.get("type")
         if record.field("execution_state") == "unknown" and source_type != "import":
-            raise WorkflowPrerequisiteError(
-                "unknown execution_state is import-only"
-            )
+            raise WorkflowPrerequisiteError("unknown execution_state is import-only")
         if source_type in {"paper_capture", "import"} and record.status == "active":
             raise WorkflowPrerequisiteError(
                 "paper/import activation requires accepted review history"
@@ -462,9 +457,7 @@ class ImplementationWorkflowService(WorkflowServiceBase):
         *,
         current: bool,
     ) -> tuple[StoredRecord, ...]:
-        refs = _participant_refs_from_provider(
-            record.field("implementation_provider")
-        )
+        refs = _participant_refs_from_provider(record.field("implementation_provider"))
         participants = self._resolve_participants(
             work,
             refs,
@@ -508,9 +501,7 @@ class ImplementationWorkflowService(WorkflowServiceBase):
                 f"unsupported Implementation plan provider kind {kind!r}"
             )
         refs = provider.get("participant_refs")
-        if not isinstance(refs, Sequence) or isinstance(
-            refs, (str, bytes, bytearray)
-        ):
+        if not isinstance(refs, Sequence) or isinstance(refs, (str, bytes, bytearray)):
             raise WorkflowOwnershipError(
                 "Implementation plan provider participant_refs are malformed"
             )
@@ -584,9 +575,8 @@ class ImplementationWorkflowService(WorkflowServiceBase):
         plan_target_signature = self._target_signature(
             plan.field("target"), plan_target
         )
-        if (
-            actual_target_signature != plan_target_signature
-            and not _has_variation_kind(record, "target")
+        if actual_target_signature != plan_target_signature and not _has_variation_kind(
+            record, "target"
         ):
             raise WorkflowPrerequisiteError(
                 "target variation is required when actual target differs from plan"
@@ -615,12 +605,8 @@ class ImplementationWorkflowService(WorkflowServiceBase):
         candidate = self._require_write_input(work, record)
         self._root_service().require_current_use(work)
         plan = self._resolve_plan(work, candidate)
-        actual_target = self._resolve_actual_target(
-            work, candidate, current=True
-        )
-        actual_provider = self._resolve_actual_provider(
-            work, candidate, current=True
-        )
+        actual_target = self._resolve_actual_target(work, candidate, current=True)
+        actual_provider = self._resolve_actual_provider(work, candidate, current=True)
         plan_target = self._resolve_plan_target(work, plan.record)
         plan_provider = self._resolve_plan_provider(work, plan.record)
         self._require_plan_actual_alignment(
@@ -705,9 +691,7 @@ class ImplementationWorkflowService(WorkflowServiceBase):
         value = self._require_existing_record(work, candidate)
         require_coordinated_implementation_transition(prior, value)
         self.quarantine.require_allowed(work_target(work), "block_work_writes")
-        self.quarantine.require_allowed(
-            record_target(work, value), "block_work_writes"
-        )
+        self.quarantine.require_allowed(record_target(work, value), "block_work_writes")
         if value.status == "active":
             self._root_service().require_current_use(work)
             plan = self._resolve_plan(work, value)
@@ -759,9 +743,7 @@ class ImplementationWorkflowService(WorkflowServiceBase):
         prior_state = prior.field("execution_state")
         candidate_state = value.field("execution_state")
         if not isinstance(prior_state, str) or not isinstance(candidate_state, str):
-            raise WorkflowOwnershipError(
-                "Implementation execution_state is malformed"
-            )
+            raise WorkflowOwnershipError("Implementation execution_state is malformed")
         if prior_state != "in_progress":
             raise WorkflowPrerequisiteError(
                 "ordinary Implementation execution progression requires "
@@ -793,12 +775,8 @@ class ImplementationWorkflowService(WorkflowServiceBase):
 
         self._root_service().require_current_use(work)
         plan = self._resolve_plan(work, value)
-        actual_target = self._resolve_actual_target(
-            work, value, current=False
-        )
-        actual_provider = self._resolve_actual_provider(
-            work, value, current=False
-        )
+        actual_target = self._resolve_actual_target(work, value, current=False)
+        actual_provider = self._resolve_actual_provider(work, value, current=False)
         plan_target = self._resolve_plan_target(work, plan.record)
         plan_provider = self._resolve_plan_provider(work, plan.record)
         self._require_plan_actual_alignment(
@@ -810,12 +788,8 @@ class ImplementationWorkflowService(WorkflowServiceBase):
             plan_provider=plan_provider,
         )
         self.quarantine.require_allowed(work_target(work), "block_work_writes")
-        self.quarantine.require_allowed(
-            record_target(work, value), "block_work_writes"
-        )
-        self.quarantine.require_allowed(
-            record_target(work, value), "block_current_use"
-        )
+        self.quarantine.require_allowed(record_target(work, value), "block_work_writes")
+        self.quarantine.require_allowed(record_target(work, value), "block_current_use")
         return value
 
     def _require_successor_candidate(
@@ -865,13 +839,9 @@ class ImplementationWorkflowService(WorkflowServiceBase):
             plan_provider=plan_provider,
         )
         self.quarantine.require_allowed(work_target(work), "block_work_writes")
-        self.quarantine.require_allowed(
-            record_target(work, value), "block_work_writes"
-        )
+        self.quarantine.require_allowed(record_target(work, value), "block_work_writes")
         self.quarantine.require_allowed(work_target(work), "block_current_use")
-        self.quarantine.require_allowed(
-            record_target(work, value), "block_current_use"
-        )
+        self.quarantine.require_allowed(record_target(work, value), "block_current_use")
         return value
 
     def _require_work_root_successor_candidate(
@@ -917,8 +887,7 @@ class ImplementationWorkflowService(WorkflowServiceBase):
         for field in _WORK_ROOT_PRESERVED_FACT_FIELDS:
             if prior_data.get(field) != successor_data.get(field):
                 raise WorkflowPrerequisiteError(
-                    "work-root correction cannot rewrite occurrence fact "
-                    f"{field}"
+                    f"work-root correction cannot rewrite occurrence fact {field}"
                 )
 
         self.repository.load_work(source_work)
@@ -994,8 +963,7 @@ class ImplementationWorkflowService(WorkflowServiceBase):
             )
             if prior.status not in {"active", "invalidated"}:
                 raise WorkflowPrerequisiteError(
-                    "duplicate consolidation predecessor must be active or "
-                    "invalidated"
+                    "duplicate consolidation predecessor must be active or invalidated"
                 )
             prior_updated = _parse_timestamp(
                 prior.field("updated_at"),
@@ -1026,13 +994,9 @@ class ImplementationWorkflowService(WorkflowServiceBase):
             plan_provider=plan_provider,
         )
         self.quarantine.require_allowed(work_target(work), "block_work_writes")
-        self.quarantine.require_allowed(
-            record_target(work, value), "block_work_writes"
-        )
+        self.quarantine.require_allowed(record_target(work, value), "block_work_writes")
         self.quarantine.require_allowed(work_target(work), "block_current_use")
-        self.quarantine.require_allowed(
-            record_target(work, value), "block_current_use"
-        )
+        self.quarantine.require_allowed(record_target(work, value), "block_current_use")
         return value
 
     def transition_lifecycle(
@@ -1164,6 +1128,7 @@ class ImplementationWorkflowService(WorkflowServiceBase):
             quarantine=self.quarantine,
             context_assembler=self.contexts,
         )
+
         def validate_successor(prior: PortiaRecord, value: PortiaRecord) -> None:
             self._require_successor_candidate(
                 work,
@@ -1215,6 +1180,7 @@ class ImplementationWorkflowService(WorkflowServiceBase):
         effective_at: str | None = None,
         operation_id: str | None = None,
         fault_hook: FaultHook | None = None,
+        _ownership_evidence: OwnershipCorrectionEvidence | None = None,
     ) -> OperationCommitResult:
         """Move one corrected Implementation representation to its true root."""
         _require_implementation_owner(destination_work)
@@ -1263,6 +1229,7 @@ class ImplementationWorkflowService(WorkflowServiceBase):
                     allow_supersession=True,
                 )
             ),
+            evidence=_ownership_evidence,
         )
         accepted = self.load_exact(predecessor)
         require_implementation_lifecycle_reconciled(

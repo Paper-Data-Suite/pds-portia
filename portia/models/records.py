@@ -394,6 +394,14 @@ class OwnershipCorrectionV1(PortiaRecord):
     CONTRACT = "ownership_correction"
     VERSION = "1"
 
+class OwnershipCorrectionV2(PortiaRecord):
+    """Exact ``ownership_correction@2`` runtime representation."""
+
+    __slots__ = ()
+
+    CONTRACT = "ownership_correction"
+    VERSION = "2"
+
 class ExceptionalRemovalV1(PortiaRecord):
     """Exact ``exceptional_removal@1`` runtime representation."""
 
@@ -417,6 +425,14 @@ class OperationJournalV2(PortiaRecord):
 
     CONTRACT = "operation_journal"
     VERSION = "2"
+
+class OperationJournalV3(PortiaRecord):
+    """Exact ``operation_journal@3`` runtime representation."""
+
+    __slots__ = ()
+
+    CONTRACT = "operation_journal"
+    VERSION = "3"
 
 class OperationCurrentPointerV1(PortiaRecord):
     """Exact ``operation_current_pointer@1`` runtime representation."""
@@ -595,9 +611,11 @@ _RECORD_TYPES: Final[tuple[type[PortiaRecord], ...]] = (
     DependencyV1,
     RecordMigrationV1,
     OwnershipCorrectionV1,
+    OwnershipCorrectionV2,
     ExceptionalRemovalV1,
     OperationJournalV1,
     OperationJournalV2,
+    OperationJournalV3,
     OperationCurrentPointerV1,
     OperationLockV1,
     OperationLockV2,

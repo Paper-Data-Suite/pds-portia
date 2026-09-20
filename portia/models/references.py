@@ -41,6 +41,9 @@ EXACT_ACTOR_CONTACT_POINT_REF_SCHEMA_ID: Final[str] = (
 EXACT_ACTOR_STUDENT_RELATIONSHIP_REF_SCHEMA_ID: Final[str] = (
     _BASE + "exact-actor-student-relationship-ref.schema.json"
 )
+EXACT_ACTOR_ROSTER_STUDENT_COLLISION_REF_SCHEMA_ID: Final[str] = (
+    _BASE + "exact-actor-roster-student-collision-ref.schema.json"
+)
 
 
 @dataclass(frozen=True, slots=True)
@@ -403,5 +406,36 @@ class ExactActorStudentRelationshipRef:
         return {
             "actor_id": self.actor_id,
             "relationship_id": self.relationship_id,
+            "contract_version": self.contract_version,
+        }
+
+
+@dataclass(frozen=True, slots=True)
+class ExactActorRosterStudentCollisionRef:
+    """Reference to one exact reviewed Actor/roster collision record."""
+
+    actor_id: str
+    collision_id: str
+    contract_version: str
+
+    def __post_init__(self) -> None:
+        validate_portia_id(self.actor_id, "actr_", "actor_id")
+        validate_portia_id(self.collision_id, "arsc_", "collision_id")
+        validate_external_id(self.contract_version, "contract_version")
+
+    @classmethod
+    def from_dict(cls, data: object) -> "ExactActorRosterStudentCollisionRef":
+        validate_schema_id(EXACT_ACTOR_ROSTER_STUDENT_COLLISION_REF_SCHEMA_ID, data)
+        mapping = cast(Mapping[str, object], data)
+        return cls(
+            actor_id=cast(str, mapping["actor_id"]),
+            collision_id=cast(str, mapping["collision_id"]),
+            contract_version=cast(str, mapping["contract_version"]),
+        )
+
+    def to_dict(self) -> dict[str, object]:
+        return {
+            "actor_id": self.actor_id,
+            "collision_id": self.collision_id,
             "contract_version": self.contract_version,
         }

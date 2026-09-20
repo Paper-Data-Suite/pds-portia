@@ -892,7 +892,9 @@ def test_correct_history_partial_commit_preserves_durable_selector_for_recovery(
     assert unchanged.record.status == "active"
     current = OperationJournalStore(tmp_path).load_current("op_history_partial")
     assert current.revision.field("operation_kind") == "correct_history"
-    assert current.revision.field("state") == "failed"
+    current_data = current.revision.to_dict()
+    assert current_data["state"] == "recovering"
+    assert current_data["partial_state"]["recommended_disposition"] == "resume"
 
 
 _AFTER_CORRECTION = "2026-08-26T14:00:00-04:00"

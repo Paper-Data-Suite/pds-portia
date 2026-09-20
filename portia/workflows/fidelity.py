@@ -18,7 +18,10 @@ from portia.storage.orchestration import FaultHook, OperationCommitResult
 from portia.storage.quarantine import QuarantineGuard
 from portia.storage.repository import PortiaRepository, StoredRecord
 from portia.workflows.action_consolidation import ActionConsolidationCoordinator
-from portia.workflows.action_reownership import ActionOwnershipCorrectionCoordinator
+from portia.workflows.action_reownership import (
+    ActionOwnershipCorrectionCoordinator,
+    OwnershipCorrectionEvidence,
+)
 from portia.workflows.action_transition import ActionLifecycleCoordinator
 from portia.workflows.common import WorkflowServiceBase, record_target, work_target
 from portia.workflows.context import WorkflowContextAssembler
@@ -122,9 +125,7 @@ def _exact_local_ref(
         reference.record_kind not in kinds or reference.contract_version != "1"
     ):
         allowed = " or ".join(f"{kind}@1" for kind in sorted(kinds))
-        raise WorkflowOwnershipError(
-            f"Fidelity {field_name} must name exact {allowed}"
-        )
+        raise WorkflowOwnershipError(f"Fidelity {field_name} must name exact {allowed}")
     return reference
 
 
@@ -193,9 +194,7 @@ class FidelityWorkflowService(WorkflowServiceBase):
     ) -> FidelityV1:
         _require_fidelity_owner(work)
         if not isinstance(record, FidelityV1):
-            raise WorkflowOwnershipError(
-                "new Fidelity writes require fidelity@1 input"
-            )
+            raise WorkflowOwnershipError("new Fidelity writes require fidelity@1 input")
         if record.class_id != work.class_id or record.work_id != work.work_id:
             raise WorkflowOwnershipError(
                 "Fidelity does not belong to the explicitly selected Support Process"
@@ -325,7 +324,9 @@ class FidelityWorkflowService(WorkflowServiceBase):
         exact = support_process_participant_reference(work, evaluator.record_id)
         try:
             if current:
-                return self._participant_service().require_current_use(exact).participant
+                return (
+                    self._participant_service().require_current_use(exact).participant
+                )
             return self._participant_service().load_exact(exact)
         except PortiaNotFoundError as exc:
             raise WorkflowPrerequisiteError(
@@ -473,9 +474,7 @@ class FidelityWorkflowService(WorkflowServiceBase):
         value = self._require_existing_record(work, candidate)
         require_coordinated_fidelity_transition(prior, value)
         self.quarantine.require_allowed(work_target(work), "block_work_writes")
-        self.quarantine.require_allowed(
-            record_target(work, value), "block_work_writes"
-        )
+        self.quarantine.require_allowed(record_target(work, value), "block_work_writes")
         if value.status == "active":
             self._root_service().require_current_use(work)
             self._resolve_plan(work, value)
@@ -532,13 +531,9 @@ class FidelityWorkflowService(WorkflowServiceBase):
         self._resolve_scope(work, value)
         self._resolve_basis_records(work, value)
         self.quarantine.require_allowed(work_target(work), "block_work_writes")
-        self.quarantine.require_allowed(
-            record_target(work, value), "block_work_writes"
-        )
+        self.quarantine.require_allowed(record_target(work, value), "block_work_writes")
         self.quarantine.require_allowed(work_target(work), "block_current_use")
-        self.quarantine.require_allowed(
-            record_target(work, value), "block_current_use"
-        )
+        self.quarantine.require_allowed(record_target(work, value), "block_current_use")
         return value
 
     def _require_work_root_successor_candidate(
@@ -644,8 +639,7 @@ class FidelityWorkflowService(WorkflowServiceBase):
             )
             if prior.status not in {"active", "invalidated"}:
                 raise WorkflowPrerequisiteError(
-                    "duplicate consolidation predecessor must be active or "
-                    "invalidated"
+                    "duplicate consolidation predecessor must be active or invalidated"
                 )
             prior_updated = _parse_timestamp(
                 prior.field("updated_at"),
@@ -667,13 +661,9 @@ class FidelityWorkflowService(WorkflowServiceBase):
         self._resolve_scope(work, value)
         self._resolve_basis_records(work, value)
         self.quarantine.require_allowed(work_target(work), "block_work_writes")
-        self.quarantine.require_allowed(
-            record_target(work, value), "block_work_writes"
-        )
+        self.quarantine.require_allowed(record_target(work, value), "block_work_writes")
         self.quarantine.require_allowed(work_target(work), "block_current_use")
-        self.quarantine.require_allowed(
-            record_target(work, value), "block_current_use"
-        )
+        self.quarantine.require_allowed(record_target(work, value), "block_current_use")
         return value
 
     def transition_lifecycle(
@@ -720,17 +710,15 @@ class FidelityWorkflowService(WorkflowServiceBase):
             operation_id=operation_id,
             fault_hook=fault_hook,
             candidate_validator=validate_transition,
-            transition_factory=lambda prior, value: (
-                build_fidelity_lifecycle_transition(
-                    self.repository,
-                    work,
-                    prior,
-                    value,
-                    transition_id=transition_id,
-                    reason_code=reason_code,
-                    reason_detail=reason_detail,
-                    effective_at=effective_at,
-                )
+            transition_factory=lambda prior, value: build_fidelity_lifecycle_transition(
+                self.repository,
+                work,
+                prior,
+                value,
+                transition_id=transition_id,
+                reason_code=reason_code,
+                reason_detail=reason_detail,
+                effective_at=effective_at,
             ),
         )
         accepted = self.load_exact(reference)
@@ -792,18 +780,16 @@ class FidelityWorkflowService(WorkflowServiceBase):
             fault_hook=fault_hook,
             successor_validator=validate_successor,
             predecessor_factory=superseded_fidelity_predecessor,
-            transition_factory=lambda prior, value: (
-                build_fidelity_lifecycle_transition(
-                    self.repository,
-                    work,
-                    prior,
-                    value,
-                    transition_id=transition_id,
-                    reason_code=supersession_reason,
-                    reason_detail=reason_detail,
-                    effective_at=effective_at,
-                    allow_supersession=True,
-                )
+            transition_factory=lambda prior, value: build_fidelity_lifecycle_transition(
+                self.repository,
+                work,
+                prior,
+                value,
+                transition_id=transition_id,
+                reason_code=supersession_reason,
+                reason_detail=reason_detail,
+                effective_at=effective_at,
+                allow_supersession=True,
             ),
         )
         accepted = self.load_exact(predecessor)
@@ -825,6 +811,7 @@ class FidelityWorkflowService(WorkflowServiceBase):
         effective_at: str | None = None,
         operation_id: str | None = None,
         fault_hook: FaultHook | None = None,
+        _ownership_evidence: OwnershipCorrectionEvidence | None = None,
     ) -> OperationCommitResult:
         """Move one corrected Fidelity representation to its true root."""
         _require_fidelity_owner(destination_work)
@@ -860,19 +847,18 @@ class FidelityWorkflowService(WorkflowServiceBase):
             fault_hook=fault_hook,
             successor_validator=validate_successor,
             predecessor_factory=superseded_fidelity_predecessor,
-            transition_factory=lambda prior, value: (
-                build_fidelity_lifecycle_transition(
-                    self.repository,
-                    source_work,
-                    prior,
-                    value,
-                    transition_id=transition_id,
-                    reason_code="work_root_corrected",
-                    reason_detail=reason_detail,
-                    effective_at=effective_at,
-                    allow_supersession=True,
-                )
+            transition_factory=lambda prior, value: build_fidelity_lifecycle_transition(
+                self.repository,
+                source_work,
+                prior,
+                value,
+                transition_id=transition_id,
+                reason_code="work_root_corrected",
+                reason_detail=reason_detail,
+                effective_at=effective_at,
+                allow_supersession=True,
             ),
+            evidence=_ownership_evidence,
         )
         accepted = self.load_exact(predecessor)
         require_fidelity_lifecycle_reconciled(

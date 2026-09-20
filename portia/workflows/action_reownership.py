@@ -5,6 +5,7 @@ from __future__ import annotations
 import hashlib
 import json
 from collections.abc import Callable, Mapping
+from dataclasses import dataclass
 
 from portia.models import PortiaRecord, parse_portia_record
 from portia.models.references import ExactPortiaWorkRecordRef, ExactPortiaWorkRef
@@ -45,6 +46,15 @@ OwnershipPredecessorFactory = Callable[[PortiaRecord, PortiaRecord], PortiaRecor
 OwnershipTransitionFactory = Callable[[PortiaRecord, PortiaRecord], PortiaRecord]
 
 
+@dataclass(frozen=True, slots=True)
+class OwnershipCorrectionEvidence:
+    """Internal, already-validated evidence added to one ownership operation."""
+
+    certificate: PortiaRecord
+    reference_dispositions: tuple[tuple[str, str], ...]
+    dependency_dispositions: tuple[tuple[str, str], ...]
+
+
 def _ownership_intent_digest(
     source_work: ExactPortiaWorkRef,
     destination_work: ExactPortiaWorkRef,
@@ -52,6 +62,7 @@ def _ownership_intent_digest(
     predecessor_candidate: PortiaRecord,
     successor: PortiaRecord,
     transition: PortiaRecord,
+    evidence: OwnershipCorrectionEvidence | None,
 ) -> str:
     payload = b"".join(
         (
@@ -61,6 +72,19 @@ def _ownership_intent_digest(
             canonical_json_bytes(predecessor_candidate.to_dict()),
             canonical_json_bytes(successor.to_dict()),
             canonical_json_bytes(transition.to_dict()),
+            canonical_json_bytes(
+                evidence.certificate.to_dict() if evidence is not None else None
+            ),
+            canonical_json_bytes(
+                {
+                    "reference_dispositions": (
+                        evidence.reference_dispositions if evidence is not None else ()
+                    ),
+                    "dependency_dispositions": (
+                        evidence.dependency_dispositions if evidence is not None else ()
+                    ),
+                }
+            ),
         )
     )
     return hashlib.sha256(payload).hexdigest()
@@ -137,6 +161,7 @@ def _completed_ownership_matches(
     successor: PortiaRecord,
     transition_id: str,
     supersession_reason: str,
+    evidence: OwnershipCorrectionEvidence | None,
 ) -> bool:
     if (
         journal_data.get("operation_kind") != "correct_ownership"
@@ -164,6 +189,17 @@ def _completed_ownership_matches(
     saw_predecessor = False
     saw_successor = False
     saw_transition = False
+    saw_certificate = evidence is None
+    certificate_target = (
+        record_target(destination_work, evidence.certificate)
+        if evidence is not None
+        else None
+    )
+    certificate_fp = (
+        fingerprint_bytes(canonical_json_bytes(evidence.certificate.to_dict()))
+        if evidence is not None
+        else None
+    )
     write_set = journal_data.get("write_set")
     if not isinstance(write_set, list):
         return False
@@ -194,14 +230,20 @@ def _completed_ownership_matches(
                 isinstance(selected, list)
                 and _state_fact("to_status", "superseded") in selected
             )
+        elif action == "exclusive_create" and target == certificate_target:
+            try:
+                saw_certificate = (
+                    ContentFingerprint.from_dict(intended.get("fingerprint"))
+                    == certificate_fp
+                )
+            except ValueError:
+                return False
         elif action == "revision_aware_replace" and target == predecessor_target:
             precondition = step.get("precondition")
             if not isinstance(precondition, Mapping):
                 return False
             try:
-                prior_fp = ContentFingerprint.from_dict(
-                    precondition.get("fingerprint")
-                )
+                prior_fp = ContentFingerprint.from_dict(precondition.get("fingerprint"))
             except ValueError:
                 return False
             selected = intended.get("selected_state")
@@ -210,7 +252,7 @@ def _completed_ownership_matches(
                 and isinstance(selected, list)
                 and _state_fact("status", "superseded") in selected
             )
-    return saw_predecessor and saw_successor and saw_transition
+    return saw_predecessor and saw_successor and saw_transition and saw_certificate
 
 
 class ActionOwnershipCorrectionCoordinator(WorkflowServiceBase):
@@ -233,6 +275,7 @@ class ActionOwnershipCorrectionCoordinator(WorkflowServiceBase):
         successor: PortiaRecord,
         transition_id: str,
         supersession_reason: str,
+        evidence: OwnershipCorrectionEvidence | None,
     ) -> OperationCommitResult | None:
         if operation_id is None:
             return None
@@ -252,14 +295,19 @@ class ActionOwnershipCorrectionCoordinator(WorkflowServiceBase):
                 successor,
                 transition_id,
                 supersession_reason,
+                evidence,
             ):
                 raise PortiaConflictError(
                     "completed action ownership operation identity is bound "
                     "to different intent"
                 )
-            return self._lifecycle_coordinator()._operation_support()._completed_result(
-                operation_id,
-                data,
+            return (
+                self._lifecycle_coordinator()
+                ._operation_support()
+                ._completed_result(
+                    operation_id,
+                    data,
+                )
             )
         if state != "staged":
             raise PortiaRecoveryRequiredError(
@@ -281,6 +329,7 @@ class ActionOwnershipCorrectionCoordinator(WorkflowServiceBase):
         successor_validator: OwnershipSuccessorValidator,
         predecessor_factory: OwnershipPredecessorFactory,
         transition_factory: OwnershipTransitionFactory,
+        evidence: OwnershipCorrectionEvidence | None = None,
     ) -> OperationCommitResult:
         """Create the same logical action in a corrected work root atomically."""
         replay = self._completed_replay(
@@ -291,6 +340,7 @@ class ActionOwnershipCorrectionCoordinator(WorkflowServiceBase):
             successor,
             transition_id,
             supersession_reason,
+            evidence,
         )
         if replay is not None:
             return replay
@@ -367,6 +417,36 @@ class ActionOwnershipCorrectionCoordinator(WorkflowServiceBase):
 
         predecessor_candidate = predecessor_factory(prior.record, successor)
         transition = transition_factory(prior.record, predecessor_candidate)
+        certificate = evidence.certificate if evidence is not None else None
+        if certificate is not None:
+            if (
+                certificate.contract != "ownership_correction"
+                or certificate.contract_version != "2"
+                or certificate.class_id != destination_work.class_id
+                or certificate.work_id != destination_work.work_id
+                or certificate.work_kind != destination_work.work_kind
+            ):
+                raise WorkflowOwnershipError(
+                    "ownership certificate must be destination-owned ownership_correction@2"
+                )
+            certificate_id = certificate.logical_id
+            if certificate_id is None:
+                raise WorkflowOwnershipError(
+                    "ownership certificate has no canonical identity"
+                )
+            try:
+                self.repository.load_work_record(
+                    destination_work,
+                    "ownership_correction",
+                    "2",
+                    certificate_id,
+                )
+            except PortiaNotFoundError:
+                pass
+            else:
+                raise PortiaConflictError(
+                    "ownership certificate identity already exists in destination"
+                )
         predecessor_target = record_target(source_work, predecessor_candidate)
         successor_target = record_target(destination_work, successor)
         transition_target = record_target(source_work, transition)
@@ -376,6 +456,11 @@ class ActionOwnershipCorrectionCoordinator(WorkflowServiceBase):
             predecessor_target,
             successor_target,
             transition_target,
+            *(
+                (record_target(destination_work, certificate),)
+                if certificate is not None
+                else ()
+            ),
         ):
             self.quarantine.require_allowed(target, "block_work_writes")
 
@@ -393,6 +478,7 @@ class ActionOwnershipCorrectionCoordinator(WorkflowServiceBase):
             predecessor_candidate,
             successor,
             transition,
+            evidence,
         )
         op_id = operation_id or f"op_{digest}"
         lock_entries, lock_records = _cross_work_lock_plan(
@@ -480,9 +566,7 @@ class ActionOwnershipCorrectionCoordinator(WorkflowServiceBase):
                 "intended_result": {
                     "contract_version": ACTION_VERSION,
                     "fingerprint": fingerprint_bytes(successor_bytes).to_dict(),
-                    "selected_state": [
-                        _state_fact("status", str(successor.status))
-                    ],
+                    "selected_state": [_state_fact("status", str(successor.status))],
                 },
                 "disposition": "staged",
                 "observed_result": None,
@@ -490,6 +574,44 @@ class ActionOwnershipCorrectionCoordinator(WorkflowServiceBase):
                 "reason_code": supersession_reason,
             }
         )
+
+        if certificate is not None:
+            certificate_id = certificate.logical_id
+            assert certificate_id is not None
+            certificate_target = record_target(destination_work, certificate)
+            certificate_bytes = canonical_json_bytes(certificate.to_dict())
+            candidates["step_ownership_certificate"] = certificate_bytes
+            steps.append(
+                {
+                    "step_id": "step_ownership_certificate",
+                    "sequence": len(steps) + 1,
+                    "phase": "canonical_gate",
+                    "action": "exclusive_create",
+                    "target": certificate_target,
+                    "representation_role": "canonical_domain",
+                    "destination_path": workspace_relative(
+                        self.workspace_root,
+                        work_record_path(
+                            self.workspace_root,
+                            destination_work,
+                            "ownership_correction",
+                            certificate_id,
+                        ),
+                    ),
+                    "precondition": {"presence": "must_be_absent"},
+                    "intended_result": {
+                        "contract_version": "2",
+                        "fingerprint": fingerprint_bytes(certificate_bytes).to_dict(),
+                        "selected_state": [
+                            _state_fact("correction_kind", "child_work_root")
+                        ],
+                    },
+                    "disposition": "staged",
+                    "observed_result": None,
+                    "compensation_step_id": None,
+                    "reason_code": supersession_reason,
+                }
+            )
 
         transition_bytes = canonical_json_bytes(transition.to_dict())
         candidates["step_transition"] = transition_bytes
@@ -575,6 +697,69 @@ class ActionOwnershipCorrectionCoordinator(WorkflowServiceBase):
             operation_kind="correct_ownership",
         )
         plan["scope"] = "graph"
+        if evidence is not None:
+            facts = plan.get("intent_facts")
+            if not isinstance(facts, list):
+                raise PortiaCorruptionError(
+                    "ownership journal intent facts are invalid"
+                )
+            facts.extend(
+                (
+                    {
+                        "name": "ownership_correction_id",
+                        "kind": "identifier",
+                        "value": str(evidence.certificate.logical_id),
+                    },
+                    {
+                        "name": "reference_disposition_count",
+                        "kind": "integer",
+                        "value": len(evidence.reference_dispositions),
+                    },
+                    {
+                        "name": "dependency_disposition_count",
+                        "kind": "integer",
+                        "value": len(evidence.dependency_dispositions),
+                    },
+                )
+            )
+            for index, (identity, disposition) in enumerate(
+                evidence.reference_dispositions, start=1
+            ):
+                facts.extend(
+                    (
+                        {
+                            "name": f"reference_{index}_identity",
+                            "kind": "identifier",
+                            "value": identity,
+                        },
+                        {
+                            "name": f"reference_{index}_disposition",
+                            "kind": "token",
+                            "value": disposition,
+                        },
+                    )
+                )
+            for index, (identity, disposition) in enumerate(
+                evidence.dependency_dispositions, start=1
+            ):
+                facts.extend(
+                    (
+                        {
+                            "name": f"dependency_{index}_identity",
+                            "kind": "identifier",
+                            "value": identity,
+                        },
+                        {
+                            "name": f"dependency_{index}_disposition",
+                            "kind": "token",
+                            "value": disposition,
+                        },
+                    )
+                )
+            affected_targets = plan.get("affected_targets")
+            if isinstance(affected_targets, list):
+                assert certificate is not None
+                affected_targets.append(record_target(destination_work, certificate))
         lifecycle = self._lifecycle_coordinator()
         result = lifecycle._write_plan(
             plan=plan,
@@ -603,6 +788,16 @@ class ActionOwnershipCorrectionCoordinator(WorkflowServiceBase):
             "1",
             transition_id,
         )
+        accepted_certificate = None
+        if certificate is not None:
+            certificate_id = certificate.logical_id
+            assert certificate_id is not None
+            accepted_certificate = self.repository.load_work_record(
+                destination_work,
+                "ownership_correction",
+                "2",
+                certificate_id,
+            )
         if accepted_predecessor.record.to_dict() != predecessor_candidate.to_dict():
             raise PortiaCorruptionError(
                 "committed action ownership predecessor does not match exact readback"
@@ -614,5 +809,13 @@ class ActionOwnershipCorrectionCoordinator(WorkflowServiceBase):
         if accepted_transition.record.to_dict() != transition.to_dict():
             raise PortiaCorruptionError(
                 "committed action ownership transition does not match exact readback"
+            )
+        if (
+            certificate is not None
+            and accepted_certificate is not None
+            and accepted_certificate.record.to_dict() != certificate.to_dict()
+        ):
+            raise PortiaCorruptionError(
+                "committed ownership certificate does not match exact readback"
             )
         return result

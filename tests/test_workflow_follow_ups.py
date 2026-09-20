@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from portia.models import PortiaRecord, parse_portia_record
+from portia.models import OwnershipCorrectionV2, PortiaRecord, parse_portia_record
 from portia.models.references import ExactPortiaWorkRecordRef, ExactPortiaWorkRef
 from portia.storage.errors import PortiaConflictError
 from portia.storage.repository import PortiaRepository
@@ -1773,6 +1773,44 @@ def test_follow_up_work_root_correction_moves_event_record_to_support_process(
         "category": "correction",
         "code": "work_root_corrected",
     }
+
+    certificate = parse_portia_record(
+        "ownership_correction",
+        "2",
+        {
+            "schema_version": "2",
+            "record_type": "ownership_correction",
+            "module_id": "portia",
+            "class_id": support_ref().class_id,
+            "work_id": support_ref().work_id,
+            "work_kind": "support_process",
+            "correction_id": "owc_fup_event_to_support",
+            "correction_kind": "child_work_root",
+            "source": {
+                "kind": "work_record",
+                "work_record_ref": predecessor.to_dict(),
+                "observed_updated_at": UPDATED,
+            },
+            "destination": {
+                "kind": "work_record",
+                "work_record_ref": new_reference.to_dict(),
+                "observed_updated_at": UPDATED,
+            },
+            "reason": {"code": "wrong_work_root"},
+            "effective_at": UPDATED,
+            "creation_source": {"type": "digital_entry"},
+            "created_at": PROGRESSED,
+            "created_by": AGENT,
+        },
+    )
+    assert isinstance(certificate, OwnershipCorrectionV2)
+    successor_entry = current.record.to_dict()["supersedes"][0]
+    assert successor_entry["work_record_ref"] == predecessor.to_dict()
+    assert successor_entry["reason"] == "work_root_corrected"
+    assert certificate.to_dict()["source"]["work_record_ref"] == predecessor.to_dict()
+    assert certificate.to_dict()["destination"]["work_record_ref"] == (
+        new_reference.to_dict()
+    )
 
 
 def test_follow_up_work_root_correction_moves_support_record_to_event(

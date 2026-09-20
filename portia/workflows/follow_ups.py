@@ -14,7 +14,10 @@ from portia.storage.quarantine import QuarantineGuard
 from portia.storage.repository import PortiaRepository, StoredRecord
 from portia.workflows.action_common import ActionReadService
 from portia.workflows.action_consolidation import ActionConsolidationCoordinator
-from portia.workflows.action_reownership import ActionOwnershipCorrectionCoordinator
+from portia.workflows.action_reownership import (
+    ActionOwnershipCorrectionCoordinator,
+    OwnershipCorrectionEvidence,
+)
 from portia.workflows.action_transition import ActionLifecycleCoordinator
 from portia.workflows.common import record_target, work_target
 from portia.workflows.context import WorkflowContextAssembler
@@ -50,9 +53,7 @@ from portia.workflows.errors import (
     WorkflowPrerequisiteError,
 )
 
-_FOLLOW_UP_OWNER_CONTEXTS = frozenset(
-    {"provider_or_collaborator", "coordinator"}
-)
+_FOLLOW_UP_OWNER_CONTEXTS = frozenset({"provider_or_collaborator", "coordinator"})
 _FOLLOW_UP_RELATED_ROLES = frozenset(
     {"context", "reviewed", "produced", "follow_up_to"}
 )
@@ -107,9 +108,7 @@ _WORKFLOW_STATE_TRANSITIONS = {
     "scheduled": frozenset(
         {"in_progress", "completed", "cancelled", "unable_to_complete"}
     ),
-    "in_progress": frozenset(
-        {"completed", "cancelled", "unable_to_complete"}
-    ),
+    "in_progress": frozenset({"completed", "cancelled", "unable_to_complete"}),
     "completed": frozenset(),
     "cancelled": frozenset(),
     "unable_to_complete": frozenset(),
@@ -225,9 +224,7 @@ class FollowUpWorkflowService(ActionReadService):
 
         if "starts_on" in timing or "ends_on" in timing:
             if "starts_on" not in timing or "ends_on" not in timing:
-                raise WorkflowOwnershipError(
-                    "Follow-Up date window is incomplete"
-                )
+                raise WorkflowOwnershipError("Follow-Up date window is incomplete")
             require_date_order(
                 timing.get("starts_on"),
                 timing.get("ends_on"),
@@ -237,9 +234,7 @@ class FollowUpWorkflowService(ActionReadService):
             return
         if "starts_at" in timing or "ends_at" in timing:
             if "starts_at" not in timing or "ends_at" not in timing:
-                raise WorkflowOwnershipError(
-                    "Follow-Up exact window is incomplete"
-                )
+                raise WorkflowOwnershipError("Follow-Up exact window is incomplete")
             require_timestamp_order(
                 timing.get("starts_at"),
                 timing.get("ends_at"),
@@ -274,8 +269,7 @@ class FollowUpWorkflowService(ActionReadService):
 
         if owner.get("kind") != "support_process_participant":
             raise WorkflowOwnershipError(
-                "Support Process Follow-Up owner must be "
-                "support_process_participant"
+                "Support Process Follow-Up owner must be support_process_participant"
             )
         authority.require_support_process_operational_participant(
             work,
@@ -514,6 +508,7 @@ class FollowUpWorkflowService(ActionReadService):
             quarantine=self.quarantine,
             context_assembler=self.contexts,
         )
+
         def validate_transition(prior: PortiaRecord, value: PortiaRecord) -> None:
             self._require_lifecycle_transition_candidate(
                 work,
@@ -757,8 +752,7 @@ class FollowUpWorkflowService(ActionReadService):
         for field in _WORK_ROOT_PRESERVED_FACT_FIELDS:
             if prior_data.get(field) != successor_data.get(field):
                 raise WorkflowPrerequisiteError(
-                    "work-root Follow-Up correction cannot rewrite fact "
-                    f"{field}"
+                    f"work-root Follow-Up correction cannot rewrite fact {field}"
                 )
 
         self.quarantine.require_allowed(
@@ -793,12 +787,8 @@ class FollowUpWorkflowService(ActionReadService):
         raw = record.field("related_records")
         if raw is None:
             return ()
-        if not isinstance(raw, Sequence) or isinstance(
-            raw, (str, bytes, bytearray)
-        ):
-            raise WorkflowOwnershipError(
-                "Follow-Up related_records are malformed"
-            )
+        if not isinstance(raw, Sequence) or isinstance(raw, (str, bytes, bytearray)):
+            raise WorkflowOwnershipError("Follow-Up related_records are malformed")
         items: list[Mapping[str, object]] = []
         for item in raw:
             if not isinstance(item, Mapping):
@@ -824,9 +814,7 @@ class FollowUpWorkflowService(ActionReadService):
                     "related-record relation"
                 )
 
-        added = tuple(
-            item for item in candidate_related if item not in prior_related
-        )
+        added = tuple(item for item in candidate_related if item not in prior_related)
         for item in added:
             role = item.get("role")
             if role not in _COMPLETION_LINK_ROLES:
@@ -1083,9 +1071,7 @@ class FollowUpWorkflowService(ActionReadService):
         result = coordinator.commit(
             predecessors,
             successor,
-            expected=tuple(
-                expected[identifier] for identifier in predecessor_ids
-            ),
+            expected=tuple(expected[identifier] for identifier in predecessor_ids),
             transition_ids=ordered_transition_ids,
             supersession_reason="duplicate_consolidated",
             operation_id=operation_id,
@@ -1114,6 +1100,7 @@ class FollowUpWorkflowService(ActionReadService):
         effective_at: str | None = None,
         operation_id: str | None = None,
         fault_hook: FaultHook | None = None,
+        _ownership_evidence: OwnershipCorrectionEvidence | None = None,
     ) -> OperationCommitResult:
         """Move one corrected Follow-Up representation to its true work root."""
         if (
@@ -1121,8 +1108,7 @@ class FollowUpWorkflowService(ActionReadService):
             or predecessor.record_ref.contract_version != "1"
         ):
             raise WorkflowOwnershipError(
-                "Follow-Up work-root correction requires exact follow_up@1 "
-                "predecessor"
+                "Follow-Up work-root correction requires exact follow_up@1 predecessor"
             )
         source_work = require_downstream_work_root_correction_predecessor(
             destination_work,
@@ -1173,6 +1159,7 @@ class FollowUpWorkflowService(ActionReadService):
                     allow_supersession=True,
                 )
             ),
+            evidence=_ownership_evidence,
         )
         accepted = self.load_exact(predecessor)
         require_downstream_lifecycle_reconciled(

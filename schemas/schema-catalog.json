@@ -503,6 +503,10 @@
       "1": {
         "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/corrections/ownership-correction.schema.json",
         "path": "schemas/v1/corrections/ownership-correction.schema.json"
+      },
+      "2": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v2/corrections/ownership-correction.schema.json",
+        "path": "schemas/v2/corrections/ownership-correction.schema.json"
       }
     },
     "exceptional_removal": {
@@ -613,6 +617,10 @@
       "2": {
         "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v2/operations/operation-journal.schema.json",
         "path": "schemas/v2/operations/operation-journal.schema.json"
+      },
+      "3": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v3/operations/operation-journal.schema.json",
+        "path": "schemas/v3/operations/operation-journal.schema.json"
       }
     },
     "operation_current_pointer": {

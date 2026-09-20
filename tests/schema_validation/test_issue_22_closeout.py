@@ -77,7 +77,12 @@ class Issue22CloseoutTests(unittest.TestCase):
             contract = entry["contract"]
             versions = sorted(catalog["contracts"][contract], key=int)
             self.assertEqual(entry["catalog_versions"], versions)
-            self.assertEqual(entry["current_version"], versions[-1])
+            if entry["current_version"] is None:
+                self.assertEqual(contract, "operation_journal")
+                self.assertEqual(entry["conditional_current_versions"], ["2", "3"])
+                self.assertIn("verified canonical absence", entry["version_authority"])
+            else:
+                self.assertEqual(entry["current_version"], versions[-1])
             self.assertIn(entry["disposition"], allowed)
             self.assertNotEqual(entry["disposition"], "planned")
             self.assertTrue(entry["rationale"])
@@ -107,7 +112,7 @@ class Issue22CloseoutTests(unittest.TestCase):
             "| `classification` | 1 | positive_graph | P22-15 |",
             "| `hypothesis` | 1 | positive_graph | P22-15 |",
             "| `intervention` | 1 | positive_graph | P22-15 |",
-            "| `operation_journal` | 2 | positive_graph | P22-14 |",
+            "| `operation_journal` | 2 / 3 conditional | positive_graph | P22-14 + Issue #47 |",
             "| `operation_lock` | 2 | positive_graph | P22-14 |",
         ):
             self.assertIn(fragment, coverage)

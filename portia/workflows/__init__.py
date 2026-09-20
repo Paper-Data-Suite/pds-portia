@@ -53,6 +53,14 @@ from portia.workflows.errors import (
     WorkflowValidationError,
 )
 from portia.workflows.events import EventWorkflowService, event_reference
+from portia.workflows.exceptional_removal import (
+    ExceptionalRemovalAuthority,
+    ExceptionalRemovalResolution,
+    ExceptionalRemovalResult,
+    ExceptionalRemovalWorkflowService,
+    RemovalAssessment,
+    RemovalChild,
+)
 from portia.workflows.fidelity import (
     FidelityWorkflowService,
     fidelity_reference,
@@ -62,6 +70,25 @@ from portia.workflows.hypotheses import HypothesisWorkflowService, hypothesis_re
 from portia.workflows.implementations import (
     ImplementationWorkflowService,
     implementation_reference,
+)
+from portia.workflows.integrity import (
+    IntegrityGuard,
+    IntegrityWorkflowService,
+    OperationIntegrityEvaluation,
+    OperationIntegrityProjection,
+)
+from portia.workflows.integrity_authority import (
+    ACKNOWLEDGEMENT_CATEGORIES,
+    TEACHER_LOCAL_AUTHORIZATION_REFERENCE_ID,
+    TEACHER_LOCAL_AUTHORIZATION_REFERENCE_KIND,
+    TEACHER_LOCAL_AUTHORIZATION_REFERENCE_VERSION,
+    TEACHER_LOCAL_OPERATOR_ROLE,
+    TEACHER_LOCAL_SUPPRESSION_POLICY_ID,
+    TEACHER_LOCAL_SUPPRESSION_POLICY_VERSION,
+    IntegrityOperatorAuthority,
+    SuppressionAuthorizationDecision,
+    SuppressionAuthorizationReference,
+    SuppressionPolicyDefinition,
 )
 from portia.workflows.interventions import (
     InterventionWorkflowService,
@@ -78,6 +105,12 @@ from portia.workflows.lifecycle import (
     supported_record_lifecycle_contracts,
 )
 from portia.workflows.lifecycle_history import LifecycleHistoryCorrectionResolution
+from portia.workflows.migrations import (
+    MigrationPlan,
+    MigrationTransformContext,
+    MigrationTransformerSpec,
+    RecordMigrationWorkflowService,
+)
 from portia.workflows.observations import (
     ObservationWorkflowService,
     observation_reference,
@@ -87,10 +120,24 @@ from portia.workflows.outcomes import (
     OutcomeBasisResolution,
     OutcomeWorkflowService,
 )
+from portia.workflows.ownership_correction import (
+    DependencyReview,
+    IncomingReferenceReview,
+    OwnershipCorrectionAssessment,
+    OwnershipCorrectionResult,
+    OwnershipCorrectionWorkflowService,
+    OwnershipFamilyRegistration,
+    supported_ownership_correction_families,
+)
 from portia.workflows.participants import (
     ParticipantPersonResolution,
     ParticipantWorkflowService,
     participant_reference,
+)
+from portia.workflows.quarantine import QuarantineWorkflowService
+from portia.workflows.recovery import (
+    RecoveryWorkflowAssessment,
+    RecoveryWorkflowService,
 )
 from portia.workflows.reentries import ReentryWorkflowService
 from portia.workflows.relationships import (
@@ -135,17 +182,40 @@ __all__ = [
     "DependencyGraphResolution",
     "DependencyWorkflowService",
     "EventWorkflowService",
+    "ExceptionalRemovalAuthority",
+    "ExceptionalRemovalResolution",
+    "ExceptionalRemovalResult",
+    "ExceptionalRemovalWorkflowService",
     "EventBundle",
     "EventBundleWorkflowService",
     "FidelityWorkflowService",
     "FollowUpWorkflowService",
     "HypothesisWorkflowService",
     "ImplementationWorkflowService",
+    "IntegrityWorkflowService",
+    "IntegrityGuard",
+    "IntegrityOperatorAuthority",
+    "OperationIntegrityEvaluation",
+    "OperationIntegrityProjection",
+    "SuppressionAuthorizationDecision",
+    "SuppressionAuthorizationReference",
+    "SuppressionPolicyDefinition",
+    "ACKNOWLEDGEMENT_CATEGORIES",
+    "TEACHER_LOCAL_AUTHORIZATION_REFERENCE_ID",
+    "TEACHER_LOCAL_AUTHORIZATION_REFERENCE_KIND",
+    "TEACHER_LOCAL_AUTHORIZATION_REFERENCE_VERSION",
+    "TEACHER_LOCAL_OPERATOR_ROLE",
+    "TEACHER_LOCAL_SUPPRESSION_POLICY_ID",
+    "TEACHER_LOCAL_SUPPRESSION_POLICY_VERSION",
     "InterventionWorkflowService",
     "JudgmentEvidenceResolution",
     "LifecycleHistoryCorrectionResolution",
     "LifecycleResolution",
     "LifecycleWorkflowService",
+    "MigrationPlan",
+    "MigrationTransformContext",
+    "MigrationTransformerSpec",
+    "RecordMigrationWorkflowService",
     "supported_record_lifecycle_contracts",
     "ModuleCommunicationAttachmentAuthority",
     "ModuleJudgmentEvidenceAuthority",
@@ -153,7 +223,18 @@ __all__ = [
     "ModuleOutcomeBasisAuthority",
     "OutcomeBasisResolution",
     "OutcomeWorkflowService",
+    "OwnershipCorrectionAssessment",
+    "OwnershipCorrectionResult",
+    "OwnershipCorrectionWorkflowService",
+    "OwnershipFamilyRegistration",
+    "IncomingReferenceReview",
+    "DependencyReview",
     "ReentryWorkflowService",
+    "RecoveryWorkflowAssessment",
+    "RecoveryWorkflowService",
+    "RemovalAssessment",
+    "RemovalChild",
+    "QuarantineWorkflowService",
     "ParticipantPersonResolution",
     "ParticipantWorkflowService",
     "PortiaWorkflowError",
@@ -202,6 +283,7 @@ __all__ = [
     "support_process_participant_reference",
     "support_process_reference",
     "supported_amendment_contracts",
+    "supported_ownership_correction_families",
     "SupportWorkflowService",
     "support_reference",
 ]

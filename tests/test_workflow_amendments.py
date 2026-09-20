@@ -1016,4 +1016,6 @@ def test_apply_amendment_partial_commit_preserves_durable_evidence(
     resolution = service.load_history(_event_work())
     assert resolution.reconciled is False
     journal = OperationJournalStore(tmp_path).load_current("op_amend_partial")
-    assert journal.revision.to_dict()["state"] == "failed"
+    journal_data = journal.revision.to_dict()
+    assert journal_data["state"] == "recovering"
+    assert journal_data["partial_state"]["recommended_disposition"] == "resume"

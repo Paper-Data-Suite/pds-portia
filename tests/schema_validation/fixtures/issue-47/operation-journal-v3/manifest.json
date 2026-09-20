@@ -1,0 +1,38 @@
+{
+  "manifest_version": "1",
+  "issue": 47,
+  "contract": "operation_journal",
+  "version": "3",
+  "valid": {
+    "v3-present-write.json": "Synthetic operation_journal@3 valid case.",
+    "v3-removal-pending.json": "Synthetic operation_journal@3 valid case.",
+    "v3-removal-verified.json": "Synthetic operation_journal@3 valid case.",
+    "v3-removal-accepted.json": "Synthetic operation_journal@3 valid case.",
+    "v3-removal-certificate-present-payload-pending.json": "Synthetic operation_journal@3 valid case."
+  },
+  "invalid": {
+    "removal-present-intent.json": "Structurally invalid absence action/result combination.",
+    "removal-present-observation.json": "Structurally invalid absence action/result combination.",
+    "removal-wrong-role.json": "Structurally invalid absence action/result combination.",
+    "removal-wrong-operation-kind.json": "Structurally invalid absence action/result combination.",
+    "absent-observation-fingerprint.json": "Structurally invalid absence action/result combination.",
+    "absence-missing-certificate.json": "Structurally invalid absence action/result combination.",
+    "accepted-absence-null-observation.json": "Structurally invalid absence action/result combination.",
+    "ordinary-action-absent-intent.json": "Structurally invalid absence action/result combination.",
+    "remove-transient-canonical.json": "Structurally invalid absence action/result combination."
+  },
+  "application_invalid": {
+    "prior-fingerprint-disagrees.json": {
+      "rule_id": "portia.operation_journal.absence_prior_agreement",
+      "description": "Absence intent must equal the exact must-match precondition."
+    },
+    "certificate-missing.json": {
+      "rule_id": "portia.operation_journal.removal_certificate_resolution",
+      "description": "The exact linked certificate must resolve."
+    },
+    "certificate-fingerprint-mismatch.json": {
+      "rule_id": "portia.operation_journal.removal_certificate_resolution",
+      "description": "Certificate bytes must match the exact linked fingerprint."
+    }
+  }
+}

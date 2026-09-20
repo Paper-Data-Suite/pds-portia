@@ -837,7 +837,9 @@ def test_duplicate_consolidation_partial_commit_preserves_durable_successor(
         disagreement_reference(event_ref(), "sod_dup_b")
     ).fingerprint == second.fingerprint
     journal = OperationJournalStore(tmp_path).load_current("op_disagreement_dup_partial")
-    assert journal.revision.field("state") == "failed"
+    journal_data = journal.revision.to_dict()
+    assert journal_data["state"] == "recovering"
+    assert journal_data["partial_state"]["recommended_disposition"] == "resume"
 
 
 def test_material_correction_rejects_competing_declared_successor(tmp_path: Path) -> None:

@@ -14,7 +14,9 @@ from portia.storage.errors import (
 )
 from portia.storage.fingerprint import ContentFingerprint, canonical_json_bytes
 from portia.storage.integrity import (
+    OperationStepEvidence,
     PersistenceFinding,
+    observe_operation_durable_state,
     validate_operation_durable_state,
 )
 from portia.storage.io import guarded_replace, read_json
@@ -35,6 +37,7 @@ class OperationRecoveryAssessment:
     disposition: str
     series: RecoveryObservation
     findings: tuple[PersistenceFinding, ...]
+    step_evidence: tuple[OperationStepEvidence, ...] = ()
 
 
 class OperationRecovery:
@@ -58,7 +61,42 @@ class OperationRecovery:
             )
         if series.disposition == "orphan_linear_successor":
             current = self.store.load_current(operation_id)
-            state = current.revision.to_dict().get("state")
+            current_data = current.revision.to_dict()
+            state = current_data.get("state")
+            successor_path = operation_revision_path(
+                self.root,
+                operation_id,
+                series.orphan_successors[0],
+            )
+            try:
+                successor_value, _bytes, _fingerprint = read_json(successor_path)
+                successor = parse_portia_record(
+                    "operation_journal",
+                    current.revision.contract_version,
+                    successor_value,
+                )
+            except Exception:
+                return OperationRecoveryAssessment(
+                    operation_id,
+                    state if isinstance(state, str) else None,
+                    "manual_review",
+                    series,
+                    (),
+                )
+            successor_data = successor.to_dict()
+            if (
+                successor_data.get("previous_journal_revision")
+                != current_data.get("journal_revision")
+                or successor_data.get("intent_digest")
+                != current_data.get("intent_digest")
+            ):
+                return OperationRecoveryAssessment(
+                    operation_id,
+                    state if isinstance(state, str) else None,
+                    "manual_review",
+                    series,
+                    (),
+                )
             return OperationRecoveryAssessment(
                 operation_id,
                 state if isinstance(state, str) else None,
@@ -71,6 +109,13 @@ class OperationRecovery:
         state_value = current.revision.to_dict().get("state")
         state = state_value if isinstance(state_value, str) else None
         findings = validate_operation_durable_state(self.root, current.revision)
+        step_evidence = observe_operation_durable_state(self.root, current.revision)
+        if any(item.disposition == "indeterminate" for item in step_evidence):
+            findings = (*findings, PersistenceFinding(
+                "PORTIA.STORAGE.OPERATION_RESULT_INDETERMINATE",
+                "portia/operations",
+                "one or more journaled canonical results contradict exact durable evidence",
+            ))
         if findings:
             return OperationRecoveryAssessment(
                 operation_id,
@@ -78,6 +123,7 @@ class OperationRecovery:
                 "quarantine_or_manual_review",
                 series,
                 findings,
+                step_evidence,
             )
         if state in {"completed", "compensated", "aborted"}:
             disposition = "terminal_consistent"
@@ -95,6 +141,7 @@ class OperationRecovery:
             disposition,
             series,
             (),
+            step_evidence,
         )
 
     def select_exact_orphan_successor(
@@ -123,7 +170,11 @@ class OperationRecovery:
         )
         successor_value, _successor_bytes, _successor_fp = read_json(successor_path)
         try:
-            successor = parse_portia_record("operation_journal", "2", successor_value)
+            successor = parse_portia_record(
+                "operation_journal",
+                current.revision.contract_version,
+                successor_value,
+            )
         except Exception as exc:
             raise PortiaCorruptionError(
                 "orphan successor is not a valid current journal"

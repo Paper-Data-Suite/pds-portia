@@ -35,6 +35,7 @@ from portia.storage.orchestration import (
     acquire_journaled_locks,
     commit_journaled_candidates,
     planned_writes,
+    requires_specialized_persistence,
     stage_journaled_candidates,
     validate_lock_plan,
 )
@@ -88,4 +89,5 @@ __all__ = [
     "validate_lock_plan",
     "stage_journaled_candidates",
     "planned_writes",
+    "requires_specialized_persistence",
 ]

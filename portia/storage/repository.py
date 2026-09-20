@@ -22,6 +22,7 @@ from portia.storage.paths import (
     actor_directory_removal_path,
     actor_record_path,
     actor_storage_history_path,
+    exceptional_removal_path,
     work_collection_root,
     work_manifest_path,
     work_record_path,
@@ -480,6 +481,67 @@ class PortiaRepository:
             canonical_json_bytes(record.to_dict()),
             expected=expected,
         )
+        return StoredRecord(record, path, fingerprint)
+
+    def load_exceptional_removal(
+        self,
+        class_id: str,
+        removal_id: str,
+        *,
+        version: str = "1",
+    ) -> StoredRecord:
+        identifier = validate_portia_id(removal_id, "rmv_", "removal_id")
+        path = exceptional_removal_path(self.workspace_root, class_id, identifier)
+        value, _bytes, fingerprint = read_json(path)
+        record = _parse_exact("exceptional_removal", version, value, path)
+        if record.class_id != class_id or record.logical_id != identifier:
+            raise PortiaOwnershipError(
+                "Exceptional Removal identity disagrees with its class certificate path"
+            )
+        return StoredRecord(record, path, fingerprint)
+
+    def list_exceptional_removals(
+        self,
+        class_id: str,
+        *,
+        version: str = "1",
+    ) -> tuple[StoredRecord, ...]:
+        collection = exceptional_removal_path(
+            self.workspace_root,
+            class_id,
+            "rmv_collection_probe",
+        ).parent
+        if not collection.exists():
+            return ()
+        if not collection.is_dir() or collection.is_symlink():
+            raise PortiaCorruptionError(
+                "Exceptional Removal certificate collection is not a safe directory"
+            )
+        records: list[StoredRecord] = []
+        for path in sorted(collection.iterdir(), key=lambda item: item.name):
+            if not path.is_file() or path.is_symlink() or path.suffix != ".json":
+                raise PortiaCorruptionError(
+                    f"unexpected artifact in Exceptional Removal collection: {path}"
+                )
+            identifier = validate_portia_id(path.stem, "rmv_", "removal_id")
+            records.append(
+                self.load_exceptional_removal(class_id, identifier, version=version)
+            )
+        return tuple(records)
+
+    def create_exceptional_removal(self, record: PortiaRecord) -> StoredRecord:
+        if (
+            record.contract != "exceptional_removal"
+            or record.logical_id is None
+            or record.class_id is None
+        ):
+            raise PortiaOwnershipError("record must be a class-scoped removal certificate")
+        path = exceptional_removal_path(
+            self.workspace_root,
+            record.class_id,
+            record.logical_id,
+        )
+        fingerprint = exclusive_create(path, canonical_json_bytes(record.to_dict()))
         return StoredRecord(record, path, fingerprint)
 
     def load_actor(self, actor_id: str, *, version: str = "1") -> StoredRecord:

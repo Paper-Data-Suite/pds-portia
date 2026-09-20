@@ -79,7 +79,7 @@ misrepresented as independently persisted graph records.
 | `statement_of_disagreement` | 1 | positive_graph | P22-04 | exact contested-predecessor binding without truth adjudication |
 | `work_relationship` | 2 | positive_graph | P22-11, P22-13, P22-14 | canonical forward relationship and cross-year continuation/context topology |
 | `dependency` | 1 | positive_graph | P22-13 | exact canonical dependency; derived reverse/index views remain nonauthoritative |
-| `operation_journal` | 2 | positive_graph | P22-14 | current version; prepared→staged→committing→recovering→committed→completed recovery evidence |
+| `operation_journal` | 2 / 3 conditional | positive_graph | P22-14 + Issue #47 | v2 remains current for existing non-removal families; v3 is required for verified canonical absence |
 | `operation_current_pointer` | 1 | positive_graph | P22-14 | explicit terminal revision selection; no newest-revision inference |
 | `operation_lock` | 2 | positive_graph | P22-14 | current version; deterministic operation/work lock identity and release evidence |
 | `source_snapshot` | 1 | positive_graph | P22-13 | truthful snapshot of exact canonical source representations |
@@ -115,7 +115,7 @@ These are current public record families, but inserting them into an ordinary po
 | `lifecycle_history_correction` | 1 | existing_focused_fixture_only | Issue #12 lifecycle/correction fixtures | history-repair administrative record is covered in focused validation; P22-04/P22-14 exercise ordinary append-preserving correction |
 | `amendment` | 1 | existing_focused_fixture_only | Issue #12 amendment fixtures | P22-04 uses Statement of Disagreement for its coherent story; forcing an Amendment as well would be redundant; dedicated Issue #12 fixtures cover Amendment semantics |
 | `record_migration` | 1 | existing_focused_fixture_only | Issue #12 migration fixtures | migration is representation change, not semantic correction; G22-015/G22-016 guard misuse |
-| `ownership_correction` | 1 | existing_focused_fixture_only | Issue #12 ownership-correction fixtures | ownership repair is an exceptional administrative correction; canonical owner/path invariants are exercised by G22-002/G22-003 |
+| `ownership_correction` | 1, 2 (current: 2) | existing_focused_fixture_only | Issue #12 v1 and Issue #47 v2 ownership-correction fixtures | ownership repair is an exceptional administrative correction; v2 adds exact Event/Support Process child-root coverage while G22-002/G22-003 retain canonical owner/path invariants |
 | `exceptional_removal` | 1 | existing_focused_fixture_only | Issue #12 exceptional-removal fixtures | explicitly exceptional and distinct from routine retention disposition |
 | `integrity_finding` | 2 | existing_focused_fixture_only | Issue #13 + Issue #14 actor-aware operation fixtures | diagnostic administrative evidence, not ordinary domain judgment; ordinary uncertainty must not manufacture findings |
 | `quarantine_record` | 2 | existing_focused_fixture_only | Issue #13 + Issue #14 actor-aware operation fixtures | exceptional isolation mechanism, not an ordinary review/lifecycle state |
@@ -157,7 +157,14 @@ Retention classes and the future Sunset orchestration boundary are architectural
 
 ## Current-version normalization
 
-P22-14 uses `operation_journal@2` and `operation_lock@2`, the highest current catalog versions. Version 2 preserves ordinary work/record recovery semantics while adding Actor Directory target shapes. `operation_current_pointer@1` remains the current pointer contract. Older cataloged versions remain valid historical contracts; Issue #22 does not mutate or republish them.
+P22-14 uses `operation_journal@2` and `operation_lock@2`, which were the
+highest current catalog versions at Issue #22 closeout. Issue #47 later adds
+conditional `operation_journal@3` authority only for verified canonical
+absence; v2 remains current for existing non-removal families. Version 2
+preserves ordinary work/record recovery semantics while adding Actor Directory
+target shapes. `operation_current_pointer@1` remains the current pointer
+contract. Older cataloged versions remain valid historical contracts, and
+neither Issue #22 nor Issue #47 mutates them.
 
 ## Completion statement
 

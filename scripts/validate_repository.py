@@ -1,4 +1,4 @@
-"""Run the complete Portia repository qualification through Issue #46."""
+"""Run the complete Portia repository qualification through Issue #47."""
 
 from __future__ import annotations
 
@@ -22,6 +22,14 @@ _ISSUE45_CLOSEOUT_COMPATIBILITY_MARKERS = (
     "Run the complete Portia repository qualification through Issue #45.",
     "Issue #45 qualification requires the authenticated Core 0.6.3 wheel",
     "Portia Issue #45 repository qualification passed",
+)
+
+# Historical source-level markers retained for the accepted Issue #46
+# mechanical validator. Current execution proceeds through Issue #47.
+_ISSUE46_CLOSEOUT_COMPATIBILITY_MARKERS = (
+    "Run the complete Portia repository qualification through Issue #46.",
+    "Issue #46 qualification requires the authenticated Core 0.6.3 wheel",
+    "Portia Issue #46 repository qualification passed",
 )
 
 
@@ -69,7 +77,7 @@ def qualify(root: Path, core_wheel: Path) -> None:
     expected_core_version = _core_version_from_wheel(core_wheel)
     if expected_core_version != "0.6.3":
         raise ValueError(
-            "Issue #46 qualification requires the authenticated Core 0.6.3 wheel; "
+            "Issue #47 qualification requires the authenticated Core 0.6.3 wheel; "
             f"received {expected_core_version}"
         )
     _run(
@@ -98,6 +106,15 @@ def qualify(root: Path, core_wheel: Path) -> None:
         [
             sys.executable,
             "scripts/validate_issue46_workflows.py",
+            "--stage",
+            "repository",
+        ],
+        root,
+    )
+    _run(
+        [
+            sys.executable,
+            "scripts/validate_issue47_workflows.py",
             "--stage",
             "repository",
         ],
@@ -205,7 +222,7 @@ def main() -> int:
     except (OSError, RuntimeError, ValueError, subprocess.CalledProcessError) as exc:
         print(f"Repository qualification failed: {exc}", file=sys.stderr)
         return 1
-    print("Portia Issue #46 repository qualification passed")
+    print("Portia Issue #47 repository qualification passed")
     return 0
 
 

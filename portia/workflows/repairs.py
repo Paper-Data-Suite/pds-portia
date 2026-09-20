@@ -18,7 +18,10 @@ from portia.storage.quarantine import QuarantineGuard
 from portia.storage.repository import PortiaRepository, StoredRecord
 from portia.workflows.action_common import ActionReadService
 from portia.workflows.action_consolidation import ActionConsolidationCoordinator
-from portia.workflows.action_reownership import ActionOwnershipCorrectionCoordinator
+from portia.workflows.action_reownership import (
+    ActionOwnershipCorrectionCoordinator,
+    OwnershipCorrectionEvidence,
+)
 from portia.workflows.action_transition import ActionLifecycleCoordinator
 from portia.workflows.common import record_target, work_target
 from portia.workflows.context import WorkflowContextAssembler
@@ -56,9 +59,7 @@ from portia.workflows.support_process_participants import (
     support_process_participant_reference,
 )
 
-_REPAIR_FACILITATOR_CONTEXTS = frozenset(
-    {"provider_or_collaborator", "coordinator"}
-)
+_REPAIR_FACILITATOR_CONTEXTS = frozenset({"provider_or_collaborator", "coordinator"})
 _CURRENT_UNIDENTIFIED_PERSON_KINDS = frozenset(
     {"unknown_person", "unidentified_person"}
 )
@@ -74,12 +75,8 @@ _WORK_ROOT_PRESERVED_FACT_FIELDS = (
 
 
 _WORKFLOW_STATE_TRANSITIONS = {
-    "planning": frozenset(
-        {"active", "completed", "cancelled", "unable_to_complete"}
-    ),
-    "active": frozenset(
-        {"completed", "cancelled", "unable_to_complete"}
-    ),
+    "planning": frozenset({"active", "completed", "cancelled", "unable_to_complete"}),
+    "active": frozenset({"completed", "cancelled", "unable_to_complete"}),
     "completed": frozenset(),
     "cancelled": frozenset(),
     "unable_to_complete": frozenset(),
@@ -129,16 +126,12 @@ _ACTION_STATE_TRANSITIONS = {
     "planned": frozenset(
         {"in_progress", "completed", "unable_to_complete", "withdrawn"}
     ),
-    "in_progress": frozenset(
-        {"completed", "unable_to_complete", "withdrawn"}
-    ),
+    "in_progress": frozenset({"completed", "unable_to_complete", "withdrawn"}),
     "completed": frozenset(),
     "unable_to_complete": frozenset(),
     "withdrawn": frozenset(),
 }
-_PARTICIPANT_IMMUTABLE_FIELDS = frozenset(
-    {"participant_key", "person", "roles"}
-)
+_PARTICIPANT_IMMUTABLE_FIELDS = frozenset({"participant_key", "person", "roles"})
 _ACTION_IMMUTABLE_FIELDS = frozenset(
     {
         "action_key",
@@ -206,9 +199,7 @@ class RepairWorkflowService(ActionReadService):
     ) -> RepairV1:
         require_downstream_record_owner(work, record, contract="repair")
         if not isinstance(record, RepairV1):
-            raise WorkflowOwnershipError(
-                "Repair workflow requires repair@1 input"
-            )
+            raise WorkflowOwnershipError("Repair workflow requires repair@1 input")
         return record
 
     @staticmethod
@@ -267,8 +258,7 @@ class RepairWorkflowService(ActionReadService):
 
         if facilitator.get("kind") != "support_process_participant":
             raise WorkflowOwnershipError(
-                "Support Process Repair facilitator must be "
-                "support_process_participant"
+                "Support Process Repair facilitator must be support_process_participant"
             )
         resolution = authority.require_support_process_operational_participant(
             work,
@@ -404,9 +394,7 @@ class RepairWorkflowService(ActionReadService):
                 continue
 
             if not isinstance(person, Mapping):
-                raise WorkflowOwnershipError(
-                    "Repair participant person is malformed"
-                )
+                raise WorkflowOwnershipError("Repair participant person is malformed")
             if person.get("kind") != "support_process_participant":
                 raise WorkflowOwnershipError(
                     "Support Process Repair participant must reference a "
@@ -418,13 +406,11 @@ class RepairWorkflowService(ActionReadService):
                     "Repair Support Process Participant reference is malformed"
                 )
             if (
-                participant_ref.get("record_kind")
-                != "support_process_participant"
+                participant_ref.get("record_kind") != "support_process_participant"
                 or participant_ref.get("contract_version") != "1"
             ):
                 raise WorkflowOwnershipError(
-                    "Repair participant must name exact "
-                    "support_process_participant@1"
+                    "Repair participant must name exact support_process_participant@1"
                 )
             participant_id = participant_ref.get("record_id")
             if not isinstance(participant_id, str):
@@ -533,9 +519,7 @@ class RepairWorkflowService(ActionReadService):
                 require_same_class=True,
                 require_same_work=False,
             )
-            resolved.append(
-                RepairContextResolution(kind="record", record=exact)
-            )
+            resolved.append(RepairContextResolution(kind="record", record=exact))
 
         return tuple(resolved)
 
@@ -555,9 +539,7 @@ class RepairWorkflowService(ActionReadService):
         action_keys: set[str] = set()
         for index, item in enumerate(values):
             if not isinstance(item, Mapping):
-                raise WorkflowOwnershipError(
-                    f"Repair actions[{index}] is malformed"
-                )
+                raise WorkflowOwnershipError(f"Repair actions[{index}] is malformed")
             action_key = item.get("action_key")
             if not isinstance(action_key, str):
                 raise WorkflowOwnershipError(
@@ -714,9 +696,7 @@ class RepairWorkflowService(ActionReadService):
             current_use=False,
         )
         if candidate.status not in {"proposed", "active"}:
-            raise WorkflowPrerequisiteError(
-                "new Repair must begin proposed or active"
-            )
+            raise WorkflowPrerequisiteError("new Repair must begin proposed or active")
         if candidate.field("supersedes") is not None:
             raise WorkflowPrerequisiteError(
                 "fresh Repair identity cannot establish supersession history"
@@ -915,9 +895,7 @@ class RepairWorkflowService(ActionReadService):
                 "Repair correction cannot reuse a superseded predecessor"
             )
         if value.status != "active":
-            raise WorkflowPrerequisiteError(
-                "corrected Repair successor must be active"
-            )
+            raise WorkflowPrerequisiteError("corrected Repair successor must be active")
 
         self._require_creation_source(
             value,
@@ -1181,8 +1159,7 @@ class RepairWorkflowService(ActionReadService):
         )
         if len(set(ordered_transition_ids)) != len(ordered_transition_ids):
             raise WorkflowPrerequisiteError(
-                "duplicate Repair consolidation lifecycle transition IDs "
-                "must be unique"
+                "duplicate Repair consolidation lifecycle transition IDs must be unique"
             )
 
         coordinator = ActionConsolidationCoordinator(
@@ -1222,9 +1199,7 @@ class RepairWorkflowService(ActionReadService):
         result = coordinator.commit(
             predecessors,
             successor,
-            expected=tuple(
-                expected[identifier] for identifier in predecessor_ids
-            ),
+            expected=tuple(expected[identifier] for identifier in predecessor_ids),
             transition_ids=ordered_transition_ids,
             supersession_reason="duplicate_consolidated",
             operation_id=operation_id,
@@ -1257,9 +1232,7 @@ class RepairWorkflowService(ActionReadService):
                 raise WorkflowOwnershipError("Repair participant is malformed")
             key = item.get("participant_key")
             if not isinstance(key, str):
-                raise WorkflowOwnershipError(
-                    "Repair participant_key is malformed"
-                )
+                raise WorkflowOwnershipError("Repair participant_key is malformed")
             projection[key] = (
                 item.get("roles"),
                 item.get("participation_state"),
@@ -1285,8 +1258,7 @@ class RepairWorkflowService(ActionReadService):
         )
         if prior.status not in {"active", "invalidated"}:
             raise WorkflowPrerequisiteError(
-                "work-root Repair correction predecessor must be "
-                "active or invalidated"
+                "work-root Repair correction predecessor must be active or invalidated"
             )
 
         (
@@ -1328,8 +1300,7 @@ class RepairWorkflowService(ActionReadService):
         for field in _WORK_ROOT_PRESERVED_FACT_FIELDS:
             if prior_data.get(field) != successor_data.get(field):
                 raise WorkflowPrerequisiteError(
-                    "work-root Repair correction cannot rewrite fact "
-                    f"{field}"
+                    f"work-root Repair correction cannot rewrite fact {field}"
                 )
         if self._work_root_participant_projection(
             prior
@@ -1379,6 +1350,7 @@ class RepairWorkflowService(ActionReadService):
         effective_at: str | None = None,
         operation_id: str | None = None,
         fault_hook: FaultHook | None = None,
+        _ownership_evidence: OwnershipCorrectionEvidence | None = None,
     ) -> OperationCommitResult:
         """Move one Repair representation to its corrected owning work root."""
         if (
@@ -1386,8 +1358,7 @@ class RepairWorkflowService(ActionReadService):
             or predecessor.record_ref.contract_version != "1"
         ):
             raise WorkflowOwnershipError(
-                "Repair work-root correction requires exact repair@1 "
-                "predecessor"
+                "Repair work-root correction requires exact repair@1 predecessor"
             )
         source_work = require_downstream_work_root_correction_predecessor(
             destination_work,
@@ -1438,6 +1409,7 @@ class RepairWorkflowService(ActionReadService):
                     allow_supersession=True,
                 )
             ),
+            evidence=_ownership_evidence,
         )
         accepted = self.load_exact(predecessor)
         require_downstream_lifecycle_reconciled(
@@ -1460,9 +1432,7 @@ class RepairWorkflowService(ActionReadService):
         if not isinstance(values, Sequence) or isinstance(
             values, (str, bytes, bytearray)
         ):
-            raise WorkflowOwnershipError(
-                f"Repair {field_name} are malformed"
-            )
+            raise WorkflowOwnershipError(f"Repair {field_name} are malformed")
         entries: dict[str, Mapping[str, object]] = {}
         for index, item in enumerate(values):
             if not isinstance(item, Mapping):
@@ -1513,9 +1483,7 @@ class RepairWorkflowService(ActionReadService):
 
             prior_state = prior_entry.get("participation_state")
             candidate_state = candidate_entry.get("participation_state")
-            if not isinstance(prior_state, str) or not isinstance(
-                candidate_state, str
-            ):
+            if not isinstance(prior_state, str) or not isinstance(candidate_state, str):
                 raise WorkflowOwnershipError(
                     "Repair participant participation_state is malformed"
                 )
@@ -1559,9 +1527,7 @@ class RepairWorkflowService(ActionReadService):
 
             prior_state = prior_entry.get("completion_state")
             candidate_state = candidate_entry.get("completion_state")
-            if not isinstance(prior_state, str) or not isinstance(
-                candidate_state, str
-            ):
+            if not isinstance(prior_state, str) or not isinstance(candidate_state, str):
                 raise WorkflowOwnershipError(
                     "Repair action completion_state is malformed"
                 )

@@ -1,0 +1,65 @@
+{
+  "valid": [
+    {
+      "name": "event-child-to-event-child",
+      "source_work_kind": "event",
+      "source_work_id": "evt_source",
+      "destination_work_kind": "event",
+      "destination_work_id": "evt_destination",
+      "record_kind": "follow_up"
+    },
+    {
+      "name": "event-child-to-support-process-child",
+      "source_work_kind": "event",
+      "source_work_id": "evt_source",
+      "destination_work_kind": "support_process",
+      "destination_work_id": "sup_destination",
+      "record_kind": "follow_up"
+    },
+    {
+      "name": "support-process-child-to-event-child",
+      "source_work_kind": "support_process",
+      "source_work_id": "sup_source",
+      "destination_work_kind": "event",
+      "destination_work_id": "evt_destination",
+      "record_kind": "outcome"
+    },
+    {
+      "name": "support-process-child-to-support-process-child",
+      "source_work_kind": "support_process",
+      "source_work_id": "sup_source",
+      "destination_work_kind": "support_process",
+      "destination_work_id": "sup_destination",
+      "record_kind": "implementation"
+    },
+    {
+      "name": "event-class-ownership",
+      "correction_kind": "event_class_ownership",
+      "source_work_kind": "event",
+      "source_work_id": "evt_source",
+      "destination_work_kind": "event",
+      "destination_work_id": "evt_destination"
+    }
+  ],
+  "structural_invalid": [
+    "wrong_schema_version",
+    "event_scope_with_support_process_id",
+    "support_process_scope_with_event_id",
+    "event_class_with_support_process_destination",
+    "mixed_endpoint_kinds",
+    "malformed_parent_reference",
+    "unknown_reason"
+  ],
+  "application_invalid": [
+    {"name": "unsupported-family-work-kind-pair", "rule_id": "portia.ownership.unsupported_family_work_root_pair"},
+    {"name": "reused-destination-id", "rule_id": "portia.ownership.destination_identifier_reused"},
+    {"name": "family-mismatch", "rule_id": "portia.ownership.record_family_mismatch"},
+    {"name": "silent-reference-retarget", "rule_id": "portia.ownership.silent_reference_retarget"},
+    {"name": "incomplete-reconciliation", "rule_id": "portia.ownership.reconciliation_incomplete"},
+    {"name": "unresolved-dependency", "rule_id": "portia.ownership.unresolved_current_use_child"},
+    {"name": "parent-mismatch", "rule_id": "portia.ownership.parent_child_mapping_mismatch"},
+    {"name": "cycle", "rule_id": "portia.ownership.cycle"},
+    {"name": "cross-workspace", "rule_id": "portia.ownership.cross_workspace"},
+    {"name": "lifecycle-mismatch", "rule_id": "portia.ownership.reason_or_time_mismatch"}
+  ]
+}

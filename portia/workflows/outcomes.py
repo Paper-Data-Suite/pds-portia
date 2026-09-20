@@ -21,7 +21,10 @@ from portia.storage.quarantine import QuarantineGuard
 from portia.storage.repository import PortiaRepository, StoredRecord
 from portia.workflows.action_common import ActionReadService
 from portia.workflows.action_consolidation import ActionConsolidationCoordinator
-from portia.workflows.action_reownership import ActionOwnershipCorrectionCoordinator
+from portia.workflows.action_reownership import (
+    ActionOwnershipCorrectionCoordinator,
+    OwnershipCorrectionEvidence,
+)
 from portia.workflows.action_transition import ActionLifecycleCoordinator
 from portia.workflows.common import record_target, work_target
 from portia.workflows.context import WorkflowContextAssembler
@@ -139,9 +142,7 @@ class OutcomeWorkflowService(ActionReadService):
     ) -> OutcomeV1:
         require_downstream_record_owner(work, record, contract="outcome")
         if not isinstance(record, OutcomeV1):
-            raise WorkflowOwnershipError(
-                "Outcome workflow requires outcome@1 input"
-            )
+            raise WorkflowOwnershipError("Outcome workflow requires outcome@1 input")
         return record
 
     @staticmethod
@@ -234,8 +235,7 @@ class OutcomeWorkflowService(ActionReadService):
 
         if evaluator.get("kind") != "support_process_participant":
             raise WorkflowOwnershipError(
-                "Support Process Outcome evaluator must be "
-                "support_process_participant"
+                "Support Process Outcome evaluator must be support_process_participant"
             )
         authority.require_support_process_operational_participant(
             work,
@@ -510,8 +510,7 @@ class OutcomeWorkflowService(ActionReadService):
                 and portia_reference.record_ref.record_kind != required_contract
             ):
                 raise WorkflowPrerequisiteError(
-                    f"Outcome basis role {role!r} requires "
-                    f"{required_contract!r}"
+                    f"Outcome basis role {role!r} requires {required_contract!r}"
                 )
 
             exact = authority.resolve_exact_work_record(
@@ -623,9 +622,7 @@ class OutcomeWorkflowService(ActionReadService):
             current_use=False,
         )
         if candidate.status not in {"proposed", "active"}:
-            raise WorkflowPrerequisiteError(
-                "new Outcome must begin proposed or active"
-            )
+            raise WorkflowPrerequisiteError("new Outcome must begin proposed or active")
         if candidate.field("supersedes") is not None:
             raise WorkflowPrerequisiteError(
                 "fresh Outcome identity cannot establish supersession history"
@@ -1112,9 +1109,7 @@ class OutcomeWorkflowService(ActionReadService):
         result = coordinator.commit(
             predecessors,
             successor,
-            expected=tuple(
-                expected[identifier] for identifier in predecessor_ids
-            ),
+            expected=tuple(expected[identifier] for identifier in predecessor_ids),
             transition_ids=ordered_transition_ids,
             supersession_reason="duplicate_consolidated",
             operation_id=operation_id,
@@ -1151,8 +1146,7 @@ class OutcomeWorkflowService(ActionReadService):
         )
         if prior.status not in {"active", "invalidated"}:
             raise WorkflowPrerequisiteError(
-                "work-root Outcome correction predecessor must be "
-                "active or invalidated"
+                "work-root Outcome correction predecessor must be active or invalidated"
             )
 
         value, target, scope_records, basis = self._validate_existing(
@@ -1188,8 +1182,7 @@ class OutcomeWorkflowService(ActionReadService):
         for field in _WORK_ROOT_PRESERVED_FACT_FIELDS:
             if prior_data.get(field) != successor_data.get(field):
                 raise WorkflowPrerequisiteError(
-                    "work-root Outcome correction cannot rewrite fact "
-                    f"{field}"
+                    f"work-root Outcome correction cannot rewrite fact {field}"
                 )
 
         self.quarantine.require_allowed(
@@ -1231,6 +1224,7 @@ class OutcomeWorkflowService(ActionReadService):
         effective_at: str | None = None,
         operation_id: str | None = None,
         fault_hook: FaultHook | None = None,
+        _ownership_evidence: OwnershipCorrectionEvidence | None = None,
     ) -> OperationCommitResult:
         """Move one Outcome representation to its corrected owning work root."""
         if (
@@ -1238,8 +1232,7 @@ class OutcomeWorkflowService(ActionReadService):
             or predecessor.record_ref.contract_version != "1"
         ):
             raise WorkflowOwnershipError(
-                "Outcome work-root correction requires exact outcome@1 "
-                "predecessor"
+                "Outcome work-root correction requires exact outcome@1 predecessor"
             )
         source_work = require_downstream_work_root_correction_predecessor(
             destination_work,
@@ -1290,6 +1283,7 @@ class OutcomeWorkflowService(ActionReadService):
                     allow_supersession=True,
                 )
             ),
+            evidence=_ownership_evidence,
         )
         accepted = self.load_exact(predecessor)
         require_downstream_lifecycle_reconciled(

@@ -1,5 +1,16 @@
 # Portia Lifecycle, Amendment, Correction, and Migration Contracts
 
+> **Issue #47 current implementation (2026-09-20):** The bounded production
+> authority is now exposed through `LifecycleWorkflowService`,
+> `AmendmentWorkflowService`, `StatementOfDisagreementWorkflowService`,
+> `DependencyWorkflowService`, `RecordMigrationWorkflowService`, and
+> `OwnershipCorrectionWorkflowService`. Exact historical references never
+> follow successors. `ownership_correction@1` remains historical read;
+> `ownership_correction@2` is current write and uses `operation_journal@2`.
+> Recovery, Integrity, Quarantine, and Exceptional Removal are documented in
+> the coordinated-persistence design and the final Issue #47 validation record.
+> Issue #49 owns teacher-facing unresolved-attention presentation.
+
 **Status:** Accepted — implemented through Decision 18
 **Project:** Paper Data Suite  
 **Module:** `pds-portia`  
@@ -9279,3 +9290,37 @@ Issue #12 now proceeds through implementation slices covering:
 - and final full-suite validation.
 
 Production persistence, coordinated operation journals, atomicity, rollback, crash recovery, quarantine mechanics, and operational finding caches remain deferred to Issue #13.
+
+---
+
+## 25. Later extension: Event and Support Process child ownership
+
+ADR 0019 extends, but does not rewrite, the accepted Event-oriented decision in
+this document. `ownership_correction@1` remains an immutable historical Event
+certificate. `ownership_correction@2` is the current write contract.
+
+Version 2 keeps root-level `event_class_ownership` Event-only. For
+`child_work_root`, it uses the existing exact Portia work-record reference
+without the v1 Event-only narrowing, so an accepted family can identify an
+exact predecessor and successor beneath Event or Support Process roots. A new
+required envelope `work_kind` makes the destination-owned `class_id` and
+`work_id` scope unambiguous and selects the matching Event or Support Process
+ID contract. The neutral reason `wrong_work_root` is added; all v1 reason codes
+remain available.
+
+The schema's four possible work-kind pairs are representational capacity, not
+blanket family authority. Application validation enforces each family's
+accepted pairs, same-family and exact-identity rules, destination scope and
+storage agreement, fresh identity where that family requires it, exact
+successor linkage, `correction/work_root_corrected` lifecycle evidence, and
+complete Dependency and incoming-reference disposition. Incoming references
+remain historical source references unless explicitly handled; they never
+silently retarget.
+
+A v2 `parent_correction` is an exact local v2 reference and is present only for
+a real governing parent correction. Standalone child moves omit it. Historical
+v1 records and their exact references are neither rewritten nor upgraded.
+
+This extension adds contract and runtime parsing authority only. The public
+ownership-correction workflow facade and coordinated certificate persistence
+are intentionally deferred.

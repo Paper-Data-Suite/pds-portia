@@ -10,6 +10,8 @@ from portia._bundle_builder import RUNTIME_VALUE_SCHEMA_IDS, build_runtime_bundl
 from portia.models import (
     EventV1,
     EventV2,
+    OwnershipCorrectionV1,
+    OwnershipCorrectionV2,
     PortiaWireError,
     audit_coverage_against_catalog,
     parse_portia_record,
@@ -103,6 +105,26 @@ def test_historical_event_remains_historical_on_parse() -> None:
     assert isinstance(model, EventV1)
     assert model.contract_version == "1"
     assert model.to_dict() == wire
+
+
+def test_ownership_correction_v1_and_v2_parse_as_exact_versions() -> None:
+    v1_wire = _json(REPO_ROOT / "docs/examples/issue-12/ownership-correction.json")
+    v1 = parse_portia_record("ownership_correction", "1", v1_wire)
+    assert isinstance(v1, OwnershipCorrectionV1)
+    assert v1.contract_version == "1"
+
+    v2_wire = dict(v1_wire)
+    v2_wire.update(
+        {
+            "schema_version": "2",
+            "work_kind": "event",
+            "correction_id": "owc_event_v2_runtime",
+        }
+    )
+    v2 = parse_portia_record("ownership_correction", "2", v2_wire)
+    assert isinstance(v2, OwnershipCorrectionV2)
+    assert v2.contract_version == "2"
+    assert v1.to_dict() == v1_wire
 
 
 def test_unknown_event_field_is_rejected() -> None:

@@ -72,6 +72,34 @@ def test_canonical_work_and_actor_paths_are_deterministic(tmp_path: Path) -> Non
     )
 
 
+def test_support_process_destination_hosts_ownership_certificate(
+    tmp_path: Path,
+) -> None:
+    destination = ExactPortiaWorkRef(
+        class_id="class_english10_p2",
+        work_id="sup_destination",
+        work_kind="support_process",
+        contract_version="1",
+    )
+    assert work_record_path(
+        tmp_path,
+        destination,
+        "ownership_correction",
+        "owc_cross_root",
+    ) == (
+        tmp_path
+        / "classes"
+        / "class_english10_p2"
+        / "modules"
+        / "portia"
+        / "work"
+        / "sup_destination"
+        / "records"
+        / "ownership_correction"
+        / "owc_cross_root.json"
+    )
+
+
 def test_operation_paths_use_immutable_revision_series(tmp_path: Path) -> None:
     assert operation_revision_path(tmp_path, "op_example", 3) == (
         tmp_path / "portia" / "operations" / "op_example" / "revisions" / "3.json"
