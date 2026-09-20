@@ -625,6 +625,224 @@ print(json.dumps({
         raise RuntimeError(f"unexpected workflow smoke result: {payload!r}")
 
 
+def _issue47_authority_smoke(
+    python: Path,
+    *,
+    cwd: Path,
+    env: dict[str, str],
+) -> None:
+    code = r"""
+import json
+from pathlib import Path
+
+from pds_core.workspace import ensure_workspace_root
+from portia.models import parse_portia_record
+from portia.models.references import ExactLocalRecordRef, ExactPortiaWorkRecordRef, ExactPortiaWorkRef
+from portia.storage.repository import PortiaRepository
+from portia.workflows import (
+    AmendmentWorkflowService,
+    DependencyWorkflowService,
+    ExceptionalRemovalAuthority,
+    ExceptionalRemovalWorkflowService,
+    IntegrityWorkflowService,
+    LifecycleWorkflowService,
+    OwnershipCorrectionWorkflowService,
+    RecordMigrationWorkflowService,
+    RecoveryWorkflowService,
+    StatementOfDisagreementWorkflowService,
+    WorkflowPrerequisiteError,
+    disagreement_reference,
+)
+
+NOW = "2026-09-20T10:00:00-04:00"
+UPDATED = "2026-09-20T10:05:00-04:00"
+AGENT = {"type": "system_process", "process_id": "wheel_issue47_smoke"}
+workspace = ensure_workspace_root(Path("synthetic-workspace-issue47"))
+repository = PortiaRepository(workspace)
+work = ExactPortiaWorkRef(
+    class_id="class_issue47_smoke",
+    work_id="evt_issue47_smoke",
+    work_kind="event",
+    contract_version="2",
+)
+event = parse_portia_record("event", "2", {
+    "schema_version": "2",
+    "record_type": "portia_work",
+    "work_kind": "event",
+    "module_id": "portia",
+    "class_id": work.class_id,
+    "work_id": work.work_id,
+    "school_year": "2026-2027",
+    "status": "active",
+    "occurrence": {"precision": "exact", "started_at": NOW},
+    "summary": "Synthetic student recieveed the handout.",
+    "creation_source": {"type": "digital_entry"},
+    "created_at": NOW,
+    "created_by": AGENT,
+    "updated_at": NOW,
+    "updated_by": AGENT,
+})
+prior = repository.create_work(work, event)
+amendment = AmendmentWorkflowService(workspace, repository=repository).apply_amendment(
+    work,
+    expected=prior.fingerprint,
+    amendment_id="amd_issue47_smoke",
+    changes=[{
+        "path": "/summary",
+        "operation": "replace",
+        "before": {"present": True, "value": "Synthetic student recieveed the handout."},
+        "after": {"present": True, "value": "Synthetic student received the handout."},
+    }],
+    reason_code="spelling_corrected",
+    created_at=UPDATED,
+    created_by=AGENT,
+    semantic_equivalence_confirmed=True,
+)
+
+participant = parse_portia_record("event_participant", "3", {
+    "schema_version": "3",
+    "record_type": "event_participant",
+    "module_id": "portia",
+    "class_id": work.class_id,
+    "work_id": work.work_id,
+    "participant_id": "ep_issue47_smoke",
+    "status": "active",
+    "subject": {"kind": "unknown_person", "reason": "identity_not_known"},
+    "creation_source": {"type": "digital_entry"},
+    "created_at": NOW,
+    "created_by": AGENT,
+    "updated_at": NOW,
+    "updated_by": AGENT,
+})
+repository.create_work_record(work, participant)
+participant_ref = ExactPortiaWorkRecordRef(
+    work_ref=work,
+    record_ref=ExactLocalRecordRef(
+        record_kind="event_participant",
+        record_id="ep_issue47_smoke",
+        contract_version="3",
+    ),
+)
+
+disagreement = parse_portia_record("statement_of_disagreement", "1", {
+    "schema_version": "1",
+    "record_type": "statement_of_disagreement",
+    "module_id": "portia",
+    "class_id": work.class_id,
+    "work_id": work.work_id,
+    "disagreement_id": "sod_issue47_smoke",
+    "status": "proposed",
+    "target": {"kind": "local_record", "record_ref": participant_ref.record_ref.to_dict()},
+    "source": {"kind": "local_operator", "display_label": "Synthetic teacher"},
+    "positions": ["disputes_accuracy"],
+    "statement": {"representation": "recorded_summary", "text": "Synthetic bounded disagreement."},
+    "creation_source": {"type": "digital_entry"},
+    "created_at": NOW,
+    "created_by": AGENT,
+    "updated_at": NOW,
+    "updated_by": AGENT,
+})
+disagreements = StatementOfDisagreementWorkflowService(workspace, repository=repository)
+created_disagreement = disagreements.create(work, disagreement)
+active_wire = created_disagreement.record.to_dict()
+active_wire.update({"status": "active", "updated_at": UPDATED, "updated_by": AGENT})
+active_disagreement = parse_portia_record("statement_of_disagreement", "1", active_wire)
+disagreement_ref = disagreement_reference(work, "sod_issue47_smoke")
+lifecycle = LifecycleWorkflowService(workspace, repository=repository)
+lifecycle.transition(
+    disagreement_ref,
+    active_disagreement,
+    expected=created_disagreement.fingerprint,
+    transition_id="lct_issue47_smoke",
+    reason_code="review_confirmed",
+    operation_id="op_issue47_lifecycle_smoke",
+)
+
+dependency = parse_portia_record("dependency", "1", {
+    "schema_version": "1",
+    "record_type": "dependency",
+    "module_id": "portia",
+    "class_id": work.class_id,
+    "work_id": work.work_id,
+    "dependency_id": "dep_issue47_smoke",
+    "status": "active",
+    "dependent": {"kind": "local_record", "record_ref": participant_ref.record_ref.to_dict()},
+    "dependency": {"kind": "portia_work", "work_ref": work.to_dict()},
+    "strength": "required",
+    "applies_to": "current_use",
+    "purpose": "workflow_prerequisite",
+    "creation_source": {"type": "digital_entry"},
+    "created_at": NOW,
+    "created_by": AGENT,
+    "updated_at": NOW,
+    "updated_by": AGENT,
+})
+dependencies = DependencyWorkflowService(workspace, repository=repository)
+dependencies.create(work, dependency)
+gate = dependencies.evaluate_gate(participant_ref, gate="current_use")
+
+integrity = IntegrityWorkflowService(workspace)
+try:
+    integrity.current_findings(integrity.operation_scope("op_issue47_lifecycle_smoke"))
+except WorkflowPrerequisiteError:
+    missing_integrity_blocked = True
+else:
+    raise AssertionError("missing current Integrity projection did not fail closed")
+
+public_instances = (
+    lifecycle,
+    AmendmentWorkflowService(workspace, repository=repository),
+    disagreements,
+    dependencies,
+    RecordMigrationWorkflowService(workspace, repository=repository),
+    OwnershipCorrectionWorkflowService(workspace, repository=repository),
+    ExceptionalRemovalWorkflowService(
+        workspace,
+        authority=ExceptionalRemovalAuthority(
+            enabled=False,
+            governance_state="unknown",
+        ),
+    ),
+    RecoveryWorkflowService(workspace),
+    integrity,
+)
+print(json.dumps({
+    "services": [type(item).__name__ for item in public_instances],
+    "amendment_steps": list(amendment.accepted_steps),
+    "lifecycle_status": lifecycle.require_corrected_history_reconciled(disagreement_ref).selected_status,
+    "dependency_gate": gate.required_gate_satisfied,
+    "integrity_missing_blocked": missing_integrity_blocked,
+}))
+"""
+    result = _run([str(python), "-c", code], cwd=cwd, env=env)
+    payload = json.loads(result.stdout)
+    expected_services = [
+        "LifecycleWorkflowService",
+        "AmendmentWorkflowService",
+        "StatementOfDisagreementWorkflowService",
+        "DependencyWorkflowService",
+        "RecordMigrationWorkflowService",
+        "OwnershipCorrectionWorkflowService",
+        "ExceptionalRemovalWorkflowService",
+        "RecoveryWorkflowService",
+        "IntegrityWorkflowService",
+    ]
+    if payload.get("services") != expected_services:
+        raise RuntimeError(f"unexpected Issue #47 public services: {payload!r}")
+    if payload.get("amendment_steps") != [
+        "step_history",
+        "step_amendment",
+        "step_target",
+    ]:
+        raise RuntimeError(f"unexpected installed Amendment result: {payload!r}")
+    if payload.get("lifecycle_status") != "active":
+        raise RuntimeError(f"unexpected installed lifecycle result: {payload!r}")
+    if payload.get("dependency_gate") is not True:
+        raise RuntimeError(f"unexpected installed Dependency gate: {payload!r}")
+    if payload.get("integrity_missing_blocked") is not True:
+        raise RuntimeError(f"Integrity projection did not fail closed: {payload!r}")
+
+
 def _exceptional_removal_smoke(
     python: Path,
     *,
@@ -637,7 +855,9 @@ from pathlib import Path
 
 from portia.models import parse_portia_record
 from portia.models.references import ExactPortiaWorkRef
+from portia.storage.errors import PortiaNotFoundError
 from portia.storage.repository import PortiaRepository
+from portia.storage.series import OperationJournalStore
 from portia.workflows import ExceptionalRemovalAuthority, ExceptionalRemovalWorkflowService
 
 workspace = Path("removal-workspace")
@@ -693,10 +913,29 @@ result = service.exceptionally_remove(
     effective_at=timestamp,
     synthetic_test_data_confirmed=True,
 )
+resolved = service.resolve_removal_state(target)
+missing_work = ExactPortiaWorkRef(
+    class_id="class_removal_smoke",
+    work_id="evt_never_existed",
+    work_kind="event",
+    contract_version="2",
+)
+try:
+    service.resolve_removal_state({"kind": "work", "work_ref": missing_work.to_dict()})
+except PortiaNotFoundError:
+    absent_without_certificate = "not_found"
+else:
+    raise AssertionError("ordinary absence was incorrectly classified as removal")
+journal = OperationJournalStore(workspace).load_current(
+    result.operation.revision.to_dict()["operation_id"]
+)
 print(json.dumps({
     "payload_absent": not stored.path.exists(),
     "certificate_present": result.certificate.path.is_file(),
-    "resolution": result.resolution.disposition,
+    "resolution": resolved.disposition,
+    "ordinary_absence": absent_without_certificate,
+    "journal_version": journal.revision.contract_version,
+    "operation_kind": journal.revision.to_dict()["operation_kind"],
     "target_unchanged": result.certificate.record.field("target") == target,
 }))
 """
@@ -706,6 +945,9 @@ print(json.dumps({
         "payload_absent": True,
         "certificate_present": True,
         "resolution": "exceptionally_removed",
+        "ordinary_absence": "not_found",
+        "journal_version": "3",
+        "operation_kind": "exceptionally_remove",
         "target_unchanged": True,
     }:
         raise RuntimeError(f"unexpected Exceptional Removal smoke result: {payload!r}")
@@ -724,12 +966,16 @@ from pathlib import Path
 from pds_core.workspace import ensure_workspace_root
 from portia.models import parse_portia_record
 from portia.models.references import ExactPortiaWorkRef
+from portia.storage.errors import PortiaQuarantinedError
 from portia.storage.quarantine import QuarantineGuard
 from portia.storage.repository import PortiaRepository
 from portia.storage.series import OperationJournalStore
 from portia.workflows import (
     FollowUpWorkflowService,
+    IntegrityWorkflowService,
     OwnershipCorrectionWorkflowService,
+    QuarantineWorkflowService,
+    RecoveryWorkflowService,
     follow_up_reference,
 )
 
@@ -948,6 +1194,32 @@ result = service.correct_work_root(
 certificate = service.resolve_correction(result.ownership_correction)
 historical = family.resolve_exact(predecessor)
 journal = OperationJournalStore(workspace).load_current(result.operation_id)
+recovery = RecoveryWorkflowService(workspace).assess(result.operation_id)
+quarantine = QuarantineWorkflowService(workspace).apply_quarantine(
+    target={"kind": "work_record", "work_record_ref": predecessor.to_dict()},
+    reason="partial_commit",
+    reason_detail="Synthetic installed guard proof.",
+    effects=["block_current_use", "review_required"],
+    applying_operation={
+        "operation_id": result.operation_id,
+        "journal_revision": journal.revision.to_dict()["journal_revision"],
+        "contract_version": "2",
+    },
+    supporting_finding_keys=[],
+    applied_at=UPDATED,
+    applied_by=AGENT,
+    release_requirements=["canonical_state_reconciled"],
+    quarantine_id="qnt_0123456789abcdef0123456789abcdee",
+)
+try:
+    IntegrityWorkflowService(workspace).quarantine.require_allowed(
+        {"kind": "work_record", "work_record_ref": predecessor.to_dict()},
+        "block_current_use",
+    )
+except PortiaQuarantinedError:
+    quarantine_blocked = True
+else:
+    raise AssertionError("installed Quarantine did not block current use")
 print(json.dumps({
     "service": type(service).__name__,
     "certificate_version": certificate.record.contract_version,
@@ -957,6 +1229,9 @@ print(json.dumps({
     "historical_status": historical.record.status,
     "journal_version": journal.revision.contract_version,
     "journal_state": journal.revision.to_dict()["state"],
+    "recovery_disposition": recovery.disposition,
+    "quarantine_state": quarantine.revision.to_dict()["state"],
+    "quarantine_blocked": quarantine_blocked,
 }))
 """
     result = _run([str(python), "-c", code], cwd=cwd, env=env)
@@ -968,6 +1243,9 @@ print(json.dumps({
         "historical_status": "superseded",
         "journal_version": "2",
         "journal_state": "completed",
+        "recovery_disposition": "terminal_consistent",
+        "quarantine_state": "active",
+        "quarantine_blocked": True,
     }
     if payload != expected:
         raise RuntimeError(f"unexpected Ownership Correction smoke result: {payload!r}")
@@ -1073,6 +1351,7 @@ def smoke(portia_wheel: Path, core_wheel: Path) -> None:
         _storage_smoke(python, cwd=work, env=env)
         _identity_smoke(python, cwd=work, env=env)
         _workflow_smoke(python, cwd=work, env=env)
+        _issue47_authority_smoke(python, cwd=work, env=env)
         _exceptional_removal_smoke(python, cwd=work, env=env)
         _ownership_correction_smoke(python, cwd=work, env=env)
 
@@ -1115,7 +1394,7 @@ def main() -> int:
             if exc.stderr:
                 print(exc.stderr, file=sys.stderr)
         return 1
-    print("Portia installed-wheel Issue #40 smoke test passed")
+    print("Portia installed-wheel Issue #47 smoke test passed")
     return 0
 
 

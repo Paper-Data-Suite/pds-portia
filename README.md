@@ -12,16 +12,16 @@ The repository currently contains:
 
 * evidence-based research on responsible K–12 behavior documentation and management;
 * accepted design analyses defining Portia’s role, identity model, ownership rules, canonical storage, references, lifecycle, correction, migration, removal, integrity diagnostics, coordinated persistence, recovery, Quarantine, finding administration, derived rebuilding, the Event and Support Process work families, the teacher-local Actor Directory, source-evidence and human-judgment layers, Response/Communication, Support/Intervention/Implementation/Fidelity, Follow-Up/Outcome/Reentry/Repair, paper/import staging, privacy projections, deliberate export, retention hooks, and future retention-orchestration boundaries;
-* accepted Architecture Decision Records ADR 0001 through ADR 0017;
+* accepted Architecture Decision Records ADR 0001 through ADR 0019;
 * independently versioned Draft 2020-12 identifier, reference, target, Actor, Account, Observation, Review, Classification, Hypothesis, Determination, attribution, provenance, lifecycle, correction, disagreement, dependency, migration, ownership-correction, removal, relationship, operational, and derived-projection schemas;
 * retained historical Event-family version-1 schemas, Event version 2, Event Participant and Role version 3, Work Relationship version 2, Actor Directory version-1 contracts, Account and Observation version-1 contracts, Review v1, Classification v1, Hypothesis v1, and Determination v1 contracts, and Actor-aware operational version-2 contracts;
 * validated synthetic examples, focused application-invalid matrices across the foundation issues, and the Issue #22 representative graph corpus with 15 positive and 37 schema-valid graph-invalid scenarios;
 * an installable, strictly typed `pds-portia` package with immutable version-explicit runtime models, exact JSON-native conversion, and in-memory application validation;
 * and automated offline schema-validation, state-machine, compatibility, privacy, example, and documentation-consistency tests.
 
-Portia now contains an installable executable package, immutable runtime models/application validation, the production canonical-storage/recovery layer, the Issue #39 Core-roster / Actor Directory identity service, Issue #40 Event/Participant/Role/Work Relationship services, Issue #41 production Account and Observation workflows, and Issue #42 production Review, Classification, Hypothesis, and Determination workflows. The accepted foundation remains defined by ADRs 0001–0017, the public contract versions listed in `schemas/schema-catalog.json`, the focused validation suites for Issues #11–#21, and the combined representative graph corpus added by Issue #22. Judgment workflows now add guarded digital-entry creation, exact historical reads, current-use qualification, Review progression, lifecycle/correction history, Determination reconsideration/reversal, Quarantine enforcement, and explicit sibling-module evidence authority while preserving the evidence-versus-human-judgment boundary.
+Portia now contains an installable executable package, immutable runtime models/application validation, the production canonical-storage/recovery layer, the Issue #39 Core-roster / Actor Directory identity service, Issue #40 Event/Participant/Role/Work Relationship services, Issue #41 production Account and Observation workflows, and Issue #42 production Review, Classification, Hypothesis, and Determination workflows. The accepted foundation remains defined by ADRs 0001–0019, the public contract versions listed in `schemas/schema-catalog.json`, the focused validation suites for Issues #11–#21, and the combined representative graph corpus added by Issue #22. Judgment workflows now add guarded digital-entry creation, exact historical reads, current-use qualification, Review progression, lifecycle/correction history, Determination reconsideration/reversal, Quarantine enforcement, and explicit sibling-module evidence authority while preserving the evidence-versus-human-judgment boundary.
 
-Historical closeout compatibility is intentionally retained without redefining current authority. Issue #12, Issue #13, and Issue #14 checkpoint tests use the phrases **Architecture Decision Records through ADR 0009** and **Actor Directory version-1 record family** for their then-current milestones. Those phrases describe historical checkpoints only; the current foundation inventory above, ADRs 0001–0017, and the current schema catalog remain authoritative.
+Historical closeout compatibility is intentionally retained without redefining current authority. Issue #12, Issue #13, and Issue #14 checkpoint tests use the phrases **Architecture Decision Records through ADR 0009** and **Actor Directory version-1 record family** for their then-current milestones. Those phrases describe historical checkpoints only; the current foundation inventory above, ADRs 0001–0019, and the current schema catalog remain authoritative.
 
 ### Issue #37 current implementation
 
@@ -227,6 +227,44 @@ without mutating the seeded graph or manufacturing downstream conclusions.
 See `docs/follow-up-outcome-reentry-repair-workflows.md`; observed validation
 evidence is recorded under
 `docs/validation/issue-46-follow-up-outcome-reentry-repair-workflows-validation.md`.
+
+### Issue #47 current implementation
+
+Issue #47 supplies the shared production authority beneath lifecycle,
+nonmaterial Amendment, Statement of Disagreement, Dependency, record migration,
+material correction, Ownership Correction, Exceptional Removal, Recovery,
+Integrity, and Quarantine. The bounded public services are
+`LifecycleWorkflowService`, `AmendmentWorkflowService`,
+`StatementOfDisagreementWorkflowService`, `DependencyWorkflowService`,
+`RecordMigrationWorkflowService`, `OwnershipCorrectionWorkflowService`,
+`ExceptionalRemovalWorkflowService`, `RecoveryWorkflowService`, and
+`IntegrityWorkflowService`; Actor Directory maintenance remains a parallel
+identity authority.
+
+Exact historical references never follow successors. Material correction uses
+an explicit successor and reconciled frontier; Amendment remains allowlisted
+and nonmaterial; disagreement remains a separate attributed record; required
+Dependency gates fail closed. Quarantine is operational rather than lifecycle
+state. Integrity acknowledgement is historical review evidence and suppression
+is presentation-only: neither can alter guard results or release Quarantine.
+
+`ownership_correction@1` is historical read and
+`ownership_correction@2` is current write. Ownership Correction uses
+`operation_journal@2`. `operation_journal@2` remains current for ordinary
+byte-present operations, while `operation_journal@3` is required for verified
+canonical absence and the specialized `exceptionally_remove` action. Removal
+is certificate-first, distinguishes removed from not-found, and never provides
+a generic delete or payload-restoration API.
+
+Teacher-local authority is intentionally bounded. Ambiguous recovery, lock
+clearing without external verification, unsupported compensation,
+pre-certificate emergency destruction, automatic Dependency cascades,
+automatic incoming-reference repair, and unsupported ownership pairs remain
+manual or unsupported. Event class-ownership correction and Actor/roster
+identity mutation are outside the public Ownership Correction boundary. Issue
+#49 owns teacher-facing unresolved-attention query and presentation; Issue #47
+owns the underlying exact authority and semantics. See
+`docs/validation/issue-47-lifecycle-correction-recovery-services-validation.md`.
 
 ### Issue #17 current implementation
 

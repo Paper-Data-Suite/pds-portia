@@ -1,5 +1,16 @@
 # Portia Lifecycle, Amendment, Correction, and Migration Contracts
 
+> **Issue #47 current implementation (2026-09-20):** The bounded production
+> authority is now exposed through `LifecycleWorkflowService`,
+> `AmendmentWorkflowService`, `StatementOfDisagreementWorkflowService`,
+> `DependencyWorkflowService`, `RecordMigrationWorkflowService`, and
+> `OwnershipCorrectionWorkflowService`. Exact historical references never
+> follow successors. `ownership_correction@1` remains historical read;
+> `ownership_correction@2` is current write and uses `operation_journal@2`.
+> Recovery, Integrity, Quarantine, and Exceptional Removal are documented in
+> the coordinated-persistence design and the final Issue #47 validation record.
+> Issue #49 owns teacher-facing unresolved-attention presentation.
+
 **Status:** Accepted — implemented through Decision 18
 **Project:** Paper Data Suite  
 **Module:** `pds-portia`  

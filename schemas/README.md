@@ -1187,6 +1187,27 @@ canonical-domain gate available only to `exceptionally_remove`; it is not a
 generic delete action, is not valid compensation, and is never equivalent to
 `remove_transient`.
 
+### Issue #47 executable authority
+
+The published contracts are enforced by bounded production services for
+lifecycle/history correction, Amendment, Statement of Disagreement,
+Dependency, migration, Ownership Correction, Exceptional Removal, Recovery,
+Integrity, and Quarantine, with parallel Actor Directory maintenance.
+`ownership_correction@1` remains historical-read authority and
+`ownership_correction@2` is current-write authority. Ownership Correction uses
+`operation_journal@2`; verified canonical absence uses
+`operation_journal@3`. Exact historical references are never silently
+retargeted to successors.
+
+Acknowledgement is historical review evidence and suppression affects only
+presentation; neither changes Integrity guard results nor releases Quarantine.
+Quarantine release and recovery mutation require accepted exact evidence.
+Teacher-local manual boundaries include ambiguous recovery, unverifiable lock
+clearing, unsupported compensation, pre-certificate emergency destruction,
+unsupported ownership families/pairs, and Event class-ownership correction.
+Issue #49, not Issue #47, owns teacher-facing unresolved-attention query and
+presentation.
+
 ## Deterministic source snapshots and derived generations
 
 The shared derived-generation contracts are:

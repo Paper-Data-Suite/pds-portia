@@ -1,5 +1,15 @@
 # Portia Coordinated Persistence, Recovery, and Derived-Index Contracts
 
+> **Issue #47 final implementation (2026-09-20):** Bounded
+> `RecoveryWorkflowService`, `IntegrityWorkflowService`,
+> `QuarantineWorkflowService`, and `ExceptionalRemovalWorkflowService`
+> authority now implements this design. Acknowledgement is historical review
+> evidence, suppression is presentation-only, and neither bypasses blocking
+> findings or releases Quarantine. Removal is certificate-first, distinguishes
+> removed from not-found, and never restores payload. Ambiguous recovery and
+> unverifiable lock clearing remain manual; Issue #49 owns teacher-facing
+> unresolved-attention presentation.
+
 > **Issue #47 correction (2026-09-17):** The original Issue #13 journal model
 > assumed a durable result remained as fingerprinted bytes.
 > `operation_journal@2` therefore cannot represent verified canonical absence.
