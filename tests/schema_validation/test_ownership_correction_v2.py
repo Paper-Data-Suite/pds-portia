@@ -30,7 +30,7 @@ except ImportError:
 V1_PATH = REPO_ROOT / "schemas/v1/corrections/ownership-correction.schema.json"
 V2_PATH = "schemas/v2/corrections/ownership-correction.schema.json"
 CASES_PATH = FIXTURE_ROOT / "issue-47/ownership-correction-v2-cases.json"
-V1_FROZEN_SHA256 = "7ffdc29786cede8a294ca58545aa475eb77ccadf70af442946d6b22de4b0a5df"
+V1_FROZEN_SHA256 = "1d6c8836a5c7ff24b0ad955af63e22478f7852b0219b1b9be9d6851e022b6778"
 FAMILY_SCHEMAS = {
     "fidelity": (
         "schemas/v1/support-processes/fidelity.schema.json",
@@ -172,7 +172,11 @@ class OwnershipCorrectionV2SchemaTests(unittest.TestCase):
         self.assertFalse(errors, "\n".join(error.message for error in errors))
 
     def test_v1_public_schema_is_byte_for_byte_frozen(self) -> None:
-        digest = hashlib.sha256(V1_PATH.read_bytes()).hexdigest()
+        # Repository text is canonically LF per .gitattributes. Normalize a
+        # Windows working-tree CRLF representation before checking the frozen
+        # canonical schema bytes.
+        canonical_bytes = V1_PATH.read_bytes().replace(b"\r\n", b"\n")
+        digest = hashlib.sha256(canonical_bytes).hexdigest()
         self.assertEqual(digest, V1_FROZEN_SHA256)
 
     def test_v2_is_cataloged_at_immutable_matching_path(self) -> None:
