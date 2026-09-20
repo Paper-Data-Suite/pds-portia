@@ -18,7 +18,10 @@ from portia.storage.quarantine import QuarantineGuard
 from portia.storage.repository import PortiaRepository, StoredRecord
 from portia.workflows.action_common import ActionReadService
 from portia.workflows.action_consolidation import ActionConsolidationCoordinator
-from portia.workflows.action_reownership import ActionOwnershipCorrectionCoordinator
+from portia.workflows.action_reownership import (
+    ActionOwnershipCorrectionCoordinator,
+    OwnershipCorrectionEvidence,
+)
 from portia.workflows.action_transition import ActionLifecycleCoordinator
 from portia.workflows.common import record_target, work_target
 from portia.workflows.context import WorkflowContextAssembler
@@ -53,26 +56,16 @@ from portia.workflows.errors import (
     WorkflowPrerequisiteError,
 )
 
-_REENTRY_COORDINATOR_CONTEXTS = frozenset(
-    {"provider_or_collaborator", "coordinator"}
-)
-_REENTRY_RECORD_CONTEXTS = frozenset(
-    {"determination", "response", "communication"}
-)
+_REENTRY_COORDINATOR_CONTEXTS = frozenset({"provider_or_collaborator", "coordinator"})
+_REENTRY_RECORD_CONTEXTS = frozenset({"determination", "response", "communication"})
 _REENTRY_WORK_CONTEXTS = frozenset({"event", "support_process"})
-_REENTRY_INERT_CONTEXTS = frozenset(
-    {"external_or_restricted_process", "other"}
-)
+_REENTRY_INERT_CONTEXTS = frozenset({"external_or_restricted_process", "other"})
 _REENTRY_SUPPORT_PLAN_CONTRACTS = frozenset({"support", "intervention"})
 
 
 _WORKFLOW_STATE_TRANSITIONS = {
-    "planned": frozenset(
-        {"active", "completed", "cancelled", "unable_to_complete"}
-    ),
-    "active": frozenset(
-        {"completed", "cancelled", "unable_to_complete"}
-    ),
+    "planned": frozenset({"active", "completed", "cancelled", "unable_to_complete"}),
+    "active": frozenset({"completed", "cancelled", "unable_to_complete"}),
     "completed": frozenset(),
     "cancelled": frozenset(),
     "unable_to_complete": frozenset(),
@@ -137,9 +130,7 @@ class ReentryWorkflowService(ActionReadService):
     ) -> ReentryV1:
         require_downstream_record_owner(work, record, contract="reentry")
         if not isinstance(record, ReentryV1):
-            raise WorkflowOwnershipError(
-                "Reentry workflow requires reentry@1 input"
-            )
+            raise WorkflowOwnershipError("Reentry workflow requires reentry@1 input")
         return record
 
     @staticmethod
@@ -217,9 +208,7 @@ class ReentryWorkflowService(ActionReadService):
                 later_name="Reentry ends_at",
             )
             return
-        raise WorkflowOwnershipError(
-            "Reentry planned return window is malformed"
-        )
+        raise WorkflowOwnershipError("Reentry planned return window is malformed")
 
     def _require_coordinator_authority(
         self,
@@ -311,14 +300,10 @@ class ReentryWorkflowService(ActionReadService):
     ) -> ReentryContextResolution:
         context = record.field("initiating_context")
         if not isinstance(context, Mapping):
-            raise WorkflowOwnershipError(
-                "Reentry initiating_context is malformed"
-            )
+            raise WorkflowOwnershipError("Reentry initiating_context is malformed")
         kind = context.get("kind")
         if not isinstance(kind, str):
-            raise WorkflowOwnershipError(
-                "Reentry initiating_context kind is malformed"
-            )
+            raise WorkflowOwnershipError("Reentry initiating_context kind is malformed")
         if kind in _REENTRY_WORK_CONTEXTS:
             return self._resolve_work_context(
                 work,
@@ -393,10 +378,7 @@ class ReentryWorkflowService(ActionReadService):
                 raise WorkflowOwnershipError(
                     "Reentry support plan must remain in the owning class"
                 )
-            if (
-                work.work_kind == "support_process"
-                and reference.work_ref != work
-            ):
+            if work.work_kind == "support_process" and reference.work_ref != work:
                 raise WorkflowOwnershipError(
                     "Support-Process-owned Reentry plan must share process"
                 )
@@ -528,9 +510,7 @@ class ReentryWorkflowService(ActionReadService):
             current_use=False,
         )
         if candidate.status not in {"proposed", "active"}:
-            raise WorkflowPrerequisiteError(
-                "new Reentry must begin proposed or active"
-            )
+            raise WorkflowPrerequisiteError("new Reentry must begin proposed or active")
         if candidate.field("supersedes") is not None:
             raise WorkflowPrerequisiteError(
                 "fresh Reentry identity cannot establish supersession history"
@@ -1006,9 +986,7 @@ class ReentryWorkflowService(ActionReadService):
         result = coordinator.commit(
             predecessors,
             successor,
-            expected=tuple(
-                expected[identifier] for identifier in predecessor_ids
-            ),
+            expected=tuple(expected[identifier] for identifier in predecessor_ids),
             transition_ids=ordered_transition_ids,
             supersession_reason="duplicate_consolidated",
             operation_id=operation_id,
@@ -1045,8 +1023,7 @@ class ReentryWorkflowService(ActionReadService):
         )
         if prior.status not in {"active", "invalidated"}:
             raise WorkflowPrerequisiteError(
-                "work-root Reentry correction predecessor must be "
-                "active or invalidated"
+                "work-root Reentry correction predecessor must be active or invalidated"
             )
 
         value, target, context, support_refs = self._validate_existing(
@@ -1082,8 +1059,7 @@ class ReentryWorkflowService(ActionReadService):
         for field in _WORK_ROOT_PRESERVED_FACT_FIELDS:
             if prior_data.get(field) != successor_data.get(field):
                 raise WorkflowPrerequisiteError(
-                    "work-root Reentry correction cannot rewrite fact "
-                    f"{field}"
+                    f"work-root Reentry correction cannot rewrite fact {field}"
                 )
 
         self.quarantine.require_allowed(
@@ -1125,6 +1101,7 @@ class ReentryWorkflowService(ActionReadService):
         effective_at: str | None = None,
         operation_id: str | None = None,
         fault_hook: FaultHook | None = None,
+        _ownership_evidence: OwnershipCorrectionEvidence | None = None,
     ) -> OperationCommitResult:
         """Move one Reentry representation to its corrected owning work root."""
         if (
@@ -1132,8 +1109,7 @@ class ReentryWorkflowService(ActionReadService):
             or predecessor.record_ref.contract_version != "1"
         ):
             raise WorkflowOwnershipError(
-                "Reentry work-root correction requires exact reentry@1 "
-                "predecessor"
+                "Reentry work-root correction requires exact reentry@1 predecessor"
             )
         source_work = require_downstream_work_root_correction_predecessor(
             destination_work,
@@ -1184,6 +1160,7 @@ class ReentryWorkflowService(ActionReadService):
                     allow_supersession=True,
                 )
             ),
+            evidence=_ownership_evidence,
         )
         accepted = self.load_exact(predecessor)
         require_downstream_lifecycle_reconciled(

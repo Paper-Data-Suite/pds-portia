@@ -120,6 +120,15 @@ from portia.workflows.outcomes import (
     OutcomeBasisResolution,
     OutcomeWorkflowService,
 )
+from portia.workflows.ownership_correction import (
+    DependencyReview,
+    IncomingReferenceReview,
+    OwnershipCorrectionAssessment,
+    OwnershipCorrectionResult,
+    OwnershipCorrectionWorkflowService,
+    OwnershipFamilyRegistration,
+    supported_ownership_correction_families,
+)
 from portia.workflows.participants import (
     ParticipantPersonResolution,
     ParticipantWorkflowService,
@@ -214,6 +223,12 @@ __all__ = [
     "ModuleOutcomeBasisAuthority",
     "OutcomeBasisResolution",
     "OutcomeWorkflowService",
+    "OwnershipCorrectionAssessment",
+    "OwnershipCorrectionResult",
+    "OwnershipCorrectionWorkflowService",
+    "OwnershipFamilyRegistration",
+    "IncomingReferenceReview",
+    "DependencyReview",
     "ReentryWorkflowService",
     "RecoveryWorkflowAssessment",
     "RecoveryWorkflowService",
@@ -268,6 +283,7 @@ __all__ = [
     "support_process_participant_reference",
     "support_process_reference",
     "supported_amendment_contracts",
+    "supported_ownership_correction_families",
     "SupportWorkflowService",
     "support_reference",
 ]

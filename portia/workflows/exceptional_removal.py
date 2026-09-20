@@ -98,7 +98,13 @@ _ORDINARY_RATIONALES = frozenset(
     }
 )
 _CHILD_DISPOSITIONS = frozenset(
-    {"retained", "exceptionally_removed", "superseded", "invalidated", "review_required"}
+    {
+        "retained",
+        "exceptionally_removed",
+        "superseded",
+        "invalidated",
+        "review_required",
+    }
 )
 _DEPENDENCY_DISPOSITIONS = frozenset(
     {"corrected", "historical_only", "unsatisfied_manual_review", "advisory_reviewed"}
@@ -142,8 +148,15 @@ def _safe_text(value: object, description: str, *, maximum: int = 500) -> str:
     if len(value) > maximum or any(character in value for character in "\r\n\x00"):
         raise WorkflowPrerequisiteError(f"{description} is not bounded one-line text")
     lowered = value.lower()
-    if "@" in value or ":\\" in value or ":/" in value or lowered.startswith(("/", "\\\\")):
-        raise WorkflowPrerequisiteError(f"{description} contains sensitive or path-like data")
+    if (
+        "@" in value
+        or ":\\" in value
+        or ":/" in value
+        or lowered.startswith(("/", "\\\\"))
+    ):
+        raise WorkflowPrerequisiteError(
+            f"{description} contains sensitive or path-like data"
+        )
     return value
 
 
@@ -167,13 +180,25 @@ class ExceptionalRemovalAuthority:
         self._require_common(authorization)
         category = reason.get("category")
         code = reason.get("code")
-        if category not in self.allowed_generic_categories or category not in _GENERIC_CATEGORIES:
-            raise WorkflowPrerequisiteError("Exceptional Removal category is not configured")
+        if (
+            category not in self.allowed_generic_categories
+            or category not in _GENERIC_CATEGORIES
+        ):
+            raise WorkflowPrerequisiteError(
+                "Exceptional Removal category is not configured"
+            )
         if not isinstance(code, str) or code in _ORDINARY_RATIONALES:
-            raise WorkflowPrerequisiteError("ordinary correction/lifecycle rationale cannot remove")
+            raise WorkflowPrerequisiteError(
+                "ordinary correction/lifecycle rationale cannot remove"
+            )
         if category == "administrative_test_data" and not synthetic_test_data_confirmed:
-            raise WorkflowPrerequisiteError("test-data removal requires positive synthetic evidence")
-        if category == "unrecoverable_corruption" and recovery_disposition != "unrecoverable":
+            raise WorkflowPrerequisiteError(
+                "test-data removal requires positive synthetic evidence"
+            )
+        if (
+            category == "unrecoverable_corruption"
+            and recovery_disposition != "unrecoverable"
+        ):
             raise WorkflowPrerequisiteError(
                 "corruption removal requires exact unrecoverable recovery evidence"
             )
@@ -191,10 +216,17 @@ class ExceptionalRemovalAuthority:
         self._require_common(authorization)
         code = ground.get("code")
         if code not in self.allowed_actor_grounds or code not in _ACTOR_GROUNDS:
-            raise WorkflowPrerequisiteError("Actor Exceptional Removal ground is not configured")
+            raise WorkflowPrerequisiteError(
+                "Actor Exceptional Removal ground is not configured"
+            )
         if code == "synthetic_or_test_record" and not synthetic_test_data_confirmed:
-            raise WorkflowPrerequisiteError("Actor test removal requires positive synthetic evidence")
-        if code == "unrecoverable_corruption" and recovery_disposition != "unrecoverable":
+            raise WorkflowPrerequisiteError(
+                "Actor test removal requires positive synthetic evidence"
+            )
+        if (
+            code == "unrecoverable_corruption"
+            and recovery_disposition != "unrecoverable"
+        ):
             raise WorkflowPrerequisiteError(
                 "Actor corruption removal requires unrecoverable recovery evidence"
             )
@@ -203,12 +235,16 @@ class ExceptionalRemovalAuthority:
 
     def _require_common(self, authorization: Mapping[str, object]) -> None:
         if not self.enabled:
-            raise WorkflowPrerequisiteError("Exceptional Removal capability is not configured")
+            raise WorkflowPrerequisiteError(
+                "Exceptional Removal capability is not configured"
+            )
         if self.governance_state != "clear":
             raise WorkflowPrerequisiteError(
                 "Exceptional Removal governance clearance is not known clear"
             )
-        _safe_text(authorization.get("decision_reference"), "external decision reference")
+        _safe_text(
+            authorization.get("decision_reference"), "external decision reference"
+        )
         actor = authorization.get("authorized_by")
         if not isinstance(actor, Mapping) or actor.get("type") != "local_operator":
             raise WorkflowPrerequisiteError(
@@ -302,7 +338,9 @@ def _canonical_candidates(root: Path) -> tuple[Path, ...]:
                 raise PortiaCorruptionError("Portia work collection is unsafe")
             for work in sorted(work_root.iterdir(), key=lambda item: item.name):
                 if not work.is_dir() or work.is_symlink():
-                    raise PortiaCorruptionError("Portia work collection has unsafe member")
+                    raise PortiaCorruptionError(
+                        "Portia work collection has unsafe member"
+                    )
                 manifest = work / "work.json"
                 if manifest.exists():
                     candidates.append(manifest)
@@ -326,7 +364,9 @@ def _canonical_candidates(root: Path) -> tuple[Path, ...]:
     for path in candidates:
         ensure_runtime_containment(root, path)
         if path.is_symlink() or not path.is_file():
-            raise PortiaCorruptionError("canonical reference scan encountered unsafe artifact")
+            raise PortiaCorruptionError(
+                "canonical reference scan encountered unsafe artifact"
+            )
     return tuple(candidates)
 
 
@@ -342,6 +382,54 @@ def _actor_ids(value: object) -> frozenset[str]:
         for child in value:
             found.update(_actor_ids(child))
     return frozenset(found)
+
+
+def _targets_overlap(left: object, right: object) -> bool:
+    if left == right:
+        return True
+    if quarantine_applies(left, right) or quarantine_applies(right, left):
+        return True
+    left_actor_ids = _actor_ids(left)
+    right_actor_ids = _actor_ids(right)
+    return bool(left_actor_ids and left_actor_ids.intersection(right_actor_ids))
+
+
+def _require_no_active_operation_conflict(
+    root: Path,
+    target: Mapping[str, object],
+) -> None:
+    operations = portia_root(root) / "operations"
+    if not operations.exists():
+        return
+    if not operations.is_dir() or operations.is_symlink():
+        raise PortiaCorruptionError("operation collection is unsafe")
+    store = OperationJournalStore(root)
+    terminal = {"completed", "compensated", "aborted"}
+    for child in sorted(operations.iterdir(), key=lambda path: path.name):
+        if child != operation_root(root, child.name):
+            raise PortiaCorruptionError("operation collection member is not canonical")
+        try:
+            current = store.load_current(child.name)
+        except Exception as exc:
+            raise PortiaRecoveryRequiredError(
+                f"operation series requires recovery before mutation: {child.name}"
+            ) from exc
+        data = current.revision.to_dict()
+        if data.get("state") in terminal:
+            continue
+        related: list[object] = [data.get("primary_target")]
+        affected = data.get("affected_targets")
+        if isinstance(affected, list):
+            related.extend(affected)
+        steps = data.get("write_set")
+        if isinstance(steps, list):
+            related.extend(
+                step.get("target") for step in steps if isinstance(step, Mapping)
+            )
+        if any(_targets_overlap(candidate, target) for candidate in related):
+            raise PortiaRecoveryRequiredError(
+                f"active operation {child.name!r} overlaps the selected target"
+            )
 
 
 def _actor_reference(
@@ -361,9 +449,13 @@ def _actor_reference(
     if kind == "actor_contact_point":
         return ExactActorContactPointRef.from_dict(wrapper.get("contact_point_ref"))
     if kind == "actor_student_relationship":
-        return ExactActorStudentRelationshipRef.from_dict(wrapper.get("relationship_ref"))
+        return ExactActorStudentRelationshipRef.from_dict(
+            wrapper.get("relationship_ref")
+        )
     if kind == "actor_roster_student_collision":
-        return ExactActorRosterStudentCollisionRef.from_dict(wrapper.get("collision_ref"))
+        return ExactActorRosterStudentCollisionRef.from_dict(
+            wrapper.get("collision_ref")
+        )
     raise WorkflowOwnershipError("unsupported Actor Directory removal target")
 
 
@@ -394,16 +486,22 @@ class ExceptionalRemovalWorkflowService:
         if kind == "work":
             work_reference = ExactPortiaWorkRef.from_dict(target.get("work_ref"))
             if work_reference.module_id != "portia":
-                raise WorkflowOwnershipError("Exceptional Removal supports only Portia work")
+                raise WorkflowOwnershipError(
+                    "Exceptional Removal supports only Portia work"
+                )
             return self.repository.load_work(work_reference)
         if kind == "work_record":
             record_reference = ExactPortiaWorkRecordRef.from_dict(
                 target.get("work_record_ref")
             )
             if record_reference.work_ref.module_id != "portia":
-                raise WorkflowOwnershipError("Exceptional Removal supports only Portia records")
+                raise WorkflowOwnershipError(
+                    "Exceptional Removal supports only Portia records"
+                )
             if record_reference.record_ref.record_kind == "exceptional_removal":
-                raise WorkflowOwnershipError("removal certificates cannot be removal targets")
+                raise WorkflowOwnershipError(
+                    "removal certificates cannot be removal targets"
+                )
             return self.repository.load_work_record(
                 record_reference.work_ref,
                 record_reference.record_ref.record_kind,
@@ -432,7 +530,9 @@ class ExceptionalRemovalWorkflowService:
             work_wire = (
                 target.get("work_ref")
                 if kind == "work"
-                else cast(Mapping[str, object], target.get("work_record_ref")).get("work_ref")
+                else cast(Mapping[str, object], target.get("work_record_ref")).get(
+                    "work_ref"
+                )
             )
             if not isinstance(work_wire, Mapping):
                 raise WorkflowOwnershipError("removal target lacks exact work scope")
@@ -492,7 +592,11 @@ class ExceptionalRemovalWorkflowService:
         for record in QuarantineGuard(self.root).active_records():
             data = record.to_dict()
             origin = data.get("origin")
-            applying = origin.get("applying_operation") if isinstance(origin, Mapping) else None
+            applying = (
+                origin.get("applying_operation")
+                if isinstance(origin, Mapping)
+                else None
+            )
             if (
                 isinstance(applying, Mapping)
                 and applying.get("operation_id") == operation_id
@@ -517,11 +621,15 @@ class ExceptionalRemovalWorkflowService:
             raise PortiaCorruptionError("removal recovery write set is malformed")
         certificate_step = steps[0]
         if not isinstance(certificate_step, Mapping):
-            raise PortiaCorruptionError("removal recovery certificate step is malformed")
+            raise PortiaCorruptionError(
+                "removal recovery certificate step is malformed"
+            )
         relative = certificate_step.get("destination_path")
         intended = certificate_step.get("intended_result")
         if not isinstance(relative, str) or not isinstance(intended, Mapping):
-            raise PortiaCorruptionError("removal recovery certificate evidence is malformed")
+            raise PortiaCorruptionError(
+                "removal recovery certificate evidence is malformed"
+            )
         path = resolve_workspace_relative(self.root, relative)
         try:
             value, _content, fingerprint = read_json(path)
@@ -538,7 +646,9 @@ class ExceptionalRemovalWorkflowService:
         try:
             record = parse_portia_record(contract, "1", value)
         except Exception as exc:
-            raise PortiaCorruptionError("removal recovery certificate is invalid") from exc
+            raise PortiaCorruptionError(
+                "removal recovery certificate is invalid"
+            ) from exc
         stored = StoredRecord(record, path, fingerprint)
         matches = self._matching_certificates(target)
         if len(matches) != 1 or matches[0].fingerprint != fingerprint:
@@ -595,7 +705,9 @@ class ExceptionalRemovalWorkflowService:
         reason = certificate_data.get(reason_field)
         authorization = certificate_data.get("authorization")
         if not isinstance(reason, Mapping) or not isinstance(authorization, Mapping):
-            raise PortiaCorruptionError("removal certificate authority evidence is malformed")
+            raise PortiaCorruptionError(
+                "removal certificate authority evidence is malformed"
+            )
         if target.get("kind") == "actor_directory_record":
             self.authority.require_actor(
                 reason,
@@ -666,7 +778,9 @@ class ExceptionalRemovalWorkflowService:
                     "verified removal absence contradicts a present canonical payload"
                 )
             observed = removal_step.get("observed_result")
-            observed_at = observed.get("observed_at") if isinstance(observed, Mapping) else None
+            observed_at = (
+                observed.get("observed_at") if isinstance(observed, Mapping) else None
+            )
             observation = AbsenceObservation(
                 cast(str, removal_step["destination_path"]),
                 observed_at if isinstance(observed_at, str) else timestamp,
@@ -696,9 +810,13 @@ class ExceptionalRemovalWorkflowService:
                 "removal step journal disposition is not safely recoverable"
             )
         prior = removal_step.get("precondition")
-        prior_fingerprint = prior.get("fingerprint") if isinstance(prior, Mapping) else None
+        prior_fingerprint = (
+            prior.get("fingerprint") if isinstance(prior, Mapping) else None
+        )
         if not isinstance(prior_fingerprint, Mapping):
-            raise PortiaCorruptionError("removal recovery lacks exact prior fingerprint")
+            raise PortiaCorruptionError(
+                "removal recovery lacks exact prior fingerprint"
+            )
         self._purge_managed_copies_from_journal(target, prior_fingerprint)
         if fault_hook is not None:
             fault_hook("after_recovery_purge", None)
@@ -718,7 +836,11 @@ class ExceptionalRemovalWorkflowService:
         target_path: Path,
     ) -> tuple[str, ...]:
         needles = _target_reference_needles(target)
-        excluded_root = target_path.parent if target.get("kind") in {"work", "actor_directory_record"} else None
+        excluded_root = (
+            target_path.parent
+            if target.get("kind") in {"work", "actor_directory_record"}
+            else None
+        )
         found: list[str] = []
         for path in _canonical_candidates(self.root):
             if path == target_path:
@@ -739,7 +861,10 @@ class ExceptionalRemovalWorkflowService:
                     except ValueError:
                         pass
             value, _content, _fingerprint = read_json(path)
-            if any(needle is not None and _contains_exact(value, needle) for needle in needles):
+            if any(
+                needle is not None and _contains_exact(value, needle)
+                for needle in needles
+            ):
                 found.append(workspace_relative(self.root, path))
         return tuple(sorted(found))
 
@@ -756,53 +881,11 @@ class ExceptionalRemovalWorkflowService:
                     matches.append(quarantine_id)
         return tuple(sorted(matches))
 
-    @staticmethod
-    def _targets_overlap(left: object, right: object) -> bool:
-        if left == right:
-            return True
-        if quarantine_applies(left, right) or quarantine_applies(right, left):
-            return True
-        left_actor_ids = _actor_ids(left)
-        right_actor_ids = _actor_ids(right)
-        return bool(left_actor_ids and left_actor_ids.intersection(right_actor_ids))
-
     def _require_no_active_operation_conflict(
         self,
         target: Mapping[str, object],
     ) -> None:
-        operations = portia_root(self.root) / "operations"
-        if not operations.exists():
-            return
-        if not operations.is_dir() or operations.is_symlink():
-            raise PortiaCorruptionError("operation collection is unsafe")
-        terminal = {"completed", "compensated", "aborted"}
-        for child in sorted(operations.iterdir(), key=lambda path: path.name):
-            if child != operation_root(self.root, child.name):
-                raise PortiaCorruptionError("operation collection member is not canonical")
-            try:
-                current = self.operations.load_current(child.name)
-            except Exception as exc:
-                raise PortiaRecoveryRequiredError(
-                    f"operation series requires recovery before removal: {child.name}"
-                ) from exc
-            data = current.revision.to_dict()
-            if data.get("state") in terminal:
-                continue
-            related: list[object] = [data.get("primary_target")]
-            affected = data.get("affected_targets")
-            if isinstance(affected, list):
-                related.extend(affected)
-            steps = data.get("write_set")
-            if isinstance(steps, list):
-                related.extend(
-                    step.get("target")
-                    for step in steps
-                    if isinstance(step, Mapping)
-                )
-            if any(self._targets_overlap(candidate, target) for candidate in related):
-                raise PortiaRecoveryRequiredError(
-                    f"active operation {child.name!r} overlaps the removal target"
-                )
+        _require_no_active_operation_conflict(self.root, target)
 
     def _managed_payload_copy_paths(
         self,
@@ -843,7 +926,9 @@ class ExceptionalRemovalWorkflowService:
                 record_id = path.stem
                 version = value.get("schema_version")
                 work_ref = target.get("work_ref")
-                if not all(isinstance(item, str) for item in (record_kind, record_id, version)):
+                if not all(
+                    isinstance(item, str) for item in (record_kind, record_id, version)
+                ):
                     raise PortiaCorruptionError("work child lacks exact identity")
                 children.append(
                     RemovalChild(
@@ -868,20 +953,37 @@ class ExceptionalRemovalWorkflowService:
                 if not records_root.exists():
                     return ()
                 actor_ref = wrapper.get("actor_ref")
-                actor_id = actor_ref.get("actor_id") if isinstance(actor_ref, Mapping) else None
+                actor_id = (
+                    actor_ref.get("actor_id")
+                    if isinstance(actor_ref, Mapping)
+                    else None
+                )
                 for path in sorted(records_root.glob("*/*.json")):
                     value, _content, _fp = read_json(path)
                     if not isinstance(value, Mapping) or not isinstance(actor_id, str):
-                        raise PortiaCorruptionError("Actor child inventory is malformed")
+                        raise PortiaCorruptionError(
+                            "Actor child inventory is malformed"
+                        )
                     kind = value.get("record_type")
                     version = value.get("schema_version")
                     fields = {
-                        "actor_contact_point": ("contact_point_ref", "contact_point_id"),
-                        "actor_student_relationship": ("relationship_ref", "relationship_id"),
-                        "actor_roster_student_collision": ("collision_ref", "collision_id"),
+                        "actor_contact_point": (
+                            "contact_point_ref",
+                            "contact_point_id",
+                        ),
+                        "actor_student_relationship": (
+                            "relationship_ref",
+                            "relationship_id",
+                        ),
+                        "actor_roster_student_collision": (
+                            "collision_ref",
+                            "collision_id",
+                        ),
                     }
                     if kind not in fields or not isinstance(version, str):
-                        raise PortiaCorruptionError("unsupported Actor child inventory member")
+                        raise PortiaCorruptionError(
+                            "unsupported Actor child inventory member"
+                        )
                     reference_field, id_field = fields[str(kind)]
                     children.append(
                         RemovalChild(
@@ -912,7 +1014,9 @@ class ExceptionalRemovalWorkflowService:
         recovery_disposition: str | None = None,
     ) -> RemovalAssessment:
         if integrity_clearance != "clear":
-            raise WorkflowPrerequisiteError("current Integrity state is not known clear")
+            raise WorkflowPrerequisiteError(
+                "current Integrity state is not known clear"
+            )
         if target.get("kind") == "actor_directory_record":
             self.authority.require_actor(
                 reason,
@@ -938,9 +1042,14 @@ class ExceptionalRemovalWorkflowService:
         stored = self._load_target(target)
         content = read_bytes(stored.path)
         if fingerprint_bytes(content) != stored.fingerprint:
-            raise PortiaConflictError("canonical bytes changed during removal assessment")
+            raise PortiaConflictError(
+                "canonical bytes changed during removal assessment"
+            )
         relative = expected_target_relative_path(self.root, dict(target))
-        if relative is None or resolve_workspace_relative(self.root, relative) != stored.path:
+        if (
+            relative is None
+            or resolve_workspace_relative(self.root, relative) != stored.path
+        ):
             raise WorkflowOwnershipError("target path is not identity-derived")
         incoming = self._incoming_references(target, stored.path)
         dependencies = tuple(
@@ -1041,7 +1150,9 @@ class ExceptionalRemovalWorkflowService:
             )
         salt = self.entropy(18)
         if len(salt) < 3:
-            raise WorkflowPrerequisiteError("removal entropy provider returned too little entropy")
+            raise WorkflowPrerequisiteError(
+                "removal entropy provider returned too little entropy"
+            )
         evidence = {
             "kind": "salted_sha256",
             "salt": base64.b64encode(salt).decode("ascii"),
@@ -1093,7 +1204,9 @@ class ExceptionalRemovalWorkflowService:
             work_wire = (
                 target.get("work_ref")
                 if target.get("kind") == "work"
-                else cast(Mapping[str, object], target["work_record_ref"]).get("work_ref")
+                else cast(Mapping[str, object], target["work_record_ref"]).get(
+                    "work_ref"
+                )
             )
             assert isinstance(work_wire, Mapping)
             class_id = cast(str, work_wire["class_id"])
@@ -1251,7 +1364,10 @@ class ExceptionalRemovalWorkflowService:
         lock_targets: list[tuple[str, dict[str, object]]] = []
         if target.get("kind") == "actor_directory_record":
             lock_targets.extend(
-                [("actor_directory_record", dict(target)), ("operation", operation_target)]
+                [
+                    ("actor_directory_record", dict(target)),
+                    ("operation", operation_target),
+                ]
             )
         else:
             protected_target: dict[str, object] = dict(target)
@@ -1322,17 +1438,35 @@ class ExceptionalRemovalWorkflowService:
             "operation_id": operation_id,
             "operation_kind": "exceptionally_remove",
             "intent_digest": fingerprint_bytes(canonical_json_bytes(intent)).digest,
-            "scope": "workspace" if target.get("kind") == "actor_directory_record" else "work",
+            "scope": "workspace"
+            if target.get("kind") == "actor_directory_record"
+            else "work",
             "primary_target": deepcopy(dict(target)),
             "affected_targets": [
                 certificate_target,
                 *[deepcopy(dict(child.target)) for child in assessment.children],
             ],
             "intent_facts": [
-                {"name": "incoming_reference_count", "kind": "integer", "value": len(assessment.incoming_references)},
-                {"name": "dependency_count", "kind": "integer", "value": len(assessment.dependencies)},
-                {"name": "child_count", "kind": "integer", "value": len(assessment.children)},
-                {"name": "managed_copy_count", "kind": "integer", "value": len(assessment.managed_payload_copies)},
+                {
+                    "name": "incoming_reference_count",
+                    "kind": "integer",
+                    "value": len(assessment.incoming_references),
+                },
+                {
+                    "name": "dependency_count",
+                    "kind": "integer",
+                    "value": len(assessment.dependencies),
+                },
+                {
+                    "name": "child_count",
+                    "kind": "integer",
+                    "value": len(assessment.children),
+                },
+                {
+                    "name": "managed_copy_count",
+                    "kind": "integer",
+                    "value": len(assessment.managed_payload_copies),
+                },
             ],
             "initiated_at": timestamp,
             "initiated_by": deepcopy(authorization["authorized_by"]),
@@ -1511,7 +1645,9 @@ class ExceptionalRemovalWorkflowService:
         for path in self.root.rglob("*"):
             if not path.is_file() or path == canonical_path:
                 continue
-            relative = "/" + _portable_relative_path(workspace_relative(self.root, path))
+            relative = "/" + _portable_relative_path(
+                workspace_relative(self.root, path)
+            )
             staged = "/.portia-staging/" in relative
             derived = relative.startswith("/portia/derived/") or (
                 "/modules/portia/" in relative and "/derived/" in relative
@@ -1535,7 +1671,9 @@ class ExceptionalRemovalWorkflowService:
         current = projection_root / "current.json"
         if current.exists():
             value, _content, fingerprint = read_json(current)
-            generation_ref = value.get("generation_ref") if isinstance(value, Mapping) else None
+            generation_ref = (
+                value.get("generation_ref") if isinstance(value, Mapping) else None
+            )
             if (
                 isinstance(generation_ref, Mapping)
                 and generation_ref.get("generation_id") == generation_root.name
@@ -1567,8 +1705,12 @@ class ExceptionalRemovalWorkflowService:
                 continue
             ensure_runtime_containment(self.root, path)
             if path.is_symlink():
-                raise PortiaCorruptionError("managed-copy purge encountered a symbolic link")
-            relative = "/" + _portable_relative_path(workspace_relative(self.root, path))
+                raise PortiaCorruptionError(
+                    "managed-copy purge encountered a symbolic link"
+                )
+            relative = "/" + _portable_relative_path(
+                workspace_relative(self.root, path)
+            )
             if "/derived/" in relative:
                 removed.extend(self._purge_derived_generation(path))
                 continue
@@ -1576,7 +1718,10 @@ class ExceptionalRemovalWorkflowService:
             fingerprint = fingerprint_bytes(content)
             exact_delete(path, expected=fingerprint)
             removed.append(workspace_relative(self.root, path))
-        if any(matches(read_bytes(path)) for path in self._managed_copy_candidates(canonical_path)):
+        if any(
+            matches(read_bytes(path))
+            for path in self._managed_copy_candidates(canonical_path)
+        ):
             raise PortiaRecoveryRequiredError(
                 "prohibited Portia-managed payload copy remains after purge"
             )
@@ -1587,11 +1732,14 @@ class ExceptionalRemovalWorkflowService:
         assessment: RemovalAssessment,
     ) -> tuple[str, ...]:
         target_value = assessment.stored.record.to_dict()
+
         def matches(content: bytes) -> bool:
             contains = content == assessment.canonical_bytes
             if not contains:
                 try:
-                    contains = _contains_exact(json.loads(content.decode("utf-8")), target_value)
+                    contains = _contains_exact(
+                        json.loads(content.decode("utf-8")), target_value
+                    )
                 except (UnicodeDecodeError, json.JSONDecodeError):
                     contains = False
             return contains
@@ -1606,7 +1754,9 @@ class ExceptionalRemovalWorkflowService:
         digest = prior_fingerprint.get("digest")
         byte_length = prior_fingerprint.get("byte_length")
         if not isinstance(digest, str) or not isinstance(byte_length, int):
-            raise PortiaCorruptionError("removal journal prior fingerprint is malformed")
+            raise PortiaCorruptionError(
+                "removal journal prior fingerprint is malformed"
+            )
         relative = expected_target_relative_path(self.root, dict(target))
         if relative is None:
             raise PortiaCorruptionError("removal journal target has no canonical path")
@@ -1644,18 +1794,30 @@ class ExceptionalRemovalWorkflowService:
         dependency_dispositions: Mapping[str, str],
         child_dispositions: Mapping[str, str],
     ) -> None:
-        if tuple(sorted(reviewed_incoming_references)) != assessment.incoming_references:
+        if (
+            tuple(sorted(reviewed_incoming_references))
+            != assessment.incoming_references
+        ):
             raise WorkflowPrerequisiteError(
                 "incoming-reference review is not complete for the fresh canonical scan"
             )
         if set(dependency_dispositions) != set(assessment.dependencies):
             raise WorkflowPrerequisiteError("Dependency review is incomplete")
-        if any(value not in _DEPENDENCY_DISPOSITIONS for value in dependency_dispositions.values()):
-            raise WorkflowPrerequisiteError("Dependency review has unsupported disposition")
+        if any(
+            value not in _DEPENDENCY_DISPOSITIONS
+            for value in dependency_dispositions.values()
+        ):
+            raise WorkflowPrerequisiteError(
+                "Dependency review has unsupported disposition"
+            )
         expected_children = {child.relative_path for child in assessment.children}
         if set(child_dispositions) != expected_children:
-            raise WorkflowPrerequisiteError("root child inventory/disposition is incomplete")
-        if any(value not in _CHILD_DISPOSITIONS for value in child_dispositions.values()):
+            raise WorkflowPrerequisiteError(
+                "root child inventory/disposition is incomplete"
+            )
+        if any(
+            value not in _CHILD_DISPOSITIONS for value in child_dispositions.values()
+        ):
             raise WorkflowPrerequisiteError("root child disposition is unsupported")
 
     def _prepare_child_removals(
@@ -1684,8 +1846,14 @@ class ExceptionalRemovalWorkflowService:
                 )
             if disposition == "retained" and assessment.target.get("kind") == "work":
                 reference = child.target.get("work_record_ref")
-                local = reference.get("record_ref") if isinstance(reference, Mapping) else None
-                record_kind = local.get("record_kind") if isinstance(local, Mapping) else None
+                local = (
+                    reference.get("record_ref")
+                    if isinstance(reference, Mapping)
+                    else None
+                )
+                record_kind = (
+                    local.get("record_kind") if isinstance(local, Mapping) else None
+                )
                 if record_kind not in _RETAINABLE_WORK_AUDIT_KINDS:
                     raise WorkflowPrerequisiteError(
                         "a substantive work child cannot remain current without its root"
@@ -1796,7 +1964,9 @@ class ExceptionalRemovalWorkflowService:
         if self._matching_certificates(target):
             resolution = self.resolve_removal_state(target)
             if resolution.disposition == "exceptionally_removed":
-                raise PortiaConflictError("use resolve_removal_state for completed replay")
+                raise PortiaConflictError(
+                    "use resolve_removal_state for completed replay"
+                )
             raise PortiaRecoveryRequiredError(
                 "existing certificate requires operation recovery, not a second removal"
             )
@@ -1826,7 +1996,9 @@ class ExceptionalRemovalWorkflowService:
         held: list[HeldLock] = []
         try:
             for entry in cast(list[dict[str, object]], journal_value["lock_set"]):
-                held.append(self.locks.acquire(lock_records[cast(str, entry["lock_id"])]))
+                held.append(
+                    self.locks.acquire(lock_records[cast(str, entry["lock_id"])])
+                )
             quarantine = self.quarantines.apply_quarantine(
                 target=target,
                 reason="removal_reconciliation",
@@ -1864,7 +2036,9 @@ class ExceptionalRemovalWorkflowService:
             if target.get("kind") == "actor_directory_record":
                 stored_certificate = self.actors.create_exceptional_removal(certificate)
             else:
-                stored_certificate = self.repository.create_exceptional_removal(certificate)
+                stored_certificate = self.repository.create_exceptional_removal(
+                    certificate
+                )
             if fault_hook is not None:
                 fault_hook("after_certificate_durable", None)
             operation = self._append_certificate_accepted(

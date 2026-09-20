@@ -66,6 +66,7 @@ REQUIRED_RUNTIME_FILES = {
     "portia/workflows/events.py",
     "portia/workflows/exceptional_removal.py",
     "portia/workflows/issue22_parity.py",
+    "portia/workflows/ownership_correction.py",
     "portia/workflows/participants.py",
     "portia/workflows/relationships.py",
     "portia/workflows/roles.py",
@@ -87,6 +88,7 @@ REQUIRED_SDIST_FILES = {
     "docs/event-participant-role-and-relationship-workflows.md",
     "docs/validation/issue-40-event-participant-role-and-relationship-workflows-validation.md",
     "docs/validation/issue-47-exceptional-removal-workflow-validation.md",
+    "docs/validation/issue-47-ownership-correction-workflow-validation.md",
     "portia/__init__.py",
     "portia/__main__.py",
     "portia/_version.py",
@@ -117,6 +119,7 @@ REQUIRED_SDIST_FILES = {
     "portia/workflows/events.py",
     "portia/workflows/exceptional_removal.py",
     "portia/workflows/issue22_parity.py",
+    "portia/workflows/ownership_correction.py",
     "portia/workflows/participants.py",
     "portia/workflows/relationships.py",
     "portia/workflows/roles.py",
@@ -148,16 +151,28 @@ def _metadata_findings(content: bytes) -> list[str]:
     if message.get("Version") != EXPECTED_VERSION:
         findings.append(f"unexpected version: {message.get('Version')!r}")
     if message.get("Requires-Python") != ">=3.11":
-        findings.append(f"unexpected Requires-Python: {message.get('Requires-Python')!r}")
-    requirements = [item.replace(" ", "") for item in message.get_all("Requires-Dist", [])]
+        findings.append(
+            f"unexpected Requires-Python: {message.get('Requires-Python')!r}"
+        )
+    requirements = [
+        item.replace(" ", "") for item in message.get_all("Requires-Dist", [])
+    ]
     if not any("pds-core<0.7,>=0.6.3" in item for item in requirements):
         findings.append(f"missing Core 0.6.3 dependency floor: {requirements}")
     sibling_names = ("scoreform", "quillan", "concord", "meridian", "vitrine")
-    runtime_requirements = [item.lower() for item in requirements if "extra==" not in item.lower()]
-    if any(any(name in item for name in sibling_names) for item in runtime_requirements):
-        findings.append(f"unexpected sibling runtime dependency: {runtime_requirements}")
+    runtime_requirements = [
+        item.lower() for item in requirements if "extra==" not in item.lower()
+    ]
+    if any(
+        any(name in item for name in sibling_names) for item in runtime_requirements
+    ):
+        findings.append(
+            f"unexpected sibling runtime dependency: {runtime_requirements}"
+        )
     if any("jsonschema" in item.lower() for item in runtime_requirements):
-        findings.append("jsonschema must remain a development/test dependency, not runtime")
+        findings.append(
+            "jsonschema must remain a development/test dependency, not runtime"
+        )
     return findings
 
 
@@ -186,7 +201,9 @@ def validate_wheel(path: Path) -> list[str]:
             ):
                 findings.append(f"unexpected runtime file type: {name}")
             if name.startswith("portia/schemas/"):
-                findings.append(f"repository schema tree leaked into runtime wheel: {name}")
+                findings.append(
+                    f"repository schema tree leaked into runtime wheel: {name}"
+                )
         for name in names:
             if _unsafe_path(name):
                 findings.append(f"unsafe wheel path: {name}")
@@ -194,12 +211,16 @@ def validate_wheel(path: Path) -> list[str]:
                 findings.append(f"forbidden wheel repository content: {name}")
             if "__pycache__/" in name or name.endswith((".pyc", ".pyo")):
                 findings.append(f"forbidden wheel cache content: {name}")
-        metadata_names = [name for name in names if name.endswith(".dist-info/METADATA")]
+        metadata_names = [
+            name for name in names if name.endswith(".dist-info/METADATA")
+        ]
         if len(metadata_names) != 1:
             findings.append("expected exactly one wheel METADATA file")
         else:
             findings.extend(_metadata_findings(archive.read(metadata_names[0])))
-        entry_names = [name for name in names if name.endswith(".dist-info/entry_points.txt")]
+        entry_names = [
+            name for name in names if name.endswith(".dist-info/entry_points.txt")
+        ]
         if len(entry_names) != 1:
             findings.append("expected exactly one wheel entry_points.txt")
         else:
@@ -216,7 +237,9 @@ def validate_wheel(path: Path) -> list[str]:
             findings.append("compiled runtime contract bundle is missing")
         else:
             if b'"bundle_contract": "pds-portia.runtime-contract-bundle"' not in bundle:
-                findings.append("compiled runtime contract bundle has unexpected identity")
+                findings.append(
+                    "compiled runtime contract bundle has unexpected identity"
+                )
     return findings
 
 

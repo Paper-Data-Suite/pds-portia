@@ -45,7 +45,7 @@ def _console_path(python: Path) -> Path:
 
 
 def _model_smoke(python: Path, *, cwd: Path, env: dict[str, str]) -> None:
-    code = r'''
+    code = r"""
 import json
 from portia.models import (
     EventV2,
@@ -149,7 +149,7 @@ print(json.dumps({
     "version": record.contract_version,
     "ownership_versions": [v1.contract_version, v2.contract_version],
 }))
-'''
+"""
     result = _run([str(python), "-c", code], cwd=cwd, env=env)
     payload = json.loads(result.stdout)
     if payload != {
@@ -179,7 +179,7 @@ def _operation_journal_v3_smoke(
             / "v3-removal-pending.json"
         ).read_text(encoding="utf-8")
     )
-    code = f'''
+    code = f"""
 import json
 from portia.models import OperationJournalV3, parse_portia_record
 from portia.storage.operation_journal import absence_steps
@@ -192,7 +192,7 @@ assert step.prior_contract_version == "3"
 assert step.removal_ref["removal_id"] == "rmv_issue47_v3"
 assert step.observed_absent is False
 print(json.dumps({{"contract": record.contract, "version": record.contract_version}}))
-'''
+"""
     result = _run([str(python), "-c", code], cwd=cwd, env=env)
     payload = json.loads(result.stdout)
     if payload != {"contract": "operation_journal", "version": "3"}:
@@ -200,7 +200,7 @@ print(json.dumps({{"contract": record.contract, "version": record.contract_versi
 
 
 def _storage_smoke(python: Path, *, cwd: Path, env: dict[str, str]) -> None:
-    code = r'''
+    code = r"""
 import json
 from pathlib import Path
 
@@ -257,17 +257,19 @@ print(json.dumps({
     "replaced": replaced.fingerprint.digest,
     "stale_conflict": conflict,
 }))
-'''
+"""
     result = _run([str(python), "-c", code], cwd=cwd, env=env)
     payload = json.loads(result.stdout)
     if payload.get("stale_conflict") != "rejected":
         raise RuntimeError(f"unexpected storage smoke result: {payload!r}")
     if payload.get("created") == payload.get("replaced"):
-        raise RuntimeError("storage replacement did not change the representation fingerprint")
+        raise RuntimeError(
+            "storage replacement did not change the representation fingerprint"
+        )
 
 
 def _identity_smoke(python: Path, *, cwd: Path, env: dict[str, str]) -> None:
-    code = r'''
+    code = r"""
 import json
 from pathlib import Path
 
@@ -363,7 +365,7 @@ print(json.dumps({
     "student_id": linked.roster_student.reference.student_id,
     "relationship_id": linked.relationship.record.logical_id,
 }))
-'''
+"""
     result = _run([str(python), "-c", code], cwd=cwd, env=env)
     payload = json.loads(result.stdout)
     expected = {
@@ -376,7 +378,7 @@ print(json.dumps({
 
 
 def _workflow_smoke(python: Path, *, cwd: Path, env: dict[str, str]) -> None:
-    code = r'''
+    code = r"""
 import json
 from pathlib import Path
 
@@ -611,7 +613,7 @@ print(json.dumps({
     "role": roles.load_exact(role_reference(source_ref, "epr_present_smoke")).record.field("role_type"),
     "relationship": exact_relationship.relationship.record.logical_id,
 }))
-'''
+"""
     result = _run([str(python), "-c", code], cwd=cwd, env=env)
     payload = json.loads(result.stdout)
     if payload != {
@@ -629,7 +631,7 @@ def _exceptional_removal_smoke(
     cwd: Path,
     env: dict[str, str],
 ) -> None:
-    code = r'''
+    code = r"""
 import json
 from pathlib import Path
 
@@ -697,7 +699,7 @@ print(json.dumps({
     "resolution": result.resolution.disposition,
     "target_unchanged": result.certificate.record.field("target") == target,
 }))
-'''
+"""
     result = _run([str(python), "-c", code], cwd=cwd, env=env)
     payload = json.loads(result.stdout)
     if payload != {
@@ -707,6 +709,268 @@ print(json.dumps({
         "target_unchanged": True,
     }:
         raise RuntimeError(f"unexpected Exceptional Removal smoke result: {payload!r}")
+
+
+def _ownership_correction_smoke(
+    python: Path,
+    *,
+    cwd: Path,
+    env: dict[str, str],
+) -> None:
+    code = r"""
+import json
+from pathlib import Path
+
+from pds_core.workspace import ensure_workspace_root
+from portia.models import parse_portia_record
+from portia.models.references import ExactPortiaWorkRef
+from portia.storage.quarantine import QuarantineGuard
+from portia.storage.repository import PortiaRepository
+from portia.storage.series import OperationJournalStore
+from portia.workflows import (
+    FollowUpWorkflowService,
+    OwnershipCorrectionWorkflowService,
+    follow_up_reference,
+)
+
+NOW = "2026-09-19T10:00:00-04:00"
+UPDATED = "2026-09-19T10:05:00-04:00"
+AGENT = {"type": "system_process", "process_id": "wheel_ownership_smoke"}
+workspace = ensure_workspace_root(Path("synthetic-workspace-ownership"))
+repository = PortiaRepository(workspace)
+source = ExactPortiaWorkRef(
+    class_id="class_smoke",
+    work_id="evt_ownership_smoke",
+    work_kind="event",
+    contract_version="2",
+)
+destination = ExactPortiaWorkRef(
+    class_id="class_smoke",
+    work_id="sup_ownership_smoke",
+    work_kind="support_process",
+    contract_version="1",
+)
+repository.create_work(source, parse_portia_record("event", "2", {
+    "schema_version": "2",
+    "record_type": "portia_work",
+    "work_kind": "event",
+    "module_id": "portia",
+    "class_id": source.class_id,
+    "work_id": source.work_id,
+    "school_year": "2026-2027",
+    "status": "active",
+    "creation_source": {"type": "digital_entry"},
+    "created_at": NOW,
+    "created_by": AGENT,
+    "updated_at": NOW,
+    "updated_by": AGENT,
+    "occurrence": {"precision": "exact", "started_at": NOW},
+    "summary": "Synthetic installed ownership source.",
+}))
+repository.create_work_record(source, parse_portia_record("event_participant", "3", {
+    "schema_version": "3",
+    "record_type": "event_participant",
+    "module_id": "portia",
+    "class_id": source.class_id,
+    "work_id": source.work_id,
+    "participant_id": "ep_ownership_smoke",
+    "status": "active",
+    "subject": {
+        "kind": "descriptive_person",
+        "description_type": "outside_student",
+        "display_label": "Synthetic installed student",
+    },
+    "creation_source": {"type": "digital_entry"},
+    "created_at": NOW,
+    "created_by": AGENT,
+    "updated_at": NOW,
+    "updated_by": AGENT,
+}))
+repository.create_work(destination, parse_portia_record("support_process", "1", {
+    "schema_version": "1",
+    "record_type": "portia_work",
+    "work_kind": "support_process",
+    "module_id": "portia",
+    "class_id": destination.class_id,
+    "work_id": destination.work_id,
+    "school_year": "2026-2027",
+    "status": "active",
+    "workflow_state": "active",
+    "summary": "Synthetic installed ownership destination.",
+    "initiation": {
+        "kind": "teacher_identified_need",
+        "detail": "Synthetic installed need.",
+    },
+    "creation_source": {"type": "digital_entry"},
+    "created_at": NOW,
+    "created_by": AGENT,
+    "updated_at": NOW,
+    "updated_by": AGENT,
+}))
+for participant_id, contexts, person in (
+    (
+        "spp_ownership_student",
+        [{"kind": "supported_person"}],
+        {
+            "kind": "descriptive_person",
+            "description_type": "outside_student",
+            "display_label": "Synthetic installed supported student",
+        },
+    ),
+    (
+        "spp_ownership_coordinator",
+        [{"kind": "coordinator"}],
+        {"kind": "local_operator", "display_label": "Synthetic installed teacher"},
+    ),
+):
+    repository.create_work_record(destination, parse_portia_record(
+        "support_process_participant", "1", {
+            "schema_version": "1",
+            "record_type": "support_process_participant",
+            "module_id": "portia",
+            "class_id": destination.class_id,
+            "work_id": destination.work_id,
+            "participant_id": participant_id,
+            "status": "active",
+            "person": person,
+            "contexts": contexts,
+            "creation_source": {"type": "digital_entry"},
+            "created_at": NOW,
+            "created_by": AGENT,
+            "updated_at": NOW,
+            "updated_by": AGENT,
+        },
+    ))
+
+follow_up = parse_portia_record("follow_up", "1", {
+    "schema_version": "1",
+    "record_type": "follow_up",
+    "module_id": "portia",
+    "class_id": source.class_id,
+    "work_kind": source.work_kind,
+    "work_id": source.work_id,
+    "follow_up_id": "fup_ownership_smoke",
+    "status": "active",
+    "target": {
+        "kind": "event_participant",
+        "record_ref": {
+            "record_kind": "event_participant",
+            "record_id": "ep_ownership_smoke",
+            "contract_version": "3",
+        },
+    },
+    "owner": {
+        "kind": "represented_human",
+        "person": {"kind": "local_operator", "display_label": "Synthetic installed teacher"},
+    },
+    "purpose": {"kind": "coordination"},
+    "planned_timing": {"kind": "date_only", "date": "2026-09-20"},
+    "workflow_state": "scheduled",
+    "creation_source": {"type": "digital_entry"},
+    "created_at": NOW,
+    "created_by": AGENT,
+    "updated_at": NOW,
+    "updated_by": AGENT,
+})
+family = FollowUpWorkflowService(workspace, repository=repository)
+created = family.create(source, follow_up)
+predecessor = follow_up_reference(source, "fup_ownership_smoke")
+wire = created.record.to_dict()
+wire.update({
+    "class_id": destination.class_id,
+    "work_kind": destination.work_kind,
+    "work_id": destination.work_id,
+    "target": {
+        "kind": "support_process_participant",
+        "record_ref": {
+            "record_kind": "support_process_participant",
+            "record_id": "spp_ownership_student",
+            "contract_version": "1",
+        },
+    },
+    "owner": {
+        "kind": "support_process_participant",
+        "participant_ref": {
+            "record_kind": "support_process_participant",
+            "record_id": "spp_ownership_coordinator",
+            "contract_version": "1",
+        },
+    },
+    "supersedes": [{
+        "work_record_ref": predecessor.to_dict(),
+        "reason": "work_root_corrected",
+    }],
+    "created_at": UPDATED,
+    "created_by": AGENT,
+    "updated_at": UPDATED,
+    "updated_by": AGENT,
+})
+successor = parse_portia_record("follow_up", "1", wire)
+
+class ClearIntegrity:
+    def __init__(self, root):
+        self.quarantine = QuarantineGuard(root)
+    def require_allowed(self, target, effect):
+        self.quarantine.require_allowed(target, effect)
+
+service = OwnershipCorrectionWorkflowService(
+    workspace,
+    repository=repository,
+    integrity_guard=ClearIntegrity(workspace),
+)
+assessment = service.assess_correction(
+    predecessor,
+    destination,
+    successor,
+    expected=created.fingerprint,
+    effective_at=UPDATED,
+)
+result = service.correct_work_root(
+    predecessor,
+    destination,
+    successor,
+    expected=created.fingerprint,
+    transition_id="lct_ownership_smoke",
+    correction_id="owc_ownership_smoke",
+    reason={"code": "wrong_work_root"},
+    effective_at=UPDATED,
+    created_by=AGENT,
+    reference_dispositions={
+        item.reference_key: "remain_exact_historical"
+        for item in assessment.incoming_references
+    },
+    dependency_dispositions={
+        item.dependency_key: "satisfied_by_destination"
+        for item in assessment.dependencies
+    },
+    operation_id="op_ownership_smoke",
+)
+certificate = service.resolve_correction(result.ownership_correction)
+historical = family.resolve_exact(predecessor)
+journal = OperationJournalStore(workspace).load_current(result.operation_id)
+print(json.dumps({
+    "service": type(service).__name__,
+    "certificate_version": certificate.record.contract_version,
+    "destination_status": repository.load_work_record(
+        destination, "follow_up", "1", "fup_ownership_smoke"
+    ).record.status,
+    "historical_status": historical.record.status,
+    "journal_version": journal.revision.contract_version,
+    "journal_state": journal.revision.to_dict()["state"],
+}))
+"""
+    result = _run([str(python), "-c", code], cwd=cwd, env=env)
+    payload = json.loads(result.stdout)
+    expected = {
+        "service": "OwnershipCorrectionWorkflowService",
+        "certificate_version": "2",
+        "destination_status": "active",
+        "historical_status": "superseded",
+        "journal_version": "2",
+        "journal_state": "completed",
+    }
+    if payload != expected:
+        raise RuntimeError(f"unexpected Ownership Correction smoke result: {payload!r}")
 
 
 def smoke(portia_wheel: Path, core_wheel: Path) -> None:
@@ -758,27 +1022,51 @@ def smoke(portia_wheel: Path, core_wheel: Path) -> None:
         package_info = json.loads(package_result.stdout)
         installed_path = Path(package_info["path"]).resolve()
         if repository.resolve() in installed_path.parents:
-            raise RuntimeError(f"smoke import resolved into source checkout: {installed_path}")
+            raise RuntimeError(
+                f"smoke import resolved into source checkout: {installed_path}"
+            )
         if package_info["version"] != "0.2.0":
-            raise RuntimeError(f"unexpected installed Portia version: {package_info['version']}")
+            raise RuntimeError(
+                f"unexpected installed Portia version: {package_info['version']}"
+            )
         if not (installed_path / "py.typed").is_file():
             raise RuntimeError("installed Portia wheel is missing py.typed")
         if not (installed_path / "_runtime_contract_bundle.json").is_file():
-            raise RuntimeError("installed Portia wheel is missing the runtime contract bundle")
+            raise RuntimeError(
+                "installed Portia wheel is missing the runtime contract bundle"
+            )
         if not (installed_path / "storage" / "repository.py").is_file():
-            raise RuntimeError("installed Portia wheel is missing the Issue #38 storage package")
+            raise RuntimeError(
+                "installed Portia wheel is missing the Issue #38 storage package"
+            )
         if not (installed_path / "storage" / "actor_directory.py").is_file():
-            raise RuntimeError("installed Portia wheel is missing Actor Directory storage inventory")
+            raise RuntimeError(
+                "installed Portia wheel is missing Actor Directory storage inventory"
+            )
         if not (installed_path / "identity" / "roster.py").is_file():
-            raise RuntimeError("installed Portia wheel is missing the Issue #39 identity package")
+            raise RuntimeError(
+                "installed Portia wheel is missing the Issue #39 identity package"
+            )
         if not (installed_path / "workflows" / "events.py").is_file():
-            raise RuntimeError("installed Portia wheel is missing the Issue #40 workflow package")
+            raise RuntimeError(
+                "installed Portia wheel is missing the Issue #40 workflow package"
+            )
         if not (installed_path / "storage" / "canonical_removal.py").is_file():
-            raise RuntimeError("installed Portia wheel is missing canonical removal storage")
+            raise RuntimeError(
+                "installed Portia wheel is missing canonical removal storage"
+            )
         if not (installed_path / "workflows" / "exceptional_removal.py").is_file():
-            raise RuntimeError("installed Portia wheel is missing Exceptional Removal workflow")
+            raise RuntimeError(
+                "installed Portia wheel is missing Exceptional Removal workflow"
+            )
+        if not (installed_path / "workflows" / "ownership_correction.py").is_file():
+            raise RuntimeError(
+                "installed Portia wheel is missing Ownership Correction workflow"
+            )
         if (installed_path / "schemas").exists():
-            raise RuntimeError("installed Portia wheel unexpectedly contains repository schemas")
+            raise RuntimeError(
+                "installed Portia wheel unexpectedly contains repository schemas"
+            )
 
         _model_smoke(python, cwd=work, env=env)
         _operation_journal_v3_smoke(python, cwd=work, env=env)
@@ -786,6 +1074,7 @@ def smoke(portia_wheel: Path, core_wheel: Path) -> None:
         _identity_smoke(python, cwd=work, env=env)
         _workflow_smoke(python, cwd=work, env=env)
         _exceptional_removal_smoke(python, cwd=work, env=env)
+        _ownership_correction_smoke(python, cwd=work, env=env)
 
         before = sorted(path.relative_to(work).as_posix() for path in work.rglob("*"))
         console = _console_path(python)
@@ -797,7 +1086,9 @@ def smoke(portia_wheel: Path, core_wheel: Path) -> None:
         if "Core requirement: pds-core>=0.6.3,<0.7" not in status.stdout:
             raise RuntimeError("status output is missing the Core 0.6.3 requirement")
         if "Teacher data access: none" not in status.stdout:
-            raise RuntimeError("status output does not preserve the non-mutating bootstrap boundary")
+            raise RuntimeError(
+                "status output does not preserve the non-mutating bootstrap boundary"
+            )
         menu = _run([str(console), "menu"], cwd=work, env=env)
         if "bootstrap only" not in menu.stdout:
             raise RuntimeError("menu output does not identify the bootstrap-only state")
