@@ -1,7 +1,7 @@
 # Issue #48 Validation: Student Timeline and Work View
 
-**Issue:** #48 — Implement a privacy-minimized student timeline and work view  
-**Runtime dependency:** `pds-core>=0.6.3,<0.7`  
+**Issue:** #48 — Implement a privacy-minimized student timeline and work view
+**Runtime dependency:** `pds-core>=0.6.3,<0.7`
 **Branch:** `48-privacy-minimized-student-timeline-work-view`
 
 ## Evidence policy
