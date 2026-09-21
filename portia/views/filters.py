@@ -45,9 +45,19 @@ _WORK_KINDS: Final[frozenset[str]] = frozenset({"event", "support_process"})
 _VIEW_MODES: Final[frozenset[str]] = frozenset({"current", "history"})
 _CATEGORIES: Final[frozenset[str]] = frozenset(
     rule.category for rule in STUDENT_VIEW_PROJECTION_INVENTORY.values()
-)
+) | frozenset({"history"})
 _RECORD_FAMILIES: Final[frozenset[str]] = frozenset(
     rule.record_kind for rule in STUDENT_VIEW_PROJECTION_INVENTORY.values()
+) | frozenset(
+    {
+        "lifecycle_transition",
+        "lifecycle_history_correction",
+        "amendment",
+        "statement_of_disagreement",
+        "record_migration",
+        "ownership_correction",
+        "exceptional_removal",
+    }
 )
 
 

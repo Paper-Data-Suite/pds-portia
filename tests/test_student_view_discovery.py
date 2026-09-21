@@ -503,7 +503,7 @@ def test_missing_roster_authority_is_not_treated_as_empty_history(
         StudentWorkDiscoveryService(tmp_path).discover(_query(_student()))
 
 
-def test_explicit_legacy_work_discovery_fails_closed_until_history_slice(
+def test_explicit_legacy_work_discovery_requires_historical_participant_authority(
     tmp_path: Path,
 ) -> None:
     _write_roster(tmp_path, "class_a", "student_1")
@@ -520,6 +520,6 @@ def test_explicit_legacy_work_discovery_fails_closed_until_history_slice(
 
     with pytest.raises(
         PortiaLocalValidationError,
-        match="history expansion is deferred",
+        match="requires exact historical participant authority",
     ):
         StudentWorkDiscoveryService(tmp_path).discover(query)

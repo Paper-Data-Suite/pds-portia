@@ -16,7 +16,13 @@ from portia.models.references import (
     ExactPortiaWorkRef,
     RosterStudentRef,
 )
-from portia.storage import PortiaCorruptionError, PortiaRepository, StoredRecord
+from portia.storage import (
+    PortiaCorruptionError,
+    PortiaQuarantinedError,
+    PortiaRepository,
+    QuarantineGuard,
+    StoredRecord,
+)
 from portia.views.currentness import (
     CurrentnessDecision,
     CurrentnessResolver,
@@ -35,6 +41,7 @@ from portia.views.policy import (
     projection_rule,
     projection_rules,
 )
+from portia.workflows.common import record_target, work_target
 
 ProjectionDisposition = Literal[
     "included",
@@ -153,17 +160,13 @@ class ProjectionDecision:
 
 @dataclass(frozen=True, slots=True)
 class StudentPrivacyProjectionResult:
-    """Assembled current-view projection with no absent-source side channel."""
+    """Assembled current-frontier projection with no absent-source side channel."""
 
     discovery: StudentWorkDiscoveryResult
     policy: StudentViewPolicyIdentity
     items: tuple[ProjectedStudentViewItem, ...]
 
     def __post_init__(self) -> None:
-        if self.discovery.query.mode != "current":
-            raise PortiaLocalValidationError(
-                "Slice 3 privacy projection supports current mode only"
-            )
         if self.policy != STUDENT_VIEW_POLICY:
             raise PortiaLocalValidationError(
                 "student privacy result must carry the exact current policy identity"
@@ -321,22 +324,21 @@ class StudentPrivacyProjectionService:
         *,
         repository: PortiaRepository | None = None,
         currentness: CurrentnessResolver | None = None,
+        quarantine: QuarantineGuard | None = None,
     ) -> None:
         self.workspace_root = Path(workspace_root)
         self.repository = repository or PortiaRepository(self.workspace_root)
+        self.quarantine = quarantine or QuarantineGuard(self.workspace_root)
         self.currentness = currentness or StudentViewCurrentnessResolver(
             self.workspace_root,
             repository=self.repository,
+            quarantine=self.quarantine,
         )
 
     def project(
         self,
         discovery: StudentWorkDiscoveryResult,
     ) -> StudentPrivacyProjectionResult:
-        if discovery.query.mode != "current":
-            raise PortiaLocalValidationError(
-                "Slice 3 privacy/currentness projection supports current mode only"
-            )
         assembled: list[ProjectedStudentViewItem] = []
         for work in discovery.works:
             root_stored = self.repository.load_work(work.work_ref)
@@ -421,6 +423,57 @@ class StudentPrivacyProjectionService:
             stored.record,
             applicability,
             currentness,
+        )
+
+    def project_historical_source(
+        self,
+        work: DiscoveredStudentWork,
+        source_ref: TimelineSourceRef,
+        stored: StoredRecord | None = None,
+    ) -> ProjectionDecision:
+        """Project one exact noncurrent source through privacy and Quarantine."""
+        stored = stored or self._load_source(source_ref)
+        applicability = self._applicability(work, source_ref, stored.record)
+        if applicability.focal == "not_applicable":
+            return ProjectionDecision(
+                source_ref,
+                "absent",
+                "not_focally_applicable",
+            )
+        rule = projection_rule(stored.record.contract, stored.record.contract_version)
+        target = (
+            work_target(source_ref)
+            if isinstance(source_ref, ExactPortiaWorkRef)
+            else record_target(source_ref.work_ref, stored.record)
+        )
+        try:
+            self.quarantine.require_allowed(target, "block_current_use")
+        except PortiaQuarantinedError:
+            item = ProjectedStudentViewItem(
+                source_ref=source_ref,
+                disposition="unavailable",
+                category=rule.category,
+                semantic_type=stored.record.contract,
+                status=stored.record.status,
+                native_scope=applicability.native_scope,
+                focal_applicability=applicability.focal,
+                reason_code="current_use_blocked",
+            )
+            return ProjectionDecision(
+                source_ref,
+                "unavailable",
+                "current_use_blocked",
+                item,
+            )
+        return self._privacy_project(
+            source_ref,
+            stored.record,
+            applicability,
+            CurrentnessDecision(
+                source_ref,
+                "current",
+                "historical_representation",
+            ),
         )
 
     def _load_source(self, source_ref: TimelineSourceRef) -> StoredRecord:

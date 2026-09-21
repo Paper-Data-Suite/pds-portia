@@ -350,8 +350,22 @@ def _projection_rule(
 
 
 STUDENT_VIEW_PROJECTION_RULES: Final[tuple[StudentViewProjectionRule, ...]] = (
-    *_projection_rule("event", ("2",), "work_context", "work_root", safe=("status",), withheld=("summary",)),
-    *_projection_rule("support_process", ("1",), "work_context", "work_root", safe=("status", "workflow_state"), withheld=("summary", "initiation")),
+    *_projection_rule(
+        "event",
+        ("2",),
+        "work_context",
+        "work_root",
+        safe=("status", "school_year"),
+        withheld=("summary",),
+    ),
+    *_projection_rule(
+        "support_process",
+        ("1",),
+        "work_context",
+        "work_root",
+        safe=("status", "workflow_state", "school_year"),
+        withheld=("summary", "initiation"),
+    ),
     *_projection_rule("event_participant", ("3",), "participation", "participant", safe=("status",), withheld=("subject",)),
     *_projection_rule("event_participant_role", ("3",), "participation", "role", safe=("status", "role_type"), withheld=("target", "basis")),
     *_projection_rule("work_relationship", ("2",), "participation", "relationship", safe=("status", "relationship_type"), withheld=("source", "target")),

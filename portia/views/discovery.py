@@ -385,8 +385,9 @@ class StudentWorkDiscoveryService:
                     )
                 except PortiaLocalValidationError as exc:
                     raise PortiaLocalValidationError(
-                        "Slice 2 work discovery supports current work-root "
-                        "contracts only; legacy history expansion is deferred"
+                        "legacy work-root history requires exact historical "
+                        "participant authority; automatic student discovery "
+                        "does not infer prior membership"
                     ) from exc
                 stored = self.repository.load_work(reference)
                 resolved = _exact_root_reference(stored)

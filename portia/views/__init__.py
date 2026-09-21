@@ -35,6 +35,16 @@ from portia.views.filters import (
     TimelineStateCriterion,
     TimelineStateField,
 )
+from portia.views.history import (
+    HistoryEntryKind,
+    NavigationScope,
+    StudentHistoryResult,
+    StudentViewEntry,
+    StudentViewNavigationRef,
+    filter_history_entries,
+    navigation_for_source,
+    order_student_view_entries,
+)
 from portia.views.models import (
     StudentTimelineItem,
     StudentTimelineQuery,
@@ -75,8 +85,24 @@ from portia.views.projection import (
     StudentPrivacyProjectionResult,
     StudentPrivacyProjectionService,
 )
+from portia.views.student import (
+    StudentTimelineService,
+    StudentTimelineViewResult,
+    StudentWorkTimelineView,
+)
 
 __all__ = [
+    "HistoryEntryKind",
+    "NavigationScope",
+    "StudentHistoryResult",
+    "StudentTimelineService",
+    "StudentTimelineViewResult",
+    "StudentViewEntry",
+    "StudentViewNavigationRef",
+    "StudentWorkTimelineView",
+    "filter_history_entries",
+    "navigation_for_source",
+    "order_student_view_entries",
     "STUDENT_VIEW_CHRONOLOGY_INVENTORY",
     "STUDENT_VIEW_CHRONOLOGY_RULES",
     "ChronologizedStudentViewItem",
