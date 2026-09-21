@@ -266,6 +266,40 @@ identity mutation are outside the public Ownership Correction boundary. Issue
 owns the underlying exact authority and semantics. See
 `docs/validation/issue-47-lifecycle-correction-recovery-services-validation.md`.
 
+### Issue #48 current implementation
+
+Issue #48 supplies Portia's production teacher-facing,
+**privacy-minimized student timeline and work view** through `portia.views`.
+`StudentTimelineService` composes exact Core roster identity, bounded Event and
+Support Process discovery, family-specific current-use authority, closed
+privacy projection, semantic chronology, deterministic filters, deliberate
+domain history, and exact-source navigation without creating a canonical
+student dossier.
+
+The view preserves Account/Observation, judgment, Response/Communication,
+Support/Intervention, Implementation/Fidelity, Follow-Up/Outcome/Reentry/Repair,
+and correction/history distinctions. `included`, `absent`, `withheld`,
+`unavailable`, and `requires_manual_review` remain separate projection states.
+Multi-participant work does not leak unrelated identities or hidden counts, and
+unsafe narrative is not mechanically rewritten as source truth.
+
+Current selection does not use timestamps, filenames, identifier order, or
+highest schema version. Historical inspection is explicit and may include
+privacy-safe superseded representations, lifecycle/correction context,
+Amendments, Statements of Disagreement, migration/Ownership Correction
+existence, and bounded Exceptional Removal history. Quarantine remains a
+current-use guard, and removed payload is never reconstructed from the derived
+view.
+
+The student view exposes no behavior/risk/severity score, offender ranking,
+severity filter, raw-record bypass, sibling-module payload fetch, or automatic
+cross-year/global identity expansion. View generation and filtering are
+read-only and noncanonical. Issue #49 retains attention/recovery presentation,
+#50 menu composition, #51 deliberate export, and #52 suite integration.
+
+See `docs/student-timeline-and-work-view.md`; validation evidence is recorded in
+`docs/validation/issue-48-student-timeline-work-view-validation.md`.
+
 ### Issue #17 current implementation
 
 The current architecture now includes **accepted ADR 0013 for Response and Communication**.
