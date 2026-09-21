@@ -1,5 +1,11 @@
 """Privacy-minimized student timeline/work-view foundations."""
 
+from portia.views.currentness import (
+    CurrentnessDecision,
+    CurrentnessResolver,
+    CurrentnessState,
+    StudentViewCurrentnessResolver,
+)
 from portia.views.discovery import (
     DiscoveredStudentWork,
     FocalParticipantMatch,
@@ -23,16 +29,49 @@ from portia.views.policy import (
     STUDENT_VIEW_CONTRACT_INVENTORY,
     STUDENT_VIEW_CONTRACT_RULES,
     STUDENT_VIEW_POLICY,
+    STUDENT_VIEW_PROJECTION_INVENTORY,
+    STUDENT_VIEW_PROJECTION_RULES,
     ContractSurface,
     ProjectionPurpose,
     StudentViewContractRule,
     StudentViewPolicyIdentity,
+    StudentViewProjectionRule,
     contract_rule,
     current_work_root_rule,
+    known_contract_versions,
+    projection_rule,
+    projection_rules,
     student_view_policy_digest,
+)
+from portia.views.projection import (
+    FocalApplicability,
+    NativeScope,
+    ProjectedField,
+    ProjectedScalar,
+    ProjectedStudentViewItem,
+    ProjectionDecision,
+    ProjectionDisposition,
+    StudentPrivacyProjectionResult,
+    StudentPrivacyProjectionService,
 )
 
 __all__ = [
+    "CurrentnessDecision",
+    "CurrentnessResolver",
+    "CurrentnessState",
+    "FocalApplicability",
+    "NativeScope",
+    "ProjectedField",
+    "ProjectedScalar",
+    "ProjectedStudentViewItem",
+    "ProjectionDecision",
+    "ProjectionDisposition",
+    "StudentPrivacyProjectionResult",
+    "StudentPrivacyProjectionService",
+    "StudentViewCurrentnessResolver",
+    "StudentViewProjectionRule",
+    "STUDENT_VIEW_PROJECTION_INVENTORY",
+    "STUDENT_VIEW_PROJECTION_RULES",
     "DiscoveredStudentWork",
     "FocalParticipantMatch",
     "ParticipantKind",
@@ -57,5 +96,8 @@ __all__ = [
     "ViewMode",
     "contract_rule",
     "current_work_root_rule",
+    "known_contract_versions",
+    "projection_rule",
+    "projection_rules",
     "student_view_policy_digest",
 ]
