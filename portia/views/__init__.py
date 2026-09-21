@@ -1,5 +1,19 @@
 """Privacy-minimized student timeline/work-view foundations."""
 
+from portia.views.chronology import (
+    STUDENT_VIEW_CHRONOLOGY_INVENTORY,
+    STUDENT_VIEW_CHRONOLOGY_RULES,
+    ChronologizedStudentViewItem,
+    ChronologyAdapterKind,
+    ChronologyPrecision,
+    SemanticTimelineMarker,
+    SortDirection,
+    StudentChronologyResult,
+    StudentChronologyService,
+    StudentViewChronologyRule,
+    chronology_rule,
+    order_chronology_items,
+)
 from portia.views.currentness import (
     CurrentnessDecision,
     CurrentnessResolver,
@@ -13,6 +27,13 @@ from portia.views.discovery import (
     RelatedWorkContext,
     StudentWorkDiscoveryResult,
     StudentWorkDiscoveryService,
+)
+from portia.views.filters import (
+    FilteredStudentTimelineResult,
+    StudentTimelineFilter,
+    StudentTimelineFilterService,
+    TimelineStateCriterion,
+    TimelineStateField,
 )
 from portia.views.models import (
     StudentTimelineItem,
@@ -56,10 +77,23 @@ from portia.views.projection import (
 )
 
 __all__ = [
+    "STUDENT_VIEW_CHRONOLOGY_INVENTORY",
+    "STUDENT_VIEW_CHRONOLOGY_RULES",
+    "ChronologizedStudentViewItem",
+    "ChronologyAdapterKind",
+    "ChronologyPrecision",
+    "SemanticTimelineMarker",
+    "SortDirection",
+    "StudentChronologyResult",
+    "StudentChronologyService",
+    "StudentViewChronologyRule",
+    "chronology_rule",
+    "order_chronology_items",
     "CurrentnessDecision",
     "CurrentnessResolver",
     "CurrentnessState",
     "FocalApplicability",
+    "FilteredStudentTimelineResult",
     "NativeScope",
     "ProjectedField",
     "ProjectedScalar",
@@ -68,8 +102,12 @@ __all__ = [
     "ProjectionDisposition",
     "StudentPrivacyProjectionResult",
     "StudentPrivacyProjectionService",
+    "StudentTimelineFilter",
+    "StudentTimelineFilterService",
     "StudentViewCurrentnessResolver",
     "StudentViewProjectionRule",
+    "TimelineStateCriterion",
+    "TimelineStateField",
     "STUDENT_VIEW_PROJECTION_INVENTORY",
     "STUDENT_VIEW_PROJECTION_RULES",
     "DiscoveredStudentWork",
