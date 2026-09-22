@@ -962,9 +962,16 @@ class SupportProcessWorkflowService(WorkflowServiceBase):
         )
         return root
 
+    def require_current_use_authority(
+        self,
+        work: ExactPortiaWorkRef,
+    ) -> StoredRecord:
+        """Require current non-Dependency authority for read-only gate inspection."""
+        return self._require_current_use_authority(work)
+
     def require_current_use(self, work: ExactPortiaWorkRef) -> StoredRecord:
         """Qualify one exact active Support Process for automatic current use."""
-        root = self._require_current_use_authority(work)
+        root = self.require_current_use_authority(work)
         self._require_current_use_dependency_gate(work)
         return root
 

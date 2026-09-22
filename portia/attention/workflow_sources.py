@@ -6,7 +6,7 @@ orchestration and partial/unavailable aggregation belong to Issue #49 Slice 5.
 
 from __future__ import annotations
 
-from collections.abc import Mapping
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Final
@@ -28,10 +28,15 @@ from portia.storage.errors import PortiaCorruptionError
 from portia.storage.quarantine import QuarantineGuard
 from portia.storage.repository import PortiaRepository, StoredRecord
 from portia.workflows.context import WorkflowContextAssembler
+from portia.workflows.dependencies import (
+    DependencyConditionEvaluation,
+    DependencyWorkflowService,
+)
 from portia.workflows.downstream_common import follow_up_reference
 from portia.workflows.follow_ups import FollowUpWorkflowService
 from portia.workflows.judgment_evidence import ModuleJudgmentEvidenceAuthority
 from portia.workflows.reviews import ReviewWorkflowService, review_reference
+from portia.workflows.support_processes import SupportProcessWorkflowService
 
 _OPERATIONAL_FOLLOW_UP_STATES: Final[frozenset[str]] = frozenset(
     {"scheduled", "in_progress"}
@@ -44,6 +49,23 @@ _INCOMPLETE_REVIEW_STATES: Final[frozenset[str]] = frozenset(
 )
 _TERMINAL_REVIEW_STATES: Final[frozenset[str]] = frozenset(
     {"completed", "cancelled"}
+)
+_OPERATIONAL_SUPPORT_PROCESS_STATES: Final[frozenset[str]] = frozenset(
+    {"planning", "active", "paused"}
+)
+_TERMINAL_SUPPORT_PROCESS_STATES: Final[frozenset[str]] = frozenset(
+    {"completed", "discontinued", "cancelled"}
+)
+_DEPENDENCY_ATTENTION_CONDITIONS: Final[frozenset[str]] = frozenset(
+    {"review_required", "unsatisfied", "indeterminate"}
+)
+_DEPENDENCY_ATTENTION_REASON_ORDER: Final[tuple[str, ...]] = (
+    "required_review_required",
+    "required_unsatisfied",
+    "required_indeterminate",
+    "advisory_review_required",
+    "advisory_unsatisfied",
+    "advisory_indeterminate",
 )
 
 
@@ -109,6 +131,26 @@ def _query_wants_code(query: PortiaAttentionQuery, code: str) -> bool:
     ):
         return False
     return True
+
+
+def _dependency_attention_reason_codes(
+    evaluations: Sequence[DependencyConditionEvaluation],
+) -> tuple[str, ...]:
+    """Collapse Dependency conditions to bounded process-level reason codes."""
+    observed: set[str] = set()
+    for evaluation in evaluations:
+        if evaluation.condition not in _DEPENDENCY_ATTENTION_CONDITIONS:
+            continue
+        if evaluation.strength not in {"required", "advisory"}:
+            raise PortiaCorruptionError(
+                "Dependency attention encountered unsupported strength"
+            )
+        observed.add(f"{evaluation.strength}_{evaluation.condition}")
+    return tuple(
+        reason
+        for reason in _DEPENDENCY_ATTENTION_REASON_ORDER
+        if reason in observed
+    )
 
 
 class FollowUpScheduleQueryService:
@@ -323,8 +365,115 @@ class AttentionQueryService:
             )
         return tuple(items)
 
+    def _support_process_items(
+        self,
+        query: PortiaAttentionQuery,
+    ) -> tuple[PortiaAttentionItem, ...]:
+        work = _require_exact_work_scope(query)
+        if work.work_kind != "support_process":
+            return ()
+
+        wants_due = _query_wants_code(
+            query,
+            "portia_support_process_review_due",
+        )
+        wants_overdue = _query_wants_code(
+            query,
+            "portia_support_process_review_overdue",
+        )
+        wants_dependency = _query_wants_code(
+            query,
+            "portia_support_process_dependency_attention",
+        )
+        if not wants_due and not wants_overdue and not wants_dependency:
+            return ()
+
+        support = SupportProcessWorkflowService(
+            self.workspace_root,
+            repository=self.repository,
+            quarantine=self.quarantine,
+            context_assembler=self.contexts,
+        )
+        exact = support.load_exact(work)
+        if exact.record.status != "active":
+            return ()
+        current = support.require_current_use_authority(work)
+        workflow_state = current.record.field("workflow_state")
+        if not isinstance(workflow_state, str):
+            raise PortiaCorruptionError(
+                "current Support Process workflow_state is malformed"
+            )
+        if workflow_state in _TERMINAL_SUPPORT_PROCESS_STATES:
+            return ()
+        if workflow_state not in _OPERATIONAL_SUPPORT_PROCESS_STATES:
+            raise PortiaCorruptionError(
+                "current Support Process has unsupported workflow_state"
+            )
+
+        context = PortiaAttentionContext(
+            class_id=work.class_id,
+            work_ref=work,
+        )
+        items: list[PortiaAttentionItem] = []
+
+        if wants_due or wants_overdue:
+            review_on = current.record.field("review_on")
+            if review_on is not None:
+                if not isinstance(review_on, str):
+                    raise PortiaCorruptionError(
+                        "current Support Process review_on is malformed"
+                    )
+                timing = classify_follow_up_timing(
+                    {"kind": "date_only", "date": review_on},
+                    as_of=query.as_of,
+                )
+                if timing.classification == "due" and wants_due:
+                    items.append(
+                        PortiaAttentionItem(
+                            code="portia_support_process_review_due",
+                            source_ref=work,
+                            context=context,
+                            reason_codes=(workflow_state,),
+                            timing=timing,
+                        )
+                    )
+                elif timing.classification == "overdue" and wants_overdue:
+                    items.append(
+                        PortiaAttentionItem(
+                            code="portia_support_process_review_overdue",
+                            source_ref=work,
+                            context=context,
+                            reason_codes=(workflow_state,),
+                            timing=timing,
+                        )
+                    )
+
+        if wants_dependency:
+            gate = DependencyWorkflowService(
+                self.workspace_root,
+                repository=self.repository,
+                quarantine=self.quarantine,
+                context_assembler=self.contexts,
+            ).evaluate_gate(
+                work,
+                gate="current_use",
+                evaluated_at=query.as_of.text,
+            )
+            reasons = _dependency_attention_reason_codes(gate.conditions)
+            if reasons:
+                items.append(
+                    PortiaAttentionItem(
+                        code="portia_support_process_dependency_attention",
+                        source_ref=work,
+                        context=context,
+                        reason_codes=reasons,
+                    )
+                )
+
+        return tuple(items)
+
     def query(self, query: PortiaAttentionQuery) -> PortiaAttentionReport:
-        """Evaluate Slice-2 workflow attention for one exact work scope."""
+        """Evaluate workflow attention for one exact work scope."""
         if not isinstance(query, PortiaAttentionQuery):
             raise TypeError("query must be a PortiaAttentionQuery")
         work = _require_exact_work_scope(query)
@@ -339,5 +488,6 @@ class AttentionQueryService:
         items = (
             *self._follow_up_items(query),
             *self._review_items(query),
+            *self._support_process_items(query),
         )
         return build_attention_report(query, tuple(items))
