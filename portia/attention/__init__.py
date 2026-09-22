@@ -36,6 +36,10 @@ from portia.attention.timing import (
     TimingPrecision,
     classify_follow_up_timing,
 )
+from portia.attention.workflow_sources import (
+    AttentionQueryService,
+    FollowUpScheduleQueryService,
+)
 
 __all__ = [
     "ATTENTION_CLASSES",
@@ -46,10 +50,12 @@ __all__ = [
     "PORTIA_ATTENTION_UNAVAILABLE_NOTICE",
     "AttentionClass",
     "AttentionEvaluation",
+    "AttentionQueryService",
     "AttentionScopeKind",
     "AttentionSourceRef",
     "FollowUpScheduleItem",
     "FollowUpScheduleQuery",
+    "FollowUpScheduleQueryService",
     "OpaqueAttentionSourceKind",
     "OpaqueAttentionSourceRef",
     "PortiaAttentionContext",
