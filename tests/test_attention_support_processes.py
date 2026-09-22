@@ -233,6 +233,11 @@ def _query() -> PortiaAttentionQuery:
     return PortiaAttentionQuery(
         scope=PortiaAttentionScope.work_scope(work_ref()),
         as_of=AS_OF,
+        attention_codes=(
+            "portia_support_process_review_due",
+            "portia_support_process_review_overdue",
+            "portia_support_process_dependency_attention",
+        ),
     )
 
 

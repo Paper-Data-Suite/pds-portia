@@ -187,9 +187,13 @@ def finding_acknowledgement_path(root: str | Path, acknowledgement_id: str) -> P
     return portia_root(root) / "finding_acknowledgements" / f"{identifier}.json"
 
 
+def finding_suppressions_root(root: str | Path) -> Path:
+    return portia_root(root) / "finding_suppressions"
+
+
 def finding_suppression_root(root: str | Path, suppression_id: str) -> Path:
     identifier = validate_portia_id(suppression_id, "fsup_", "suppression_id")
-    return portia_root(root) / "finding_suppressions" / identifier
+    return finding_suppressions_root(root) / identifier
 
 
 def finding_suppression_revision_path(root: str | Path, suppression_id: str, revision: int) -> Path:

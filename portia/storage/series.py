@@ -7,11 +7,13 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from portia.models import PortiaRecord, parse_portia_record
+from portia.models.errors import PortiaLocalValidationError
 from portia.storage.errors import (
     PortiaAmbiguousRecoveryError,
     PortiaConflictError,
     PortiaCorruptionError,
     PortiaNotFoundError,
+    PortiaPathError,
     PortiaRecoveryRequiredError,
 )
 from portia.storage.fingerprint import ContentFingerprint, canonical_json_bytes
@@ -20,8 +22,12 @@ from portia.storage.operation_journal import validate_operation_journal_applicat
 from portia.storage.paths import (
     finding_suppression_current_path,
     finding_suppression_revision_path,
+    finding_suppression_root,
+    finding_suppressions_root,
     operation_current_path,
     operation_revision_path,
+    operation_root,
+    operations_root,
     quarantine_current_path,
     quarantine_revision_path,
 )
@@ -322,6 +328,34 @@ class OperationJournalStore(_RevisionSeries):
             pointer_path=operation_current_path,
         )
 
+    def series_ids(self) -> tuple[str, ...]:
+        """Enumerate only validated Operation Journal series identities."""
+        collection = operations_root(self.root)
+        if not collection.exists():
+            return ()
+        if not collection.is_dir():
+            raise PortiaCorruptionError(
+                "Portia operation collection is not a directory"
+            )
+        identifiers: list[str] = []
+        for child in sorted(collection.iterdir(), key=lambda path: path.name):
+            if not child.is_dir():
+                raise PortiaCorruptionError(
+                    "unexpected artifact in Operation Journal collection"
+                )
+            try:
+                expected = operation_root(self.root, child.name)
+            except (PortiaPathError, PortiaLocalValidationError) as exc:
+                raise PortiaCorruptionError(
+                    "operation series identity is not canonical"
+                ) from exc
+            if expected != child:
+                raise PortiaCorruptionError(
+                    "operation series identity disagrees with its path"
+                )
+            identifiers.append(child.name)
+        return tuple(identifiers)
+
     def _parse_revision(self, value: object, path: Path) -> PortiaRecord:
         if not isinstance(value, Mapping):
             raise PortiaCorruptionError(f"invalid immutable revision: {path}")
@@ -457,3 +491,31 @@ class FindingSuppressionStore(_RevisionSeries):
             revision_path=finding_suppression_revision_path,
             pointer_path=finding_suppression_current_path,
         )
+
+    def current_states(self) -> tuple[SeriesState, ...]:
+        """Load every explicitly selected suppression series state."""
+        collection = finding_suppressions_root(self.root)
+        if not collection.exists():
+            return ()
+        if not collection.is_dir():
+            raise PortiaCorruptionError(
+                "Portia finding-suppression collection is not a directory"
+            )
+        states: list[SeriesState] = []
+        for child in sorted(collection.iterdir(), key=lambda path: path.name):
+            if not child.is_dir():
+                raise PortiaCorruptionError(
+                    "unexpected artifact in finding-suppression collection"
+                )
+            try:
+                expected = finding_suppression_root(self.root, child.name)
+            except (PortiaPathError, PortiaLocalValidationError) as exc:
+                raise PortiaCorruptionError(
+                    "finding-suppression series identity is not canonical"
+                ) from exc
+            if expected != child:
+                raise PortiaCorruptionError(
+                    "finding-suppression identity disagrees with its path"
+                )
+            states.append(self.load_current(child.name))
+        return tuple(states)

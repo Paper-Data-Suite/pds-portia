@@ -20,11 +20,12 @@ from portia.attention.models import (
     PortiaAttentionReport,
     build_attention_report,
 )
+from portia.attention.operational_sources import OperationalAttentionSourceService
 from portia.attention.taxonomy import require_attention_definition
 from portia.attention.timing import classify_follow_up_timing
 from portia.models.errors import PortiaLocalValidationError
 from portia.models.references import ExactPortiaWorkRef
-from portia.storage.errors import PortiaCorruptionError
+from portia.storage.errors import PortiaCorruptionError, PortiaQuarantinedError
 from portia.storage.quarantine import QuarantineGuard
 from portia.storage.repository import PortiaRepository, StoredRecord
 from portia.workflows.context import WorkflowContextAssembler
@@ -270,6 +271,10 @@ class AttentionQueryService:
             quarantine=self.quarantine,
             context_assembler=self.contexts,
         )
+        self.operational = OperationalAttentionSourceService(
+            self.workspace_root,
+            quarantine=self.quarantine,
+        )
 
     def _follow_up_items(
         self,
@@ -485,9 +490,16 @@ class AttentionQueryService:
         ):
             return build_attention_report(query)
 
-        items = (
-            *self._follow_up_items(query),
-            *self._review_items(query),
-            *self._support_process_items(query),
-        )
+        items = list(self.operational.items(query, work))
+        for source in (
+            self._follow_up_items,
+            self._review_items,
+            self._support_process_items,
+        ):
+            try:
+                items.extend(source(query))
+            except PortiaQuarantinedError:
+                # Known containment is itself an operational attention fact.
+                # Quarantine must not prevent its own native presentation.
+                continue
         return build_attention_report(query, tuple(items))
