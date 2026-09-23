@@ -342,13 +342,9 @@ class IntegrityWorkflowService:
         Presence is checked without weakening freshness, corruption, or Quarantine
         authority. Call ``current_findings`` to consume the selected projection.
         """
-        return (
-            self._derived.load_current_or_none(
-                _PROJECTION_KIND,
-                dict(projection_scope),
-                require_fresh=False,
-            )
-            is not None
+        return self._derived.has_current_pointer(
+            _PROJECTION_KIND,
+            dict(projection_scope),
         )
 
     def _require_exact_current_finding(
@@ -1217,6 +1213,12 @@ class IntegrityWorkflowService:
             finding_key=finding_key,
             evaluation_key=evaluation_key,
         )
+        try:
+            self._require_suppressible(finding)
+        except WorkflowPrerequisiteError:
+            # Suppression is presentation policy only and can never hide a
+            # current finding whose accepted severity/effects forbid suppression.
+            return False
         expected_binding = _exact_finding_binding(finding)
         evaluated = _parse_timestamp(
             evaluated_at,

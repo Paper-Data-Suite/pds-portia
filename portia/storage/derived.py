@@ -308,6 +308,28 @@ class DerivedStore:
             pointer_fp,
         )
 
+    def has_current_pointer(
+        self,
+        projection_kind: str,
+        scope: object,
+    ) -> bool:
+        """Return whether the exact derived current pointer artifact exists.
+
+        Corrupt/unreadable pointer bytes remain errors rather than being flattened
+        into absence. This method does not validate the selected generation.
+        """
+        try:
+            read_json(
+                derived_current_path(
+                    self.root,
+                    projection_kind,
+                    scope,
+                )
+            )
+        except PortiaNotFoundError:
+            return False
+        return True
+
     def load_current_or_none(
         self,
         projection_kind: str,

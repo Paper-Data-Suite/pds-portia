@@ -11,6 +11,7 @@ from portia.attention.models import (
     PortiaAttentionContext,
     PortiaAttentionItem,
     PortiaAttentionQuery,
+    PortiaAttentionScope,
 )
 from portia.attention.taxonomy import require_attention_definition
 from portia.models.references import ExactPortiaWorkRef
@@ -68,6 +69,10 @@ def _work_target(work: ExactPortiaWorkRef) -> dict[str, object]:
     return {"kind": "work", "work_ref": work.to_dict()}
 
 
+def _class_target(class_id: str) -> dict[str, object]:
+    return {"kind": "class", "class_id": class_id}
+
+
 def _exact_work_matches(value: object, work: ExactPortiaWorkRef) -> bool:
     return isinstance(value, Mapping) and dict(value) == work.to_dict()
 
@@ -103,17 +108,72 @@ def _target_belongs_to_work(target: object, work: ExactPortiaWorkRef) -> bool:
     return False
 
 
-def _operation_applies_to_work(
+def _target_belongs_to_class(target: object, class_id: str) -> bool:
+    """Return whether one exact operational target belongs to a class."""
+    if not isinstance(target, Mapping):
+        return False
+    kind = target.get("kind")
+    if kind == "class":
+        return target.get("class_id") == class_id
+    if kind == "work":
+        work = target.get("work_ref")
+        return isinstance(work, Mapping) and work.get("class_id") == class_id
+    if kind == "work_record":
+        composite = target.get("work_record_ref")
+        work = (
+            composite.get("work_ref")
+            if isinstance(composite, Mapping)
+            else None
+        )
+        return isinstance(work, Mapping) and work.get("class_id") == class_id
+    if kind == "derived_projection":
+        scope = target.get("projection_scope")
+        if not isinstance(scope, Mapping):
+            return False
+        if scope.get("scope") == "class":
+            return scope.get("class_id") == class_id
+        if scope.get("scope") == "work":
+            work = scope.get("work_ref")
+            return (
+                isinstance(work, Mapping)
+                and work.get("class_id") == class_id
+            )
+    return False
+
+
+def _operation_targets(
     journal_data: Mapping[str, object],
-    work: ExactPortiaWorkRef,
-) -> bool:
+) -> tuple[object, ...]:
     affected = journal_data.get("affected_targets")
     if not isinstance(affected, list):
         raise PortiaCorruptionError(
             "selected Operation Journal affected_targets is malformed"
         )
-    targets = (journal_data.get("primary_target"), *affected)
-    return any(_target_belongs_to_work(target, work) for target in targets)
+    return (journal_data.get("primary_target"), *affected)
+
+
+def _operation_applies_to_work(
+    journal_data: Mapping[str, object],
+    work: ExactPortiaWorkRef,
+) -> bool:
+    return any(
+        _target_belongs_to_work(target, work)
+        for target in _operation_targets(journal_data)
+    )
+
+
+def _operation_applies_to_class(
+    journal_data: Mapping[str, object],
+    class_id: str,
+) -> bool:
+    return any(
+        _target_belongs_to_class(target, class_id)
+        for target in _operation_targets(journal_data)
+    )
+
+
+class UnknownIntegrityAttentionCodeError(WorkflowPrerequisiteError):
+    """A current finding code has no frozen native attention meaning."""
 
 
 def _integrity_attention_code(code: object) -> str:
@@ -125,7 +185,7 @@ def _integrity_attention_code(code: object) -> str:
         return "portia_integrity_conflict"
     if code in _INTEGRITY_REVIEW_CODES:
         return "portia_integrity_review_required"
-    raise WorkflowPrerequisiteError(
+    raise UnknownIntegrityAttentionCodeError(
         "current Integrity Finding code has no native attention classification"
     )
 
@@ -147,8 +207,21 @@ def _quarantine_reason_codes(data: Mapping[str, object]) -> tuple[str, ...]:
     )
 
 
+def _context(scope: PortiaAttentionScope) -> PortiaAttentionContext:
+    if scope.kind == "work":
+        assert scope.work_ref is not None
+        return PortiaAttentionContext(
+            class_id=scope.work_ref.class_id,
+            work_ref=scope.work_ref,
+        )
+    if scope.kind == "class":
+        assert scope.class_id is not None
+        return PortiaAttentionContext(class_id=scope.class_id)
+    return PortiaAttentionContext()
+
+
 class OperationalAttentionSourceService:
-    """Read-only exact-work operational attention sources."""
+    """Read-only operational attention in explicit work/class/workspace scope."""
 
     def __init__(
         self,
@@ -168,37 +241,86 @@ class OperationalAttentionSourceService:
             quarantine=self.quarantine,
         )
 
-    def _selected_operation_for_work(
+    def _selected_operation(
         self,
         operation_id: str,
-        work: ExactPortiaWorkRef,
     ) -> SeriesState | None:
-        current = self.operations.load_current(operation_id)
-        if not _operation_applies_to_work(current.revision.to_dict(), work):
+        try:
+            return self.operations.load_current(operation_id)
+        except PortiaNotFoundError:
             return None
-        return current
 
-    def _operation_id_belongs_to_work(
+    def operation_ids_for_scope(
+        self,
+        scope: PortiaAttentionScope,
+        *,
+        selected_only: bool,
+    ) -> tuple[str, ...]:
+        """Return exact operation IDs attributable to one explicit scope."""
+        selected: list[str] = []
+        for operation_id in self.operations.series_ids():
+            current = self._selected_operation(operation_id)
+            if current is None:
+                if scope.kind == "workspace" and not selected_only:
+                    selected.append(operation_id)
+                continue
+
+            if scope.kind == "workspace":
+                selected.append(operation_id)
+                continue
+
+            data = current.revision.to_dict()
+            if scope.kind == "class":
+                assert scope.class_id is not None
+                if _operation_applies_to_class(data, scope.class_id):
+                    selected.append(operation_id)
+                continue
+
+            assert scope.work_ref is not None
+            if _operation_applies_to_work(data, scope.work_ref):
+                selected.append(operation_id)
+
+        return tuple(selected)
+
+    def _operation_id_belongs_to_scope(
         self,
         operation_id: str,
-        work: ExactPortiaWorkRef,
+        scope: PortiaAttentionScope,
     ) -> bool:
-        try:
-            return self._selected_operation_for_work(operation_id, work) is not None
-        except PortiaNotFoundError:
+        current = self._selected_operation(operation_id)
+        if current is None:
             return False
+        if scope.kind == "workspace":
+            return True
+        data = current.revision.to_dict()
+        if scope.kind == "class":
+            assert scope.class_id is not None
+            return _operation_applies_to_class(data, scope.class_id)
+        assert scope.work_ref is not None
+        return _operation_applies_to_work(data, scope.work_ref)
 
-    def _quarantine_belongs_to_work(
+    def _quarantine_belongs_to_scope(
         self,
         data: Mapping[str, object],
-        work: ExactPortiaWorkRef,
+        scope: PortiaAttentionScope,
     ) -> bool:
-        target = data.get("target")
-        if _target_belongs_to_work(target, work):
+        if scope.kind == "workspace":
             return True
+
+        target = data.get("target")
+        if scope.kind == "work":
+            assert scope.work_ref is not None
+            if _target_belongs_to_work(target, scope.work_ref):
+                return True
+        else:
+            assert scope.class_id is not None
+            if quarantine_applies(target, _class_target(scope.class_id)):
+                return True
+            if _target_belongs_to_class(target, scope.class_id):
+                return True
+
         if not isinstance(target, Mapping):
             return False
-
         if target.get("kind") == "operation":
             operation_ref = target.get("operation_ref")
             operation_id = (
@@ -210,15 +332,15 @@ class OperationalAttentionSourceService:
                 raise PortiaCorruptionError(
                     "operational Quarantine target has malformed operation identity"
                 )
-            return self._operation_id_belongs_to_work(operation_id, work)
+            return self._operation_id_belongs_to_scope(operation_id, scope)
 
         if target.get("kind") == "derived_projection":
-            scope = target.get("projection_scope")
+            projection_scope = target.get("projection_scope")
             if (
-                isinstance(scope, Mapping)
-                and scope.get("scope") == "operation"
+                isinstance(projection_scope, Mapping)
+                and projection_scope.get("scope") == "operation"
             ):
-                operation_ref = scope.get("operation_ref")
+                operation_ref = projection_scope.get("operation_ref")
                 operation_id = (
                     operation_ref.get("operation_id")
                     if isinstance(operation_ref, Mapping)
@@ -228,32 +350,28 @@ class OperationalAttentionSourceService:
                     raise PortiaCorruptionError(
                         "operation-scoped projection Quarantine is malformed"
                     )
-                return self._operation_id_belongs_to_work(operation_id, work)
+                return self._operation_id_belongs_to_scope(
+                    operation_id,
+                    scope,
+                )
         return False
 
-    def _recovery_items(
+    def recovery_items(
         self,
         query: PortiaAttentionQuery,
-        work: ExactPortiaWorkRef,
     ) -> tuple[PortiaAttentionItem, ...]:
         if not _query_wants_code(query, "portia_recovery_required"):
             return ()
 
-        context = PortiaAttentionContext(
-            class_id=work.class_id,
-            work_ref=work,
+        context = _context(query.scope)
+        operation_ids = self.operation_ids_for_scope(
+            query.scope,
+            selected_only=query.scope.kind != "workspace",
         )
         items: list[PortiaAttentionItem] = []
-        for operation_id in self.operations.series_ids():
+        for operation_id in operation_ids:
             assessment = self.recovery.assess(operation_id)
             if assessment.disposition in _TERMINAL_RECOVERY_DISPOSITIONS:
-                continue
-            if assessment.series.selected_revision is None:
-                # Exact work attribution cannot be proven without a selected
-                # current journal. Workspace orchestration handles this later.
-                continue
-            current = self._selected_operation_for_work(operation_id, work)
-            if current is None:
                 continue
             reasons = [f"disposition_{assessment.disposition}"]
             if assessment.state is not None:
@@ -271,22 +389,18 @@ class OperationalAttentionSourceService:
             )
         return tuple(items)
 
-    def _quarantine_items(
+    def quarantine_items(
         self,
         query: PortiaAttentionQuery,
-        work: ExactPortiaWorkRef,
     ) -> tuple[PortiaAttentionItem, ...]:
         if not _query_wants_code(query, "portia_quarantine_active"):
             return ()
 
-        context = PortiaAttentionContext(
-            class_id=work.class_id,
-            work_ref=work,
-        )
+        context = _context(query.scope)
         items: list[PortiaAttentionItem] = []
         for record in self.quarantine.active_records():
             data = record.to_dict()
-            if not self._quarantine_belongs_to_work(data, work):
+            if not self._quarantine_belongs_to_scope(data, query.scope):
                 continue
             quarantine_id = data.get("quarantine_id")
             if not isinstance(quarantine_id, str):
@@ -306,10 +420,9 @@ class OperationalAttentionSourceService:
             )
         return tuple(items)
 
-    def _integrity_items(
+    def integrity_items(
         self,
         query: PortiaAttentionQuery,
-        work: ExactPortiaWorkRef,
     ) -> tuple[PortiaAttentionItem, ...]:
         wants_conflict = _query_wants_code(
             query,
@@ -322,19 +435,12 @@ class OperationalAttentionSourceService:
         if not wants_conflict and not wants_review:
             return ()
 
-        context = PortiaAttentionContext(
-            class_id=work.class_id,
-            work_ref=work,
-        )
+        context = _context(query.scope)
         items: list[PortiaAttentionItem] = []
-        for operation_id in self.operations.series_ids():
-            try:
-                current = self._selected_operation_for_work(operation_id, work)
-            except PortiaNotFoundError:
-                continue
-            if current is None:
-                continue
-
+        for operation_id in self.operation_ids_for_scope(
+            query.scope,
+            selected_only=True,
+        ):
             scope = self.integrity.operation_scope(operation_id)
             if not self.integrity.has_current_finding_projection(scope):
                 continue
@@ -363,7 +469,11 @@ class OperationalAttentionSourceService:
                 finding_code = data.get("code")
                 if not all(
                     isinstance(value, str)
-                    for value in (finding_key, evaluation_key, finding_code)
+                    for value in (
+                        finding_key,
+                        evaluation_key,
+                        finding_code,
+                    )
                 ):
                     raise PortiaCorruptionError(
                         "current Integrity Finding identity is malformed"
@@ -398,11 +508,10 @@ class OperationalAttentionSourceService:
     def items(
         self,
         query: PortiaAttentionQuery,
-        work: ExactPortiaWorkRef,
     ) -> tuple[PortiaAttentionItem, ...]:
         """Return bounded operational items without repair or mutation."""
         return (
-            *self._recovery_items(query, work),
-            *self._quarantine_items(query, work),
-            *self._integrity_items(query, work),
+            *self.recovery_items(query),
+            *self.quarantine_items(query),
+            *self.integrity_items(query),
         )

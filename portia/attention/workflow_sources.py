@@ -1,8 +1,4 @@
-"""Work-local Follow-Up schedule and workflow-attention sources for Issue #49.
-
-This slice deliberately remains exact-work-local. Broader workspace/class/work
-orchestration and partial/unavailable aggregation belong to Issue #49 Slice 5.
-"""
+"""Follow-Up schedule and native attention orchestration for Issue #49."""
 
 from __future__ import annotations
 
@@ -11,21 +7,38 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Final
 
+from portia.attention.derived_sources import DerivedAttentionSourceService
 from portia.attention.models import (
+    PORTIA_ATTENTION_PARTIAL_NOTICE,
+    PORTIA_ATTENTION_UNAVAILABLE_NOTICE,
     FollowUpScheduleItem,
     FollowUpScheduleQuery,
     PortiaAttentionContext,
     PortiaAttentionItem,
+    PortiaAttentionNotice,
     PortiaAttentionQuery,
     PortiaAttentionReport,
+    PortiaAttentionScope,
     build_attention_report,
 )
-from portia.attention.operational_sources import OperationalAttentionSourceService
+from portia.attention.operational_sources import (
+    OperationalAttentionSourceService,
+    UnknownIntegrityAttentionCodeError,
+)
+from portia.attention.scope import (
+    class_exists,
+    class_work_refs,
+    discover_workspace_classes,
+)
 from portia.attention.taxonomy import require_attention_definition
 from portia.attention.timing import classify_follow_up_timing
 from portia.models.errors import PortiaLocalValidationError
 from portia.models.references import ExactPortiaWorkRef
-from portia.storage.errors import PortiaCorruptionError, PortiaQuarantinedError
+from portia.storage.errors import (
+    PortiaCorruptionError,
+    PortiaNotFoundError,
+    PortiaStorageError,
+)
 from portia.storage.quarantine import QuarantineGuard
 from portia.storage.repository import PortiaRepository, StoredRecord
 from portia.workflows.context import WorkflowContextAssembler
@@ -34,6 +47,7 @@ from portia.workflows.dependencies import (
     DependencyWorkflowService,
 )
 from portia.workflows.downstream_common import follow_up_reference
+from portia.workflows.errors import WorkflowPrerequisiteError
 from portia.workflows.follow_ups import FollowUpWorkflowService
 from portia.workflows.judgment_evidence import ModuleJudgmentEvidenceAuthority
 from portia.workflows.reviews import ReviewWorkflowService, review_reference
@@ -67,6 +81,12 @@ _DEPENDENCY_ATTENTION_REASON_ORDER: Final[tuple[str, ...]] = (
     "advisory_review_required",
     "advisory_unsatisfied",
     "advisory_indeterminate",
+)
+_PARTIAL_NOTICE_MESSAGE: Final[str] = (
+    "One or more independent Portia attention sources could not be evaluated safely."
+)
+_UNAVAILABLE_NOTICE_MESSAGE: Final[str] = (
+    "The requested Portia attention scope could not be evaluated safely."
 )
 
 
@@ -244,12 +264,57 @@ class FollowUpScheduleQueryService:
         self,
         query: FollowUpScheduleQuery,
     ) -> tuple[FollowUpScheduleItem, ...]:
-        """Return scheduled/due/overdue current Follow-Ups without mutation."""
-        return tuple(entry.item for entry in self._entries(query))
+        """Return current Follow-Ups in explicit work/class/workspace scope."""
+        if not isinstance(query, FollowUpScheduleQuery):
+            raise TypeError("query must be a FollowUpScheduleQuery")
+
+        if query.scope.kind == "work":
+            entries = list(self._entries(query))
+        elif query.scope.kind == "class":
+            class_id = query.scope.class_id
+            assert class_id is not None
+            if not class_exists(self.workspace_root, class_id):
+                raise PortiaNotFoundError(
+                    "requested Follow-Up schedule class scope does not exist"
+                )
+            entries = []
+            for work in class_work_refs(self.repository, class_id):
+                entries.extend(
+                    self._entries(
+                        FollowUpScheduleQuery(
+                            scope=PortiaAttentionScope.work_scope(work),
+                            as_of=query.as_of,
+                            active_school_year=query.active_school_year,
+                        )
+                    )
+                )
+        else:
+            discovery = discover_workspace_classes(self.workspace_root)
+            if discovery.incomplete:
+                raise PortiaCorruptionError(
+                    "workspace class discovery is incomplete"
+                )
+            entries = []
+            for class_id in discovery.class_ids:
+                for work in class_work_refs(self.repository, class_id):
+                    entries.extend(
+                        self._entries(
+                            FollowUpScheduleQuery(
+                                scope=PortiaAttentionScope.work_scope(work),
+                                as_of=query.as_of,
+                                active_school_year=query.active_school_year,
+                            )
+                        )
+                    )
+
+        return tuple(
+            entry.item
+            for entry in sorted(entries, key=_schedule_sort_key)
+        )
 
 
 class AttentionQueryService:
-    """Slice-2 attention over exact-work Follow-Up and Review sources."""
+    """Native read-only attention over explicit work/class/workspace scope."""
 
     def __init__(
         self,
@@ -274,6 +339,10 @@ class AttentionQueryService:
         self.operational = OperationalAttentionSourceService(
             self.workspace_root,
             quarantine=self.quarantine,
+        )
+        self.derived = DerivedAttentionSourceService(
+            self.workspace_root,
+            operational=self.operational,
         )
 
     def _follow_up_items(
@@ -477,29 +546,183 @@ class AttentionQueryService:
 
         return tuple(items)
 
-    def query(self, query: PortiaAttentionQuery) -> PortiaAttentionReport:
-        """Evaluate workflow attention for one exact work scope."""
-        if not isinstance(query, PortiaAttentionQuery):
-            raise TypeError("query must be a PortiaAttentionQuery")
-        work = _require_exact_work_scope(query)
+    @staticmethod
+    def _partial_notice() -> PortiaAttentionNotice:
+        return PortiaAttentionNotice(
+            code=PORTIA_ATTENTION_PARTIAL_NOTICE,
+            message=_PARTIAL_NOTICE_MESSAGE,
+        )
 
-        if not _work_matches_school_year(
-            self.repository,
-            work,
-            query.active_school_year,
+    @staticmethod
+    def _unavailable_report(
+        query: PortiaAttentionQuery,
+    ) -> PortiaAttentionReport:
+        return build_attention_report(
+            query,
+            notices=(
+                PortiaAttentionNotice(
+                    code=PORTIA_ATTENTION_UNAVAILABLE_NOTICE,
+                    message=_UNAVAILABLE_NOTICE_MESSAGE,
+                ),
+            ),
+            evaluation="unavailable",
+        )
+
+    @staticmethod
+    def _work_query(
+        query: PortiaAttentionQuery,
+        work: ExactPortiaWorkRef,
+    ) -> PortiaAttentionQuery:
+        return PortiaAttentionQuery(
+            scope=PortiaAttentionScope.work_scope(work),
+            as_of=query.as_of,
+            active_school_year=query.active_school_year,
+            attention_codes=query.attention_codes,
+            attention_classes=query.attention_classes,
+        )
+
+    def _technical_items(
+        self,
+        query: PortiaAttentionQuery,
+    ) -> tuple[list[PortiaAttentionItem], bool]:
+        items: list[PortiaAttentionItem] = []
+        partial = False
+        for source in (
+            self.operational.recovery_items,
+            self.operational.quarantine_items,
+            self.operational.integrity_items,
+            self.derived.items,
         ):
-            return build_attention_report(query)
+            try:
+                items.extend(source(query))
+            except UnknownIntegrityAttentionCodeError:
+                # Unknown accepted finding vocabulary is a contract failure,
+                # not an isolatable availability problem.
+                raise
+            except (PortiaStorageError, WorkflowPrerequisiteError):
+                partial = True
+        return items, partial
 
-        items = list(self.operational.items(query, work))
+    def _domain_items_for_work(
+        self,
+        query: PortiaAttentionQuery,
+        work: ExactPortiaWorkRef,
+    ) -> tuple[list[PortiaAttentionItem], bool]:
+        local_query = self._work_query(query, work)
+        try:
+            if not _work_matches_school_year(
+                self.repository,
+                work,
+                query.active_school_year,
+            ):
+                return [], False
+        except PortiaStorageError:
+            return [], True
+
+        items: list[PortiaAttentionItem] = []
+        partial = False
         for source in (
             self._follow_up_items,
             self._review_items,
             self._support_process_items,
         ):
             try:
-                items.extend(source(query))
-            except PortiaQuarantinedError:
-                # Known containment is itself an operational attention fact.
-                # Quarantine must not prevent its own native presentation.
+                items.extend(source(local_query))
+            except (PortiaStorageError, WorkflowPrerequisiteError):
+                partial = True
+        return items, partial
+
+    def _evaluated_report(
+        self,
+        query: PortiaAttentionQuery,
+        items: list[PortiaAttentionItem],
+        *,
+        partial: bool,
+    ) -> PortiaAttentionReport:
+        notices = (self._partial_notice(),) if partial else ()
+        return build_attention_report(
+            query,
+            tuple(items),
+            notices=notices,
+        )
+
+    def _query_work(
+        self,
+        query: PortiaAttentionQuery,
+    ) -> PortiaAttentionReport:
+        work = _require_exact_work_scope(query)
+        try:
+            root = self.repository.load_work(work)
+        except PortiaStorageError:
+            return self._unavailable_report(query)
+
+        if (
+            query.active_school_year is not None
+            and root.record.field("school_year") != query.active_school_year
+        ):
+            return build_attention_report(query)
+
+        technical, technical_partial = self._technical_items(query)
+        domain, domain_partial = self._domain_items_for_work(query, work)
+        return self._evaluated_report(
+            query,
+            [*technical, *domain],
+            partial=technical_partial or domain_partial,
+        )
+
+    def _query_class(
+        self,
+        query: PortiaAttentionQuery,
+    ) -> PortiaAttentionReport:
+        class_id = query.scope.class_id
+        assert class_id is not None
+        if not class_exists(self.workspace_root, class_id):
+            return self._unavailable_report(query)
+
+        try:
+            works = class_work_refs(self.repository, class_id)
+        except PortiaStorageError:
+            return self._unavailable_report(query)
+
+        items, partial = self._technical_items(query)
+        for work in works:
+            domain, work_partial = self._domain_items_for_work(query, work)
+            items.extend(domain)
+            partial = partial or work_partial
+        return self._evaluated_report(query, items, partial=partial)
+
+    def _query_workspace(
+        self,
+        query: PortiaAttentionQuery,
+    ) -> PortiaAttentionReport:
+        try:
+            discovery = discover_workspace_classes(self.workspace_root)
+        except PortiaStorageError:
+            return self._unavailable_report(query)
+
+        items, partial = self._technical_items(query)
+        partial = partial or discovery.incomplete
+        for class_id in discovery.class_ids:
+            try:
+                works = class_work_refs(self.repository, class_id)
+            except PortiaStorageError:
+                partial = True
                 continue
-        return build_attention_report(query, tuple(items))
+            for work in works:
+                domain, work_partial = self._domain_items_for_work(
+                    query,
+                    work,
+                )
+                items.extend(domain)
+                partial = partial or work_partial
+        return self._evaluated_report(query, items, partial=partial)
+
+    def query(self, query: PortiaAttentionQuery) -> PortiaAttentionReport:
+        """Evaluate native attention in one explicit work/class/workspace scope."""
+        if not isinstance(query, PortiaAttentionQuery):
+            raise TypeError("query must be a PortiaAttentionQuery")
+        if query.scope.kind == "work":
+            return self._query_work(query)
+        if query.scope.kind == "class":
+            return self._query_class(query)
+        return self._query_workspace(query)
