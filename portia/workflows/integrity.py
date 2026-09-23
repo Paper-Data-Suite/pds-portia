@@ -333,6 +333,20 @@ class IntegrityWorkflowService:
         """Return exact current fresh findings without mutating projection state."""
         return self._load_current_findings(projection_scope)
 
+    def has_current_finding_projection(
+        self,
+        projection_scope: Mapping[str, object],
+    ) -> bool:
+        """Return whether an exact selected finding projection exists.
+
+        Presence is checked without weakening freshness, corruption, or Quarantine
+        authority. Call ``current_findings`` to consume the selected projection.
+        """
+        return self._derived.has_current_pointer(
+            _PROJECTION_KIND,
+            dict(projection_scope),
+        )
+
     def _require_exact_current_finding(
         self,
         projection_scope: Mapping[str, object],
@@ -1174,6 +1188,100 @@ class IntegrityWorkflowService:
         raise WorkflowPrerequisiteError(
             "selected suppression expiry condition is not supported"
         )
+
+    def is_finding_presentation_suppressed(
+        self,
+        projection_scope: Mapping[str, object],
+        *,
+        finding_key: str,
+        evaluation_key: str,
+        evaluated_at: str,
+        surface: str,
+        audience: str,
+    ) -> bool:
+        """Evaluate current suppression policy without mutating suppression state."""
+        if not isinstance(surface, str) or not surface:
+            raise WorkflowPrerequisiteError(
+                "suppression presentation surface must be a bounded identifier"
+            )
+        if not isinstance(audience, str) or not audience:
+            raise WorkflowPrerequisiteError(
+                "suppression presentation audience must be a bounded identifier"
+            )
+        finding = self._require_exact_current_finding(
+            projection_scope,
+            finding_key=finding_key,
+            evaluation_key=evaluation_key,
+        )
+        try:
+            self._require_suppressible(finding)
+        except WorkflowPrerequisiteError:
+            # Suppression is presentation policy only and can never hide a
+            # current finding whose accepted severity/effects forbid suppression.
+            return False
+        expected_binding = _exact_finding_binding(finding)
+        evaluated = _parse_timestamp(
+            evaluated_at,
+            description="suppression presentation evaluation time",
+        )
+
+        for current in self._suppressions.current_states():
+            data = current.revision.to_dict()
+            if data.get("state") != "active":
+                continue
+            if data.get("finding_binding") != expected_binding:
+                continue
+
+            presentation = data.get("presentation_scope")
+            if not isinstance(presentation, Mapping):
+                raise PortiaCorruptionError(
+                    "active suppression presentation scope is malformed"
+                )
+            surfaces = presentation.get("surfaces")
+            audiences = presentation.get("audiences")
+            if (
+                not isinstance(surfaces, list)
+                or not all(isinstance(value, str) for value in surfaces)
+                or not isinstance(audiences, list)
+                or not all(isinstance(value, str) for value in audiences)
+            ):
+                raise PortiaCorruptionError(
+                    "active suppression presentation scope is malformed"
+                )
+            if surface not in surfaces or audience not in audiences:
+                continue
+
+            starts = _parse_timestamp(
+                data.get("starts_at"),
+                description="suppression starts_at",
+            )
+            if evaluated < starts:
+                continue
+
+            raw_conditions = data.get("expiry_conditions")
+            if not isinstance(raw_conditions, list) or not raw_conditions:
+                raise PortiaCorruptionError(
+                    "active suppression expiry conditions are malformed"
+                )
+            conditions: list[Mapping[str, object]] = []
+            for condition in raw_conditions:
+                if not isinstance(condition, Mapping):
+                    raise PortiaCorruptionError(
+                        "active suppression expiry condition is malformed"
+                    )
+                conditions.append(condition)
+            if any(
+                self._condition_matches(
+                    current.revision,
+                    condition,
+                    projection_scope=projection_scope,
+                    evaluated_at=evaluated_at,
+                )
+                for condition in conditions
+            ):
+                continue
+            return True
+        return False
 
     def _active_suppression(
         self,

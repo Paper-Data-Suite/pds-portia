@@ -294,11 +294,48 @@ view.
 The student view exposes no behavior/risk/severity score, offender ranking,
 severity filter, raw-record bypass, sibling-module payload fetch, or automatic
 cross-year/global identity expansion. View generation and filtering are
-read-only and noncanonical. Issue #49 retains attention/recovery presentation,
-#50 menu composition, #51 deliberate export, and #52 suite integration.
+read-only and noncanonical. Issue #49 owns native attention/recovery queries,
+#50 retains menu composition, #51 deliberate export, and #52 suite integration.
 
 See `docs/student-timeline-and-work-view.md`; validation evidence is recorded in
 `docs/validation/issue-48-student-timeline-work-view-validation.md`.
+
+### Issue #49 current implementation
+
+Issue #49 adds Portia's production **read-only Follow-Up schedule and native
+teacher-attention query layer** through `portia.attention`.
+
+`FollowUpScheduleQueryService` keeps future scheduled Follow-Ups distinct from
+due/overdue attention. `AttentionQueryService` composes exact current
+Follow-Up, Review, Support Process, Integrity Finding, Operation Recovery,
+Quarantine, and registered derived-state authority across explicit work, class,
+or workspace scope. Every semantic time comparison receives an explicit
+offset-aware `as_of`.
+
+The native taxonomy is stable and presentation-neutral. Attention counts are
+workflow counts, not student counts or rankings. No behavior/risk/urgency/
+priority score, student ranking, automatic recommendation, recovery action,
+Quarantine release, acknowledgement, suppression, or derived rebuild is
+performed by a query.
+
+Integrity acknowledgement does not resolve a finding. Effective suppression
+uses the accepted Issue #47 policy and cannot hide an impermissibly suppressible
+blocking finding. Active Quarantine remains a separate current fact. Derived
+staleness uses `DerivedStore` source-snapshot authority rather than filesystem
+age.
+
+Unknown exact scope fails safely instead of widening. Broad evaluation can
+preserve unrelated safe results with a bounded partial notice, while an unsafe
+requested exact scope is unavailable rather than silently empty. Native items
+remain low-density and do not copy student narrative, Contact Points, raw
+integrity/recovery evidence, source paths, or removed content.
+
+Issue #49 does not implement the #50 menu, #51 export, #52 Core
+module-operations provider, or #53's full installed Event-to-Follow-Up
+acceptance story.
+
+See `docs/due-follow-up-and-attention-queries.md`; validation evidence is
+recorded in `docs/validation/issue-49-attention-query-validation.md`.
 
 ### Issue #17 current implementation
 
