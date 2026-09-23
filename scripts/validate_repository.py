@@ -1,4 +1,4 @@
-"""Run the complete Portia repository qualification through Issue #48."""
+"""Run the complete Portia repository qualification through Issue #49."""
 
 from __future__ import annotations
 
@@ -39,6 +39,15 @@ _ISSUE47_CLOSEOUT_COMPATIBILITY_MARKERS = (
     "Run the complete Portia repository qualification through Issue #47.",
     "Issue #47 qualification requires the authenticated Core 0.6.3 wheel",
     "Portia Issue #47 repository qualification passed",
+)
+
+
+# Historical source-level markers retained for the accepted Issue #48
+# mechanical validator. Current execution proceeds through Issue #49.
+_ISSUE48_CLOSEOUT_COMPATIBILITY_MARKERS = (
+    "Run the complete Portia repository qualification through Issue #48.",
+    "Issue #48 qualification requires the authenticated Core 0.6.3 wheel",
+    "Portia Issue #48 repository qualification passed",
 )
 
 
@@ -86,7 +95,7 @@ def qualify(root: Path, core_wheel: Path) -> None:
     expected_core_version = _core_version_from_wheel(core_wheel)
     if expected_core_version != "0.6.3":
         raise ValueError(
-            "Issue #48 qualification requires the authenticated Core 0.6.3 wheel; "
+            "Issue #49 qualification requires the authenticated Core 0.6.3 wheel; "
             f"received {expected_core_version}"
         )
     _run(
@@ -138,6 +147,15 @@ def qualify(root: Path, core_wheel: Path) -> None:
         ],
         root,
     )
+    _run(
+        [
+            sys.executable,
+            "scripts/validate_attention_queries.py",
+            "--stage",
+            "repository",
+        ],
+        root,
+    )
     _run([sys.executable, "-m", "pytest"], root)
     _run([sys.executable, "-m", "ruff", "check", "."], root)
     _run([sys.executable, "-m", "mypy"], root)
@@ -160,6 +178,7 @@ def qualify(root: Path, core_wheel: Path) -> None:
     _run([sys.executable, "scripts/check_issue45_package.py", "dist"], root)
     _run([sys.executable, "scripts/check_issue46_package.py", "dist"], root)
     _run([sys.executable, "scripts/check_issue48_package.py", "dist"], root)
+    _run([sys.executable, "scripts/check_issue49_package.py", "dist"], root)
 
     wheels = sorted((root / "dist").glob("pds_portia-*.whl"))
     if len(wheels) != 1:
@@ -236,6 +255,15 @@ def qualify(root: Path, core_wheel: Path) -> None:
         ],
         root,
     )
+    _run(
+        [
+            sys.executable,
+            "scripts/smoke_test_issue49_wheel.py",
+            str(wheels[0]),
+            str(core_wheel.resolve()),
+        ],
+        root,
+    )
     if (root / ".git").exists():
         _run(["git", "diff", "--check"], root)
 
@@ -250,7 +278,7 @@ def main() -> int:
     except (OSError, RuntimeError, ValueError, subprocess.CalledProcessError) as exc:
         print(f"Repository qualification failed: {exc}", file=sys.stderr)
         return 1
-    print("Portia Issue #48 repository qualification passed")
+    print("Portia Issue #49 repository qualification passed")
     return 0
 
 
