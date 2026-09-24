@@ -7,12 +7,21 @@ from collections.abc import Mapping
 from dataclasses import dataclass
 from datetime import date
 from pathlib import Path
+from typing import Literal, cast
 
 from portia.menu.authoring import (
     HumanAttributionInput,
+    SupportAuthoringInput,
+    SupportGoalAuthoringInput,
+    SupportNeedAuthoringInput,
     SupportParticipantAuthoringInput,
     SupportParticipantContextInput,
+    SupportPlanTargetInput,
     SupportProcessAuthoringInput,
+    SupportScheduleInput,
+    prepare_support,
+    prepare_support_goal,
+    prepare_support_need,
     prepare_support_participant,
     prepare_support_participant_activation,
     prepare_support_process,
@@ -45,7 +54,11 @@ from portia.menu.ui import (
     print_menu_header,
     print_navigation,
 )
-from portia.models import PortiaRecord, SupportProcessParticipantV1, SupportProcessV1
+from portia.models import (
+    PortiaRecord,
+    SupportProcessParticipantV1,
+    SupportProcessV1,
+)
 from portia.models.references import ExactPortiaWorkRef
 from portia.storage.errors import (
     PortiaConflictError,
@@ -58,8 +71,11 @@ from portia.storage.errors import (
 from portia.storage.repository import StoredRecord
 from portia.workflows import (
     PortiaWorkflowError,
+    SupportGoalWorkflowService,
+    SupportNeedWorkflowService,
     SupportProcessParticipantWorkflowService,
     SupportProcessWorkflowService,
+    SupportWorkflowService,
     support_process_participant_reference,
 )
 
@@ -78,6 +94,33 @@ _DESCRIPTION_TYPES: tuple[tuple[str, str], ...] = (
     ("visitor", "Visitor"),
     ("community_member", "Community member"),
     ("other", "Other described person"),
+)
+
+_NEED_KINDS: tuple[tuple[str, str], ...] = (
+    ("access", "Access"),
+    ("environmental_or_instructional", "Environmental or instructional"),
+    ("organizational_or_routine", "Organizational or routine"),
+    ("skill_or_strategy", "Skill or strategy"),
+    ("relationship_or_connection", "Relationship or connection"),
+    ("resource_or_coordination", "Resource or coordination"),
+    ("other", "Other bounded need"),
+)
+_SUPPORT_STRATEGIES: tuple[tuple[str, str], ...] = (
+    ("access", "Access"),
+    ("environmental_or_instructional", "Environmental or instructional"),
+    ("organizational", "Organizational"),
+    ("relationship_or_connection", "Relationship or connection"),
+    ("routine_or_structure", "Routine or structure"),
+    ("skill_building", "Skill building"),
+    ("self_management", "Self-management"),
+    ("resource_or_coordination", "Resource or coordination"),
+    ("other", "Other bounded strategy"),
+)
+_NO_PROVIDER_REASONS: tuple[tuple[str, str], ...] = (
+    ("access_condition", "Access condition — no individual provider assigned"),
+    ("self_directed", "Self-directed"),
+    ("resource_availability", "Resource availability"),
+    ("other", "Other explicit reason"),
 )
 
 
@@ -102,6 +145,40 @@ class SupportParticipantOption:
     person_label: str
     context_label: str
     status: str
+    label: str
+
+
+@dataclass(frozen=True, slots=True)
+class SupportNeedOption:
+    """One exact Support Need selection."""
+
+    stored: StoredRecord
+    need_id: str
+    description: str
+    status: str
+    label: str
+
+
+@dataclass(frozen=True, slots=True)
+class SupportGoalOption:
+    """One exact Support Goal selection."""
+
+    stored: StoredRecord
+    goal_id: str
+    description: str
+    status: str
+    label: str
+
+
+@dataclass(frozen=True, slots=True)
+class SupportPlanOption:
+    """One exact Support planning record for display."""
+
+    stored: StoredRecord
+    support_id: str
+    procedure: str
+    status: str
+    plan_state: str
     label: str
 
 
@@ -736,6 +813,689 @@ def activate_support_process_once(
     )
 
 
+def _planning_status(process: SupportProcessOption) -> Literal["proposed", "active"]:
+    if process.status == "proposed":
+        return "proposed"
+    if process.status == "active":
+        return "active"
+    raise ValueError("Support planning requires a proposed or active Support Process")
+
+
+def _choose_planning_target(
+    root: Path,
+    process: SupportProcessOption,
+    *,
+    title: str,
+) -> tuple[SupportPlanTargetInput, str]:
+    statuses = (
+        frozenset({"active"})
+        if process.status == "active"
+        else frozenset({"proposed", "active"})
+    )
+    participants = _participant_options(root, process.work, statuses=statuses)
+    values: list[tuple[SupportPlanTargetInput, str]] = [
+        (SupportPlanTargetInput(kind="support_process"), "Whole Support Process")
+    ]
+    values.extend(
+        (
+            SupportPlanTargetInput(
+                kind="support_process_participant",
+                participant_id=item.participant_id,
+            ),
+            item.person_label,
+        )
+        for item in participants
+    )
+    return select_one(
+        title,
+        tuple(values),
+        tuple(label for _value, label in values),
+        help_text=(
+            "Choose the exact planning target. A target identifies scope only; it does not "
+            "assign a role, establish delivery, or assert an Outcome."
+        ),
+    )
+
+
+def _need_options(
+    root: Path,
+    process: SupportProcessOption,
+    *,
+    statuses: frozenset[str],
+) -> tuple[SupportNeedOption, ...]:
+    values: list[SupportNeedOption] = []
+    for stored in SupportNeedWorkflowService(root).list(process.work):
+        record = stored.record
+        identifier = record.logical_id
+        status = record.status
+        description = record.field("description")
+        if (
+            identifier is None
+            or not isinstance(status, str)
+            or status not in statuses
+            or not isinstance(description, str)
+        ):
+            continue
+        values.append(
+            SupportNeedOption(
+                stored=stored,
+                need_id=identifier,
+                description=description,
+                status=status,
+                label=f"{description} — {status.title()}",
+            )
+        )
+    return tuple(values)
+
+
+def _goal_options(
+    root: Path,
+    process: SupportProcessOption,
+    *,
+    statuses: frozenset[str],
+) -> tuple[SupportGoalOption, ...]:
+    values: list[SupportGoalOption] = []
+    for stored in SupportGoalWorkflowService(root).list(process.work):
+        record = stored.record
+        identifier = record.logical_id
+        status = record.status
+        description = record.field("description")
+        if (
+            identifier is None
+            or not isinstance(status, str)
+            or status not in statuses
+            or not isinstance(description, str)
+        ):
+            continue
+        values.append(
+            SupportGoalOption(
+                stored=stored,
+                goal_id=identifier,
+                description=description,
+                status=status,
+                label=f"{description} — {status.title()}",
+            )
+        )
+    return tuple(values)
+
+
+def _support_options(root: Path, process: SupportProcessOption) -> tuple[SupportPlanOption, ...]:
+    values: list[SupportPlanOption] = []
+    for stored in SupportWorkflowService(root).list(process.work):
+        record = stored.record
+        identifier = record.logical_id
+        status = record.status
+        strategy = record.field("strategy")
+        plan_state = record.field("plan_state")
+        procedure = strategy.get("procedure") if isinstance(strategy, Mapping) else None
+        if (
+            identifier is None
+            or not isinstance(status, str)
+            or status not in {"proposed", "active"}
+            or not isinstance(plan_state, str)
+            or not isinstance(procedure, str)
+        ):
+            continue
+        values.append(
+            SupportPlanOption(
+                stored=stored,
+                support_id=identifier,
+                procedure=procedure,
+                status=status,
+                plan_state=plan_state,
+                label=(
+                    f"{procedure} — {status.title()} / "
+                    f"{plan_state.replace('_', ' ').title()}"
+                ),
+            )
+        )
+    return tuple(values)
+
+
+def record_support_need_once(
+    state: MenuSessionContext,
+    process: SupportProcessOption,
+    *,
+    clock: MenuClock | None = None,
+    ids: PortiaIdGenerator | None = None,
+) -> None:
+    """Record one bounded Support Need without diagnostic or eligibility inference."""
+
+    root = state.resolve_workspace()
+    operator = _require_operator(state, title="Record Support Need — Your Name")
+    target, target_label = _choose_planning_target(
+        root, process, title="Record Support Need — Target"
+    )
+    need_kind = select_one(
+        "Record Support Need — Kind",
+        tuple(item[0] for item in _NEED_KINDS),
+        tuple(item[1] for item in _NEED_KINDS),
+        help_text=(
+            "Choose a bounded teacher-local planning category. This is not a diagnosis, "
+            "eligibility code, risk level, or institutional determination."
+        ),
+    )
+    kind_detail: str | None = None
+    if need_kind == "other":
+        kind_detail = prompt_text(
+            "Record Support Need — Kind",
+            "Need kind detail",
+            help_text=(
+                "Describe the bounded category without converting it into a diagnosis "
+                "or eligibility claim."
+            ),
+        )
+    description = prompt_text(
+        "Record Support Need — Description",
+        "Need description",
+        help_text=(
+            "Describe what access, condition, resource, routine, skill, strategy, or "
+            "coordination need is being planned for. Record only the human-entered need statement."
+        ),
+    )
+    assert description is not None
+    status = _planning_status(process)
+    candidate = prepare_support_need(
+        SupportNeedAuthoringInput(
+            work=process.work,
+            status=status,
+            target=target,
+            need_kind=need_kind,
+            description=description,
+            kind_detail=kind_detail,
+            local_operator_label=operator,
+        ),
+        clock=clock or MenuClock(),
+        ids=ids or PortiaIdGenerator(),
+    )
+    if not confirm_write(
+        "Record Support Need — Review",
+        "RECORD",
+        (
+            f"Support Process: {process.summary}",
+            f"Target: {target_label}",
+            f"Need kind: {need_kind.replace('_', ' ')}",
+            f"Description: {description}",
+            f"Canonical status: {status}",
+            "",
+            "A Need is a planning record. It does not establish diagnosis, eligibility, "
+            "severity, service delivery, or Outcome.",
+        ),
+        help_text="RECORD creates only this exact Support Need.",
+    ):
+        return
+    SupportNeedWorkflowService(root).create(process.work, candidate)
+    _show_result("Support Need Recorded", ("Support Need recorded.",))
+
+
+def record_support_goal_once(
+    state: MenuSessionContext,
+    process: SupportProcessOption,
+    *,
+    clock: MenuClock | None = None,
+    ids: PortiaIdGenerator | None = None,
+) -> None:
+    """Record one future-facing Support Goal without progress or attainment inference."""
+
+    root = state.resolve_workspace()
+    operator = _require_operator(state, title="Record Support Goal — Your Name")
+    target, target_label = _choose_planning_target(
+        root, process, title="Record Support Goal — Target"
+    )
+    description = prompt_text(
+        "Record Support Goal — Description",
+        "Future objective",
+        help_text=(
+            "State the future support objective. This field is a plan; it does not say the goal "
+            "has been met or that progress has occurred."
+        ),
+    )
+    assert description is not None
+    criteria = prompt_text(
+        "Record Support Goal — Criteria",
+        "Planned criteria",
+        help_text="Optional planned criteria for later review; this is not a current result.",
+        optional=True,
+    )
+    measurement = prompt_text(
+        "Record Support Goal — Measurement",
+        "Planned measurement approach",
+        help_text=(
+            "Optional plan for later observation or review; this does not create an Outcome."
+        ),
+        optional=True,
+    )
+    status = _planning_status(process)
+    candidate = prepare_support_goal(
+        SupportGoalAuthoringInput(
+            work=process.work,
+            status=status,
+            target=target,
+            description=description,
+            planned_criteria=criteria,
+            measurement_approach=measurement,
+            local_operator_label=operator,
+        ),
+        clock=clock or MenuClock(),
+        ids=ids or PortiaIdGenerator(),
+    )
+    if not confirm_write(
+        "Record Support Goal — Review",
+        "RECORD",
+        (
+            f"Support Process: {process.summary}",
+            f"Target: {target_label}",
+            f"Future objective: {description}",
+            f"Canonical status: {status}",
+            "",
+            "A Goal describes planned future direction. It does not record progress, attainment, "
+            "effectiveness, or Outcome.",
+        ),
+        help_text="RECORD creates only this exact Support Goal.",
+    ):
+        return
+    SupportGoalWorkflowService(root).create(process.work, candidate)
+    _show_result("Support Goal Recorded", ("Support Goal recorded.",))
+
+
+def _select_needs_for_support(
+    root: Path, process: SupportProcessOption
+) -> tuple[SupportNeedOption, ...]:
+    statuses = (
+        frozenset({"active"})
+        if process.status == "active"
+        else frozenset({"proposed", "active"})
+    )
+    available = list(_need_options(root, process, statuses=statuses))
+    if not available:
+        raise ValueError("Record at least one eligible Support Need before planning a Support.")
+    selected: list[SupportNeedOption] = []
+    while available:
+        choice = select_one(
+            "Plan Support — Need",
+            tuple(available),
+            tuple(item.label for item in available),
+            help_text="Select an exact Need this Support is intended to address.",
+        )
+        selected.append(choice)
+        available = [item for item in available if item.need_id != choice.need_id]
+        if not available:
+            break
+        more = select_one(
+            "Plan Support — Needs",
+            (False, True),
+            ("Continue with selected Needs", "Add another Need"),
+            help_text="Link only Needs this planned Support explicitly addresses.",
+        )
+        if not more:
+            break
+    return tuple(selected)
+
+
+def _select_goals_for_support(
+    root: Path, process: SupportProcessOption
+) -> tuple[SupportGoalOption, ...]:
+    statuses = (
+        frozenset({"active"})
+        if process.status == "active"
+        else frozenset({"proposed", "active"})
+    )
+    available = list(_goal_options(root, process, statuses=statuses))
+    if not available:
+        return ()
+    link = select_one(
+        "Plan Support — Goals",
+        (False, True),
+        ("Do not link a Goal", "Link one or more Goals"),
+        help_text="Goal linkage is optional and does not assert progress or attainment.",
+    )
+    if not link:
+        return ()
+    selected: list[SupportGoalOption] = []
+    while available:
+        choice = select_one(
+            "Plan Support — Goal",
+            tuple(available),
+            tuple(item.label for item in available),
+            help_text="Select an exact future-facing Goal this Support is intended to serve.",
+        )
+        selected.append(choice)
+        available = [item for item in available if item.goal_id != choice.goal_id]
+        if not available:
+            break
+        more = select_one(
+            "Plan Support — Goals",
+            (False, True),
+            ("Continue with selected Goals", "Add another Goal"),
+            help_text="Link only Goals explicitly served by this plan.",
+        )
+        if not more:
+            break
+    return tuple(selected)
+
+
+def _select_provider_plan(
+    root: Path, process: SupportProcessOption
+) -> tuple[tuple[str, ...], str | None, str | None, str]:
+    statuses = (
+        frozenset({"active"})
+        if process.status == "active"
+        else frozenset({"proposed", "active"})
+    )
+    participants = list(_participant_options(root, process.work, statuses=statuses))
+    assigned = select_one(
+        "Plan Support — Provider",
+        (False, True),
+        ("No individual provider assigned", "Assign Support Process participant(s)"),
+        help_text=(
+            "Provider planning is explicit. Assignment does not establish actual implementation, "
+            "attendance, fidelity, or effectiveness."
+        ),
+    )
+    if assigned:
+        if not participants:
+            raise ValueError(
+                "No eligible Support Process Participants are available for provider assignment."
+            )
+        selected: list[SupportParticipantOption] = []
+        available = participants
+        while available:
+            choice = select_one(
+                "Plan Support — Provider",
+                tuple(available),
+                tuple(item.label for item in available),
+                help_text=(
+                    "Select an exact Support Process Participant as a planned provider/collaborator."
+                ),
+            )
+            selected.append(choice)
+            available = [
+                item for item in available if item.participant_id != choice.participant_id
+            ]
+            if not available:
+                break
+            more = select_one(
+                "Plan Support — Providers",
+                (False, True),
+                ("Continue with selected providers", "Add another provider"),
+                help_text="Add only participants explicitly assigned in this plan.",
+            )
+            if not more:
+                break
+        return (
+            tuple(item.participant_id for item in selected),
+            None,
+            None,
+            ", ".join(item.person_label for item in selected),
+        )
+    reason = select_one(
+        "Plan Support — No Assigned Provider",
+        tuple(item[0] for item in _NO_PROVIDER_REASONS),
+        tuple(item[1] for item in _NO_PROVIDER_REASONS),
+        help_text="Record why this plan has no individually assigned provider.",
+    )
+    detail: str | None = None
+    if reason == "other":
+        detail = prompt_text(
+            "Plan Support — No Assigned Provider",
+            "Reason detail",
+            help_text="Briefly state the bounded reason no provider is assigned.",
+        )
+    return (), reason, detail, f"No assigned provider — {reason.replace('_', ' ')}"
+
+
+def _prompt_positive_int(title: str, label: str, *, help_text: str) -> int:
+    while True:
+        value = prompt_text(title, label, help_text=help_text)
+        assert value is not None
+        if value.isdigit() and int(value) > 0:
+            return int(value)
+        _show_result(title, (f"{label} must be a positive whole number.",))
+
+
+def _prompt_optional_minutes(title: str) -> int | None:
+    while True:
+        value = prompt_text(
+            title,
+            "Planned duration in minutes",
+            help_text="Optional planning duration. This does not record actual time delivered.",
+            optional=True,
+        )
+        if value is None:
+            return None
+        if value.isdigit() and 1 <= int(value) <= 10080:
+            return int(value)
+        _show_result(title, ("Duration must be a whole number from 1 through 10080.",))
+
+
+def _choose_support_schedule() -> tuple[SupportScheduleInput, str]:
+    kind = cast(
+        Literal["as_needed", "recurring", "condition_triggered", "custom"],
+        select_one(
+            "Plan Support — Schedule",
+            ("as_needed", "recurring", "condition_triggered", "custom"),
+            ("As needed", "Recurring", "Condition triggered", "Custom description"),
+            help_text=(
+                "This is a planned schedule only. Calendar recurrence or a trigger does not create "
+                "an Implementation record."
+            ),
+        ),
+    )
+    minutes = _prompt_optional_minutes("Plan Support — Schedule")
+    if kind == "as_needed":
+        return SupportScheduleInput(kind="as_needed", planned_minutes=minutes), "As needed"
+    if kind == "recurring":
+        occurrences = _prompt_positive_int(
+            "Plan Support — Recurrence",
+            "Occurrences",
+            help_text="Planned number of occurrences; this is not an implementation count.",
+        )
+        interval_count = _prompt_positive_int(
+            "Plan Support — Recurrence",
+            "Every how many units",
+            help_text="Enter the planned interval count.",
+        )
+        unit = select_one(
+            "Plan Support — Recurrence",
+            ("day", "week", "month"),
+            ("Day(s)", "Week(s)", "Month(s)"),
+            help_text="Choose the planned recurrence unit.",
+        )
+        return (
+            SupportScheduleInput(
+                kind="recurring",
+                planned_minutes=minutes,
+                occurrences=occurrences,
+                interval_count=interval_count,
+                interval_unit=unit,
+            ),
+            f"{occurrences} occurrence(s), every {interval_count} {unit}(s)",
+        )
+    if kind == "condition_triggered":
+        trigger = prompt_text(
+            "Plan Support — Trigger",
+            "Trigger condition",
+            help_text="Describe the bounded condition that calls for the planned Support.",
+        )
+        assert trigger is not None
+        return (
+            SupportScheduleInput(
+                kind="condition_triggered", planned_minutes=minutes, trigger=trigger
+            ),
+            f"Condition triggered — {trigger}",
+        )
+    description = prompt_text(
+        "Plan Support — Schedule",
+        "Custom schedule description",
+        help_text="Describe the planned schedule without claiming implementation occurred.",
+    )
+    assert description is not None
+    return (
+        SupportScheduleInput(
+            kind="custom", planned_minutes=minutes, description=description
+        ),
+        f"Custom — {description}",
+    )
+
+
+def record_support_once(
+    state: MenuSessionContext,
+    process: SupportProcessOption,
+    *,
+    clock: MenuClock | None = None,
+    ids: PortiaIdGenerator | None = None,
+) -> None:
+    """Record one Support plan without creating implementation or effectiveness evidence."""
+
+    root = state.resolve_workspace()
+    operator = _require_operator(state, title="Plan Support — Your Name")
+    target, target_label = _choose_planning_target(
+        root, process, title="Plan Support — Target"
+    )
+    needs = _select_needs_for_support(root, process)
+    goals = _select_goals_for_support(root, process)
+    strategy_kind = select_one(
+        "Plan Support — Strategy",
+        tuple(item[0] for item in _SUPPORT_STRATEGIES),
+        tuple(item[1] for item in _SUPPORT_STRATEGIES),
+        help_text=(
+            "Choose the bounded type of planned Support; this is not an Intervention record."
+        ),
+    )
+    strategy_detail: str | None = None
+    if strategy_kind == "other":
+        strategy_detail = prompt_text(
+            "Plan Support — Strategy",
+            "Strategy detail",
+            help_text="Describe the bounded strategy category.",
+        )
+    procedure = prompt_text(
+        "Plan Support — Procedure",
+        "Planned procedure",
+        help_text=(
+            "Describe what is planned. Do not record implementation, fidelity, or effectiveness here."
+        ),
+    )
+    assert procedure is not None
+    provider_ids, no_provider_reason, no_provider_detail, provider_label = (
+        _select_provider_plan(root, process)
+    )
+    schedule, schedule_label = _choose_support_schedule()
+    status = _planning_status(process)
+    candidate = prepare_support(
+        SupportAuthoringInput(
+            work=process.work,
+            status=status,
+            target=target,
+            need_ids=tuple(item.need_id for item in needs),
+            goal_ids=tuple(item.goal_id for item in goals),
+            strategy_kind=strategy_kind,
+            procedure=procedure,
+            strategy_detail=strategy_detail,
+            provider_participant_ids=provider_ids,
+            no_provider_reason=no_provider_reason,
+            no_provider_detail=no_provider_detail,
+            schedule=schedule,
+            local_operator_label=operator,
+        ),
+        clock=clock or MenuClock(),
+        ids=ids or PortiaIdGenerator(),
+    )
+    goal_text = ", ".join(item.description for item in goals) if goals else "None linked"
+    if not confirm_write(
+        "Plan Support — Review",
+        "RECORD",
+        (
+            f"Support Process: {process.summary}",
+            f"Target: {target_label}",
+            f"Need(s): {', '.join(item.description for item in needs)}",
+            f"Goal(s): {goal_text}",
+            f"Strategy: {strategy_kind.replace('_', ' ')}",
+            f"Procedure: {procedure}",
+            f"Provider plan: {provider_label}",
+            f"Schedule: {schedule_label}",
+            f"Canonical status: {status}",
+            "",
+            "This records a Support plan only. It does not create an Intervention, "
+            "Implementation, Fidelity, Follow-Up, or Outcome.",
+        ),
+        help_text="RECORD creates only this exact Support planning record.",
+    ):
+        return
+    SupportWorkflowService(root).create(process.work, candidate)
+    _show_result("Support Planned", ("Support planning record created.",))
+
+
+def view_support_planning_once(state: MenuSessionContext, process: SupportProcessOption) -> None:
+    """Read Needs, Goals, and Supports without changing canonical state."""
+
+    root = state.resolve_workspace()
+    entries: list[str] = []
+    entries.extend(
+        f"Need — {item.description} — {item.status}"
+        for item in _need_options(
+            root, process, statuses=frozenset({"proposed", "active"})
+        )
+    )
+    entries.extend(
+        f"Goal — {item.description} — {item.status}"
+        for item in _goal_options(
+            root, process, statuses=frozenset({"proposed", "active"})
+        )
+    )
+    entries.extend(
+        f"Support — {item.procedure} — {item.status} / {item.plan_state}"
+        for item in _support_options(root, process)
+    )
+    if not entries:
+        _show_result(
+            "Support Planning",
+            ("No current/proposed Needs, Goals, or Supports are recorded.",),
+        )
+        return
+    pages = page_count(len(entries), page_size=PAGE_SIZE)
+    page_index = 0
+    while True:
+        clear_screen()
+        print_menu_header("Support Planning")
+        print(f"Support Process: {process.summary}")
+        print()
+        for entry in page_items(entries, page_index, page_size=PAGE_SIZE):
+            print(f"- {entry}")
+        if pages > 1:
+            print()
+            print(f"Page {page_index + 1} of {pages}")
+            if page_index + 1 < pages:
+                print("N. Next page")
+            if page_index > 0:
+                print("P. Previous page")
+        print_navigation()
+        print()
+        raw = input("Select an option: ").strip()
+        normalized = raw.casefold()
+        if normalized == "n" and page_index + 1 < pages:
+            page_index += 1
+            continue
+        if normalized == "p" and page_index > 0:
+            page_index -= 1
+            continue
+        navigation = parse_menu_navigation(raw)
+        if navigation is PortiaMenuChoice.HELP:
+            _show_result(
+                "Support Planning Help",
+                (
+                    "This is a read-only view of exact planning records.",
+                    "Need is not Goal; Support plan is not Implementation; none of these records "
+                    "is an Outcome.",
+                ),
+            )
+        elif navigation is NavigationChoice.BACK:
+            return
+        else:
+            print(navigation_hint_with_help())
+            pause_for_user()
+
+
 def _open_process_menu(state: MenuSessionContext, process: SupportProcessOption) -> None:
     while True:
         clear_screen()
@@ -749,6 +1509,10 @@ def _open_process_menu(state: MenuSessionContext, process: SupportProcessOption)
         print("3. Activate participant")
         if process.status == "proposed":
             print("4. Activate Support Process")
+        print("5. Record Support Need")
+        print("6. Record Support Goal")
+        print("7. Plan Support")
+        print("8. View Needs / Goals / Supports")
         print_navigation()
         print()
         raw = input("Select an option: ").strip()
@@ -759,7 +1523,8 @@ def _open_process_menu(state: MenuSessionContext, process: SupportProcessOption)
                 (
                     "Support setup is incremental. Each confirmed write is canonical on its own.",
                     "Participant activation and Support Process activation are separate lifecycle actions.",
-                    "Needs, goals, supports, interventions, implementation, and fidelity are not collapsed here.",
+                    "Need, Goal, and Support are separate planning families.",
+                    "A Support plan does not create Intervention, Implementation, Fidelity, Follow-Up, or Outcome records.",
                 ),
             )
             continue
@@ -775,6 +1540,14 @@ def _open_process_menu(state: MenuSessionContext, process: SupportProcessOption)
             elif raw == "4" and process.status == "proposed":
                 activate_support_process_once(state, process)
                 return
+            elif raw == "5":
+                record_support_need_once(state, process)
+            elif raw == "6":
+                record_support_goal_once(state, process)
+            elif raw == "7":
+                record_support_once(state, process)
+            elif raw == "8":
+                view_support_planning_once(state, process)
             else:
                 print(navigation_hint_with_help())
                 pause_for_user()
@@ -815,7 +1588,7 @@ def launch_manage_support_menu(state: MenuSessionContext) -> None:
                 (
                     "A Support Process is teacher-local planning, not automatically an IEP, 504 plan, FBA, BIP, clinical plan, or institutional case plan.",
                     "need != goal; support != intervention; plan != implementation; implementation != fidelity; fidelity != Outcome.",
-                    "This slice wires the Support Process root and Participants only.",
+                    "The routine menu keeps Need, Goal, and Support planning separate from Intervention, Implementation, Fidelity, Follow-Up, and Outcome.",
                 ),
             )
             continue

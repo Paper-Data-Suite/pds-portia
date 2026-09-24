@@ -19,8 +19,11 @@ from portia.models import (
     ObservationV2,
     ResponseV1,
     ReviewV1,
+    SupportGoalV1,
+    SupportNeedV1,
     SupportProcessParticipantV1,
     SupportProcessV1,
+    SupportV1,
     parse_portia_record,
 )
 from portia.models.common import ExplicitOffsetTimestamp
@@ -245,6 +248,72 @@ class PreparedSupportParticipantActivation:
     candidate: SupportProcessParticipantV1
     transition_id: str
     operation_id: str
+
+
+@dataclass(frozen=True, slots=True)
+class SupportPlanTargetInput:
+    """One exact Support Process-local planning target."""
+
+    kind: Literal["support_process", "support_process_participant"]
+    participant_id: str | None = None
+
+
+@dataclass(frozen=True, slots=True)
+class SupportNeedAuthoringInput:
+    """Teacher-entered facts for one bounded Support Need."""
+
+    work: ExactPortiaWorkRef
+    status: Literal["proposed", "active"]
+    target: SupportPlanTargetInput
+    need_kind: str
+    description: str
+    kind_detail: str | None
+    local_operator_label: str
+
+
+@dataclass(frozen=True, slots=True)
+class SupportGoalAuthoringInput:
+    """Teacher-entered facts for one bounded future Support Goal."""
+
+    work: ExactPortiaWorkRef
+    status: Literal["proposed", "active"]
+    target: SupportPlanTargetInput
+    description: str
+    planned_criteria: str | None
+    measurement_approach: str | None
+    local_operator_label: str
+
+
+@dataclass(frozen=True, slots=True)
+class SupportScheduleInput:
+    """Planning-only schedule facts; no implementation semantics."""
+
+    kind: Literal["as_needed", "recurring", "condition_triggered", "custom"]
+    planned_minutes: int | None = None
+    occurrences: int | None = None
+    interval_count: int | None = None
+    interval_unit: str | None = None
+    trigger: str | None = None
+    description: str | None = None
+
+
+@dataclass(frozen=True, slots=True)
+class SupportAuthoringInput:
+    """Teacher-entered facts for one Support planning record."""
+
+    work: ExactPortiaWorkRef
+    status: Literal["proposed", "active"]
+    target: SupportPlanTargetInput
+    need_ids: tuple[str, ...]
+    goal_ids: tuple[str, ...]
+    strategy_kind: str
+    procedure: str
+    strategy_detail: str | None
+    provider_participant_ids: tuple[str, ...]
+    no_provider_reason: str | None
+    no_provider_detail: str | None
+    schedule: SupportScheduleInput
+    local_operator_label: str
 
 
 @dataclass(frozen=True, slots=True)
@@ -1144,3 +1213,247 @@ def prepare_support_process_activation(
         transition_id=ids.new("lct_"),
         operation_id=ids.new("op_"),
     )
+
+def _support_plan_target(value: SupportPlanTargetInput) -> dict[str, object]:
+    if value.kind == "support_process":
+        if value.participant_id is not None:
+            raise ValueError("whole-process target cannot include a participant ID")
+        return {"kind": "support_process"}
+    if value.kind != "support_process_participant" or value.participant_id is None:
+        raise ValueError("participant target requires one exact participant ID")
+    return {
+        "kind": "support_process_participant",
+        "record_ref": {
+            "record_kind": "support_process_participant",
+            "record_id": value.participant_id,
+            "contract_version": "1",
+        },
+    }
+
+
+def prepare_support_need(
+    request: SupportNeedAuthoringInput,
+    *,
+    clock: MenuClock,
+    ids: PortiaIdGenerator,
+) -> SupportNeedV1:
+    """Build one explicit Need without diagnosis, eligibility, or outcome inference."""
+
+    _require_support_work(request.work)
+    if request.status not in {"proposed", "active"}:
+        raise ValueError("Support Need status must be proposed or active")
+    if request.need_kind == "other":
+        if request.kind_detail is None:
+            raise ValueError("other Support Need kind requires detail")
+        kind_detail = _normalized_text(request.kind_detail, "Support Need kind detail")
+    else:
+        if request.kind_detail is not None and request.kind_detail.strip():
+            raise ValueError("Support Need kind detail is only valid for other")
+        kind_detail = None
+    timestamp = clock.now().text
+    data: dict[str, object] = {
+        "schema_version": "1",
+        "record_type": "support_need",
+        "module_id": "portia",
+        "class_id": request.work.class_id,
+        "work_id": request.work.work_id,
+        "need_id": ids.new("spn_"),
+        "status": request.status,
+        "target": _support_plan_target(request.target),
+        "need_kind": request.need_kind,
+        "description": _normalized_text(request.description, "Support Need description"),
+        "creation_source": {"type": "digital_entry"},
+        "created_at": timestamp,
+        "created_by": _operator(request.local_operator_label),
+        "updated_at": timestamp,
+        "updated_by": _operator(request.local_operator_label),
+    }
+    if kind_detail is not None:
+        data["kind_detail"] = kind_detail
+    record = parse_portia_record("support_need", "1", data)
+    if not isinstance(record, SupportNeedV1):
+        raise TypeError("Support Need authoring produced an unexpected runtime model")
+    return record
+
+
+def prepare_support_goal(
+    request: SupportGoalAuthoringInput,
+    *,
+    clock: MenuClock,
+    ids: PortiaIdGenerator,
+) -> SupportGoalV1:
+    """Build one future-facing Goal without recording progress or attainment."""
+
+    _require_support_work(request.work)
+    if request.status not in {"proposed", "active"}:
+        raise ValueError("Support Goal status must be proposed or active")
+    timestamp = clock.now().text
+    data: dict[str, object] = {
+        "schema_version": "1",
+        "record_type": "support_goal",
+        "module_id": "portia",
+        "class_id": request.work.class_id,
+        "work_id": request.work.work_id,
+        "goal_id": ids.new("spg_"),
+        "status": request.status,
+        "target": _support_plan_target(request.target),
+        "description": _normalized_text(request.description, "Support Goal description"),
+        "creation_source": {"type": "digital_entry"},
+        "created_at": timestamp,
+        "created_by": _operator(request.local_operator_label),
+        "updated_at": timestamp,
+        "updated_by": _operator(request.local_operator_label),
+    }
+    if request.planned_criteria is not None and request.planned_criteria.strip():
+        data["planned_criteria"] = _normalized_text(
+            request.planned_criteria, "Support Goal planned criteria"
+        )
+    if request.measurement_approach is not None and request.measurement_approach.strip():
+        data["measurement_approach"] = _normalized_text(
+            request.measurement_approach, "Support Goal measurement approach"
+        )
+    record = parse_portia_record("support_goal", "1", data)
+    if not isinstance(record, SupportGoalV1):
+        raise TypeError("Support Goal authoring produced an unexpected runtime model")
+    return record
+
+
+def _support_schedule(value: SupportScheduleInput) -> dict[str, object]:
+    schedule: dict[str, object] = {"kind": value.kind}
+    if value.planned_minutes is not None:
+        if value.planned_minutes < 1:
+            raise ValueError("planned support duration must be at least one minute")
+        schedule["planned_duration"] = {
+            "kind": "minutes",
+            "minutes": value.planned_minutes,
+        }
+    if value.kind == "as_needed":
+        return schedule
+    if value.kind == "recurring":
+        if value.occurrences is None or value.interval_count is None or value.interval_unit is None:
+            raise ValueError("recurring support schedule requires frequency")
+        schedule["frequency"] = {
+            "occurrences": value.occurrences,
+            "interval_count": value.interval_count,
+            "interval_unit": value.interval_unit,
+        }
+        return schedule
+    if value.kind == "condition_triggered":
+        if value.trigger is None:
+            raise ValueError("condition-triggered support schedule requires a trigger")
+        schedule["trigger"] = _normalized_text(value.trigger, "Support schedule trigger")
+        return schedule
+    if value.kind == "custom":
+        if value.description is None:
+            raise ValueError("custom support schedule requires a description")
+        schedule["description"] = _normalized_text(
+            value.description, "Support schedule description"
+        )
+        return schedule
+    raise ValueError(f"unsupported Support schedule kind {value.kind!r}")
+
+
+def prepare_support(
+    request: SupportAuthoringInput,
+    *,
+    clock: MenuClock,
+    ids: PortiaIdGenerator,
+) -> SupportV1:
+    """Build one planning Support without claiming delivery or effectiveness."""
+
+    _require_support_work(request.work)
+    if request.status not in {"proposed", "active"}:
+        raise ValueError("Support status must be proposed or active")
+    if not request.need_ids:
+        raise ValueError("Support requires at least one exact Need")
+    if len(set(request.need_ids)) != len(request.need_ids):
+        raise ValueError("Support Need selection repeats an exact Need")
+    if len(set(request.goal_ids)) != len(request.goal_ids):
+        raise ValueError("Support Goal selection repeats an exact Goal")
+    if len(set(request.provider_participant_ids)) != len(request.provider_participant_ids):
+        raise ValueError("Support provider selection repeats an exact Participant")
+
+    strategy: dict[str, object] = {
+        "kind": request.strategy_kind,
+        "procedure": _normalized_text(request.procedure, "Support procedure"),
+    }
+    if request.strategy_kind == "other":
+        if request.strategy_detail is None:
+            raise ValueError("other Support strategy requires detail")
+        strategy["kind_detail"] = _normalized_text(
+            request.strategy_detail, "Support strategy detail"
+        )
+    elif request.strategy_detail is not None and request.strategy_detail.strip():
+        raise ValueError("Support strategy detail is only valid for other")
+
+    if request.provider_participant_ids:
+        if request.no_provider_reason is not None:
+            raise ValueError("assigned Support providers cannot also use no-provider reason")
+        provider_plan: dict[str, object] = {
+            "kind": "assigned",
+            "participant_refs": [
+                {
+                    "record_kind": "support_process_participant",
+                    "record_id": participant_id,
+                    "contract_version": "1",
+                }
+                for participant_id in request.provider_participant_ids
+            ],
+        }
+    else:
+        if request.no_provider_reason is None:
+            raise ValueError("Support without assigned providers requires an explicit reason")
+        provider_plan = {
+            "kind": "no_assigned_provider",
+            "reason": request.no_provider_reason,
+        }
+        if request.no_provider_reason == "other":
+            if request.no_provider_detail is None:
+                raise ValueError("other no-provider reason requires detail")
+            provider_plan["detail"] = _normalized_text(
+                request.no_provider_detail, "Support no-provider detail"
+            )
+        elif request.no_provider_detail is not None and request.no_provider_detail.strip():
+            raise ValueError("no-provider detail is only valid for other")
+
+    timestamp = clock.now().text
+    data: dict[str, object] = {
+        "schema_version": "1",
+        "record_type": "support",
+        "module_id": "portia",
+        "class_id": request.work.class_id,
+        "work_id": request.work.work_id,
+        "support_id": ids.new("spt_"),
+        "status": request.status,
+        "target": _support_plan_target(request.target),
+        "need_refs": [
+            {
+                "record_kind": "support_need",
+                "record_id": need_id,
+                "contract_version": "1",
+            }
+            for need_id in request.need_ids
+        ],
+        "strategy": strategy,
+        "provider_plan": provider_plan,
+        "schedule": _support_schedule(request.schedule),
+        "plan_state": "active" if request.status == "active" else "planned",
+        "creation_source": {"type": "digital_entry"},
+        "created_at": timestamp,
+        "created_by": _operator(request.local_operator_label),
+        "updated_at": timestamp,
+        "updated_by": _operator(request.local_operator_label),
+    }
+    if request.goal_ids:
+        data["goal_refs"] = [
+            {
+                "record_kind": "support_goal",
+                "record_id": goal_id,
+                "contract_version": "1",
+            }
+            for goal_id in request.goal_ids
+        ]
+    record = parse_portia_record("support", "1", data)
+    if not isinstance(record, SupportV1):
+        raise TypeError("Support authoring produced an unexpected runtime model")
+    return record
