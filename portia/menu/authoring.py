@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 from dataclasses import dataclass
 from datetime import date
 from typing import Literal
@@ -16,6 +17,7 @@ from portia.models import (
     EventParticipantV3,
     EventV2,
     FidelityV1,
+    FollowUpV1,
     HypothesisV1,
     ImplementationV1,
     InterventionV1,
@@ -1837,4 +1839,99 @@ def prepare_fidelity(
     record = parse_portia_record("fidelity", "1", data)
     if not isinstance(record, FidelityV1):
         raise TypeError("Fidelity authoring produced an unexpected runtime model")
+    return record
+
+@dataclass(frozen=True, slots=True)
+class FollowUpCompletionInput:
+    """One explicit completion of an existing exact Follow-Up."""
+
+    prior: FollowUpV1
+    local_operator_label: str
+    disposition_kind: str | None = None
+    disposition_detail: str | None = None
+
+
+_FOLLOW_UP_DISPOSITIONS = frozenset(
+    {
+        "continue_current_support",
+        "review_later",
+        "adapt_plan",
+        "fade_or_reduce_support",
+        "complete_process",
+        "discontinue_process",
+        "no_additional_action",
+        "other",
+    }
+)
+_FOLLOW_UP_DISPOSITION_PURPOSES = frozenset(
+    {
+        "response_review",
+        "support_process_review",
+        "goal_review",
+        "implementation_review",
+        "fidelity_review",
+    }
+)
+
+
+def prepare_follow_up_completion(
+    request: FollowUpCompletionInput,
+    *,
+    clock: MenuClock,
+) -> FollowUpV1:
+    """Build a same-identity Follow-Up completion without downstream inference."""
+
+    prior = request.prior
+    if prior.status != "active":
+        raise ValueError("Follow-Up completion requires active canonical status")
+    prior_state = prior.field("workflow_state")
+    if prior_state not in {"scheduled", "in_progress"}:
+        raise ValueError(
+            "Follow-Up completion requires scheduled or in-progress workflow state"
+        )
+    if prior.field("disposition") is not None:
+        raise ValueError("non-completed Follow-Up cannot already carry a disposition")
+
+    purpose = prior.field("purpose")
+    if not isinstance(purpose, Mapping):
+        raise ValueError("Follow-Up purpose is malformed")
+    purpose_kind = purpose.get("kind")
+    if not isinstance(purpose_kind, str):
+        raise ValueError("Follow-Up purpose is malformed")
+
+    if request.disposition_kind is not None:
+        if prior.field("work_kind") != "support_process":
+            raise ValueError("Follow-Up disposition is Support Process-only")
+        if purpose_kind not in _FOLLOW_UP_DISPOSITION_PURPOSES:
+            raise ValueError("Follow-Up purpose is not eligible for a disposition")
+        if request.disposition_kind not in _FOLLOW_UP_DISPOSITIONS:
+            raise ValueError("unsupported Follow-Up disposition")
+    elif request.disposition_detail is not None and request.disposition_detail.strip():
+        raise ValueError("Follow-Up disposition detail requires a disposition")
+
+    wire: dict[str, object] = {
+        key: value for key, value in prior.to_dict().items()
+    }
+    completed_at = clock.now().text
+    wire["workflow_state"] = "completed"
+    wire["completed_at"] = completed_at
+    wire["updated_at"] = completed_at
+    wire["updated_by"] = _operator(request.local_operator_label)
+
+    if request.disposition_kind is not None:
+        disposition: dict[str, object] = {"kind": request.disposition_kind}
+        if request.disposition_kind == "other":
+            if request.disposition_detail is None:
+                raise ValueError("other Follow-Up disposition requires detail")
+            disposition["detail"] = _normalized_text(
+                request.disposition_detail,
+                "Follow-Up disposition detail",
+            )
+        elif request.disposition_detail is not None and request.disposition_detail.strip():
+            raise ValueError("disposition detail is only valid for other")
+        wire["disposition"] = disposition
+
+    record = parse_portia_record("follow_up", "1", wire)
+    if not isinstance(record, FollowUpV1):
+        raise TypeError("Follow-Up completion produced an unexpected runtime model")
     return record
