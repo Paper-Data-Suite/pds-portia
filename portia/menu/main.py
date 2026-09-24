@@ -19,6 +19,7 @@ from portia.menu.navigation import (
 )
 from portia.menu.response_communication import launch_response_communication_menu
 from portia.menu.support import launch_manage_support_menu
+from portia.menu.timeline import launch_view_timeline_menu
 from portia.menu.ui import (
     clear_screen,
     pause_for_user,
@@ -61,7 +62,7 @@ PRIMARY_TASKS: tuple[MenuTask, ...] = (
     MenuTask(
         "6",
         "View Timeline",
-        "View the privacy-minimized current history for an exact roster student.",
+        "View the privacy-minimized current timeline for an exact roster student.",
     ),
     MenuTask(
         "7",
@@ -167,6 +168,9 @@ def _main_menu_once(state: MenuSessionContext) -> None:
         return
     if choice == "5":
         launch_complete_follow_up_menu(state)
+        return
+    if choice == "6":
+        launch_view_timeline_menu(state)
         return
     for task in ALL_TASKS:
         if choice == task.key:
