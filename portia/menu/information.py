@@ -1,4 +1,4 @@
-"""Teacher-facing Add Information workflow for Account and Observation evidence."""
+"""Teacher-facing Add Information workflow for evidence and explicit human judgment."""
 
 from __future__ import annotations
 
@@ -16,6 +16,12 @@ from portia.menu.authoring import (
 from portia.menu.clock import MenuClock
 from portia.menu.context import MenuSessionContext
 from portia.menu.identifiers import PortiaIdGenerator
+from portia.menu.judgment import (
+    record_classification_once,
+    record_determination_once,
+    record_hypothesis_once,
+    record_review_once,
+)
 from portia.menu.navigation import (
     NavigationChoice,
     PortiaMenuChoice,
@@ -719,16 +725,20 @@ def launch_add_information_menu(
     clock: MenuClock | None = None,
     ids: PortiaIdGenerator | None = None,
 ) -> None:
-    """Launch the evidence-focused portion of the Add Information task."""
+    """Launch evidence and explicit human-judgment Add Information workflows."""
 
     while True:
         clear_screen()
         print_menu_header("Add Information")
-        print("Add evidence to an existing Event without collapsing its meaning.")
+        print("Add evidence or an explicit human judgment to an existing Event.")
         print()
         print("1. Record what someone reported")
         print("2. Record what I directly observed")
         print("3. Review recorded Accounts / Observations")
+        print("4. Start a Review")
+        print("5. Record a Classification")
+        print("6. Record a Hypothesis")
+        print("7. Record a Determination")
         print_navigation()
         print()
         raw = input("Select an option: ").strip()
@@ -739,20 +749,28 @@ def launch_add_information_menu(
                 (
                     "An Account records attributable reported information.",
                     "An Observation records bounded direct or measured observation.",
-                    "Neither becomes true or a finding merely because it is recorded.",
-                    "Human-judgment records are handled separately from this evidence path.",
+                    "Review, Classification, Hypothesis, and Determination remain distinct.",
+                    "No evidence record or judgment automatically creates the next family.",
                 ),
             )
         elif navigation is NavigationChoice.BACK:
             return
-        elif raw in {"1", "2", "3"}:
+        elif raw in {"1", "2", "3", "4", "5", "6", "7"}:
             try:
                 if raw == "1":
                     record_account_once(state, clock=clock, ids=ids)
                 elif raw == "2":
                     record_observation_once(state, clock=clock, ids=ids)
-                else:
+                elif raw == "3":
                     review_information_once(state)
+                elif raw == "4":
+                    record_review_once(state, clock=clock, ids=ids)
+                elif raw == "5":
+                    record_classification_once(state, clock=clock, ids=ids)
+                elif raw == "6":
+                    record_hypothesis_once(state, clock=clock, ids=ids)
+                else:
+                    record_determination_once(state, clock=clock, ids=ids)
             except CancelMenuAction:
                 continue
             except (ReturnToMainMenu, QuitPDS, EOFError):

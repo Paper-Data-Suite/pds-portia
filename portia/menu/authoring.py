@@ -9,9 +9,13 @@ from portia.menu.clock import MenuClock
 from portia.menu.identifiers import PortiaIdGenerator
 from portia.models import (
     AccountV2,
+    ClassificationV1,
+    DeterminationV1,
     EventParticipantV3,
     EventV2,
+    HypothesisV1,
     ObservationV2,
+    ReviewV1,
     parse_portia_record,
 )
 from portia.models.common import ExplicitOffsetTimestamp
@@ -107,6 +111,84 @@ class ObservationAuthoringInput:
     local_operator_label: str
 
 
+JudgmentEvidenceKind = Literal["event", "account", "observation"]
+JudgmentEvidenceRelation = str
+
+
+@dataclass(frozen=True, slots=True)
+class JudgmentEvidenceInput:
+    """One exact Event-local material reference selected as judgment evidence."""
+
+    kind: JudgmentEvidenceKind
+    record_id: str | None = None
+    contract_version: str | None = None
+
+
+@dataclass(frozen=True, slots=True)
+class JudgmentEvidenceRelationInput:
+    """One explicit relationship between a judgment and selected evidence."""
+
+    relation: JudgmentEvidenceRelation
+    evidence: JudgmentEvidenceInput
+
+
+@dataclass(frozen=True, slots=True)
+class ReviewAuthoringInput:
+    """Teacher-entered facts for one active, open Review."""
+
+    work: ExactPortiaWorkRef
+    target: EventEvidenceTargetInput
+    trigger_kind: str
+    trigger_detail: str | None
+    question_kind: str
+    question_text: str
+    evidence: tuple[JudgmentEvidenceInput, ...]
+    local_operator_label: str
+
+
+@dataclass(frozen=True, slots=True)
+class ClassificationAuthoringInput:
+    """Teacher-entered facts for one reporter-selected Classification."""
+
+    work: ExactPortiaWorkRef
+    target: EventEvidenceTargetInput
+    result_kind: str
+    scheme_id: str | None
+    scheme_version: str | None
+    category_code: str | None
+    category_label: str | None
+    definition_text: str | None
+    unable_rationale: str | None
+    basis: tuple[JudgmentEvidenceInput, ...]
+    local_operator_label: str
+
+
+@dataclass(frozen=True, slots=True)
+class HypothesisAuthoringInput:
+    """Teacher-entered facts for one explicit Hypothesis under consideration."""
+
+    work: ExactPortiaWorkRef
+    target: EventEvidenceTargetInput
+    proposition: str
+    rationale: str | None
+    evidence: tuple[JudgmentEvidenceRelationInput, ...]
+    local_operator_label: str
+
+
+@dataclass(frozen=True, slots=True)
+class DeterminationAuthoringInput:
+    """Teacher-local bounded conclusion without downstream action inference."""
+
+    work: ExactPortiaWorkRef
+    target: EventEvidenceTargetInput
+    question: str
+    outcome_kind: str
+    conclusion_text: str | None
+    rationale: str | None
+    basis: tuple[JudgmentEvidenceRelationInput, ...]
+    local_operator_label: str
+
+
 def _normalized_text(value: str, field_name: str) -> str:
     normalized = " ".join(value.split())
     if not normalized:
@@ -195,7 +277,42 @@ def _event_target(value: EventEvidenceTargetInput) -> dict[str, object]:
 
 def _require_event_work(work: ExactPortiaWorkRef) -> None:
     if work.work_kind != "event" or work.contract_version != "2":
-        raise ValueError("this teacher-menu evidence path requires an exact event@2 work")
+        raise ValueError("this teacher-menu path requires an exact event@2 work")
+
+
+def _judgment_evidence_ref(
+    work: ExactPortiaWorkRef,
+    evidence: JudgmentEvidenceInput,
+) -> dict[str, object]:
+    if evidence.kind == "event":
+        if evidence.record_id is not None or evidence.contract_version is not None:
+            raise ValueError("Event judgment evidence cannot include a child record identity")
+        return {"kind": "portia_work", "work_ref": work.to_dict()}
+    if evidence.kind not in {"account", "observation"}:
+        raise ValueError(f"unsupported judgment evidence kind: {evidence.kind}")
+    if evidence.record_id is None or evidence.contract_version is None:
+        raise ValueError("record judgment evidence requires exact record identity and version")
+    return {
+        "kind": "portia_record",
+        "work_record_ref": {
+            "work_ref": work.to_dict(),
+            "record_ref": {
+                "record_kind": evidence.kind,
+                "record_id": evidence.record_id,
+                "contract_version": evidence.contract_version,
+            },
+        },
+    }
+
+
+def _judgment_relation(
+    work: ExactPortiaWorkRef,
+    value: JudgmentEvidenceRelationInput,
+) -> dict[str, object]:
+    return {
+        "relation": value.relation,
+        "evidence_ref": _judgment_evidence_ref(work, value.evidence),
+    }
 
 
 def _location(location_type: str, detail: str | None) -> dict[str, object]:
@@ -383,4 +500,233 @@ def prepare_direct_observation(
     )
     if not isinstance(record, ObservationV2):
         raise TypeError("Observation authoring produced an unexpected runtime model")
+    return record
+
+
+def prepare_review(
+    request: ReviewAuthoringInput,
+    *,
+    clock: MenuClock,
+    ids: PortiaIdGenerator,
+) -> ReviewV1:
+    """Build one active open Review without deciding any downstream judgment."""
+
+    _require_event_work(request.work)
+    timestamp = clock.now().text
+    trigger: dict[str, object] = {"kind": request.trigger_kind}
+    if request.trigger_kind == "other":
+        if request.trigger_detail is None:
+            raise ValueError("other Review trigger requires detail")
+        trigger["detail"] = _normalized_text(request.trigger_detail, "Review trigger detail")
+    record = parse_portia_record(
+        "review",
+        "1",
+        {
+            "schema_version": "1",
+            "record_type": "review",
+            "module_id": "portia",
+            "class_id": request.work.class_id,
+            "work_id": request.work.work_id,
+            "review_id": ids.new("rvw_"),
+            "status": "active",
+            "review_state": "open",
+            "trigger": trigger,
+            "question": {
+                "kind": request.question_kind,
+                "text": _normalized_text(request.question_text, "Review question"),
+            },
+            "target": _event_target(request.target),
+            "reviewer": {
+                "kind": "local_operator",
+                "display_label": _normalized_text(
+                    request.local_operator_label, "local operator display label"
+                ),
+            },
+            "evidence_considered": [
+                _judgment_evidence_ref(request.work, item) for item in request.evidence
+            ],
+            "creation_source": {"type": "digital_entry"},
+            "created_at": timestamp,
+            "created_by": _operator(request.local_operator_label),
+            "updated_at": timestamp,
+            "updated_by": _operator(request.local_operator_label),
+        },
+    )
+    if not isinstance(record, ReviewV1):
+        raise TypeError("Review authoring produced an unexpected runtime model")
+    return record
+
+
+def prepare_classification(
+    request: ClassificationAuthoringInput,
+    *,
+    clock: MenuClock,
+    ids: PortiaIdGenerator,
+) -> ClassificationV1:
+    """Build one reporter-selected Classification chosen explicitly by the teacher."""
+
+    _require_event_work(request.work)
+    timestamp = clock.now().text
+    if request.result_kind == "category_selected":
+        required = {
+            "scheme_id": request.scheme_id,
+            "scheme_version": request.scheme_version,
+            "category_code": request.category_code,
+            "category_label": request.category_label,
+            "definition_text": request.definition_text,
+        }
+        if any(value is None for value in required.values()):
+            raise ValueError("selected Classification category requires a complete definition snapshot")
+        result: dict[str, object] = {
+            "kind": "category_selected",
+            "definition": {
+                key: _normalized_text(value, key)
+                for key, value in required.items()
+                if value is not None
+            },
+        }
+    elif request.result_kind == "unable_to_determine":
+        result = {"kind": "unable_to_determine"}
+        if request.unable_rationale is not None:
+            result["rationale"] = _normalized_text(
+                request.unable_rationale, "Classification rationale"
+            )
+    else:
+        raise ValueError(f"unsupported Classification result kind: {request.result_kind}")
+    data: dict[str, object] = {
+        "schema_version": "1",
+        "record_type": "classification",
+        "module_id": "portia",
+        "class_id": request.work.class_id,
+        "work_id": request.work.work_id,
+        "classification_id": ids.new("cls_"),
+        "status": "active",
+        "target": _event_target(request.target),
+        "selector": {
+            "kind": "local_operator",
+            "display_label": _normalized_text(
+                request.local_operator_label, "local operator display label"
+            ),
+        },
+        "stage": "reporter_selected",
+        "result": result,
+        "creation_source": {"type": "digital_entry"},
+        "created_at": timestamp,
+        "created_by": _operator(request.local_operator_label),
+        "updated_at": timestamp,
+        "updated_by": _operator(request.local_operator_label),
+    }
+    if request.basis:
+        data["basis"] = [
+            _judgment_evidence_ref(request.work, item) for item in request.basis
+        ]
+    record = parse_portia_record("classification", "1", data)
+    if not isinstance(record, ClassificationV1):
+        raise TypeError("Classification authoring produced an unexpected runtime model")
+    return record
+
+
+def prepare_hypothesis(
+    request: HypothesisAuthoringInput,
+    *,
+    clock: MenuClock,
+    ids: PortiaIdGenerator,
+) -> HypothesisV1:
+    """Build one explicit Hypothesis without converting it into a Determination."""
+
+    _require_event_work(request.work)
+    timestamp = clock.now().text
+    data: dict[str, object] = {
+        "schema_version": "1",
+        "record_type": "hypothesis",
+        "module_id": "portia",
+        "class_id": request.work.class_id,
+        "work_id": request.work.work_id,
+        "hypothesis_id": ids.new("hyp_"),
+        "status": "active",
+        "target": _event_target(request.target),
+        "author": {
+            "kind": "local_operator",
+            "display_label": _normalized_text(
+                request.local_operator_label, "local operator display label"
+            ),
+        },
+        "proposition": _normalized_text(request.proposition, "Hypothesis proposition"),
+        "consideration_state": "under_consideration",
+        "evidence": [
+            _judgment_relation(request.work, item) for item in request.evidence
+        ],
+        "creation_source": {"type": "digital_entry"},
+        "created_at": timestamp,
+        "created_by": _operator(request.local_operator_label),
+        "updated_at": timestamp,
+        "updated_by": _operator(request.local_operator_label),
+    }
+    if request.rationale is not None:
+        data["rationale"] = _normalized_text(request.rationale, "Hypothesis rationale")
+    record = parse_portia_record("hypothesis", "1", data)
+    if not isinstance(record, HypothesisV1):
+        raise TypeError("Hypothesis authoring produced an unexpected runtime model")
+    return record
+
+
+def prepare_determination(
+    request: DeterminationAuthoringInput,
+    *,
+    clock: MenuClock,
+    ids: PortiaIdGenerator,
+) -> DeterminationV1:
+    """Build one teacher-local Determination without creating a Response or Outcome."""
+
+    _require_event_work(request.work)
+    timestamp = clock.now().text
+    if request.outcome_kind == "conclusion":
+        if request.conclusion_text is None:
+            raise ValueError("conclusion Determination requires bounded conclusion text")
+        outcome: dict[str, object] = {
+            "kind": "conclusion",
+            "text": _normalized_text(request.conclusion_text, "Determination conclusion"),
+        }
+    elif request.outcome_kind in {
+        "insufficient_information",
+        "unable_to_determine",
+        "not_applicable",
+    }:
+        outcome = {"kind": request.outcome_kind}
+    else:
+        raise ValueError(f"unsupported Determination outcome kind: {request.outcome_kind}")
+    data: dict[str, object] = {
+        "schema_version": "1",
+        "record_type": "determination",
+        "module_id": "portia",
+        "class_id": request.work.class_id,
+        "work_id": request.work.work_id,
+        "determination_id": ids.new("det_"),
+        "status": "active",
+        "target": _event_target(request.target),
+        "question": _normalized_text(request.question, "Determination question"),
+        "decision_maker": {
+            "kind": "local_operator",
+            "display_label": _normalized_text(
+                request.local_operator_label, "local operator display label"
+            ),
+        },
+        "authority_context": {"kind": "teacher_local", "scope": "teacher_review"},
+        "process_basis": {
+            "kind": "teacher_local",
+            "process_label": "Teacher-local review",
+        },
+        "outcome": outcome,
+        "basis": [_judgment_relation(request.work, item) for item in request.basis],
+        "creation_source": {"type": "digital_entry"},
+        "created_at": timestamp,
+        "created_by": _operator(request.local_operator_label),
+        "updated_at": timestamp,
+        "updated_by": _operator(request.local_operator_label),
+    }
+    if request.rationale is not None:
+        data["rationale"] = _normalized_text(request.rationale, "Determination rationale")
+    record = parse_portia_record("determination", "1", data)
+    if not isinstance(record, DeterminationV1):
+        raise TypeError("Determination authoring produced an unexpected runtime model")
     return record
