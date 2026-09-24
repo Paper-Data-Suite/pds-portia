@@ -22,6 +22,7 @@ from portia.models import (
     ImplementationV1,
     InterventionV1,
     ObservationV2,
+    PortiaRecord,
     ResponseV1,
     ReviewV1,
     SupportGoalV1,
@@ -1935,3 +1936,285 @@ def prepare_follow_up_completion(
     if not isinstance(record, FollowUpV1):
         raise TypeError("Follow-Up completion produced an unexpected runtime model")
     return record
+
+@dataclass(frozen=True, slots=True)
+class AccountCorrectionInput:
+    """Material correction of one exact Account statement."""
+
+    work: ExactPortiaWorkRef
+    prior: PortiaRecord
+    corrected_text: str
+    local_operator_label: str
+
+
+@dataclass(frozen=True, slots=True)
+class AccountRetractionInput:
+    """One same-source Account retraction statement."""
+
+    work: ExactPortiaWorkRef
+    prior: PortiaRecord
+    retraction_text: str
+    local_operator_label: str
+
+
+@dataclass(frozen=True, slots=True)
+class ObservationCorrectionInput:
+    """Material correction of one exact Observation narrative."""
+
+    work: ExactPortiaWorkRef
+    prior: PortiaRecord
+    corrected_narrative: str
+    local_operator_label: str
+
+
+@dataclass(frozen=True, slots=True)
+class EvidenceInvalidationInput:
+    """Same-identity invalidation candidate for Account or Observation."""
+
+    prior: PortiaRecord
+    local_operator_label: str
+
+
+def event_summary_amendment_change(
+    prior: PortiaRecord,
+    corrected_summary: str,
+) -> dict[str, object]:
+    """Build the registered nonmaterial Event-summary Amendment change."""
+
+    if prior.contract != "event" or prior.contract_version != "2":
+        raise ValueError("Event summary Amendment requires event@2")
+    before = prior.field("summary")
+    if not isinstance(before, str):
+        raise ValueError("Event summary is not available as amendable text")
+    after = _normalized_text(corrected_summary, "corrected Event summary")
+    if after == before:
+        raise ValueError("corrected Event summary must differ from the current text")
+    return {
+        "path": "/summary",
+        "operation": "replace",
+        "before": {"present": True, "value": before},
+        "after": {"present": True, "value": after},
+    }
+
+
+def _evidence_successor_wire(
+    prior: PortiaRecord,
+    work: ExactPortiaWorkRef,
+    *,
+    identifier_field: str,
+    identifier: str,
+    supersession_reason: str,
+    timestamp: str,
+    local_operator_label: str,
+) -> dict[str, object]:
+    if prior.logical_id is None:
+        raise ValueError("selected evidence record lacks exact identity")
+    wire: dict[str, object] = {
+        key: value for key, value in prior.to_dict().items()
+    }
+    wire["schema_version"] = "2"
+    wire["work_kind"] = work.work_kind
+    wire[identifier_field] = identifier
+    wire["status"] = "active"
+    wire["creation_source"] = {"type": "digital_entry"}
+    wire["created_at"] = timestamp
+    wire["created_by"] = _operator(local_operator_label)
+    wire["updated_at"] = timestamp
+    wire["updated_by"] = _operator(local_operator_label)
+    wire["supersedes"] = [
+        {
+            "work_record_ref": {
+                "work_ref": work.to_dict(),
+                "record_ref": {
+                    "record_kind": prior.contract,
+                    "record_id": prior.logical_id,
+                    "contract_version": prior.contract_version,
+                },
+            },
+            "reason": supersession_reason,
+        }
+    ]
+    return wire
+
+
+def prepare_account_statement_correction(
+    request: AccountCorrectionInput,
+    *,
+    clock: MenuClock,
+    ids: PortiaIdGenerator,
+) -> AccountV2:
+    """Create an active Account successor changing only one routine statement."""
+
+    prior = request.prior
+    if prior.contract != "account" or prior.status != "active":
+        raise ValueError("Account correction requires an active Account")
+    prior_data = prior.to_dict()
+    content = prior_data.get("content")
+    if not isinstance(content, list) or len(content) != 1:
+        raise ValueError(
+            "routine Account correction requires exactly one textual content item"
+        )
+    item = content[0]
+    if not isinstance(item, dict):
+        raise ValueError("Account content is not routine textual evidence")
+    representation = item.get("representation")
+    if representation not in {"recorded_summary", "verbatim_quote"}:
+        raise ValueError("Account content representation requires Advanced correction")
+    current_text = item.get("text")
+    if not isinstance(current_text, str):
+        raise ValueError("Account content text is unavailable")
+    corrected = _normalized_text(request.corrected_text, "corrected Account text")
+    if corrected == current_text:
+        raise ValueError("corrected Account text must differ from the current text")
+
+    timestamp = clock.now().text
+    wire = _evidence_successor_wire(
+        prior,
+        request.work,
+        identifier_field="account_id",
+        identifier=ids.new("acct_"),
+        supersession_reason="statement_corrected",
+        timestamp=timestamp,
+        local_operator_label=request.local_operator_label,
+    )
+    wire["content"] = [{"representation": representation, "text": corrected}]
+    record = parse_portia_record("account", "2", wire)
+    if not isinstance(record, AccountV2):
+        raise TypeError("Account correction produced an unexpected runtime model")
+    return record
+
+
+def prepare_account_retraction(
+    request: AccountRetractionInput,
+    *,
+    clock: MenuClock,
+    ids: PortiaIdGenerator,
+) -> AccountV2:
+    """Create same-source retraction evidence without teacher-only status toggling."""
+
+    prior = request.prior
+    if prior.contract != "account" or prior.status != "active":
+        raise ValueError("Account retraction requires an active Account")
+    if prior.logical_id is None:
+        raise ValueError("selected Account lacks exact identity")
+
+    source = prior.field("source")
+    target = prior.field("target")
+    information_origin = prior.field("information_origin")
+    source_certainty = prior.field("source_certainty")
+    if not isinstance(source, Mapping) or not isinstance(target, Mapping):
+        raise ValueError("Account source or target is malformed")
+    if not isinstance(information_origin, str) or not isinstance(source_certainty, str):
+        raise ValueError("Account evidence attribution is incomplete")
+
+    timestamp = clock.now().text
+    wire: dict[str, object] = {
+        "schema_version": "2",
+        "record_type": "account",
+        "module_id": "portia",
+        "class_id": request.work.class_id,
+        "work_kind": request.work.work_kind,
+        "work_id": request.work.work_id,
+        "account_id": ids.new("acct_"),
+        "status": "active",
+        "target": dict(target),
+        "source": dict(source),
+        "information_origin": information_origin,
+        "source_certainty": source_certainty,
+        "content": [
+            {
+                "representation": "recorded_summary",
+                "text": _normalized_text(
+                    request.retraction_text,
+                    "Account retraction statement",
+                ),
+            }
+        ],
+        "provided_time": {"precision": "exact", "at": timestamp},
+        "related_accounts": [
+            {
+                "relation": "retracts",
+                "account_ref": {
+                    "record_kind": "account",
+                    "record_id": prior.logical_id,
+                    "contract_version": prior.contract_version,
+                },
+            }
+        ],
+        "creation_source": {"type": "digital_entry"},
+        "created_at": timestamp,
+        "created_by": _operator(request.local_operator_label),
+        "updated_at": timestamp,
+        "updated_by": _operator(request.local_operator_label),
+    }
+    record = parse_portia_record("account", "2", wire)
+    if not isinstance(record, AccountV2):
+        raise TypeError("Account retraction produced an unexpected runtime model")
+    return record
+
+
+def prepare_observation_content_correction(
+    request: ObservationCorrectionInput,
+    *,
+    clock: MenuClock,
+    ids: PortiaIdGenerator,
+) -> ObservationV2:
+    """Create an active Observation successor changing its routine narrative."""
+
+    prior = request.prior
+    if prior.contract != "observation" or prior.status != "active":
+        raise ValueError("Observation correction requires an active Observation")
+    content = prior.field("content")
+    if not isinstance(content, Mapping):
+        raise ValueError("Observation content is malformed")
+    current = content.get("narrative")
+    if not isinstance(current, str):
+        raise ValueError(
+            "routine Observation correction requires a narrative Observation"
+        )
+    corrected = _normalized_text(
+        request.corrected_narrative,
+        "corrected Observation narrative",
+    )
+    if corrected == current:
+        raise ValueError(
+            "corrected Observation narrative must differ from the current narrative"
+        )
+
+    timestamp = clock.now().text
+    wire = _evidence_successor_wire(
+        prior,
+        request.work,
+        identifier_field="observation_id",
+        identifier=ids.new("obs_"),
+        supersession_reason="observation_content_corrected",
+        timestamp=timestamp,
+        local_operator_label=request.local_operator_label,
+    )
+    corrected_content = dict(content)
+    corrected_content["narrative"] = corrected
+    wire["content"] = corrected_content
+    record = parse_portia_record("observation", "2", wire)
+    if not isinstance(record, ObservationV2):
+        raise TypeError("Observation correction produced an unexpected runtime model")
+    return record
+
+
+def prepare_evidence_invalidation(
+    request: EvidenceInvalidationInput,
+    *,
+    clock: MenuClock,
+) -> PortiaRecord:
+    """Build same-identity invalidation without changing substantive evidence."""
+
+    prior = request.prior
+    if prior.contract not in {"account", "observation"} or prior.status != "active":
+        raise ValueError("evidence invalidation requires an active Account or Observation")
+    wire: dict[str, object] = {
+        key: value for key, value in prior.to_dict().items()
+    }
+    timestamp = clock.now().text
+    wire["status"] = "invalidated"
+    wire["updated_at"] = timestamp
+    wire["updated_by"] = _operator(request.local_operator_label)
+    return parse_portia_record(prior.contract, prior.contract_version, wire)
