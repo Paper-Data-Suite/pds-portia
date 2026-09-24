@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from datetime import date
 from typing import Literal
 
 from portia.menu.clock import MenuClock
@@ -18,9 +19,12 @@ from portia.models import (
     ObservationV2,
     ResponseV1,
     ReviewV1,
+    SupportProcessParticipantV1,
+    SupportProcessV1,
     parse_portia_record,
 )
 from portia.models.common import ExplicitOffsetTimestamp
+from portia.models.json_values import JsonValue
 from portia.models.references import ExactPortiaWorkRef
 from portia.workflows import EventBundle
 
@@ -191,6 +195,58 @@ class DeterminationAuthoringInput:
     local_operator_label: str
 
 
+
+
+@dataclass(frozen=True, slots=True)
+class SupportProcessAuthoringInput:
+    """Teacher-entered facts for one proposed teacher-local Support Process."""
+
+    owner_class_id: str
+    school_year: str
+    summary: str
+    initiation_detail: str
+    local_operator_label: str
+    planned_start_date: str | None = None
+    planned_end_date: str | None = None
+    review_on: str | None = None
+
+
+@dataclass(frozen=True, slots=True)
+class SupportParticipantContextInput:
+    """One explicit participation context within a Support Process."""
+
+    kind: str
+    detail: str | None = None
+
+
+@dataclass(frozen=True, slots=True)
+class SupportParticipantAuthoringInput:
+    """Teacher-entered facts for one proposed Support Process Participant."""
+
+    work: ExactPortiaWorkRef
+    person: HumanAttributionInput
+    contexts: tuple[SupportParticipantContextInput, ...]
+    local_operator_label: str
+
+
+@dataclass(frozen=True, slots=True)
+class PreparedSupportProcessActivation:
+    """One in-memory proposed->active Support Process lifecycle request."""
+
+    candidate: SupportProcessV1
+    transition_id: str
+    operation_id: str
+
+
+@dataclass(frozen=True, slots=True)
+class PreparedSupportParticipantActivation:
+    """One in-memory proposed->active Support Participant lifecycle request."""
+
+    candidate: SupportProcessParticipantV1
+    transition_id: str
+    operation_id: str
+
+
 @dataclass(frozen=True, slots=True)
 class ResponseAuthoringInput:
     """Teacher-entered facts for one bounded Event-local Response."""
@@ -237,7 +293,7 @@ def _normalized_text(value: str, field_name: str) -> str:
     return normalized
 
 
-def _operator(display_label: str) -> dict[str, object]:
+def _operator(display_label: str) -> dict[str, JsonValue]:
     return {
         "type": "local_operator",
         "display_label": _normalized_text(display_label, "local operator display label"),
@@ -906,3 +962,185 @@ def prepare_communication(
     if not isinstance(record, CommunicationV1):
         raise TypeError("Communication authoring produced an unexpected runtime model")
     return record
+
+
+def _require_support_work(work: ExactPortiaWorkRef) -> None:
+    if work.work_kind != "support_process" or work.contract_version != "1":
+        raise ValueError(
+            "this teacher-menu path requires an exact support_process@1 work"
+        )
+
+
+def _optional_iso_date(value: str | None, field_name: str) -> str | None:
+    if value is None:
+        return None
+    normalized = value.strip()
+    if not normalized:
+        return None
+    try:
+        date.fromisoformat(normalized)
+    except ValueError as exc:
+        raise ValueError(f"{field_name} must use YYYY-MM-DD") from exc
+    return normalized
+
+
+def prepare_support_process(
+    request: SupportProcessAuthoringInput,
+    *,
+    clock: MenuClock,
+    ids: PortiaIdGenerator,
+) -> SupportProcessV1:
+    """Build one proposed Support Process without inventing downstream planning state."""
+
+    timestamp = clock.now().text
+    actor = _operator(request.local_operator_label)
+    data: dict[str, object] = {
+        "schema_version": "1",
+        "record_type": "portia_work",
+        "work_kind": "support_process",
+        "module_id": "portia",
+        "class_id": request.owner_class_id,
+        "work_id": ids.new("sup_"),
+        "school_year": request.school_year,
+        "status": "proposed",
+        "workflow_state": "planning",
+        "summary": _normalized_text(request.summary, "Support Process summary"),
+        "initiation": {
+            "kind": "teacher_identified_need",
+            "detail": _normalized_text(
+                request.initiation_detail,
+                "Support Process initiation detail",
+            ),
+        },
+        "creation_source": {"type": "digital_entry"},
+        "created_at": timestamp,
+        "created_by": actor,
+        "updated_at": timestamp,
+        "updated_by": actor,
+    }
+    dates = {
+        "planned_start_date": _optional_iso_date(
+            request.planned_start_date, "planned_start_date"
+        ),
+        "planned_end_date": _optional_iso_date(
+            request.planned_end_date, "planned_end_date"
+        ),
+        "review_on": _optional_iso_date(request.review_on, "review_on"),
+    }
+    for key, value in dates.items():
+        if value is not None:
+            data[key] = value
+    record = parse_portia_record("support_process", "1", data)
+    if not isinstance(record, SupportProcessV1):
+        raise TypeError("Support Process authoring produced an unexpected runtime model")
+    return record
+
+
+def prepare_support_participant(
+    request: SupportParticipantAuthoringInput,
+    *,
+    clock: MenuClock,
+    ids: PortiaIdGenerator,
+) -> SupportProcessParticipantV1:
+    """Build one proposed Participant without inferring role, need, goal, or support."""
+
+    _require_support_work(request.work)
+    if not request.contexts:
+        raise ValueError("Support Process Participant requires at least one context")
+    contexts: list[dict[str, object]] = []
+    seen: set[tuple[str, str | None]] = set()
+    for item in request.contexts:
+        detail: str | None = None
+        if item.kind == "other":
+            if item.detail is None:
+                raise ValueError("other Support Participant context requires detail")
+            detail = _normalized_text(item.detail, "Support Participant context detail")
+        elif item.detail is not None:
+            raise ValueError("Support Participant context detail is only valid for other")
+        identity = (item.kind, detail)
+        if identity in seen:
+            raise ValueError("Support Participant context is duplicated")
+        seen.add(identity)
+        value: dict[str, object] = {"kind": item.kind}
+        if detail is not None:
+            value["detail"] = detail
+        contexts.append(value)
+
+    timestamp = clock.now().text
+    record = parse_portia_record(
+        "support_process_participant",
+        "1",
+        {
+            "schema_version": "1",
+            "record_type": "support_process_participant",
+            "module_id": "portia",
+            "class_id": request.work.class_id,
+            "work_id": request.work.work_id,
+            "participant_id": ids.new("spp_"),
+            "status": "proposed",
+            "person": _represented_human(request.person),
+            "contexts": contexts,
+            "creation_source": {"type": "digital_entry"},
+            "created_at": timestamp,
+            "created_by": _operator(request.local_operator_label),
+            "updated_at": timestamp,
+            "updated_by": _operator(request.local_operator_label),
+        },
+    )
+    if not isinstance(record, SupportProcessParticipantV1):
+        raise TypeError(
+            "Support Process Participant authoring produced an unexpected runtime model"
+        )
+    return record
+
+
+def prepare_support_participant_activation(
+    prior: SupportProcessParticipantV1,
+    *,
+    local_operator_label: str,
+    clock: MenuClock,
+    ids: PortiaIdGenerator,
+) -> PreparedSupportParticipantActivation:
+    """Prepare one explicit Participant activation without writing canonical state."""
+
+    if prior.status != "proposed":
+        raise ValueError("only a proposed Support Process Participant can be activated")
+    data = prior.to_dict()
+    data["status"] = "active"
+    data["updated_at"] = clock.now().text
+    data["updated_by"] = _operator(local_operator_label)
+    candidate = parse_portia_record("support_process_participant", "1", data)
+    if not isinstance(candidate, SupportProcessParticipantV1):
+        raise TypeError("Support Participant activation produced an unexpected runtime model")
+    return PreparedSupportParticipantActivation(
+        candidate=candidate,
+        transition_id=ids.new("lct_"),
+        operation_id=ids.new("op_"),
+    )
+
+
+def prepare_support_process_activation(
+    prior: SupportProcessV1,
+    *,
+    local_operator_label: str,
+    clock: MenuClock,
+    ids: PortiaIdGenerator,
+) -> PreparedSupportProcessActivation:
+    """Prepare one explicit root activation without changing workflow_state."""
+
+    if prior.status != "proposed":
+        raise ValueError("only a proposed Support Process can be activated")
+    if prior.field("workflow_state") != "planning":
+        raise ValueError("Support Process activation requires planning workflow state")
+    data = prior.to_dict()
+    data["status"] = "active"
+    data["updated_at"] = clock.now().text
+    data["updated_by"] = _operator(local_operator_label)
+    candidate = parse_portia_record("support_process", "1", data)
+    if not isinstance(candidate, SupportProcessV1):
+        raise TypeError("Support Process activation produced an unexpected runtime model")
+    return PreparedSupportProcessActivation(
+        candidate=candidate,
+        transition_id=ids.new("lct_"),
+        operation_id=ids.new("op_"),
+    )
