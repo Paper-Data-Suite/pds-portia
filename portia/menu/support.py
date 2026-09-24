@@ -45,6 +45,12 @@ from portia.menu.selectors import (
     class_options,
     student_options,
 )
+from portia.menu.support_delivery import (
+    record_fidelity_once,
+    record_implementation_once,
+    record_intervention_once,
+    view_delivery_records_once,
+)
 from portia.menu.ui import (
     PAGE_SIZE,
     clear_screen,
@@ -1513,6 +1519,11 @@ def _open_process_menu(state: MenuSessionContext, process: SupportProcessOption)
         print("6. Record Support Goal")
         print("7. Plan Support")
         print("8. View Needs / Goals / Supports")
+        print("9. Plan Intervention")
+        if process.status == "active":
+            print("10. Record Implementation")
+            print("11. Record Fidelity")
+        print("12. View Intervention / Implementation / Fidelity")
         print_navigation()
         print()
         raw = input("Select an option: ").strip()
@@ -1523,8 +1534,9 @@ def _open_process_menu(state: MenuSessionContext, process: SupportProcessOption)
                 (
                     "Support setup is incremental. Each confirmed write is canonical on its own.",
                     "Participant activation and Support Process activation are separate lifecycle actions.",
-                    "Need, Goal, and Support are separate planning families.",
-                    "A Support plan does not create Intervention, Implementation, Fidelity, Follow-Up, or Outcome records.",
+                    "Need, Goal, Support, Intervention, Implementation, and Fidelity remain separate canonical families.",
+                    "Implementation and Fidelity are available only after the Support Process is active.",
+                    "A plan does not prove implementation; Implementation does not prove Fidelity; Fidelity does not prove effectiveness or Outcome.",
                 ),
             )
             continue
@@ -1548,6 +1560,14 @@ def _open_process_menu(state: MenuSessionContext, process: SupportProcessOption)
                 record_support_once(state, process)
             elif raw == "8":
                 view_support_planning_once(state, process)
+            elif raw == "9":
+                record_intervention_once(state, process)
+            elif raw == "10" and process.status == "active":
+                record_implementation_once(state, process)
+            elif raw == "11" and process.status == "active":
+                record_fidelity_once(state, process)
+            elif raw == "12":
+                view_delivery_records_once(state, process)
             else:
                 print(navigation_hint_with_help())
                 pause_for_user()
@@ -1588,7 +1608,7 @@ def launch_manage_support_menu(state: MenuSessionContext) -> None:
                 (
                     "A Support Process is teacher-local planning, not automatically an IEP, 504 plan, FBA, BIP, clinical plan, or institutional case plan.",
                     "need != goal; support != intervention; plan != implementation; implementation != fidelity; fidelity != Outcome.",
-                    "The routine menu keeps Need, Goal, and Support planning separate from Intervention, Implementation, Fidelity, Follow-Up, and Outcome.",
+                    "The routine menu preserves Need, Goal, Support, Intervention, Implementation, and Fidelity as distinct teacher-local records; Follow-Up and Outcome remain separate tasks.",
                 ),
             )
             continue

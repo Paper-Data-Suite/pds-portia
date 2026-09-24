@@ -15,7 +15,10 @@ from portia.models import (
     DeterminationV1,
     EventParticipantV3,
     EventV2,
+    FidelityV1,
     HypothesisV1,
+    ImplementationV1,
+    InterventionV1,
     ObservationV2,
     ResponseV1,
     ReviewV1,
@@ -313,6 +316,64 @@ class SupportAuthoringInput:
     no_provider_reason: str | None
     no_provider_detail: str | None
     schedule: SupportScheduleInput
+    local_operator_label: str
+
+
+@dataclass(frozen=True, slots=True)
+class InterventionAuthoringInput:
+    """Teacher-entered facts for one structured Intervention plan."""
+
+    work: ExactPortiaWorkRef
+    status: Literal["proposed", "active"]
+    target: SupportPlanTargetInput
+    need_ids: tuple[str, ...]
+    goal_ids: tuple[str, ...]
+    strategy_kind: str
+    procedure: str
+    strategy_detail: str | None
+    provider_participant_ids: tuple[str, ...]
+    no_provider_reason: str | None
+    no_provider_detail: str | None
+    schedule: SupportScheduleInput
+    monitoring_approach: str
+    local_operator_label: str
+
+
+@dataclass(frozen=True, slots=True)
+class ImplementationAuthoringInput:
+    """Teacher-entered facts for one actual Support/Intervention occurrence."""
+
+    work: ExactPortiaWorkRef
+    plan_kind: Literal["support", "intervention"]
+    plan_id: str
+    actual_target: SupportPlanTargetInput
+    provider_participant_ids: tuple[str, ...]
+    no_human_provider_reason: str | None
+    no_human_provider_detail: str | None
+    execution_state: str
+    started_at: ExplicitOffsetTimestamp
+    ended_at: ExplicitOffsetTimestamp | None
+    variation_kinds: tuple[str, ...]
+    variation_detail: str | None
+    summary: str
+    local_operator_label: str
+
+
+@dataclass(frozen=True, slots=True)
+class FidelityAuthoringInput:
+    """Teacher-entered facts for one Fidelity evaluation of an exact plan."""
+
+    work: ExactPortiaWorkRef
+    plan_kind: Literal["support", "intervention"]
+    plan_id: str
+    evaluator_participant_id: str
+    implementation_id: str
+    result: str
+    basis_kind: str
+    basis_detail: str | None
+    include_implementation_basis: bool
+    evaluated_at: ExplicitOffsetTimestamp
+    summary: str
     local_operator_label: str
 
 
@@ -1456,4 +1517,324 @@ def prepare_support(
     record = parse_portia_record("support", "1", data)
     if not isinstance(record, SupportV1):
         raise TypeError("Support authoring produced an unexpected runtime model")
+    return record
+
+def prepare_intervention(
+    request: InterventionAuthoringInput,
+    *,
+    clock: MenuClock,
+    ids: PortiaIdGenerator,
+) -> InterventionV1:
+    """Build one Intervention plan without claiming implementation or outcome."""
+
+    _require_support_work(request.work)
+    if request.status not in {"proposed", "active"}:
+        raise ValueError("Intervention status must be proposed or active")
+    if not request.need_ids:
+        raise ValueError("Intervention requires at least one exact Need")
+    if not request.goal_ids:
+        raise ValueError("Intervention requires at least one exact Goal")
+    if len(set(request.need_ids)) != len(request.need_ids):
+        raise ValueError("Intervention Need selection repeats an exact Need")
+    if len(set(request.goal_ids)) != len(request.goal_ids):
+        raise ValueError("Intervention Goal selection repeats an exact Goal")
+    if len(set(request.provider_participant_ids)) != len(
+        request.provider_participant_ids
+    ):
+        raise ValueError("Intervention provider selection repeats an exact Participant")
+
+    strategy: dict[str, object] = {
+        "kind": request.strategy_kind,
+        "procedure": _normalized_text(request.procedure, "Intervention procedure"),
+    }
+    if request.strategy_kind == "other":
+        if request.strategy_detail is None:
+            raise ValueError("other Intervention strategy requires detail")
+        strategy["kind_detail"] = _normalized_text(
+            request.strategy_detail, "Intervention strategy detail"
+        )
+    elif request.strategy_detail is not None and request.strategy_detail.strip():
+        raise ValueError("Intervention strategy detail is only valid for other")
+
+    if request.provider_participant_ids:
+        if request.no_provider_reason is not None:
+            raise ValueError(
+                "assigned Intervention providers cannot also use no-provider reason"
+            )
+        provider_plan: dict[str, object] = {
+            "kind": "assigned",
+            "participant_refs": [
+                {
+                    "record_kind": "support_process_participant",
+                    "record_id": participant_id,
+                    "contract_version": "1",
+                }
+                for participant_id in request.provider_participant_ids
+            ],
+        }
+    else:
+        if request.status == "active":
+            raise ValueError("active Intervention requires assigned providers")
+        if request.no_provider_reason is None:
+            raise ValueError(
+                "proposed Intervention without assigned providers requires an explicit reason"
+            )
+        provider_plan = {
+            "kind": "no_assigned_provider",
+            "reason": request.no_provider_reason,
+        }
+        if request.no_provider_reason == "other":
+            if request.no_provider_detail is None:
+                raise ValueError("other no-provider reason requires detail")
+            provider_plan["detail"] = _normalized_text(
+                request.no_provider_detail, "Intervention no-provider detail"
+            )
+        elif request.no_provider_detail is not None and request.no_provider_detail.strip():
+            raise ValueError("no-provider detail is only valid for other")
+
+    if request.status == "active" and request.schedule.kind == "as_needed":
+        raise ValueError("active Intervention requires a non-as-needed schedule")
+
+    timestamp = clock.now().text
+    data: dict[str, object] = {
+        "schema_version": "1",
+        "record_type": "intervention",
+        "module_id": "portia",
+        "class_id": request.work.class_id,
+        "work_id": request.work.work_id,
+        "intervention_id": ids.new("int_"),
+        "status": request.status,
+        "target": _support_plan_target(request.target),
+        "need_refs": [
+            {
+                "record_kind": "support_need",
+                "record_id": need_id,
+                "contract_version": "1",
+            }
+            for need_id in request.need_ids
+        ],
+        "goal_refs": [
+            {
+                "record_kind": "support_goal",
+                "record_id": goal_id,
+                "contract_version": "1",
+            }
+            for goal_id in request.goal_ids
+        ],
+        "strategy": strategy,
+        "provider_plan": provider_plan,
+        "schedule": _support_schedule(request.schedule),
+        "monitoring_approach": _normalized_text(
+            request.monitoring_approach, "Intervention monitoring approach"
+        ),
+        "plan_state": "active" if request.status == "active" else "planned",
+        "creation_source": {"type": "digital_entry"},
+        "created_at": timestamp,
+        "created_by": _operator(request.local_operator_label),
+        "updated_at": timestamp,
+        "updated_by": _operator(request.local_operator_label),
+    }
+    record = parse_portia_record("intervention", "1", data)
+    if not isinstance(record, InterventionV1):
+        raise TypeError("Intervention authoring produced an unexpected runtime model")
+    return record
+
+
+def prepare_implementation(
+    request: ImplementationAuthoringInput,
+    *,
+    clock: MenuClock,
+    ids: PortiaIdGenerator,
+) -> ImplementationV1:
+    """Build one actual occurrence without mutating or evaluating its exact plan."""
+
+    _require_support_work(request.work)
+    if request.plan_kind not in {"support", "intervention"}:
+        raise ValueError("Implementation plan must be Support or Intervention")
+    if request.execution_state not in {
+        "attempted",
+        "in_progress",
+        "completed",
+        "partially_completed",
+        "unable_to_complete",
+    }:
+        raise ValueError("unsupported Implementation execution state")
+    if len(set(request.provider_participant_ids)) != len(
+        request.provider_participant_ids
+    ):
+        raise ValueError("Implementation provider selection repeats an exact Participant")
+    if len(set(request.variation_kinds)) != len(request.variation_kinds):
+        raise ValueError("Implementation variation repeats a category")
+
+    if request.provider_participant_ids:
+        if request.no_human_provider_reason is not None:
+            raise ValueError(
+                "Implementation with human providers cannot also use no-human-provider reason"
+            )
+        provider: dict[str, object] = {
+            "kind": "participants",
+            "participant_refs": [
+                {
+                    "record_kind": "support_process_participant",
+                    "record_id": participant_id,
+                    "contract_version": "1",
+                }
+                for participant_id in request.provider_participant_ids
+            ],
+        }
+    else:
+        if request.no_human_provider_reason is None:
+            raise ValueError(
+                "Implementation without human providers requires an explicit reason"
+            )
+        provider = {
+            "kind": "no_human_provider",
+            "reason": request.no_human_provider_reason,
+        }
+        if request.no_human_provider_reason == "other":
+            if request.no_human_provider_detail is None:
+                raise ValueError("other no-human-provider reason requires detail")
+            provider["detail"] = _normalized_text(
+                request.no_human_provider_detail,
+                "Implementation no-human-provider detail",
+            )
+        elif (
+            request.no_human_provider_detail is not None
+            and request.no_human_provider_detail.strip()
+        ):
+            raise ValueError("no-human-provider detail is only valid for other")
+
+    timestamp = clock.now().text
+    data: dict[str, object] = {
+        "schema_version": "1",
+        "record_type": "implementation",
+        "module_id": "portia",
+        "class_id": request.work.class_id,
+        "work_id": request.work.work_id,
+        "implementation_id": ids.new("imp_"),
+        "status": "active",
+        "plan_ref": {
+            "record_kind": request.plan_kind,
+            "record_id": request.plan_id,
+            "contract_version": "1",
+        },
+        "actual_target": _support_plan_target(request.actual_target),
+        "implementation_provider": provider,
+        "execution_state": request.execution_state,
+        "started_at": request.started_at.text,
+        "summary": _normalized_text(request.summary, "Implementation summary"),
+        "creation_source": {"type": "digital_entry"},
+        "created_at": timestamp,
+        "created_by": _operator(request.local_operator_label),
+        "updated_at": timestamp,
+        "updated_by": _operator(request.local_operator_label),
+    }
+    if request.ended_at is not None:
+        data["ended_at"] = request.ended_at.text
+    if request.variation_kinds:
+        if request.variation_detail is None:
+            raise ValueError("Implementation variation requires detail")
+        data["variation"] = {
+            "kinds": list(request.variation_kinds),
+            "detail": _normalized_text(
+                request.variation_detail, "Implementation variation detail"
+            ),
+        }
+    elif request.variation_detail is not None and request.variation_detail.strip():
+        raise ValueError("Implementation variation detail requires a variation category")
+
+    record = parse_portia_record("implementation", "1", data)
+    if not isinstance(record, ImplementationV1):
+        raise TypeError("Implementation authoring produced an unexpected runtime model")
+    return record
+
+
+def prepare_fidelity(
+    request: FidelityAuthoringInput,
+    *,
+    clock: MenuClock,
+    ids: PortiaIdGenerator,
+) -> FidelityV1:
+    """Build one Fidelity evaluation without claiming effectiveness or Outcome."""
+
+    _require_support_work(request.work)
+    if request.plan_kind not in {"support", "intervention"}:
+        raise ValueError("Fidelity plan must be Support or Intervention")
+    if request.result not in {
+        "as_planned",
+        "partially_as_planned",
+        "not_as_planned",
+        "unable_to_determine",
+        "not_applicable",
+    }:
+        raise ValueError("unsupported Fidelity result")
+    if request.basis_kind not in {
+        "direct_observation",
+        "implementation_records",
+        "record_review",
+        "combined",
+        "other",
+    }:
+        raise ValueError("unsupported routine Fidelity basis")
+
+    basis: dict[str, object] = {"kind": request.basis_kind}
+    if request.basis_kind == "other":
+        if request.basis_detail is None:
+            raise ValueError("other Fidelity basis requires detail")
+        basis["detail"] = _normalized_text(
+            request.basis_detail, "Fidelity basis detail"
+        )
+    elif request.basis_detail is not None and request.basis_detail.strip():
+        basis["detail"] = _normalized_text(
+            request.basis_detail, "Fidelity basis detail"
+        )
+    if request.include_implementation_basis:
+        basis["record_refs"] = [
+            {
+                "record_kind": "implementation",
+                "record_id": request.implementation_id,
+                "contract_version": "1",
+            }
+        ]
+
+    timestamp = clock.now().text
+    data: dict[str, object] = {
+        "schema_version": "1",
+        "record_type": "fidelity",
+        "module_id": "portia",
+        "class_id": request.work.class_id,
+        "work_id": request.work.work_id,
+        "fidelity_id": ids.new("fid_"),
+        "status": "active",
+        "plan_ref": {
+            "record_kind": request.plan_kind,
+            "record_id": request.plan_id,
+            "contract_version": "1",
+        },
+        "evaluator_ref": {
+            "record_kind": "support_process_participant",
+            "record_id": request.evaluator_participant_id,
+            "contract_version": "1",
+        },
+        "scope": {
+            "kind": "one_implementation",
+            "implementation_ref": {
+                "record_kind": "implementation",
+                "record_id": request.implementation_id,
+                "contract_version": "1",
+            },
+        },
+        "result": request.result,
+        "basis": basis,
+        "evaluated_at": request.evaluated_at.text,
+        "summary": _normalized_text(request.summary, "Fidelity summary"),
+        "creation_source": {"type": "digital_entry"},
+        "created_at": timestamp,
+        "created_by": _operator(request.local_operator_label),
+        "updated_at": timestamp,
+        "updated_by": _operator(request.local_operator_label),
+    }
+    record = parse_portia_record("fidelity", "1", data)
+    if not isinstance(record, FidelityV1):
+        raise TypeError("Fidelity authoring produced an unexpected runtime model")
     return record
