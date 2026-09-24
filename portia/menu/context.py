@@ -22,6 +22,7 @@ class MenuSessionContext:
     selected_class_id: str | None = None
     selected_work_kind: WorkKind | None = None
     selected_work_id: str | None = None
+    local_operator_label: str | None = None
 
     def resolve_workspace(self, explicit_root: str | Path | None = None) -> Path:
         """Resolve Core workspace authority and invalidate stale target context."""
@@ -38,6 +39,14 @@ class MenuSessionContext:
         self.selected_class_id = None
         self.selected_work_kind = None
         self.selected_work_id = None
+
+    def remember_local_operator(self, display_label: str) -> None:
+        """Remember process-local write attribution; this is not authentication."""
+
+        normalized = " ".join(display_label.split())
+        if not normalized:
+            raise ValueError("local operator display label must not be blank")
+        self.local_operator_label = normalized
 
     def remember_class(self, class_id: str) -> None:
         """Remember one exact Core class identifier for process-local navigation."""

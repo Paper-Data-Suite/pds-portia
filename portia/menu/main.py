@@ -5,6 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from portia.menu.context import MenuSessionContext
+from portia.menu.event import launch_record_event_menu
 from portia.menu.navigation import (
     NavigationChoice,
     PortiaMenuChoice,
@@ -121,7 +122,7 @@ def _launch_foundation_task(task: MenuTask, state: MenuSessionContext) -> None:
         print_menu_header(task.label)
         print(task.purpose)
         print()
-        print("Task-specific actions are not yet wired in this foundation slice.")
+        print("Task-specific actions are not wired on this surface yet.")
         print_navigation()
         print()
         choice = input("Select an option: ").strip()
@@ -147,6 +148,9 @@ def _main_menu_once(state: MenuSessionContext) -> None:
     )
     if navigation is PortiaMenuChoice.HELP:
         _main_help()
+        return
+    if choice == "1":
+        launch_record_event_menu(state)
         return
     for task in ALL_TASKS:
         if choice == task.key:
