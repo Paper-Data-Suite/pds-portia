@@ -10,11 +10,13 @@ from portia.menu.identifiers import PortiaIdGenerator
 from portia.models import (
     AccountV2,
     ClassificationV1,
+    CommunicationV1,
     DeterminationV1,
     EventParticipantV3,
     EventV2,
     HypothesisV1,
     ObservationV2,
+    ResponseV1,
     ReviewV1,
     parse_portia_record,
 )
@@ -186,6 +188,45 @@ class DeterminationAuthoringInput:
     conclusion_text: str | None
     rationale: str | None
     basis: tuple[JudgmentEvidenceRelationInput, ...]
+    local_operator_label: str
+
+
+@dataclass(frozen=True, slots=True)
+class ResponseAuthoringInput:
+    """Teacher-entered facts for one bounded Event-local Response."""
+
+    work: ExactPortiaWorkRef
+    target: EventEvidenceTargetInput
+    action_family: str
+    description: str
+    execution_state: str
+    started_at: ExplicitOffsetTimestamp
+    local_operator_label: str
+    consequence_context: str | None = None
+
+
+@dataclass(frozen=True, slots=True)
+class CommunicationRecipientInput:
+    """One represented recipient and explicitly recorded participation state."""
+
+    person: HumanAttributionInput
+    participation: str
+
+
+@dataclass(frozen=True, slots=True)
+class CommunicationAuthoringInput:
+    """Teacher-entered facts for one Event-owned Communication act."""
+
+    work: ExactPortiaWorkRef
+    recipients: tuple[CommunicationRecipientInput, ...]
+    method_kind: str
+    method_detail: str | None
+    purpose_kind: str
+    purpose_detail: str | None
+    act_state: str
+    privacy_scope: str
+    started_at: ExplicitOffsetTimestamp
+    summary: str | None
     local_operator_label: str
 
 
@@ -729,4 +770,139 @@ def prepare_determination(
     record = parse_portia_record("determination", "1", data)
     if not isinstance(record, DeterminationV1):
         raise TypeError("Determination authoring produced an unexpected runtime model")
+    return record
+
+
+def prepare_response(
+    request: ResponseAuthoringInput,
+    *,
+    clock: MenuClock,
+    ids: PortiaIdGenerator,
+) -> ResponseV1:
+    """Build one bounded active Response without inferring effectiveness or outcome."""
+
+    _require_event_work(request.work)
+    timestamp = clock.now().text
+    action: dict[str, object] = {
+        "family": request.action_family,
+        "description": _normalized_text(request.description, "Response description"),
+    }
+    if request.action_family == "consequence":
+        if request.consequence_context != "teacher_local":
+            raise ValueError(
+                "routine teacher Response consequence requires teacher_local context"
+            )
+        action["consequence_context"] = "teacher_local"
+    elif request.consequence_context is not None:
+        raise ValueError(
+            "Response consequence_context is only valid for consequence actions"
+        )
+
+    record = parse_portia_record(
+        "response",
+        "1",
+        {
+            "schema_version": "1",
+            "record_type": "response",
+            "module_id": "portia",
+            "class_id": request.work.class_id,
+            "work_id": request.work.work_id,
+            "response_id": ids.new("rsp_"),
+            "status": "active",
+            "target": _event_target(request.target),
+            "provider": {
+                "kind": "local_operator",
+                "display_label": _normalized_text(
+                    request.local_operator_label, "local operator display label"
+                ),
+            },
+            "action": action,
+            "execution_state": request.execution_state,
+            "started_at": request.started_at.text,
+            "creation_source": {"type": "digital_entry"},
+            "created_at": timestamp,
+            "created_by": _operator(request.local_operator_label),
+            "updated_at": timestamp,
+            "updated_by": _operator(request.local_operator_label),
+        },
+    )
+    if not isinstance(record, ResponseV1):
+        raise TypeError("Response authoring produced an unexpected runtime model")
+    return record
+
+
+def prepare_communication(
+    request: CommunicationAuthoringInput,
+    *,
+    clock: MenuClock,
+    ids: PortiaIdGenerator,
+) -> CommunicationV1:
+    """Build one Event-owned Communication without inferring delivery or agreement."""
+
+    _require_event_work(request.work)
+    if not request.recipients:
+        raise ValueError("Communication requires at least one explicit recipient")
+    timestamp = clock.now().text
+
+    method: dict[str, object] = {"kind": request.method_kind}
+    if request.method_kind == "other":
+        if request.method_detail is None:
+            raise ValueError("other Communication method requires detail")
+        method["detail"] = _normalized_text(
+            request.method_detail, "Communication method detail"
+        )
+    elif request.method_detail is not None:
+        raise ValueError("Communication method detail is only valid for other")
+
+    purpose: dict[str, object] = {"kind": request.purpose_kind}
+    if request.purpose_kind == "other":
+        if request.purpose_detail is None:
+            raise ValueError("other Communication purpose requires detail")
+        purpose["detail"] = _normalized_text(
+            request.purpose_detail, "Communication purpose detail"
+        )
+    elif request.purpose_detail is not None:
+        raise ValueError("Communication purpose detail is only valid for other")
+
+    data: dict[str, object] = {
+        "schema_version": "1",
+        "record_type": "communication",
+        "module_id": "portia",
+        "class_id": request.work.class_id,
+        "work_kind": "event",
+        "work_id": request.work.work_id,
+        "communication_id": ids.new("comm_"),
+        "status": "active",
+        "sender": {
+            "kind": "local_operator",
+            "display_label": _normalized_text(
+                request.local_operator_label, "local operator display label"
+            ),
+        },
+        "recipients": [
+            {
+                "person": _represented_human(item.person),
+                "participation": item.participation,
+            }
+            for item in request.recipients
+        ],
+        "method": method,
+        "purpose": purpose,
+        "act_state": request.act_state,
+        "privacy_scope": request.privacy_scope,
+        "started_at": request.started_at.text,
+        "creation_source": {"type": "digital_entry"},
+        "created_at": timestamp,
+        "created_by": _operator(request.local_operator_label),
+        "updated_at": timestamp,
+        "updated_by": _operator(request.local_operator_label),
+    }
+    if request.summary is not None:
+        normalized_summary = " ".join(request.summary.split())
+        if normalized_summary:
+            data["summary"] = normalized_summary
+
+    record = parse_portia_record("communication", "1", data)
+    if not isinstance(record, CommunicationV1):
+        raise TypeError("Communication authoring produced an unexpected runtime model")
     return record

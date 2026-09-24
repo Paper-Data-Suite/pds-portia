@@ -16,6 +16,7 @@ from portia.menu.navigation import (
     navigation_labels_with_help,
     parse_menu_navigation,
 )
+from portia.menu.response_communication import launch_response_communication_menu
 from portia.menu.ui import (
     clear_screen,
     pause_for_user,
@@ -155,6 +156,9 @@ def _main_menu_once(state: MenuSessionContext) -> None:
         return
     if choice == "2":
         launch_add_information_menu(state)
+        return
+    if choice == "3":
+        launch_response_communication_menu(state)
         return
     for task in ALL_TASKS:
         if choice == task.key:
