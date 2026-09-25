@@ -167,7 +167,7 @@ with TemporaryDirectory(prefix="portia-issue50-menu-") as temp:
     event = repository.load_work(work).record
     participants = repository.list_event_participants(work)
 
-    assert event.status == "draft"
+    assert event.status == "active"
     assert len(participants) == 1
     assert repository.list_accounts(work) == ()
     assert repository.list_observations(work) == ()
