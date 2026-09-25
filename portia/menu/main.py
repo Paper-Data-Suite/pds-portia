@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from portia.menu.advanced import launch_advanced_menu
 from portia.menu.attention import launch_attention_needed_menu
 from portia.menu.context import MenuSessionContext
 from portia.menu.correction import launch_correct_retract_menu
@@ -179,6 +180,9 @@ def _main_menu_once(state: MenuSessionContext) -> None:
         return
     if choice == "8":
         launch_attention_needed_menu(state)
+        return
+    if choice == "9":
+        launch_advanced_menu(state)
         return
     for task in ALL_TASKS:
         if choice == task.key:
