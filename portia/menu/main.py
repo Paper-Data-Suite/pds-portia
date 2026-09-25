@@ -12,7 +12,6 @@ from portia.menu.event import launch_record_event_menu
 from portia.menu.follow_up import launch_complete_follow_up_menu
 from portia.menu.information import launch_add_information_menu
 from portia.menu.navigation import (
-    NavigationChoice,
     PortiaMenuChoice,
     QuitPDS,
     ReturnToMainMenu,
@@ -27,7 +26,6 @@ from portia.menu.ui import (
     clear_screen,
     pause_for_user,
     print_menu_header,
-    print_navigation,
 )
 
 
@@ -112,37 +110,6 @@ def _main_help() -> None:
     pause_for_user()
 
 
-def _task_help(task: MenuTask) -> None:
-    clear_screen()
-    print_menu_header(f"{task.label} Help")
-    print(task.purpose)
-    print("Task navigation is presentation only; existing Portia services remain authoritative.")
-    print()
-    pause_for_user()
-
-
-def _launch_foundation_task(task: MenuTask, state: MenuSessionContext) -> None:
-    """Expose one safe task surface while task-specific workflows are added."""
-
-    del state
-    while True:
-        clear_screen()
-        print_menu_header(task.label)
-        print(task.purpose)
-        print()
-        print("Task-specific actions are not wired on this surface yet.")
-        print_navigation()
-        print()
-        choice = input("Select an option: ").strip()
-        navigation = parse_menu_navigation(choice)
-        if navigation is PortiaMenuChoice.HELP:
-            _task_help(task)
-        elif navigation is NavigationChoice.BACK:
-            return
-        else:
-            print(navigation_hint_with_help())
-            pause_for_user()
-
 
 def _main_menu_once(state: MenuSessionContext) -> None:
     clear_screen()
@@ -184,10 +151,6 @@ def _main_menu_once(state: MenuSessionContext) -> None:
     if choice == "9":
         launch_advanced_menu(state)
         return
-    for task in ALL_TASKS:
-        if choice == task.key:
-            _launch_foundation_task(task, state)
-            return
     print(
         navigation_hint_with_help(
             back=False,
