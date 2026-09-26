@@ -15,11 +15,7 @@ from portia.storage.deliberate_export_operations import (
     validate_deliberate_export_committed_reference,
     validate_deliberate_export_lock_agreement,
 )
-from portia.storage.errors import (
-    PortiaConflictError,
-    PortiaCorruptionError,
-    PortiaLockError,
-)
+from portia.storage.errors import PortiaConflictError, PortiaCorruptionError
 from portia.storage.fingerprint import canonical_json_bytes, fingerprint_bytes
 from portia.storage.locks import (
     LockStore,
@@ -470,18 +466,24 @@ def test_operation_lock_v3_is_exact_and_agrees_with_export_journal() -> None:
         )
 
 
-def test_v3_export_lock_and_v4_export_journal_are_not_executable_yet(
+def test_v3_export_lock_is_executable_but_generic_v4_path_remains_closed(
     tmp_path: Path,
 ) -> None:
     journal_record = parse_portia_record("operation_journal", "4", _journal())
     lock_record = parse_portia_record("operation_lock", "3", _lock())
 
-    with pytest.raises(PortiaLockError, match="operation_lock@2"):
-        LockStore(tmp_path).acquire(lock_record)
+    store = LockStore(tmp_path)
+    held = store.acquire(lock_record)
+    assert held.path.exists()
+    store.release(held)
+    assert not held.path.exists()
 
     lock_id = lock_record.field("lock_id")
     assert isinstance(lock_id, str)
-    with pytest.raises(PortiaConflictError, match="validation-only"):
+    with pytest.raises(
+        PortiaConflictError,
+        match="specialized Issue #88 execution boundary",
+    ):
         acquire_journaled_locks(
             tmp_path,
             journal_record,

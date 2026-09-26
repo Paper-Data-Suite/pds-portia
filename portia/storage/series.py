@@ -360,7 +360,7 @@ class OperationJournalStore(_RevisionSeries):
         if not isinstance(value, Mapping):
             raise PortiaCorruptionError(f"invalid immutable revision: {path}")
         version = value.get("schema_version")
-        if version not in {"2", "3"}:
+        if version not in {"2", "3", "4"}:
             raise PortiaCorruptionError(
                 f"unsupported explicit Operation Journal version at {path}: {version!r}"
             )
@@ -399,9 +399,11 @@ class OperationJournalStore(_RevisionSeries):
         if revision.contract != "operation_journal" or revision.contract_version not in {
             "2",
             "3",
+            "4",
         }:
             raise PortiaConflictError(
-                "current operations must use operation_journal@2 or operation_journal@3"
+                "current operations must use operation_journal@2, "
+                "operation_journal@3, or operation_journal@4"
             )
         try:
             validate_operation_journal_application(revision)
@@ -431,6 +433,7 @@ class OperationJournalStore(_RevisionSeries):
         if revision.contract != "operation_journal" or revision.contract_version not in {
             "2",
             "3",
+            "4",
         }:
             raise PortiaConflictError("successor is not a supported Operation Journal")
         if current.revision.contract_version != revision.contract_version:
@@ -456,6 +459,18 @@ class OperationJournalStore(_RevisionSeries):
             raise PortiaConflictError(
                 "operation identity cannot be reused for different intent"
             )
+        if revision.contract_version == "4":
+            from portia.storage.deliberate_export_operations import (
+                deliberate_export_immutable_plan,
+            )
+
+            if deliberate_export_immutable_plan(
+                current.revision
+            ) != deliberate_export_immutable_plan(revision):
+                raise PortiaConflictError(
+                    "deliberate-export immutable write intent changed across "
+                    "journal revisions"
+                )
         return super().append(
             revision,
             pointer,

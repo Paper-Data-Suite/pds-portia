@@ -84,8 +84,12 @@ class LockStore:
         self.root = Path(root)
 
     def acquire(self, record: PortiaRecord) -> HeldLock:
-        if record.contract != "operation_lock" or record.contract_version != "2":
-            raise PortiaLockError("current lock acquisition requires operation_lock@2")
+        if record.contract != "operation_lock" or record.contract_version not in {"2", "3"}:
+            raise PortiaLockError(
+                "current lock acquisition requires operation_lock@2 or operation_lock@3"
+            )
+        if record.contract_version == "3":
+            validate_operation_lock_application(record)
         data = record.to_dict()
         lock_id = data.get("lock_id")
         scope = data.get("lock_scope")

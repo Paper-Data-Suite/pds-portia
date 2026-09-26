@@ -26,7 +26,12 @@ from portia.storage.errors import (
 from portia.storage.fingerprint import ContentFingerprint, fingerprint_bytes
 from portia.storage.integrity import expected_target_relative_path
 from portia.storage.io import read_bytes
-from portia.storage.locks import HeldLock, LockStore, derive_lock_id
+from portia.storage.locks import (
+    HeldLock,
+    LockStore,
+    derive_lock_id,
+    validate_operation_lock_application,
+)
 from portia.storage.operation_journal import validate_operation_journal_application
 from portia.storage.paths import lock_path, workspace_relative
 from portia.storage.staging import StagedArtifact, publish_staged, stage_bytes
@@ -98,18 +103,21 @@ def _journal_data(journal: PortiaRecord | Mapping[str, Any]) -> Mapping[str, Any
 
 def _validate_versioned_journal(
     journal: PortiaRecord | Mapping[str, Any],
+    *,
+    allow_deliberate_export_execution: bool = False,
 ) -> None:
-    """Validate complete journal records while retaining narrow plan-map callers."""
+    """Validate complete journals and keep generic v4 execution closed."""
     if isinstance(journal, PortiaRecord) or "schema_version" in journal:
         validate_operation_journal_application(journal)
         data = _journal_data(journal)
         if (
             data.get("schema_version") == "4"
             and data.get("operation_kind") == "generate_deliberate_export"
+            and not allow_deliberate_export_execution
         ):
             raise PortiaConflictError(
                 "deliberate-export persistence execution remains disabled "
-                "in the Issue #88 validation-only slice"
+                "outside the specialized Issue #88 execution boundary"
             )
 
 
@@ -246,6 +254,7 @@ def _generic_lock_rank(scope: str) -> int:
         "work": 4,
         "record": 5,
         "derived_projection": 6,
+        "deliberate_export": 7,
     }
     try:
         return ranks[scope]
@@ -384,8 +393,12 @@ def _validate_lock_record(
     entry: Mapping[str, Any],
     record: PortiaRecord,
 ) -> None:
-    if record.contract != "operation_lock" or record.contract_version != "2":
-        raise PortiaLockError("coordinated execution requires operation_lock@2")
+    if record.contract != "operation_lock" or record.contract_version not in {"2", "3"}:
+        raise PortiaLockError(
+            "coordinated execution requires operation_lock@2 or operation_lock@3"
+        )
+    if record.contract_version == "3":
+        validate_operation_lock_application(record)
     data = record.to_dict()
     scope = entry.get("lock_scope")
     target = entry.get("protected_target")
@@ -408,11 +421,15 @@ def acquire_journaled_locks(
     lock_records: Mapping[str, PortiaRecord],
     *,
     fault_hook: FaultHook | None = None,
+    _allow_deliberate_export_execution: bool = False,
 ) -> tuple[HeldLock, ...]:
     """Acquire the exact accepted lock plan, releasing partial acquisition on conflict."""
     root = Path(workspace_root).resolve(strict=False)
     data = _journal_data(journal)
-    _validate_versioned_journal(journal)
+    _validate_versioned_journal(
+        journal,
+        allow_deliberate_export_execution=_allow_deliberate_export_execution,
+    )
     operation_id = data.get("operation_id")
     if not isinstance(operation_id, str):
         raise PortiaCorruptionError("operation journal is missing operation_id")
@@ -461,6 +478,7 @@ def commit_journaled_candidates(
     lock_records: Mapping[str, PortiaRecord],
     *,
     fault_hook: FaultHook | None = None,
+    _allow_deliberate_export_execution: bool = False,
 ) -> OperationCommitResult:
     """Publish the bounded canonical-gate write set without fictitious rollback.
 
@@ -471,7 +489,10 @@ def commit_journaled_candidates(
     """
     root = Path(workspace_root).resolve(strict=False)
     data = _journal_data(journal)
-    _validate_versioned_journal(journal)
+    _validate_versioned_journal(
+        journal,
+        allow_deliberate_export_execution=_allow_deliberate_export_execution,
+    )
     operation_id = data.get("operation_id")
     state = data.get("state")
     if not isinstance(operation_id, str):
@@ -516,7 +537,13 @@ def commit_journaled_candidates(
             "staged candidate order/set does not equal the journaled canonical-gate write set"
         )
 
-    held = acquire_journaled_locks(root, journal, lock_records, fault_hook=fault_hook)
+    held = acquire_journaled_locks(
+        root,
+        journal,
+        lock_records,
+        fault_hook=fault_hook,
+        _allow_deliberate_export_execution=_allow_deliberate_export_execution,
+    )
     store = LockStore(root)
     accepted: list[tuple[str, ContentFingerprint]] = []
     try:

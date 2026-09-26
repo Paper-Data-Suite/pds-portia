@@ -162,6 +162,43 @@ lock record uses `operation_lock@3`. Generic lock acquisition and byte
 publication remain deliberately disabled for this new family until a later
 Issue #88 persistence slice qualifies the execution path.
 
+
+## Bounded execution seam
+
+The specialized deliberate-export persistence entry point is the only Issue #88
+path allowed to execute the v4 export family. Generic coordinated execution
+continues to reject direct `operation_journal@4` export publication unless the
+specialized caller explicitly enters the internal execution seam.
+
+Execution performs these effects in the journaled order:
+
+```text
+1. acquire exact operation_lock@3 for the pexp_ identity
+2. exclusive-create artifact.<format>
+3. exact read-back of artifact bytes
+4. exclusive-create export.json
+5. exact read-back of provenance bytes
+6. release the exact acquired lock
+```
+
+The specialized path revalidates the `deliberate_export@1` candidate before
+staging and again before publication. Provenance bytes are canonical JSON bytes
+of that exact record. A failure before the first accepted final write releases
+the lock. A failure after the artifact becomes durable preserves the v3 export
+lock and raises the existing partial-commit recovery signal; it does not delete
+the accepted artifact or manufacture rollback.
+
+`OperationJournalStore` now admits application-valid v4 export series while
+continuing to prohibit mixed journal contract versions. The immutable export
+plan is compared across v4 revisions, so a committed or completed successor
+cannot change the export identity, lock plan, preflight, artifact bytes,
+provenance bytes, committed-revision reservation, or other immutable write
+intent. Revision-local observations and lifecycle state may advance normally.
+
+This slice intentionally does not classify or repair interrupted export state.
+Recovery inspection, exact replay, committed/completed reconciliation, and
+lock clearing remain later Issue #88 work.
+
 ## Compatibility
 
 Published schemas remain immutable:

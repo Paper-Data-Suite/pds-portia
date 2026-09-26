@@ -677,3 +677,65 @@ def validate_deliberate_export_committed_reference(
         raise PortiaCorruptionError(
             "committed export journal partial state does not reconcile both accepted writes"
         )
+
+
+def deliberate_export_immutable_plan(
+    journal: PortiaRecord | Mapping[str, Any],
+) -> bytes:
+    """Return the immutable v4 export plan used for revision-series comparison."""
+    data = _data(journal, contract="operation_journal", version="4")
+    validate_deliberate_export_journal(data)
+
+    raw_locks = _list(data.get("lock_set"), "lock_set")
+    raw_steps = _list(data.get("write_set"), "write_set")
+    lock_plan = []
+    for raw in raw_locks:
+        entry = _mapping(raw, "lock entry")
+        lock_plan.append(
+            {
+                "lock_id": entry.get("lock_id"),
+                "sequence": entry.get("sequence"),
+                "lock_scope": entry.get("lock_scope"),
+                "protected_target": entry.get("protected_target"),
+                "lock_path": entry.get("lock_path"),
+            }
+        )
+
+    write_plan = []
+    immutable_write_fields = (
+        "step_id",
+        "sequence",
+        "phase",
+        "action",
+        "target",
+        "representation_role",
+        "destination_path",
+        "precondition",
+        "intended_result",
+        "compensation_step_id",
+        "reason_code",
+    )
+    for raw in raw_steps:
+        step = _mapping(raw, "write step")
+        write_plan.append({field: step.get(field) for field in immutable_write_fields})
+
+    immutable = {
+        "operation_id": data.get("operation_id"),
+        "operation_kind": data.get("operation_kind"),
+        "intent_digest": data.get("intent_digest"),
+        "scope": data.get("scope"),
+        "primary_target": data.get("primary_target"),
+        "affected_targets": data.get("affected_targets"),
+        "intent_facts": data.get("intent_facts"),
+        "initiated_at": data.get("initiated_at"),
+        "initiated_by": data.get("initiated_by"),
+        "authorization_references": data.get("authorization_references"),
+        "preflight_snapshot_digest": data.get("preflight_snapshot_digest"),
+        "preflight_snapshot": data.get("preflight_snapshot"),
+        "lock_plan": lock_plan,
+        "write_plan": write_plan,
+        "compensation_plan": data.get("compensation_plan"),
+        "recovery_plan": data.get("recovery_plan"),
+        "created_at": data.get("created_at"),
+    }
+    return canonical_json_bytes(immutable)
