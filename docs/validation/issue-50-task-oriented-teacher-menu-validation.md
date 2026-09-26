@@ -59,24 +59,46 @@ synthetic Event through the installed menu application layer, verifies that no
 Account/Observation/Determination/Response/Follow-Up is inferred, and verifies
 installed Timeline, Follow-Up scheduling, and Attention delegation.
 
-## Final qualification — pending
+## Final qualification — local Windows evidence
 
-The following results are intentionally left unclaimed until observed:
+The committed Issue #50 closeout source was qualified locally on Windows with
+the authenticated Core 0.6.3 wheel.
+
+Observed terminal evidence:
 
 ```text
-Issue #50 repository validator:
-full pytest:
-Ruff:
-strict MyPy:
-pip check:
-wheel + sdist build:
-Twine:
-Issue #50 package inventory:
-Issue #50 isolated installed-wheel smoke:
-cumulative validate_repository.py:
-Windows CI:
-Ubuntu CI:
-git diff --check:
+Successfully built pds_portia-0.2.0.tar.gz and
+pds_portia-0.2.0-py3-none-any.whl
+
+Twine wheel: PASSED
+Twine sdist: PASSED
+
+Portia Issue #50 package inventory validation passed
+
+Portia installed-wheel Issue #50 teacher-menu smoke test passed
+
+git diff --check: passed
+
+Portia Issue #50 repository qualification passed
 ```
 
-Populate this section only with observed command output during final closeout.
+The captured console excerpt begins during the build/package phase rather than
+at the start of `validate_repository.py`. Therefore this record does not invent
+an exact full-pytest test count or repeat unobserved Ruff/MyPy/pip-check output.
+The terminal `Portia Issue #50 repository qualification passed` result was
+observed from the cumulative validator, whose earlier stages include repository
+pytest, Ruff, strict MyPy, and `pip check`.
+
+The cumulative run also observed successful installed-wheel smoke checks for
+Issues #41, #42, #43, #44, #45, #46, #47, #48, and #49 before the Issue #50
+teacher-menu smoke.
+
+### CI evidence — pending
+
+```text
+Windows CI:
+Ubuntu CI:
+```
+
+Do not claim durable CI success here until the branch has been pushed and both
+matrix jobs have completed successfully.
