@@ -219,3 +219,42 @@ family.
 This ADR does not implement teacher export selection, rendering, CSV/HTML/PDF
 output, disclosure/delivery, recipient tracking, authorization policy, source
 projection, retention/disposition, or external-system synchronization.
+
+## Read-only recovery classification
+
+Recovery inspection for `generate_deliberate_export` is deliberately separate
+from recovery mutation. The classifier observes the exact journaled artifact
+and provenance paths and compares durable bytes with their exact intended
+fingerprints. It reports one of these principal states:
+
+```text
+nothing_durable
+artifact_only
+artifact_mismatch
+provenance_only
+artifact_provenance_mismatch
+exact_both_committed_journal_missing
+committed
+completed
+indeterminate
+```
+
+`artifact_only` means the exact artifact bytes are already durable and the
+provenance representation is absent. That state is eligible for a later
+provenance-only recovery action; it is not permission to regenerate or
+overwrite the artifact.
+
+`exact_both_committed_journal_missing` means both exact representations are
+durable and parse/reconcile correctly, but the deterministically reserved
+committed journal revision is absent. A later recovery slice may reconstruct
+only the missing operational revision from already-proven facts.
+
+`committed` requires resolution of the exact journal revision named by
+`deliberate_export@1.operation_journal_ref`, and that revision must reconcile
+both accepted writes. `completed` may be a later selected revision; the export
+record continues to name the original committed revision.
+
+Mismatches, unreadable durable state, invalid exact provenance, broken journal
+history, and otherwise ambiguous states fail closed as review-required. This
+slice performs no overwrite, deletion, journal repair, pointer repair, lock
+clearing, or candidate regeneration.

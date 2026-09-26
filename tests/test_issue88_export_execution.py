@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import copy
 import json
+from collections.abc import Mapping
 from pathlib import Path
 from typing import Any
 
@@ -15,13 +16,16 @@ from portia.storage.deliberate_export_persistence import (
     commit_deliberate_export_candidates,
     stage_deliberate_export_candidates,
 )
+from portia.storage.deliberate_export_recovery import DeliberateExportRecovery
 from portia.storage.errors import (
     PortiaConflictError,
     PortiaOperationPartialCommitError,
 )
 from portia.storage.fingerprint import canonical_json_bytes, fingerprint_bytes
+from portia.storage.io import exclusive_create
 from portia.storage.locks import LockStore, derive_lock_id
 from portia.storage.orchestration import commit_journaled_candidates
+from portia.storage.recovery import OperationRecovery
 from portia.storage.series import OperationJournalStore
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -516,3 +520,206 @@ def test_v4_series_rejects_rewriting_export_intent_after_commit(
             _pointer(3),
             expected_pointer=current.pointer_fingerprint,
         )
+
+
+def _persist_staged_export_series(tmp_path: Path, artifact: bytes):
+    export = parse_portia_record("deliberate_export", "1", _export(artifact))
+    staged = parse_portia_record(
+        "operation_journal",
+        "4",
+        _journal(artifact, export.to_dict()),
+    )
+    store = OperationJournalStore(tmp_path)
+    current = store.create(staged, _pointer(1))
+    return export, store, current
+
+
+def _persist_exact_export_outputs(
+    tmp_path: Path,
+    artifact: bytes,
+    export,
+) -> None:
+    exclusive_create(tmp_path / ARTIFACT_PATH, artifact)
+    exclusive_create(
+        tmp_path / PROVENANCE_PATH,
+        canonical_json_bytes(export.to_dict()),
+    )
+
+
+def _append_committed_export_revision(
+    store: OperationJournalStore,
+    current,
+    artifact: bytes,
+    export,
+):
+    committed = parse_portia_record(
+        "operation_journal",
+        "4",
+        _journal(
+            artifact,
+            export.to_dict(),
+            revision=2,
+            previous=1,
+            state="committed",
+        ),
+    )
+    return store.append(
+        committed,
+        _pointer(2),
+        expected_pointer=current.pointer_fingerprint,
+    )
+
+
+def test_export_recovery_classifies_nothing_durable(tmp_path: Path) -> None:
+    artifact = b"a,b\\n1,2\\n"
+    _export_record, _store, _current = _persist_staged_export_series(
+        tmp_path,
+        artifact,
+    )
+    assessment = DeliberateExportRecovery(tmp_path).assess(OPERATION_ID)
+    assert assessment.disposition == "nothing_durable"
+    assert OperationRecovery(tmp_path).assess(OPERATION_ID).disposition == "resume"
+
+
+def test_export_recovery_classifies_artifact_only(tmp_path: Path) -> None:
+    artifact = b"a,b\\n1,2\\n"
+    _export_record, _store, _current = _persist_staged_export_series(
+        tmp_path,
+        artifact,
+    )
+    exclusive_create(tmp_path / ARTIFACT_PATH, artifact)
+
+    assessment = DeliberateExportRecovery(tmp_path).assess(OPERATION_ID)
+    assert assessment.disposition == "artifact_only"
+    assert assessment.artifact is not None
+    assert assessment.artifact.disposition == "exact"
+
+
+def test_export_recovery_classifies_artifact_mismatch(tmp_path: Path) -> None:
+    artifact = b"a,b\\n1,2\\n"
+    _export_record, _store, _current = _persist_staged_export_series(
+        tmp_path,
+        artifact,
+    )
+    exclusive_create(tmp_path / ARTIFACT_PATH, b"different\\n")
+
+    assessment = DeliberateExportRecovery(tmp_path).assess(OPERATION_ID)
+    assert assessment.disposition == "artifact_mismatch"
+    assert (
+        OperationRecovery(tmp_path).assess(OPERATION_ID).disposition
+        == "quarantine_or_manual_review"
+    )
+
+
+def test_export_recovery_classifies_provenance_only(tmp_path: Path) -> None:
+    artifact = b"a,b\\n1,2\\n"
+    export, _store, _current = _persist_staged_export_series(tmp_path, artifact)
+    exclusive_create(
+        tmp_path / PROVENANCE_PATH,
+        canonical_json_bytes(export.to_dict()),
+    )
+
+    assessment = DeliberateExportRecovery(tmp_path).assess(OPERATION_ID)
+    assert assessment.disposition == "provenance_only"
+
+
+def test_export_recovery_classifies_artifact_and_provenance_mismatch(
+    tmp_path: Path,
+) -> None:
+    artifact = b"a,b\\n1,2\\n"
+    _export_record, _store, _current = _persist_staged_export_series(
+        tmp_path,
+        artifact,
+    )
+    exclusive_create(tmp_path / ARTIFACT_PATH, b"different-artifact\\n")
+    exclusive_create(tmp_path / PROVENANCE_PATH, b"{}\\n")
+
+    assessment = DeliberateExportRecovery(tmp_path).assess(OPERATION_ID)
+    assert assessment.disposition == "artifact_provenance_mismatch"
+
+
+def test_export_recovery_classifies_exact_pair_with_committed_journal_missing(
+    tmp_path: Path,
+) -> None:
+    artifact = b"a,b\\n1,2\\n"
+    export, _store, _current = _persist_staged_export_series(tmp_path, artifact)
+    _persist_exact_export_outputs(tmp_path, artifact, export)
+
+    assessment = DeliberateExportRecovery(tmp_path).assess(OPERATION_ID)
+    assert assessment.disposition == "exact_both_committed_journal_missing"
+    assert assessment.planned_committed_revision == 2
+
+
+def test_export_recovery_classifies_committed(tmp_path: Path) -> None:
+    artifact = b"a,b\\n1,2\\n"
+    export, store, current = _persist_staged_export_series(tmp_path, artifact)
+    _persist_exact_export_outputs(tmp_path, artifact, export)
+    _append_committed_export_revision(store, current, artifact, export)
+
+    assessment = DeliberateExportRecovery(tmp_path).assess(OPERATION_ID)
+    assert assessment.disposition == "committed"
+    assert assessment.selected_revision == 2
+    assert (
+        OperationRecovery(tmp_path).assess(OPERATION_ID).disposition
+        == "finalize_post_commit"
+    )
+
+
+def test_export_recovery_classifies_completed_without_rewriting_provenance(
+    tmp_path: Path,
+) -> None:
+    artifact = b"a,b\\n1,2\\n"
+    export, store, current = _persist_staged_export_series(tmp_path, artifact)
+    _persist_exact_export_outputs(tmp_path, artifact, export)
+    current = _append_committed_export_revision(
+        store,
+        current,
+        artifact,
+        export,
+    )
+    completed = parse_portia_record(
+        "operation_journal",
+        "4",
+        _journal(
+            artifact,
+            export.to_dict(),
+            revision=3,
+            previous=2,
+            state="completed",
+        ),
+    )
+    store.append(
+        completed,
+        _pointer(3),
+        expected_pointer=current.pointer_fingerprint,
+    )
+
+    assessment = DeliberateExportRecovery(tmp_path).assess(OPERATION_ID)
+    assert assessment.disposition == "completed"
+    assert assessment.planned_committed_revision == 2
+    assert assessment.selected_revision == 3
+    operation_ref = export.field("operation_journal_ref")
+    assert isinstance(operation_ref, Mapping)
+    assert operation_ref["journal_revision"] == 2
+    assert (
+        OperationRecovery(tmp_path).assess(OPERATION_ID).disposition
+        == "terminal_consistent"
+    )
+
+
+def test_export_recovery_classifies_unreadable_durable_state_as_indeterminate(
+    tmp_path: Path,
+) -> None:
+    artifact = b"a,b\\n1,2\\n"
+    _export_record, _store, _current = _persist_staged_export_series(
+        tmp_path,
+        artifact,
+    )
+    (tmp_path / ARTIFACT_PATH).mkdir(parents=True)
+
+    assessment = DeliberateExportRecovery(tmp_path).assess(OPERATION_ID)
+    assert assessment.disposition == "indeterminate"
+    assert (
+        OperationRecovery(tmp_path).assess(OPERATION_ID).disposition
+        == "quarantine_or_manual_review"
+    )
