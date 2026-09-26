@@ -107,6 +107,61 @@ operation_current_pointer
 
 No "latest revision" inference is introduced.
 
+## Application-validation seam
+
+The v4 deliberate-export family is application-closed more narrowly than the
+additive wire schema. Existing operation families remain on their accepted
+journal versions; `operation_journal@4` is write authority only for
+`generate_deliberate_export`.
+
+A valid generation plan contains exactly two final exclusive-create writes in
+this order:
+
+```text
+1. deliberate_export_artifact
+2. deliberate_export_provenance
+```
+
+Both target the same exact `pexp_` identity and both have `must_be_absent`
+preconditions. The artifact lives directly beneath:
+
+```text
+portia/exports/<pexp_...>/artifact.<format>
+```
+
+and the provenance record lives at:
+
+```text
+portia/exports/<pexp_...>/export.json
+```
+
+The artifact representation uses the operation-level serialization boundary:
+
+```text
+portia_deliberate_export_artifact_v1
+```
+
+This token is not a media type, file extension, or `deliberate_export@1`
+schema version. Issue #51 must bind its renderer to this representation version
+when it supplies candidate artifact bytes.
+
+The provenance write reserves the first committed journal revision explicitly
+in privacy-minimized selected state:
+
+```text
+committed_journal_revision = <positive integer>
+```
+
+Pre-commit revisions must reserve a later revision. The committed revision must
+equal the reservation. A later completed revision must follow it. The immutable
+`deliberate_export@1.operation_journal_ref` names the reserved committed v4
+revision, never an implicit current or latest revision.
+
+The journal contains one exact `deliberate_export` lock entry and the durable
+lock record uses `operation_lock@3`. Generic lock acquisition and byte
+publication remain deliberately disabled for this new family until a later
+Issue #88 persistence slice qualifies the execution path.
+
 ## Compatibility
 
 Published schemas remain immutable:

@@ -138,9 +138,16 @@ def validate_operation_journal_application(
 ) -> None:
     """Enforce cross-field version/action rules not expressible as simple types."""
     version = journal_version(journal)
-    if version not in {"2", "3"}:
+    if version not in {"2", "3", "4"}:
         raise PortiaCorruptionError(f"unsupported current journal version: {version}")
     data = _data(journal)
+    if version == "4":
+        from portia.storage.deliberate_export_operations import (
+            validate_deliberate_export_journal,
+        )
+
+        validate_deliberate_export_journal(data)
+        return
     raw_steps = data.get("write_set")
     if not isinstance(raw_steps, list):
         raise PortiaCorruptionError("operation journal write_set is not an array")

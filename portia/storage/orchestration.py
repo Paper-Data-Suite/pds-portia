@@ -102,6 +102,15 @@ def _validate_versioned_journal(
     """Validate complete journal records while retaining narrow plan-map callers."""
     if isinstance(journal, PortiaRecord) or "schema_version" in journal:
         validate_operation_journal_application(journal)
+        data = _journal_data(journal)
+        if (
+            data.get("schema_version") == "4"
+            and data.get("operation_kind") == "generate_deliberate_export"
+        ):
+            raise PortiaConflictError(
+                "deliberate-export persistence execution remains disabled "
+                "in the Issue #88 validation-only slice"
+            )
 
 
 def _as_int(value: object, description: str) -> int:
