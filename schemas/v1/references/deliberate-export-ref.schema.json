@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/deliberate-export-ref.schema.json",
+  "title": "Portia Deliberate Export Reference",
+  "description": "Exact identity-only reference to one Portia deliberate export contract representation. Resolution uses the named pexp_ identity and exact contract version; the reference does not establish authorization, artifact existence, disclosure, delivery, or external acceptance.",
+  "type": "object",
+  "required": [
+    "export_id",
+    "contract_version"
+  ],
+  "properties": {
+    "export_id": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-deliberate-export-id.schema.json"
+    },
+    "contract_version": {
+      "const": "1"
+    }
+  },
+  "additionalProperties": false
+}

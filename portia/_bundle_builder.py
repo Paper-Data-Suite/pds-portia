@@ -35,6 +35,8 @@ RUNTIME_VALUE_SCHEMA_IDS = frozenset(
         PORTIA_SCHEMA_PREFIX + "schemas/v1/references/exact-actor-ref.schema.json",
         PORTIA_SCHEMA_PREFIX + "schemas/v1/references/exact-actor-contact-point-ref.schema.json",
         PORTIA_SCHEMA_PREFIX + "schemas/v1/references/exact-actor-student-relationship-ref.schema.json",
+        PORTIA_SCHEMA_PREFIX + "schemas/v1/references/deliberate-export-ref.schema.json",
+        PORTIA_SCHEMA_PREFIX + "schemas/v1/targets/deliberate-export-target.schema.json",
     }
 )
 

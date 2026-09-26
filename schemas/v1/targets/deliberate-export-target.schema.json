@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/targets/deliberate-export-target.schema.json",
+  "title": "Portia Deliberate Export Target",
+  "description": "Exact operational target for the local Portia deliberate-export identity whose artifact/provenance custody is coordinated. It does not identify a recipient, source student, disclosure, delivery, or institutional status.",
+  "type": "object",
+  "required": [
+    "kind",
+    "export_ref"
+  ],
+  "properties": {
+    "kind": {
+      "const": "deliberate_export"
+    },
+    "export_ref": {
+      "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/deliberate-export-ref.schema.json"
+    }
+  },
+  "additionalProperties": false
+}
