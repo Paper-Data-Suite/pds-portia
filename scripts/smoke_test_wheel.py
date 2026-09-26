@@ -17,6 +17,7 @@ def _run(
     *,
     cwd: Path,
     env: dict[str, str],
+    input_text: str | None = None,
 ) -> subprocess.CompletedProcess[str]:
     return subprocess.run(
         command,
@@ -25,6 +26,7 @@ def _run(
         text=True,
         capture_output=True,
         check=True,
+        input=input_text,
     )
 
 
@@ -1366,16 +1368,34 @@ def smoke(portia_wheel: Path, core_wheel: Path) -> None:
             raise RuntimeError("status output is missing the Core 0.6.3 requirement")
         if "Teacher data access: none" not in status.stdout:
             raise RuntimeError(
-                "status output does not preserve the non-mutating bootstrap boundary"
+                "status output does not preserve the non-mutating status boundary"
             )
-        menu = _run([str(console), "menu"], cwd=work, env=env)
-        if "bootstrap only" not in menu.stdout:
-            raise RuntimeError("menu output does not identify the bootstrap-only state")
+        menu = _run(
+            [str(console), "menu"],
+            cwd=work,
+            env=env,
+            input_text="q\n",
+        )
+        for label in (
+            "Record Event",
+            "Add Information",
+            "Record Response / Communication",
+            "Manage Support",
+            "Complete Follow-Up",
+            "View Timeline",
+            "Correct / Retract",
+            "Attention Needed",
+            "Advanced Portia tools",
+        ):
+            if label not in menu.stdout:
+                raise RuntimeError(f"menu output is missing {label!r}")
+        if "[planned]" in menu.stdout:
+            raise RuntimeError("menu output still exposes the bootstrap planned scaffold")
         _run([str(python), "-m", "portia", "--version"], cwd=work, env=env)
         after = sorted(path.relative_to(work).as_posix() for path in work.rglob("*"))
         if after != before:
             raise RuntimeError(
-                "Portia bootstrap CLI mutated its working directory during smoke test"
+                "Portia CLI mutated its working directory during smoke test"
             )
 
 
