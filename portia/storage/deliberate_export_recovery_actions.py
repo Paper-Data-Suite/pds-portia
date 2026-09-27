@@ -12,6 +12,7 @@ from portia.storage.deliberate_export_operations import (
     planned_deliberate_export_commit_revision,
     validate_deliberate_export_candidate_reconciliation,
     validate_deliberate_export_committed_reference,
+    validate_deliberate_export_journal,
     validate_deliberate_export_lock_agreement,
 )
 from portia.storage.deliberate_export_recovery import (
@@ -82,6 +83,20 @@ def _provenance_path(root: Path, journal: PortiaRecord) -> Path:
     return resolve_workspace_relative(root, relative)
 
 
+def _validate_recovery_export_candidate(
+    journal: PortiaRecord,
+    export: PortiaRecord,
+) -> None:
+    """Translate contradictory caller export intent to operation conflict."""
+    validate_deliberate_export_journal(journal)
+    try:
+        validate_deliberate_export_candidate_reconciliation(journal, export)
+    except PortiaCorruptionError as exc:
+        raise PortiaConflictError(
+            "deliberate-export recovery candidate contradicts journaled intent"
+        ) from exc
+
+
 def _validate_existing_provenance_bytes(
     root: Path,
     journal: PortiaRecord,
@@ -105,7 +120,7 @@ def recover_deliberate_export_provenance(
     root = Path(workspace_root).resolve(strict=False)
     store = OperationJournalStore(root)
     journal, _current = _current_export_journal(store, operation_id)
-    validate_deliberate_export_candidate_reconciliation(journal, export)
+    _validate_recovery_export_candidate(journal, export)
 
     recovery = DeliberateExportRecovery(root)
     before = recovery.assess(operation_id)
@@ -270,7 +285,7 @@ def recover_deliberate_export_committed_revision(
     root = Path(workspace_root).resolve(strict=False)
     store = OperationJournalStore(root)
     journal, current_state = _current_export_journal(store, operation_id)
-    validate_deliberate_export_candidate_reconciliation(journal, export)
+    _validate_recovery_export_candidate(journal, export)
     _validate_existing_provenance_bytes(root, journal, export)
 
     recovery = DeliberateExportRecovery(root)
@@ -491,7 +506,7 @@ def finalize_deliberate_export(
     before = recovery.assess(operation_id)
 
     if before.disposition == "completed":
-        validate_deliberate_export_candidate_reconciliation(journal, export)
+        _validate_recovery_export_candidate(journal, export)
         _release_preserved_export_lock(root, journal, lock)
         return DeliberateExportRecoveryResult("exact_replay", before)
 

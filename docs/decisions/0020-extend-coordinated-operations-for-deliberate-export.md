@@ -321,3 +321,37 @@ If the completed revision is already durable as the single exact orphan
 successor, finalization validates it and repairs only the current pointer.
 Repeated finalization of an already-completed exact export is an idempotent
 replay and creates no additional revisions.
+
+
+## Adversarial replay and conflict guarantees
+
+The deliberate-export operation family is fail-closed under contradictory
+replay and preexisting durable state.
+
+Reusing one accepted operation/export identity with candidate bytes that do not
+match the immutable journal plan is a conflict, even if the export identifier
+text is unchanged. No recovery path treats a shared identifier as permission to
+replace artifact or provenance bytes.
+
+The `deliberate_export` lock key is derived from the exact protected export
+target rather than from the owning operation identifier. Consequently,
+different operation IDs that attempt to coordinate the same exact `pexp_`
+identity contend for the same lock and cannot hold it concurrently.
+
+Preexisting artifact or provenance bytes that differ from the journaled exact
+fingerprints are evidence of conflict or indeterminate custody. Recovery does
+not overwrite, delete, normalize, or regenerate those representations.
+
+An orphan journal successor is selectable only when it is the exact expected
+successor and preserves the immutable deliberate-export plan. A structurally
+valid orphan with changed intent remains recovery-required and the current
+pointer is not advanced.
+
+Exact replay after completion is idempotent across provenance recovery,
+committed-revision recovery, and finalization. It creates no duplicate final
+representations and no extra journal revisions.
+
+Workspace-relative export paths reject traversal components, and the existing
+resolved-path containment boundary rejects symlink escapes from the selected
+workspace. Platform environments that cannot create test symlinks retain the
+portable traversal check plus the repository's generic containment coverage.

@@ -24,14 +24,21 @@ from portia.storage.deliberate_export_recovery_actions import (
 )
 from portia.storage.errors import (
     PortiaConflictError,
+    PortiaLockError,
     PortiaOperationPartialCommitError,
+    PortiaPathError,
     PortiaRecoveryRequiredError,
 )
 from portia.storage.fingerprint import canonical_json_bytes, fingerprint_bytes
 from portia.storage.io import exclusive_create
 from portia.storage.locks import LockStore, derive_lock_id
 from portia.storage.orchestration import commit_journaled_candidates
-from portia.storage.paths import lock_path, operation_revision_path
+from portia.storage.paths import (
+    lock_path,
+    operation_revision_path,
+    validate_workspace_relative_path,
+    workspace_relative,
+)
 from portia.storage.recovery import OperationRecovery
 from portia.storage.series import OperationJournalStore
 
@@ -1095,3 +1102,266 @@ def test_export_finalization_requires_lock_evidence_when_lock_is_present(
         )
 
     assert held.path.exists()
+
+
+
+def test_contradictory_export_candidate_reuse_fails_without_mutation(
+    tmp_path: Path,
+) -> None:
+    artifact = b"a,b\n1,2\n"
+    export, _store, _current = _persist_staged_export_series(tmp_path, artifact)
+    exclusive_create(tmp_path / ARTIFACT_PATH, artifact)
+    conflicting = parse_portia_record(
+        "deliberate_export",
+        "1",
+        _export(b"different-output\n"),
+    )
+
+    with pytest.raises(PortiaConflictError):
+        recover_deliberate_export_provenance(
+            tmp_path,
+            OPERATION_ID,
+            export=conflicting,
+        )
+
+    assert (tmp_path / ARTIFACT_PATH).read_bytes() == artifact
+    assert not (tmp_path / PROVENANCE_PATH).exists()
+    assert export.field("export_id") == conflicting.field("export_id")
+
+
+def test_competing_operation_ids_cannot_hold_same_export_lock(
+    tmp_path: Path,
+) -> None:
+    first = parse_portia_record("operation_lock", "3", _lock())
+    second_data = copy.deepcopy(_lock())
+    owning_operation = second_data["owning_operation"]
+    assert isinstance(owning_operation, dict)
+    owning_operation["operation_id"] = "op_issue88_competing_export"
+    second = parse_portia_record("operation_lock", "3", second_data)
+
+    store = LockStore(tmp_path)
+    held = store.acquire(first)
+    try:
+        with pytest.raises(PortiaLockError, match="already held"):
+            store.acquire(second)
+        assert held.path.exists()
+    finally:
+        store.release(held)
+
+
+def test_wrong_preexisting_artifact_is_never_overwritten_by_recovery(
+    tmp_path: Path,
+) -> None:
+    artifact = b"a,b\n1,2\n"
+    export, _store, _current = _persist_staged_export_series(tmp_path, artifact)
+    wrong = b"preexisting-wrong-artifact\n"
+    exclusive_create(tmp_path / ARTIFACT_PATH, wrong)
+
+    with pytest.raises(PortiaRecoveryRequiredError):
+        recover_deliberate_export_provenance(
+            tmp_path,
+            OPERATION_ID,
+            export=export,
+        )
+
+    assert (tmp_path / ARTIFACT_PATH).read_bytes() == wrong
+    assert not (tmp_path / PROVENANCE_PATH).exists()
+
+
+def test_wrong_preexisting_provenance_is_never_overwritten_by_recovery(
+    tmp_path: Path,
+) -> None:
+    artifact = b"a,b\n1,2\n"
+    export, _store, _current = _persist_staged_export_series(tmp_path, artifact)
+    exclusive_create(tmp_path / ARTIFACT_PATH, artifact)
+    wrong = b"{}\n"
+    exclusive_create(tmp_path / PROVENANCE_PATH, wrong)
+
+    with pytest.raises(PortiaRecoveryRequiredError):
+        recover_deliberate_export_provenance(
+            tmp_path,
+            OPERATION_ID,
+            export=export,
+        )
+
+    assert (tmp_path / ARTIFACT_PATH).read_bytes() == artifact
+    assert (tmp_path / PROVENANCE_PATH).read_bytes() == wrong
+
+
+def test_contradictory_replay_after_commit_does_not_add_revision(
+    tmp_path: Path,
+) -> None:
+    artifact = b"a,b\n1,2\n"
+    export = _recover_to_committed(tmp_path, artifact)
+    conflicting = parse_portia_record(
+        "deliberate_export",
+        "1",
+        _export(b"contradictory-output\n"),
+    )
+    before_provenance = (tmp_path / PROVENANCE_PATH).read_bytes()
+
+    with pytest.raises(PortiaConflictError):
+        recover_deliberate_export_committed_revision(
+            tmp_path,
+            OPERATION_ID,
+            export=conflicting,
+            observed_at="2026-08-05T20:00:11-04:00",
+            committed_at="2026-08-05T20:00:12-04:00",
+        )
+
+    assert (
+        OperationJournalStore(tmp_path).inspect_recovery(OPERATION_ID).valid_revisions
+        == (1, 2)
+    )
+    assert (tmp_path / PROVENANCE_PATH).read_bytes() == before_provenance
+    assert export.field("export_id") == conflicting.field("export_id")
+
+
+def test_unexpected_committed_orphan_cannot_be_selected(
+    tmp_path: Path,
+) -> None:
+    artifact = b"a,b\n1,2\n"
+    export, store, current = _persist_staged_export_series(tmp_path, artifact)
+    _persist_exact_export_outputs(tmp_path, artifact, export)
+
+    orphan_data = _journal(
+        artifact,
+        export.to_dict(),
+        revision=2,
+        previous=1,
+        state="committed",
+    )
+    preflight = orphan_data["preflight_snapshot"]
+    assert isinstance(preflight, list)
+    assert isinstance(preflight[0], dict)
+    preflight[0]["observed_at"] = "2026-08-05T20:00:59-04:00"
+    orphan = parse_portia_record("operation_journal", "4", orphan_data)
+    exclusive_create(
+        operation_revision_path(tmp_path, OPERATION_ID, 2),
+        canonical_json_bytes(orphan.to_dict()),
+    )
+
+    observation = store.inspect_recovery(OPERATION_ID)
+    assert observation.disposition == "orphan_linear_successor"
+
+    with pytest.raises(
+        PortiaRecoveryRequiredError,
+        match="immutable intent",
+    ):
+        recover_deliberate_export_committed_revision(
+            tmp_path,
+            OPERATION_ID,
+            export=export,
+            observed_at="2026-08-05T20:00:03-04:00",
+            committed_at="2026-08-05T20:00:04-04:00",
+        )
+
+    selected = store.load_current(OPERATION_ID)
+    assert selected.pointer_fingerprint == current.pointer_fingerprint
+    assert selected.pointer.field("journal_revision") == 1
+
+
+def test_exact_replay_across_recovery_apis_creates_no_duplicates(
+    tmp_path: Path,
+) -> None:
+    artifact = b"a,b\n1,2\n"
+    export = _recover_to_committed(tmp_path, artifact)
+    finalize_deliberate_export(
+        tmp_path,
+        OPERATION_ID,
+        export=export,
+    )
+    artifact_before = (tmp_path / ARTIFACT_PATH).read_bytes()
+    provenance_before = (tmp_path / PROVENANCE_PATH).read_bytes()
+    revisions_before = OperationJournalStore(tmp_path).inspect_recovery(
+        OPERATION_ID
+    ).valid_revisions
+
+    provenance_replay = recover_deliberate_export_provenance(
+        tmp_path,
+        OPERATION_ID,
+        export=export,
+    )
+    commit_replay = recover_deliberate_export_committed_revision(
+        tmp_path,
+        OPERATION_ID,
+        export=export,
+        observed_at="2026-08-05T20:00:21-04:00",
+        committed_at="2026-08-05T20:00:22-04:00",
+    )
+    final_replay = finalize_deliberate_export(
+        tmp_path,
+        OPERATION_ID,
+        export=export,
+    )
+
+    assert provenance_replay.action == "exact_replay"
+    assert commit_replay.action == "exact_replay"
+    assert final_replay.action == "exact_replay"
+    assert (tmp_path / ARTIFACT_PATH).read_bytes() == artifact_before
+    assert (tmp_path / PROVENANCE_PATH).read_bytes() == provenance_before
+    assert (
+        OperationJournalStore(tmp_path).inspect_recovery(OPERATION_ID).valid_revisions
+        == revisions_before
+        == (1, 2, 3)
+    )
+
+
+def test_export_workspace_path_traversal_is_rejected() -> None:
+    with pytest.raises(PortiaPathError, match="unsafe components"):
+        validate_workspace_relative_path(
+            "../portia/exports/pexp_escape/artifact.csv"
+        )
+
+
+def test_export_symlink_escape_is_rejected_when_platform_supports_symlinks(
+    tmp_path: Path,
+) -> None:
+    outside = tmp_path.parent / f"{tmp_path.name}-issue88-outside"
+    outside.mkdir(exist_ok=True)
+    export_link = tmp_path / "portia" / "exports" / "pexp_escape"
+    export_link.parent.mkdir(parents=True, exist_ok=True)
+    try:
+        export_link.symlink_to(outside, target_is_directory=True)
+    except OSError:
+        pytest.skip("directory symlinks are not available in this environment")
+
+    with pytest.raises(PortiaPathError, match="outside the selected workspace"):
+        workspace_relative(tmp_path, export_link / "artifact.csv")
+
+
+
+def test_contradictory_completed_replay_is_conflict_without_mutation(
+    tmp_path: Path,
+) -> None:
+    artifact = b"a,b\n1,2\n"
+    export = _recover_to_committed(tmp_path, artifact)
+    finalize_deliberate_export(tmp_path, OPERATION_ID, export=export)
+    conflicting = parse_portia_record(
+        "deliberate_export",
+        "1",
+        _export(b"contradictory-completed-output\n"),
+    )
+    artifact_before = (tmp_path / ARTIFACT_PATH).read_bytes()
+    provenance_before = (tmp_path / PROVENANCE_PATH).read_bytes()
+    revisions_before = OperationJournalStore(tmp_path).inspect_recovery(
+        OPERATION_ID
+    ).valid_revisions
+
+    with pytest.raises(
+        PortiaConflictError,
+        match="contradicts journaled intent",
+    ):
+        finalize_deliberate_export(
+            tmp_path,
+            OPERATION_ID,
+            export=conflicting,
+        )
+
+    assert (tmp_path / ARTIFACT_PATH).read_bytes() == artifact_before
+    assert (tmp_path / PROVENANCE_PATH).read_bytes() == provenance_before
+    assert (
+        OperationJournalStore(tmp_path).inspect_recovery(OPERATION_ID).valid_revisions
+        == revisions_before
+        == (1, 2, 3)
+    )
