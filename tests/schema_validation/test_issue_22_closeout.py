@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import json
-from pathlib import Path
 import re
 import unittest
 
@@ -79,8 +78,12 @@ class Issue22CloseoutTests(unittest.TestCase):
             self.assertEqual(entry["catalog_versions"], versions)
             if entry["current_version"] is None:
                 self.assertEqual(contract, "operation_journal")
-                self.assertEqual(entry["conditional_current_versions"], ["2", "3"])
+                self.assertEqual(
+                    entry["conditional_current_versions"],
+                    ["2", "3", "4"],
+                )
                 self.assertIn("verified canonical absence", entry["version_authority"])
+                self.assertIn("generate_deliberate_export", entry["version_authority"])
             else:
                 self.assertEqual(entry["current_version"], versions[-1])
             self.assertIn(entry["disposition"], allowed)
@@ -103,7 +106,7 @@ class Issue22CloseoutTests(unittest.TestCase):
             )
         )
         self.assertEqual(markdown_rows, record_families)
-        self.assertEqual(len(entries), 161)
+        self.assertEqual(len(entries), 163)
         self.assertEqual(len(record_families), 67)
 
     def test_required_positive_families_have_final_coverage(self) -> None:
@@ -112,8 +115,8 @@ class Issue22CloseoutTests(unittest.TestCase):
             "| `classification` | 1 | positive_graph | P22-15 |",
             "| `hypothesis` | 1 | positive_graph | P22-15 |",
             "| `intervention` | 1 | positive_graph | P22-15 |",
-            "| `operation_journal` | 2 / 3 conditional | positive_graph | P22-14 + Issue #47 |",
-            "| `operation_lock` | 2 | positive_graph | P22-14 |",
+            "| `operation_journal` | 2 / 3 / 4 conditional | positive_graph | P22-14 + Issue #47 + Issue #88 |",
+            "| `operation_lock` | 3 | positive_graph | P22-14 + Issue #88 |",
         ):
             self.assertIn(fragment, coverage)
 

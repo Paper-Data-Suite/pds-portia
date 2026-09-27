@@ -1078,22 +1078,46 @@
       "rationale": "Supporting identifier, reference, target, primitive/common, attribution, fingerprint, or embedded value schema; it is not an independently persisted graph record family and therefore does not require a standalone positive story."
     },
     {
+      "contract": "deliberate_export_ref",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": false,
+      "disposition": "not_applicable_with_rationale",
+      "evidence": "Issue #88 deliberate-export coordinated-operation schema/reference tests and transitive deliberate-export operation coverage",
+      "rationale": "Supporting exact deliberate-export identity reference; it is not an independently persisted graph record family."
+    },
+    {
+      "contract": "deliberate_export_target",
+      "catalog_versions": [
+        "1"
+      ],
+      "current_version": "1",
+      "record_operational_family": false,
+      "disposition": "not_applicable_with_rationale",
+      "evidence": "Issue #88 deliberate-export coordinated-operation schema/reference tests and transitive deliberate-export operation coverage",
+      "rationale": "Supporting exact deliberate-export operation/lock target; it is not an independently persisted graph record family."
+    },
+    {
       "contract": "operation_journal",
       "catalog_versions": [
         "1",
         "2",
-        "3"
+        "3",
+        "4"
       ],
       "current_version": null,
       "conditional_current_versions": [
         "2",
-        "3"
+        "3",
+        "4"
       ],
-      "version_authority": "v2 for existing non-removal families; v3 for write sets containing verified canonical absence",
+      "version_authority": "v2 for existing non-removal families; v3 for write sets containing verified canonical absence; v4 for generate_deliberate_export",
       "record_operational_family": true,
       "disposition": "positive_graph",
-      "evidence": "P22-14 + Issue #47 Slice 33.1A",
-      "rationale": "conditional current-write authority; v2 preserves existing recovery evidence and v3 adds verified canonical absence"
+      "evidence": "P22-14 + Issue #47 + Issue #88",
+      "rationale": "conditional current-write authority; v2 preserves existing recovery evidence, v3 adds verified canonical absence, and v4 adds exact deliberate-export coordination"
     },
     {
       "contract": "operation_current_pointer",
@@ -1110,13 +1134,14 @@
       "contract": "operation_lock",
       "catalog_versions": [
         "1",
-        "2"
+        "2",
+        "3"
       ],
-      "current_version": "2",
+      "current_version": "3",
       "record_operational_family": true,
       "disposition": "positive_graph",
-      "evidence": "P22-14",
-      "rationale": "current version; deterministic operation/work lock identity and release evidence"
+      "evidence": "P22-14 + Issue #88",
+      "rationale": "v2 preserves existing operation/work locking; v3 adds exact deliberate-export lock scope and target identity"
     },
     {
       "contract": "quarantine_record",

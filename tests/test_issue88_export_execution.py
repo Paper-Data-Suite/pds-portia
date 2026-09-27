@@ -17,14 +17,21 @@ from portia.storage.deliberate_export_persistence import (
     stage_deliberate_export_candidates,
 )
 from portia.storage.deliberate_export_recovery import DeliberateExportRecovery
+from portia.storage.deliberate_export_recovery_actions import (
+    finalize_deliberate_export,
+    recover_deliberate_export_committed_revision,
+    recover_deliberate_export_provenance,
+)
 from portia.storage.errors import (
     PortiaConflictError,
     PortiaOperationPartialCommitError,
+    PortiaRecoveryRequiredError,
 )
 from portia.storage.fingerprint import canonical_json_bytes, fingerprint_bytes
 from portia.storage.io import exclusive_create
 from portia.storage.locks import LockStore, derive_lock_id
 from portia.storage.orchestration import commit_journaled_candidates
+from portia.storage.paths import lock_path, operation_revision_path
 from portia.storage.recovery import OperationRecovery
 from portia.storage.series import OperationJournalStore
 
@@ -723,3 +730,368 @@ def test_export_recovery_classifies_unreadable_durable_state_as_indeterminate(
         OperationRecovery(tmp_path).assess(OPERATION_ID).disposition
         == "quarantine_or_manual_review"
     )
+
+
+def test_artifact_only_recovery_creates_only_missing_provenance(
+    tmp_path: Path,
+) -> None:
+    artifact = b"a,b\\n1,2\\n"
+    export, _store, _current = _persist_staged_export_series(tmp_path, artifact)
+    exclusive_create(tmp_path / ARTIFACT_PATH, artifact)
+    before_artifact = (tmp_path / ARTIFACT_PATH).read_bytes()
+
+    result = recover_deliberate_export_provenance(
+        tmp_path,
+        OPERATION_ID,
+        export=export,
+    )
+
+    assert result.action == "created_missing_provenance"
+    assert result.assessment.disposition == "exact_both_committed_journal_missing"
+    assert (tmp_path / ARTIFACT_PATH).read_bytes() == before_artifact
+    assert (tmp_path / PROVENANCE_PATH).read_bytes() == canonical_json_bytes(
+        export.to_dict()
+    )
+
+
+def test_missing_provenance_recovery_exact_replay_does_not_duplicate(
+    tmp_path: Path,
+) -> None:
+    artifact = b"a,b\\n1,2\\n"
+    export, _store, _current = _persist_staged_export_series(tmp_path, artifact)
+    _persist_exact_export_outputs(tmp_path, artifact, export)
+    before = (tmp_path / PROVENANCE_PATH).read_bytes()
+
+    result = recover_deliberate_export_provenance(
+        tmp_path,
+        OPERATION_ID,
+        export=export,
+    )
+
+    assert result.action == "exact_replay"
+    assert (tmp_path / PROVENANCE_PATH).read_bytes() == before
+
+
+@pytest.mark.parametrize(
+    "artifact_bytes,provenance_bytes",
+    [
+        (b"different\\n", None),
+        (None, b"{}\\n"),
+        (b"different\\n", b"{}\\n"),
+    ],
+)
+def test_provenance_recovery_refuses_unsafe_durable_states(
+    tmp_path: Path,
+    artifact_bytes: bytes | None,
+    provenance_bytes: bytes | None,
+) -> None:
+    artifact = b"a,b\\n1,2\\n"
+    export, _store, _current = _persist_staged_export_series(tmp_path, artifact)
+    if artifact_bytes is not None:
+        exclusive_create(tmp_path / ARTIFACT_PATH, artifact_bytes)
+    if provenance_bytes is not None:
+        exclusive_create(tmp_path / PROVENANCE_PATH, provenance_bytes)
+
+    with pytest.raises(
+        PortiaRecoveryRequiredError,
+        match="provenance recovery is not safe",
+    ):
+        recover_deliberate_export_provenance(
+            tmp_path,
+            OPERATION_ID,
+            export=export,
+        )
+
+
+def test_exact_pair_recovery_creates_reserved_committed_revision(
+    tmp_path: Path,
+) -> None:
+    artifact = b"a,b\\n1,2\\n"
+    export, _store, _current = _persist_staged_export_series(tmp_path, artifact)
+    _persist_exact_export_outputs(tmp_path, artifact, export)
+
+    result = recover_deliberate_export_committed_revision(
+        tmp_path,
+        OPERATION_ID,
+        export=export,
+        observed_at="2026-08-05T20:00:03-04:00",
+        committed_at="2026-08-05T20:00:04-04:00",
+    )
+
+    assert result.action == "created_missing_committed_revision"
+    assert result.assessment.disposition == "committed"
+    assert result.assessment.selected_revision == 2
+    selected = OperationJournalStore(tmp_path).load_current(OPERATION_ID)
+    assert selected.revision.field("journal_revision") == 2
+    assert selected.revision.field("state") == "committed"
+
+
+def test_committed_revision_recovery_exact_replay_does_not_add_revision(
+    tmp_path: Path,
+) -> None:
+    artifact = b"a,b\\n1,2\\n"
+    export, _store, _current = _persist_staged_export_series(tmp_path, artifact)
+    _persist_exact_export_outputs(tmp_path, artifact, export)
+
+    first = recover_deliberate_export_committed_revision(
+        tmp_path,
+        OPERATION_ID,
+        export=export,
+        observed_at="2026-08-05T20:00:03-04:00",
+        committed_at="2026-08-05T20:00:04-04:00",
+    )
+    second = recover_deliberate_export_committed_revision(
+        tmp_path,
+        OPERATION_ID,
+        export=export,
+        observed_at="2026-08-05T20:00:09-04:00",
+        committed_at="2026-08-05T20:00:10-04:00",
+    )
+
+    assert first.action == "created_missing_committed_revision"
+    assert second.action == "exact_replay"
+    assert (
+        OperationJournalStore(tmp_path).inspect_recovery(OPERATION_ID).valid_revisions
+        == (1, 2)
+    )
+
+
+def test_committed_revision_recovery_selects_exact_orphan_successor(
+    tmp_path: Path,
+) -> None:
+    artifact = b"a,b\\n1,2\\n"
+    export, store, current = _persist_staged_export_series(tmp_path, artifact)
+    _persist_exact_export_outputs(tmp_path, artifact, export)
+
+    committed = parse_portia_record(
+        "operation_journal",
+        "4",
+        _journal(
+            artifact,
+            export.to_dict(),
+            revision=2,
+            previous=1,
+            state="committed",
+        ),
+    )
+    exclusive_create(
+        operation_revision_path(tmp_path, OPERATION_ID, 2),
+        canonical_json_bytes(committed.to_dict()),
+    )
+
+    observation = store.inspect_recovery(OPERATION_ID)
+    assert observation.disposition == "orphan_linear_successor"
+    assert (
+        store.load_current(OPERATION_ID).pointer_fingerprint
+        == current.pointer_fingerprint
+    )
+
+    result = recover_deliberate_export_committed_revision(
+        tmp_path,
+        OPERATION_ID,
+        export=export,
+        observed_at="2026-08-05T20:00:03-04:00",
+        committed_at="2026-08-05T20:00:04-04:00",
+    )
+
+    assert result.action == "selected_existing_committed_revision"
+    assert result.assessment.disposition == "committed"
+    assert (
+        OperationJournalStore(tmp_path)
+        .load_current(OPERATION_ID)
+        .pointer.field("journal_revision")
+        == 2
+    )
+
+
+def test_committed_revision_recovery_refuses_artifact_mismatch(
+    tmp_path: Path,
+) -> None:
+    artifact = b"a,b\\n1,2\\n"
+    export, _store, _current = _persist_staged_export_series(tmp_path, artifact)
+    exclusive_create(tmp_path / ARTIFACT_PATH, b"different\\n")
+    exclusive_create(
+        tmp_path / PROVENANCE_PATH,
+        canonical_json_bytes(export.to_dict()),
+    )
+
+    with pytest.raises(PortiaRecoveryRequiredError):
+        recover_deliberate_export_committed_revision(
+            tmp_path,
+            OPERATION_ID,
+            export=export,
+            observed_at="2026-08-05T20:00:03-04:00",
+            committed_at="2026-08-05T20:00:04-04:00",
+        )
+
+    assert not operation_revision_path(tmp_path, OPERATION_ID, 2).exists()
+
+
+
+def _recover_to_committed(
+    tmp_path: Path,
+    artifact: bytes,
+):
+    export, _store, _current = _persist_staged_export_series(tmp_path, artifact)
+    _persist_exact_export_outputs(tmp_path, artifact, export)
+    recover_deliberate_export_committed_revision(
+        tmp_path,
+        OPERATION_ID,
+        export=export,
+        observed_at="2026-08-05T20:00:03-04:00",
+        committed_at="2026-08-05T20:00:04-04:00",
+    )
+    return export
+
+
+def test_export_finalization_appends_completed_revision_without_rewriting_export(
+    tmp_path: Path,
+) -> None:
+    artifact = b"a,b\n1,2\n"
+    export = _recover_to_committed(tmp_path, artifact)
+    before_provenance = (tmp_path / PROVENANCE_PATH).read_bytes()
+
+    result = finalize_deliberate_export(
+        tmp_path,
+        OPERATION_ID,
+        export=export,
+    )
+
+    assert result.action == "completed_export_operation"
+    assert result.assessment.disposition == "completed"
+    assert result.assessment.selected_revision == 3
+    assert result.assessment.planned_committed_revision == 2
+    assert (tmp_path / PROVENANCE_PATH).read_bytes() == before_provenance
+    operation_ref = export.field("operation_journal_ref")
+    assert isinstance(operation_ref, Mapping)
+    assert operation_ref["journal_revision"] == 2
+
+
+def test_export_finalization_releases_exact_preserved_v3_lock(
+    tmp_path: Path,
+) -> None:
+    artifact = b"a,b\n1,2\n"
+    export = _recover_to_committed(tmp_path, artifact)
+    lock = parse_portia_record("operation_lock", "3", _lock())
+    held = LockStore(tmp_path).acquire(lock)
+    assert held.path.exists()
+
+    result = finalize_deliberate_export(
+        tmp_path,
+        OPERATION_ID,
+        export=export,
+        lock=lock,
+    )
+
+    assert result.assessment.disposition == "completed"
+    assert not held.path.exists()
+
+
+def test_export_finalization_exact_replay_adds_no_revision(
+    tmp_path: Path,
+) -> None:
+    artifact = b"a,b\n1,2\n"
+    export = _recover_to_committed(tmp_path, artifact)
+
+    first = finalize_deliberate_export(
+        tmp_path,
+        OPERATION_ID,
+        export=export,
+    )
+    second = finalize_deliberate_export(
+        tmp_path,
+        OPERATION_ID,
+        export=export,
+    )
+
+    assert first.action == "completed_export_operation"
+    assert second.action == "exact_replay"
+    assert (
+        OperationJournalStore(tmp_path).inspect_recovery(OPERATION_ID).valid_revisions
+        == (1, 2, 3)
+    )
+
+
+def test_export_finalization_selects_exact_completed_orphan(
+    tmp_path: Path,
+) -> None:
+    artifact = b"a,b\n1,2\n"
+    export = _recover_to_committed(tmp_path, artifact)
+    store = OperationJournalStore(tmp_path)
+    committed_state = store.load_current(OPERATION_ID)
+    committed = committed_state.revision
+
+    completed_data = committed.to_dict()
+    completed_data["journal_revision"] = 3
+    completed_data["previous_journal_revision"] = 2
+    completed_data["state"] = "completed"
+    completed = parse_portia_record("operation_journal", "4", completed_data)
+    exclusive_create(
+        operation_revision_path(tmp_path, OPERATION_ID, 3),
+        canonical_json_bytes(completed.to_dict()),
+    )
+
+    observation = store.inspect_recovery(OPERATION_ID)
+    assert observation.disposition == "orphan_linear_successor"
+
+    result = finalize_deliberate_export(
+        tmp_path,
+        OPERATION_ID,
+        export=export,
+    )
+
+    assert result.action == "selected_existing_completed_revision"
+    assert result.assessment.disposition == "completed"
+    assert store.load_current(OPERATION_ID).pointer.field("journal_revision") == 3
+
+
+def test_export_finalization_refuses_mismatched_durable_lock(
+    tmp_path: Path,
+) -> None:
+    artifact = b"a,b\n1,2\n"
+    export = _recover_to_committed(tmp_path, artifact)
+    lock = parse_portia_record("operation_lock", "3", _lock())
+    lock_id = lock.field("lock_id")
+    assert isinstance(lock_id, str)
+    path = lock_path(tmp_path, lock_id)
+    exclusive_create(path, b"{}\n")
+
+    with pytest.raises(
+        PortiaRecoveryRequiredError,
+        match="lock differs",
+    ):
+        finalize_deliberate_export(
+            tmp_path,
+            OPERATION_ID,
+            export=export,
+            lock=lock,
+        )
+
+    assert path.exists()
+    assert (
+        OperationJournalStore(tmp_path)
+        .load_current(OPERATION_ID)
+        .revision.field("state")
+        == "committed"
+    )
+
+
+def test_export_finalization_requires_lock_evidence_when_lock_is_present(
+    tmp_path: Path,
+) -> None:
+    artifact = b"a,b\n1,2\n"
+    export = _recover_to_committed(tmp_path, artifact)
+    lock = parse_portia_record("operation_lock", "3", _lock())
+    held = LockStore(tmp_path).acquire(lock)
+
+    with pytest.raises(
+        PortiaRecoveryRequiredError,
+        match="no lock record was supplied",
+    ):
+        finalize_deliberate_export(
+            tmp_path,
+            OPERATION_ID,
+            export=export,
+        )
+
+    assert held.path.exists()

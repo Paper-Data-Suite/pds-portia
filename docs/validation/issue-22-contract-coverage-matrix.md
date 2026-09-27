@@ -36,12 +36,12 @@ outside Issue #22 coverage accounting.
 Current checked inventory:
 
 ```text
-161 catalog contract families total
+163 catalog contract families total
  67 independently persisted record/operational families
- 94 supporting identifier/reference/target/common/embedded families
+ 96 supporting identifier/reference/target/common/embedded families
 ```
 
-The 94 supporting families are explicitly dispositioned in the manifest as
+The 96 supporting families are explicitly dispositioned in the manifest as
 `not_applicable_with_rationale`; they remain transitively exercised but are not
 misrepresented as independently persisted graph records.
 
@@ -79,9 +79,9 @@ misrepresented as independently persisted graph records.
 | `statement_of_disagreement` | 1 | positive_graph | P22-04 | exact contested-predecessor binding without truth adjudication |
 | `work_relationship` | 2 | positive_graph | P22-11, P22-13, P22-14 | canonical forward relationship and cross-year continuation/context topology |
 | `dependency` | 1 | positive_graph | P22-13 | exact canonical dependency; derived reverse/index views remain nonauthoritative |
-| `operation_journal` | 2 / 3 conditional | positive_graph | P22-14 + Issue #47 | v2 remains current for existing non-removal families; v3 is required for verified canonical absence |
+| `operation_journal` | 2 / 3 / 4 conditional | positive_graph | P22-14 + Issue #47 + Issue #88 | v2 remains current for existing non-removal families; v3 is required for verified canonical absence; v4 is required for exact deliberate-export coordination |
 | `operation_current_pointer` | 1 | positive_graph | P22-14 | explicit terminal revision selection; no newest-revision inference |
-| `operation_lock` | 2 | positive_graph | P22-14 | current version; deterministic operation/work lock identity and release evidence |
+| `operation_lock` | 3 | positive_graph | P22-14 + Issue #88 | v2 preserves existing operation/work locks; v3 adds exact deliberate-export lock identity and release evidence |
 | `source_snapshot` | 1 | positive_graph | P22-13 | truthful snapshot of exact canonical source representations |
 | `derived_index_metadata` | 1 | positive_graph | P22-13 | immutable rebuild-generation metadata and exact source/data fingerprints |
 | `derived_current_pointer` | 1 | positive_graph | P22-13 | explicit derived-generation selection without authority/freshness claim |
@@ -160,18 +160,20 @@ Retention classes and the future Sunset orchestration boundary are architectural
 P22-14 uses `operation_journal@2` and `operation_lock@2`, which were the
 highest current catalog versions at Issue #22 closeout. Issue #47 later adds
 conditional `operation_journal@3` authority only for verified canonical
-absence; v2 remains current for existing non-removal families. Version 2
-preserves ordinary work/record recovery semantics while adding Actor Directory
-target shapes. `operation_current_pointer@1` remains the current pointer
-contract. Older cataloged versions remain valid historical contracts, and
-neither Issue #22 nor Issue #47 mutates them.
+absence. Issue #88 adds conditional `operation_journal@4` authority only for
+`generate_deliberate_export` and `operation_lock@3` only for exact
+deliberate-export locking. Version 2 remains authoritative for its existing
+non-removal operation families; version 3 journal semantics remain authoritative
+for verified canonical absence. `operation_current_pointer@1` remains the
+current pointer contract. Older cataloged versions remain valid historical
+contracts, and none of these later issues mutates their published wire shapes.
 
 ## Completion statement
 
-The machine-readable catalog mapping contains **161 / 161 current public catalog
+The machine-readable catalog mapping contains **163 / 163 current public catalog
 contract families**. Of those, **67 independently persisted record/operational
 families** receive explicit table rows here: 50 `positive_graph` and 17
-`existing_focused_fixture_only`. The remaining 94 supporting catalog families are
+`existing_focused_fixture_only`. The remaining 96 supporting catalog families are
 explicit `not_applicable_with_rationale` entries in
 `tests/fixtures/issue_22/contract-coverage.json` and are exercised transitively.
 No current catalog family is unclassified and no coverage entry is left in a

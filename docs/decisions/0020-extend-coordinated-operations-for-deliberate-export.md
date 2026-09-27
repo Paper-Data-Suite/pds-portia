@@ -258,3 +258,66 @@ Mismatches, unreadable durable state, invalid exact provenance, broken journal
 history, and otherwise ambiguous states fail closed as review-required. This
 slice performs no overwrite, deletion, journal repair, pointer repair, lock
 clearing, or candidate regeneration.
+
+
+## Evidence-preserving recovery mutations
+
+Recovery mutation is narrower than recovery classification.
+
+For an exact `artifact_only` state, Portia may create only the missing
+`deliberate_export@1` provenance bytes after revalidating the supplied exact
+candidate against the journal. The already-durable artifact is neither
+regenerated nor overwritten.
+
+For an exact artifact/provenance pair with the deterministically reserved
+committed journal revision missing, Portia may construct only that exact next
+`operation_journal@4` revision from the existing immutable plan and the proven
+durable fingerprints. The reconstructed revision records both final writes as
+accepted/verified and advances `operation_current_pointer@1` through the
+existing guarded immutable-series mechanism.
+
+If the reserved committed revision already exists as the single exact orphan
+successor, recovery validates its immutable plan and exact export reference,
+then repairs only the current pointer. It does not create a duplicate revision.
+
+Exact replay is idempotent. Already-correct provenance, committed journals, and
+terminal completed state are validated and returned without rewriting durable
+export representations.
+
+Artifact mismatch, provenance-only state, provenance mismatch, unexpected
+orphan revisions, contradictory candidates, and indeterminate evidence remain
+non-mutating recovery-required states.
+
+This slice still does not release preserved export locks or synthesize the
+later completed journal revision. Finalization remains a separate recovery
+step.
+
+
+## Post-commit export finalization
+
+A committed deliberate-export operation may be finalized only after the exact
+committed revision and immutable export provenance reconcile.
+
+If the exact v3 export lock remains durable from a partial-commit recovery,
+finalization requires the caller to supply the matching `operation_lock@3`
+record. Portia reconstructs the `HeldLock` from the durable lock bytes and
+fingerprint and delegates deletion to the existing guarded
+`LockStore.release()` primitive. A mismatched lock is never cleared. A missing
+lock is treated as an already-released idempotent state; Portia does not
+recreate it merely to release it again.
+
+Lock release precedes recording completed state. Therefore a crash after lock
+release but before journal advancement leaves an exact committed operation that
+can safely retry finalization.
+
+The completed revision is the exact successor of the reserved committed
+revision and preserves the immutable export plan. Advancing
+`operation_current_pointer@1` to that later revision does not rewrite
+`deliberate_export@1`; its `operation_journal_ref` continues to identify the
+historical committed revision that first established both accepted export
+representations.
+
+If the completed revision is already durable as the single exact orphan
+successor, finalization validates it and repairs only the current pointer.
+Repeated finalization of an already-completed exact export is an idempotent
+replay and creates no additional revisions.

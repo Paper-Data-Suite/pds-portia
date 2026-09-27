@@ -70,6 +70,8 @@ def test_contract_inventory_explicitly_classifies_every_runtime_contract() -> No
     assert contract_rule("event", "1").surface == "legacy_history_only"
     assert contract_rule("event_participant", "3").surface == "domain_current"
     assert contract_rule("operation_journal", "3").surface == "operational_excluded"
+    assert contract_rule("operation_journal", "4").surface == "operational_excluded"
+    assert contract_rule("operation_lock", "3").surface == "operational_excluded"
     assert contract_rule("deliberate_export", "1").surface == "export_excluded"
 
 
