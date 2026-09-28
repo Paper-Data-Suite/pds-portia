@@ -434,6 +434,14 @@ class OperationJournalV3(PortiaRecord):
     CONTRACT = "operation_journal"
     VERSION = "3"
 
+class OperationJournalV4(PortiaRecord):
+    """Exact ``operation_journal@4`` runtime representation."""
+
+    __slots__ = ()
+
+    CONTRACT = "operation_journal"
+    VERSION = "4"
+
 class OperationCurrentPointerV1(PortiaRecord):
     """Exact ``operation_current_pointer@1`` runtime representation."""
 
@@ -457,6 +465,14 @@ class OperationLockV2(PortiaRecord):
 
     CONTRACT = "operation_lock"
     VERSION = "2"
+
+class OperationLockV3(PortiaRecord):
+    """Exact ``operation_lock@3`` runtime representation."""
+
+    __slots__ = ()
+
+    CONTRACT = "operation_lock"
+    VERSION = "3"
 
 class QuarantineRecordV1(PortiaRecord):
     """Exact ``quarantine_record@1`` runtime representation."""
@@ -616,9 +632,11 @@ _RECORD_TYPES: Final[tuple[type[PortiaRecord], ...]] = (
     OperationJournalV1,
     OperationJournalV2,
     OperationJournalV3,
+    OperationJournalV4,
     OperationCurrentPointerV1,
     OperationLockV1,
     OperationLockV2,
+    OperationLockV3,
     QuarantineRecordV1,
     QuarantineRecordV2,
     QuarantineCurrentPointerV1,

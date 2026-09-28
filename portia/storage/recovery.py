@@ -108,6 +108,51 @@ class OperationRecovery:
         current = self.store.load_current(operation_id)
         state_value = current.revision.to_dict().get("state")
         state = state_value if isinstance(state_value, str) else None
+        current_data = current.revision.to_dict()
+        if (
+            current.revision.contract_version == "4"
+            and current_data.get("operation_kind") == "generate_deliberate_export"
+        ):
+            from portia.storage.deliberate_export_recovery import (
+                DeliberateExportRecovery,
+            )
+
+            export_assessment = DeliberateExportRecovery(self.root).assess(operation_id)
+            if export_assessment.disposition == "completed":
+                disposition = "terminal_consistent"
+                export_findings: tuple[PersistenceFinding, ...] = ()
+            elif export_assessment.disposition == "committed":
+                disposition = "finalize_post_commit"
+                export_findings = ()
+            elif export_assessment.disposition in {
+                "nothing_durable",
+                "artifact_only",
+                "exact_both_committed_journal_missing",
+            }:
+                disposition = "resume"
+                export_findings = ()
+            else:
+                disposition = "quarantine_or_manual_review"
+                relative = (
+                    f"portia/exports/{export_assessment.export_id}"
+                    if export_assessment.export_id is not None
+                    else "portia/exports"
+                )
+                export_findings = (
+                    PersistenceFinding(
+                        "PORTIA.STORAGE.DELIBERATE_EXPORT_RECOVERY_REQUIRED",
+                        relative,
+                        "deliberate-export durable state requires explicit recovery review",
+                    ),
+                )
+            return OperationRecoveryAssessment(
+                operation_id,
+                state,
+                disposition,
+                series,
+                export_findings,
+                (),
+            )
         findings = validate_operation_durable_state(self.root, current.revision)
         step_evidence = observe_operation_durable_state(self.root, current.revision)
         if any(item.disposition == "indeterminate" for item in step_evidence):

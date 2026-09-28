@@ -22,6 +22,10 @@ from portia.models.errors import (
     PortiaWireError,
     UnsupportedContractError,
 )
+from portia.models.export_operations import (
+    DeliberateExportRef,
+    DeliberateExportTarget,
+)
 from portia.models.identifiers import (
     PortiaIdentifier,
     validate_external_id,
@@ -76,8 +80,10 @@ from portia.models.records import (
     OperationJournalV1,
     OperationJournalV2,
     OperationJournalV3,
+    OperationJournalV4,
     OperationLockV1,
     OperationLockV2,
+    OperationLockV3,
     OutcomeV1,
     OwnershipCorrectionV1,
     OwnershipCorrectionV2,
@@ -130,6 +136,7 @@ __all__ = [
     "RuntimeCoverageEntry", "runtime_coverage", "audit_coverage_against_catalog",
     "PortiaModelError", "PortiaWireError", "PortiaLocalValidationError", "UnsupportedContractError",
     "PortiaIdentifier", "validate_external_id", "validate_portia_id",
+    "DeliberateExportRef", "DeliberateExportTarget",
     "RosterStudentRef",
     "ActorRef",
     "ExactActorRef",
@@ -197,9 +204,11 @@ __all__ = [
     "OperationJournalV1",
     "OperationJournalV2",
     "OperationJournalV3",
+    "OperationJournalV4",
     "OperationCurrentPointerV1",
     "OperationLockV1",
     "OperationLockV2",
+    "OperationLockV3",
     "QuarantineRecordV1",
     "QuarantineRecordV2",
     "QuarantineCurrentPointerV1",

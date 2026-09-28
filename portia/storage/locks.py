@@ -4,8 +4,10 @@ from __future__ import annotations
 
 import hashlib
 import json
+from collections.abc import Mapping
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Any, cast
 
 from portia.models import PortiaRecord
 from portia.storage.errors import (
@@ -31,13 +33,63 @@ def derive_lock_id(lock_scope: str, protected_target: object) -> str:
     return "lock_" + hashlib.sha256(compact).hexdigest()
 
 
+def _lock_application_data(
+    record: PortiaRecord | Mapping[str, Any],
+) -> Mapping[str, Any]:
+    if isinstance(record, PortiaRecord):
+        if record.contract != "operation_lock":
+            raise PortiaCorruptionError("record is not an Operation Lock")
+        return cast(Mapping[str, Any], record.to_dict())
+    if not isinstance(record, Mapping):
+        raise PortiaCorruptionError("operation lock application input is not an object")
+    return record
+
+
+def validate_operation_lock_application(
+    record: PortiaRecord | Mapping[str, Any],
+) -> None:
+    """Validate version-specific lock semantics without acquiring the lock."""
+    data = _lock_application_data(record)
+    version = (
+        record.contract_version
+        if isinstance(record, PortiaRecord)
+        else data.get("schema_version")
+    )
+    if version == "2":
+        return
+    if version == "3":
+        from portia.storage.deliberate_export_operations import (
+            validate_deliberate_export_lock,
+        )
+
+        validate_deliberate_export_lock(data)
+        return
+    raise PortiaCorruptionError(f"unsupported current lock version: {version}")
+
+
+def validate_deliberate_export_lock_agreement(
+    journal: PortiaRecord | Mapping[str, Any],
+    lock: PortiaRecord | Mapping[str, Any],
+) -> None:
+    """Validate one v3 export lock against one exact journal v4 plan."""
+    from portia.storage.deliberate_export_operations import (
+        validate_deliberate_export_lock_agreement as validate_agreement,
+    )
+
+    validate_agreement(journal, lock)
+
+
 class LockStore:
     def __init__(self, root: str | Path) -> None:
         self.root = Path(root)
 
     def acquire(self, record: PortiaRecord) -> HeldLock:
-        if record.contract != "operation_lock" or record.contract_version != "2":
-            raise PortiaLockError("current lock acquisition requires operation_lock@2")
+        if record.contract != "operation_lock" or record.contract_version not in {"2", "3"}:
+            raise PortiaLockError(
+                "current lock acquisition requires operation_lock@2 or operation_lock@3"
+            )
+        if record.contract_version == "3":
+            validate_operation_lock_application(record)
         data = record.to_dict()
         lock_id = data.get("lock_id")
         scope = data.get("lock_scope")
