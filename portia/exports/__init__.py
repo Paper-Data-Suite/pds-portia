@@ -1,5 +1,14 @@
 """Bounded deliberate export policy and workflow services."""
 
+from portia.exports.discovery import (
+    TeacherReferenceExportScope,
+    TeacherReferenceObservationState,
+    TeacherReferenceScopeDiscovery,
+    TeacherReferenceScopeDiscoveryService,
+    TeacherReferenceSourceObservation,
+    TeacherReferenceSourceRef,
+    TeacherReferenceSourceRole,
+)
 from portia.exports.policy import (
     TEACHER_REFERENCE_CONTRACT_INVENTORY,
     TEACHER_REFERENCE_CONTRACT_RULES,
@@ -29,6 +38,13 @@ from portia.exports.policy import (
 )
 
 __all__ = [
+    "TeacherReferenceExportScope",
+    "TeacherReferenceObservationState",
+    "TeacherReferenceScopeDiscovery",
+    "TeacherReferenceScopeDiscoveryService",
+    "TeacherReferenceSourceObservation",
+    "TeacherReferenceSourceRef",
+    "TeacherReferenceSourceRole",
     "TEACHER_REFERENCE_CONTRACT_INVENTORY",
     "TEACHER_REFERENCE_CONTRACT_RULES",
     "TEACHER_REFERENCE_EXPORT_POLICY",
