@@ -9,6 +9,12 @@ from portia.exports.discovery import (
     TeacherReferenceSourceRef,
     TeacherReferenceSourceRole,
 )
+from portia.exports.inventory import (
+    EXPORT_SOURCE_INVENTORY_ALGORITHM,
+    TeacherReferenceSourceInventory,
+    TeacherReferenceSourceInventoryService,
+    teacher_reference_source_inventory_digest,
+)
 from portia.exports.policy import (
     TEACHER_REFERENCE_CONTRACT_INVENTORY,
     TEACHER_REFERENCE_CONTRACT_RULES,
@@ -50,6 +56,13 @@ from portia.exports.projection import (
     teacher_reference_projection_descriptor,
     teacher_reference_projection_digest,
 )
+from portia.exports.rendering import (
+    TEACHER_REFERENCE_ARTIFACT_FORMAT,
+    TEACHER_REFERENCE_ARTIFACT_MEDIA_TYPE,
+    TEACHER_REFERENCE_RENDERER_ID,
+    TeacherReferenceHtmlRenderer,
+    TeacherReferenceRenderedArtifact,
+)
 
 __all__ = [
     "TeacherReferenceExportScope",
@@ -59,6 +72,15 @@ __all__ = [
     "TeacherReferenceSourceObservation",
     "TeacherReferenceSourceRef",
     "TeacherReferenceSourceRole",
+    "EXPORT_SOURCE_INVENTORY_ALGORITHM",
+    "TeacherReferenceSourceInventory",
+    "TeacherReferenceSourceInventoryService",
+    "teacher_reference_source_inventory_digest",
+    "TEACHER_REFERENCE_ARTIFACT_FORMAT",
+    "TEACHER_REFERENCE_ARTIFACT_MEDIA_TYPE",
+    "TEACHER_REFERENCE_RENDERER_ID",
+    "TeacherReferenceHtmlRenderer",
+    "TeacherReferenceRenderedArtifact",
     "PROJECTION_DECISION_ALGORITHM",
     "TeacherReferenceDispositionSummary",
     "TeacherReferenceManualResolution",
