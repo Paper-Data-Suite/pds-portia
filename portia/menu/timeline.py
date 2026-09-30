@@ -6,7 +6,7 @@ from collections import Counter
 from dataclasses import dataclass
 from pathlib import Path
 
-from portia.menu.context import MenuSessionContext
+from portia.menu.context import MenuSessionContext, WorkKind
 from portia.menu.navigation import (
     NavigationChoice,
     PortiaMenuChoice,
@@ -276,7 +276,15 @@ def _view_current_timeline(root: Path, student: StudentOption) -> None:
     )
 
 
-def _open_current_work(root: Path, student: StudentOption) -> None:
+def _open_current_work(
+    state: MenuSessionContext,
+    root: Path,
+    student: StudentOption,
+) -> None:
+    from portia.menu.teacher_reference_export import (
+        launch_teacher_reference_work_menu,
+    )
+
     result = student_timeline_result(root, student, history=False)
     options = _work_options(result.works)
     if not options:
@@ -298,14 +306,40 @@ def _open_current_work(root: Path, student: StudentOption) -> None:
             "production student-view service. Display labels are not lookup authority."
         ),
     )
-    _browse_entries(
+    work_kind: WorkKind
+    if selected.work.work_ref.work_kind == "event":
+        work_kind = "event"
+    elif selected.work.work_ref.work_kind == "support_process":
+        work_kind = "support_process"
+    else:
+        raise PortiaLocalValidationError(
+            "current work has an unsupported export work kind"
+        )
+
+    state.remember_work(
+        class_id=selected.work.work_ref.class_id,
+        work_kind=work_kind,
+        work_id=selected.work.work_ref.work_id,
+    )
+
+    def show_current() -> None:
+        _browse_entries(
+            student,
+            selected.work.current_items,
+            title="View Timeline — Current Work",
+            help_text=(
+                "This screen contains only the current privacy-projected entries for "
+                "the selected exact work. Related work is not merged into this work "
+                "item. Back returns to the selected-work actions."
+            ),
+        )
+
+    launch_teacher_reference_work_menu(
+        state,
+        root,
         student,
-        selected.work.current_items,
-        title="View Timeline — Current Work",
-        help_text=(
-            "This screen contains only the current privacy-projected entries for the "
-            "selected exact work. Related work is not merged into this work item."
-        ),
+        selected.work,
+        show_current=show_current,
     )
 
 
@@ -366,7 +400,7 @@ def _student_view_menu(
             _view_current_timeline(root, student)
             continue
         if raw == "2":
-            _open_current_work(root, student)
+            _open_current_work(state, root, student)
             continue
         if raw == "3":
             _view_history(root, student)
