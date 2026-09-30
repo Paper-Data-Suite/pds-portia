@@ -475,9 +475,10 @@ def launch_teacher_reference_work_menu(
             print_menu_header("View Timeline — Teacher Reference Help")
             print(
                 "A teacher-reference export is a deliberate local artifact for your "
-                "own reference. It is not an official institutional record and does "
-                "not by itself authorize disclosure, sharing, delivery, filing, or "
-                "receipt."
+                "own reference. It is not an official record, disclosure "
+                "authorization, delivery record, or institutional filing. Creating "
+                "it does not by itself authorize disclosure, delivery, filing, "
+                "sharing, or receipt."
             )
             print(
                 "Whole-work export uses teacher_current scope. The selected-student "

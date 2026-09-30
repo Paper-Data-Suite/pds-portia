@@ -206,6 +206,45 @@ REQUIRED_SDIST_FILES = {
 }
 
 
+_ISSUE51_REQUIRED_RUNTIME_FILES = {
+    "portia/exports/__init__.py",
+    "portia/exports/policy.py",
+    "portia/exports/discovery.py",
+    "portia/exports/projection.py",
+    "portia/exports/inventory.py",
+    "portia/exports/rendering.py",
+    "portia/exports/preparation.py",
+    "portia/exports/execution.py",
+    "portia/exports/recovery.py",
+    "portia/exports/history.py",
+    "portia/menu/teacher_reference_export.py",
+}
+REQUIRED_RUNTIME_FILES.update(_ISSUE51_REQUIRED_RUNTIME_FILES)
+REQUIRED_SDIST_FILES.update(
+    _ISSUE51_REQUIRED_RUNTIME_FILES
+    | {
+        "CHANGELOG.md",
+        "docs/README.md",
+        "docs/teacher-reference-exports.md",
+        "docs/validation/issue-51-acceptance-matrix.md",
+        "docs/validation/issue-51-bounded-deliberate-local-exports-validation.md",
+        "scripts/check_issue51_package.py",
+        "scripts/smoke_test_issue51_teacher_reference_export_wheel.py",
+        "scripts/validate_teacher_reference_exports.py",
+        "tests/test_issue51_acceptance_matrix.py",
+        "tests/test_issue51_qualification.py",
+        "tests/test_teacher_reference_export_policy.py",
+        "tests/test_teacher_reference_export_discovery.py",
+        "tests/test_teacher_reference_export_projection.py",
+        "tests/test_teacher_reference_export_rendering.py",
+        "tests/test_teacher_reference_export_preparation.py",
+        "tests/test_teacher_reference_export_execution.py",
+        "tests/test_teacher_reference_export_recovery_history.py",
+        "tests/test_teacher_menu_teacher_reference_export.py",
+    }
+)
+
+
 def _unsafe_path(name: str) -> bool:
     path = PurePosixPath(name)
     return path.is_absolute() or any(part in {"", ".", ".."} for part in path.parts)

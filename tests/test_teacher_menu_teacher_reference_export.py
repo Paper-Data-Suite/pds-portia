@@ -318,7 +318,7 @@ def test_contextual_help_explains_export_boundary(
     )
 
     output = capsys.readouterr().out
-    assert "not an official institutional record" in output
+    assert "not an official record" in output
     assert "does not by itself authorize disclosure" in output
     assert "does not create a student-global dossier" in output
     assert "type EXPORT exactly" in output
