@@ -42,6 +42,16 @@ from portia.exports.policy import (
     teacher_reference_policy_descriptor,
     teacher_reference_policy_digest,
 )
+from portia.exports.preparation import (
+    TEACHER_REFERENCE_AUTHORIZATION_SCOPE_ID,
+    TEACHER_REFERENCE_PREPARATION_ID,
+    TEACHER_REFERENCE_PREPARATION_VERSION,
+    TeacherReferenceExportPreparation,
+    TeacherReferenceExportPreparationService,
+    TeacherReferenceExportPreview,
+    TeacherReferenceGenerationAuthorization,
+    TeacherReferencePreviewManualDecision,
+)
 from portia.exports.projection import (
     PROJECTION_DECISION_ALGORITHM,
     TeacherReferenceDispositionSummary,
@@ -81,6 +91,14 @@ __all__ = [
     "TEACHER_REFERENCE_RENDERER_ID",
     "TeacherReferenceHtmlRenderer",
     "TeacherReferenceRenderedArtifact",
+    "TEACHER_REFERENCE_AUTHORIZATION_SCOPE_ID",
+    "TEACHER_REFERENCE_PREPARATION_ID",
+    "TEACHER_REFERENCE_PREPARATION_VERSION",
+    "TeacherReferenceExportPreparation",
+    "TeacherReferenceExportPreparationService",
+    "TeacherReferenceExportPreview",
+    "TeacherReferenceGenerationAuthorization",
+    "TeacherReferencePreviewManualDecision",
     "PROJECTION_DECISION_ALGORITHM",
     "TeacherReferenceDispositionSummary",
     "TeacherReferenceManualResolution",
