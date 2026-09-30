@@ -9,6 +9,16 @@ from portia.exports.discovery import (
     TeacherReferenceSourceRef,
     TeacherReferenceSourceRole,
 )
+from portia.exports.execution import (
+    TEACHER_REFERENCE_CONFIRMATION,
+    ExecutionFailureCode,
+    PreparedStateDetail,
+    TeacherReferenceExportExecutionFailure,
+    TeacherReferenceExportExecutionResult,
+    TeacherReferenceExportExecutionService,
+    TeacherReferenceExportExecutionSuccess,
+    TeacherReferencePreparedStateCheck,
+)
 from portia.exports.inventory import (
     EXPORT_SOURCE_INVENTORY_ALGORITHM,
     TeacherReferenceSourceInventory,
@@ -75,6 +85,14 @@ from portia.exports.rendering import (
 )
 
 __all__ = [
+    "TEACHER_REFERENCE_CONFIRMATION",
+    "ExecutionFailureCode",
+    "PreparedStateDetail",
+    "TeacherReferenceExportExecutionFailure",
+    "TeacherReferenceExportExecutionResult",
+    "TeacherReferenceExportExecutionService",
+    "TeacherReferenceExportExecutionSuccess",
+    "TeacherReferencePreparedStateCheck",
     "TeacherReferenceExportScope",
     "TeacherReferenceObservationState",
     "TeacherReferenceScopeDiscovery",
