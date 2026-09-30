@@ -19,6 +19,11 @@ from portia.exports.execution import (
     TeacherReferenceExportExecutionSuccess,
     TeacherReferencePreparedStateCheck,
 )
+from portia.exports.history import (
+    TeacherReferenceExportHistoryEntry,
+    TeacherReferenceExportHistoryService,
+    TeacherReferenceHistoryVerification,
+)
 from portia.exports.inventory import (
     EXPORT_SOURCE_INVENTORY_ALGORITHM,
     TeacherReferenceSourceInventory,
@@ -76,6 +81,11 @@ from portia.exports.projection import (
     teacher_reference_projection_descriptor,
     teacher_reference_projection_digest,
 )
+from portia.exports.recovery import (
+    TeacherReferenceExportRecoveryResult,
+    TeacherReferenceExportRecoveryService,
+    TeacherReferenceRecoveryCode,
+)
 from portia.exports.rendering import (
     TEACHER_REFERENCE_ARTIFACT_FORMAT,
     TEACHER_REFERENCE_ARTIFACT_MEDIA_TYPE,
@@ -93,6 +103,12 @@ __all__ = [
     "TeacherReferenceExportExecutionService",
     "TeacherReferenceExportExecutionSuccess",
     "TeacherReferencePreparedStateCheck",
+    "TeacherReferenceExportHistoryEntry",
+    "TeacherReferenceExportHistoryService",
+    "TeacherReferenceHistoryVerification",
+    "TeacherReferenceExportRecoveryResult",
+    "TeacherReferenceExportRecoveryService",
+    "TeacherReferenceRecoveryCode",
     "TeacherReferenceExportScope",
     "TeacherReferenceObservationState",
     "TeacherReferenceScopeDiscovery",
