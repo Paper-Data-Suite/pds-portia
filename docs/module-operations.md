@@ -31,6 +31,33 @@ The capability callables are lazy seams. The dedicated `portia.attention_provide
 
 This prevents installed provider discovery from becoming a hidden teacher-data access path or package-initialization dependency cycle.
 
+## Attention adapter
+
+`portia.attention_provider` is a presentation-neutral Core adapter over Issue #49's native `AttentionQueryService`; it is not a second attention engine.
+
+For each Core attention invocation, Portia captures one timezone-aware instant and converts it to the existing `ExplicitOffsetTimestamp` authority. That same `as_of` value is used for the entire native query. Core's optional `active_school_year` passes through unchanged to the native query.
+
+Request scope is exact:
+
+- no `workspace_root` returns bounded `unavailable` and does not resolve environment, saved, default, current-directory, or menu context;
+- workspace with no `class_id` maps to `PortiaAttentionScope.workspace_scope()`;
+- an explicit `class_id` maps only to `PortiaAttentionScope.class_scope(class_id)` and never widens to workspace scope.
+
+Native Issue #49 summaries remain authoritative for code, label, and count. The shared report exposes only the Core-bounded projection. Exact class/work context is added only when it is truthful for every contributor to that summary. Multi-class or multi-work summaries omit false representative context.
+
+Native partial/unavailable messages are not copied across the boundary. The adapter emits a fixed Portia-owned Core notice vocabulary:
+
+```text
+portia_attention_partial
+portia_attention_unavailable
+```
+
+If a native count exceeds Core's shared count bound, the adapter does not clamp or reinterpret it. That summary is omitted and the shared evaluation is marked partial. Unsupported future native attention codes fail closed rather than being inferred by substring or heuristic.
+
+Unexpected implementation exceptions are not converted into empty attention. They cross the provider boundary so Core can classify `module_operations.provider_failed` without exposing Portia exception text.
+
+Owner-action references are intentionally deferred to Slice 3. Slice 2 projects attention facts only.
+
 ## Ownership boundaries
 
 The operations entry point is separate from Portia's existing launcher:
@@ -51,4 +78,4 @@ The exact Core release used for final Issue #52 qualification is a release-evide
 
 ## Slice status
 
-Slice 1 establishes only the profile/discovery boundary and lazy callable seams. Native #49 attention projection, Portia readiness semantics, owner-action mapping, installed-wheel acceptance, and closeout qualification are implemented in later Issue #52 slices.
+Slices 1-2 establish the profile/discovery boundary, lazy callable seams, and native #49 attention projection. Owner-action mapping, Portia readiness semantics, installed-wheel acceptance, and closeout qualification are implemented in later Issue #52 slices.
