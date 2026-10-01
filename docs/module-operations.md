@@ -56,7 +56,26 @@ If a native count exceeds Core's shared count bound, the adapter does not clamp 
 
 Unexpected implementation exceptions are not converted into empty attention. They cross the provider boundary so Core can classify `module_operations.provider_failed` without exposing Portia exception text.
 
-Owner-action references are intentionally deferred to Slice 3. Slice 2 projects attention facts only.
+### Owner-action references
+
+Each projected attention summary carries one stable opaque Portia-owned `ModuleOwnerActionRef`. The closed mapping is:
+
+```text
+portia_follow_up_due / portia_follow_up_overdue
+  -> open_complete_follow_up
+portia_review_incomplete
+  -> open_add_information
+portia_support_process_review_due / portia_support_process_review_overdue /
+portia_support_process_dependency_attention
+  -> open_manage_support
+portia_integrity_conflict / portia_integrity_review_required /
+portia_recovery_required / portia_quarantine_active / portia_derived_state_stale
+  -> open_advanced_tools
+```
+
+These values are interoperability identity only. They are not commands, URLs, filesystem paths, callables, serialized menu state, or execution payloads. Issue #52 does not execute owner actions.
+
+The mapping lives in the presentation-neutral attention package. The #50 teacher menu derives its existing routine route table from the same action authority, so menu routing and shared Core projection cannot silently drift while the Core adapter remains independent of `portia.menu`.
 
 ## Ownership boundaries
 
@@ -78,4 +97,4 @@ The exact Core release used for final Issue #52 qualification is a release-evide
 
 ## Slice status
 
-Slices 1-2 establish the profile/discovery boundary, lazy callable seams, and native #49 attention projection. Owner-action mapping, Portia readiness semantics, installed-wheel acceptance, and closeout qualification are implemented in later Issue #52 slices.
+Slices 1-3 establish the profile/discovery boundary, lazy callable seams, native #49 attention projection, and shared Portia-owned action identity. Portia readiness semantics, installed-wheel acceptance, and closeout qualification are implemented in later Issue #52 slices.

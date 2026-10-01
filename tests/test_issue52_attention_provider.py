@@ -201,7 +201,9 @@ def test_native_summary_projects_exact_count_label_class_and_work(
     assert summary.work_ref.module_id == "portia"
     assert summary.work_ref.class_id == "class_a"
     assert summary.work_ref.work_id == "evt_attention"
-    assert summary.action is None
+    assert summary.action is not None
+    assert summary.action.module_id == "portia"
+    assert summary.action.action_id == "open_add_information"
 
 
 def test_workspace_multi_class_summary_omits_false_context(

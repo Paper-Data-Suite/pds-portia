@@ -1,5 +1,11 @@
 """Native read-only attention contracts for Portia."""
 
+from portia.attention.actions import (
+    PORTIA_ATTENTION_ACTION_ID_BY_CODE,
+    PORTIA_ATTENTION_ACTION_IDS,
+    PortiaAttentionActionId,
+    require_portia_attention_action_id,
+)
 from portia.attention.models import (
     PORTIA_ATTENTION_CONTRACT_VERSION,
     PORTIA_ATTENTION_PARTIAL_NOTICE,
@@ -45,6 +51,8 @@ __all__ = [
     "ATTENTION_CLASSES",
     "ATTENTION_DEFINITION_BY_CODE",
     "ATTENTION_DEFINITIONS",
+    "PORTIA_ATTENTION_ACTION_ID_BY_CODE",
+    "PORTIA_ATTENTION_ACTION_IDS",
     "PORTIA_ATTENTION_CONTRACT_VERSION",
     "PORTIA_ATTENTION_PARTIAL_NOTICE",
     "PORTIA_ATTENTION_UNAVAILABLE_NOTICE",
@@ -58,6 +66,7 @@ __all__ = [
     "FollowUpScheduleQueryService",
     "OpaqueAttentionSourceKind",
     "OpaqueAttentionSourceRef",
+    "PortiaAttentionActionId",
     "PortiaAttentionContext",
     "PortiaAttentionDefinition",
     "PortiaAttentionItem",
@@ -74,4 +83,5 @@ __all__ = [
     "classify_follow_up_timing",
     "require_attention_class",
     "require_attention_definition",
+    "require_portia_attention_action_id",
 ]

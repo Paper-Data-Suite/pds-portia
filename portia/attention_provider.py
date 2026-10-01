@@ -12,10 +12,12 @@ from pds_core.module_operations import (
     ModuleAttentionSummary,
     ModuleOperationsNotice,
     ModuleOperationsRequest,
+    ModuleOwnerActionRef,
 )
 from pds_core.routing_models import ModuleWorkRef
 
 from portia.attention import (
+    PORTIA_ATTENTION_ACTION_ID_BY_CODE,
     PORTIA_ATTENTION_PARTIAL_NOTICE,
     PORTIA_ATTENTION_UNAVAILABLE_NOTICE,
     AttentionQueryService,
@@ -24,6 +26,7 @@ from portia.attention import (
     PortiaAttentionQuery,
     PortiaAttentionReport,
     PortiaAttentionScope,
+    require_portia_attention_action_id,
 )
 from portia.models.common import ExplicitOffsetTimestamp
 from portia.models.references import ExactPortiaWorkRef
@@ -32,19 +35,7 @@ from portia.pds_operations import PORTIA_MODULE_ID
 AttentionClock = Callable[[], datetime]
 
 _KNOWN_NATIVE_ATTENTION_CODES: Final[frozenset[str]] = frozenset(
-    {
-        "portia_follow_up_due",
-        "portia_follow_up_overdue",
-        "portia_review_incomplete",
-        "portia_integrity_conflict",
-        "portia_integrity_review_required",
-        "portia_recovery_required",
-        "portia_quarantine_active",
-        "portia_derived_state_stale",
-        "portia_support_process_review_due",
-        "portia_support_process_review_overdue",
-        "portia_support_process_dependency_attention",
-    }
+    PORTIA_ATTENTION_ACTION_ID_BY_CODE
 )
 
 _NOTICE_SUMMARIES: Final[dict[str, str]] = {
@@ -172,6 +163,13 @@ def _shared_context(
     return class_id, work_ref
 
 
+def _owner_action(code: str) -> ModuleOwnerActionRef:
+    return ModuleOwnerActionRef(
+        module_id=PORTIA_MODULE_ID,
+        action_id=require_portia_attention_action_id(code),
+    )
+
+
 def _project_native_report(
     native: PortiaAttentionReport,
     request: ModuleOperationsRequest,
@@ -208,6 +206,7 @@ def _project_native_report(
                 count=summary.count,
                 class_id=class_id,
                 work_ref=work_ref,
+                action=_owner_action(summary.code),
             )
         )
 
