@@ -512,6 +512,29 @@ operation recovery, privacy safety, or foreign-custody truth.
 
 Issue #22 does not add a runtime application or a new ADR.
 
+### Issue #51 current implementation
+
+Issue #51 adds Portia's first production bounded deliberate local teacher-reference
+export workflow. One exact current Event@2 or Support Process@1 can be projected
+for `teacher_current` reference or, when an exact focal participant applies, for
+`participant_specific` reference.
+
+The workflow uses a closed fail-closed privacy policy, explicit include-exact/omit
+manual review, exact contributing-source inventory, deterministic self-contained
+HTML, zero-write preview, an exact preparation fingerprint, and explicit `EXPORT`
+confirmation. Execution revalidates the reviewed state and then uses the accepted
+Issue #88 `operation_journal@4` / `operation_lock@3` persistence and recovery path.
+
+Exports are immutable local teacher references. Generation is not disclosure,
+delivery, receipt, filing, or creation of an official institutional record. The
+workflow does not create a student-global dossier, live-enrich from Core roster or
+Actor Directory data, depend on sibling PDS modules, or provide an overwrite path.
+Verified work-scoped export history remains read-only and does not infer the newest
+artifact to be current or official.
+
+See `docs/teacher-reference-exports.md` and the Issue #51 validation records under
+`docs/validation/`.
+
 ## Product Position
 
 Portia is designed as:
