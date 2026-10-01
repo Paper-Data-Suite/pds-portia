@@ -25,6 +25,9 @@ classifiers = [
 [project.scripts]
 portia = "portia.cli:main"
 
+[project.entry-points."paper_data_suite.module_operations"]
+portia = "portia.pds_operations:get_module_operations_profile"
+
 [project.urls]
 Documentation = "https://github.com/Paper-Data-Suite/pds-portia/tree/main/docs"
 Repository = "https://github.com/Paper-Data-Suite/pds-portia"

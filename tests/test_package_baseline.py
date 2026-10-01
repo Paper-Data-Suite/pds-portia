@@ -26,7 +26,11 @@ def test_console_entry_point_is_bounded_to_portia_cli() -> None:
     with (ROOT / "pyproject.toml").open("rb") as handle:
         data = tomllib.load(handle)
     assert data["project"]["scripts"] == {"portia": "portia.cli:main"}
-    assert "entry-points" not in data["project"]
+    assert data["project"]["entry-points"] == {
+        "paper_data_suite.module_operations": {
+            "portia": "portia.pds_operations:get_module_operations_profile"
+        }
+    }
 
 
 def test_py_typed_marker_exists() -> None:
