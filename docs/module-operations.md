@@ -98,3 +98,22 @@ The exact Core release used for final Issue #52 qualification is a release-evide
 ## Slice status
 
 Slices 1-3 establish the profile/discovery boundary, lazy callable seams, native #49 attention projection, and shared Portia-owned action identity. Portia readiness semantics, installed-wheel acceptance, and closeout qualification are implemented in later Issue #52 slices.
+
+## Issue #52 Slice 4 — readiness provider
+
+Portia now exposes a dedicated Core v1 readiness adapter in
+`portia.readiness_provider`. Readiness is structural/contextual only: it asks
+whether Portia can meaningfully operate in the exact explicit workspace/class
+context supplied by Core.
+
+The provider never resolves an implicit workspace. Missing or uninspectable
+workspace authority is `unavailable`; a known structural blocker is
+`evaluated` with `ready=False`. Exact class readiness reuses Core's canonical
+class metadata and roster readers. A valid class does not require pre-existing
+Portia Events, Support Processes, Actors, attention, exports, or other Portia
+work.
+
+`active_school_year` is not reinterpreted as a readiness gate. Readiness also
+does not call the attention provider or translate attention, Quarantine,
+recovery, integrity, derived-state, or export history into global readiness.
+The provider performs no setup or write probe.
