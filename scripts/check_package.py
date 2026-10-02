@@ -245,6 +245,29 @@ REQUIRED_SDIST_FILES.update(
 )
 
 
+
+_ISSUE52_REQUIRED_RUNTIME_FILES = {
+    "portia/pds_operations.py",
+    "portia/attention_provider.py",
+    "portia/readiness_provider.py",
+    "portia/attention/actions.py",
+}
+REQUIRED_RUNTIME_FILES.update(_ISSUE52_REQUIRED_RUNTIME_FILES)
+REQUIRED_SDIST_FILES.update(
+    _ISSUE52_REQUIRED_RUNTIME_FILES
+    | {
+        "docs/module-operations.md",
+        "scripts/check_issue52_package.py",
+        "scripts/smoke_test_issue52_module_operations_wheel.py",
+        "tests/test_issue52_operations_profile.py",
+        "tests/test_issue52_attention_provider.py",
+        "tests/test_issue52_attention_actions.py",
+        "tests/test_issue52_readiness_provider.py",
+        "tests/test_issue52_packaging.py",
+    }
+)
+
+
 def _unsafe_path(name: str) -> bool:
     path = PurePosixPath(name)
     return path.is_absolute() or any(part in {"", ".", ".."} for part in path.parts)
@@ -334,6 +357,13 @@ def validate_wheel(path: Path) -> list[str]:
             entries = archive.read(entry_names[0]).decode("utf-8")
             if "portia = portia.cli:main" not in entries:
                 findings.append("missing portia console entry point")
+            if "[paper_data_suite.module_operations]" not in entries:
+                findings.append("missing module-operations entry-point group")
+            if (
+                "portia = portia.pds_operations:get_module_operations_profile"
+                not in entries
+            ):
+                findings.append("missing Portia module-operations entry point")
             if "paper_data_suite.modules" in entries:
                 findings.append("suite routing entry point is premature in #40")
             if "paper_data_suite.publication_producers" in entries:

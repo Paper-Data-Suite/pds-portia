@@ -117,3 +117,22 @@ work.
 does not call the attention provider or translate attention, Quarantine,
 recovery, integrity, derived-state, or export history into global readiness.
 The provider performs no setup or write probe.
+
+## Slice 5 — installed distribution boundary
+
+Issue #52 installed acceptance is qualified from the built Portia wheel rather than
+from an editable/source-tree import. The wheel must expose exactly one
+`paper_data_suite.module_operations` entry point named `portia`, preserve the
+`portia = portia.cli:main` console script, include both provider implementations
+and the shared attention-action vocabulary, and retain the declared
+`pds-core>=0.6.3,<0.7` compatibility floor.
+
+Installed interoperability is exercised against the authenticated released Core
+0.6.4 wheel. That exact closeout artifact has SHA-256
+`48cea9317f2967bdc0f2d4c14349a56677c7c3f8211f0f33978ccb1a1c75859b`.
+Using Core 0.6.4 for qualification does not by itself raise Portia's minimum Core
+dependency. The installed smoke verifies discovery, missing-context behavior,
+valid and missing exact-class readiness, native-attention projection, opaque
+owner actions, privacy-minimal shared output, provider zero-write behavior, the
+standalone `portia status` launcher, and absence of sibling PDS runtime
+dependencies.
