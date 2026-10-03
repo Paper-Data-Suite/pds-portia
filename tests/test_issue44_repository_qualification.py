@@ -94,8 +94,10 @@ def test_ci_uses_durable_repository_qualification_label() -> None:
     text = CI.read_text(encoding="utf-8")
     assert "- name: Run complete repository qualification" in text
     assert "Run complete Issue 39 qualification" not in text
-    assert 'python scripts/validate_repository.py --core-wheel "$env:PDS_CORE_WHEEL"' in text
-
+    assert 'current_core: "0.6.4"' in text
+    assert 'core: "0.6.3"' in text
+    assert '--core-wheel "$env:PDS_CORE_WHEEL"' in text
+    assert '--historical-core-wheel "$env:PDS_HISTORICAL_CORE_WHEEL"' in text
 
 def test_issue44_validation_record_documents_observed_distribution_checkpoint() -> None:
     text = ISSUE44_VALIDATION.read_text(encoding="utf-8")

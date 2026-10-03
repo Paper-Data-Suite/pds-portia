@@ -72,12 +72,10 @@ def test_issue49_ci_qualifies_windows_and_ubuntu_through_durable_path() -> None:
     assert "ubuntu-latest" in text
     assert "windows-latest" in text
     assert 'python: "3.11"' in text
+    assert 'current_core: "0.6.4"' in text
     assert 'core: "0.6.3"' in text
-    assert (
-        'python scripts/validate_repository.py --core-wheel "$env:PDS_CORE_WHEEL"'
-        in text
-    )
-
+    assert '--core-wheel "$env:PDS_CORE_WHEEL"' in text
+    assert '--historical-core-wheel "$env:PDS_HISTORICAL_CORE_WHEEL"' in text
 
 def test_issue49_repository_stage_validator_accepts_cumulative_path() -> None:
     result = subprocess.run(
