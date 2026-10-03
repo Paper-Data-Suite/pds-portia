@@ -61,9 +61,9 @@ Slice 1 records the current path families before changing any writer.
 | Work storage history | new: `.../history/storage_revisions/<bounded-token>.json`; legacy identity-heavy hierarchy remains readable | B + C + F | New technical-history leaves are fixed at 40 characters and bind record kind, record ID, and full digest. |
 | Actor root/child | `portia/actors/<actor_id>/...` | C | Opaque identity; audit history depth separately. |
 | Actor storage history | new: `.../history/storage_revisions/<bounded-token>.json`; legacy identity-heavy hierarchy remains readable | B + C + F | New technical-history leaves are fixed at 40 characters with Actor-domain separation. |
-| Operations / Quarantine / suppressions | revision directory + numeric/fixed leaf | C + fixed leaf | Structurally bounded by durable IDs but still subject to workspace depth. |
-| Derived generations | scope/projection hierarchy + `metadata.json` / `data.json` | C + fixed leaf | Fixed leaves are good; dynamic scope/projection geometry needs qualification. |
-| Teacher-reference export | `portia/exports/<pexp_id>/artifact.html` + `export.json` | C + fixed leaf | Preserve; no human filename expansion. |
+| Operations / Quarantine / suppressions | revision directory + numeric/fixed leaf | C + fixed leaf | Slice 5 characterizes normal generated-ID relative paths at 72–84 characters; no writer rewrite is justified. |
+| Derived generations | scope/projection hierarchy + `metadata.json` / `data.json` | C + fixed leaf | Slice 5 confirms this remains the canonical path-pressure outlier; representative work/class/operation metadata paths project beyond the historical 260-character reference under a 119-character workspace root. |
+| Teacher-reference export | `portia/exports/<pexp_id>/artifact.html` + `export.json` | C + fixed leaf | Slice 5 characterizes the generated-ID artifact path at 66 relative characters and confirms display/source text does not enter the path. |
 | Coordinated staging | new: `portia/.staging/<bounded-op-token>/<bounded-candidate>.candidate`; legacy target-adjacent form remains readable | B + E + F | New writes are shallow and bounded; exact legacy candidates replay in place without migration. |
 | Guarded replacement temp | `.portia-tmp-<bounded-token>.tmp` beside destination | B + E | Fixed 51-character leaf; does not repeat destination filename. |
 | Workspace-file evidence/attachment | stored workspace-relative locator | D | Preserve exact provenance; never shorten or rewrite silently. |
@@ -180,6 +180,43 @@ manufacturing an authority preference.
 
 Technical history remains exact prior-byte recovery evidence and does not become
 domain history.
+
+## Slice 5 canonical path-geometry characterization
+
+The remaining canonical families were measured with Portia's ordinary generated
+32-hex IDs and a representative 119-character deep workspace root. This is a
+regression characterization, not a universal filesystem limit.
+
+Routine workspace-level series remain shallow:
+
+```text
+operation revision              72 relative / 192 projected absolute
+quarantine revision             74 relative / 194 projected absolute
+finding-suppression revision    84 relative / 204 projected absolute
+teacher-reference artifact      66 relative / 186 projected absolute
+```
+
+These families already use durable opaque IDs plus numeric or fixed leaves.
+Changing their canonical identities would add compatibility cost without
+addressing a demonstrated amplification defect, so Slice 5 deliberately leaves
+their production writers unchanged.
+
+Derived state is materially different. Representative metadata paths measure:
+
+```text
+work scope       184 relative / 304 projected absolute
+class scope      142 relative / 262 projected absolute
+workspace scope  128 relative / 248 projected absolute
+operation scope  143 relative / 263 projected absolute
+graph scope      142 relative / 262 projected absolute
+```
+
+The 260-character figure is used only as a historical Windows/native-tooling
+pressure reference. Portia does not adopt it as a universal application maximum.
+
+The result is that derived-state serialization remains the one canonical
+Portia-owned path family requiring dedicated #92 hardening. A later slice should
+address it without rewriting existing derived paths or changing domain identity.
 
 ## Writer and reader compatibility
 

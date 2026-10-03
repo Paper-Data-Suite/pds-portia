@@ -4,6 +4,7 @@
 
 ### Added
 
+- Issue #92 canonical path-geometry characterization proving routine operation/quarantine/suppression/export paths remain shallow while identifying derived state as the remaining canonical path-pressure outlier.
 - Issue #92 bounded 40-character work/Actor technical storage-history leaves with exact legacy-history reuse and no migration.
 - Issue #92 bounded workspace-level coordinated staging with exact legacy target-adjacent replay compatibility.
 - Issue #92 bounded 51-character target-adjacent replacement temporaries that preserve guarded atomic replacement without repeating destination filenames.
