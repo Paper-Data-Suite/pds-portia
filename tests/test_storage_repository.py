@@ -7,7 +7,11 @@ import pytest
 from portia.models import parse_portia_record
 from portia.models.references import ExactPortiaWorkRef
 from portia.storage.errors import PortiaConflictError, PortiaCorruptionError
-from portia.storage.paths import work_storage_history_path
+from portia.storage.fingerprint import canonical_json_bytes
+from portia.storage.paths import (
+    legacy_work_storage_history_path,
+    work_storage_history_path,
+)
 from portia.storage.repository import PortiaRepository
 
 
@@ -66,6 +70,102 @@ def test_work_root_replacement_is_expected_state_guarded_and_preserves_prior_byt
 
     with pytest.raises(PortiaConflictError):
         repository.replace_work(work, replacement, expected=created.fingerprint)
+
+
+def test_work_replacement_reuses_exact_legacy_history_without_migration(
+    tmp_path: Path,
+) -> None:
+    repository = PortiaRepository(tmp_path)
+    work = _work_ref()
+    initial = parse_portia_record(
+        "event",
+        "2",
+        _event_wire(
+            status="draft",
+            updated_at="2026-08-26T12:00:00-04:00",
+        ),
+    )
+    created = repository.create_work(work, initial)
+    legacy = legacy_work_storage_history_path(
+        tmp_path,
+        work,
+        "event",
+        "evt_storage",
+        created.fingerprint.digest,
+    )
+    legacy.parent.mkdir(parents=True)
+    legacy.write_bytes(canonical_json_bytes(initial.to_dict()))
+
+    replacement = parse_portia_record(
+        "event",
+        "2",
+        _event_wire(
+            status="draft",
+            updated_at="2026-08-26T12:05:00-04:00",
+        ),
+    )
+    repository.replace_work(work, replacement, expected=created.fingerprint)
+
+    current = work_storage_history_path(
+        tmp_path,
+        work,
+        "event",
+        "evt_storage",
+        created.fingerprint.digest,
+    )
+    assert legacy.is_file()
+    assert not current.exists()
+    assert repository.load_work(work).record.to_dict() == replacement.to_dict()
+
+
+def test_work_replacement_fails_closed_when_current_and_legacy_history_both_exist(
+    tmp_path: Path,
+) -> None:
+    repository = PortiaRepository(tmp_path)
+    work = _work_ref()
+    initial = parse_portia_record(
+        "event",
+        "2",
+        _event_wire(
+            status="draft",
+            updated_at="2026-08-26T12:00:00-04:00",
+        ),
+    )
+    created = repository.create_work(work, initial)
+    prior = canonical_json_bytes(initial.to_dict())
+    current = work_storage_history_path(
+        tmp_path,
+        work,
+        "event",
+        "evt_storage",
+        created.fingerprint.digest,
+    )
+    legacy = legacy_work_storage_history_path(
+        tmp_path,
+        work,
+        "event",
+        "evt_storage",
+        created.fingerprint.digest,
+    )
+    current.parent.mkdir(parents=True)
+    legacy.parent.mkdir(parents=True)
+    current.write_bytes(prior)
+    legacy.write_bytes(prior)
+
+    replacement = parse_portia_record(
+        "event",
+        "2",
+        _event_wire(
+            status="draft",
+            updated_at="2026-08-26T12:05:00-04:00",
+        ),
+    )
+    with pytest.raises(PortiaCorruptionError, match="current and legacy"):
+        repository.replace_work(
+            work,
+            replacement,
+            expected=created.fingerprint,
+        )
 
 
 def test_bounded_work_and_child_enumeration_is_sorted_and_strict(

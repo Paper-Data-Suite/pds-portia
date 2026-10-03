@@ -11,12 +11,16 @@ from portia.storage.paths import (
     actor_child_path,
     actor_directory_removal_path,
     actor_record_path,
+    actor_storage_history_path,
     derived_current_path,
+    legacy_actor_storage_history_path,
+    legacy_work_storage_history_path,
     operation_current_path,
     operation_revision_path,
     resolve_workspace_relative,
     work_manifest_path,
     work_record_path,
+    work_storage_history_path,
 )
 
 
@@ -69,6 +73,78 @@ def test_canonical_work_and_actor_paths_are_deterministic(tmp_path: Path) -> Non
     )
     assert actor_directory_removal_path(tmp_path, "rmv_example") == (
         tmp_path / "portia" / "actor-directory-removals" / "rmv_example.json"
+    )
+
+
+def test_storage_history_writer_paths_are_bounded_and_legacy_paths_are_exact(
+    tmp_path: Path,
+) -> None:
+    work = _event_ref()
+    digest = "0" * 64
+
+    current_work = work_storage_history_path(
+        tmp_path,
+        work,
+        "event_participant",
+        "ep_example",
+        digest,
+    )
+    legacy_work = legacy_work_storage_history_path(
+        tmp_path,
+        work,
+        "event_participant",
+        "ep_example",
+        digest,
+    )
+    assert current_work.parent == (
+        tmp_path
+        / "classes"
+        / "class_english10_p2"
+        / "modules"
+        / "portia"
+        / "work"
+        / "evt_example"
+        / "history"
+        / "storage_revisions"
+    )
+    assert len(current_work.name) == 40
+    assert current_work.name.startswith("pt_")
+    assert current_work.name.endswith(".json")
+    assert legacy_work == (
+        current_work.parent
+        / "event_participant"
+        / "ep_example"
+        / f"{digest}.json"
+    )
+
+    current_actor = actor_storage_history_path(
+        tmp_path,
+        "actr_example",
+        "actor_contact_point",
+        "acp_example",
+        digest,
+    )
+    legacy_actor = legacy_actor_storage_history_path(
+        tmp_path,
+        "actr_example",
+        "actor_contact_point",
+        "acp_example",
+        digest,
+    )
+    assert current_actor.parent == (
+        tmp_path
+        / "portia"
+        / "actors"
+        / "actr_example"
+        / "history"
+        / "storage_revisions"
+    )
+    assert len(current_actor.name) == 40
+    assert legacy_actor == (
+        current_actor.parent
+        / "actor_contact_point"
+        / "acp_example"
+        / f"{digest}.json"
     )
 
 

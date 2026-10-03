@@ -15,6 +15,10 @@ from pds_core.routing_models import ModuleWorkRef
 from portia.models.identifiers import validate_external_id, validate_portia_id
 from portia.models.references import ExactPortiaWorkRef, PortiaWorkRef
 from portia.storage.errors import PortiaPathError
+from portia.storage.generated_paths import (
+    build_actor_storage_revision_leaf,
+    build_work_storage_revision_leaf,
+)
 
 
 def _work_model(work: PortiaWorkRef | ExactPortiaWorkRef) -> ModuleWorkRef:
@@ -49,6 +53,18 @@ def work_record_path(
     )
 
 
+def _validate_storage_history_identity(
+    record_kind: str,
+    record_id: str,
+    digest: str,
+) -> tuple[str, str, str]:
+    kind = validate_external_id(record_kind, "record_kind")
+    identifier = validate_external_id(record_id, "record_id")
+    if len(digest) != 64 or any(ch not in "0123456789abcdef" for ch in digest):
+        raise PortiaPathError("storage-history digest must be lowercase SHA-256")
+    return kind, identifier, digest
+
+
 def work_storage_history_path(
     root: str | Path,
     work: PortiaWorkRef | ExactPortiaWorkRef,
@@ -56,14 +72,37 @@ def work_storage_history_path(
     record_id: str,
     digest: str,
 ) -> Path:
-    kind = validate_external_id(record_kind, "record_kind")
-    identifier = validate_external_id(record_id, "record_id")
-    if len(digest) != 64 or any(ch not in "0123456789abcdef" for ch in digest):
-        raise PortiaPathError("storage-history digest must be lowercase SHA-256")
+    """Return the bounded writer path for one work technical storage revision."""
+    kind, identifier, exact_digest = _validate_storage_history_identity(
+        record_kind,
+        record_id,
+        digest,
+    )
+    leaf = build_work_storage_revision_leaf(kind, identifier, exact_digest)
     return safe_module_work_descendant(
         root,
         _work_model(work),
-        f"history/storage_revisions/{kind}/{identifier}/{digest}.json",
+        f"history/storage_revisions/{leaf}",
+    )
+
+
+def legacy_work_storage_history_path(
+    root: str | Path,
+    work: PortiaWorkRef | ExactPortiaWorkRef,
+    record_kind: str,
+    record_id: str,
+    digest: str,
+) -> Path:
+    """Return the pre-Issue-92 work storage-history path for exact compatibility."""
+    kind, identifier, exact_digest = _validate_storage_history_identity(
+        record_kind,
+        record_id,
+        digest,
+    )
+    return safe_module_work_descendant(
+        root,
+        _work_model(work),
+        f"history/storage_revisions/{kind}/{identifier}/{exact_digest}.json",
     )
 
 
@@ -101,17 +140,36 @@ def actor_storage_history_path(
     record_id: str,
     digest: str,
 ) -> Path:
-    kind = validate_external_id(record_kind, "record_kind")
-    identifier = validate_external_id(record_id, "record_id")
-    if len(digest) != 64 or any(ch not in "0123456789abcdef" for ch in digest):
-        raise PortiaPathError("storage-history digest must be lowercase SHA-256")
+    """Return the bounded writer path for one Actor technical storage revision."""
+    kind, identifier, exact_digest = _validate_storage_history_identity(
+        record_kind,
+        record_id,
+        digest,
+    )
+    leaf = build_actor_storage_revision_leaf(kind, identifier, exact_digest)
+    return actor_root(root, actor_id) / "history" / "storage_revisions" / leaf
+
+
+def legacy_actor_storage_history_path(
+    root: str | Path,
+    actor_id: str,
+    record_kind: str,
+    record_id: str,
+    digest: str,
+) -> Path:
+    """Return the pre-Issue-92 Actor storage-history path for compatibility."""
+    kind, identifier, exact_digest = _validate_storage_history_identity(
+        record_kind,
+        record_id,
+        digest,
+    )
     return (
         actor_root(root, actor_id)
         / "history"
         / "storage_revisions"
         / kind
         / identifier
-        / f"{digest}.json"
+        / f"{exact_digest}.json"
     )
 
 

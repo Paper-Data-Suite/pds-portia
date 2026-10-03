@@ -58,14 +58,14 @@ Slice 1 records the current path families before changing any writer.
 | --- | --- | --- | --- |
 | Work manifest | `.../work/<work_id>/work.json` | C + fixed leaf | Preserve canonical identity and fixed leaf. |
 | Work child | `.../records/<kind>/<record_id>.json` | C | Canonical and potentially deep; qualify before changing. |
-| Work storage history | `.../history/storage_revisions/<kind>/<record_id>/<sha256>.json` | C + fixed digest | High path-pressure surface; requires explicit deep-workspace qualification. |
+| Work storage history | new: `.../history/storage_revisions/<bounded-token>.json`; legacy identity-heavy hierarchy remains readable | B + C + F | New technical-history leaves are fixed at 40 characters and bind record kind, record ID, and full digest. |
 | Actor root/child | `portia/actors/<actor_id>/...` | C | Opaque identity; audit history depth separately. |
-| Actor storage history | `.../history/storage_revisions/<kind>/<record_id>/<sha256>.json` | C + fixed digest | High path-pressure surface. |
+| Actor storage history | new: `.../history/storage_revisions/<bounded-token>.json`; legacy identity-heavy hierarchy remains readable | B + C + F | New technical-history leaves are fixed at 40 characters with Actor-domain separation. |
 | Operations / Quarantine / suppressions | revision directory + numeric/fixed leaf | C + fixed leaf | Structurally bounded by durable IDs but still subject to workspace depth. |
 | Derived generations | scope/projection hierarchy + `metadata.json` / `data.json` | C + fixed leaf | Fixed leaves are good; dynamic scope/projection geometry needs qualification. |
 | Teacher-reference export | `portia/exports/<pexp_id>/artifact.html` + `export.json` | C + fixed leaf | Preserve; no human filename expansion. |
 | Coordinated staging | new: `portia/.staging/<bounded-op-token>/<bounded-candidate>.candidate`; legacy target-adjacent form remains readable | B + E + F | New writes are shallow and bounded; exact legacy candidates replay in place without migration. |
-| Guarded replacement temp | target-adjacent temporary name derived from `path.name` | E | Temporary leaf expands with destination filename; candidate for the next #92 slice. |
+| Guarded replacement temp | `.portia-tmp-<bounded-token>.tmp` beside destination | B + E | Fixed 51-character leaf; does not repeat destination filename. |
 | Workspace-file evidence/attachment | stored workspace-relative locator | D | Preserve exact provenance; never shorten or rewrite silently. |
 | Existing persisted paths | previously accepted exact locations | F | Reader compatibility; no path migration solely for #92. |
 | Core retained scans (future v0.3 consumer) | Core-owned retained-source provenance | D/F | Treat as opaque Core provenance; historical paths may remain long. |
@@ -139,6 +139,47 @@ evidence is authoritative.
 
 Publication, fingerprint verification, idempotent replay, contradiction
 detection, containment, and exact cleanup semantics remain unchanged.
+
+## Slice 4 bounded technical storage history
+
+New work and Actor technical storage revisions no longer serialize record kind,
+record ID, and a full 64-character digest as nested filesystem components.
+
+New work history uses:
+
+```text
+<work-root>/history/storage_revisions/
+  pt_<32 lowercase hexadecimal characters>.json
+```
+
+New Actor history uses the same 40-character leaf shape beneath the Actor's
+`history/storage_revisions/` directory, with a distinct Actor domain separator.
+
+The token binds:
+
+- owner domain (`work_storage_revision` or `actor_storage_revision`);
+- exact record kind;
+- exact record ID; and
+- the full prior-byte SHA-256 digest.
+
+The full semantic identity remains recoverable from the owning canonical record
+and the caller's exact history lookup inputs; the bounded leaf is filesystem
+serialization only.
+
+Pre-Issue-92 history remains valid at:
+
+```text
+.../history/storage_revisions/<kind>/<record_id>/<sha256>.json
+```
+
+Before creating a new history artifact, repository replacement checks both the
+new and legacy exact identities. An exact legacy artifact is verified and reused
+in place without rename, copy, or migration. If both current and legacy
+identities exist for the same revision, Portia fails closed rather than
+manufacturing an authority preference.
+
+Technical history remains exact prior-byte recovery evidence and does not become
+domain history.
 
 ## Writer and reader compatibility
 

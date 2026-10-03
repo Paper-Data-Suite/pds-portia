@@ -7,10 +7,13 @@ from portia.storage.generated_paths import (
     GENERATED_PATH_TOKEN_LENGTH,
     REPLACEMENT_TEMPORARY_LEAF_LENGTH,
     STAGING_CANDIDATE_LEAF_LENGTH,
+    STORAGE_REVISION_LEAF_LENGTH,
+    build_actor_storage_revision_leaf,
     build_generated_path_token,
     build_replacement_temporary_leaf,
     build_staging_candidate_leaf,
     build_staging_operation_token,
+    build_work_storage_revision_leaf,
     validate_generated_path_token,
 )
 
@@ -127,4 +130,32 @@ def test_staging_candidate_length_does_not_expand_with_destination() -> None:
     )
     assert len(short) == STAGING_CANDIDATE_LEAF_LENGTH
     assert len(long) == STAGING_CANDIDATE_LEAF_LENGTH
+    assert short != long
+
+
+def test_storage_revision_leaves_are_bounded_and_owner_domain_separated() -> None:
+    digest = "0" * 64
+    work = build_work_storage_revision_leaf("event", "evt_storage", digest)
+    actor = build_actor_storage_revision_leaf(
+        "actor_contact_point",
+        "acp_example",
+        digest,
+    )
+    assert work == "pt_2e6035b755b19fadf7f89d25f68056ea.json"
+    assert actor == "pt_ff35a0d1de570f2f6c965455e15df548.json"
+    assert len(work) == STORAGE_REVISION_LEAF_LENGTH == 40
+    assert len(actor) == STORAGE_REVISION_LEAF_LENGTH
+    assert work != actor
+
+
+def test_storage_revision_leaf_does_not_expand_with_record_identity() -> None:
+    digest = "f" * 64
+    short = build_work_storage_revision_leaf("event", "evt_a", digest)
+    long = build_work_storage_revision_leaf(
+        "record_" + "x" * 4096,
+        "id_" + "y" * 4096,
+        digest,
+    )
+    assert len(short) == STORAGE_REVISION_LEAF_LENGTH
+    assert len(long) == STORAGE_REVISION_LEAF_LENGTH
     assert short != long

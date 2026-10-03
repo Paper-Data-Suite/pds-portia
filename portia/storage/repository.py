@@ -23,6 +23,8 @@ from portia.storage.paths import (
     actor_record_path,
     actor_storage_history_path,
     exceptional_removal_path,
+    legacy_actor_storage_history_path,
+    legacy_work_storage_history_path,
     work_collection_root,
     work_manifest_path,
     work_record_path,
@@ -105,6 +107,20 @@ def _validate_actor_owner(record: PortiaRecord, actor_id: str) -> None:
         raise PortiaOwnershipError("Actor-directory record actor_ref disagrees with canonical path")
 
 
+def _validate_existing_history(
+    history: Path,
+    *,
+    contract: str,
+    version: str,
+    prior_bytes: bytes,
+    prior_fingerprint: ContentFingerprint,
+) -> None:
+    existing_value, existing_bytes, existing_fingerprint = read_json(history)
+    if existing_fingerprint != prior_fingerprint or existing_bytes != prior_bytes:
+        raise PortiaCorruptionError("technical storage-history collision")
+    _parse_exact(contract, version, existing_value, history)
+
+
 def _preserve_prior(
     path: Path,
     *,
@@ -112,19 +128,50 @@ def _preserve_prior(
     version: str,
     expected: ContentFingerprint,
     history_path: HistoryPathBuilder,
+    legacy_history_path: HistoryPathBuilder,
 ) -> None:
     prior_value, prior_bytes, prior_fingerprint = read_json(path)
     if prior_fingerprint != expected:
         raise PortiaConflictError("expected prior state does not match current record")
     _parse_exact(contract, version, prior_value, path)
+
     history = history_path(prior_fingerprint.digest)
+    legacy = legacy_history_path(prior_fingerprint.digest)
+    history_exists = history.exists() or history.is_symlink()
+    legacy_exists = legacy.exists() or legacy.is_symlink()
+    if history_exists and legacy_exists:
+        raise PortiaCorruptionError(
+            "current and legacy technical storage-history identities both exist"
+        )
+    if history_exists:
+        _validate_existing_history(
+            history,
+            contract=contract,
+            version=version,
+            prior_bytes=prior_bytes,
+            prior_fingerprint=prior_fingerprint,
+        )
+        return
+    if legacy_exists:
+        _validate_existing_history(
+            legacy,
+            contract=contract,
+            version=version,
+            prior_bytes=prior_bytes,
+            prior_fingerprint=prior_fingerprint,
+        )
+        return
+
     try:
         exclusive_create(history, prior_bytes)
-    except PortiaConflictError as exc:
-        existing_value, existing_bytes, existing_fingerprint = read_json(history)
-        if existing_fingerprint != prior_fingerprint or existing_bytes != prior_bytes:
-            raise PortiaCorruptionError("technical storage-history collision") from exc
-        _parse_exact(contract, version, existing_value, history)
+    except PortiaConflictError:
+        _validate_existing_history(
+            history,
+            contract=contract,
+            version=version,
+            prior_bytes=prior_bytes,
+            prior_fingerprint=prior_fingerprint,
+        )
 
 
 class PortiaRepository:
@@ -245,6 +292,13 @@ class PortiaRepository:
             version=record.contract_version,
             expected=expected,
             history_path=lambda digest: work_storage_history_path(
+                self.workspace_root,
+                work,
+                record.contract,
+                work.work_id,
+                digest,
+            ),
+            legacy_history_path=lambda digest: legacy_work_storage_history_path(
                 self.workspace_root,
                 work,
                 record.contract,
@@ -475,6 +529,13 @@ class PortiaRepository:
                 record_id,
                 digest,
             ),
+            legacy_history_path=lambda digest: legacy_work_storage_history_path(
+                self.workspace_root,
+                work,
+                record.contract,
+                record_id,
+                digest,
+            ),
         )
         fingerprint = guarded_replace(
             path,
@@ -585,6 +646,13 @@ class PortiaRepository:
                 actor_id,
                 digest,
             ),
+            legacy_history_path=lambda digest: legacy_actor_storage_history_path(
+                self.workspace_root,
+                actor_id,
+                "actor",
+                actor_id,
+                digest,
+            ),
         )
         fingerprint = guarded_replace(
             path,
@@ -640,6 +708,13 @@ class PortiaRepository:
             version=record.contract_version,
             expected=expected,
             history_path=lambda digest: actor_storage_history_path(
+                self.workspace_root,
+                actor_id,
+                record.contract,
+                record_id,
+                digest,
+            ),
+            legacy_history_path=lambda digest: legacy_actor_storage_history_path(
                 self.workspace_root,
                 actor_id,
                 record.contract,

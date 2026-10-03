@@ -34,6 +34,13 @@ STAGING_CANDIDATE_LEAF_LENGTH: Final[int] = (
     GENERATED_PATH_TOKEN_LENGTH + len(STAGING_CANDIDATE_LEAF_SUFFIX)
 )
 
+WORK_STORAGE_REVISION_DOMAIN: Final[str] = "work_storage_revision"
+ACTOR_STORAGE_REVISION_DOMAIN: Final[str] = "actor_storage_revision"
+STORAGE_REVISION_LEAF_SUFFIX: Final[str] = ".json"
+STORAGE_REVISION_LEAF_LENGTH: Final[int] = (
+    GENERATED_PATH_TOKEN_LENGTH + len(STORAGE_REVISION_LEAF_SUFFIX)
+)
+
 _DOMAIN_PATTERN: Final[re.Pattern[str]] = re.compile(r"^[a-z][a-z0-9_-]*$")
 _TOKEN_PATTERN: Final[re.Pattern[str]] = re.compile(
     rf"^{re.escape(GENERATED_PATH_TOKEN_PREFIX)}"
@@ -145,3 +152,44 @@ def build_staging_candidate_leaf(
     if len(leaf) != STAGING_CANDIDATE_LEAF_LENGTH:
         raise PortiaPathError("staging candidate leaf exceeded its fixed budget")
     return leaf
+
+
+def _build_storage_revision_leaf(
+    domain: str,
+    record_kind: object,
+    record_id: object,
+    digest: object,
+) -> str:
+    token = build_generated_path_token(domain, record_kind, record_id, digest)
+    leaf = f"{token}{STORAGE_REVISION_LEAF_SUFFIX}"
+    if len(leaf) != STORAGE_REVISION_LEAF_LENGTH:
+        raise PortiaPathError("storage-revision leaf exceeded its fixed budget")
+    return leaf
+
+
+def build_work_storage_revision_leaf(
+    record_kind: object,
+    record_id: object,
+    digest: object,
+) -> str:
+    """Return one bounded work technical-storage revision leaf."""
+    return _build_storage_revision_leaf(
+        WORK_STORAGE_REVISION_DOMAIN,
+        record_kind,
+        record_id,
+        digest,
+    )
+
+
+def build_actor_storage_revision_leaf(
+    record_kind: object,
+    record_id: object,
+    digest: object,
+) -> str:
+    """Return one bounded Actor technical-storage revision leaf."""
+    return _build_storage_revision_leaf(
+        ACTOR_STORAGE_REVISION_DOMAIN,
+        record_kind,
+        record_id,
+        digest,
+    )

@@ -4,6 +4,7 @@
 
 ### Added
 
+- Issue #92 bounded 40-character work/Actor technical storage-history leaves with exact legacy-history reuse and no migration.
 - Issue #92 bounded workspace-level coordinated staging with exact legacy target-adjacent replay compatibility.
 - Issue #92 bounded 51-character target-adjacent replacement temporaries that preserve guarded atomic replacement without repeating destination filenames.
 - Issue #92 path-safety foundation with a fixed-length, domain-separated generated filesystem token and documented current-surface audit.
