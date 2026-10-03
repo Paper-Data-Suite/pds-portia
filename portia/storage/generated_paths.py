@@ -27,6 +27,13 @@ REPLACEMENT_TEMPORARY_LEAF_LENGTH: Final[int] = (
     + len(REPLACEMENT_TEMPORARY_LEAF_SUFFIX)
 )
 
+STAGING_OPERATION_DOMAIN: Final[str] = "staging_operation"
+STAGING_CANDIDATE_DOMAIN: Final[str] = "staging_candidate"
+STAGING_CANDIDATE_LEAF_SUFFIX: Final[str] = ".candidate"
+STAGING_CANDIDATE_LEAF_LENGTH: Final[int] = (
+    GENERATED_PATH_TOKEN_LENGTH + len(STAGING_CANDIDATE_LEAF_SUFFIX)
+)
+
 _DOMAIN_PATTERN: Final[re.Pattern[str]] = re.compile(r"^[a-z][a-z0-9_-]*$")
 _TOKEN_PATTERN: Final[re.Pattern[str]] = re.compile(
     rf"^{re.escape(GENERATED_PATH_TOKEN_PREFIX)}"
@@ -114,4 +121,27 @@ def build_replacement_temporary_leaf(nonce: object) -> str:
     )
     if len(leaf) != REPLACEMENT_TEMPORARY_LEAF_LENGTH:
         raise PortiaPathError("replacement temporary leaf exceeded its fixed budget")
+    return leaf
+
+
+def build_staging_operation_token(operation_id: object) -> str:
+    """Return the bounded directory token for one staging operation."""
+    return build_generated_path_token(STAGING_OPERATION_DOMAIN, operation_id)
+
+
+def build_staging_candidate_leaf(
+    operation_id: object,
+    step_id: object,
+    destination_relative_path: object,
+) -> str:
+    """Return one bounded staging leaf bound to operation, step, and destination."""
+    token = build_generated_path_token(
+        STAGING_CANDIDATE_DOMAIN,
+        operation_id,
+        step_id,
+        destination_relative_path,
+    )
+    leaf = f"{token}{STAGING_CANDIDATE_LEAF_SUFFIX}"
+    if len(leaf) != STAGING_CANDIDATE_LEAF_LENGTH:
+        raise PortiaPathError("staging candidate leaf exceeded its fixed budget")
     return leaf

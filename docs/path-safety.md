@@ -64,7 +64,7 @@ Slice 1 records the current path families before changing any writer.
 | Operations / Quarantine / suppressions | revision directory + numeric/fixed leaf | C + fixed leaf | Structurally bounded by durable IDs but still subject to workspace depth. |
 | Derived generations | scope/projection hierarchy + `metadata.json` / `data.json` | C + fixed leaf | Fixed leaves are good; dynamic scope/projection geometry needs qualification. |
 | Teacher-reference export | `portia/exports/<pexp_id>/artifact.html` + `export.json` | C + fixed leaf | Preserve; no human filename expansion. |
-| Coordinated staging | `<destination-parent>/.portia-staging/<operation_id>/<step_id>.candidate` | E | Repeats operation/step identity and deepens the destination; candidate for a later #92 slice. |
+| Coordinated staging | new: `portia/.staging/<bounded-op-token>/<bounded-candidate>.candidate`; legacy target-adjacent form remains readable | B + E + F | New writes are shallow and bounded; exact legacy candidates replay in place without migration. |
 | Guarded replacement temp | target-adjacent temporary name derived from `path.name` | E | Temporary leaf expands with destination filename; candidate for the next #92 slice. |
 | Workspace-file evidence/attachment | stored workspace-relative locator | D | Preserve exact provenance; never shorten or rewrite silently. |
 | Existing persisted paths | previously accepted exact locations | F | Reader compatibility; no path migration solely for #92. |
@@ -103,6 +103,42 @@ atomicity assumption.
 The leaf is infrastructure identity only. It is never persisted as domain or
 provenance identity, and failure cleanup remains best-effort without deleting
 the canonical destination.
+
+## Slice 3 bounded coordinated staging
+
+New coordinated byte candidates no longer inherit the destination directory
+depth. Portia stages new candidates beneath:
+
+```text
+portia/.staging/
+  pt_<operation-token>/
+    pt_<candidate-token>.candidate
+```
+
+The operation directory token is exactly 35 characters. The candidate leaf is
+exactly 45 characters and is deterministically bound to the validated operation
+ID, step ID, and exact workspace-relative destination. The full operation, step,
+and destination identities remain authoritative in the accepted Operation
+Journal and `StagedArtifact`; the filesystem tokens are infrastructure
+serialization only.
+
+The pre-Issue-92 layout remains a reader/replay compatibility surface:
+
+```text
+<destination-parent>/
+  .portia-staging/
+    <operation_id>/
+      <step_id>.candidate
+```
+
+`stage_bytes()` recognizes one exact legacy candidate and reuses it in place
+when its bytes match the journaled candidate. It does not rename, copy, or
+migrate that artifact. If both legacy and current staging identities exist for
+one operation step, Portia fails closed rather than guessing which staged
+evidence is authoritative.
+
+Publication, fingerprint verification, idempotent replay, contradiction
+detection, containment, and exact cleanup semantics remain unchanged.
 
 ## Writer and reader compatibility
 

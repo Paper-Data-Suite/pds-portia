@@ -6,8 +6,11 @@ from portia.storage.errors import PortiaPathError
 from portia.storage.generated_paths import (
     GENERATED_PATH_TOKEN_LENGTH,
     REPLACEMENT_TEMPORARY_LEAF_LENGTH,
+    STAGING_CANDIDATE_LEAF_LENGTH,
     build_generated_path_token,
     build_replacement_temporary_leaf,
+    build_staging_candidate_leaf,
+    build_staging_operation_token,
     validate_generated_path_token,
 )
 
@@ -96,3 +99,32 @@ def test_replacement_temporary_leaf_has_exact_fixed_budget() -> None:
 def test_replacement_temporary_leaf_rejects_invalid_nonce(nonce: str) -> None:
     with pytest.raises(PortiaPathError):
         build_replacement_temporary_leaf(nonce)
+
+
+def test_staging_tokens_have_stable_bounded_vectors() -> None:
+    destination = (
+        "classes/class_a/modules/portia/work/evt_a/"
+        "records/account/acc_a.json"
+    )
+    operation = build_staging_operation_token("op_test")
+    candidate = build_staging_candidate_leaf(
+        "op_test",
+        "step_test",
+        destination,
+    )
+    assert operation == "pt_dcc99bffa04701fc8e0b752e946c9a37"
+    assert candidate == "pt_6303d89e16dcca94b69851be93be9e4f.candidate"
+    assert len(operation) == GENERATED_PATH_TOKEN_LENGTH == 35
+    assert len(candidate) == STAGING_CANDIDATE_LEAF_LENGTH == 45
+
+
+def test_staging_candidate_length_does_not_expand_with_destination() -> None:
+    short = build_staging_candidate_leaf("op_test", "step_test", "a/b.json")
+    long = build_staging_candidate_leaf(
+        "op_test",
+        "step_test",
+        "deep/" + ("segment/" * 300) + "record.json",
+    )
+    assert len(short) == STAGING_CANDIDATE_LEAF_LENGTH
+    assert len(long) == STAGING_CANDIDATE_LEAF_LENGTH
+    assert short != long
