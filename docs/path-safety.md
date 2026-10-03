@@ -267,6 +267,33 @@ Metadata continues to bind the exact `data_artifact.workspace_relative_path`.
 Legacy metadata is checked against its legacy data path; newly written metadata
 is checked against its bounded v2 data path.
 
+## Slice 7 physical deep-workspace qualification
+
+The hardened source tree now includes physical filesystem qualification beneath
+a synthetic workspace root targeted at 119 absolute characters. The helper
+creates the workspace directly under the host temporary root so pytest's own
+nested test directory does not accidentally determine the geometry. If a host
+temporary root is already unusually long, the test preserves that greater
+stress rather than manufacturing a shorter path.
+
+The qualification performs real writes and readback through three representative
+flows:
+
+- coordinated staging, publication, cleanup, canonical Event replacement, and
+  bounded technical storage-history preservation;
+- operation-backed bounded derived generation installation and current reload;
+- complete reviewed teacher-reference export execution, including its operation
+  journal, staged writes, artifact, and provenance.
+
+The derived metadata artifact remains 115 workspace-relative characters in this
+qualification and reaches at least 235 absolute characters under the requested
+deep root. The tests exercise actual Python filesystem calls; they do not merely
+calculate path strings and do not inspect or alter Windows `LongPathsEnabled`.
+
+This slice intentionally changes no production writer. A failure here is a
+qualification signal requiring a focused repair rather than a reason to shorten
+unrelated canonical identities.
+
 ## Writer and reader compatibility
 
 Issue #92 follows this compatibility model wherever a writer changes:
