@@ -14,16 +14,18 @@ env:
 
 jobs:
   qualification:
-    name: Qualification (${{ matrix.os }}, Python ${{ matrix.python }}, Core ${{ matrix.core }})
+    name: Qualification (${{ matrix.os }}, Python ${{ matrix.python }}, Core ${{ matrix.current_core }}; historical ${{ matrix.core }})
     strategy:
       fail-fast: false
       matrix:
         include:
           - os: ubuntu-latest
             python: "3.11"
+            current_core: "0.6.4"
             core: "0.6.3"
           - os: windows-latest
             python: "3.11"
+            current_core: "0.6.4"
             core: "0.6.3"
 
     runs-on: ${{ matrix.os }}
@@ -35,26 +37,33 @@ jobs:
         with:
           python-version: ${{ matrix.python }}
 
-      - name: Configure Core wheel path
+      - name: Configure Core wheel paths
         shell: pwsh
         run: |
           $coreDirectory = Join-Path $env:RUNNER_TEMP "core"
           New-Item -ItemType Directory -Force -Path $coreDirectory | Out-Null
-          $coreWheel = Join-Path $coreDirectory "pds_core-${{ matrix.core }}-py3-none-any.whl"
-          "PDS_CORE_WHEEL=$coreWheel" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          $currentCoreWheel = Join-Path $coreDirectory "pds_core-${{ matrix.current_core }}-py3-none-any.whl"
+          $historicalCoreWheel = Join-Path $coreDirectory "pds_core-${{ matrix.core }}-py3-none-any.whl"
+          "PDS_CORE_WHEEL=$currentCoreWheel" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          "PDS_HISTORICAL_CORE_WHEEL=$historicalCoreWheel" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
 
-      - name: Download official Core release wheel
+      - name: Download official Core release wheels
         shell: pwsh
         run: |
           Invoke-WebRequest `
-            -Uri "https://github.com/Paper-Data-Suite/pds-core/releases/download/v${{ matrix.core }}/pds_core-${{ matrix.core }}-py3-none-any.whl" `
+            -Uri "https://github.com/Paper-Data-Suite/pds-core/releases/download/v${{ matrix.current_core }}/pds_core-${{ matrix.current_core }}-py3-none-any.whl" `
             -OutFile $env:PDS_CORE_WHEEL `
             -ErrorAction Stop
+          Invoke-WebRequest `
+            -Uri "https://github.com/Paper-Data-Suite/pds-core/releases/download/v${{ matrix.core }}/pds_core-${{ matrix.core }}-py3-none-any.whl" `
+            -OutFile $env:PDS_HISTORICAL_CORE_WHEEL `
+            -ErrorAction Stop
 
-      - name: Authenticate and install Core
+      - name: Authenticate Core wheels and install current Core
         shell: pwsh
         run: |
           python scripts/verify_core_wheel.py "$env:PDS_CORE_WHEEL"
+          python scripts/verify_core_wheel.py "$env:PDS_HISTORICAL_CORE_WHEEL"
           python -m pip install "$env:PDS_CORE_WHEEL"
 
       - name: Install Portia development dependencies
@@ -62,4 +71,7 @@ jobs:
 
       - name: Run complete repository qualification
         shell: pwsh
-        run: python scripts/validate_repository.py --core-wheel "$env:PDS_CORE_WHEEL"
+        run: |
+          python scripts/validate_repository.py `
+            --core-wheel "$env:PDS_CORE_WHEEL" `
+            --historical-core-wheel "$env:PDS_HISTORICAL_CORE_WHEEL"

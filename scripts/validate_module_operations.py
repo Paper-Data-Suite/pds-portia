@@ -279,6 +279,20 @@ def _validate_repository(root: Path) -> None:
             raise RuntimeError(
                 f"repository qualification is missing Issue #52 marker: {marker}"
             )
+
+    ci = _read(root, ".github/workflows/ci.yml")
+    _require_markers(
+        ci,
+        (
+            'current_core: "0.6.4"',
+            'core: "0.6.3"',
+            "PDS_CORE_WHEEL",
+            "PDS_HISTORICAL_CORE_WHEEL",
+            '--core-wheel "$env:PDS_CORE_WHEEL"',
+            '--historical-core-wheel "$env:PDS_HISTORICAL_CORE_WHEEL"',
+        ),
+        label="Issue #52 durable CI qualification",
+    )
     print("Portia Issue #52 repository module-operations validation passed")
 
 
