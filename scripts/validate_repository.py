@@ -1,4 +1,4 @@
-"""Run the complete Portia repository qualification through Issue #51."""
+"""Run the complete Portia repository qualification through Issue #52."""
 
 from __future__ import annotations
 
@@ -77,6 +77,15 @@ _ISSUE88_CLOSEOUT_COMPATIBILITY_MARKERS = (
 )
 
 
+# Historical source-level markers retained for the accepted Issue #51
+# mechanical validator. Current execution proceeds through Issue #52.
+_ISSUE51_CLOSEOUT_COMPATIBILITY_MARKERS = (
+    "Run the complete Portia repository qualification through Issue #51.",
+    "Issue #51 qualification requires the authenticated Core 0.6.3 wheel",
+    "Portia Issue #51 repository qualification passed",
+)
+
+
 def _run(command: list[str], root: Path) -> None:
     print(f"+ {' '.join(command)}", flush=True)
     subprocess.run(command, cwd=root, check=True)
@@ -116,16 +125,36 @@ def _core_version_from_wheel(core_wheel: Path) -> str:
     return version
 
 
-def qualify(root: Path, core_wheel: Path) -> None:
+def qualify(
+    root: Path,
+    core_wheel: Path,
+    historical_core_wheel: Path,
+) -> None:
     _validate_security_policy(root)
     expected_core_version = _core_version_from_wheel(core_wheel)
-    if expected_core_version != "0.6.3":
+    if expected_core_version != "0.6.4":
         raise ValueError(
-            "Issue #51 qualification requires the authenticated Core 0.6.3 wheel; "
+            "Issue #52 qualification requires the authenticated Core 0.6.4 wheel; "
             f"received {expected_core_version}"
+        )
+    expected_historical_core_version = _core_version_from_wheel(
+        historical_core_wheel
+    )
+    if expected_historical_core_version != "0.6.3":
+        raise ValueError(
+            "Historical Portia wheel smokes require the authenticated Core 0.6.3 "
+            f"wheel; received {expected_historical_core_version}"
         )
     _run(
         [sys.executable, "scripts/verify_core_wheel.py", str(core_wheel.resolve())],
+        root,
+    )
+    _run(
+        [
+            sys.executable,
+            "scripts/verify_core_wheel.py",
+            str(historical_core_wheel.resolve()),
+        ],
         root,
     )
     _run(
@@ -193,6 +222,15 @@ def qualify(root: Path, core_wheel: Path) -> None:
     )
     _run([sys.executable, "scripts/validate_issue88_deliberate_export.py", "--stage", "repository"], root)
     _run([sys.executable, "scripts/validate_teacher_reference_exports.py", "--stage", "repository"], root)
+    _run(
+        [
+            sys.executable,
+            "scripts/validate_module_operations.py",
+            "--stage",
+            "repository",
+        ],
+        root,
+    )
     _run([sys.executable, "-m", "pytest"], root)
     _run([sys.executable, "-m", "ruff", "check", "."], root)
     _run([sys.executable, "-m", "mypy"], root)
@@ -219,6 +257,7 @@ def qualify(root: Path, core_wheel: Path) -> None:
     _run([sys.executable, "scripts/check_issue50_package.py", "dist"], root)
     _run([sys.executable, "scripts/check_issue88_package.py", "dist"], root)
     _run([sys.executable, "scripts/check_issue51_package.py", "dist"], root)
+    _run([sys.executable, "scripts/check_issue52_package.py", "dist"], root)
 
     wheels = sorted((root / "dist").glob("pds_portia-*.whl"))
     if len(wheels) != 1:
@@ -228,7 +267,7 @@ def qualify(root: Path, core_wheel: Path) -> None:
             sys.executable,
             "scripts/smoke_test_wheel.py",
             str(wheels[0]),
-            str(core_wheel.resolve()),
+            str(historical_core_wheel.resolve()),
         ],
         root,
     )
@@ -237,7 +276,7 @@ def qualify(root: Path, core_wheel: Path) -> None:
             sys.executable,
             "scripts/smoke_test_issue41_wheel.py",
             str(wheels[0]),
-            str(core_wheel.resolve()),
+            str(historical_core_wheel.resolve()),
         ],
         root,
     )
@@ -246,7 +285,7 @@ def qualify(root: Path, core_wheel: Path) -> None:
             sys.executable,
             "scripts/smoke_test_issue42_wheel.py",
             str(wheels[0]),
-            str(core_wheel.resolve()),
+            str(historical_core_wheel.resolve()),
         ],
         root,
     )
@@ -255,7 +294,7 @@ def qualify(root: Path, core_wheel: Path) -> None:
             sys.executable,
             "scripts/smoke_test_issue43_wheel.py",
             str(wheels[0]),
-            str(core_wheel.resolve()),
+            str(historical_core_wheel.resolve()),
         ],
         root,
     )
@@ -264,7 +303,7 @@ def qualify(root: Path, core_wheel: Path) -> None:
             sys.executable,
             "scripts/smoke_test_issue44_wheel.py",
             str(wheels[0]),
-            str(core_wheel.resolve()),
+            str(historical_core_wheel.resolve()),
         ],
         root,
     )
@@ -273,7 +312,7 @@ def qualify(root: Path, core_wheel: Path) -> None:
             sys.executable,
             "scripts/smoke_test_issue45_wheel.py",
             str(wheels[0]),
-            str(core_wheel.resolve()),
+            str(historical_core_wheel.resolve()),
         ],
         root,
     )
@@ -282,7 +321,7 @@ def qualify(root: Path, core_wheel: Path) -> None:
             sys.executable,
             "scripts/smoke_test_issue46_wheel.py",
             str(wheels[0]),
-            str(core_wheel.resolve()),
+            str(historical_core_wheel.resolve()),
         ],
         root,
     )
@@ -291,7 +330,7 @@ def qualify(root: Path, core_wheel: Path) -> None:
             sys.executable,
             "scripts/smoke_test_issue48_wheel.py",
             str(wheels[0]),
-            str(core_wheel.resolve()),
+            str(historical_core_wheel.resolve()),
         ],
         root,
     )
@@ -300,7 +339,7 @@ def qualify(root: Path, core_wheel: Path) -> None:
             sys.executable,
             "scripts/smoke_test_issue49_wheel.py",
             str(wheels[0]),
-            str(core_wheel.resolve()),
+            str(historical_core_wheel.resolve()),
         ],
         root,
     )
@@ -309,7 +348,7 @@ def qualify(root: Path, core_wheel: Path) -> None:
             sys.executable,
             "scripts/smoke_test_issue50_teacher_menu_wheel.py",
             str(wheels[0]),
-            str(core_wheel.resolve()),
+            str(historical_core_wheel.resolve()),
         ],
         root,
     )
@@ -318,7 +357,7 @@ def qualify(root: Path, core_wheel: Path) -> None:
             sys.executable,
             "scripts/smoke_test_issue88_deliberate_export_wheel.py",
             str(wheels[0]),
-            str(core_wheel.resolve()),
+            str(historical_core_wheel.resolve()),
         ],
         root,
     )
@@ -326,6 +365,15 @@ def qualify(root: Path, core_wheel: Path) -> None:
         [
             sys.executable,
             "scripts/smoke_test_issue51_teacher_reference_export_wheel.py",
+            str(wheels[0]),
+            str(historical_core_wheel.resolve()),
+        ],
+        root,
+    )
+    _run(
+        [
+            sys.executable,
+            "scripts/smoke_test_issue52_module_operations_wheel.py",
             str(wheels[0]),
             str(core_wheel.resolve()),
         ],
@@ -338,14 +386,20 @@ def qualify(root: Path, core_wheel: Path) -> None:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--core-wheel", required=True, type=Path)
+    parser.add_argument(
+        "--historical-core-wheel",
+        required=True,
+        type=Path,
+        help="authenticated Core 0.6.3 wheel for frozen historical smokes",
+    )
     args = parser.parse_args()
     root = Path(__file__).resolve().parents[1]
     try:
-        qualify(root, args.core_wheel)
+        qualify(root, args.core_wheel, args.historical_core_wheel)
     except (OSError, RuntimeError, ValueError, subprocess.CalledProcessError) as exc:
         print(f"Repository qualification failed: {exc}", file=sys.stderr)
         return 1
-    print("Portia Issue #51 repository qualification passed")
+    print("Portia Issue #52 repository qualification passed")
     return 0
 
 

@@ -459,7 +459,9 @@ def findings(root: Path) -> list[str]:
         text = ci.read_text(encoding="utf-8")
         for phrase in (
             "- name: Run complete repository qualification",
-            'python scripts/validate_repository.py --core-wheel "$env:PDS_CORE_WHEEL"',
+            "python scripts/validate_repository.py",
+            '--core-wheel "$env:PDS_CORE_WHEEL"',
+            '--historical-core-wheel "$env:PDS_HISTORICAL_CORE_WHEEL"',
         ):
             if phrase not in text:
                 errors.append(f"CI missing durable repository qualification path: {phrase}")

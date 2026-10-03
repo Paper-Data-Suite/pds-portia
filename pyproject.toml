@@ -25,6 +25,9 @@ classifiers = [
 [project.scripts]
 portia = "portia.cli:main"
 
+[project.entry-points."paper_data_suite.module_operations"]
+portia = "portia.pds_operations:get_module_operations_profile"
+
 [project.urls]
 Documentation = "https://github.com/Paper-Data-Suite/pds-portia/tree/main/docs"
 Repository = "https://github.com/Paper-Data-Suite/pds-portia"
@@ -75,8 +78,11 @@ files = [
     "scripts/check_package.py",
     "scripts/check_issue88_package.py",
     "scripts/check_issue51_package.py",
+    "scripts/check_issue52_package.py",
+    "scripts/validate_module_operations.py",
     "scripts/smoke_test_issue88_deliberate_export_wheel.py",
     "scripts/smoke_test_issue51_teacher_reference_export_wheel.py",
+    "scripts/smoke_test_issue52_module_operations_wheel.py",
     "scripts/smoke_test_wheel.py",
     "scripts/repair_pip_residue.py",
     "scripts/validate_identity.py",

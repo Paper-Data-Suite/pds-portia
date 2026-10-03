@@ -9,9 +9,11 @@ from typing import Final, Literal, TypeAlias
 
 from portia.attention import (
     ATTENTION_DEFINITION_BY_CODE,
+    PORTIA_ATTENTION_ACTION_ID_BY_CODE,
     PORTIA_ATTENTION_PARTIAL_NOTICE,
     AttentionQueryService,
     OpaqueAttentionSourceRef,
+    PortiaAttentionActionId,
     PortiaAttentionItem,
     PortiaAttentionQuery,
     PortiaAttentionReport,
@@ -52,18 +54,18 @@ AttentionRoute: TypeAlias = Literal[
     "advanced_inspection",
 ]
 
+_ATTENTION_ROUTE_BY_ACTION_ID: Final[
+    dict[PortiaAttentionActionId, AttentionRoute]
+] = {
+    "open_complete_follow_up": "complete_follow_up",
+    "open_add_information": "add_information",
+    "open_manage_support": "manage_support",
+    "open_advanced_tools": "advanced_inspection",
+}
+
 ATTENTION_ROUTE_BY_CODE: Final[dict[str, AttentionRoute]] = {
-    "portia_follow_up_due": "complete_follow_up",
-    "portia_follow_up_overdue": "complete_follow_up",
-    "portia_review_incomplete": "add_information",
-    "portia_integrity_conflict": "advanced_inspection",
-    "portia_integrity_review_required": "advanced_inspection",
-    "portia_recovery_required": "advanced_inspection",
-    "portia_quarantine_active": "advanced_inspection",
-    "portia_derived_state_stale": "advanced_inspection",
-    "portia_support_process_review_due": "manage_support",
-    "portia_support_process_review_overdue": "manage_support",
-    "portia_support_process_dependency_attention": "manage_support",
+    code: _ATTENTION_ROUTE_BY_ACTION_ID[action_id]
+    for code, action_id in PORTIA_ATTENTION_ACTION_ID_BY_CODE.items()
 }
 
 _ROUTE_LABELS: Final[dict[AttentionRoute, str]] = {

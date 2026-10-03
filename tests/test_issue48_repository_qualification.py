@@ -69,14 +69,17 @@ def test_issue48_repository_qualification_retains_full_repo_gates() -> None:
 
 def test_issue48_ci_qualifies_windows_and_ubuntu_through_durable_path() -> None:
     text = CI.read_text(encoding="utf-8")
-    assert "ubuntu-latest" in text
-    assert "windows-latest" in text
-    assert 'python: "3.11"' in text
-    assert 'core: "0.6.3"' in text
-    assert (
-        'python scripts/validate_repository.py --core-wheel "$env:PDS_CORE_WHEEL"'
-        in text
-    )
+    for required in (
+        "ubuntu-latest",
+        "windows-latest",
+        'python: "3.11"',
+        'core: "0.6.3"',
+        'current_core: "0.6.4"',
+        "python scripts/validate_repository.py",
+        '--core-wheel "$env:PDS_CORE_WHEEL"',
+        '--historical-core-wheel "$env:PDS_HISTORICAL_CORE_WHEEL"',
+    ):
+        assert required in text
 
 
 def test_issue48_repository_stage_validator_accepts_cumulative_path() -> None:
