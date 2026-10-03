@@ -4,18 +4,26 @@ Portia documentation is organized around public architecture/contracts, producti
 
 For the v0.2 teacher-reference export workflow, start with:
 
-- `teacher-reference-exports.md` — supported purpose/scope, privacy projection, manual review, preview/confirmation, Issue #88 persistence/recovery, and immutable history;
-- `validation/issue-51-acceptance-matrix.md` — mapping of the 98 Issue #51 acceptance obligations to executable evidence;
-- `validation/issue-51-bounded-deliberate-local-exports-validation.md` — Issue #51 closeout and distribution qualification contract;
-- `decisions/0017-*.md` and `decisions/0020-*.md` — governing privacy/export and coordinated-operation architecture.
+- `teacher-reference-exports.md` â€” supported purpose/scope, privacy projection, manual review, preview/confirmation, Issue #88 persistence/recovery, and immutable history;
+- `validation/issue-51-acceptance-matrix.md` â€” mapping of the 98 Issue #51 acceptance obligations to executable evidence;
+- `validation/issue-51-bounded-deliberate-local-exports-validation.md` â€” Issue #51 closeout and distribution qualification contract;
+- `decisions/0017-*.md` and `decisions/0020-*.md` â€” governing privacy/export and coordinated-operation architecture.
 
 For the Core module-operations interoperability boundary, see:
 
-- `module-operations.md` — Portia's Core v1 operations profile, metadata-safe discovery boundary, provider ownership, and Issue #52 slice status.
+- `module-operations.md` â€” Portia's Core v1 operations profile, metadata-safe discovery boundary, provider ownership, and Issue #52 slice status.
 
 For Core module-operations integration, also see:
 
-- `module-operations.md` — profile registration, native-attention projection, owner actions, structural readiness, privacy/read-only boundaries, and installed interoperability;
-- `validation/issue-52-portia-module-operations-validation.md` — Issue #52 closeout, dual-Core qualification boundary, package/installed evidence, and authoritative repository command.
+- `module-operations.md` â€” profile registration, native-attention projection, owner actions, structural readiness, privacy/read-only boundaries, and installed interoperability;
+- `validation/issue-52-portia-module-operations-validation.md` â€” Issue #52 closeout, dual-Core qualification boundary, package/installed evidence, and authoritative repository command.
 
 The repository's `README.md` remains the broad project overview. Issue-specific validation records under `docs/validation/` are evidence for their named checkpoints and do not supersede newer accepted architecture.
+
+## Path safety
+
+For Portia-owned filesystem path policy and the Issue #92 audit, see:
+
+- `path-safety.md` â€” domain identity vs. filesystem infrastructure identity,
+  bounded generated-token policy, current path-surface classification, legacy
+  reader compatibility, and the future Core-retained-source byte-read rule.

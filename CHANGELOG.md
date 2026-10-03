@@ -4,6 +4,7 @@
 
 ### Added
 
+- Issue #92 path-safety foundation with a fixed-length, domain-separated generated filesystem token and documented current-surface audit.
 - Bounded deliberate local teacher-reference exports for exact current Event@2 and Support Process@1 work.
 - Closed `teacher_current` and `participant_specific` privacy projection with explicit manual include-exact/omit review.
 - Deterministic self-contained HTML rendering and exact `export_source_inventory@1` provenance.
