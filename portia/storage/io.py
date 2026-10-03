@@ -4,9 +4,9 @@ from __future__ import annotations
 
 import json
 import os
-import tempfile
+import secrets
 from pathlib import Path
-from typing import Any
+from typing import Any, Final
 
 from portia.storage.errors import (
     PortiaConflictError,
@@ -15,6 +15,9 @@ from portia.storage.errors import (
     PortiaStorageError,
 )
 from portia.storage.fingerprint import ContentFingerprint, fingerprint_bytes
+from portia.storage.generated_paths import build_replacement_temporary_leaf
+
+_REPLACEMENT_TEMPORARY_ALLOCATION_ATTEMPTS: Final[int] = 8
 
 
 def read_bytes(path: Path) -> bytes:
@@ -74,6 +77,39 @@ def exclusive_create(path: Path, content: bytes) -> ContentFingerprint:
     return fingerprint_bytes(observed)
 
 
+def _write_replacement_temporary(directory: Path, content: bytes) -> Path:
+    """Create one bounded target-adjacent replacement candidate exclusively."""
+    for _attempt in range(_REPLACEMENT_TEMPORARY_ALLOCATION_ATTEMPTS):
+        candidate = directory / build_replacement_temporary_leaf(secrets.token_hex(16))
+        descriptor: int | None = None
+        try:
+            descriptor = os.open(
+                candidate,
+                os.O_WRONLY | os.O_CREAT | os.O_EXCL,
+                0o600,
+            )
+        except FileExistsError:
+            continue
+        try:
+            with os.fdopen(descriptor, "wb") as handle:
+                descriptor = None
+                handle.write(content)
+                handle.flush()
+                os.fsync(handle.fileno())
+        except OSError:
+            if descriptor is not None:
+                os.close(descriptor)
+            try:
+                candidate.unlink(missing_ok=True)
+            except OSError:
+                pass
+            raise
+        return candidate
+    raise FileExistsError(
+        "could not allocate a unique bounded replacement temporary artifact"
+    )
+
+
 def guarded_replace(
     path: Path,
     content: bytes,
@@ -89,17 +125,7 @@ def guarded_replace(
     path.parent.mkdir(parents=True, exist_ok=True)
     temporary: Path | None = None
     try:
-        with tempfile.NamedTemporaryFile(
-            mode="wb",
-            dir=path.parent,
-            prefix=f".{path.name}.",
-            suffix=".tmp",
-            delete=False,
-        ) as handle:
-            temporary = Path(handle.name)
-            handle.write(content)
-            handle.flush()
-            os.fsync(handle.fileno())
+        temporary = _write_replacement_temporary(path.parent, content)
         # Recheck immediately before replace; do not silently retry on drift.
         if fingerprint_bytes(read_bytes(path)) != expected:
             raise PortiaConflictError(

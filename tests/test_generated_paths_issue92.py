@@ -5,7 +5,9 @@ import pytest
 from portia.storage.errors import PortiaPathError
 from portia.storage.generated_paths import (
     GENERATED_PATH_TOKEN_LENGTH,
+    REPLACEMENT_TEMPORARY_LEAF_LENGTH,
     build_generated_path_token,
+    build_replacement_temporary_leaf,
     validate_generated_path_token,
 )
 
@@ -70,3 +72,27 @@ def test_generated_path_token_requires_identity_and_rejects_malformed_tokens() -
     ):
         with pytest.raises(PortiaPathError):
             validate_generated_path_token(value)
+
+
+def test_replacement_temporary_leaf_has_exact_fixed_budget() -> None:
+    leaf = build_replacement_temporary_leaf("0" * 32)
+    assert leaf == ".portia-tmp-pt_28b43f3c114ed5960673ce4a94bbde1a.tmp"
+    assert len(leaf) == REPLACEMENT_TEMPORARY_LEAF_LENGTH == 51
+    assert "/" not in leaf
+    assert "\\" not in leaf
+
+
+@pytest.mark.parametrize(
+    "nonce",
+    (
+        "",
+        "0" * 31,
+        "0" * 33,
+        "A" * 32,
+        "g" * 32,
+        "../" + "0" * 32,
+    ),
+)
+def test_replacement_temporary_leaf_rejects_invalid_nonce(nonce: str) -> None:
+    with pytest.raises(PortiaPathError):
+        build_replacement_temporary_leaf(nonce)

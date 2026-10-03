@@ -81,6 +81,29 @@ E = temporary/staging infrastructure identity
 F = legacy path that must remain readable
 ```
 
+## Slice 2 bounded replacement temporaries
+
+`guarded_replace()` retains its existing same-directory atomic replacement
+boundary, expected-fingerprint check, immediate pre-replace recheck, fsync, and
+readback verification. Its temporary leaf no longer repeats the destination
+filename.
+
+New replacement temporaries use:
+
+```text
+.portia-tmp-pt_<32 lowercase hexadecimal characters>.tmp
+```
+
+for an exact leaf length of 51 characters. A fresh 128-bit nonce is projected
+through the Slice 1 domain-separated token primitive. Allocation is exclusive
+and retries a bounded number of exact collisions. The temporary stays adjacent
+to the destination so `os.replace()` preserves the established same-filesystem
+atomicity assumption.
+
+The leaf is infrastructure identity only. It is never persisted as domain or
+provenance identity, and failure cleanup remains best-effort without deleting
+the canonical destination.
+
 ## Writer and reader compatibility
 
 Issue #92 follows this compatibility model wherever a writer changes:

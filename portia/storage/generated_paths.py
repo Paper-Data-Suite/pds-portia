@@ -17,10 +17,23 @@ GENERATED_PATH_TOKEN_LENGTH: Final[int] = (
 )
 GENERATED_PATH_DOMAIN_MAX_LENGTH: Final[int] = 48
 
+REPLACEMENT_TEMPORARY_DOMAIN: Final[str] = "replacement_temporary"
+REPLACEMENT_TEMPORARY_LEAF_PREFIX: Final[str] = ".portia-tmp-"
+REPLACEMENT_TEMPORARY_LEAF_SUFFIX: Final[str] = ".tmp"
+REPLACEMENT_TEMPORARY_NONCE_HEX_LENGTH: Final[int] = 32
+REPLACEMENT_TEMPORARY_LEAF_LENGTH: Final[int] = (
+    len(REPLACEMENT_TEMPORARY_LEAF_PREFIX)
+    + GENERATED_PATH_TOKEN_LENGTH
+    + len(REPLACEMENT_TEMPORARY_LEAF_SUFFIX)
+)
+
 _DOMAIN_PATTERN: Final[re.Pattern[str]] = re.compile(r"^[a-z][a-z0-9_-]*$")
 _TOKEN_PATTERN: Final[re.Pattern[str]] = re.compile(
     rf"^{re.escape(GENERATED_PATH_TOKEN_PREFIX)}"
     rf"[0-9a-f]{{{GENERATED_PATH_TOKEN_HEX_LENGTH}}}$"
+)
+_REPLACEMENT_TEMPORARY_NONCE_PATTERN: Final[re.Pattern[str]] = re.compile(
+    rf"^[0-9a-f]{{{REPLACEMENT_TEMPORARY_NONCE_HEX_LENGTH}}}$"
 )
 
 
@@ -78,3 +91,27 @@ def validate_generated_path_token(value: object) -> str:
     if not isinstance(value, str) or _TOKEN_PATTERN.fullmatch(value) is None:
         raise PortiaPathError("invalid Portia generated-path token")
     return value
+
+
+def build_replacement_temporary_leaf(nonce: object) -> str:
+    """Return one exact bounded leaf for target-adjacent replacement staging.
+
+    ``nonce`` is infrastructure entropy only. The destination filename is
+    intentionally not embedded in the temporary leaf.
+    """
+    if (
+        not isinstance(nonce, str)
+        or _REPLACEMENT_TEMPORARY_NONCE_PATTERN.fullmatch(nonce) is None
+    ):
+        raise PortiaPathError(
+            "replacement temporary nonce must be 32 lowercase hexadecimal characters"
+        )
+    token = build_generated_path_token(REPLACEMENT_TEMPORARY_DOMAIN, nonce)
+    leaf = (
+        f"{REPLACEMENT_TEMPORARY_LEAF_PREFIX}"
+        f"{token}"
+        f"{REPLACEMENT_TEMPORARY_LEAF_SUFFIX}"
+    )
+    if len(leaf) != REPLACEMENT_TEMPORARY_LEAF_LENGTH:
+        raise PortiaPathError("replacement temporary leaf exceeded its fixed budget")
+    return leaf
