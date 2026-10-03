@@ -271,6 +271,31 @@ REQUIRED_SDIST_FILES.update(
 )
 
 
+_ISSUE92_REQUIRED_RUNTIME_FILES = {
+    "portia/storage/generated_paths.py",
+    "portia/storage/paths.py",
+    "portia/storage/io.py",
+    "portia/storage/staging.py",
+    "portia/storage/repository.py",
+    "portia/storage/derived.py",
+    "portia/workflows/integrity.py",
+}
+REQUIRED_RUNTIME_FILES.update(_ISSUE92_REQUIRED_RUNTIME_FILES)
+REQUIRED_SDIST_FILES.update(
+    _ISSUE92_REQUIRED_RUNTIME_FILES
+    | {
+        "docs/path-safety.md",
+        "scripts/check_issue92_package.py",
+        "scripts/smoke_test_issue92_deep_workspace_wheel.py",
+        "tests/test_generated_paths_issue92.py",
+        "tests/test_path_geometry_issue92.py",
+        "tests/test_derived_paths_issue92.py",
+        "tests/test_deep_workspace_issue92.py",
+        "tests/test_issue92_qualification.py",
+    }
+)
+
+
 def _unsafe_path(name: str) -> bool:
     path = PurePosixPath(name)
     return path.is_absolute() or any(part in {"", ".", ".."} for part in path.parts)

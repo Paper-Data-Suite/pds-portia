@@ -4,6 +4,7 @@
 
 ### Added
 
+- Issue #92 isolated installed-wheel deep-workspace qualification against the exact released Core 0.6.4 wheel, plus package inventory enforcement for path-hardening runtime modules.
 - Issue #92 physical deep-workspace qualification at a targeted 119-character workspace root across staging/history, bounded derived state, and complete teacher-reference export execution.
 - Issue #92 bounded `derived-v2` filesystem serialization with deterministic legacy-reader compatibility and non-destructive legacy-to-bounded current-pointer cutover.
 - Issue #92 canonical path-geometry characterization proving routine operation/quarantine/suppression/export paths remain shallow while identifying derived state as the remaining canonical path-pressure outlier.

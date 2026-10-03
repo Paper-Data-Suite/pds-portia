@@ -294,6 +294,43 @@ This slice intentionally changes no production writer. A failure here is a
 qualification signal requiring a focused repair rather than a reason to shorten
 unrelated canonical identities.
 
+## Slice 8 installed-wheel and Core 0.6.4 qualification
+
+The release boundary authenticates the exact released Core 0.6.4 wheel before
+installation:
+
+```text
+filename  pds_core-0.6.4-py3-none-any.whl
+SHA-256   48cea9317f2967bdc0f2d4c14349a56677c7c3f8211f0f33978ccb1a1c75859b
+```
+
+Portia retains its declared runtime compatibility floor
+`pds-core>=0.6.3,<0.7`; the exact Core 0.6.4 artifact is a qualification target,
+not a dependency-floor increase.
+
+The Issue #92 installed smoke creates a clean virtual environment, installs the
+authenticated Core wheel, installs the built Portia wheel with `--no-deps`,
+runs `pip check`, rejects a Portia import that resolves into the source checkout,
+and verifies that all path-hardening runtime modules are present in the installed
+distribution.
+
+The installed package then performs physical deep-workspace staging/publication,
+canonical replacement with bounded technical history, and bounded derived-state
+installation/reload under a workspace of at least 119 absolute characters. The
+smoke requires the installed Core version to be exactly 0.6.4 and the installed
+Portia version to match this release line.
+
+A dedicated Issue #92 package checker also requires the path-hardening runtime
+modules in the wheel and the validation/smoke assets in the source distribution.
+The generic package checker carries the same #92 inventory forward so later
+release qualification cannot silently omit this boundary.
+
+The cumulative `scripts/validate_repository.py` closeout path terminates at
+Issue #92 and runs both the #92 package checker and installed deep-workspace
+smoke after the accepted Issue #52 boundaries. Historical Issue #52 source-level
+closeout markers remain present for compatibility with already accepted
+qualification guards.
+
 ## Writer and reader compatibility
 
 Issue #92 follows this compatibility model wherever a writer changes:
