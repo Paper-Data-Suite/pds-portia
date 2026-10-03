@@ -535,6 +535,26 @@ artifact to be current or official.
 See `docs/teacher-reference-exports.md` and the Issue #51 validation records under
 `docs/validation/`.
 
+## Issue #52 current implementation
+
+Issue #52 exposes Portia through Core module-operations contract v1 with exactly
+one installed profile: `paper_data_suite.module_operations / portia`. The profile
+lazily exposes independent Portia attention and readiness providers without
+changing the public `portia = portia.cli:main` launcher.
+
+Attention remains an adapter over the native Issue #49 authority and exports only
+bounded codes, labels, counts, safely common class/work context, and opaque
+Portia owner-action IDs. Readiness is structural/contextual: known blockers are
+`ready=False`, while authority that cannot be inspected safely is unavailable.
+Neither provider performs canonical writes, widens missing scope, ranks students,
+or turns attention/recovery state into a readiness judgment.
+
+Installed qualification uses released Core 0.6.4 for the current #52 provider
+boundary while retaining Core 0.6.3 for frozen historical installed-wheel
+checkpoint smokes. Portia continues to declare `pds-core>=0.6.3,<0.7`. See
+`docs/module-operations.md` and the Issue #52 validation record under
+`docs/validation/`.
+
 ## Product Position
 
 Portia is designed as:

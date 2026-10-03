@@ -136,3 +136,26 @@ valid and missing exact-class readiness, native-attention projection, opaque
 owner actions, privacy-minimal shared output, provider zero-write behavior, the
 standalone `portia status` launcher, and absence of sibling PDS runtime
 dependencies.
+
+## Slice 6 — closeout qualification
+
+Issue #52 closes with a dedicated mechanical validator and one authoritative
+repository qualification. Portia attention and Portia readiness remain
+independent Portia-owned provider surfaces under Core module-operations v1.
+Current source tests, type checks, package checks, and the Issue #52 installed
+provider smoke qualify against authenticated released Core 0.6.4. Frozen
+historical installed-wheel smokes continue to run against authenticated Core
+0.6.3, preserving their accepted checkpoint semantics rather than rewriting
+them merely for closeout.
+
+The authoritative command is:
+
+```text
+python scripts/validate_repository.py \
+  --core-wheel <pds_core-0.6.4-py3-none-any.whl> \
+  --historical-core-wheel <pds_core-0.6.3-py3-none-any.whl>
+```
+
+This does not raise Portia's declared `pds-core>=0.6.3,<0.7` runtime floor.
+The complete closeout evidence and boundary rationale are recorded in
+`docs/validation/issue-52-portia-module-operations-validation.md`.

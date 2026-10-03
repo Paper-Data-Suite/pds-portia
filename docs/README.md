@@ -13,4 +13,9 @@ For the Core module-operations interoperability boundary, see:
 
 - `module-operations.md` — Portia's Core v1 operations profile, metadata-safe discovery boundary, provider ownership, and Issue #52 slice status.
 
+For Core module-operations integration, also see:
+
+- `module-operations.md` — profile registration, native-attention projection, owner actions, structural readiness, privacy/read-only boundaries, and installed interoperability;
+- `validation/issue-52-portia-module-operations-validation.md` — Issue #52 closeout, dual-Core qualification boundary, package/installed evidence, and authoritative repository command.
+
 The repository's `README.md` remains the broad project overview. Issue-specific validation records under `docs/validation/` are evidence for their named checkpoints and do not supersede newer accepted architecture.

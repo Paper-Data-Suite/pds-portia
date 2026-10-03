@@ -264,6 +264,9 @@ REQUIRED_SDIST_FILES.update(
         "tests/test_issue52_attention_actions.py",
         "tests/test_issue52_readiness_provider.py",
         "tests/test_issue52_packaging.py",
+        "tests/test_issue52_qualification.py",
+        "scripts/validate_module_operations.py",
+        "docs/validation/issue-52-portia-module-operations-validation.md",
     }
 )
 

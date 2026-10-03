@@ -12,8 +12,13 @@
 - Evidence-preserving export recovery and immutable work-scoped export history verification.
 - Contextual export/history actions from View Timeline without adding a ninth routine root task.
 - Issue #51 acceptance matrix, mechanical validator, package checker, and isolated Core+Portia installed-wheel smoke.
+- Core module-operations v1 profile exposing bounded Portia attention and structural readiness providers.
+- Closed opaque Portia attention owner-action vocabulary shared with the teacher-menu routing authority.
+- Issue #52 mechanical validator, package inventory, and isolated installed-wheel qualification against released Core 0.6.4.
 
 ### Boundaries
 
 - Export generation remains a local teacher-reference action, not disclosure, delivery, receipt, filing, or official institutional record creation.
 - No student-global export, sibling-module runtime dependency, generic JSON export, automatic privacy rewriting, or export overwrite path is introduced.
+- Module operations remain read-only and privacy-minimal; readiness is structural rather than a behavior, risk, priority, recovery, or Suite-launch judgment.
+- Portia keeps its `pds-core>=0.6.3,<0.7` floor; current #52 closeout uses Core 0.6.4 while frozen historical installed smokes retain Core 0.6.3.
