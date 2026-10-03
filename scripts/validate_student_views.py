@@ -349,7 +349,10 @@ def _repository_findings(root: Path) -> list[str]:
             "windows-latest",
             'python: "3.11"',
             'core: "0.6.3"',
-            "python scripts/validate_repository.py --core-wheel",
+            'current_core: "0.6.4"',
+            "python scripts/validate_repository.py",
+            '--core-wheel "$env:PDS_CORE_WHEEL"',
+            '--historical-core-wheel "$env:PDS_HISTORICAL_CORE_WHEEL"',
         ):
             if phrase not in text:
                 errors.append(f"CI missing Issue #48 qualification marker: {phrase}")
