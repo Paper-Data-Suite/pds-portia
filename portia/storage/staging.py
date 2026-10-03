@@ -12,13 +12,21 @@ from portia.storage.errors import (
     PortiaPathError,
 )
 from portia.storage.fingerprint import ContentFingerprint, fingerprint_bytes
+from portia.storage.generated_paths import (
+    build_staging_candidate_leaf,
+    build_staging_operation_token,
+)
 from portia.storage.io import (
     exact_delete,
     exclusive_create,
     guarded_replace,
     read_bytes,
 )
-from portia.storage.paths import resolve_workspace_relative, workspace_relative
+from portia.storage.paths import (
+    resolve_workspace_relative,
+    validate_workspace_relative_path,
+    workspace_relative,
+)
 
 
 @dataclass(frozen=True, slots=True)
@@ -78,15 +86,63 @@ def staging_path_for(
     step_id: str,
     destination_relative_path: object,
 ) -> Path:
-    """Return the deterministic target-adjacent candidate path for one step."""
+    """Return the bounded workspace-level candidate path for a new staging write."""
     operation = validate_portia_id(operation_id, "op_", "operation_id")
     step = validate_portia_id(step_id, "step_", "step_id")
+    relative = validate_workspace_relative_path(destination_relative_path).as_posix()
     root = Path(workspace_root).resolve(strict=False)
-    destination = resolve_workspace_relative(root, destination_relative_path)
+    destination = resolve_workspace_relative(root, relative)
     ensure_runtime_containment(root, destination)
-    staging = destination.parent / ".portia-staging" / operation / f"{step}.candidate"
+    staging = (
+        root
+        / "portia"
+        / ".staging"
+        / build_staging_operation_token(operation)
+        / build_staging_candidate_leaf(operation, step, relative)
+    )
     ensure_runtime_containment(root, staging)
     return staging
+
+
+def legacy_staging_path_for(
+    workspace_root: str | Path,
+    operation_id: str,
+    step_id: str,
+    destination_relative_path: object,
+) -> Path:
+    """Return the pre-Issue-92 target-adjacent staging identity for compatibility."""
+    operation = validate_portia_id(operation_id, "op_", "operation_id")
+    step = validate_portia_id(step_id, "step_", "step_id")
+    relative = validate_workspace_relative_path(destination_relative_path).as_posix()
+    root = Path(workspace_root).resolve(strict=False)
+    destination = resolve_workspace_relative(root, relative)
+    ensure_runtime_containment(root, destination)
+    staging = (
+        destination.parent
+        / ".portia-staging"
+        / operation
+        / f"{step}.candidate"
+    )
+    ensure_runtime_containment(root, staging)
+    return staging
+
+
+def _candidate_exists(path: Path) -> bool:
+    return path.exists() or path.is_symlink()
+
+
+def _exact_replay(
+    path: Path,
+    content: bytes,
+    fingerprint: ContentFingerprint,
+) -> ContentFingerprint:
+    existing = read_bytes(path)
+    observed = fingerprint_bytes(existing)
+    if observed != fingerprint or existing != content:
+        raise PortiaConflictError(
+            "staging identity already contains contradictory candidate bytes"
+        )
+    return observed
 
 
 def stage_bytes(
@@ -100,22 +156,45 @@ def stage_bytes(
 ) -> StagedArtifact:
     """Stage bytes, allowing only exact idempotent replay of an existing candidate."""
     root = Path(workspace_root).resolve(strict=False)
-    destination = resolve_workspace_relative(root, destination_relative_path)
-    staging = staging_path_for(root, operation_id, step_id, destination_relative_path)
+    relative = validate_workspace_relative_path(destination_relative_path).as_posix()
+    destination = resolve_workspace_relative(root, relative)
+    staging = staging_path_for(root, operation_id, step_id, relative)
+    legacy = legacy_staging_path_for(root, operation_id, step_id, relative)
     fingerprint = fingerprint_bytes(content)
     if intended is not None and fingerprint != intended:
         raise PortiaConflictError(
             "candidate bytes do not match the journaled intended result"
         )
+
+    current_exists = _candidate_exists(staging)
+    legacy_exists = _candidate_exists(legacy)
+    if current_exists and legacy_exists:
+        raise PortiaConflictError(
+            "current and legacy staging identities both exist for one operation step"
+        )
+    if current_exists:
+        observed = _exact_replay(staging, content, fingerprint)
+        return StagedArtifact(
+            operation_id,
+            step_id,
+            staging,
+            destination,
+            observed,
+        )
+    if legacy_exists:
+        observed = _exact_replay(legacy, content, fingerprint)
+        return StagedArtifact(
+            operation_id,
+            step_id,
+            legacy,
+            destination,
+            observed,
+        )
+
     try:
         observed = exclusive_create(staging, content)
     except PortiaConflictError:
-        existing = read_bytes(staging)
-        observed = fingerprint_bytes(existing)
-        if observed != fingerprint or existing != content:
-            raise PortiaConflictError(
-                "staging identity already contains contradictory candidate bytes"
-            ) from None
+        observed = _exact_replay(staging, content, fingerprint)
     if observed != fingerprint:
         raise PortiaCorruptionError("staged-candidate readback fingerprint mismatch")
     return StagedArtifact(operation_id, step_id, staging, destination, observed)
@@ -180,6 +259,7 @@ def _prune_empty_staging_dirs(root: Path, start: Path) -> None:
         if current == root or current.name not in {
             start.name,
             ".portia-staging",
+            ".staging",
         }:
             break
         try:

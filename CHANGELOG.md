@@ -4,6 +4,14 @@
 
 ### Added
 
+- Issue #92 isolated installed-wheel deep-workspace qualification against the exact released Core 0.6.4 wheel, plus package inventory enforcement for path-hardening runtime modules.
+- Issue #92 physical deep-workspace qualification at a targeted 119-character workspace root across staging/history, bounded derived state, and complete teacher-reference export execution.
+- Issue #92 bounded `derived-v2` filesystem serialization with deterministic legacy-reader compatibility and non-destructive legacy-to-bounded current-pointer cutover.
+- Issue #92 canonical path-geometry characterization proving routine operation/quarantine/suppression/export paths remain shallow while identifying derived state as the remaining canonical path-pressure outlier.
+- Issue #92 bounded 40-character work/Actor technical storage-history leaves with exact legacy-history reuse and no migration.
+- Issue #92 bounded workspace-level coordinated staging with exact legacy target-adjacent replay compatibility.
+- Issue #92 bounded 51-character target-adjacent replacement temporaries that preserve guarded atomic replacement without repeating destination filenames.
+- Issue #92 path-safety foundation with a fixed-length, domain-separated generated filesystem token and documented current-surface audit.
 - Bounded deliberate local teacher-reference exports for exact current Event@2 and Support Process@1 work.
 - Closed `teacher_current` and `participant_specific` privacy projection with explicit manual include-exact/omit review.
 - Deterministic self-contained HTML rendering and exact `export_source_inventory@1` provenance.
