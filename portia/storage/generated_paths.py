@@ -41,6 +41,9 @@ STORAGE_REVISION_LEAF_LENGTH: Final[int] = (
     GENERATED_PATH_TOKEN_LENGTH + len(STORAGE_REVISION_LEAF_SUFFIX)
 )
 
+DERIVED_PROJECTION_DOMAIN: Final[str] = "derived_projection"
+DERIVED_GENERATION_DOMAIN: Final[str] = "derived_generation"
+
 _DOMAIN_PATTERN: Final[re.Pattern[str]] = re.compile(r"^[a-z][a-z0-9_-]*$")
 _TOKEN_PATTERN: Final[re.Pattern[str]] = re.compile(
     rf"^{re.escape(GENERATED_PATH_TOKEN_PREFIX)}"
@@ -192,4 +195,30 @@ def build_actor_storage_revision_leaf(
         record_kind,
         record_id,
         digest,
+    )
+
+
+def build_derived_projection_token(
+    projection_kind: object,
+    scope_kind: object,
+    *scope_identity: object,
+) -> str:
+    """Return one bounded token for an exact derived projection scope."""
+    return build_generated_path_token(
+        DERIVED_PROJECTION_DOMAIN,
+        projection_kind,
+        scope_kind,
+        *scope_identity,
+    )
+
+
+def build_derived_generation_token(
+    projection_token: object,
+    generation_id: object,
+) -> str:
+    """Return one bounded token for a generation inside one projection scope."""
+    return build_generated_path_token(
+        DERIVED_GENERATION_DOMAIN,
+        projection_token,
+        generation_id,
     )

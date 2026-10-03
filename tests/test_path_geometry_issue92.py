@@ -7,6 +7,7 @@ from portia.models.references import ExactPortiaWorkRef
 from portia.storage.paths import (
     derived_metadata_path,
     finding_suppression_revision_path,
+    legacy_derived_metadata_path,
     operation_revision_path,
     quarantine_revision_path,
 )
@@ -123,7 +124,42 @@ def test_derived_scope_geometry_is_explicit_remaining_path_pressure() -> None:
         },
     }
 
-    relative_lengths = {
+    legacy_lengths = {
+        name: len(
+            _relative_text(
+                legacy_derived_metadata_path(
+                    root,
+                    projection,
+                    scope,
+                    generation_id,
+                ),
+                root,
+            )
+        )
+        for name, scope in scopes.items()
+    }
+
+    assert legacy_lengths == {
+        "work": 184,
+        "class": 142,
+        "workspace": 128,
+        "operation": 143,
+        "graph": 142,
+    }
+
+    legacy_projected = {
+        name: REPRESENTATIVE_DEEP_ROOT_LENGTH + 1 + length
+        for name, length in legacy_lengths.items()
+    }
+    assert legacy_projected == {
+        "work": 304,
+        "class": 262,
+        "workspace": 248,
+        "operation": 263,
+        "graph": 262,
+    }
+
+    bounded_lengths = {
         name: len(
             _relative_text(
                 derived_metadata_path(
@@ -137,28 +173,30 @@ def test_derived_scope_geometry_is_explicit_remaining_path_pressure() -> None:
         )
         for name, scope in scopes.items()
     }
-
-    assert relative_lengths == {
-        "work": 184,
-        "class": 142,
-        "workspace": 128,
-        "operation": 143,
-        "graph": 142,
+    assert bounded_lengths == {
+        "work": 115,
+        "class": 115,
+        "workspace": 115,
+        "operation": 115,
+        "graph": 115,
     }
-
-    projected = {
-        name: REPRESENTATIVE_DEEP_ROOT_LENGTH + 1 + length
-        for name, length in relative_lengths.items()
-    }
-    assert projected == {
-        "work": 304,
-        "class": 262,
-        "workspace": 248,
-        "operation": 263,
-        "graph": 262,
-    }
+    assert all(
+        _projected_absolute_length(
+            _relative_text(
+                derived_metadata_path(
+                    root,
+                    projection,
+                    scope,
+                    generation_id,
+                ),
+                root,
+            )
+        )
+        == 235
+        for scope in scopes.values()
+    )
 
     # 260 is only a historical pressure reference, not Portia's universal limit.
-    assert projected["work"] > LEGACY_WINDOWS_REFERENCE_LENGTH
-    assert projected["class"] > LEGACY_WINDOWS_REFERENCE_LENGTH
-    assert projected["operation"] > LEGACY_WINDOWS_REFERENCE_LENGTH
+    assert legacy_projected["work"] > LEGACY_WINDOWS_REFERENCE_LENGTH
+    assert legacy_projected["class"] > LEGACY_WINDOWS_REFERENCE_LENGTH
+    assert legacy_projected["operation"] > LEGACY_WINDOWS_REFERENCE_LENGTH

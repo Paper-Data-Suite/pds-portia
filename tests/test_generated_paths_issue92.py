@@ -9,6 +9,8 @@ from portia.storage.generated_paths import (
     STAGING_CANDIDATE_LEAF_LENGTH,
     STORAGE_REVISION_LEAF_LENGTH,
     build_actor_storage_revision_leaf,
+    build_derived_generation_token,
+    build_derived_projection_token,
     build_generated_path_token,
     build_replacement_temporary_leaf,
     build_staging_candidate_leaf,
@@ -159,3 +161,20 @@ def test_storage_revision_leaf_does_not_expand_with_record_identity() -> None:
     assert len(short) == STORAGE_REVISION_LEAF_LENGTH
     assert len(long) == STORAGE_REVISION_LEAF_LENGTH
     assert short != long
+
+
+def test_derived_tokens_have_stable_bounded_vectors() -> None:
+    projection = build_derived_projection_token(
+        "current_state_view",
+        "work",
+        "class_english10_p2",
+        "evt_example",
+    )
+    generation = build_derived_generation_token(
+        projection,
+        "dgen_example",
+    )
+    assert projection == "pt_751b1943be160f1db511eddae43de8ef"
+    assert generation == "pt_a677e8eb837245e8362aa3b29023a008"
+    assert len(projection) == GENERATED_PATH_TOKEN_LENGTH
+    assert len(generation) == GENERATED_PATH_TOKEN_LENGTH

@@ -62,7 +62,7 @@ Slice 1 records the current path families before changing any writer.
 | Actor root/child | `portia/actors/<actor_id>/...` | C | Opaque identity; audit history depth separately. |
 | Actor storage history | new: `.../history/storage_revisions/<bounded-token>.json`; legacy identity-heavy hierarchy remains readable | B + C + F | New technical-history leaves are fixed at 40 characters with Actor-domain separation. |
 | Operations / Quarantine / suppressions | revision directory + numeric/fixed leaf | C + fixed leaf | Slice 5 characterizes normal generated-ID relative paths at 72–84 characters; no writer rewrite is justified. |
-| Derived generations | scope/projection hierarchy + `metadata.json` / `data.json` | C + fixed leaf | Slice 5 confirms this remains the canonical path-pressure outlier; representative work/class/operation metadata paths project beyond the historical 260-character reference under a 119-character workspace root. |
+| Derived generations | new: `portia/derived-v2/<projection-token>/generations/<generation-token>/...`; legacy scope-owned hierarchy remains readable | B + C + F | Slice 6 bounds every new representative metadata path at 115 relative characters while preserving exact legacy derived paths. |
 | Teacher-reference export | `portia/exports/<pexp_id>/artifact.html` + `export.json` | C + fixed leaf | Slice 5 characterizes the generated-ID artifact path at 66 relative characters and confirms display/source text does not enter the path. |
 | Coordinated staging | new: `portia/.staging/<bounded-op-token>/<bounded-candidate>.candidate`; legacy target-adjacent form remains readable | B + E + F | New writes are shallow and bounded; exact legacy candidates replay in place without migration. |
 | Guarded replacement temp | `.portia-tmp-<bounded-token>.tmp` beside destination | B + E | Fixed 51-character leaf; does not repeat destination filename. |
@@ -215,8 +215,57 @@ The 260-character figure is used only as a historical Windows/native-tooling
 pressure reference. Portia does not adopt it as a universal application maximum.
 
 The result is that derived-state serialization remains the one canonical
-Portia-owned path family requiring dedicated #92 hardening. A later slice should
-address it without rewriting existing derived paths or changing domain identity.
+Portia-owned path family requiring dedicated #92 hardening.
+
+## Slice 6 bounded derived-state serialization
+
+New derived projections use an internal storage-layout v2:
+
+```text
+portia/derived-v2/
+  pt_<projection-scope-token>/
+    current.json
+    generations/
+      pt_<generation-token>/
+        data.json
+        metadata.json
+```
+
+The projection token is exactly 35 characters and binds the projection kind plus
+the same semantic scope identity that selected the legacy projection root. The
+generation token is exactly 35 characters and binds the projection token plus
+the exact `dgen_` identity. Domain IDs and `derived_*@1` record contracts are
+unchanged.
+
+For the Slice 5 representative matrix, every new metadata path is now exactly
+115 workspace-relative characters, or 235 projected absolute characters under
+the same 119-character deep root. `current.json` is 66 relative characters and
+generation `data.json` is 111.
+
+Pre-Issue-92 derived state remains readable in its exact original scope-owned
+layout. Portia does not rename, copy, or delete legacy generations.
+
+Reader selection is deterministic:
+
+```text
+bounded v2 current pointer exists -> use bounded layout
+otherwise legacy current exists   -> use legacy layout
+otherwise                         -> no selected generation
+```
+
+A corrupt bounded pointer is an error; Portia does not silently downgrade to a
+legacy pointer.
+
+When a legacy current projection receives a new generation, installation first
+verifies the exact expected legacy-pointer fingerprint. The new generation is
+written only to the bounded v2 layout, then a bounded `current.json` is created.
+The legacy pointer and generation remain byte-for-byte untouched. From that
+point forward, the bounded current pointer is authoritative for Portia's derived
+reader. This is a prospective writer cutover, not a workspace migration.
+
+Metadata continues to bind the exact `data_artifact.workspace_relative_path`.
+Legacy metadata is checked against its legacy data path; newly written metadata
+is checked against its bounded v2 data path.
 
 ## Writer and reader compatibility
 

@@ -34,7 +34,11 @@ from portia.storage.integrity import (
 from portia.storage.io import read_json
 from portia.storage.paths import (
     derived_data_path,
+    derived_metadata_path,
     derived_projection_root,
+    legacy_derived_data_path,
+    legacy_derived_metadata_path,
+    legacy_derived_projection_root,
     operation_current_path,
     operation_revision_path,
     operation_root,
@@ -997,77 +1001,149 @@ class IntegrityWorkflowService:
     ) -> PortiaRecord:
         """Resolve a bound historical finding by its exact pair, never by recency."""
         scope = dict(projection_scope)
-        generations = (
-            derived_projection_root(self.root, _PROJECTION_KIND, scope)
-            / "generations"
+        generation_roots = (
+            (
+                derived_projection_root(self.root, _PROJECTION_KIND, scope)
+                / "generations",
+                False,
+            ),
+            (
+                legacy_derived_projection_root(
+                    self.root,
+                    _PROJECTION_KIND,
+                    scope,
+                )
+                / "generations",
+                True,
+            ),
         )
-        if not generations.is_dir():
+        available = [
+            (root, legacy_layout)
+            for root, legacy_layout in generation_roots
+            if root.is_dir()
+        ]
+        if not available:
             raise WorkflowPrerequisiteError(
                 "bound historical Integrity Finding generation is unavailable"
             )
+
         matches: list[PortiaRecord] = []
-        for generation in sorted(generations.iterdir(), key=lambda item: item.name):
-            if not generation.is_dir() or not generation.name.startswith("dgen_"):
-                raise PortiaCorruptionError(
-                    "unexpected artifact in Integrity Finding generation namespace"
-                )
-            try:
-                metadata_raw, _metadata_bytes, _metadata_fp = read_json(
-                    generation / "metadata.json"
-                )
-                metadata = parse_portia_record(
-                    "derived_index_metadata", "1", metadata_raw
-                )
-                data_raw, _data_bytes, data_fp = read_json(generation / "data.json")
-            except Exception as exc:
-                raise PortiaCorruptionError(
-                    "historical Integrity Finding generation is malformed"
-                ) from exc
-            metadata_data = metadata.to_dict()
-            artifact = metadata_data.get("data_artifact")
-            try:
-                expected_data_fp = ContentFingerprint.from_dict(
-                    artifact.get("fingerprint")
-                    if isinstance(artifact, dict)
-                    else None
-                )
-            except ValueError as exc:
-                raise PortiaCorruptionError(
-                    "historical Integrity Finding data fingerprint is invalid"
-                ) from exc
-            if (
-                metadata_data.get("generation_id") != generation.name
-                or metadata_data.get("projection_kind") != _PROJECTION_KIND
-                or metadata_data.get("projection_scope") != scope
-                or metadata_data.get("projection_contract_version")
-                != _PROJECTION_CONTRACT_VERSION
-                or data_fp != expected_data_fp
+        for generations, legacy_layout in available:
+            for generation in sorted(
+                generations.iterdir(),
+                key=lambda item: item.name,
             ):
-                raise PortiaCorruptionError(
-                    "historical Integrity Finding generation identity is inconsistent"
-                )
-            if not isinstance(data_raw, dict) or set(data_raw) != {"findings"}:
-                raise PortiaCorruptionError(
-                    "historical Integrity Finding data envelope is invalid"
-                )
-            raw_findings = data_raw.get("findings")
-            if not isinstance(raw_findings, list):
-                raise PortiaCorruptionError(
-                    "historical Integrity Finding data is not an array"
-                )
-            for raw in raw_findings:
+                if not generation.is_dir():
+                    raise PortiaCorruptionError(
+                        "unexpected artifact in Integrity Finding generation namespace"
+                    )
                 try:
-                    finding = parse_portia_record("integrity_finding", "2", raw)
+                    metadata_raw, _metadata_bytes, _metadata_fp = read_json(
+                        generation / "metadata.json"
+                    )
+                    metadata = parse_portia_record(
+                        "derived_index_metadata",
+                        "1",
+                        metadata_raw,
+                    )
+                    metadata_data = metadata.to_dict()
+                    generation_id = metadata_data.get("generation_id")
+                    if not isinstance(generation_id, str):
+                        raise PortiaCorruptionError(
+                            "historical Integrity Finding generation lacks identity"
+                        )
+                    if legacy_layout:
+                        expected_metadata_path = legacy_derived_metadata_path(
+                            self.root,
+                            _PROJECTION_KIND,
+                            scope,
+                            generation_id,
+                        )
+                        expected_data_path = legacy_derived_data_path(
+                            self.root,
+                            _PROJECTION_KIND,
+                            scope,
+                            generation_id,
+                        )
+                    else:
+                        expected_metadata_path = derived_metadata_path(
+                            self.root,
+                            _PROJECTION_KIND,
+                            scope,
+                            generation_id,
+                        )
+                        expected_data_path = derived_data_path(
+                            self.root,
+                            _PROJECTION_KIND,
+                            scope,
+                            generation_id,
+                        )
+                    if (
+                        generation / "metadata.json" != expected_metadata_path
+                        or generation / "data.json" != expected_data_path
+                    ):
+                        raise PortiaCorruptionError(
+                            "historical Integrity Finding storage identity is inconsistent"
+                        )
+                    data_raw, _data_bytes, data_fp = read_json(expected_data_path)
+                except PortiaCorruptionError:
+                    raise
                 except Exception as exc:
                     raise PortiaCorruptionError(
-                        "historical Integrity Finding is malformed"
+                        "historical Integrity Finding generation is malformed"
                     ) from exc
-                data = finding.to_dict()
+
+                artifact = metadata_data.get("data_artifact")
+                try:
+                    expected_data_fp = ContentFingerprint.from_dict(
+                        artifact.get("fingerprint")
+                        if isinstance(artifact, dict)
+                        else None
+                    )
+                except ValueError as exc:
+                    raise PortiaCorruptionError(
+                        "historical Integrity Finding data fingerprint is invalid"
+                    ) from exc
                 if (
-                    data.get("finding_key") == binding.get("finding_key")
-                    and data.get("evaluation_key") == binding.get("evaluation_key")
+                    metadata_data.get("projection_kind") != _PROJECTION_KIND
+                    or metadata_data.get("projection_scope") != scope
+                    or metadata_data.get("projection_contract_version")
+                    != _PROJECTION_CONTRACT_VERSION
+                    or data_fp != expected_data_fp
+                    or not isinstance(artifact, dict)
+                    or artifact.get("workspace_relative_path")
+                    != workspace_relative(self.root, expected_data_path)
                 ):
-                    matches.append(finding)
+                    raise PortiaCorruptionError(
+                        "historical Integrity Finding generation identity is inconsistent"
+                    )
+                if not isinstance(data_raw, dict) or set(data_raw) != {"findings"}:
+                    raise PortiaCorruptionError(
+                        "historical Integrity Finding data envelope is invalid"
+                    )
+                raw_findings = data_raw.get("findings")
+                if not isinstance(raw_findings, list):
+                    raise PortiaCorruptionError(
+                        "historical Integrity Finding data is not an array"
+                    )
+                for raw in raw_findings:
+                    try:
+                        finding = parse_portia_record(
+                            "integrity_finding",
+                            "2",
+                            raw,
+                        )
+                    except Exception as exc:
+                        raise PortiaCorruptionError(
+                            "historical Integrity Finding is malformed"
+                        ) from exc
+                    data = finding.to_dict()
+                    if (
+                        data.get("finding_key") == binding.get("finding_key")
+                        and data.get("evaluation_key")
+                        == binding.get("evaluation_key")
+                    ):
+                        matches.append(finding)
         if not matches:
             raise WorkflowPrerequisiteError(
                 "bound exact historical Integrity Finding is unavailable"
