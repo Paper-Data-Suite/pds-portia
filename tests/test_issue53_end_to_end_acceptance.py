@@ -934,3 +934,88 @@ def test_issue53_stale_conflict_follows_core_provider_boundary() -> None:
     assert 'print("PASS conflict")' in source
     assert '"stale_conflict_raised": stale_conflict[' in source
     assert '"ordinary_conflict_not_recovery": stale_conflict[' in source
+
+
+def test_issue53_recovery_identifiers_are_stable() -> None:
+    smoke = _load_script()
+    assert smoke.RECOVERED_SUPPORT_ID == "spt_issue53_access_corrected"
+    assert smoke.RECOVERY_TRANSITION_ID == "lct_issue53_support_corrected"
+    assert smoke.RECOVERY_OPERATION_ID == "op_issue53_support_recovery"
+
+
+def test_issue53_recovery_uses_real_support_correction_fault_hook() -> None:
+    smoke = _load_script()
+    probe = smoke._RECOVERY_PROBE
+    for marker in (
+        "SupportWorkflowService(workspace)",
+        '"reason": "strategy_corrected"',
+        "service.correct(",
+        "operation_id=OPERATION_ID",
+        "fault_hook=fail_after_successor",
+        'checkpoint == "after_publish" and step_id == "step_successor"',
+        "except PortiaOperationPartialCommitError as exc:",
+        'partial_error.accepted_steps != ("step_history", "step_successor")',
+    ):
+        assert marker in probe
+
+
+def test_issue53_partial_recovery_evidence_is_exact() -> None:
+    smoke = _load_script()
+    probe = smoke._RECOVERY_PROBE
+    for marker in (
+        'partial_data.get("state") != "recovering"',
+        '"step_transition"',
+        '"step_action"',
+        "RecoveryWorkflowService(workspace)",
+        "assessment = recovery.assess(OPERATION_ID)",
+        'assessment.disposition != "resume"',
+        "assessment.findings",
+        'evidence["step_successor"].disposition != "accepted"',
+        'evidence["step_transition"].disposition != "not_written"',
+    ):
+        assert marker in probe
+
+
+def test_issue53_recovery_resumes_only_remaining_exact_writes() -> None:
+    smoke = _load_script()
+    probe = smoke._RECOVERY_PROBE
+    for marker in (
+        "accepted_before_recovery = {",
+        "recovery.resume_incomplete(",
+        "expected_pointer=partial_current.pointer_fingerprint",
+        "history_path.read_bytes() != accepted_before_recovery",
+        "successor_after_recovery.path.read_bytes()",
+        "successor_after_recovery.path.stat().st_mtime_ns",
+        'predecessor_after.record.status != "superseded"',
+        "fingerprint_bytes(path.read_bytes())",
+    ):
+        assert marker in probe
+
+
+def test_issue53_recovery_releases_locks_cleans_staging_and_is_idempotent() -> None:
+    smoke = _load_script()
+    probe = smoke._RECOVERY_PROBE
+    for marker in (
+        "held_lock_paths",
+        "staged_paths",
+        "if any(path.exists() for path in held_lock_paths):",
+        "if any(path.exists() for path in staged_paths):",
+        'terminal_data.get("state") != "completed"',
+        "before_idempotent_recovery = snapshot(workspace)",
+        "repeated = recovery.resume_incomplete(",
+        "after_idempotent_recovery = snapshot(workspace)",
+        "before_idempotent_recovery != after_idempotent_recovery",
+    ):
+        assert marker in probe
+
+
+def test_issue53_recovery_follows_ordinary_conflict_as_distinct_boundary() -> None:
+    source = (
+        ROOT / "scripts" / "smoke_test_issue53_end_to_end_wheel.py"
+    ).read_text(encoding="utf-8")
+    conflict_index = source.index("stale_conflict = _stale_conflict_probe(")
+    recovery_index = source.index("recovery = _recovery_probe(")
+    assert conflict_index < recovery_index
+    assert 'print("PASS recovery")' in source
+    assert '"partial_error_exact": recovery["partial_error_exact"]' in source
+    assert '"recovery_idempotent": recovery["recovery_idempotent"]' in source

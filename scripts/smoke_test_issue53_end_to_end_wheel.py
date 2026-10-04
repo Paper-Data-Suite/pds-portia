@@ -50,6 +50,9 @@ COUNSELOR_SUPPORT_PARTICIPANT_ID: Final[str] = "spp_issue53_counselor"
 SUPPORT_NEED_ID: Final[str] = "spn_issue53_access"
 SUPPORT_GOAL_ID: Final[str] = "spg_issue53_access"
 SUPPORT_PLAN_ID: Final[str] = "spt_issue53_access"
+RECOVERED_SUPPORT_ID: Final[str] = "spt_issue53_access_corrected"
+RECOVERY_TRANSITION_ID: Final[str] = "lct_issue53_support_corrected"
+RECOVERY_OPERATION_ID: Final[str] = "op_issue53_support_recovery"
 IMPLEMENTATION_ONE_ID: Final[str] = "imp_issue53_access_001"
 IMPLEMENTATION_TWO_ID: Final[str] = "imp_issue53_access_002"
 FIDELITY_ID: Final[str] = "fid_issue53_access"
@@ -3367,6 +3370,383 @@ print(
 )
 """
 
+_RECOVERY_PROBE = r"""
+import hashlib
+import json
+import sys
+from pathlib import Path
+
+from portia.models import parse_portia_record
+from portia.models.references import ExactPortiaWorkRef
+from portia.storage.errors import PortiaOperationPartialCommitError
+from portia.storage.fingerprint import ContentFingerprint, fingerprint_bytes
+from portia.storage.paths import (
+    resolve_workspace_relative,
+    work_storage_history_path,
+)
+from portia.storage.series import OperationJournalStore
+from portia.workflows import (
+    RecoveryWorkflowService,
+    SupportWorkflowService,
+    support_reference,
+)
+
+PRIMARY_CLASS_ID = "eng10_p2_2026"
+SUPPORT_PROCESS_ID = "sup_issue53_support"
+SUPPORT_ID = "spt_issue53_access"
+CORRECTED_SUPPORT_ID = "spt_issue53_access_corrected"
+TRANSITION_ID = "lct_issue53_support_corrected"
+OPERATION_ID = "op_issue53_support_recovery"
+CORRECTED_AT = "2026-10-19T09:30:00-04:00"
+AGENT = {
+    "type": "local_operator",
+    "display_label": "Synthetic Acceptance Operator",
+}
+
+workspace = Path(sys.argv[1]).resolve()
+work = ExactPortiaWorkRef(
+    class_id=PRIMARY_CLASS_ID,
+    work_id=SUPPORT_PROCESS_ID,
+    work_kind="support_process",
+    contract_version="1",
+)
+predecessor_ref = support_reference(work, SUPPORT_ID)
+successor_ref = support_reference(work, CORRECTED_SUPPORT_ID)
+service = SupportWorkflowService(workspace)
+journals = OperationJournalStore(workspace)
+recovery = RecoveryWorkflowService(workspace)
+
+
+def snapshot(root):
+    return tuple(
+        sorted(
+            (
+                path.relative_to(root).as_posix(),
+                hashlib.sha256(path.read_bytes()).hexdigest(),
+            )
+            for path in root.rglob("*")
+            if path.is_file()
+        )
+    )
+
+
+predecessor = service.require_current_use(predecessor_ref)
+if predecessor.record.status != "active":
+    raise RuntimeError("recovery predecessor must be canonically active")
+if predecessor.record.field("plan_state") != "paused":
+    raise RuntimeError("recovery predecessor must retain Part K paused plan state")
+
+predecessor_bytes_before = predecessor.path.read_bytes()
+predecessor_fingerprint_before = predecessor.fingerprint
+
+successor_wire = predecessor.record.to_dict()
+successor_wire["support_id"] = CORRECTED_SUPPORT_ID
+strategy = dict(successor_wire["strategy"])
+strategy["procedure"] = (
+    "At the start of independent work, make the designated lower-distraction "
+    "location available and state once that the participant may choose it."
+)
+successor_wire["strategy"] = strategy
+successor_wire["supersedes"] = [
+    {
+        "work_record_ref": predecessor_ref.to_dict(),
+        "reason": "strategy_corrected",
+        "detail": "Corrected the recorded wording of the planned reminder.",
+    }
+]
+successor_wire["created_at"] = CORRECTED_AT
+successor_wire["created_by"] = AGENT
+successor_wire["updated_at"] = CORRECTED_AT
+successor_wire["updated_by"] = AGENT
+successor = parse_portia_record("support", "1", successor_wire)
+
+fault_checkpoints = []
+
+
+def fail_after_successor(checkpoint, step_id):
+    fault_checkpoints.append((checkpoint, step_id))
+    if checkpoint == "after_publish" and step_id == "step_successor":
+        raise RuntimeError("synthetic Issue #53 recovery crash boundary")
+
+
+partial_error = None
+try:
+    service.correct(
+        predecessor_ref,
+        successor,
+        expected=predecessor.fingerprint,
+        transition_id=TRANSITION_ID,
+        operation_id=OPERATION_ID,
+        fault_hook=fail_after_successor,
+    )
+except PortiaOperationPartialCommitError as exc:
+    partial_error = exc
+
+if partial_error is None:
+    raise RuntimeError("coordinated Support correction did not partially commit")
+if partial_error.operation_id != OPERATION_ID:
+    raise RuntimeError("partial-commit error lost exact operation identity")
+if partial_error.accepted_steps != ("step_history", "step_successor"):
+    raise RuntimeError("partial-commit boundary accepted unexpected canonical steps")
+
+partial_current = journals.load_current(OPERATION_ID)
+partial_data = partial_current.revision.to_dict()
+if partial_data.get("state") != "recovering":
+    raise RuntimeError("partial operation was not journaled as recovering")
+if partial_data.get("operation_id") != OPERATION_ID:
+    raise RuntimeError("recovering journal lost operation identity")
+
+partial_state = partial_data.get("partial_state")
+if not isinstance(partial_state, dict):
+    raise RuntimeError("recovering journal has malformed partial state")
+if partial_state.get("durability_assessment") != "confirmed":
+    raise RuntimeError("recovering journal did not confirm durable partial state")
+if partial_state.get("accepted_steps") != ["step_history", "step_successor"]:
+    raise RuntimeError("recovering journal accepted-step evidence changed")
+if partial_state.get("remaining_canonical_steps") != [
+    "step_transition",
+    "step_action",
+]:
+    raise RuntimeError("recovering journal remaining-step evidence changed")
+if partial_state.get("recommended_disposition") != "resume":
+    raise RuntimeError("recovering journal did not recommend bounded resume")
+
+write_set = partial_data.get("write_set")
+if not isinstance(write_set, list):
+    raise RuntimeError("recovering journal write set is malformed")
+steps = {
+    step.get("step_id"): step
+    for step in write_set
+    if isinstance(step, dict) and isinstance(step.get("step_id"), str)
+}
+if tuple(steps) != (
+    "step_history",
+    "step_successor",
+    "step_transition",
+    "step_action",
+):
+    raise RuntimeError("Support correction write-set topology changed")
+
+for step_id in ("step_history", "step_successor"):
+    if steps[step_id].get("disposition") != "accepted":
+        raise RuntimeError("durable partial step lost accepted disposition")
+for step_id in ("step_transition", "step_action"):
+    if steps[step_id].get("disposition") != "staged":
+        raise RuntimeError("remaining recovery step lost staged disposition")
+
+history_path = work_storage_history_path(
+    workspace,
+    work,
+    "support",
+    SUPPORT_ID,
+    predecessor_fingerprint_before.digest,
+)
+if history_path.read_bytes() != predecessor_bytes_before:
+    raise RuntimeError("accepted technical history bytes changed at interruption")
+
+successor_partial = service.load_exact(successor_ref)
+successor_bytes_before_recovery = successor_partial.path.read_bytes()
+successor_mtime_before_recovery = successor_partial.path.stat().st_mtime_ns
+if successor_partial.record.to_dict() != successor.to_dict():
+    raise RuntimeError("accepted successor bytes do not match correction intent")
+
+predecessor_partial = service.load_exact(predecessor_ref)
+if predecessor_partial.fingerprint != predecessor_fingerprint_before:
+    raise RuntimeError("predecessor changed before recovery")
+if predecessor_partial.path.read_bytes() != predecessor_bytes_before:
+    raise RuntimeError("predecessor canonical bytes changed before recovery")
+if predecessor_partial.record.status != "active":
+    raise RuntimeError("predecessor was superseded before recovery")
+
+transition_step = steps["step_transition"]
+transition_destination = transition_step.get("destination_path")
+if not isinstance(transition_destination, str):
+    raise RuntimeError("transition step destination is malformed")
+transition_path = resolve_workspace_relative(workspace, transition_destination)
+if transition_path.exists():
+    raise RuntimeError("lifecycle transition was published before recovery")
+
+staged_entries = partial_data.get("staged_artifacts")
+if not isinstance(staged_entries, list) or len(staged_entries) != 4:
+    raise RuntimeError("recovering journal did not retain exact staged set")
+staged_paths = []
+for entry in staged_entries:
+    if not isinstance(entry, dict):
+        raise RuntimeError("recovering staged evidence is malformed")
+    relative = entry.get("staging_path")
+    if not isinstance(relative, str):
+        raise RuntimeError("recovering staging path is malformed")
+    path = resolve_workspace_relative(workspace, relative)
+    if not path.is_file():
+        raise RuntimeError("recovering staged candidate is missing")
+    staged_paths.append(path)
+
+lock_set = partial_data.get("lock_set")
+if not isinstance(lock_set, list):
+    raise RuntimeError("recovering lock set is malformed")
+held_lock_paths = []
+for entry in lock_set:
+    if not isinstance(entry, dict):
+        raise RuntimeError("recovering lock evidence is malformed")
+    if entry.get("disposition") != "acquired":
+        raise RuntimeError("partial operation did not retain exact held locks")
+    relative = entry.get("lock_path")
+    if not isinstance(relative, str):
+        raise RuntimeError("recovering lock path is malformed")
+    path = resolve_workspace_relative(workspace, relative)
+    if not path.is_file():
+        raise RuntimeError("journaled held lock is not durable")
+    held_lock_paths.append(path)
+
+assessment = recovery.assess(OPERATION_ID)
+if assessment.state != "recovering":
+    raise RuntimeError("RecoveryWorkflowService did not observe recovering state")
+if assessment.disposition != "resume":
+    raise RuntimeError("RecoveryWorkflowService did not select resume")
+if assessment.findings:
+    raise RuntimeError("recovering operation has unexpected blocking findings")
+evidence = {item.step_id: item for item in assessment.step_evidence}
+if set(evidence) != set(steps):
+    raise RuntimeError("recovery assessment lost exact write-step identities")
+if evidence["step_history"].disposition != "accepted":
+    raise RuntimeError("recovery did not recognize accepted history")
+if evidence["step_successor"].disposition != "accepted":
+    raise RuntimeError("recovery did not recognize accepted successor")
+if evidence["step_transition"].disposition != "not_written":
+    raise RuntimeError("recovery did not recognize missing transition")
+if evidence["step_action"].disposition != "not_written":
+    raise RuntimeError("recovery did not recognize unsuperseded predecessor")
+
+accepted_before_recovery = {
+    "step_history": history_path.read_bytes(),
+    "step_successor": successor_partial.path.read_bytes(),
+}
+
+recovered = recovery.resume_incomplete(
+    OPERATION_ID,
+    expected_pointer=partial_current.pointer_fingerprint,
+)
+if recovered.state != "completed":
+    raise RuntimeError("recovery did not reach completed journal state")
+if recovered.disposition != "terminal_consistent":
+    raise RuntimeError("recovery did not become terminal-consistent")
+if recovered.findings:
+    raise RuntimeError("completed recovery retained unexpected findings")
+if any(item.disposition != "accepted" for item in recovered.step_evidence):
+    raise RuntimeError("completed recovery did not prove every canonical step")
+
+if history_path.read_bytes() != accepted_before_recovery["step_history"]:
+    raise RuntimeError("recovery replayed or rewrote already accepted history")
+successor_after_recovery = service.require_current_use(successor_ref)
+if successor_after_recovery.path.read_bytes() != accepted_before_recovery["step_successor"]:
+    raise RuntimeError("recovery replayed or rewrote already accepted successor")
+if successor_after_recovery.path.stat().st_mtime_ns != successor_mtime_before_recovery:
+    raise RuntimeError("accepted successor was republished during recovery")
+
+predecessor_after = service.load_exact(predecessor_ref)
+if predecessor_after.record.status != "superseded":
+    raise RuntimeError("recovery did not supersede exact predecessor")
+if predecessor_after.record.field("plan_state") != "paused":
+    raise RuntimeError("recovery changed paused Support plan state")
+if not transition_path.is_file():
+    raise RuntimeError("recovery did not publish exact lifecycle transition")
+transition = service.repository.load_work_record(
+    work,
+    "lifecycle_transition",
+    "1",
+    TRANSITION_ID,
+)
+if transition.record.field("to_status") != "superseded":
+    raise RuntimeError("recovered lifecycle transition has wrong terminal status")
+
+for step_id, raw in steps.items():
+    destination = raw.get("destination_path")
+    intended_raw = raw.get("intended_result")
+    if not isinstance(destination, str) or not isinstance(intended_raw, dict):
+        raise RuntimeError("recovering write step lost deterministic intent")
+    expected = ContentFingerprint.from_dict(intended_raw.get("fingerprint"))
+    path = resolve_workspace_relative(workspace, destination)
+    actual = fingerprint_bytes(path.read_bytes())
+    if actual != expected:
+        raise RuntimeError(
+            "recovery final canonical bytes disagree with journaled exact intent"
+        )
+
+if any(path.exists() for path in held_lock_paths):
+    raise RuntimeError("recovery did not release exact held locks")
+if any(path.exists() for path in staged_paths):
+    raise RuntimeError("recovery did not clean operation-owned staging")
+
+terminal_current = journals.load_current(OPERATION_ID)
+terminal_data = terminal_current.revision.to_dict()
+if terminal_data.get("state") != "completed":
+    raise RuntimeError("operation current pointer does not select completed journal")
+terminal_partial = terminal_data.get("partial_state")
+if not isinstance(terminal_partial, dict):
+    raise RuntimeError("terminal recovery partial state is malformed")
+if terminal_partial.get("remaining_canonical_steps") != []:
+    raise RuntimeError("terminal recovery still reports canonical work")
+if terminal_partial.get("held_or_possible_locks") != []:
+    raise RuntimeError("terminal recovery still reports held locks")
+if terminal_data.get("staged_artifacts") != []:
+    raise RuntimeError("terminal recovery still reports staging")
+
+before_idempotent_recovery = snapshot(workspace)
+repeated = recovery.resume_incomplete(
+    OPERATION_ID,
+    expected_pointer=terminal_current.pointer_fingerprint,
+)
+after_idempotent_recovery = snapshot(workspace)
+if repeated.disposition != "terminal_consistent":
+    raise RuntimeError("repeated recovery did not remain terminal-consistent")
+if before_idempotent_recovery != after_idempotent_recovery:
+    raise RuntimeError("repeated terminal recovery mutated durable state")
+
+print(
+    json.dumps(
+        {
+            "partial_error_exact": True,
+            "partial_accepted_steps": list(partial_error.accepted_steps),
+            "partial_state": partial_data.get("state"),
+            "partial_disposition": assessment.disposition,
+            "partial_findings_count": len(assessment.findings),
+            "accepted_history_preserved": (
+                history_path.read_bytes()
+                == accepted_before_recovery["step_history"]
+            ),
+            "accepted_successor_preserved": (
+                successor_after_recovery.path.read_bytes()
+                == accepted_before_recovery["step_successor"]
+            ),
+            "accepted_successor_not_republished": (
+                successor_after_recovery.path.stat().st_mtime_ns
+                == successor_mtime_before_recovery
+            ),
+            "predecessor_superseded": predecessor_after.record.status
+            == "superseded",
+            "successor_current": successor_after_recovery.record.status == "active",
+            "successor_plan_state": successor_after_recovery.record.field(
+                "plan_state"
+            ),
+            "transition_published": transition_path.is_file(),
+            "terminal_state": terminal_data.get("state"),
+            "terminal_disposition": recovered.disposition,
+            "terminal_findings_count": len(recovered.findings),
+            "locks_released": not any(path.exists() for path in held_lock_paths),
+            "staging_cleaned": not any(path.exists() for path in staged_paths),
+            "remaining_steps_empty": (
+                terminal_partial.get("remaining_canonical_steps") == []
+            ),
+            "recovery_idempotent": (
+                before_idempotent_recovery == after_idempotent_recovery
+            ),
+            "ordinary_conflict_distinct": True,
+        },
+        sort_keys=True,
+    )
+)
+"""
+
 class Issue53AcceptanceError(RuntimeError):
     """Raised when the representative installed acceptance boundary fails."""
 
@@ -4240,6 +4620,69 @@ def _stale_conflict_probe(
             )
     return payload
 
+def _recovery_probe(
+    python: Path,
+    *,
+    cwd: Path,
+    env: Mapping[str, str],
+    workspace: Path,
+) -> dict[str, object]:
+    completed = _run(
+        [
+            str(python),
+            "-c",
+            _RECOVERY_PROBE,
+            str(workspace),
+        ],
+        cwd=cwd,
+        env=env,
+    )
+    lines = [line for line in completed.stdout.splitlines() if line.strip()]
+    if not lines:
+        raise Issue53AcceptanceError(
+            "Issue #53 installed recovery probe produced no result"
+        )
+    try:
+        payload_raw = json.loads(lines[-1])
+    except json.JSONDecodeError as exc:
+        raise Issue53AcceptanceError(
+            "Issue #53 installed recovery probe returned invalid JSON"
+        ) from exc
+    if not isinstance(payload_raw, dict):
+        raise Issue53AcceptanceError(
+            "Issue #53 installed recovery result was not an object"
+        )
+
+    payload = cast(dict[str, object], payload_raw)
+    expected = {
+        "partial_error_exact": True,
+        "partial_accepted_steps": ["step_history", "step_successor"],
+        "partial_state": "recovering",
+        "partial_disposition": "resume",
+        "partial_findings_count": 0,
+        "accepted_history_preserved": True,
+        "accepted_successor_preserved": True,
+        "accepted_successor_not_republished": True,
+        "predecessor_superseded": True,
+        "successor_current": True,
+        "successor_plan_state": "paused",
+        "transition_published": True,
+        "terminal_state": "completed",
+        "terminal_disposition": "terminal_consistent",
+        "terminal_findings_count": 0,
+        "locks_released": True,
+        "staging_cleaned": True,
+        "remaining_steps_empty": True,
+        "recovery_idempotent": True,
+        "ordinary_conflict_distinct": True,
+    }
+    for key, value in expected.items():
+        if payload.get(key) != value:
+            raise Issue53AcceptanceError(
+                f"Issue #53 installed recovery mismatch for {key}"
+            )
+    return payload
+
 def smoke(portia_wheel: Path, core_wheel: Path) -> dict[str, object]:
     repository = Path(__file__).resolve().parents[1]
     candidate = _require_wheel(portia_wheel, label="Portia candidate")
@@ -4365,6 +4808,12 @@ def smoke(portia_wheel: Path, core_wheel: Path) -> dict[str, object]:
             env=env,
             workspace=workspace,
         )
+        recovery = _recovery_probe(
+            python,
+            cwd=work,
+            env=env,
+            workspace=workspace,
+        )
         if tuple(work.iterdir()):
             raise Issue53AcceptanceError(
                 "Issue #53 acceptance polluted its empty working directory"
@@ -4387,6 +4836,7 @@ def smoke(portia_wheel: Path, core_wheel: Path) -> dict[str, object]:
         print("PASS attention transition")
         print("PASS provider boundary")
         print("PASS conflict")
+        print("PASS recovery")
 
         return {
             "candidate_portia_wheel": candidate.name,
@@ -4583,6 +5033,30 @@ def smoke(portia_wheel: Path, core_wheel: Path) -> dict[str, object]:
             "ordinary_conflict_not_recovery": stale_conflict[
                 "ordinary_conflict_not_recovery"
             ],
+            "partial_error_exact": recovery["partial_error_exact"],
+            "partial_accepted_steps": recovery["partial_accepted_steps"],
+            "recovery_partial_state": recovery["partial_state"],
+            "recovery_partial_disposition": recovery["partial_disposition"],
+            "accepted_history_preserved": recovery[
+                "accepted_history_preserved"
+            ],
+            "accepted_successor_preserved": recovery[
+                "accepted_successor_preserved"
+            ],
+            "accepted_successor_not_republished": recovery[
+                "accepted_successor_not_republished"
+            ],
+            "recovered_predecessor_superseded": recovery[
+                "predecessor_superseded"
+            ],
+            "recovered_successor_current": recovery["successor_current"],
+            "recovery_terminal_state": recovery["terminal_state"],
+            "recovery_terminal_disposition": recovery[
+                "terminal_disposition"
+            ],
+            "recovery_locks_released": recovery["locks_released"],
+            "recovery_staging_cleaned": recovery["staging_cleaned"],
+            "recovery_idempotent": recovery["recovery_idempotent"],
             "launcher_reachable": True,
             "pip_check": "clean",
         }
