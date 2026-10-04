@@ -867,3 +867,70 @@ def test_issue53_core_provider_follows_follow_up_attention_transition() -> None:
     assert 'print("PASS provider boundary")' in source
     assert '"provider_zero_write": core_provider["provider_zero_write"]' in source
     assert '"shared_projection_privacy_bounded": core_provider[' in source
+
+
+def test_issue53_stale_conflict_uses_real_support_plan_state_update() -> None:
+    smoke = _load_script()
+    probe = smoke._STALE_CONFLICT_PROBE
+    for marker in (
+        "SupportWorkflowService(workspace)",
+        "service.require_current_use(reference)",
+        'paused_wire["plan_state"] = "paused"',
+        "service.transition_plan_state(",
+        "expected=stale_fingerprint",
+        'stale_wire["plan_state"] = "completed"',
+    ):
+        assert marker in probe
+
+
+def test_issue53_stale_conflict_requires_exact_portia_conflict_error() -> None:
+    smoke = _load_script()
+    probe = smoke._STALE_CONFLICT_PROBE
+    for marker in (
+        "from portia.storage.errors import PortiaConflictError",
+        "except PortiaConflictError:",
+        '"stale_conflict_raised": conflict_raised',
+        '"stale_fingerprint_obsolete": stale_fingerprint != accepted_fingerprint',
+    ):
+        assert marker in probe
+
+
+def test_issue53_stale_conflict_is_byte_for_byte_zero_mutation() -> None:
+    smoke = _load_script()
+    probe = smoke._STALE_CONFLICT_PROBE
+    for marker in (
+        "before_conflict = snapshot(workspace)",
+        "after_conflict = snapshot(workspace)",
+        "if after_conflict != before_conflict:",
+        "accepted_bytes = accepted.path.read_bytes()",
+        "current.path.read_bytes() != accepted_bytes",
+        '"workspace_snapshot_preserved": after_conflict == before_conflict',
+        '"canonical_bytes_preserved": current.path.read_bytes() == accepted_bytes',
+    ):
+        assert marker in probe
+
+
+def test_issue53_stale_conflict_does_not_fabricate_recovery_evidence() -> None:
+    smoke = _load_script()
+    probe = smoke._STALE_CONFLICT_PROBE
+    for marker in (
+        "from portia.storage.paths import operations_root",
+        "operations_before = operation_artifacts(workspace)",
+        "operations_after = operation_artifacts(workspace)",
+        "if operations_after != operations_before:",
+        '"operation_artifacts_preserved": operations_after == operations_before',
+        '"ordinary_conflict_not_recovery": True',
+    ):
+        assert marker in probe
+
+
+def test_issue53_stale_conflict_follows_core_provider_boundary() -> None:
+    source = (
+        ROOT / "scripts" / "smoke_test_issue53_end_to_end_wheel.py"
+    ).read_text(encoding="utf-8")
+    provider_index = source.index("core_provider = _core_provider_probe(")
+    conflict_index = source.index("stale_conflict = _stale_conflict_probe(")
+    assert provider_index < conflict_index
+    assert 'print("PASS conflict")' in source
+    assert '"stale_conflict_raised": stale_conflict[' in source
+    assert '"ordinary_conflict_not_recovery": stale_conflict[' in source

@@ -3203,6 +3203,170 @@ print(
 )
 """
 
+_STALE_CONFLICT_PROBE = r"""
+import hashlib
+import json
+import sys
+from pathlib import Path
+
+from portia.models import parse_portia_record
+from portia.models.references import ExactPortiaWorkRef
+from portia.storage.errors import PortiaConflictError
+from portia.storage.paths import operations_root
+from portia.workflows import (
+    SupportWorkflowService,
+    support_reference,
+)
+
+PRIMARY_CLASS_ID = "eng10_p2_2026"
+SUPPORT_PROCESS_ID = "sup_issue53_support"
+SUPPORT_ID = "spt_issue53_access"
+PAUSED_AT = "2026-10-19T09:20:00-04:00"
+STALE_ATTEMPT_AT = "2026-10-19T09:25:00-04:00"
+AGENT = {
+    "type": "local_operator",
+    "display_label": "Synthetic Acceptance Operator",
+}
+
+workspace = Path(sys.argv[1]).resolve()
+work = ExactPortiaWorkRef(
+    class_id=PRIMARY_CLASS_ID,
+    work_id=SUPPORT_PROCESS_ID,
+    work_kind="support_process",
+    contract_version="1",
+)
+reference = support_reference(work, SUPPORT_ID)
+service = SupportWorkflowService(workspace)
+
+
+def snapshot(root):
+    files = tuple(
+        sorted(
+            (
+                path.relative_to(root).as_posix(),
+                hashlib.sha256(path.read_bytes()).hexdigest(),
+            )
+            for path in root.rglob("*")
+            if path.is_file()
+        )
+    )
+    directories = tuple(
+        sorted(
+            path.relative_to(root).as_posix()
+            for path in root.rglob("*")
+            if path.is_dir()
+        )
+    )
+    return directories, files
+
+
+def operation_artifacts(root):
+    operations = operations_root(root)
+    if not operations.exists():
+        return ()
+    return tuple(
+        sorted(
+            path.relative_to(root).as_posix()
+            for path in operations.rglob("*")
+            if path.is_file()
+        )
+    )
+
+
+original = service.require_current_use(reference)
+if original.record.status != "active":
+    raise RuntimeError("Support must remain canonically active for stale conflict")
+if original.record.field("plan_state") != "active":
+    raise RuntimeError("Support plan must be active before stale conflict")
+
+stale_fingerprint = original.fingerprint
+original_bytes = original.path.read_bytes()
+
+paused_wire = original.record.to_dict()
+paused_wire["plan_state"] = "paused"
+paused_wire["updated_at"] = PAUSED_AT
+paused_wire["updated_by"] = AGENT
+paused_candidate = parse_portia_record("support", "1", paused_wire)
+
+accepted = service.transition_plan_state(
+    reference,
+    paused_candidate,
+    expected=stale_fingerprint,
+)
+if accepted.record.logical_id != SUPPORT_ID:
+    raise RuntimeError("legitimate Support update changed exact identity")
+if accepted.record.status != "active":
+    raise RuntimeError("legitimate Support update changed canonical lifecycle")
+if accepted.record.field("plan_state") != "paused":
+    raise RuntimeError("legitimate Support update did not enter paused state")
+if accepted.fingerprint == stale_fingerprint:
+    raise RuntimeError("legitimate Support update did not change fingerprint")
+if accepted.path.read_bytes() == original_bytes:
+    raise RuntimeError("legitimate Support update did not change canonical bytes")
+
+accepted_bytes = accepted.path.read_bytes()
+accepted_fingerprint = accepted.fingerprint
+before_conflict = snapshot(workspace)
+operations_before = operation_artifacts(workspace)
+
+stale_wire = accepted.record.to_dict()
+stale_wire["plan_state"] = "completed"
+stale_wire["updated_at"] = STALE_ATTEMPT_AT
+stale_wire["updated_by"] = AGENT
+stale_candidate = parse_portia_record("support", "1", stale_wire)
+
+conflict_raised = False
+try:
+    service.transition_plan_state(
+        reference,
+        stale_candidate,
+        expected=stale_fingerprint,
+    )
+except PortiaConflictError:
+    conflict_raised = True
+
+if not conflict_raised:
+    raise RuntimeError("stale Support mutation did not raise PortiaConflictError")
+
+after_conflict = snapshot(workspace)
+operations_after = operation_artifacts(workspace)
+if after_conflict != before_conflict:
+    raise RuntimeError("stale-write conflict caused unintended workspace mutation")
+if operations_after != operations_before:
+    raise RuntimeError("ordinary stale-write conflict fabricated operation evidence")
+
+current = service.require_current_use(reference)
+if current.fingerprint != accepted_fingerprint:
+    raise RuntimeError("stale-write conflict changed accepted Support fingerprint")
+if current.path.read_bytes() != accepted_bytes:
+    raise RuntimeError("stale-write conflict changed accepted canonical bytes")
+if current.record.field("plan_state") != "paused":
+    raise RuntimeError("stale-write conflict changed accepted Support plan state")
+if current.record.status != "active":
+    raise RuntimeError("stale-write conflict changed Support lifecycle")
+
+print(
+    json.dumps(
+        {
+            "original_plan_state": original.record.field("plan_state"),
+            "accepted_plan_state": accepted.record.field("plan_state"),
+            "stale_conflict_raised": conflict_raised,
+            "stale_fingerprint_obsolete": stale_fingerprint != accepted_fingerprint,
+            "canonical_fingerprint_preserved": (
+                current.fingerprint == accepted_fingerprint
+            ),
+            "canonical_bytes_preserved": current.path.read_bytes() == accepted_bytes,
+            "workspace_snapshot_preserved": after_conflict == before_conflict,
+            "operation_artifacts_preserved": operations_after == operations_before,
+            "support_status": current.record.status,
+            "support_plan_state": current.record.field("plan_state"),
+            "ordinary_conflict_not_recovery": True,
+        },
+        sort_keys=True,
+    )
+)
+"""
+
 class Issue53AcceptanceError(RuntimeError):
     """Raised when the representative installed acceptance boundary fails."""
 
@@ -4022,6 +4186,60 @@ def _core_provider_probe(
         )
     return payload
 
+def _stale_conflict_probe(
+    python: Path,
+    *,
+    cwd: Path,
+    env: Mapping[str, str],
+    workspace: Path,
+) -> dict[str, object]:
+    completed = _run(
+        [
+            str(python),
+            "-c",
+            _STALE_CONFLICT_PROBE,
+            str(workspace),
+        ],
+        cwd=cwd,
+        env=env,
+    )
+    lines = [line for line in completed.stdout.splitlines() if line.strip()]
+    if not lines:
+        raise Issue53AcceptanceError(
+            "Issue #53 installed stale-conflict probe produced no result"
+        )
+    try:
+        payload_raw = json.loads(lines[-1])
+    except json.JSONDecodeError as exc:
+        raise Issue53AcceptanceError(
+            "Issue #53 installed stale-conflict probe returned invalid JSON"
+        ) from exc
+    if not isinstance(payload_raw, dict):
+        raise Issue53AcceptanceError(
+            "Issue #53 installed stale-conflict result was not an object"
+        )
+
+    payload = cast(dict[str, object], payload_raw)
+    expected = {
+        "original_plan_state": "active",
+        "accepted_plan_state": "paused",
+        "stale_conflict_raised": True,
+        "stale_fingerprint_obsolete": True,
+        "canonical_fingerprint_preserved": True,
+        "canonical_bytes_preserved": True,
+        "workspace_snapshot_preserved": True,
+        "operation_artifacts_preserved": True,
+        "support_status": "active",
+        "support_plan_state": "paused",
+        "ordinary_conflict_not_recovery": True,
+    }
+    for key, value in expected.items():
+        if payload.get(key) != value:
+            raise Issue53AcceptanceError(
+                f"Issue #53 installed stale-conflict mismatch for {key}"
+            )
+    return payload
+
 def smoke(portia_wheel: Path, core_wheel: Path) -> dict[str, object]:
     repository = Path(__file__).resolve().parents[1]
     candidate = _require_wheel(portia_wheel, label="Portia candidate")
@@ -4141,6 +4359,12 @@ def smoke(portia_wheel: Path, core_wheel: Path) -> dict[str, object]:
             env=env,
             workspace=workspace,
         )
+        stale_conflict = _stale_conflict_probe(
+            python,
+            cwd=work,
+            env=env,
+            workspace=workspace,
+        )
         if tuple(work.iterdir()):
             raise Issue53AcceptanceError(
                 "Issue #53 acceptance polluted its empty working directory"
@@ -4162,6 +4386,7 @@ def smoke(portia_wheel: Path, core_wheel: Path) -> dict[str, object]:
         print("PASS Follow-Up")
         print("PASS attention transition")
         print("PASS provider boundary")
+        print("PASS conflict")
 
         return {
             "candidate_portia_wheel": candidate.name,
@@ -4339,6 +4564,24 @@ def smoke(portia_wheel: Path, core_wheel: Path) -> dict[str, object]:
             ],
             "workspace_path_not_exposed": core_provider[
                 "workspace_path_not_exposed"
+            ],
+            "stale_conflict_raised": stale_conflict[
+                "stale_conflict_raised"
+            ],
+            "conflict_canonical_bytes_preserved": stale_conflict[
+                "canonical_bytes_preserved"
+            ],
+            "conflict_workspace_snapshot_preserved": stale_conflict[
+                "workspace_snapshot_preserved"
+            ],
+            "conflict_operation_artifacts_preserved": stale_conflict[
+                "operation_artifacts_preserved"
+            ],
+            "support_plan_state_after_conflict": stale_conflict[
+                "support_plan_state"
+            ],
+            "ordinary_conflict_not_recovery": stale_conflict[
+                "ordinary_conflict_not_recovery"
             ],
             "launcher_reachable": True,
             "pip_check": "clean",
