@@ -101,3 +101,58 @@ def test_issue53_smoke_script_is_in_strict_mypy_qualification() -> None:
         data = tomllib.load(handle)
     files = set(data["tool"]["mypy"]["files"])
     assert "scripts/smoke_test_issue53_end_to_end_wheel.py" in files
+
+
+def test_issue53_core_setup_identifiers_match_representative_story() -> None:
+    smoke = _load_script()
+    assert smoke.SYNTHETIC_SCHOOL_YEAR == "2026-2027"
+    assert smoke.PRIMARY_CLASS_ID == "eng10_p2_2026"
+    assert smoke.SECONDARY_CLASS_ID == "journalism_p6_2026"
+    assert smoke.COLLISION_STUDENT_ID == "student_shared_001"
+
+
+def test_issue53_core_setup_probe_uses_public_core_authorities() -> None:
+    smoke = _load_script()
+    probe = smoke._CORE_SETUP_PROBE
+    for marker in (
+        "from pds_core.class_metadata import (",
+        "create_class_metadata,",
+        "write_class_metadata_for_class,",
+        "from pds_core.classes import load_class_roster, write_class_roster",
+        "from pds_core.rosters import create_roster, student_display_name",
+        "from pds_core.school_years import get_active_school_year, open_school_year",
+        "open_school_year(",
+        "write_class_metadata_for_class(workspace, metadata_record)",
+        "write_class_roster(workspace, primary_roster)",
+        "write_class_roster(workspace, secondary_roster)",
+    ):
+        assert marker in probe
+
+
+def test_issue53_core_setup_uses_portia_exact_class_qualified_identity() -> None:
+    smoke = _load_script()
+    probe = smoke._CORE_SETUP_PROBE
+    for marker in (
+        "from portia.identity.roster import CoreRosterResolver",
+        "from portia.models.references import RosterStudentRef",
+        "primary_ref = RosterStudentRef(",
+        "secondary_ref = RosterStudentRef(",
+        "resolver.resolve_reference(primary_ref)",
+        "resolver.resolve_reference(secondary_ref)",
+        "if primary_ref == secondary_ref:",
+        "if primary_resolution.reference == secondary_resolution.reference:",
+        "student_display_name(primary_student) != student_display_name(secondary_student)",
+    ):
+        assert marker in probe
+
+
+def test_issue53_core_setup_extends_same_deep_workspace_after_foundation() -> None:
+    source = (
+        ROOT / "scripts" / "smoke_test_issue53_end_to_end_wheel.py"
+    ).read_text(encoding="utf-8")
+    foundation_index = source.index("foundation = _foundation_probe(")
+    core_setup_index = source.index("core_setup = _core_setup_probe(")
+    assert foundation_index < core_setup_index
+    assert 'print("PASS Core setup")' in source
+    assert '"active_school_year": core_setup["active_school_year"]' in source
+    assert '"collision_reference_distinct": core_setup[' in source

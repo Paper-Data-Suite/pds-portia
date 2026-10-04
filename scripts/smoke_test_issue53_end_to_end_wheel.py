@@ -27,6 +27,10 @@ CORE_064_SHA256: Final[str] = (
 EXPECTED_CORE_VERSION: Final[str] = "0.6.4"
 EXPECTED_PORTIA_VERSION: Final[str] = "0.2.0"
 TARGET_DEEP_WORKSPACE_LENGTH: Final[int] = 119
+SYNTHETIC_SCHOOL_YEAR: Final[str] = "2026-2027"
+PRIMARY_CLASS_ID: Final[str] = "eng10_p2_2026"
+SECONDARY_CLASS_ID: Final[str] = "journalism_p6_2026"
+COLLISION_STUDENT_ID: Final[str] = "student_shared_001"
 
 _AUTHORITY_ENVIRONMENT_KEYS: Final[frozenset[str]] = frozenset(
     {"PYTHONPATH", "PDS_WORKSPACE_ROOT"}
@@ -133,6 +137,161 @@ print(
 )
 """
 
+
+_CORE_SETUP_PROBE = r"""
+import json
+import sys
+from datetime import datetime, timezone
+from pathlib import Path
+
+from pds_core.class_metadata import (
+    create_class_metadata,
+    load_class_metadata_for_class,
+    write_class_metadata_for_class,
+)
+from pds_core.classes import load_class_roster, write_class_roster
+from pds_core.rosters import create_roster, student_display_name
+from pds_core.school_years import get_active_school_year, open_school_year
+
+from portia.identity.roster import CoreRosterResolver
+from portia.models.references import RosterStudentRef
+
+
+SCHOOL_YEAR = "2026-2027"
+PRIMARY_CLASS_ID = "eng10_p2_2026"
+SECONDARY_CLASS_ID = "journalism_p6_2026"
+COLLISION_STUDENT_ID = "student_shared_001"
+CREATED_AT = datetime(2026, 9, 1, 12, 0, tzinfo=timezone.utc)
+
+workspace = Path(sys.argv[1]).resolve()
+
+opened = open_school_year(
+    workspace,
+    SCHOOL_YEAR,
+    opened_at=CREATED_AT,
+)
+if opened.active_school_year != SCHOOL_YEAR or opened.closed_at is not None:
+    raise RuntimeError("Core active school-year state did not open as expected")
+if get_active_school_year(workspace) != SCHOOL_YEAR:
+    raise RuntimeError("Core active school-year lookup disagrees with written state")
+
+for class_id in (PRIMARY_CLASS_ID, SECONDARY_CLASS_ID):
+    metadata_record = create_class_metadata(
+        class_id,
+        SCHOOL_YEAR,
+        created_at=CREATED_AT,
+    )
+    write_class_metadata_for_class(workspace, metadata_record)
+
+primary_roster = create_roster(
+    PRIMARY_CLASS_ID,
+    (
+        {
+            "student_id": COLLISION_STUDENT_ID,
+            "last_name": "Synthetic",
+            "first_name": "Shared",
+            "period": "2",
+        },
+        {
+            "student_id": "student_primary_002",
+            "last_name": "Synthetic",
+            "first_name": "Primary",
+            "period": "2",
+        },
+    ),
+)
+secondary_roster = create_roster(
+    SECONDARY_CLASS_ID,
+    (
+        {
+            "student_id": COLLISION_STUDENT_ID,
+            "last_name": "Synthetic",
+            "first_name": "Shared",
+            "period": "6",
+        },
+        {
+            "student_id": "student_secondary_002",
+            "last_name": "Synthetic",
+            "first_name": "Secondary",
+            "period": "6",
+        },
+    ),
+)
+
+write_class_roster(workspace, primary_roster)
+write_class_roster(workspace, secondary_roster)
+
+primary_metadata = load_class_metadata_for_class(workspace, PRIMARY_CLASS_ID)
+secondary_metadata = load_class_metadata_for_class(workspace, SECONDARY_CLASS_ID)
+if primary_metadata.school_year != SCHOOL_YEAR:
+    raise RuntimeError("primary class metadata lost the active school year")
+if secondary_metadata.school_year != SCHOOL_YEAR:
+    raise RuntimeError("secondary class metadata lost the active school year")
+
+loaded_primary = load_class_roster(workspace, PRIMARY_CLASS_ID)
+loaded_secondary = load_class_roster(workspace, SECONDARY_CLASS_ID)
+if loaded_primary.class_id != PRIMARY_CLASS_ID:
+    raise RuntimeError("primary Core roster reloaded under the wrong class")
+if loaded_secondary.class_id != SECONDARY_CLASS_ID:
+    raise RuntimeError("secondary Core roster reloaded under the wrong class")
+
+primary_ref = RosterStudentRef(
+    class_id=PRIMARY_CLASS_ID,
+    student_id=COLLISION_STUDENT_ID,
+)
+secondary_ref = RosterStudentRef(
+    class_id=SECONDARY_CLASS_ID,
+    student_id=COLLISION_STUDENT_ID,
+)
+if primary_ref == secondary_ref:
+    raise RuntimeError("Portia collapsed distinct class-qualified roster references")
+
+resolver = CoreRosterResolver(workspace)
+primary_resolution = resolver.resolve_reference(primary_ref)
+secondary_resolution = resolver.resolve_reference(secondary_ref)
+
+if primary_resolution.reference != primary_ref:
+    raise RuntimeError("primary Portia roster resolution changed exact identity")
+if secondary_resolution.reference != secondary_ref:
+    raise RuntimeError("secondary Portia roster resolution changed exact identity")
+if primary_resolution.reference == secondary_resolution.reference:
+    raise RuntimeError("Portia resolver merged cross-class roster identities")
+
+primary_student = primary_resolution.student
+secondary_student = secondary_resolution.student
+if primary_student.student_id != secondary_student.student_id:
+    raise RuntimeError("synthetic collision no longer shares the local student_id")
+if primary_student.class_id == secondary_student.class_id:
+    raise RuntimeError("synthetic collision no longer spans distinct Core classes")
+if student_display_name(primary_student) != student_display_name(secondary_student):
+    raise RuntimeError("synthetic collision no longer shares the display name")
+if primary_student == secondary_student:
+    raise RuntimeError("class-qualified Core student records were merged")
+
+print(
+    json.dumps(
+        {
+            "active_school_year": get_active_school_year(workspace),
+            "class_count": 2,
+            "roster_count": 2,
+            "primary_roster_count": len(loaded_primary.students),
+            "secondary_roster_count": len(loaded_secondary.students),
+            "collision_local_student_id_equal": (
+                primary_student.student_id == secondary_student.student_id
+            ),
+            "collision_display_name_equal": (
+                student_display_name(primary_student)
+                == student_display_name(secondary_student)
+            ),
+            "collision_reference_distinct": primary_ref != secondary_ref,
+            "resolver_reference_distinct": (
+                primary_resolution.reference != secondary_resolution.reference
+            ),
+        },
+        sort_keys=True,
+    )
+)
+"""
 
 class Issue53AcceptanceError(RuntimeError):
     """Raised when the representative installed acceptance boundary fails."""
@@ -363,6 +522,58 @@ def _foundation_probe(
     return payload
 
 
+def _core_setup_probe(
+    python: Path,
+    *,
+    cwd: Path,
+    env: Mapping[str, str],
+    workspace: Path,
+) -> dict[str, object]:
+    completed = _run(
+        [
+            str(python),
+            "-c",
+            _CORE_SETUP_PROBE,
+            str(workspace),
+        ],
+        cwd=cwd,
+        env=env,
+    )
+    lines = [line for line in completed.stdout.splitlines() if line.strip()]
+    if not lines:
+        raise Issue53AcceptanceError(
+            "Issue #53 installed Core setup probe produced no result"
+        )
+    try:
+        payload_raw = json.loads(lines[-1])
+    except json.JSONDecodeError as exc:
+        raise Issue53AcceptanceError(
+            "Issue #53 installed Core setup probe returned invalid JSON"
+        ) from exc
+    if not isinstance(payload_raw, dict):
+        raise Issue53AcceptanceError(
+            "Issue #53 installed Core setup probe result was not an object"
+        )
+
+    payload = cast(dict[str, object], payload_raw)
+    expected = {
+        "active_school_year": SYNTHETIC_SCHOOL_YEAR,
+        "class_count": 2,
+        "roster_count": 2,
+        "primary_roster_count": 2,
+        "secondary_roster_count": 2,
+        "collision_local_student_id_equal": True,
+        "collision_display_name_equal": True,
+        "collision_reference_distinct": True,
+        "resolver_reference_distinct": True,
+    }
+    for key, value in expected.items():
+        if payload.get(key) != value:
+            raise Issue53AcceptanceError(
+                f"Issue #53 installed Core setup mismatch for {key}"
+            )
+    return payload
+
 def smoke(portia_wheel: Path, core_wheel: Path) -> dict[str, object]:
     repository = Path(__file__).resolve().parents[1]
     candidate = _require_wheel(portia_wheel, label="Portia candidate")
@@ -422,6 +633,12 @@ def smoke(portia_wheel: Path, core_wheel: Path) -> dict[str, object]:
             environment=environment,
             repository=repository,
         )
+        core_setup = _core_setup_probe(
+            python,
+            cwd=work,
+            env=env,
+            workspace=workspace,
+        )
         if tuple(work.iterdir()):
             raise Issue53AcceptanceError(
                 "Issue #53 acceptance polluted its empty working directory"
@@ -429,6 +646,7 @@ def smoke(portia_wheel: Path, core_wheel: Path) -> dict[str, object]:
 
         print("PASS install")
         print("PASS deep workspace")
+        print("PASS Core setup")
 
         return {
             "candidate_portia_wheel": candidate.name,
@@ -438,6 +656,15 @@ def smoke(portia_wheel: Path, core_wheel: Path) -> dict[str, object]:
             "core_version": foundation["core_version"],
             "portia_version": foundation["portia_version"],
             "workspace_length": foundation["workspace_length"],
+            "active_school_year": core_setup["active_school_year"],
+            "class_count": core_setup["class_count"],
+            "roster_count": core_setup["roster_count"],
+            "collision_reference_distinct": core_setup[
+                "collision_reference_distinct"
+            ],
+            "resolver_reference_distinct": core_setup[
+                "resolver_reference_distinct"
+            ],
             "launcher_reachable": True,
             "pip_check": "clean",
         }
