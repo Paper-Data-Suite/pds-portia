@@ -789,3 +789,81 @@ def test_issue53_follow_up_attention_follows_fidelity_in_same_story() -> None:
     assert 'print("PASS attention transition")' in source
     assert '"follow_up_workflow_state": follow_up_attention[' in source
     assert '"attention_after_count": follow_up_attention[' in source
+
+
+def test_issue53_core_provider_uses_core_metadata_and_diagnostics() -> None:
+    smoke = _load_script()
+    probe = smoke._CORE_PROVIDER_PROBE
+    for marker in (
+        "inspect_core_provider_entry_points(",
+        'provider_kind="module_operations"',
+        'diagnose_core_providers(provider_kind="module_operations")',
+        "metadata_row.entry_point_target",
+        '"portia.pds_operations:get_module_operations_profile"',
+        'diagnostic.code != "provider.valid"',
+        'diagnostic.core_compatibility != "passed"',
+        "profile = diagnostic.validated_profile",
+    ):
+        assert marker in probe
+
+
+def test_issue53_core_provider_invokes_readiness_and_attention_through_core() -> None:
+    smoke = _load_script()
+    probe = smoke._CORE_PROVIDER_PROBE
+    for marker in (
+        "ModuleOperationsRequest(",
+        "invoke_module_operations(profile, request)",
+        'readiness.code != "module_operations.evaluated"',
+        "readiness.report.ready is not True",
+        'attention.code != "module_operations.evaluated"',
+        'attention.report.evaluation != "evaluated"',
+    ):
+        assert marker in probe
+
+
+def test_issue53_core_provider_boundary_is_zero_write() -> None:
+    smoke = _load_script()
+    probe = smoke._CORE_PROVIDER_PROBE
+    for marker in (
+        "baseline = snapshot(workspace)",
+        "after_metadata = snapshot(workspace)",
+        "after_diagnostics = snapshot(workspace)",
+        "after_invocation = snapshot(workspace)",
+        '"provider_zero_write": after_invocation == baseline',
+        '"metadata_zero_write": after_metadata == baseline',
+        '"diagnostics_zero_write": after_diagnostics == baseline',
+    ):
+        assert marker in probe
+
+
+def test_issue53_core_provider_projection_is_privacy_minimal() -> None:
+    smoke = _load_script()
+    probe = smoke._CORE_PROVIDER_PROBE
+    for marker in (
+        'if set(shared["readiness"]) != {"evaluation", "ready", "notices"}',
+        'if set(shared["attention"]) != {"evaluation", "summaries", "notices"}',
+        '"student_shared_001"',
+        '"Shared Synthetic"',
+        '"guardian.issue53@example.invalid"',
+        '"journalism_p6_2026"',
+        '"fup_issue53_review"',
+        "str(workspace)",
+        '"workspace_root"',
+        '"record_body"',
+        '"shared_projection_privacy_bounded": True',
+    ):
+        assert marker in probe
+
+
+def test_issue53_core_provider_follows_follow_up_attention_transition() -> None:
+    source = (
+        ROOT / "scripts" / "smoke_test_issue53_end_to_end_wheel.py"
+    ).read_text(encoding="utf-8")
+    follow_up_index = source.index(
+        "follow_up_attention = _follow_up_attention_probe("
+    )
+    provider_index = source.index("core_provider = _core_provider_probe(")
+    assert follow_up_index < provider_index
+    assert 'print("PASS provider boundary")' in source
+    assert '"provider_zero_write": core_provider["provider_zero_write"]' in source
+    assert '"shared_projection_privacy_bounded": core_provider[' in source

@@ -2952,6 +2952,257 @@ print(
 )
 """
 
+_CORE_PROVIDER_PROBE = r"""
+import hashlib
+import json
+import sys
+from dataclasses import asdict
+from pathlib import Path
+
+from pds_core.module_operations import (
+    MODULE_OPERATIONS_ENTRY_POINT_GROUP,
+    ModuleOperationsRequest,
+    invoke_module_operations,
+)
+from pds_core.provider_diagnostics import (
+    diagnose_core_providers,
+    inspect_core_provider_entry_points,
+)
+
+PRIMARY_CLASS_ID = "eng10_p2_2026"
+ACTIVE_SCHOOL_YEAR = "2026-2027"
+
+workspace = Path(sys.argv[1]).resolve()
+
+
+def snapshot(root):
+    return tuple(
+        sorted(
+            (
+                path.relative_to(root).as_posix(),
+                hashlib.sha256(path.read_bytes()).hexdigest(),
+            )
+            for path in root.rglob("*")
+            if path.is_file()
+        )
+    )
+
+
+baseline = snapshot(workspace)
+
+metadata_rows = inspect_core_provider_entry_points(
+    provider_kind="module_operations"
+)
+portia_metadata = tuple(
+    row for row in metadata_rows if row.entry_point_name == "portia"
+)
+if len(portia_metadata) != 1:
+    raise RuntimeError("Core metadata inspection did not find exactly one Portia provider")
+metadata_row = portia_metadata[0]
+if metadata_row.entry_point_group != MODULE_OPERATIONS_ENTRY_POINT_GROUP:
+    raise RuntimeError("Portia provider is registered under the wrong Core group")
+if (
+    metadata_row.entry_point_target
+    != "portia.pds_operations:get_module_operations_profile"
+):
+    raise RuntimeError("Portia provider target changed")
+distribution_name = metadata_row.distribution_name
+if not isinstance(distribution_name, str):
+    raise RuntimeError("Portia provider metadata lost distribution identity")
+if distribution_name.casefold().replace("_", "-") != "pds-portia":
+    raise RuntimeError("Portia provider metadata points at the wrong distribution")
+
+after_metadata = snapshot(workspace)
+if after_metadata != baseline:
+    raise RuntimeError("Core metadata-only provider inspection mutated workspace")
+
+diagnostics = diagnose_core_providers(provider_kind="module_operations")
+portia_diagnostics = tuple(
+    result
+    for result in diagnostics
+    if result.metadata.entry_point_name == "portia"
+)
+if len(portia_diagnostics) != 1:
+    raise RuntimeError("Core provider diagnosis did not isolate one Portia provider")
+diagnostic = portia_diagnostics[0]
+if diagnostic.code != "provider.valid":
+    raise RuntimeError("Core did not diagnose installed Portia provider as valid")
+if diagnostic.stage != "valid":
+    raise RuntimeError("Portia provider diagnosis did not reach valid stage")
+if diagnostic.declared_identity != "portia":
+    raise RuntimeError("Portia provider diagnosis lost module identity")
+if diagnostic.profile_validation != "passed":
+    raise RuntimeError("Portia provider profile did not pass Core validation")
+if diagnostic.core_compatibility != "passed":
+    raise RuntimeError("Portia provider is not compatible with Core operations v1")
+if diagnostic.registry_conflict:
+    raise RuntimeError("Portia provider identity unexpectedly conflicts")
+profile = diagnostic.validated_profile
+if profile is None:
+    raise RuntimeError("valid Portia provider diagnosis did not retain profile")
+if profile.module_id != "portia":
+    raise RuntimeError("diagnosed Portia profile has wrong module identity")
+if profile.supported_core_operations_contract_versions != frozenset({"1"}):
+    raise RuntimeError("diagnosed Portia profile has wrong Core contract set")
+if profile.readiness_provider is None or profile.attention_provider is None:
+    raise RuntimeError("diagnosed Portia profile lost readiness or attention")
+
+after_diagnostics = snapshot(workspace)
+if after_diagnostics != baseline:
+    raise RuntimeError("Core provider diagnosis mutated workspace")
+
+request = ModuleOperationsRequest(
+    workspace_root=workspace,
+    active_school_year=ACTIVE_SCHOOL_YEAR,
+    class_id=PRIMARY_CLASS_ID,
+)
+readiness, attention = invoke_module_operations(profile, request)
+
+after_invocation = snapshot(workspace)
+if after_invocation != baseline:
+    raise RuntimeError("Core module-operations invocation mutated workspace")
+
+if readiness.module_id != "portia" or readiness.capability != "readiness":
+    raise RuntimeError("Core readiness invocation lost Portia capability identity")
+if readiness.code != "module_operations.evaluated":
+    raise RuntimeError("Portia readiness did not evaluate through Core")
+if not readiness.provider_call_attempted or not readiness.provider_call_succeeded:
+    raise RuntimeError("Core readiness invocation did not call provider successfully")
+if readiness.result_validation != "passed":
+    raise RuntimeError("Core readiness result did not pass shared validation")
+if readiness.report is None:
+    raise RuntimeError("Core readiness invocation returned no report")
+if readiness.report.evaluation != "evaluated":
+    raise RuntimeError("Portia readiness report is not evaluated")
+if readiness.report.ready is not True:
+    raise RuntimeError("exact primary Core class is not Portia-ready")
+
+if attention.module_id != "portia" or attention.capability != "attention":
+    raise RuntimeError("Core attention invocation lost Portia capability identity")
+if attention.code != "module_operations.evaluated":
+    raise RuntimeError("Portia attention did not evaluate through Core")
+if not attention.provider_call_attempted or not attention.provider_call_succeeded:
+    raise RuntimeError("Core attention invocation did not call provider successfully")
+if attention.result_validation != "passed":
+    raise RuntimeError("Core attention result did not pass shared validation")
+if attention.report is None:
+    raise RuntimeError("Core attention invocation returned no report")
+if attention.report.evaluation != "evaluated":
+    raise RuntimeError("Portia attention report is not evaluated")
+
+for summary in attention.report.summaries:
+    if summary.class_id not in {None, PRIMARY_CLASS_ID}:
+        raise RuntimeError("shared attention leaked foreign class context")
+    if summary.work_ref is not None:
+        if summary.work_ref.module_id != "portia":
+            raise RuntimeError("shared attention work reference has foreign owner")
+        if summary.work_ref.class_id != PRIMARY_CLASS_ID:
+            raise RuntimeError("shared attention work reference escaped class scope")
+    if summary.action is not None and summary.action.module_id != "portia":
+        raise RuntimeError("shared attention action has foreign owner")
+
+shared = {
+    "readiness": asdict(readiness.report),
+    "attention": asdict(attention.report),
+}
+if set(shared["readiness"]) != {"evaluation", "ready", "notices"}:
+    raise RuntimeError("Core readiness projection gained an unexpected payload field")
+if set(shared["attention"]) != {"evaluation", "summaries", "notices"}:
+    raise RuntimeError("Core attention projection gained an unexpected payload field")
+
+for summary in shared["attention"]["summaries"]:
+    if set(summary) != {
+        "code",
+        "label",
+        "count",
+        "class_id",
+        "work_ref",
+        "action",
+    }:
+        raise RuntimeError("Core attention summary gained an unexpected payload field")
+
+serialized = json.dumps(shared, sort_keys=True, default=str)
+prohibited = (
+    "student_shared_001",
+    "Shared Synthetic",
+    "Synthetic Counselor",
+    "journalism_p6_2026",
+    "actr_guardian_001",
+    "actr_counselor_001",
+    "acp_guardian_email_001",
+    "guardian.issue53@example.invalid",
+    "acct_issue53_cross_report",
+    "acct_issue53_cross_corrected",
+    "obs_issue53_cross_observed",
+    "comm_issue53_guardian",
+    "rsp_issue53_neutral_support",
+    "imp_issue53_access_001",
+    "imp_issue53_access_002",
+    "fid_issue53_access",
+    "fup_issue53_review",
+    "Synthetic classroom material-location discrepancy.",
+    "blue marker",
+    str(workspace),
+)
+for value in prohibited:
+    if value in serialized:
+        raise RuntimeError(
+            "Core shared module-operations projection leaked private Portia state"
+        )
+
+lowered = serialized.casefold()
+for prohibited_key in (
+    "workspace_root",
+    "contact_point",
+    "email_address",
+    "student_name",
+    "actor_id",
+    "record_body",
+    "raw_record",
+    "narrative",
+):
+    if prohibited_key in lowered:
+        raise RuntimeError(
+            "Core shared module-operations projection exposed a private payload field"
+        )
+
+print(
+    json.dumps(
+        {
+            "metadata_provider_count": len(portia_metadata),
+            "metadata_group_exact": (
+                metadata_row.entry_point_group
+                == MODULE_OPERATIONS_ENTRY_POINT_GROUP
+            ),
+            "metadata_target_exact": (
+                metadata_row.entry_point_target
+                == "portia.pds_operations:get_module_operations_profile"
+            ),
+            "diagnostic_code": diagnostic.code,
+            "diagnostic_profile_validation": diagnostic.profile_validation,
+            "diagnostic_core_compatibility": diagnostic.core_compatibility,
+            "profile_module_id": profile.module_id,
+            "profile_contract_v1": (
+                profile.supported_core_operations_contract_versions
+                == frozenset({"1"})
+            ),
+            "readiness_code": readiness.code,
+            "readiness_ready": readiness.report.ready,
+            "attention_code": attention.code,
+            "attention_evaluation": attention.report.evaluation,
+            "attention_summary_count": len(attention.report.summaries),
+            "provider_zero_write": after_invocation == baseline,
+            "metadata_zero_write": after_metadata == baseline,
+            "diagnostics_zero_write": after_diagnostics == baseline,
+            "shared_projection_privacy_bounded": True,
+            "foreign_class_not_exposed": "journalism_p6_2026" not in serialized,
+            "workspace_path_not_exposed": str(workspace) not in serialized,
+        },
+        sort_keys=True,
+    )
+)
+"""
+
 class Issue53AcceptanceError(RuntimeError):
     """Raised when the representative installed acceptance boundary fails."""
 
@@ -3700,6 +3951,77 @@ def _follow_up_attention_probe(
             )
     return payload
 
+def _core_provider_probe(
+    python: Path,
+    *,
+    cwd: Path,
+    env: Mapping[str, str],
+    workspace: Path,
+) -> dict[str, object]:
+    completed = _run(
+        [
+            str(python),
+            "-c",
+            _CORE_PROVIDER_PROBE,
+            str(workspace),
+        ],
+        cwd=cwd,
+        env=env,
+    )
+    lines = [line for line in completed.stdout.splitlines() if line.strip()]
+    if not lines:
+        raise Issue53AcceptanceError(
+            "Issue #53 installed Core provider probe produced no result"
+        )
+    try:
+        payload_raw = json.loads(lines[-1])
+    except json.JSONDecodeError as exc:
+        raise Issue53AcceptanceError(
+            "Issue #53 installed Core provider probe returned invalid JSON"
+        ) from exc
+    if not isinstance(payload_raw, dict):
+        raise Issue53AcceptanceError(
+            "Issue #53 installed Core provider result was not an object"
+        )
+
+    payload = cast(dict[str, object], payload_raw)
+    expected = {
+        "metadata_provider_count": 1,
+        "metadata_group_exact": True,
+        "metadata_target_exact": True,
+        "diagnostic_code": "provider.valid",
+        "diagnostic_profile_validation": "passed",
+        "diagnostic_core_compatibility": "passed",
+        "profile_module_id": "portia",
+        "profile_contract_v1": True,
+        "readiness_code": "module_operations.evaluated",
+        "readiness_ready": True,
+        "attention_code": "module_operations.evaluated",
+        "attention_evaluation": "evaluated",
+        "provider_zero_write": True,
+        "metadata_zero_write": True,
+        "diagnostics_zero_write": True,
+        "shared_projection_privacy_bounded": True,
+        "foreign_class_not_exposed": True,
+        "workspace_path_not_exposed": True,
+    }
+    for key, value in expected.items():
+        if payload.get(key) != value:
+            raise Issue53AcceptanceError(
+                f"Issue #53 installed Core provider mismatch for {key}"
+            )
+
+    summary_count = payload.get("attention_summary_count")
+    if (
+        not isinstance(summary_count, int)
+        or isinstance(summary_count, bool)
+        or summary_count < 0
+    ):
+        raise Issue53AcceptanceError(
+            "Issue #53 installed Core attention summary count is invalid"
+        )
+    return payload
+
 def smoke(portia_wheel: Path, core_wheel: Path) -> dict[str, object]:
     repository = Path(__file__).resolve().parents[1]
     candidate = _require_wheel(portia_wheel, label="Portia candidate")
@@ -3813,6 +4135,12 @@ def smoke(portia_wheel: Path, core_wheel: Path) -> dict[str, object]:
             env=env,
             workspace=workspace,
         )
+        core_provider = _core_provider_probe(
+            python,
+            cwd=work,
+            env=env,
+            workspace=workspace,
+        )
         if tuple(work.iterdir()):
             raise Issue53AcceptanceError(
                 "Issue #53 acceptance polluted its empty working directory"
@@ -3833,6 +4161,7 @@ def smoke(portia_wheel: Path, core_wheel: Path) -> dict[str, object]:
         print("PASS Fidelity")
         print("PASS Follow-Up")
         print("PASS attention transition")
+        print("PASS provider boundary")
 
         return {
             "candidate_portia_wheel": candidate.name,
@@ -3989,6 +4318,27 @@ def smoke(portia_wheel: Path, core_wheel: Path) -> dict[str, object]:
             ],
             "process_completion_not_inferred": follow_up_attention[
                 "process_completion_not_inferred"
+            ],
+            "provider_metadata_target_exact": core_provider[
+                "metadata_target_exact"
+            ],
+            "provider_diagnostic_code": core_provider["diagnostic_code"],
+            "provider_readiness_ready": core_provider["readiness_ready"],
+            "provider_attention_evaluation": core_provider[
+                "attention_evaluation"
+            ],
+            "provider_attention_summary_count": core_provider[
+                "attention_summary_count"
+            ],
+            "provider_zero_write": core_provider["provider_zero_write"],
+            "shared_projection_privacy_bounded": core_provider[
+                "shared_projection_privacy_bounded"
+            ],
+            "foreign_class_not_exposed": core_provider[
+                "foreign_class_not_exposed"
+            ],
+            "workspace_path_not_exposed": core_provider[
+                "workspace_path_not_exposed"
             ],
             "launcher_reachable": True,
             "pip_check": "clean",
