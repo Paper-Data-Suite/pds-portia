@@ -39,6 +39,9 @@ PRIMARY_EVENT_PARTICIPANT_ID: Final[str] = "ep_issue53_primary"
 CROSS_EVENT_PARTICIPANT_ID: Final[str] = "ep_issue53_cross"
 EVENT_ACCOUNT_ID: Final[str] = "acct_issue53_cross_report"
 EVENT_OBSERVATION_ID: Final[str] = "obs_issue53_cross_observed"
+EVENT_REVIEW_ID: Final[str] = "rvw_issue53_evidence"
+EVENT_DETERMINATION_ID: Final[str] = "det_issue53_insufficient"
+CORRECTED_EVENT_ACCOUNT_ID: Final[str] = "acct_issue53_cross_corrected"
 
 _AUTHORITY_ENVIRONMENT_KEYS: Final[frozenset[str]] = frozenset(
     {"PYTHONPATH", "PDS_WORKSPACE_ROOT"}
@@ -1025,6 +1028,330 @@ print(
 )
 """
 
+_JUDGMENT_CORRECTION_PROBE = r"""
+import json
+import sys
+from pathlib import Path
+
+from portia.models import parse_portia_record
+from portia.models.references import ExactPortiaWorkRef
+from portia.storage.fingerprint import fingerprint_bytes
+from portia.storage.paths import work_storage_history_path
+from portia.workflows import (
+    AccountWorkflowService,
+    ClassificationWorkflowService,
+    DeterminationWorkflowService,
+    HypothesisWorkflowService,
+    ReviewWorkflowService,
+    account_reference,
+    determination_reference,
+    observation_reference,
+    review_reference,
+)
+
+PRIMARY_CLASS_ID = "eng10_p2_2026"
+EVENT_ID = "evt_issue53_primary"
+ACCOUNT_ID = "acct_issue53_cross_report"
+OBSERVATION_ID = "obs_issue53_cross_observed"
+REVIEW_ID = "rvw_issue53_evidence"
+DETERMINATION_ID = "det_issue53_insufficient"
+CORRECTED_ACCOUNT_ID = "acct_issue53_cross_corrected"
+CORRECTION_TRANSITION_ID = "lct_issue53_account_corrected"
+CORRECTION_OPERATION_ID = "op_issue53_account_corrected"
+STAMP = "2026-10-04T12:30:00-04:00"
+CORRECTION_STAMP = "2026-10-04T12:35:00-04:00"
+AGENT = {
+    "type": "local_operator",
+    "display_label": "Synthetic Acceptance Operator",
+}
+
+workspace = Path(sys.argv[1]).resolve()
+work = ExactPortiaWorkRef(
+    class_id=PRIMARY_CLASS_ID,
+    work_id=EVENT_ID,
+    work_kind="event",
+    contract_version="2",
+)
+
+
+def evidence_ref(record_kind, record_id):
+    return {
+        "kind": "portia_record",
+        "work_record_ref": {
+            "work_ref": work.to_dict(),
+            "record_ref": {
+                "record_kind": record_kind,
+                "record_id": record_id,
+                "contract_version": "2",
+            },
+        },
+    }
+
+
+original_account_ref = account_reference(work, ACCOUNT_ID)
+observation_ref = observation_reference(work, OBSERVATION_ID)
+
+accounts = AccountWorkflowService(workspace)
+reviews = ReviewWorkflowService(workspace)
+determinations = DeterminationWorkflowService(workspace)
+
+predecessor_before = accounts.require_current_use(original_account_ref)
+observation = observation_ref
+account_evidence = evidence_ref("account", ACCOUNT_ID)
+observation_evidence = evidence_ref("observation", OBSERVATION_ID)
+
+review_record = parse_portia_record(
+    "review",
+    "1",
+    {
+        "schema_version": "1",
+        "record_type": "review",
+        "module_id": "portia",
+        "class_id": PRIMARY_CLASS_ID,
+        "work_id": EVENT_ID,
+        "review_id": REVIEW_ID,
+        "status": "active",
+        "review_state": "completed",
+        "trigger": {"kind": "routine_review"},
+        "question": {
+            "kind": "evidence_review",
+            "text": (
+                "What bounded information is supported by the exact Account "
+                "and Observation for this synthetic Event?"
+            ),
+        },
+        "target": {"kind": "event"},
+        "reviewer": {
+            "kind": "local_operator",
+            "display_label": "Synthetic Acceptance Operator",
+        },
+        "evidence_considered": [
+            account_evidence,
+            observation_evidence,
+        ],
+        "creation_source": {"type": "digital_entry"},
+        "created_at": STAMP,
+        "created_by": AGENT,
+        "updated_at": STAMP,
+        "updated_by": AGENT,
+    },
+)
+review_created = reviews.create(work, review_record)
+review_exact_ref = review_reference(work, REVIEW_ID)
+review_current_before = reviews.require_current_use(review_exact_ref)
+if review_current_before.record.field("review_state") != "completed":
+    raise RuntimeError("bounded Review did not remain completed/current")
+
+determination_record = parse_portia_record(
+    "determination",
+    "1",
+    {
+        "schema_version": "1",
+        "record_type": "determination",
+        "module_id": "portia",
+        "class_id": PRIMARY_CLASS_ID,
+        "work_id": EVENT_ID,
+        "determination_id": DETERMINATION_ID,
+        "status": "active",
+        "target": {"kind": "event"},
+        "question": (
+            "What bounded conclusion is supported by the conflicting "
+            "synthetic evidence?"
+        ),
+        "decision_maker": {
+            "kind": "local_operator",
+            "display_label": "Synthetic Acceptance Operator",
+        },
+        "authority_context": {
+            "kind": "teacher_local",
+            "scope": "teacher_review",
+        },
+        "process_basis": {
+            "kind": "teacher_local",
+            "process_label": "Synthetic local evidence review",
+        },
+        "outcome": {"kind": "insufficient_information"},
+        "review_ref": review_exact_ref.to_dict(),
+        "basis": [
+            {
+                "relation": "supporting",
+                "evidence_ref": account_evidence,
+            },
+            {
+                "relation": "contrary",
+                "evidence_ref": observation_evidence,
+            },
+        ],
+        "creation_source": {"type": "digital_entry"},
+        "created_at": STAMP,
+        "created_by": AGENT,
+        "updated_at": STAMP,
+        "updated_by": AGENT,
+    },
+)
+determination_created = determinations.create(work, determination_record)
+determination_exact_ref = determination_reference(work, DETERMINATION_ID)
+determination_current_before = determinations.require_current_use(
+    determination_exact_ref
+)
+if determination_current_before.record.field("outcome") != {
+    "kind": "insufficient_information"
+}:
+    raise RuntimeError("Determination exceeded the bounded insufficient-information result")
+
+if ClassificationWorkflowService(workspace).list(work):
+    raise RuntimeError("bounded Review manufactured a Classification")
+if HypothesisWorkflowService(workspace).list(work):
+    raise RuntimeError("bounded Review manufactured a Hypothesis")
+
+prior_bytes = predecessor_before.path.read_bytes()
+prior_fingerprint = predecessor_before.fingerprint
+review_fingerprint = review_created.fingerprint
+determination_fingerprint = determination_created.fingerprint
+
+predecessor_wire = predecessor_before.record.to_dict()
+corrected_wire = dict(predecessor_wire)
+corrected_wire["account_id"] = CORRECTED_ACCOUNT_ID
+corrected_wire["status"] = "active"
+corrected_wire["content"] = [
+    {
+        "representation": "recorded_summary",
+        "text": (
+            "Synthetic source corrected the earlier statement: "
+            "the blue marker was on the side tray after the timer sounded."
+        ),
+    }
+]
+corrected_wire["supersedes"] = [
+    {
+        "work_record_ref": original_account_ref.to_dict(),
+        "reason": "statement_corrected",
+    }
+]
+corrected_wire["created_at"] = CORRECTION_STAMP
+corrected_wire["updated_at"] = CORRECTION_STAMP
+corrected_wire["created_by"] = AGENT
+corrected_wire["updated_by"] = AGENT
+
+successor = parse_portia_record("account", "2", corrected_wire)
+correction = accounts.correct(
+    original_account_ref,
+    successor,
+    expected=prior_fingerprint,
+    transition_id=CORRECTION_TRANSITION_ID,
+    operation_id=CORRECTION_OPERATION_ID,
+)
+if correction.accepted_steps != (
+    "step_history",
+    "step_successor",
+    "step_transition",
+    "step_evidence",
+):
+    raise RuntimeError("Account correction did not complete its accepted coordinated path")
+
+predecessor_after = accounts.load_exact(original_account_ref)
+successor_ref = account_reference(work, CORRECTED_ACCOUNT_ID)
+successor_after = accounts.require_current_use(successor_ref)
+
+if predecessor_after.record.status != "superseded":
+    raise RuntimeError("corrected Account predecessor did not become superseded")
+if successor_after.record.status != "active":
+    raise RuntimeError("corrected Account successor did not become current")
+if predecessor_after.record.logical_id == successor_after.record.logical_id:
+    raise RuntimeError("Account correction reused predecessor identity")
+
+supersedes = successor_after.record.field("supersedes")
+if not isinstance(supersedes, tuple) or len(supersedes) != 1:
+    raise RuntimeError("corrected Account successor lost exact supersession provenance")
+supersession_ref = supersedes[0]["work_record_ref"]["record_ref"]
+if (
+    supersession_ref["record_kind"] != "account"
+    or supersession_ref["record_id"] != ACCOUNT_ID
+    or supersession_ref["contract_version"] != "2"
+):
+    raise RuntimeError("corrected Account successor does not exactly name predecessor")
+
+history_path = work_storage_history_path(
+    workspace,
+    work,
+    "account",
+    ACCOUNT_ID,
+    prior_fingerprint.digest,
+)
+if not history_path.is_file():
+    raise RuntimeError("technical storage history for Account predecessor is absent")
+history_bytes = history_path.read_bytes()
+if history_bytes != prior_bytes:
+    raise RuntimeError("technical storage history bytes differ from accepted predecessor")
+if fingerprint_bytes(history_bytes) != prior_fingerprint:
+    raise RuntimeError("technical storage history fingerprint disagrees with predecessor")
+
+review_after = reviews.require_current_use(review_exact_ref)
+determination_after = determinations.require_current_use(
+    determination_exact_ref
+)
+if review_after.fingerprint != review_fingerprint:
+    raise RuntimeError("Account correction rewrote historical Review")
+if determination_after.fingerprint != determination_fingerprint:
+    raise RuntimeError("Account correction rewrote historical Determination")
+
+review_evidence = review_after.record.to_dict()["evidence_considered"]
+review_account_ids = [
+    item["work_record_ref"]["record_ref"]["record_id"]
+    for item in review_evidence
+    if item["kind"] == "portia_record"
+    and item["work_record_ref"]["record_ref"]["record_kind"] == "account"
+]
+if review_account_ids != [ACCOUNT_ID]:
+    raise RuntimeError("historical Review silently retargeted corrected Account")
+
+determination_basis = determination_after.record.to_dict()["basis"]
+determination_account_ids = [
+    item["evidence_ref"]["work_record_ref"]["record_ref"]["record_id"]
+    for item in determination_basis
+    if item["evidence_ref"]["kind"] == "portia_record"
+    and item["evidence_ref"]["work_record_ref"]["record_ref"]["record_kind"]
+    == "account"
+]
+if determination_account_ids != [ACCOUNT_ID]:
+    raise RuntimeError("historical Determination silently retargeted corrected Account")
+
+if determination_after.record.field("outcome") != {
+    "kind": "insufficient_information"
+}:
+    raise RuntimeError("Account correction changed bounded Determination outcome")
+
+print(
+    json.dumps(
+        {
+            "review_current": True,
+            "review_completed": True,
+            "determination_current": True,
+            "determination_outcome": "insufficient_information",
+            "classification_count": len(
+                ClassificationWorkflowService(workspace).list(work)
+            ),
+            "hypothesis_count": len(HypothesisWorkflowService(workspace).list(work)),
+            "predecessor_status": predecessor_after.record.status,
+            "successor_status": successor_after.record.status,
+            "successor_distinct": (
+                predecessor_after.record.logical_id
+                != successor_after.record.logical_id
+            ),
+            "exact_supersession": True,
+            "technical_history_preserved": True,
+            "review_history_pinned": True,
+            "determination_history_pinned": True,
+            "judgment_fingerprint_stable": (
+                review_after.fingerprint == review_fingerprint
+                and determination_after.fingerprint == determination_fingerprint
+            ),
+        },
+        sort_keys=True,
+    )
+)
+"""
+
 class Issue53AcceptanceError(RuntimeError):
     """Raised when the representative installed acceptance boundary fails."""
 
@@ -1413,6 +1740,63 @@ def _event_evidence_probe(
             )
     return payload
 
+def _judgment_correction_probe(
+    python: Path,
+    *,
+    cwd: Path,
+    env: Mapping[str, str],
+    workspace: Path,
+) -> dict[str, object]:
+    completed = _run(
+        [
+            str(python),
+            "-c",
+            _JUDGMENT_CORRECTION_PROBE,
+            str(workspace),
+        ],
+        cwd=cwd,
+        env=env,
+    )
+    lines = [line for line in completed.stdout.splitlines() if line.strip()]
+    if not lines:
+        raise Issue53AcceptanceError(
+            "Issue #53 installed judgment/correction probe produced no result"
+        )
+    try:
+        payload_raw = json.loads(lines[-1])
+    except json.JSONDecodeError as exc:
+        raise Issue53AcceptanceError(
+            "Issue #53 installed judgment/correction probe returned invalid JSON"
+        ) from exc
+    if not isinstance(payload_raw, dict):
+        raise Issue53AcceptanceError(
+            "Issue #53 installed judgment/correction probe result was not an object"
+        )
+
+    payload = cast(dict[str, object], payload_raw)
+    expected = {
+        "review_current": True,
+        "review_completed": True,
+        "determination_current": True,
+        "determination_outcome": "insufficient_information",
+        "classification_count": 0,
+        "hypothesis_count": 0,
+        "predecessor_status": "superseded",
+        "successor_status": "active",
+        "successor_distinct": True,
+        "exact_supersession": True,
+        "technical_history_preserved": True,
+        "review_history_pinned": True,
+        "determination_history_pinned": True,
+        "judgment_fingerprint_stable": True,
+    }
+    for key, value in expected.items():
+        if payload.get(key) != value:
+            raise Issue53AcceptanceError(
+                f"Issue #53 installed judgment/correction mismatch for {key}"
+            )
+    return payload
+
 def smoke(portia_wheel: Path, core_wheel: Path) -> dict[str, object]:
     repository = Path(__file__).resolve().parents[1]
     candidate = _require_wheel(portia_wheel, label="Portia candidate")
@@ -1490,6 +1874,12 @@ def smoke(portia_wheel: Path, core_wheel: Path) -> dict[str, object]:
             env=env,
             workspace=workspace,
         )
+        judgment_correction = _judgment_correction_probe(
+            python,
+            cwd=work,
+            env=env,
+            workspace=workspace,
+        )
         if tuple(work.iterdir()):
             raise Issue53AcceptanceError(
                 "Issue #53 acceptance polluted its empty working directory"
@@ -1500,6 +1890,8 @@ def smoke(portia_wheel: Path, core_wheel: Path) -> dict[str, object]:
         print("PASS Core setup")
         print("PASS Actor setup")
         print("PASS Event evidence")
+        print("PASS bounded judgment")
+        print("PASS correction history")
 
         return {
             "candidate_portia_wheel": candidate.name,
@@ -1543,6 +1935,22 @@ def smoke(portia_wheel: Path, core_wheel: Path) -> dict[str, object]:
                 "automatic_judgment_count"
             ],
             "neutrality_preserved": event_evidence["neutrality_preserved"],
+            "review_current": judgment_correction["review_current"],
+            "determination_current": judgment_correction["determination_current"],
+            "determination_outcome": judgment_correction[
+                "determination_outcome"
+            ],
+            "predecessor_status": judgment_correction["predecessor_status"],
+            "successor_status": judgment_correction["successor_status"],
+            "technical_history_preserved": judgment_correction[
+                "technical_history_preserved"
+            ],
+            "review_history_pinned": judgment_correction[
+                "review_history_pinned"
+            ],
+            "determination_history_pinned": judgment_correction[
+                "determination_history_pinned"
+            ],
             "launcher_reachable": True,
             "pip_check": "clean",
         }

@@ -296,3 +296,73 @@ def test_issue53_event_stage_follows_actor_setup_in_same_workspace() -> None:
     assert 'print("PASS Event evidence")' in source
     assert '"event_current": event_evidence["event_current"]' in source
     assert '"automatic_judgment_count": event_evidence[' in source
+
+
+def test_issue53_judgment_correction_identifiers_are_stable() -> None:
+    smoke = _load_script()
+    assert smoke.EVENT_REVIEW_ID == "rvw_issue53_evidence"
+    assert smoke.EVENT_DETERMINATION_ID == "det_issue53_insufficient"
+    assert smoke.CORRECTED_EVENT_ACCOUNT_ID == "acct_issue53_cross_corrected"
+
+
+def test_issue53_judgment_stage_uses_bounded_production_services() -> None:
+    smoke = _load_script()
+    probe = smoke._JUDGMENT_CORRECTION_PROBE
+    for marker in (
+        "ReviewWorkflowService(workspace)",
+        "DeterminationWorkflowService(workspace)",
+        "reviews.create(work, review_record)",
+        "determinations.create(work, determination_record)",
+        '"outcome": {"kind": "insufficient_information"}',
+        '"relation": "supporting"',
+        '"relation": "contrary"',
+        "ClassificationWorkflowService(workspace).list(work)",
+        "HypothesisWorkflowService(workspace).list(work)",
+    ):
+        assert marker in probe
+
+
+def test_issue53_correction_uses_public_coordinated_account_path() -> None:
+    smoke = _load_script()
+    probe = smoke._JUDGMENT_CORRECTION_PROBE
+    for marker in (
+        "correction = accounts.correct(",
+        "expected=prior_fingerprint",
+        'transition_id=CORRECTION_TRANSITION_ID',
+        'operation_id=CORRECTION_OPERATION_ID',
+        '"step_history"',
+        '"step_successor"',
+        '"step_transition"',
+        '"step_evidence"',
+        '"reason": "statement_corrected"',
+    ):
+        assert marker in probe
+
+
+def test_issue53_correction_proves_exact_history_and_pinned_judgment() -> None:
+    smoke = _load_script()
+    probe = smoke._JUDGMENT_CORRECTION_PROBE
+    for marker in (
+        "work_storage_history_path(",
+        "fingerprint_bytes(history_bytes) != prior_fingerprint",
+        "predecessor_after.record.status != \"superseded\"",
+        "successor_after.record.status != \"active\"",
+        "review_after.fingerprint != review_fingerprint",
+        "determination_after.fingerprint != determination_fingerprint",
+        "review_account_ids != [ACCOUNT_ID]",
+        "determination_account_ids != [ACCOUNT_ID]",
+    ):
+        assert marker in probe
+
+
+def test_issue53_judgment_correction_follows_event_evidence_in_same_story() -> None:
+    source = (
+        ROOT / "scripts" / "smoke_test_issue53_end_to_end_wheel.py"
+    ).read_text(encoding="utf-8")
+    event_index = source.index("event_evidence = _event_evidence_probe(")
+    judgment_index = source.index("judgment_correction = _judgment_correction_probe(")
+    assert event_index < judgment_index
+    assert 'print("PASS bounded judgment")' in source
+    assert 'print("PASS correction history")' in source
+    assert '"determination_outcome": judgment_correction[' in source
+    assert '"review_history_pinned": judgment_correction[' in source
