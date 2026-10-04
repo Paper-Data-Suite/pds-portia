@@ -53,6 +53,7 @@ SUPPORT_PLAN_ID: Final[str] = "spt_issue53_access"
 IMPLEMENTATION_ONE_ID: Final[str] = "imp_issue53_access_001"
 IMPLEMENTATION_TWO_ID: Final[str] = "imp_issue53_access_002"
 FIDELITY_ID: Final[str] = "fid_issue53_access"
+FOLLOW_UP_ID: Final[str] = "fup_issue53_review"
 
 _AUTHORITY_ENVIRONMENT_KEYS: Final[frozenset[str]] = frozenset(
     {"PYTHONPATH", "PDS_WORKSPACE_ROOT"}
@@ -2628,6 +2629,329 @@ print(
 )
 """
 
+_FOLLOW_UP_ATTENTION_PROBE = r"""
+import hashlib
+import json
+import sys
+from pathlib import Path
+
+from portia.attention import (
+    AttentionQueryService,
+    PortiaAttentionQuery,
+    PortiaAttentionScope,
+)
+from portia.models import parse_portia_record
+from portia.models.common import ExplicitOffsetTimestamp
+from portia.models.references import ExactPortiaWorkRef
+from portia.workflows import (
+    FidelityWorkflowService,
+    FollowUpWorkflowService,
+    OutcomeWorkflowService,
+    SupportProcessWorkflowService,
+    SupportWorkflowService,
+    fidelity_reference,
+    follow_up_reference,
+    support_reference,
+)
+
+PRIMARY_CLASS_ID = "eng10_p2_2026"
+SUPPORT_PROCESS_ID = "sup_issue53_support"
+SUPPORTED_PARTICIPANT_ID = "spp_issue53_student"
+COUNSELOR_PARTICIPANT_ID = "spp_issue53_counselor"
+SUPPORT_ID = "spt_issue53_access"
+FIDELITY_ID = "fid_issue53_access"
+FOLLOW_UP_ID = "fup_issue53_review"
+PLANNED_AT = "2026-10-19T09:00:00-04:00"
+CREATED_AT = "2026-10-04T13:45:00-04:00"
+COMPLETED_AT = "2026-10-19T09:10:00-04:00"
+AS_OF = ExplicitOffsetTimestamp(PLANNED_AT)
+AGENT = {
+    "type": "local_operator",
+    "display_label": "Synthetic Acceptance Operator",
+}
+
+workspace = Path(sys.argv[1]).resolve()
+work = ExactPortiaWorkRef(
+    class_id=PRIMARY_CLASS_ID,
+    work_id=SUPPORT_PROCESS_ID,
+    work_kind="support_process",
+    contract_version="1",
+)
+
+
+def snapshot(root):
+    observed = []
+    for path in sorted(root.rglob("*")):
+        if path.is_file():
+            observed.append(
+                (
+                    path.relative_to(root).as_posix(),
+                    hashlib.sha256(path.read_bytes()).hexdigest(),
+                )
+            )
+    return tuple(observed)
+
+
+root_service = SupportProcessWorkflowService(workspace)
+support_service = SupportWorkflowService(workspace)
+fidelity_service = FidelityWorkflowService(workspace)
+follow_up_service = FollowUpWorkflowService(workspace)
+outcome_service = OutcomeWorkflowService(workspace)
+attention_service = AttentionQueryService(workspace)
+
+root_before = root_service.require_current_use(work)
+support_before = support_service.require_current_use(
+    support_reference(work, SUPPORT_ID)
+)
+fidelity_before = fidelity_service.require_current_use(
+    fidelity_reference(work, FIDELITY_ID)
+)
+
+if root_before.record.status != "active":
+    raise RuntimeError("Support Process is not active before Follow-Up")
+if root_before.record.field("workflow_state") != "active":
+    raise RuntimeError("Support Process workflow is not active before Follow-Up")
+if support_before.record.field("plan_state") != "active":
+    raise RuntimeError("Support plan is not active before Follow-Up")
+if fidelity_before.record.field("result") != "as_planned":
+    raise RuntimeError("expected bounded Fidelity result is absent before Follow-Up")
+
+target = {
+    "kind": "support_process_participant",
+    "record_ref": {
+        "record_kind": "support_process_participant",
+        "record_id": SUPPORTED_PARTICIPANT_ID,
+        "contract_version": "1",
+    },
+}
+owner = {
+    "kind": "support_process_participant",
+    "participant_ref": {
+        "record_kind": "support_process_participant",
+        "record_id": COUNSELOR_PARTICIPANT_ID,
+        "contract_version": "1",
+    },
+}
+
+scheduled_record = parse_portia_record(
+    "follow_up",
+    "1",
+    {
+        "schema_version": "1",
+        "record_type": "follow_up",
+        "module_id": "portia",
+        "class_id": PRIMARY_CLASS_ID,
+        "work_kind": "support_process",
+        "work_id": SUPPORT_PROCESS_ID,
+        "follow_up_id": FOLLOW_UP_ID,
+        "status": "active",
+        "target": target,
+        "owner": owner,
+        "purpose": {"kind": "support_process_review"},
+        "planned_timing": {
+            "kind": "exact_time",
+            "at": PLANNED_AT,
+        },
+        "workflow_state": "scheduled",
+        "creation_source": {"type": "digital_entry"},
+        "created_at": CREATED_AT,
+        "created_by": AGENT,
+        "updated_at": CREATED_AT,
+        "updated_by": AGENT,
+    },
+)
+scheduled = follow_up_service.create(work, scheduled_record)
+follow_up_ref = follow_up_reference(work, FOLLOW_UP_ID)
+scheduled_current = follow_up_service.require_current_use(follow_up_ref)
+
+if scheduled_current.record.field("workflow_state") != "scheduled":
+    raise RuntimeError("Follow-Up did not remain explicitly scheduled")
+if scheduled_current.record.field("planned_timing") != {
+    "kind": "exact_time",
+    "at": PLANNED_AT,
+}:
+    raise RuntimeError("Follow-Up lost its exact planned timing")
+if scheduled_current.record.field("target") != target:
+    raise RuntimeError("Follow-Up lost exact supported Participant target")
+if scheduled_current.record.field("owner") != owner:
+    raise RuntimeError("Follow-Up lost exact counselor owner")
+
+attention_query = PortiaAttentionQuery(
+    scope=PortiaAttentionScope.work_scope(work),
+    as_of=AS_OF,
+    active_school_year="2026-2027",
+    attention_codes=(
+        "portia_follow_up_due",
+        "portia_follow_up_overdue",
+    ),
+)
+
+before_attention_snapshot = snapshot(workspace)
+before_attention = attention_service.query(attention_query)
+after_attention_snapshot = snapshot(workspace)
+if before_attention_snapshot != after_attention_snapshot:
+    raise RuntimeError("pre-completion AttentionQueryService mutated workspace")
+
+if before_attention.evaluation != "evaluated":
+    raise RuntimeError("pre-completion attention was not evaluated")
+if len(before_attention.items) != 1:
+    raise RuntimeError("scheduled due Follow-Up did not surface one attention item")
+attention_item = before_attention.items[0]
+if attention_item.code != "portia_follow_up_due":
+    raise RuntimeError("scheduled Follow-Up surfaced the wrong attention code")
+if attention_item.source_ref != follow_up_ref:
+    raise RuntimeError("Follow-Up attention did not preserve exact source identity")
+if attention_item.timing is None or attention_item.timing.classification != "due":
+    raise RuntimeError("Follow-Up attention did not retain due timing")
+
+reviewed_support = {
+    "role": "reviewed",
+    "record_ref": {
+        "work_ref": work.to_dict(),
+        "record_ref": {
+            "record_kind": "support",
+            "record_id": SUPPORT_ID,
+            "contract_version": "1",
+        },
+    },
+}
+reviewed_fidelity = {
+    "role": "reviewed",
+    "record_ref": {
+        "work_ref": work.to_dict(),
+        "record_ref": {
+            "record_kind": "fidelity",
+            "record_id": FIDELITY_ID,
+            "contract_version": "1",
+        },
+    },
+}
+
+completed_wire = scheduled_current.record.to_dict()
+completed_wire["workflow_state"] = "completed"
+completed_wire["completed_at"] = COMPLETED_AT
+completed_wire["related_records"] = [
+    reviewed_support,
+    reviewed_fidelity,
+]
+completed_wire["disposition"] = {"kind": "continue_current_support"}
+completed_wire["updated_at"] = COMPLETED_AT
+completed_wire["updated_by"] = AGENT
+completed_candidate = parse_portia_record(
+    "follow_up",
+    "1",
+    completed_wire,
+)
+completed = follow_up_service.transition_workflow_state(
+    follow_up_ref,
+    completed_candidate,
+    expected=scheduled_current.fingerprint,
+)
+
+if completed.record.logical_id != FOLLOW_UP_ID:
+    raise RuntimeError("Follow-Up completion changed exact identity")
+if completed.record.status != "active":
+    raise RuntimeError("Follow-Up completion changed canonical lifecycle")
+if completed.record.field("workflow_state") != "completed":
+    raise RuntimeError("Follow-Up did not complete through production workflow")
+if completed.record.field("completed_at") != COMPLETED_AT:
+    raise RuntimeError("Follow-Up completion timestamp changed")
+if completed.record.field("disposition") != {
+    "kind": "continue_current_support"
+}:
+    raise RuntimeError("Follow-Up did not preserve explicit continue-support disposition")
+
+related_records = completed.record.field("related_records")
+if not isinstance(related_records, tuple):
+    raise RuntimeError("completed Follow-Up related records are malformed")
+if tuple(related_records) != (reviewed_support, reviewed_fidelity):
+    raise RuntimeError("completed Follow-Up did not retain exact reviewed records")
+
+after_completion_snapshot = snapshot(workspace)
+after_attention = attention_service.query(attention_query)
+after_post_query_snapshot = snapshot(workspace)
+if after_completion_snapshot != after_post_query_snapshot:
+    raise RuntimeError("post-completion AttentionQueryService mutated workspace")
+
+if after_attention.evaluation != "evaluated":
+    raise RuntimeError("post-completion attention was not evaluated")
+if after_attention.items:
+    raise RuntimeError("completed Follow-Up remained outstanding attention")
+
+outcomes = outcome_service.list(work)
+if outcomes:
+    raise RuntimeError("completed Follow-Up or positive Fidelity manufactured Outcome")
+
+root_after = root_service.require_current_use(work)
+if root_after.fingerprint != root_before.fingerprint:
+    raise RuntimeError("Follow-Up completion mutated Support Process root")
+if root_after.record.status != "active":
+    raise RuntimeError("Follow-Up completion changed Support Process lifecycle")
+if root_after.record.field("workflow_state") != "active":
+    raise RuntimeError("Follow-Up completion automatically completed Support Process")
+
+support_after = support_service.require_current_use(
+    support_reference(work, SUPPORT_ID)
+)
+if support_after.fingerprint != support_before.fingerprint:
+    raise RuntimeError("Follow-Up completion mutated Support plan")
+
+fidelity_after = fidelity_service.require_current_use(
+    fidelity_reference(work, FIDELITY_ID)
+)
+if fidelity_after.fingerprint != fidelity_before.fingerprint:
+    raise RuntimeError("Follow-Up completion rewrote Fidelity")
+if fidelity_after.record.field("result") != "as_planned":
+    raise RuntimeError("Follow-Up completion changed Fidelity result")
+
+completed_wire_check = completed.record.to_dict()
+for forbidden in (
+    "outcome",
+    "effectiveness",
+    "progress",
+    "causation",
+):
+    if forbidden in completed_wire_check:
+        raise RuntimeError("Follow-Up introduced inferred result semantics")
+
+print(
+    json.dumps(
+        {
+            "follow_up_current": True,
+            "follow_up_status": completed.record.status,
+            "follow_up_workflow_state": completed.record.field("workflow_state"),
+            "follow_up_planned_at": PLANNED_AT,
+            "follow_up_completed_at": completed.record.field("completed_at"),
+            "follow_up_identity_preserved": completed.record.logical_id
+            == FOLLOW_UP_ID,
+            "reviewed_support_exact": reviewed_support in related_records,
+            "reviewed_fidelity_exact": reviewed_fidelity in related_records,
+            "disposition": completed.record.field("disposition")["kind"],
+            "attention_before_code": attention_item.code,
+            "attention_before_timing": attention_item.timing.classification,
+            "attention_after_count": len(after_attention.items),
+            "attention_queries_zero_write": True,
+            "outcome_count": len(outcomes),
+            "support_process_status": root_after.record.status,
+            "support_process_workflow_state": root_after.record.field(
+                "workflow_state"
+            ),
+            "support_process_unchanged": root_after.fingerprint
+            == root_before.fingerprint,
+            "support_plan_unchanged": support_after.fingerprint
+            == support_before.fingerprint,
+            "fidelity_unchanged": fidelity_after.fingerprint
+            == fidelity_before.fingerprint,
+            "outcome_not_inferred": len(outcomes) == 0,
+            "process_completion_not_inferred": (
+                root_after.record.field("workflow_state") == "active"
+            ),
+        },
+        sort_keys=True,
+    )
+)
+"""
+
 class Issue53AcceptanceError(RuntimeError):
     """Raised when the representative installed acceptance boundary fails."""
 
@@ -3312,6 +3636,70 @@ def _implementation_fidelity_probe(
             )
     return payload
 
+def _follow_up_attention_probe(
+    python: Path,
+    *,
+    cwd: Path,
+    env: Mapping[str, str],
+    workspace: Path,
+) -> dict[str, object]:
+    completed = _run(
+        [
+            str(python),
+            "-c",
+            _FOLLOW_UP_ATTENTION_PROBE,
+            str(workspace),
+        ],
+        cwd=cwd,
+        env=env,
+    )
+    lines = [line for line in completed.stdout.splitlines() if line.strip()]
+    if not lines:
+        raise Issue53AcceptanceError(
+            "Issue #53 installed Follow-Up/attention probe produced no result"
+        )
+    try:
+        payload_raw = json.loads(lines[-1])
+    except json.JSONDecodeError as exc:
+        raise Issue53AcceptanceError(
+            "Issue #53 installed Follow-Up/attention probe returned invalid JSON"
+        ) from exc
+    if not isinstance(payload_raw, dict):
+        raise Issue53AcceptanceError(
+            "Issue #53 installed Follow-Up/attention result was not an object"
+        )
+
+    payload = cast(dict[str, object], payload_raw)
+    expected = {
+        "follow_up_current": True,
+        "follow_up_status": "active",
+        "follow_up_workflow_state": "completed",
+        "follow_up_planned_at": "2026-10-19T09:00:00-04:00",
+        "follow_up_completed_at": "2026-10-19T09:10:00-04:00",
+        "follow_up_identity_preserved": True,
+        "reviewed_support_exact": True,
+        "reviewed_fidelity_exact": True,
+        "disposition": "continue_current_support",
+        "attention_before_code": "portia_follow_up_due",
+        "attention_before_timing": "due",
+        "attention_after_count": 0,
+        "attention_queries_zero_write": True,
+        "outcome_count": 0,
+        "support_process_status": "active",
+        "support_process_workflow_state": "active",
+        "support_process_unchanged": True,
+        "support_plan_unchanged": True,
+        "fidelity_unchanged": True,
+        "outcome_not_inferred": True,
+        "process_completion_not_inferred": True,
+    }
+    for key, value in expected.items():
+        if payload.get(key) != value:
+            raise Issue53AcceptanceError(
+                f"Issue #53 installed Follow-Up/attention mismatch for {key}"
+            )
+    return payload
+
 def smoke(portia_wheel: Path, core_wheel: Path) -> dict[str, object]:
     repository = Path(__file__).resolve().parents[1]
     candidate = _require_wheel(portia_wheel, label="Portia candidate")
@@ -3419,6 +3807,12 @@ def smoke(portia_wheel: Path, core_wheel: Path) -> dict[str, object]:
             env=env,
             workspace=workspace,
         )
+        follow_up_attention = _follow_up_attention_probe(
+            python,
+            cwd=work,
+            env=env,
+            workspace=workspace,
+        )
         if tuple(work.iterdir()):
             raise Issue53AcceptanceError(
                 "Issue #53 acceptance polluted its empty working directory"
@@ -3437,6 +3831,8 @@ def smoke(portia_wheel: Path, core_wheel: Path) -> dict[str, object]:
         print("PASS Support planning")
         print("PASS Implementation history")
         print("PASS Fidelity")
+        print("PASS Follow-Up")
+        print("PASS attention transition")
 
         return {
             "candidate_portia_wheel": candidate.name,
@@ -3571,6 +3967,28 @@ def smoke(portia_wheel: Path, core_wheel: Path) -> dict[str, object]:
             ],
             "fidelity_outcome_not_inferred": implementation_fidelity[
                 "outcome_not_inferred"
+            ],
+            "follow_up_workflow_state": follow_up_attention[
+                "follow_up_workflow_state"
+            ],
+            "follow_up_identity_preserved": follow_up_attention[
+                "follow_up_identity_preserved"
+            ],
+            "follow_up_disposition": follow_up_attention["disposition"],
+            "attention_before_code": follow_up_attention[
+                "attention_before_code"
+            ],
+            "attention_after_count": follow_up_attention[
+                "attention_after_count"
+            ],
+            "attention_queries_zero_write": follow_up_attention[
+                "attention_queries_zero_write"
+            ],
+            "follow_up_outcome_not_inferred": follow_up_attention[
+                "outcome_not_inferred"
+            ],
+            "process_completion_not_inferred": follow_up_attention[
+                "process_completion_not_inferred"
             ],
             "launcher_reachable": True,
             "pip_check": "clean",

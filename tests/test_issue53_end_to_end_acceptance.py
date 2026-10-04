@@ -687,3 +687,105 @@ def test_issue53_implementation_fidelity_follows_support_planning() -> None:
     assert 'print("PASS Fidelity")' in source
     assert '"implementation_count": implementation_fidelity[' in source
     assert '"fidelity_result": implementation_fidelity[' in source
+
+
+def test_issue53_follow_up_identifier_is_stable() -> None:
+    smoke = _load_script()
+    assert smoke.FOLLOW_UP_ID == "fup_issue53_review"
+
+
+def test_issue53_follow_up_is_scheduled_then_completed_through_production_workflow() -> None:
+    smoke = _load_script()
+    probe = smoke._FOLLOW_UP_ATTENTION_PROBE
+    for marker in (
+        "FollowUpWorkflowService(workspace)",
+        '"workflow_state": "scheduled"',
+        '"kind": "exact_time"',
+        '"at": PLANNED_AT',
+        "follow_up_service.create(work, scheduled_record)",
+        'completed_wire["workflow_state"] = "completed"',
+        'completed_wire["completed_at"] = COMPLETED_AT',
+        "follow_up_service.transition_workflow_state(",
+        "expected=scheduled_current.fingerprint",
+    ):
+        assert marker in probe
+
+
+def test_issue53_follow_up_review_pins_support_and_fidelity_and_disposition() -> None:
+    smoke = _load_script()
+    probe = smoke._FOLLOW_UP_ATTENTION_PROBE
+    for marker in (
+        '"record_kind": "support"',
+        '"record_id": SUPPORT_ID',
+        '"record_kind": "fidelity"',
+        '"record_id": FIDELITY_ID',
+        '"role": "reviewed"',
+        '"kind": "continue_current_support"',
+        "tuple(related_records) != (reviewed_support, reviewed_fidelity)",
+    ):
+        assert marker in probe
+
+
+def test_issue53_native_attention_transitions_due_to_clear_on_completion() -> None:
+    smoke = _load_script()
+    probe = smoke._FOLLOW_UP_ATTENTION_PROBE
+    for marker in (
+        "AttentionQueryService(workspace)",
+        "PortiaAttentionQuery(",
+        'attention_codes=(',
+        '"portia_follow_up_due"',
+        '"portia_follow_up_overdue"',
+        "attention_service.query(attention_query)",
+        'attention_item.code != "portia_follow_up_due"',
+        "after_attention.items",
+        '"attention_after_count": len(after_attention.items)',
+    ):
+        assert marker in probe
+
+
+def test_issue53_attention_queries_are_zero_write() -> None:
+    smoke = _load_script()
+    probe = smoke._FOLLOW_UP_ATTENTION_PROBE
+    for marker in (
+        "def snapshot(root):",
+        "before_attention_snapshot = snapshot(workspace)",
+        "after_attention_snapshot = snapshot(workspace)",
+        "after_completion_snapshot = snapshot(workspace)",
+        "after_post_query_snapshot = snapshot(workspace)",
+        '"attention_queries_zero_write": True',
+    ):
+        assert marker in probe
+
+
+def test_issue53_completed_follow_up_does_not_infer_outcome_or_complete_process() -> None:
+    smoke = _load_script()
+    probe = smoke._FOLLOW_UP_ATTENTION_PROBE
+    for marker in (
+        "OutcomeWorkflowService(workspace)",
+        "if outcomes:",
+        "root_after.fingerprint != root_before.fingerprint",
+        'root_after.record.field("workflow_state") != "active"',
+        '"outcome"',
+        '"effectiveness"',
+        '"progress"',
+        '"causation"',
+        '"process_completion_not_inferred":',
+    ):
+        assert marker in probe
+
+
+def test_issue53_follow_up_attention_follows_fidelity_in_same_story() -> None:
+    source = (
+        ROOT / "scripts" / "smoke_test_issue53_end_to_end_wheel.py"
+    ).read_text(encoding="utf-8")
+    fidelity_index = source.index(
+        "implementation_fidelity = _implementation_fidelity_probe("
+    )
+    follow_up_index = source.index(
+        "follow_up_attention = _follow_up_attention_probe("
+    )
+    assert fidelity_index < follow_up_index
+    assert 'print("PASS Follow-Up")' in source
+    assert 'print("PASS attention transition")' in source
+    assert '"follow_up_workflow_state": follow_up_attention[' in source
+    assert '"attention_after_count": follow_up_attention[' in source
