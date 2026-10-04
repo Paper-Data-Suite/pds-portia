@@ -47,6 +47,9 @@ EVENT_COMMUNICATION_ID: Final[str] = "comm_issue53_guardian"
 SUPPORT_PROCESS_ID: Final[str] = "sup_issue53_support"
 SUPPORTED_SUPPORT_PARTICIPANT_ID: Final[str] = "spp_issue53_student"
 COUNSELOR_SUPPORT_PARTICIPANT_ID: Final[str] = "spp_issue53_counselor"
+SUPPORT_NEED_ID: Final[str] = "spn_issue53_access"
+SUPPORT_GOAL_ID: Final[str] = "spg_issue53_access"
+SUPPORT_PLAN_ID: Final[str] = "spt_issue53_access"
 
 _AUTHORITY_ENVIRONMENT_KEYS: Final[frozenset[str]] = frozenset(
     {"PYTHONPATH", "PDS_WORKSPACE_ROOT"}
@@ -1939,6 +1942,340 @@ print(
 )
 """
 
+_SUPPORT_PLANNING_PROBE = r"""
+import json
+import sys
+from collections.abc import Mapping
+from pathlib import Path
+
+from portia.models import parse_portia_record
+from portia.models.references import ExactPortiaWorkRef
+from portia.workflows import (
+    FidelityWorkflowService,
+    FollowUpWorkflowService,
+    ImplementationWorkflowService,
+    OutcomeWorkflowService,
+    SupportGoalWorkflowService,
+    SupportNeedWorkflowService,
+    SupportProcessWorkflowService,
+    SupportWorkflowService,
+    support_goal_reference,
+    support_need_reference,
+    support_reference,
+)
+
+PRIMARY_CLASS_ID = "eng10_p2_2026"
+SUPPORT_PROCESS_ID = "sup_issue53_support"
+SUPPORTED_PARTICIPANT_ID = "spp_issue53_student"
+COUNSELOR_PARTICIPANT_ID = "spp_issue53_counselor"
+NEED_ID = "spn_issue53_access"
+GOAL_ID = "spg_issue53_access"
+SUPPORT_ID = "spt_issue53_access"
+PLAN_CREATED_AT = "2026-10-04T13:00:00-04:00"
+ROOT_ACTIVE_STATE_AT = "2026-10-04T13:05:00-04:00"
+AGENT = {
+    "type": "local_operator",
+    "display_label": "Synthetic Acceptance Operator",
+}
+
+workspace = Path(sys.argv[1]).resolve()
+work = ExactPortiaWorkRef(
+    class_id=PRIMARY_CLASS_ID,
+    work_id=SUPPORT_PROCESS_ID,
+    work_kind="support_process",
+    contract_version="1",
+)
+
+root_service = SupportProcessWorkflowService(workspace)
+need_service = SupportNeedWorkflowService(workspace)
+goal_service = SupportGoalWorkflowService(workspace)
+support_service = SupportWorkflowService(workspace)
+
+root_before = root_service.require_current_use(work)
+if root_before.record.status != "active":
+    raise RuntimeError("Support Process is not active before planning")
+if root_before.record.field("workflow_state") != "planning":
+    raise RuntimeError("Support Process is not in planning state before plan creation")
+
+participant_target = {
+    "kind": "support_process_participant",
+    "record_ref": {
+        "record_kind": "support_process_participant",
+        "record_id": SUPPORTED_PARTICIPANT_ID,
+        "contract_version": "1",
+    },
+}
+
+need = parse_portia_record(
+    "support_need",
+    "1",
+    {
+        "schema_version": "1",
+        "record_type": "support_need",
+        "module_id": "portia",
+        "class_id": PRIMARY_CLASS_ID,
+        "work_id": SUPPORT_PROCESS_ID,
+        "need_id": NEED_ID,
+        "status": "active",
+        "target": participant_target,
+        "need_kind": "environmental_or_instructional",
+        "description": (
+            "Provide a predictable lower-distraction work option during "
+            "independent work when the supported participant chooses it."
+        ),
+        "creation_source": {"type": "digital_entry"},
+        "created_at": PLAN_CREATED_AT,
+        "created_by": AGENT,
+        "updated_at": PLAN_CREATED_AT,
+        "updated_by": AGENT,
+    },
+)
+need_created = need_service.create(work, need)
+need_ref = support_need_reference(work, NEED_ID)
+need_current = need_service.require_current_use(need_ref)
+
+goal = parse_portia_record(
+    "support_goal",
+    "1",
+    {
+        "schema_version": "1",
+        "record_type": "support_goal",
+        "module_id": "portia",
+        "class_id": PRIMARY_CLASS_ID,
+        "work_id": SUPPORT_PROCESS_ID,
+        "goal_id": GOAL_ID,
+        "status": "active",
+        "target": participant_target,
+        "description": (
+            "The supported participant will have the planned lower-distraction "
+            "work option available during independent-work periods."
+        ),
+        "planned_criteria": (
+            "Review later implementation records for whether the option was "
+            "made available as planned."
+        ),
+        "measurement_approach": (
+            "Use bounded Implementation and Fidelity records rather than "
+            "inferring progress from the plan itself."
+        ),
+        "creation_source": {"type": "digital_entry"},
+        "created_at": PLAN_CREATED_AT,
+        "created_by": AGENT,
+        "updated_at": PLAN_CREATED_AT,
+        "updated_by": AGENT,
+    },
+)
+goal_created = goal_service.create(work, goal)
+goal_ref = support_goal_reference(work, GOAL_ID)
+goal_current = goal_service.require_current_use(goal_ref)
+
+support = parse_portia_record(
+    "support",
+    "1",
+    {
+        "schema_version": "1",
+        "record_type": "support",
+        "module_id": "portia",
+        "class_id": PRIMARY_CLASS_ID,
+        "work_id": SUPPORT_PROCESS_ID,
+        "support_id": SUPPORT_ID,
+        "status": "active",
+        "target": participant_target,
+        "need_refs": [
+            {
+                "record_kind": "support_need",
+                "record_id": NEED_ID,
+                "contract_version": "1",
+            }
+        ],
+        "goal_refs": [
+            {
+                "record_kind": "support_goal",
+                "record_id": GOAL_ID,
+                "contract_version": "1",
+            }
+        ],
+        "strategy": {
+            "kind": "environmental_or_instructional",
+            "procedure": (
+                "At the start of independent work, make the designated "
+                "lower-distraction location available and briefly remind the "
+                "participant that the option may be selected."
+            ),
+        },
+        "provider_plan": {
+            "kind": "assigned",
+            "participant_refs": [
+                {
+                    "record_kind": "support_process_participant",
+                    "record_id": COUNSELOR_PARTICIPANT_ID,
+                    "contract_version": "1",
+                }
+            ],
+        },
+        "schedule": {
+            "kind": "recurring",
+            "window": {
+                "starts_on": "2026-10-05",
+                "ends_on": "2026-10-18",
+                "review_on": "2026-10-19",
+            },
+            "frequency": {
+                "occurrences": 1,
+                "interval_count": 1,
+                "interval_unit": "day",
+            },
+            "selected_days": [
+                "monday",
+                "tuesday",
+                "wednesday",
+                "thursday",
+                "friday",
+            ],
+            "timing_detail": "During scheduled independent-work periods.",
+        },
+        "plan_state": "active",
+        "creation_source": {"type": "digital_entry"},
+        "created_at": PLAN_CREATED_AT,
+        "created_by": AGENT,
+        "updated_at": PLAN_CREATED_AT,
+        "updated_by": AGENT,
+    },
+)
+support_created = support_service.create(work, support)
+support_ref = support_reference(work, SUPPORT_ID)
+support_current = support_service.require_current_use(support_ref)
+
+if need_created.fingerprint != need_current.fingerprint:
+    raise RuntimeError("Support Need current representation changed unexpectedly")
+if goal_created.fingerprint != goal_current.fingerprint:
+    raise RuntimeError("Support Goal current representation changed unexpectedly")
+if support_created.fingerprint != support_current.fingerprint:
+    raise RuntimeError("Support current representation changed unexpectedly")
+
+if need_current.record.field("target") != participant_target:
+    raise RuntimeError("Support Need lost exact supported Participant target")
+if goal_current.record.field("target") != participant_target:
+    raise RuntimeError("Support Goal lost exact supported Participant target")
+if support_current.record.field("target") != participant_target:
+    raise RuntimeError("Support lost exact supported Participant target")
+
+need_refs = support_current.record.field("need_refs")
+goal_refs = support_current.record.field("goal_refs")
+provider_plan = support_current.record.field("provider_plan")
+if not isinstance(need_refs, tuple) or len(need_refs) != 1:
+    raise RuntimeError("Support exact Need linkage changed")
+if not isinstance(goal_refs, tuple) or len(goal_refs) != 1:
+    raise RuntimeError("Support exact Goal linkage changed")
+if not isinstance(provider_plan, Mapping):
+    raise RuntimeError("Support provider plan is malformed")
+
+if need_refs[0] != {
+    "record_kind": "support_need",
+    "record_id": NEED_ID,
+    "contract_version": "1",
+}:
+    raise RuntimeError("Support does not exactly name the active Need")
+if goal_refs[0] != {
+    "record_kind": "support_goal",
+    "record_id": GOAL_ID,
+    "contract_version": "1",
+}:
+    raise RuntimeError("Support does not exactly name the active Goal")
+
+provider_refs = provider_plan.get("participant_refs")
+if not isinstance(provider_refs, tuple) or provider_refs != (
+    {
+        "record_kind": "support_process_participant",
+        "record_id": COUNSELOR_PARTICIPANT_ID,
+        "contract_version": "1",
+    },
+):
+    raise RuntimeError("Support did not preserve exact counselor provider assignment")
+
+root_active_wire = root_before.record.to_dict()
+root_active_wire["workflow_state"] = "active"
+root_active_wire["updated_at"] = ROOT_ACTIVE_STATE_AT
+root_active_wire["updated_by"] = AGENT
+root_active_candidate = parse_portia_record(
+    "support_process",
+    "1",
+    root_active_wire,
+)
+root_after = root_service.transition_workflow_state(
+    work,
+    root_active_candidate,
+    expected=root_before.fingerprint,
+)
+
+if root_after.record.status != "active":
+    raise RuntimeError("Support Process lifecycle status changed during workflow progression")
+if root_after.record.field("workflow_state") != "active":
+    raise RuntimeError("Support Process did not enter active workflow state")
+if root_after.record.logical_id != SUPPORT_PROCESS_ID:
+    raise RuntimeError("Support Process workflow progression changed canonical identity")
+
+execution_counts = {
+    "implementation": len(ImplementationWorkflowService(workspace).list(work)),
+    "fidelity": len(FidelityWorkflowService(workspace).list(work)),
+    "follow_up": len(FollowUpWorkflowService(workspace).list(work)),
+    "outcome": len(OutcomeWorkflowService(workspace).list(work)),
+}
+if any(execution_counts.values()):
+    raise RuntimeError("Support planning manufactured execution, follow-up, or Outcome")
+
+for record in (
+    need_current.record.to_dict(),
+    goal_current.record.to_dict(),
+    support_current.record.to_dict(),
+):
+    for forbidden in (
+        "diagnosis",
+        "progress",
+        "effectiveness",
+        "outcome",
+        "fidelity",
+        "implementation",
+    ):
+        if forbidden in record:
+            raise RuntimeError("Support planning introduced inferred downstream semantics")
+
+print(
+    json.dumps(
+        {
+            "need_current": True,
+            "goal_current": True,
+            "support_current": True,
+            "need_target_exact": need_current.record.field("target")
+            == participant_target,
+            "goal_target_exact": goal_current.record.field("target")
+            == participant_target,
+            "support_target_exact": support_current.record.field("target")
+            == participant_target,
+            "support_need_exact": True,
+            "support_goal_exact": True,
+            "support_provider_exact": True,
+            "support_plan_state": support_current.record.field("plan_state"),
+            "support_process_status": root_after.record.status,
+            "support_process_workflow_state": root_after.record.field(
+                "workflow_state"
+            ),
+            "support_process_identity_preserved": (
+                root_after.record.logical_id == SUPPORT_PROCESS_ID
+            ),
+            "implementation_count": execution_counts["implementation"],
+            "fidelity_count": execution_counts["fidelity"],
+            "follow_up_count": execution_counts["follow_up"],
+            "outcome_count": execution_counts["outcome"],
+            "downstream_not_inferred": all(
+                value == 0 for value in execution_counts.values()
+            ),
+        },
+        sort_keys=True,
+    )
+)
+"""
+
 class Issue53AcceptanceError(RuntimeError):
     """Raised when the representative installed acceptance boundary fails."""
 
@@ -2501,6 +2838,67 @@ def _support_process_probe(
             )
     return payload
 
+def _support_planning_probe(
+    python: Path,
+    *,
+    cwd: Path,
+    env: Mapping[str, str],
+    workspace: Path,
+) -> dict[str, object]:
+    completed = _run(
+        [
+            str(python),
+            "-c",
+            _SUPPORT_PLANNING_PROBE,
+            str(workspace),
+        ],
+        cwd=cwd,
+        env=env,
+    )
+    lines = [line for line in completed.stdout.splitlines() if line.strip()]
+    if not lines:
+        raise Issue53AcceptanceError(
+            "Issue #53 installed Support planning probe produced no result"
+        )
+    try:
+        payload_raw = json.loads(lines[-1])
+    except json.JSONDecodeError as exc:
+        raise Issue53AcceptanceError(
+            "Issue #53 installed Support planning probe returned invalid JSON"
+        ) from exc
+    if not isinstance(payload_raw, dict):
+        raise Issue53AcceptanceError(
+            "Issue #53 installed Support planning result was not an object"
+        )
+
+    payload = cast(dict[str, object], payload_raw)
+    expected = {
+        "need_current": True,
+        "goal_current": True,
+        "support_current": True,
+        "need_target_exact": True,
+        "goal_target_exact": True,
+        "support_target_exact": True,
+        "support_need_exact": True,
+        "support_goal_exact": True,
+        "support_provider_exact": True,
+        "support_plan_state": "active",
+        "support_process_status": "active",
+        "support_process_workflow_state": "active",
+        "support_process_identity_preserved": True,
+        "implementation_count": 0,
+        "fidelity_count": 0,
+        "follow_up_count": 0,
+        "outcome_count": 0,
+        "downstream_not_inferred": True,
+    }
+    for key, value in expected.items():
+        if payload.get(key) != value:
+            raise Issue53AcceptanceError(
+                f"Issue #53 installed Support planning mismatch for {key}"
+            )
+    return payload
+
 def smoke(portia_wheel: Path, core_wheel: Path) -> dict[str, object]:
     repository = Path(__file__).resolve().parents[1]
     candidate = _require_wheel(portia_wheel, label="Portia candidate")
@@ -2596,6 +2994,12 @@ def smoke(portia_wheel: Path, core_wheel: Path) -> dict[str, object]:
             env=env,
             workspace=workspace,
         )
+        support_planning = _support_planning_probe(
+            python,
+            cwd=work,
+            env=env,
+            workspace=workspace,
+        )
         if tuple(work.iterdir()):
             raise Issue53AcceptanceError(
                 "Issue #53 acceptance polluted its empty working directory"
@@ -2611,6 +3015,7 @@ def smoke(portia_wheel: Path, core_wheel: Path) -> dict[str, object]:
         print("PASS Response")
         print("PASS Communication")
         print("PASS Support Process")
+        print("PASS Support planning")
 
         return {
             "candidate_portia_wheel": candidate.name,
@@ -2712,6 +3117,19 @@ def smoke(portia_wheel: Path, core_wheel: Path) -> dict[str, object]:
             ],
             "planning_not_inferred": support_process[
                 "planning_not_inferred"
+            ],
+            "need_current": support_planning["need_current"],
+            "goal_current": support_planning["goal_current"],
+            "support_current": support_planning["support_current"],
+            "support_plan_state": support_planning["support_plan_state"],
+            "support_process_active_workflow": support_planning[
+                "support_process_workflow_state"
+            ],
+            "support_provider_exact": support_planning[
+                "support_provider_exact"
+            ],
+            "downstream_not_inferred": support_planning[
+                "downstream_not_inferred"
             ],
             "launcher_reachable": True,
             "pip_check": "clean",

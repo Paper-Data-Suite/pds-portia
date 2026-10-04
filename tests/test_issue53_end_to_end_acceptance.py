@@ -507,3 +507,84 @@ def test_issue53_support_process_follows_response_communication_in_same_story() 
     assert 'print("PASS Support Process")' in source
     assert '"support_process_current": support_process[' in source
     assert '"response_handoff_exact": support_process[' in source
+
+
+def test_issue53_support_planning_identifiers_are_stable() -> None:
+    smoke = _load_script()
+    assert smoke.SUPPORT_NEED_ID == "spn_issue53_access"
+    assert smoke.SUPPORT_GOAL_ID == "spg_issue53_access"
+    assert smoke.SUPPORT_PLAN_ID == "spt_issue53_access"
+
+
+def test_issue53_support_planning_uses_production_services_and_exact_links() -> None:
+    smoke = _load_script()
+    probe = smoke._SUPPORT_PLANNING_PROBE
+    for marker in (
+        "SupportNeedWorkflowService(workspace)",
+        "SupportGoalWorkflowService(workspace)",
+        "SupportWorkflowService(workspace)",
+        "need_service.create(work, need)",
+        "goal_service.create(work, goal)",
+        "support_service.create(work, support)",
+        '"record_id": NEED_ID',
+        '"record_id": GOAL_ID',
+        '"record_id": COUNSELOR_PARTICIPANT_ID',
+        "support_service.require_current_use(support_ref)",
+    ):
+        assert marker in probe
+
+
+def test_issue53_support_planning_targets_same_exact_supported_participant() -> None:
+    smoke = _load_script()
+    probe = smoke._SUPPORT_PLANNING_PROBE
+    for marker in (
+        'SUPPORTED_PARTICIPANT_ID = "spp_issue53_student"',
+        '"kind": "support_process_participant"',
+        '"record_id": SUPPORTED_PARTICIPANT_ID',
+        "need_current.record.field(\"target\") != participant_target",
+        "goal_current.record.field(\"target\") != participant_target",
+        "support_current.record.field(\"target\") != participant_target",
+    ):
+        assert marker in probe
+
+
+def test_issue53_support_process_enters_active_workflow_state_without_new_identity() -> None:
+    smoke = _load_script()
+    probe = smoke._SUPPORT_PLANNING_PROBE
+    for marker in (
+        'root_active_wire["workflow_state"] = "active"',
+        "root_service.transition_workflow_state(",
+        "expected=root_before.fingerprint",
+        'root_after.record.status != "active"',
+        'root_after.record.logical_id != SUPPORT_PROCESS_ID',
+    ):
+        assert marker in probe
+
+
+def test_issue53_support_planning_does_not_infer_execution_or_outcome() -> None:
+    smoke = _load_script()
+    probe = smoke._SUPPORT_PLANNING_PROBE
+    for marker in (
+        "ImplementationWorkflowService(workspace).list(work)",
+        "FidelityWorkflowService(workspace).list(work)",
+        "FollowUpWorkflowService(workspace).list(work)",
+        "OutcomeWorkflowService(workspace).list(work)",
+        '"diagnosis"',
+        '"progress"',
+        '"effectiveness"',
+        '"outcome"',
+        '"downstream_not_inferred": all(',
+    ):
+        assert marker in probe
+
+
+def test_issue53_support_planning_follows_support_bootstrap_in_same_story() -> None:
+    source = (
+        ROOT / "scripts" / "smoke_test_issue53_end_to_end_wheel.py"
+    ).read_text(encoding="utf-8")
+    bootstrap_index = source.index("support_process = _support_process_probe(")
+    planning_index = source.index("support_planning = _support_planning_probe(")
+    assert bootstrap_index < planning_index
+    assert 'print("PASS Support planning")' in source
+    assert '"support_plan_state": support_planning["support_plan_state"]' in source
+    assert '"downstream_not_inferred": support_planning[' in source
