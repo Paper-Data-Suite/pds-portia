@@ -441,3 +441,69 @@ def test_issue53_response_communication_follows_correction_in_same_story() -> No
     assert 'print("PASS Communication")' in source
     assert '"recipient_participation": response_communication[' in source
     assert '"outcome_not_inferred": response_communication[' in source
+
+
+def test_issue53_support_process_identifiers_are_stable() -> None:
+    smoke = _load_script()
+    assert smoke.SUPPORT_PROCESS_ID == "sup_issue53_support"
+    assert smoke.SUPPORTED_SUPPORT_PARTICIPANT_ID == "spp_issue53_student"
+    assert smoke.COUNSELOR_SUPPORT_PARTICIPANT_ID == "spp_issue53_counselor"
+
+
+def test_issue53_support_process_uses_response_handoff_bootstrap() -> None:
+    smoke = _load_script()
+    probe = smoke._SUPPORT_PROCESS_PROBE
+    for marker in (
+        "SupportProcessWorkflowService(workspace)",
+        "SupportProcessParticipantWorkflowService(workspace)",
+        '"kind": "response_handoff"',
+        '"record_ref": response_ref.to_dict()',
+        "root_created = root_service.create(root_record)",
+        "root_service.transition_lifecycle(",
+        '"step_history"',
+        '"step_transition"',
+        '"step_work"',
+    ):
+        assert marker in probe
+
+
+def test_issue53_support_process_preserves_exact_supported_student_and_actor() -> None:
+    smoke = _load_script()
+    probe = smoke._SUPPORT_PROCESS_PROBE
+    for marker in (
+        '"class_id": SECONDARY_CLASS_ID',
+        '"student_id": COLLISION_STUDENT_ID',
+        '"kind": "supported_person"',
+        '"actor_id": COUNSELOR_ACTOR_ID',
+        '"kind": "provider_or_collaborator"',
+        '"kind": "coordinator"',
+        "supported_current.authority.reference.class_id != SECONDARY_CLASS_ID",
+        "counselor_current.authority.record.logical_id != COUNSELOR_ACTOR_ID",
+    ):
+        assert marker in probe
+
+
+def test_issue53_support_bootstrap_does_not_manufacture_plan_records() -> None:
+    smoke = _load_script()
+    probe = smoke._SUPPORT_PROCESS_PROBE
+    for marker in (
+        "SupportNeedWorkflowService(workspace).list(support_work)",
+        "SupportGoalWorkflowService(workspace).list(support_work)",
+        "SupportWorkflowService(workspace).list(support_work)",
+        '"planning_not_inferred": all(value == 0',
+    ):
+        assert marker in probe
+
+
+def test_issue53_support_process_follows_response_communication_in_same_story() -> None:
+    source = (
+        ROOT / "scripts" / "smoke_test_issue53_end_to_end_wheel.py"
+    ).read_text(encoding="utf-8")
+    response_index = source.index(
+        "response_communication = _response_communication_probe("
+    )
+    support_index = source.index("support_process = _support_process_probe(")
+    assert response_index < support_index
+    assert 'print("PASS Support Process")' in source
+    assert '"support_process_current": support_process[' in source
+    assert '"response_handoff_exact": support_process[' in source

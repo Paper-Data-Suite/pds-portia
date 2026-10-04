@@ -44,6 +44,9 @@ EVENT_DETERMINATION_ID: Final[str] = "det_issue53_insufficient"
 CORRECTED_EVENT_ACCOUNT_ID: Final[str] = "acct_issue53_cross_corrected"
 EVENT_RESPONSE_ID: Final[str] = "rsp_issue53_neutral_support"
 EVENT_COMMUNICATION_ID: Final[str] = "comm_issue53_guardian"
+SUPPORT_PROCESS_ID: Final[str] = "sup_issue53_support"
+SUPPORTED_SUPPORT_PARTICIPANT_ID: Final[str] = "spp_issue53_student"
+COUNSELOR_SUPPORT_PARTICIPANT_ID: Final[str] = "spp_issue53_counselor"
 
 _AUTHORITY_ENVIRONMENT_KEYS: Final[frozenset[str]] = frozenset(
     {"PYTHONPATH", "PDS_WORKSPACE_ROOT"}
@@ -1644,6 +1647,298 @@ print(
 )
 """
 
+_SUPPORT_PROCESS_PROBE = r"""
+import json
+import sys
+from collections.abc import Mapping
+from pathlib import Path
+
+from portia.models import parse_portia_record
+from portia.models.references import ExactPortiaWorkRef
+from portia.workflows import (
+    ResponseWorkflowService,
+    SupportGoalWorkflowService,
+    SupportNeedWorkflowService,
+    SupportProcessParticipantWorkflowService,
+    SupportProcessWorkflowService,
+    SupportWorkflowService,
+    response_reference,
+    support_process_participant_reference,
+    support_process_reference,
+)
+
+PRIMARY_CLASS_ID = "eng10_p2_2026"
+SECONDARY_CLASS_ID = "journalism_p6_2026"
+COLLISION_STUDENT_ID = "student_shared_001"
+COUNSELOR_ACTOR_ID = "actr_counselor_001"
+EVENT_ID = "evt_issue53_primary"
+RESPONSE_ID = "rsp_issue53_neutral_support"
+SUPPORT_PROCESS_ID = "sup_issue53_support"
+SUPPORTED_PARTICIPANT_ID = "spp_issue53_student"
+COUNSELOR_PARTICIPANT_ID = "spp_issue53_counselor"
+ROOT_CREATED_AT = "2026-10-04T12:50:00-04:00"
+PARTICIPANT_CREATED_AT = "2026-10-04T12:51:00-04:00"
+PARTICIPANT_ACTIVE_AT = "2026-10-04T12:52:00-04:00"
+ROOT_ACTIVE_AT = "2026-10-04T12:53:00-04:00"
+AGENT = {
+    "type": "local_operator",
+    "display_label": "Synthetic Acceptance Operator",
+}
+
+workspace = Path(sys.argv[1]).resolve()
+
+event_work = ExactPortiaWorkRef(
+    class_id=PRIMARY_CLASS_ID,
+    work_id=EVENT_ID,
+    work_kind="event",
+    contract_version="2",
+)
+response_ref = response_reference(event_work, RESPONSE_ID)
+response_exact = ResponseWorkflowService(workspace).resolve_exact(response_ref)
+if response_exact.record.logical_id != RESPONSE_ID:
+    raise RuntimeError("Support Process handoff source Response did not resolve exactly")
+
+root_service = SupportProcessWorkflowService(workspace)
+participant_service = SupportProcessParticipantWorkflowService(workspace)
+
+root_record = parse_portia_record(
+    "support_process",
+    "1",
+    {
+        "schema_version": "1",
+        "record_type": "portia_work",
+        "work_kind": "support_process",
+        "module_id": "portia",
+        "class_id": PRIMARY_CLASS_ID,
+        "work_id": SUPPORT_PROCESS_ID,
+        "school_year": "2026-2027",
+        "status": "proposed",
+        "workflow_state": "planning",
+        "summary": (
+            "Synthetic longer-running support process initiated from the "
+            "Event-local Response handoff."
+        ),
+        "initiation": {
+            "kind": "response_handoff",
+            "record_ref": response_ref.to_dict(),
+        },
+        "planned_start_date": "2026-10-05",
+        "review_on": "2026-10-19",
+        "creation_source": {"type": "digital_entry"},
+        "created_at": ROOT_CREATED_AT,
+        "created_by": AGENT,
+        "updated_at": ROOT_CREATED_AT,
+        "updated_by": AGENT,
+    },
+)
+root_created = root_service.create(root_record)
+support_work = support_process_reference(root_record)
+
+if support_work.class_id != PRIMARY_CLASS_ID:
+    raise RuntimeError("Support Process owner class changed during bootstrap")
+if support_work.work_kind != "support_process":
+    raise RuntimeError("Support Process did not retain distinct work kind")
+if support_work.work_id == EVENT_ID:
+    raise RuntimeError("Support Process reused Event work identity")
+
+
+def participant_wire(participant_id, person, contexts):
+    return {
+        "schema_version": "1",
+        "record_type": "support_process_participant",
+        "module_id": "portia",
+        "class_id": PRIMARY_CLASS_ID,
+        "work_id": SUPPORT_PROCESS_ID,
+        "participant_id": participant_id,
+        "status": "proposed",
+        "person": person,
+        "contexts": contexts,
+        "creation_source": {"type": "digital_entry"},
+        "created_at": PARTICIPANT_CREATED_AT,
+        "created_by": AGENT,
+        "updated_at": PARTICIPANT_CREATED_AT,
+        "updated_by": AGENT,
+    }
+
+
+supported_record = parse_portia_record(
+    "support_process_participant",
+    "1",
+    participant_wire(
+        SUPPORTED_PARTICIPANT_ID,
+        {
+            "kind": "roster_student",
+            "roster_student_ref": {
+                "class_id": SECONDARY_CLASS_ID,
+                "student_id": COLLISION_STUDENT_ID,
+            },
+            "display_snapshot": {"display_name": "Shared Synthetic"},
+        },
+        [{"kind": "supported_person"}],
+    ),
+)
+counselor_record = parse_portia_record(
+    "support_process_participant",
+    "1",
+    participant_wire(
+        COUNSELOR_PARTICIPANT_ID,
+        {
+            "kind": "actor",
+            "actor_ref": {"actor_id": COUNSELOR_ACTOR_ID},
+            "display_snapshot": {"display_name": "Synthetic Counselor"},
+        },
+        [
+            {"kind": "provider_or_collaborator"},
+            {"kind": "coordinator"},
+        ],
+    ),
+)
+
+supported_created = participant_service.create(support_work, supported_record)
+counselor_created = participant_service.create(support_work, counselor_record)
+
+
+def activate_participant(created, participant_id, transition_id, operation_id):
+    wire = created.record.to_dict()
+    wire["status"] = "active"
+    wire["updated_at"] = PARTICIPANT_ACTIVE_AT
+    wire["updated_by"] = AGENT
+    active_candidate = parse_portia_record(
+        "support_process_participant",
+        "1",
+        wire,
+    )
+    result = participant_service.transition_lifecycle(
+        support_process_participant_reference(support_work, participant_id),
+        active_candidate,
+        expected=created.fingerprint,
+        transition_id=transition_id,
+        reason_code="planning_confirmed",
+        operation_id=operation_id,
+    )
+    if result.accepted_steps != (
+        "step_history",
+        "step_transition",
+        "step_record",
+    ):
+        raise RuntimeError("Support Process Participant activation path changed")
+    return participant_service.require_current_use(
+        support_process_participant_reference(support_work, participant_id)
+    )
+
+
+supported_current = activate_participant(
+    supported_created,
+    SUPPORTED_PARTICIPANT_ID,
+    "lct_issue53_spp_student_active",
+    "op_issue53_spp_student_active",
+)
+counselor_current = activate_participant(
+    counselor_created,
+    COUNSELOR_PARTICIPANT_ID,
+    "lct_issue53_spp_counselor_active",
+    "op_issue53_spp_counselor_active",
+)
+
+if supported_current.kind != "roster_student":
+    raise RuntimeError("supported participant lost exact roster identity")
+if supported_current.authority is None:
+    raise RuntimeError("supported participant roster authority is absent")
+if supported_current.authority.reference.class_id != SECONDARY_CLASS_ID:
+    raise RuntimeError("Support Process relocalized cross-class supported student")
+if supported_current.authority.reference.student_id != COLLISION_STUDENT_ID:
+    raise RuntimeError("Support Process supported the wrong exact roster student")
+
+if counselor_current.kind != "actor":
+    raise RuntimeError("counselor participant lost Actor identity")
+if counselor_current.authority is None:
+    raise RuntimeError("counselor Actor authority is absent")
+if counselor_current.authority.record.logical_id != COUNSELOR_ACTOR_ID:
+    raise RuntimeError("Support Process resolved the wrong counselor Actor")
+
+root_active_wire = root_created.record.to_dict()
+root_active_wire["status"] = "active"
+root_active_wire["updated_at"] = ROOT_ACTIVE_AT
+root_active_wire["updated_by"] = AGENT
+root_active_candidate = parse_portia_record(
+    "support_process",
+    "1",
+    root_active_wire,
+)
+activation = root_service.transition_lifecycle(
+    support_work,
+    root_active_candidate,
+    expected=root_created.fingerprint,
+    transition_id="lct_issue53_support_active",
+    reason_code="planning_confirmed",
+    operation_id="op_issue53_support_active",
+)
+if activation.accepted_steps != (
+    "step_history",
+    "step_transition",
+    "step_work",
+):
+    raise RuntimeError("Support Process activation path changed")
+
+current_root = root_service.require_current_use(support_work)
+if current_root.record.status != "active":
+    raise RuntimeError("Support Process did not become current/active")
+if current_root.record.field("workflow_state") != "planning":
+    raise RuntimeError("Support Process activation silently changed planning state")
+
+initiation = current_root.record.field("initiation")
+if not isinstance(initiation, Mapping):
+    raise RuntimeError("Support Process initiation is malformed")
+if initiation.get("kind") != "response_handoff":
+    raise RuntimeError("Support Process lost Response handoff initiation")
+if initiation.get("record_ref") != response_ref.to_dict():
+    raise RuntimeError("Support Process initiation silently retargeted the Response")
+
+participants = participant_service.list(support_work)
+if len(participants) != 2:
+    raise RuntimeError("Support Process Participant cardinality changed")
+if {item.record.logical_id for item in participants} != {
+    SUPPORTED_PARTICIPANT_ID,
+    COUNSELOR_PARTICIPANT_ID,
+}:
+    raise RuntimeError("Support Process Participant identities changed")
+
+plan_counts = {
+    "need": len(SupportNeedWorkflowService(workspace).list(support_work)),
+    "goal": len(SupportGoalWorkflowService(workspace).list(support_work)),
+    "support": len(SupportWorkflowService(workspace).list(support_work)),
+}
+if any(plan_counts.values()):
+    raise RuntimeError("Support Process bootstrap manufactured planning records")
+
+print(
+    json.dumps(
+        {
+            "support_process_current": True,
+            "support_process_status": current_root.record.status,
+            "support_process_workflow_state": current_root.record.field(
+                "workflow_state"
+            ),
+            "support_process_owner_class": current_root.record.class_id,
+            "support_process_distinct_from_event": support_work.work_id != EVENT_ID,
+            "response_handoff_exact": initiation.get("record_ref")
+            == response_ref.to_dict(),
+            "support_participant_count": len(participants),
+            "supported_student_kind": supported_current.kind,
+            "supported_student_class": supported_current.authority.reference.class_id,
+            "supported_student_exact": True,
+            "counselor_kind": counselor_current.kind,
+            "counselor_actor_exact": True,
+            "need_count": plan_counts["need"],
+            "goal_count": plan_counts["goal"],
+            "support_count": plan_counts["support"],
+            "planning_not_inferred": all(value == 0 for value in plan_counts.values()),
+        },
+        sort_keys=True,
+    )
+)
+"""
+
 class Issue53AcceptanceError(RuntimeError):
     """Raised when the representative installed acceptance boundary fails."""
 
@@ -2147,6 +2442,65 @@ def _response_communication_probe(
             )
     return payload
 
+def _support_process_probe(
+    python: Path,
+    *,
+    cwd: Path,
+    env: Mapping[str, str],
+    workspace: Path,
+) -> dict[str, object]:
+    completed = _run(
+        [
+            str(python),
+            "-c",
+            _SUPPORT_PROCESS_PROBE,
+            str(workspace),
+        ],
+        cwd=cwd,
+        env=env,
+    )
+    lines = [line for line in completed.stdout.splitlines() if line.strip()]
+    if not lines:
+        raise Issue53AcceptanceError(
+            "Issue #53 installed Support Process probe produced no result"
+        )
+    try:
+        payload_raw = json.loads(lines[-1])
+    except json.JSONDecodeError as exc:
+        raise Issue53AcceptanceError(
+            "Issue #53 installed Support Process probe returned invalid JSON"
+        ) from exc
+    if not isinstance(payload_raw, dict):
+        raise Issue53AcceptanceError(
+            "Issue #53 installed Support Process result was not an object"
+        )
+
+    payload = cast(dict[str, object], payload_raw)
+    expected = {
+        "support_process_current": True,
+        "support_process_status": "active",
+        "support_process_workflow_state": "planning",
+        "support_process_owner_class": PRIMARY_CLASS_ID,
+        "support_process_distinct_from_event": True,
+        "response_handoff_exact": True,
+        "support_participant_count": 2,
+        "supported_student_kind": "roster_student",
+        "supported_student_class": SECONDARY_CLASS_ID,
+        "supported_student_exact": True,
+        "counselor_kind": "actor",
+        "counselor_actor_exact": True,
+        "need_count": 0,
+        "goal_count": 0,
+        "support_count": 0,
+        "planning_not_inferred": True,
+    }
+    for key, value in expected.items():
+        if payload.get(key) != value:
+            raise Issue53AcceptanceError(
+                f"Issue #53 installed Support Process mismatch for {key}"
+            )
+    return payload
+
 def smoke(portia_wheel: Path, core_wheel: Path) -> dict[str, object]:
     repository = Path(__file__).resolve().parents[1]
     candidate = _require_wheel(portia_wheel, label="Portia candidate")
@@ -2236,6 +2590,12 @@ def smoke(portia_wheel: Path, core_wheel: Path) -> dict[str, object]:
             env=env,
             workspace=workspace,
         )
+        support_process = _support_process_probe(
+            python,
+            cwd=work,
+            env=env,
+            workspace=workspace,
+        )
         if tuple(work.iterdir()):
             raise Issue53AcceptanceError(
                 "Issue #53 acceptance polluted its empty working directory"
@@ -2250,6 +2610,7 @@ def smoke(portia_wheel: Path, core_wheel: Path) -> dict[str, object]:
         print("PASS correction history")
         print("PASS Response")
         print("PASS Communication")
+        print("PASS Support Process")
 
         return {
             "candidate_portia_wheel": candidate.name,
@@ -2330,6 +2691,27 @@ def smoke(portia_wheel: Path, core_wheel: Path) -> dict[str, object]:
             ],
             "outcome_not_inferred": response_communication[
                 "outcome_not_inferred"
+            ],
+            "support_process_current": support_process[
+                "support_process_current"
+            ],
+            "support_process_workflow_state": support_process[
+                "support_process_workflow_state"
+            ],
+            "response_handoff_exact": support_process[
+                "response_handoff_exact"
+            ],
+            "support_participant_count": support_process[
+                "support_participant_count"
+            ],
+            "supported_student_exact": support_process[
+                "supported_student_exact"
+            ],
+            "counselor_actor_exact": support_process[
+                "counselor_actor_exact"
+            ],
+            "planning_not_inferred": support_process[
+                "planning_not_inferred"
             ],
             "launcher_reachable": True,
             "pip_check": "clean",
