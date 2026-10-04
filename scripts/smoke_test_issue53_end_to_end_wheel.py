@@ -50,6 +50,9 @@ COUNSELOR_SUPPORT_PARTICIPANT_ID: Final[str] = "spp_issue53_counselor"
 SUPPORT_NEED_ID: Final[str] = "spn_issue53_access"
 SUPPORT_GOAL_ID: Final[str] = "spg_issue53_access"
 SUPPORT_PLAN_ID: Final[str] = "spt_issue53_access"
+IMPLEMENTATION_ONE_ID: Final[str] = "imp_issue53_access_001"
+IMPLEMENTATION_TWO_ID: Final[str] = "imp_issue53_access_002"
+FIDELITY_ID: Final[str] = "fid_issue53_access"
 
 _AUTHORITY_ENVIRONMENT_KEYS: Final[frozenset[str]] = frozenset(
     {"PYTHONPATH", "PDS_WORKSPACE_ROOT"}
@@ -2276,6 +2279,355 @@ print(
 )
 """
 
+_IMPLEMENTATION_FIDELITY_PROBE = r"""
+import json
+import sys
+from pathlib import Path
+
+from portia.models import parse_portia_record
+from portia.models.references import ExactPortiaWorkRef
+from portia.workflows import (
+    FidelityWorkflowService,
+    FollowUpWorkflowService,
+    ImplementationWorkflowService,
+    OutcomeWorkflowService,
+    SupportProcessWorkflowService,
+    SupportWorkflowService,
+    fidelity_reference,
+    implementation_reference,
+    support_reference,
+)
+
+PRIMARY_CLASS_ID = "eng10_p2_2026"
+SUPPORT_PROCESS_ID = "sup_issue53_support"
+SUPPORTED_PARTICIPANT_ID = "spp_issue53_student"
+COUNSELOR_PARTICIPANT_ID = "spp_issue53_counselor"
+SUPPORT_ID = "spt_issue53_access"
+IMPLEMENTATION_ONE_ID = "imp_issue53_access_001"
+IMPLEMENTATION_TWO_ID = "imp_issue53_access_002"
+FIDELITY_ID = "fid_issue53_access"
+AGENT = {
+    "type": "local_operator",
+    "display_label": "Synthetic Acceptance Operator",
+}
+
+workspace = Path(sys.argv[1]).resolve()
+work = ExactPortiaWorkRef(
+    class_id=PRIMARY_CLASS_ID,
+    work_id=SUPPORT_PROCESS_ID,
+    work_kind="support_process",
+    contract_version="1",
+)
+
+root_service = SupportProcessWorkflowService(workspace)
+support_service = SupportWorkflowService(workspace)
+implementation_service = ImplementationWorkflowService(workspace)
+fidelity_service = FidelityWorkflowService(workspace)
+outcome_service = OutcomeWorkflowService(workspace)
+follow_up_service = FollowUpWorkflowService(workspace)
+
+root_before = root_service.require_current_use(work)
+if root_before.record.status != "active":
+    raise RuntimeError("Support Process is not current before execution history")
+if root_before.record.field("workflow_state") != "active":
+    raise RuntimeError("Support Process workflow is not active before execution history")
+
+support_ref = support_reference(work, SUPPORT_ID)
+support_before = support_service.require_current_use(support_ref)
+support_before_fingerprint = support_before.fingerprint
+if support_before.record.field("plan_state") != "active":
+    raise RuntimeError("Support plan is not active before Implementation")
+
+participant_target = {
+    "kind": "support_process_participant",
+    "record_ref": {
+        "record_kind": "support_process_participant",
+        "record_id": SUPPORTED_PARTICIPANT_ID,
+        "contract_version": "1",
+    },
+}
+participant_provider = {
+    "kind": "participants",
+    "participant_refs": [
+        {
+            "record_kind": "support_process_participant",
+            "record_id": COUNSELOR_PARTICIPANT_ID,
+            "contract_version": "1",
+        }
+    ],
+}
+plan_ref = {
+    "record_kind": "support",
+    "record_id": SUPPORT_ID,
+    "contract_version": "1",
+}
+
+
+def implementation_wire(
+    implementation_id,
+    started_at,
+    ended_at,
+    recorded_at,
+    summary,
+):
+    return {
+        "schema_version": "1",
+        "record_type": "implementation",
+        "module_id": "portia",
+        "class_id": PRIMARY_CLASS_ID,
+        "work_id": SUPPORT_PROCESS_ID,
+        "implementation_id": implementation_id,
+        "status": "active",
+        "plan_ref": plan_ref,
+        "actual_target": participant_target,
+        "implementation_provider": participant_provider,
+        "execution_state": "completed",
+        "started_at": started_at,
+        "ended_at": ended_at,
+        "summary": summary,
+        "creation_source": {"type": "digital_entry"},
+        "created_at": recorded_at,
+        "created_by": AGENT,
+        "updated_at": recorded_at,
+        "updated_by": AGENT,
+    }
+
+
+implementation_one = parse_portia_record(
+    "implementation",
+    "1",
+    implementation_wire(
+        IMPLEMENTATION_ONE_ID,
+        "2026-10-04T13:10:00-04:00",
+        "2026-10-04T13:18:00-04:00",
+        "2026-10-04T13:19:00-04:00",
+        (
+            "Synthetic first occurrence: the planned lower-distraction "
+            "location was made available during independent work."
+        ),
+    ),
+)
+implementation_two = parse_portia_record(
+    "implementation",
+    "1",
+    implementation_wire(
+        IMPLEMENTATION_TWO_ID,
+        "2026-10-04T13:25:00-04:00",
+        "2026-10-04T13:33:00-04:00",
+        "2026-10-04T13:34:00-04:00",
+        (
+            "Synthetic second occurrence: the planned lower-distraction "
+            "location was again made available during independent work."
+        ),
+    ),
+)
+
+created_one = implementation_service.create(work, implementation_one)
+created_two = implementation_service.create(work, implementation_two)
+
+one_ref = implementation_reference(work, IMPLEMENTATION_ONE_ID)
+two_ref = implementation_reference(work, IMPLEMENTATION_TWO_ID)
+current_one = implementation_service.require_current_use(one_ref)
+current_two = implementation_service.require_current_use(two_ref)
+
+if current_one.record.logical_id == current_two.record.logical_id:
+    raise RuntimeError("distinct Implementation occurrences collapsed identity")
+if current_one.path == current_two.path:
+    raise RuntimeError("distinct Implementation occurrences collapsed storage path")
+if current_one.record.field("plan_ref") != plan_ref:
+    raise RuntimeError("first Implementation lost exact Support plan reference")
+if current_two.record.field("plan_ref") != plan_ref:
+    raise RuntimeError("second Implementation lost exact Support plan reference")
+if current_one.record.field("actual_target") != participant_target:
+    raise RuntimeError("first Implementation changed exact supported target")
+if current_two.record.field("actual_target") != participant_target:
+    raise RuntimeError("second Implementation changed exact supported target")
+if current_one.record.field("implementation_provider") != participant_provider:
+    raise RuntimeError("first Implementation changed exact counselor provider")
+if current_two.record.field("implementation_provider") != participant_provider:
+    raise RuntimeError("second Implementation changed exact counselor provider")
+if current_one.record.field("execution_state") != "completed":
+    raise RuntimeError("first Implementation did not remain completed")
+if current_two.record.field("execution_state") != "completed":
+    raise RuntimeError("second Implementation did not remain completed")
+
+implementations = implementation_service.list(work)
+implementation_ids = tuple(
+    item.record.logical_id
+    for item in implementations
+    if item.record.logical_id in {
+        IMPLEMENTATION_ONE_ID,
+        IMPLEMENTATION_TWO_ID,
+    }
+)
+if set(implementation_ids) != {
+    IMPLEMENTATION_ONE_ID,
+    IMPLEMENTATION_TWO_ID,
+}:
+    raise RuntimeError("Implementation history did not retain both exact occurrences")
+
+implementation_refs = [
+    {
+        "record_kind": "implementation",
+        "record_id": IMPLEMENTATION_ONE_ID,
+        "contract_version": "1",
+    },
+    {
+        "record_kind": "implementation",
+        "record_id": IMPLEMENTATION_TWO_ID,
+        "contract_version": "1",
+    },
+]
+
+fidelity = parse_portia_record(
+    "fidelity",
+    "1",
+    {
+        "schema_version": "1",
+        "record_type": "fidelity",
+        "module_id": "portia",
+        "class_id": PRIMARY_CLASS_ID,
+        "work_id": SUPPORT_PROCESS_ID,
+        "fidelity_id": FIDELITY_ID,
+        "status": "active",
+        "plan_ref": plan_ref,
+        "evaluator_ref": {
+            "record_kind": "support_process_participant",
+            "record_id": COUNSELOR_PARTICIPANT_ID,
+            "contract_version": "1",
+        },
+        "scope": {
+            "kind": "implementation_set",
+            "implementation_refs": implementation_refs,
+        },
+        "result": "as_planned",
+        "basis": {
+            "kind": "implementation_records",
+            "record_refs": implementation_refs,
+        },
+        "evaluated_at": "2026-10-04T13:38:00-04:00",
+        "summary": (
+            "The two exact Implementation records document that the planned "
+            "availability step was carried out as recorded. This Fidelity "
+            "evaluation addresses adherence only, not effectiveness or Outcome."
+        ),
+        "creation_source": {"type": "digital_entry"},
+        "created_at": "2026-10-04T13:40:00-04:00",
+        "created_by": AGENT,
+        "updated_at": "2026-10-04T13:40:00-04:00",
+        "updated_by": AGENT,
+    },
+)
+fidelity_created = fidelity_service.create(work, fidelity)
+fidelity_ref = fidelity_reference(work, FIDELITY_ID)
+fidelity_current = fidelity_service.require_current_use(fidelity_ref)
+
+if fidelity_created.fingerprint != fidelity_current.fingerprint:
+    raise RuntimeError("Fidelity current representation changed unexpectedly")
+if fidelity_current.record.field("plan_ref") != plan_ref:
+    raise RuntimeError("Fidelity lost exact Support plan reference")
+
+scope = fidelity_current.record.field("scope")
+basis = fidelity_current.record.field("basis")
+if not isinstance(scope, dict) and not hasattr(scope, "get"):
+    raise RuntimeError("Fidelity scope is malformed")
+if not isinstance(basis, dict) and not hasattr(basis, "get"):
+    raise RuntimeError("Fidelity basis is malformed")
+if scope.get("kind") != "implementation_set":
+    raise RuntimeError("Fidelity did not retain implementation-set scope")
+scope_refs = scope.get("implementation_refs")
+basis_refs = basis.get("record_refs")
+if tuple(scope_refs) != tuple(implementation_refs):
+    raise RuntimeError("Fidelity scope lost exact Implementation identities")
+if basis.get("kind") != "implementation_records":
+    raise RuntimeError("Fidelity basis changed from implementation records")
+if tuple(basis_refs) != tuple(implementation_refs):
+    raise RuntimeError("Fidelity basis lost exact Implementation identities")
+if fidelity_current.record.field("result") != "as_planned":
+    raise RuntimeError("Fidelity result changed unexpectedly")
+
+fidelity_wire = fidelity_current.record.to_dict()
+for forbidden in (
+    "effectiveness",
+    "outcome",
+    "progress",
+    "success",
+    "compliance",
+    "provider_competence",
+):
+    if forbidden in fidelity_wire:
+        raise RuntimeError("Fidelity record introduced prohibited inferred semantics")
+
+for implementation in (current_one.record.to_dict(), current_two.record.to_dict()):
+    for forbidden in ("fidelity", "effectiveness", "outcome", "successful"):
+        if forbidden in implementation:
+            raise RuntimeError(
+                "Implementation occurrence introduced prohibited inferred semantics"
+            )
+
+support_after = support_service.require_current_use(support_ref)
+if support_after.fingerprint != support_before_fingerprint:
+    raise RuntimeError("execution history mutated the exact Support plan")
+
+root_after = root_service.require_current_use(work)
+if root_after.fingerprint != root_before.fingerprint:
+    raise RuntimeError("execution history mutated the Support Process root")
+if root_after.record.field("workflow_state") != "active":
+    raise RuntimeError("execution history changed Support Process workflow state")
+
+outcome_count = len(outcome_service.list(work))
+follow_up_count = len(follow_up_service.list(work))
+if outcome_count != 0:
+    raise RuntimeError("positive Fidelity manufactured an Outcome")
+if follow_up_count != 0:
+    raise RuntimeError("execution/Fidelity stage manufactured a Follow-Up")
+
+print(
+    json.dumps(
+        {
+            "implementation_count": len(implementation_ids),
+            "implementation_one_current": (
+                created_one.fingerprint == current_one.fingerprint
+            ),
+            "implementation_two_current": (
+                created_two.fingerprint == current_two.fingerprint
+            ),
+            "implementation_identities_distinct": (
+                current_one.record.logical_id != current_two.record.logical_id
+            ),
+            "implementation_paths_distinct": current_one.path != current_two.path,
+            "implementation_plan_exact": (
+                current_one.record.field("plan_ref") == plan_ref
+                and current_two.record.field("plan_ref") == plan_ref
+            ),
+            "implementation_target_exact": (
+                current_one.record.field("actual_target") == participant_target
+                and current_two.record.field("actual_target") == participant_target
+            ),
+            "implementation_provider_exact": (
+                current_one.record.field("implementation_provider")
+                == participant_provider
+                and current_two.record.field("implementation_provider")
+                == participant_provider
+            ),
+            "fidelity_current": True,
+            "fidelity_result": fidelity_current.record.field("result"),
+            "fidelity_scope_exact": tuple(scope_refs) == tuple(implementation_refs),
+            "fidelity_basis_exact": tuple(basis_refs) == tuple(implementation_refs),
+            "support_plan_unchanged": (
+                support_after.fingerprint == support_before_fingerprint
+            ),
+            "support_process_unchanged": root_after.fingerprint == root_before.fingerprint,
+            "follow_up_count": follow_up_count,
+            "outcome_count": outcome_count,
+            "effectiveness_not_inferred": True,
+            "outcome_not_inferred": outcome_count == 0,
+        },
+        sort_keys=True,
+    )
+)
+"""
+
 class Issue53AcceptanceError(RuntimeError):
     """Raised when the representative installed acceptance boundary fails."""
 
@@ -2899,6 +3251,67 @@ def _support_planning_probe(
             )
     return payload
 
+def _implementation_fidelity_probe(
+    python: Path,
+    *,
+    cwd: Path,
+    env: Mapping[str, str],
+    workspace: Path,
+) -> dict[str, object]:
+    completed = _run(
+        [
+            str(python),
+            "-c",
+            _IMPLEMENTATION_FIDELITY_PROBE,
+            str(workspace),
+        ],
+        cwd=cwd,
+        env=env,
+    )
+    lines = [line for line in completed.stdout.splitlines() if line.strip()]
+    if not lines:
+        raise Issue53AcceptanceError(
+            "Issue #53 installed Implementation/Fidelity probe produced no result"
+        )
+    try:
+        payload_raw = json.loads(lines[-1])
+    except json.JSONDecodeError as exc:
+        raise Issue53AcceptanceError(
+            "Issue #53 installed Implementation/Fidelity probe returned invalid JSON"
+        ) from exc
+    if not isinstance(payload_raw, dict):
+        raise Issue53AcceptanceError(
+            "Issue #53 installed Implementation/Fidelity result was not an object"
+        )
+
+    payload = cast(dict[str, object], payload_raw)
+    expected = {
+        "implementation_count": 2,
+        "implementation_one_current": True,
+        "implementation_two_current": True,
+        "implementation_identities_distinct": True,
+        "implementation_paths_distinct": True,
+        "implementation_plan_exact": True,
+        "implementation_target_exact": True,
+        "implementation_provider_exact": True,
+        "fidelity_current": True,
+        "fidelity_result": "as_planned",
+        "fidelity_scope_exact": True,
+        "fidelity_basis_exact": True,
+        "support_plan_unchanged": True,
+        "support_process_unchanged": True,
+        "follow_up_count": 0,
+        "outcome_count": 0,
+        "effectiveness_not_inferred": True,
+        "outcome_not_inferred": True,
+    }
+    for key, value in expected.items():
+        if payload.get(key) != value:
+            raise Issue53AcceptanceError(
+                f"Issue #53 installed Implementation/Fidelity mismatch for {key}"
+            )
+    return payload
+
 def smoke(portia_wheel: Path, core_wheel: Path) -> dict[str, object]:
     repository = Path(__file__).resolve().parents[1]
     candidate = _require_wheel(portia_wheel, label="Portia candidate")
@@ -3000,6 +3413,12 @@ def smoke(portia_wheel: Path, core_wheel: Path) -> dict[str, object]:
             env=env,
             workspace=workspace,
         )
+        implementation_fidelity = _implementation_fidelity_probe(
+            python,
+            cwd=work,
+            env=env,
+            workspace=workspace,
+        )
         if tuple(work.iterdir()):
             raise Issue53AcceptanceError(
                 "Issue #53 acceptance polluted its empty working directory"
@@ -3016,6 +3435,8 @@ def smoke(portia_wheel: Path, core_wheel: Path) -> dict[str, object]:
         print("PASS Communication")
         print("PASS Support Process")
         print("PASS Support planning")
+        print("PASS Implementation history")
+        print("PASS Fidelity")
 
         return {
             "candidate_portia_wheel": candidate.name,
@@ -3130,6 +3551,26 @@ def smoke(portia_wheel: Path, core_wheel: Path) -> dict[str, object]:
             ],
             "downstream_not_inferred": support_planning[
                 "downstream_not_inferred"
+            ],
+            "implementation_count": implementation_fidelity[
+                "implementation_count"
+            ],
+            "implementation_identities_distinct": implementation_fidelity[
+                "implementation_identities_distinct"
+            ],
+            "fidelity_current": implementation_fidelity["fidelity_current"],
+            "fidelity_result": implementation_fidelity["fidelity_result"],
+            "fidelity_scope_exact": implementation_fidelity[
+                "fidelity_scope_exact"
+            ],
+            "support_plan_unchanged": implementation_fidelity[
+                "support_plan_unchanged"
+            ],
+            "effectiveness_not_inferred": implementation_fidelity[
+                "effectiveness_not_inferred"
+            ],
+            "fidelity_outcome_not_inferred": implementation_fidelity[
+                "outcome_not_inferred"
             ],
             "launcher_reachable": True,
             "pip_check": "clean",

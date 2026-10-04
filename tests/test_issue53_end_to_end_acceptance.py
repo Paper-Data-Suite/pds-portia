@@ -588,3 +588,102 @@ def test_issue53_support_planning_follows_support_bootstrap_in_same_story() -> N
     assert 'print("PASS Support planning")' in source
     assert '"support_plan_state": support_planning["support_plan_state"]' in source
     assert '"downstream_not_inferred": support_planning[' in source
+
+
+def test_issue53_implementation_fidelity_identifiers_are_stable() -> None:
+    smoke = _load_script()
+    assert smoke.IMPLEMENTATION_ONE_ID == "imp_issue53_access_001"
+    assert smoke.IMPLEMENTATION_TWO_ID == "imp_issue53_access_002"
+    assert smoke.FIDELITY_ID == "fid_issue53_access"
+
+
+def test_issue53_records_two_distinct_exact_implementation_occurrences() -> None:
+    smoke = _load_script()
+    probe = smoke._IMPLEMENTATION_FIDELITY_PROBE
+    for marker in (
+        "ImplementationWorkflowService(workspace)",
+        "implementation_service.create(work, implementation_one)",
+        "implementation_service.create(work, implementation_two)",
+        "implementation_reference(work, IMPLEMENTATION_ONE_ID)",
+        "implementation_reference(work, IMPLEMENTATION_TWO_ID)",
+        "current_one.record.logical_id == current_two.record.logical_id",
+        "current_one.path == current_two.path",
+        '"execution_state": "completed"',
+    ):
+        assert marker in probe
+
+
+def test_issue53_implementations_preserve_exact_plan_target_and_provider() -> None:
+    smoke = _load_script()
+    probe = smoke._IMPLEMENTATION_FIDELITY_PROBE
+    for marker in (
+        '"record_kind": "support"',
+        '"record_id": SUPPORT_ID',
+        '"record_id": SUPPORTED_PARTICIPANT_ID',
+        '"record_id": COUNSELOR_PARTICIPANT_ID',
+        "current_one.record.field(\"plan_ref\") != plan_ref",
+        "current_two.record.field(\"actual_target\") != participant_target",
+        "current_two.record.field(\"implementation_provider\") != participant_provider",
+    ):
+        assert marker in probe
+
+
+def test_issue53_fidelity_uses_exact_two_implementation_scope_and_basis() -> None:
+    smoke = _load_script()
+    probe = smoke._IMPLEMENTATION_FIDELITY_PROBE
+    for marker in (
+        "FidelityWorkflowService(workspace)",
+        '"kind": "implementation_set"',
+        '"kind": "implementation_records"',
+        '"result": "as_planned"',
+        "fidelity_service.create(work, fidelity)",
+        "tuple(scope_refs) != tuple(implementation_refs)",
+        "tuple(basis_refs) != tuple(implementation_refs)",
+    ):
+        assert marker in probe
+
+
+def test_issue53_fidelity_does_not_infer_effectiveness_or_outcome() -> None:
+    smoke = _load_script()
+    probe = smoke._IMPLEMENTATION_FIDELITY_PROBE
+    for marker in (
+        '"effectiveness"',
+        '"outcome"',
+        '"progress"',
+        '"success"',
+        '"compliance"',
+        '"provider_competence"',
+        "OutcomeWorkflowService(workspace)",
+        "outcome_count != 0",
+        '"effectiveness_not_inferred": True',
+        '"outcome_not_inferred": outcome_count == 0',
+    ):
+        assert marker in probe
+
+
+def test_issue53_execution_history_does_not_mutate_plan_or_process() -> None:
+    smoke = _load_script()
+    probe = smoke._IMPLEMENTATION_FIDELITY_PROBE
+    for marker in (
+        "support_before_fingerprint = support_before.fingerprint",
+        "support_after.fingerprint != support_before_fingerprint",
+        "root_after.fingerprint != root_before.fingerprint",
+        '"support_plan_unchanged":',
+        '"support_process_unchanged":',
+    ):
+        assert marker in probe
+
+
+def test_issue53_implementation_fidelity_follows_support_planning() -> None:
+    source = (
+        ROOT / "scripts" / "smoke_test_issue53_end_to_end_wheel.py"
+    ).read_text(encoding="utf-8")
+    planning_index = source.index("support_planning = _support_planning_probe(")
+    execution_index = source.index(
+        "implementation_fidelity = _implementation_fidelity_probe("
+    )
+    assert planning_index < execution_index
+    assert 'print("PASS Implementation history")' in source
+    assert 'print("PASS Fidelity")' in source
+    assert '"implementation_count": implementation_fidelity[' in source
+    assert '"fidelity_result": implementation_fidelity[' in source
