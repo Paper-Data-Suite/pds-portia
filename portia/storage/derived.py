@@ -25,6 +25,9 @@ from portia.storage.paths import (
     derived_current_path,
     derived_data_path,
     derived_metadata_path,
+    legacy_derived_current_path,
+    legacy_derived_data_path,
+    legacy_derived_metadata_path,
     workspace_relative,
 )
 
@@ -70,11 +73,67 @@ def _parse_timestamp(value: object, *, description: str) -> datetime:
     return parsed
 
 
+def _artifact_exists(path: Path) -> bool:
+    return path.exists() or path.is_symlink()
+
+
 class DerivedStore:
     """Install and load derived state without treating it as canonical authority."""
 
     def __init__(self, root: str | Path) -> None:
         self.root = Path(root)
+
+    def _selected_current_path(
+        self,
+        projection_kind: str,
+        scope: object,
+    ) -> tuple[Path, bool]:
+        """Select bounded current state first, then exact legacy state."""
+        bounded = derived_current_path(self.root, projection_kind, scope)
+        if _artifact_exists(bounded):
+            return bounded, False
+        legacy = legacy_derived_current_path(self.root, projection_kind, scope)
+        if _artifact_exists(legacy):
+            return legacy, True
+        return bounded, False
+
+    def _selected_generation_paths(
+        self,
+        projection_kind: str,
+        scope: object,
+        generation_id: str,
+        *,
+        legacy: bool,
+    ) -> tuple[Path, Path]:
+        if legacy:
+            return (
+                legacy_derived_metadata_path(
+                    self.root,
+                    projection_kind,
+                    scope,
+                    generation_id,
+                ),
+                legacy_derived_data_path(
+                    self.root,
+                    projection_kind,
+                    scope,
+                    generation_id,
+                ),
+            )
+        return (
+            derived_metadata_path(
+                self.root,
+                projection_kind,
+                scope,
+                generation_id,
+            ),
+            derived_data_path(
+                self.root,
+                projection_kind,
+                scope,
+                generation_id,
+            ),
+        )
 
     def _validate_metadata(
         self,
@@ -189,6 +248,23 @@ class DerivedStore:
             generation_id,
         )
         current_path = derived_current_path(self.root, projection_kind, scope)
+        selected_current_path, selected_legacy = self._selected_current_path(
+            projection_kind,
+            scope,
+        )
+        if expected_current is None:
+            if _artifact_exists(selected_current_path):
+                raise PortiaConflictError(
+                    "derived current pointer already exists for this projection scope"
+                )
+        else:
+            _current_value, _current_bytes, current_fp = read_json(
+                selected_current_path
+            )
+            if current_fp != expected_current:
+                raise PortiaConflictError(
+                    "expected derived current pointer fingerprint does not match"
+                )
 
         exclusive_create(data_path, data_bytes)
         try:
@@ -217,6 +293,15 @@ class DerivedStore:
         try:
             if expected_current is None:
                 pointer_fp = exclusive_create(current_path, pointer_bytes)
+            elif selected_legacy:
+                _legacy_value, _legacy_bytes, legacy_fp = read_json(
+                    selected_current_path
+                )
+                if legacy_fp != expected_current:
+                    raise PortiaConflictError(
+                        "legacy derived current pointer changed before bounded cutover"
+                    )
+                pointer_fp = exclusive_create(current_path, pointer_bytes)
             else:
                 pointer_fp = guarded_replace(
                     current_path,
@@ -241,7 +326,10 @@ class DerivedStore:
         require_fresh: bool = True,
     ) -> DerivedCurrentState:
         """Load only the generation explicitly selected by ``current.json``."""
-        current_path = derived_current_path(self.root, projection_kind, scope)
+        current_path, legacy_layout = self._selected_current_path(
+            projection_kind,
+            scope,
+        )
         pointer_value, _pointer_bytes, pointer_fp = read_json(current_path)
         try:
             pointer = parse_portia_record("derived_current_pointer", "1", pointer_value)
@@ -259,11 +347,11 @@ class DerivedStore:
         if not isinstance(generation_id, str) or contract_version != "1":
             raise PortiaCorruptionError("derived current pointer has invalid generation reference")
 
-        metadata_path = derived_metadata_path(
-            self.root,
+        metadata_path, data_path = self._selected_generation_paths(
             projection_kind,
             scope,
             generation_id,
+            legacy=legacy_layout,
         )
         metadata_value, _metadata_bytes, metadata_fp = read_json(metadata_path)
         try:
@@ -278,7 +366,6 @@ class DerivedStore:
         ):
             raise PortiaCorruptionError("selected generation metadata disagrees with current pointer")
 
-        data_path = derived_data_path(self.root, projection_kind, scope, generation_id)
         data_value, data_bytes, data_fp = read_json(data_path)
         artifact = _mapping(metadata_data.get("data_artifact"), description="data_artifact")
         try:
@@ -318,14 +405,12 @@ class DerivedStore:
         Corrupt/unreadable pointer bytes remain errors rather than being flattened
         into absence. This method does not validate the selected generation.
         """
+        current_path, _legacy_layout = self._selected_current_path(
+            projection_kind,
+            scope,
+        )
         try:
-            read_json(
-                derived_current_path(
-                    self.root,
-                    projection_kind,
-                    scope,
-                )
-            )
+            read_json(current_path)
         except PortiaNotFoundError:
             return False
         return True

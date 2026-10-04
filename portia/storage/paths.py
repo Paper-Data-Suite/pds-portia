@@ -15,6 +15,12 @@ from pds_core.routing_models import ModuleWorkRef
 from portia.models.identifiers import validate_external_id, validate_portia_id
 from portia.models.references import ExactPortiaWorkRef, PortiaWorkRef
 from portia.storage.errors import PortiaPathError
+from portia.storage.generated_paths import (
+    build_actor_storage_revision_leaf,
+    build_derived_generation_token,
+    build_derived_projection_token,
+    build_work_storage_revision_leaf,
+)
 
 
 def _work_model(work: PortiaWorkRef | ExactPortiaWorkRef) -> ModuleWorkRef:
@@ -49,6 +55,18 @@ def work_record_path(
     )
 
 
+def _validate_storage_history_identity(
+    record_kind: str,
+    record_id: str,
+    digest: str,
+) -> tuple[str, str, str]:
+    kind = validate_external_id(record_kind, "record_kind")
+    identifier = validate_external_id(record_id, "record_id")
+    if len(digest) != 64 or any(ch not in "0123456789abcdef" for ch in digest):
+        raise PortiaPathError("storage-history digest must be lowercase SHA-256")
+    return kind, identifier, digest
+
+
 def work_storage_history_path(
     root: str | Path,
     work: PortiaWorkRef | ExactPortiaWorkRef,
@@ -56,14 +74,37 @@ def work_storage_history_path(
     record_id: str,
     digest: str,
 ) -> Path:
-    kind = validate_external_id(record_kind, "record_kind")
-    identifier = validate_external_id(record_id, "record_id")
-    if len(digest) != 64 or any(ch not in "0123456789abcdef" for ch in digest):
-        raise PortiaPathError("storage-history digest must be lowercase SHA-256")
+    """Return the bounded writer path for one work technical storage revision."""
+    kind, identifier, exact_digest = _validate_storage_history_identity(
+        record_kind,
+        record_id,
+        digest,
+    )
+    leaf = build_work_storage_revision_leaf(kind, identifier, exact_digest)
     return safe_module_work_descendant(
         root,
         _work_model(work),
-        f"history/storage_revisions/{kind}/{identifier}/{digest}.json",
+        f"history/storage_revisions/{leaf}",
+    )
+
+
+def legacy_work_storage_history_path(
+    root: str | Path,
+    work: PortiaWorkRef | ExactPortiaWorkRef,
+    record_kind: str,
+    record_id: str,
+    digest: str,
+) -> Path:
+    """Return the pre-Issue-92 work storage-history path for exact compatibility."""
+    kind, identifier, exact_digest = _validate_storage_history_identity(
+        record_kind,
+        record_id,
+        digest,
+    )
+    return safe_module_work_descendant(
+        root,
+        _work_model(work),
+        f"history/storage_revisions/{kind}/{identifier}/{exact_digest}.json",
     )
 
 
@@ -101,17 +142,36 @@ def actor_storage_history_path(
     record_id: str,
     digest: str,
 ) -> Path:
-    kind = validate_external_id(record_kind, "record_kind")
-    identifier = validate_external_id(record_id, "record_id")
-    if len(digest) != 64 or any(ch not in "0123456789abcdef" for ch in digest):
-        raise PortiaPathError("storage-history digest must be lowercase SHA-256")
+    """Return the bounded writer path for one Actor technical storage revision."""
+    kind, identifier, exact_digest = _validate_storage_history_identity(
+        record_kind,
+        record_id,
+        digest,
+    )
+    leaf = build_actor_storage_revision_leaf(kind, identifier, exact_digest)
+    return actor_root(root, actor_id) / "history" / "storage_revisions" / leaf
+
+
+def legacy_actor_storage_history_path(
+    root: str | Path,
+    actor_id: str,
+    record_kind: str,
+    record_id: str,
+    digest: str,
+) -> Path:
+    """Return the pre-Issue-92 Actor storage-history path for compatibility."""
+    kind, identifier, exact_digest = _validate_storage_history_identity(
+        record_kind,
+        record_id,
+        digest,
+    )
     return (
         actor_root(root, actor_id)
         / "history"
         / "storage_revisions"
         / kind
         / identifier
-        / f"{digest}.json"
+        / f"{exact_digest}.json"
     )
 
 
@@ -222,17 +282,63 @@ def _exact_work_from_scope(scope: dict[str, object]) -> ExactPortiaWorkRef:
         raise PortiaPathError("work projection scope has an invalid work_ref") from exc
 
 
+def _derived_scope_identity_parts(scope: object) -> tuple[str, ...]:
+    if not isinstance(scope, dict):
+        raise PortiaPathError("projection scope must be an object")
+    scope_kind = scope.get("scope")
+
+    if scope_kind == "work":
+        work = _exact_work_from_scope(scope)
+        return ("work", work.class_id, work.work_id)
+
+    if scope_kind == "class":
+        class_id = validate_external_id(scope.get("class_id"), "class_id")
+        return ("class", class_id)
+
+    if scope_kind == "workspace":
+        workspace_id = scope.get("workspace_id")
+        if workspace_id is None:
+            raise PortiaPathError(
+                "workspace-scoped derived state requires an authoritative workspace_id; "
+                "Portia must not manufacture one from a filesystem path"
+            )
+        identity = validate_external_id(workspace_id, "workspace_id")
+        return ("workspace", identity)
+
+    if scope_kind == "operation":
+        operation = scope.get("operation_ref")
+        if not isinstance(operation, dict):
+            raise PortiaPathError("operation scope requires operation_ref")
+        operation_id = validate_portia_id(
+            operation.get("operation_id"), "op_", "operation_id"
+        )
+        return ("operation", operation_id)
+
+    if scope_kind == "graph":
+        graph_id = validate_external_id(scope.get("graph_id"), "graph_id")
+        return ("graph", graph_id)
+
+    raise PortiaPathError(f"unsupported projection scope: {scope_kind!r}")
+
+
 def derived_projection_root(
     root: str | Path,
     projection_kind: str,
     scope: object,
 ) -> Path:
-    """Return the accepted derived-projection root for one exact scope.
+    """Return the bounded writer root for one exact derived projection scope."""
+    kind = validate_external_id(projection_kind, "projection_kind")
+    scope_identity = _derived_scope_identity_parts(scope)
+    token = build_derived_projection_token(kind, *scope_identity)
+    return portia_root(root) / "derived-v2" / token
 
-    Work-scoped projections remain beneath the owning work ``derived/`` boundary.
-    Class scope uses the Core class/module boundary.  Workspace, operation, and
-    graph scopes use Portia's bounded workspace-owned derived namespace.
-    """
+
+def legacy_derived_projection_root(
+    root: str | Path,
+    projection_kind: str,
+    scope: object,
+) -> Path:
+    """Return the pre-Issue-92 derived root for exact reader compatibility."""
     kind = validate_external_id(projection_kind, "projection_kind")
     if not isinstance(scope, dict):
         raise PortiaPathError("projection scope must be an object")
@@ -279,8 +385,20 @@ def derived_generation_root(
     generation_id: str,
 ) -> Path:
     generation = validate_portia_id(generation_id, "dgen_", "generation_id")
+    projection = derived_projection_root(root, projection_kind, scope)
+    token = build_derived_generation_token(projection.name, generation)
+    return projection / "generations" / token
+
+
+def legacy_derived_generation_root(
+    root: str | Path,
+    projection_kind: str,
+    scope: object,
+    generation_id: str,
+) -> Path:
+    generation = validate_portia_id(generation_id, "dgen_", "generation_id")
     return (
-        derived_projection_root(root, projection_kind, scope)
+        legacy_derived_projection_root(root, projection_kind, scope)
         / "generations"
         / generation
     )
@@ -298,6 +416,18 @@ def derived_metadata_path(
     )
 
 
+def legacy_derived_metadata_path(
+    root: str | Path,
+    projection_kind: str,
+    scope: object,
+    generation_id: str,
+) -> Path:
+    return (
+        legacy_derived_generation_root(root, projection_kind, scope, generation_id)
+        / "metadata.json"
+    )
+
+
 def derived_data_path(
     root: str | Path,
     projection_kind: str,
@@ -310,12 +440,32 @@ def derived_data_path(
     )
 
 
+def legacy_derived_data_path(
+    root: str | Path,
+    projection_kind: str,
+    scope: object,
+    generation_id: str,
+) -> Path:
+    return (
+        legacy_derived_generation_root(root, projection_kind, scope, generation_id)
+        / "data.json"
+    )
+
+
 def derived_current_path(
     root: str | Path,
     projection_kind: str,
     scope: object,
 ) -> Path:
     return derived_projection_root(root, projection_kind, scope) / "current.json"
+
+
+def legacy_derived_current_path(
+    root: str | Path,
+    projection_kind: str,
+    scope: object,
+) -> Path:
+    return legacy_derived_projection_root(root, projection_kind, scope) / "current.json"
 
 
 def validate_workspace_relative_path(value: object) -> PurePosixPath:

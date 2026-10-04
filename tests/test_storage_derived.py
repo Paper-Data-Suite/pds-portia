@@ -14,6 +14,8 @@ from portia.storage.paths import (
     derived_current_path,
     derived_data_path,
     derived_metadata_path,
+    legacy_derived_data_path,
+    legacy_derived_metadata_path,
 )
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -37,7 +39,9 @@ def test_source_snapshot_digest_matches_accepted_issue13_fixture() -> None:
     assert source_snapshot_digest(snapshot) == value["source_snapshot_digest"]
 
 
-def test_derived_paths_follow_scope_owned_generation_layout(tmp_path: Path) -> None:
+def test_derived_paths_use_bounded_writer_layout_and_preserve_legacy_helpers(
+    tmp_path: Path,
+) -> None:
     work = ExactPortiaWorkRef(
         module_id="portia",
         class_id="class_english10_p2",
@@ -47,6 +51,20 @@ def test_derived_paths_follow_scope_owned_generation_layout(tmp_path: Path) -> N
     )
     work_scope = {"scope": "work", "work_ref": work.to_dict()}
     assert derived_data_path(
+        tmp_path,
+        "current_state_view",
+        work_scope,
+        "dgen_example",
+    ) == (
+        tmp_path
+        / "portia"
+        / "derived-v2"
+        / "pt_751b1943be160f1db511eddae43de8ef"
+        / "generations"
+        / "pt_a677e8eb837245e8362aa3b29023a008"
+        / "data.json"
+    )
+    assert legacy_derived_data_path(
         tmp_path,
         "current_state_view",
         work_scope,
@@ -68,6 +86,20 @@ def test_derived_paths_follow_scope_owned_generation_layout(tmp_path: Path) -> N
 
     workspace_scope = {"scope": "workspace", "workspace_id": "local_workspace"}
     assert derived_metadata_path(
+        tmp_path,
+        "incoming_reference_index",
+        workspace_scope,
+        "dgen_actor_incoming_complete_01",
+    ) == (
+        tmp_path
+        / "portia"
+        / "derived-v2"
+        / "pt_cdca676a18cc5070e9e0a918b8ff7131"
+        / "generations"
+        / "pt_060bd4690d29abded082196a9ce8f6d5"
+        / "metadata.json"
+    )
+    assert legacy_derived_metadata_path(
         tmp_path,
         "incoming_reference_index",
         workspace_scope,

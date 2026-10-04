@@ -22,7 +22,10 @@ from portia.storage.errors import (
 from portia.storage.fingerprint import canonical_json_bytes
 from portia.storage.io import guarded_replace
 from portia.storage.migration_representations import MigrationRepresentationStore
-from portia.storage.paths import work_record_path
+from portia.storage.paths import (
+    work_record_path,
+    work_storage_history_path,
+)
 from portia.storage.repository import PortiaRepository
 from portia.storage.series import OperationJournalStore
 from portia.workflows import (
@@ -233,20 +236,15 @@ def test_commit_preserves_pre_migration_source_in_technical_storage_history(
 
     _commit(service, plan)
 
-    history = (
-        tmp_path
-        / "classes"
-        / event_ref().class_id
-        / "modules"
-        / "portia"
-        / "work"
-        / event_ref().work_id
-        / "history"
-        / "storage_revisions"
-        / "event_participant"
-        / "ep_alpha"
-        / f"{original.fingerprint.digest}.json"
+    history = work_storage_history_path(
+        tmp_path,
+        event_ref(),
+        "event_participant",
+        "ep_alpha",
+        original.fingerprint.digest,
     )
+    assert history.is_file()
+    assert len(history.name) == 40
     assert history.read_bytes()
     historical = parse_portia_record(
         "event_participant",
