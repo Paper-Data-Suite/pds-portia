@@ -42,6 +42,8 @@ EVENT_OBSERVATION_ID: Final[str] = "obs_issue53_cross_observed"
 EVENT_REVIEW_ID: Final[str] = "rvw_issue53_evidence"
 EVENT_DETERMINATION_ID: Final[str] = "det_issue53_insufficient"
 CORRECTED_EVENT_ACCOUNT_ID: Final[str] = "acct_issue53_cross_corrected"
+EVENT_RESPONSE_ID: Final[str] = "rsp_issue53_neutral_support"
+EVENT_COMMUNICATION_ID: Final[str] = "comm_issue53_guardian"
 
 _AUTHORITY_ENVIRONMENT_KEYS: Final[frozenset[str]] = frozenset(
     {"PYTHONPATH", "PDS_WORKSPACE_ROOT"}
@@ -1352,6 +1354,296 @@ print(
 )
 """
 
+_RESPONSE_COMMUNICATION_PROBE = r"""
+import json
+import sys
+from collections.abc import Mapping
+from pathlib import Path
+
+from portia.identity import ActorDirectoryService
+from portia.models import parse_portia_record
+from portia.models.references import (
+    ExactActorContactPointRef,
+    ExactPortiaWorkRef,
+)
+from portia.workflows import (
+    CommunicationWorkflowService,
+    OutcomeWorkflowService,
+    ResponseWorkflowService,
+    communication_reference,
+    determination_reference,
+    response_reference,
+    review_reference,
+)
+
+PRIMARY_CLASS_ID = "eng10_p2_2026"
+EVENT_ID = "evt_issue53_primary"
+CROSS_PARTICIPANT_ID = "ep_issue53_cross"
+REVIEW_ID = "rvw_issue53_evidence"
+DETERMINATION_ID = "det_issue53_insufficient"
+GUARDIAN_ACTOR_ID = "actr_guardian_001"
+CONTACT_POINT_ID = "acp_guardian_email_001"
+RESPONSE_ID = "rsp_issue53_neutral_support"
+COMMUNICATION_ID = "comm_issue53_guardian"
+RESPONSE_STAMP = "2026-10-04T12:40:00-04:00"
+COMMUNICATION_STAMP = "2026-10-04T12:45:00-04:00"
+AGENT = {
+    "type": "local_operator",
+    "display_label": "Synthetic Acceptance Operator",
+}
+
+workspace = Path(sys.argv[1]).resolve()
+work = ExactPortiaWorkRef(
+    class_id=PRIMARY_CLASS_ID,
+    work_id=EVENT_ID,
+    work_kind="event",
+    contract_version="2",
+)
+
+review_ref = review_reference(work, REVIEW_ID)
+determination_ref = determination_reference(work, DETERMINATION_ID)
+
+responses = ResponseWorkflowService(workspace)
+communications = CommunicationWorkflowService(workspace)
+outcomes = OutcomeWorkflowService(workspace)
+
+outcome_count_before = len(outcomes.list(work))
+
+response = parse_portia_record(
+    "response",
+    "1",
+    {
+        "schema_version": "1",
+        "record_type": "response",
+        "module_id": "portia",
+        "class_id": PRIMARY_CLASS_ID,
+        "work_id": EVENT_ID,
+        "response_id": RESPONSE_ID,
+        "status": "active",
+        "target": {
+            "kind": "event_participant",
+            "record_ref": {
+                "record_kind": "event_participant",
+                "record_id": CROSS_PARTICIPANT_ID,
+                "contract_version": "3",
+            },
+        },
+        "provider": {
+            "kind": "local_operator",
+            "display_label": "Synthetic Acceptance Operator",
+        },
+        "action": {
+            "family": "environmental_or_instructional",
+            "description": (
+                "Offered a brief neutral reset location and restated the "
+                "task directions without assigning responsibility."
+            ),
+        },
+        "execution_state": "completed",
+        "started_at": "2026-10-04T12:37:00-04:00",
+        "ended_at": "2026-10-04T12:38:00-04:00",
+        "review_ref": review_ref.to_dict(),
+        "determination_ref": determination_ref.to_dict(),
+        "creation_source": {"type": "digital_entry"},
+        "created_at": RESPONSE_STAMP,
+        "created_by": AGENT,
+        "updated_at": RESPONSE_STAMP,
+        "updated_by": AGENT,
+    },
+)
+response_created = responses.create(work, response)
+response_exact_ref = response_reference(work, RESPONSE_ID)
+response_current = responses.require_current_use(response_exact_ref)
+
+if response_created.record.status != "active":
+    raise RuntimeError("Response was not created as active")
+if response_current.record.field("execution_state") != "completed":
+    raise RuntimeError("Response execution state was not retained exactly")
+if response_current.record.field("review_ref") != review_ref.to_dict():
+    raise RuntimeError("Response lost exact Review context")
+if response_current.record.field("determination_ref") != determination_ref.to_dict():
+    raise RuntimeError("Response lost exact Determination context")
+
+response_wire = response_current.record.to_dict()
+for forbidden in ("outcome", "effectiveness", "success", "agreement"):
+    if forbidden in response_wire:
+        raise RuntimeError("Response improperly encoded inferred result semantics")
+
+actor_service = ActorDirectoryService(workspace)
+contact_ref = ExactActorContactPointRef(
+    actor_id=GUARDIAN_ACTOR_ID,
+    contact_point_id=CONTACT_POINT_ID,
+    contract_version="1",
+)
+contact = actor_service.load_contact_point(
+    contact_ref,
+    require_current_use=True,
+)
+if contact.record.logical_id != CONTACT_POINT_ID:
+    raise RuntimeError("Communication setup did not resolve exact current Contact Point")
+verification = contact.record.field("verification")
+if not isinstance(verification, Mapping):
+    raise RuntimeError("synthetic Contact Point verification is malformed")
+if verification.get("kind") != "locally_confirmed":
+    raise RuntimeError("synthetic Contact Point is not locally confirmed")
+
+communication = parse_portia_record(
+    "communication",
+    "1",
+    {
+        "schema_version": "1",
+        "record_type": "communication",
+        "module_id": "portia",
+        "class_id": PRIMARY_CLASS_ID,
+        "work_kind": "event",
+        "work_id": EVENT_ID,
+        "communication_id": COMMUNICATION_ID,
+        "status": "active",
+        "sender": {
+            "kind": "local_operator",
+            "display_label": "Synthetic Acceptance Operator",
+        },
+        "recipients": [
+            {
+                "person": {
+                    "kind": "actor",
+                    "actor_ref": {"actor_id": GUARDIAN_ACTOR_ID},
+                    "display_snapshot": {"display_name": "Shared Synthetic"},
+                },
+                "endpoint_ref": {
+                    "actor_id": GUARDIAN_ACTOR_ID,
+                    "contact_point_id": CONTACT_POINT_ID,
+                    "contract_version": "1",
+                },
+                "participation": "not_established",
+            }
+        ],
+        "method": {"kind": "email"},
+        "purpose": {"kind": "response_coordination"},
+        "act_state": "completed",
+        "privacy_scope": "participant_limited",
+        "started_at": "2026-10-04T12:42:00-04:00",
+        "ended_at": "2026-10-04T12:43:00-04:00",
+        "summary": (
+            "Recorded that an email communication act was completed to share "
+            "that the neutral classroom response had been offered."
+        ),
+        "relations": [
+            {
+                "relation": "relates_to_response",
+                "record_ref": response_exact_ref.to_dict(),
+            }
+        ],
+        "creation_source": {"type": "digital_entry"},
+        "created_at": COMMUNICATION_STAMP,
+        "created_by": AGENT,
+        "updated_at": COMMUNICATION_STAMP,
+        "updated_by": AGENT,
+    },
+)
+communication_created = communications.create(work, communication)
+communication_exact_ref = communication_reference(work, COMMUNICATION_ID)
+communication_current = communications.require_current_use(
+    communication_exact_ref
+)
+
+if communication_created.record.status != "active":
+    raise RuntimeError("Communication was not created as active")
+if communication_current.record.field("act_state") != "completed":
+    raise RuntimeError("Communication act state was not retained exactly")
+
+recipients = communication_current.record.field("recipients")
+if not isinstance(recipients, tuple) or len(recipients) != 1:
+    raise RuntimeError("Communication recipient set changed unexpectedly")
+recipient = recipients[0]
+if not isinstance(recipient, Mapping):
+    raise RuntimeError("Communication recipient representation is malformed")
+
+person = recipient.get("person")
+endpoint = recipient.get("endpoint_ref")
+if not isinstance(person, Mapping) or not isinstance(endpoint, Mapping):
+    raise RuntimeError("Communication lost Actor recipient or exact endpoint")
+actor_ref = person.get("actor_ref")
+if not isinstance(actor_ref, Mapping):
+    raise RuntimeError("Communication recipient Actor reference is malformed")
+if actor_ref.get("actor_id") != GUARDIAN_ACTOR_ID:
+    raise RuntimeError("Communication recipient identity changed")
+if endpoint.get("actor_id") != GUARDIAN_ACTOR_ID:
+    raise RuntimeError("Communication endpoint Actor disagrees with recipient")
+if endpoint.get("contact_point_id") != CONTACT_POINT_ID:
+    raise RuntimeError("Communication did not preserve exact Contact Point identity")
+if recipient.get("participation") != "not_established":
+    raise RuntimeError("completed Communication improperly established participation")
+
+relations = communication_current.record.field("relations")
+if not isinstance(relations, tuple) or len(relations) != 1:
+    raise RuntimeError("Communication response relation changed unexpectedly")
+relation = relations[0]
+if not isinstance(relation, Mapping):
+    raise RuntimeError("Communication relation is malformed")
+if relation.get("relation") != "relates_to_response":
+    raise RuntimeError("Communication lost its bounded Response relation")
+relation_ref = relation.get("record_ref")
+if relation_ref != response_exact_ref.to_dict():
+    raise RuntimeError("Communication relation did not remain exact")
+
+communication_wire = communication_current.record.to_dict()
+for forbidden in (
+    "delivery",
+    "delivered",
+    "read_status",
+    "agreement",
+    "consent",
+    "outcome",
+    "engagement_score",
+):
+    if forbidden in communication_wire:
+        raise RuntimeError(
+            "Communication improperly encoded delivery/agreement/outcome semantics"
+        )
+
+if communication_current.record.field("act_state") == "completed" and (
+    recipient.get("participation") != "not_established"
+):
+    raise RuntimeError("completed Communication was conflated with participation")
+
+outcome_count_after = len(outcomes.list(work))
+if outcome_count_before != 0 or outcome_count_after != 0:
+    raise RuntimeError("Response or Communication manufactured an Outcome")
+
+print(
+    json.dumps(
+        {
+            "response_current": True,
+            "response_execution_state": response_current.record.field(
+                "execution_state"
+            ),
+            "response_review_pinned": (
+                response_current.record.field("review_ref") == review_ref.to_dict()
+            ),
+            "response_determination_pinned": (
+                response_current.record.field("determination_ref")
+                == determination_ref.to_dict()
+            ),
+            "communication_current": True,
+            "communication_act_state": communication_current.record.field(
+                "act_state"
+            ),
+            "recipient_actor_exact": True,
+            "contact_point_exact_current": True,
+            "contact_verification_kind": verification.get("kind"),
+            "recipient_participation": recipient.get("participation"),
+            "response_relation_exact": True,
+            "delivery_not_inferred": True,
+            "agreement_not_inferred": True,
+            "outcome_count": outcome_count_after,
+            "outcome_not_inferred": True,
+        },
+        sort_keys=True,
+    )
+)
+"""
+
 class Issue53AcceptanceError(RuntimeError):
     """Raised when the representative installed acceptance boundary fails."""
 
@@ -1797,6 +2089,64 @@ def _judgment_correction_probe(
             )
     return payload
 
+def _response_communication_probe(
+    python: Path,
+    *,
+    cwd: Path,
+    env: Mapping[str, str],
+    workspace: Path,
+) -> dict[str, object]:
+    completed = _run(
+        [
+            str(python),
+            "-c",
+            _RESPONSE_COMMUNICATION_PROBE,
+            str(workspace),
+        ],
+        cwd=cwd,
+        env=env,
+    )
+    lines = [line for line in completed.stdout.splitlines() if line.strip()]
+    if not lines:
+        raise Issue53AcceptanceError(
+            "Issue #53 installed Response/Communication probe produced no result"
+        )
+    try:
+        payload_raw = json.loads(lines[-1])
+    except json.JSONDecodeError as exc:
+        raise Issue53AcceptanceError(
+            "Issue #53 installed Response/Communication probe returned invalid JSON"
+        ) from exc
+    if not isinstance(payload_raw, dict):
+        raise Issue53AcceptanceError(
+            "Issue #53 installed Response/Communication result was not an object"
+        )
+
+    payload = cast(dict[str, object], payload_raw)
+    expected = {
+        "response_current": True,
+        "response_execution_state": "completed",
+        "response_review_pinned": True,
+        "response_determination_pinned": True,
+        "communication_current": True,
+        "communication_act_state": "completed",
+        "recipient_actor_exact": True,
+        "contact_point_exact_current": True,
+        "contact_verification_kind": "locally_confirmed",
+        "recipient_participation": "not_established",
+        "response_relation_exact": True,
+        "delivery_not_inferred": True,
+        "agreement_not_inferred": True,
+        "outcome_count": 0,
+        "outcome_not_inferred": True,
+    }
+    for key, value in expected.items():
+        if payload.get(key) != value:
+            raise Issue53AcceptanceError(
+                f"Issue #53 installed Response/Communication mismatch for {key}"
+            )
+    return payload
+
 def smoke(portia_wheel: Path, core_wheel: Path) -> dict[str, object]:
     repository = Path(__file__).resolve().parents[1]
     candidate = _require_wheel(portia_wheel, label="Portia candidate")
@@ -1880,6 +2230,12 @@ def smoke(portia_wheel: Path, core_wheel: Path) -> dict[str, object]:
             env=env,
             workspace=workspace,
         )
+        response_communication = _response_communication_probe(
+            python,
+            cwd=work,
+            env=env,
+            workspace=workspace,
+        )
         if tuple(work.iterdir()):
             raise Issue53AcceptanceError(
                 "Issue #53 acceptance polluted its empty working directory"
@@ -1892,6 +2248,8 @@ def smoke(portia_wheel: Path, core_wheel: Path) -> dict[str, object]:
         print("PASS Event evidence")
         print("PASS bounded judgment")
         print("PASS correction history")
+        print("PASS Response")
+        print("PASS Communication")
 
         return {
             "candidate_portia_wheel": candidate.name,
@@ -1950,6 +2308,28 @@ def smoke(portia_wheel: Path, core_wheel: Path) -> dict[str, object]:
             ],
             "determination_history_pinned": judgment_correction[
                 "determination_history_pinned"
+            ],
+            "response_current": response_communication["response_current"],
+            "response_review_pinned": response_communication[
+                "response_review_pinned"
+            ],
+            "response_determination_pinned": response_communication[
+                "response_determination_pinned"
+            ],
+            "communication_current": response_communication[
+                "communication_current"
+            ],
+            "recipient_participation": response_communication[
+                "recipient_participation"
+            ],
+            "delivery_not_inferred": response_communication[
+                "delivery_not_inferred"
+            ],
+            "agreement_not_inferred": response_communication[
+                "agreement_not_inferred"
+            ],
+            "outcome_not_inferred": response_communication[
+                "outcome_not_inferred"
             ],
             "launcher_reachable": True,
             "pip_check": "clean",

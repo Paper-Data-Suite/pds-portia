@@ -366,3 +366,78 @@ def test_issue53_judgment_correction_follows_event_evidence_in_same_story() -> N
     assert 'print("PASS correction history")' in source
     assert '"determination_outcome": judgment_correction[' in source
     assert '"review_history_pinned": judgment_correction[' in source
+
+
+def test_issue53_response_communication_identifiers_are_stable() -> None:
+    smoke = _load_script()
+    assert smoke.EVENT_RESPONSE_ID == "rsp_issue53_neutral_support"
+    assert smoke.EVENT_COMMUNICATION_ID == "comm_issue53_guardian"
+
+
+def test_issue53_response_uses_exact_review_and_determination_context() -> None:
+    smoke = _load_script()
+    probe = smoke._RESPONSE_COMMUNICATION_PROBE
+    for marker in (
+        "ResponseWorkflowService(workspace)",
+        "responses.create(work, response)",
+        "responses.require_current_use(response_exact_ref)",
+        '"review_ref": review_ref.to_dict()',
+        '"determination_ref": determination_ref.to_dict()',
+        '"family": "environmental_or_instructional"',
+        '"execution_state": "completed"',
+    ):
+        assert marker in probe
+
+
+def test_issue53_communication_uses_exact_actor_contact_authority() -> None:
+    smoke = _load_script()
+    probe = smoke._RESPONSE_COMMUNICATION_PROBE
+    for marker in (
+        "CommunicationWorkflowService(workspace)",
+        "ActorDirectoryService(workspace)",
+        "ExactActorContactPointRef(",
+        "require_current_use=True",
+        '"actor_id": GUARDIAN_ACTOR_ID',
+        '"contact_point_id": CONTACT_POINT_ID',
+        '"method": {"kind": "email"}',
+        '"participation": "not_established"',
+        '"relation": "relates_to_response"',
+    ):
+        assert marker in probe
+
+
+def test_issue53_communication_keeps_contact_delivery_participation_and_outcome_distinct() -> None:
+    smoke = _load_script()
+    probe = smoke._RESPONSE_COMMUNICATION_PROBE
+    for marker in (
+        '"act_state": "completed"',
+        '"delivery"',
+        '"read_status"',
+        '"agreement"',
+        '"consent"',
+        '"outcome"',
+        '"engagement_score"',
+        "OutcomeWorkflowService(workspace)",
+        "outcome_count_after = len(outcomes.list(work))",
+        '"delivery_not_inferred": True',
+        '"agreement_not_inferred": True',
+        '"outcome_not_inferred": True',
+    ):
+        assert marker in probe
+
+
+def test_issue53_response_communication_follows_correction_in_same_story() -> None:
+    source = (
+        ROOT / "scripts" / "smoke_test_issue53_end_to_end_wheel.py"
+    ).read_text(encoding="utf-8")
+    correction_index = source.index(
+        "judgment_correction = _judgment_correction_probe("
+    )
+    response_index = source.index(
+        "response_communication = _response_communication_probe("
+    )
+    assert correction_index < response_index
+    assert 'print("PASS Response")' in source
+    assert 'print("PASS Communication")' in source
+    assert '"recipient_participation": response_communication[' in source
+    assert '"outcome_not_inferred": response_communication[' in source
