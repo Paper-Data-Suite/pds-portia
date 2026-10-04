@@ -3378,7 +3378,10 @@ from pathlib import Path
 
 from portia.models import parse_portia_record
 from portia.models.references import ExactPortiaWorkRef
-from portia.storage.errors import PortiaOperationPartialCommitError
+from portia.storage.errors import (
+    PortiaOperationPartialCommitError,
+    PortiaRecoveryRequiredError,
+)
 from portia.storage.fingerprint import ContentFingerprint, fingerprint_bytes
 from portia.storage.paths import (
     resolve_workspace_relative,
@@ -3386,6 +3389,7 @@ from portia.storage.paths import (
 )
 from portia.storage.series import OperationJournalStore
 from portia.workflows import (
+    IntegrityWorkflowService,
     RecoveryWorkflowService,
     SupportWorkflowService,
     support_reference,
@@ -3415,6 +3419,7 @@ successor_ref = support_reference(work, CORRECTED_SUPPORT_ID)
 service = SupportWorkflowService(workspace)
 journals = OperationJournalStore(workspace)
 recovery = RecoveryWorkflowService(workspace)
+integrity = IntegrityWorkflowService(workspace)
 
 
 def snapshot(root):
@@ -3617,6 +3622,47 @@ if evidence["step_transition"].disposition != "not_written":
 if evidence["step_action"].disposition != "not_written":
     raise RuntimeError("recovery did not recognize unsuperseded predecessor")
 
+pre_integrity_evaluation = integrity.evaluate_operation_persistence(OPERATION_ID)
+if pre_integrity_evaluation.findings:
+    raise RuntimeError("recovering operation has unexpected Integrity findings")
+
+integrity_scope = integrity.operation_scope(OPERATION_ID)
+pre_integrity_projection = integrity.project_operation_persistence_findings(
+    OPERATION_ID
+)
+if pre_integrity_projection.findings:
+    raise RuntimeError("recovering operation projected unexpected public findings")
+if integrity.current_findings(integrity_scope) != ():
+    raise RuntimeError("recovering operation current Integrity projection is not clean")
+pre_generation_id = pre_integrity_projection.generation.metadata.to_dict().get(
+    "generation_id"
+)
+if not isinstance(pre_generation_id, str):
+    raise RuntimeError("recovering Integrity projection lost generation identity")
+
+pre_integrity_serialized = json.dumps(
+    {
+        "findings": [
+            finding.to_dict()
+            for finding in pre_integrity_projection.findings
+        ],
+        "metadata": pre_integrity_projection.generation.metadata.to_dict(),
+    },
+    sort_keys=True,
+    default=str,
+)
+for prohibited in (
+    "Shared Synthetic",
+    "Synthetic Counselor",
+    "guardian.issue53@example.invalid",
+    "Synthetic classroom material-location discrepancy.",
+    "blue marker",
+):
+    if prohibited in pre_integrity_serialized:
+        raise RuntimeError(
+            "recovering Integrity diagnostics leaked private narrative/contact data"
+        )
+
 accepted_before_recovery = {
     "step_history": history_path.read_bytes(),
     "step_successor": successor_partial.path.read_bytes(),
@@ -3691,6 +3737,61 @@ if terminal_partial.get("held_or_possible_locks") != []:
 if terminal_data.get("staged_artifacts") != []:
     raise RuntimeError("terminal recovery still reports staging")
 
+stale_projection_rejected = False
+try:
+    integrity.current_findings(integrity_scope)
+except PortiaRecoveryRequiredError:
+    stale_projection_rejected = True
+
+if not stale_projection_rejected:
+    raise RuntimeError(
+        "pre-recovery Integrity projection remained falsely fresh after recovery"
+    )
+
+post_integrity_evaluation = integrity.evaluate_operation_persistence(OPERATION_ID)
+if post_integrity_evaluation.findings:
+    raise RuntimeError("completed operation has unexpected Integrity findings")
+
+post_integrity_projection = integrity.project_operation_persistence_findings(
+    OPERATION_ID
+)
+if post_integrity_projection.findings:
+    raise RuntimeError("completed operation projected unexpected public findings")
+if integrity.current_findings(integrity_scope) != ():
+    raise RuntimeError("completed operation current Integrity projection is not clean")
+post_generation_id = post_integrity_projection.generation.metadata.to_dict().get(
+    "generation_id"
+)
+if not isinstance(post_generation_id, str):
+    raise RuntimeError("completed Integrity projection lost generation identity")
+if post_generation_id == pre_generation_id:
+    raise RuntimeError("Integrity projection did not advance with recovered source state")
+
+integrity.require_operation_completion(OPERATION_ID)
+
+post_integrity_serialized = json.dumps(
+    {
+        "findings": [
+            finding.to_dict()
+            for finding in post_integrity_projection.findings
+        ],
+        "metadata": post_integrity_projection.generation.metadata.to_dict(),
+    },
+    sort_keys=True,
+    default=str,
+)
+for prohibited in (
+    "Shared Synthetic",
+    "Synthetic Counselor",
+    "guardian.issue53@example.invalid",
+    "Synthetic classroom material-location discrepancy.",
+    "blue marker",
+):
+    if prohibited in post_integrity_serialized:
+        raise RuntimeError(
+            "completed Integrity diagnostics leaked private narrative/contact data"
+        )
+
 before_idempotent_recovery = snapshot(workspace)
 repeated = recovery.resume_incomplete(
     OPERATION_ID,
@@ -3741,6 +3842,24 @@ print(
                 before_idempotent_recovery == after_idempotent_recovery
             ),
             "ordinary_conflict_distinct": True,
+            "integrity_pre_findings_count": len(
+                pre_integrity_evaluation.findings
+            ),
+            "integrity_pre_projection_clean": (
+                pre_integrity_projection.findings == ()
+            ),
+            "integrity_stale_projection_rejected": stale_projection_rejected,
+            "integrity_post_findings_count": len(
+                post_integrity_evaluation.findings
+            ),
+            "integrity_post_projection_clean": (
+                post_integrity_projection.findings == ()
+            ),
+            "integrity_generation_advanced": (
+                post_generation_id != pre_generation_id
+            ),
+            "integrity_operation_completion_allowed": True,
+            "integrity_privacy_bounded": True,
         },
         sort_keys=True,
     )
@@ -4675,6 +4794,14 @@ def _recovery_probe(
         "remaining_steps_empty": True,
         "recovery_idempotent": True,
         "ordinary_conflict_distinct": True,
+        "integrity_pre_findings_count": 0,
+        "integrity_pre_projection_clean": True,
+        "integrity_stale_projection_rejected": True,
+        "integrity_post_findings_count": 0,
+        "integrity_post_projection_clean": True,
+        "integrity_generation_advanced": True,
+        "integrity_operation_completion_allowed": True,
+        "integrity_privacy_bounded": True,
     }
     for key, value in expected.items():
         if payload.get(key) != value:
@@ -4837,6 +4964,7 @@ def smoke(portia_wheel: Path, core_wheel: Path) -> dict[str, object]:
         print("PASS provider boundary")
         print("PASS conflict")
         print("PASS recovery")
+        print("PASS integrity")
 
         return {
             "candidate_portia_wheel": candidate.name,
@@ -5057,6 +5185,24 @@ def smoke(portia_wheel: Path, core_wheel: Path) -> dict[str, object]:
             "recovery_locks_released": recovery["locks_released"],
             "recovery_staging_cleaned": recovery["staging_cleaned"],
             "recovery_idempotent": recovery["recovery_idempotent"],
+            "integrity_pre_findings_count": recovery[
+                "integrity_pre_findings_count"
+            ],
+            "integrity_stale_projection_rejected": recovery[
+                "integrity_stale_projection_rejected"
+            ],
+            "integrity_post_findings_count": recovery[
+                "integrity_post_findings_count"
+            ],
+            "integrity_generation_advanced": recovery[
+                "integrity_generation_advanced"
+            ],
+            "integrity_operation_completion_allowed": recovery[
+                "integrity_operation_completion_allowed"
+            ],
+            "integrity_privacy_bounded": recovery[
+                "integrity_privacy_bounded"
+            ],
             "launcher_reachable": True,
             "pip_check": "clean",
         }

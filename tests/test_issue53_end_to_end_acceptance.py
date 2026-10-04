@@ -1019,3 +1019,74 @@ def test_issue53_recovery_follows_ordinary_conflict_as_distinct_boundary() -> No
     assert 'print("PASS recovery")' in source
     assert '"partial_error_exact": recovery["partial_error_exact"]' in source
     assert '"recovery_idempotent": recovery["recovery_idempotent"]' in source
+
+
+def test_issue53_integrity_evaluates_recovering_operation_without_false_error() -> None:
+    smoke = _load_script()
+    probe = smoke._RECOVERY_PROBE
+    for marker in (
+        "IntegrityWorkflowService(workspace)",
+        "integrity.evaluate_operation_persistence(OPERATION_ID)",
+        "pre_integrity_evaluation.findings",
+        "integrity.project_operation_persistence_findings(",
+        "integrity.current_findings(integrity_scope)",
+        "pre_generation_id",
+    ):
+        assert marker in probe
+
+
+def test_issue53_integrity_projection_turns_stale_after_recovery() -> None:
+    smoke = _load_script()
+    probe = smoke._RECOVERY_PROBE
+    for marker in (
+        "stale_projection_rejected = False",
+        "except PortiaRecoveryRequiredError:",
+        "pre-recovery Integrity projection remained falsely fresh after recovery",
+        "post_generation_id == pre_generation_id",
+        '"integrity_stale_projection_rejected": stale_projection_rejected',
+        '"integrity_generation_advanced":',
+    ):
+        assert marker in probe
+
+
+def test_issue53_integrity_rebuilds_clean_completed_operation_projection() -> None:
+    smoke = _load_script()
+    probe = smoke._RECOVERY_PROBE
+    for marker in (
+        "post_integrity_evaluation = integrity.evaluate_operation_persistence(",
+        "post_integrity_projection = integrity.project_operation_persistence_findings(",
+        "post_integrity_evaluation.findings",
+        "post_integrity_projection.findings",
+        "integrity.require_operation_completion(OPERATION_ID)",
+        '"integrity_operation_completion_allowed": True',
+    ):
+        assert marker in probe
+
+
+def test_issue53_integrity_diagnostics_remain_privacy_bounded() -> None:
+    smoke = _load_script()
+    probe = smoke._RECOVERY_PROBE
+    for marker in (
+        "pre_integrity_serialized = json.dumps(",
+        "post_integrity_serialized = json.dumps(",
+        '"Shared Synthetic"',
+        '"Synthetic Counselor"',
+        '"guardian.issue53@example.invalid"',
+        '"Synthetic classroom material-location discrepancy."',
+        '"blue marker"',
+        '"integrity_privacy_bounded": True',
+    ):
+        assert marker in probe
+
+
+def test_issue53_integrity_stage_follows_recovery_stage() -> None:
+    source = (
+        ROOT / "scripts" / "smoke_test_issue53_end_to_end_wheel.py"
+    ).read_text(encoding="utf-8")
+    assert 'print("PASS recovery")' in source
+    assert 'print("PASS integrity")' in source
+    assert source.index('print("PASS recovery")') < source.index(
+        'print("PASS integrity")'
+    )
+    assert '"integrity_pre_findings_count": recovery[' in source
+    assert '"integrity_operation_completion_allowed": recovery[' in source
