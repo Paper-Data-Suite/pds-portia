@@ -34,6 +34,11 @@ COLLISION_STUDENT_ID: Final[str] = "student_shared_001"
 GUARDIAN_ACTOR_ID: Final[str] = "actr_guardian_001"
 COUNSELOR_ACTOR_ID: Final[str] = "actr_counselor_001"
 GUARDIAN_CONTACT_POINT_ID: Final[str] = "acp_guardian_email_001"
+PRIMARY_EVENT_ID: Final[str] = "evt_issue53_primary"
+PRIMARY_EVENT_PARTICIPANT_ID: Final[str] = "ep_issue53_primary"
+CROSS_EVENT_PARTICIPANT_ID: Final[str] = "ep_issue53_cross"
+EVENT_ACCOUNT_ID: Final[str] = "acct_issue53_cross_report"
+EVENT_OBSERVATION_ID: Final[str] = "obs_issue53_cross_observed"
 
 _AUTHORITY_ENVIRONMENT_KEYS: Final[frozenset[str]] = frozenset(
     {"PYTHONPATH", "PDS_WORKSPACE_ROOT"}
@@ -620,6 +625,406 @@ print(
 )
 """
 
+_EVENT_EVIDENCE_PROBE = r"""
+import json
+import sys
+from collections.abc import Mapping
+from pathlib import Path
+
+from portia.models import parse_portia_record
+from portia.models.references import ExactPortiaWorkRef
+from portia.workflows import (
+    AccountWorkflowService,
+    ClassificationWorkflowService,
+    DeterminationWorkflowService,
+    EventWorkflowService,
+    HypothesisWorkflowService,
+    ObservationWorkflowService,
+    ParticipantWorkflowService,
+    ReviewWorkflowService,
+    RoleWorkflowService,
+    account_reference,
+    observation_reference,
+    participant_reference,
+    role_reference,
+)
+
+PRIMARY_CLASS_ID = "eng10_p2_2026"
+SECONDARY_CLASS_ID = "journalism_p6_2026"
+COLLISION_STUDENT_ID = "student_shared_001"
+GUARDIAN_ACTOR_ID = "actr_guardian_001"
+EVENT_ID = "evt_issue53_primary"
+PRIMARY_PARTICIPANT_ID = "ep_issue53_primary"
+CROSS_PARTICIPANT_ID = "ep_issue53_cross"
+ACTOR_PARTICIPANT_ID = "ep_issue53_guardian"
+PRIMARY_ROLE_ID = "epr_issue53_primary"
+CROSS_ROLE_ID = "epr_issue53_cross"
+ACTOR_ROLE_ID = "epr_issue53_guardian"
+ACCOUNT_ID = "acct_issue53_cross_report"
+OBSERVATION_ID = "obs_issue53_cross_observed"
+CREATED_AT = "2026-10-04T12:10:00-04:00"
+ACTIVATED_AT = "2026-10-04T12:20:00-04:00"
+AGENT = {
+    "type": "local_operator",
+    "display_label": "Synthetic Acceptance Operator",
+}
+
+workspace = Path(sys.argv[1]).resolve()
+work = ExactPortiaWorkRef(
+    class_id=PRIMARY_CLASS_ID,
+    work_id=EVENT_ID,
+    work_kind="event",
+    contract_version="2",
+)
+
+
+def event_wire(status, updated_at):
+    return {
+        "schema_version": "2",
+        "record_type": "portia_work",
+        "work_kind": "event",
+        "module_id": "portia",
+        "class_id": PRIMARY_CLASS_ID,
+        "work_id": EVENT_ID,
+        "school_year": "2026-2027",
+        "status": status,
+        "creation_source": {"type": "digital_entry"},
+        "created_at": CREATED_AT,
+        "created_by": AGENT,
+        "updated_at": updated_at,
+        "updated_by": AGENT,
+        "occurrence": {
+            "precision": "exact",
+            "started_at": "2026-10-04T11:55:00-04:00",
+        },
+        "summary": "Synthetic classroom material-location discrepancy.",
+        "location": {"type": "classroom"},
+        "instructional_context": {"type": "group_work"},
+    }
+
+
+def participant_wire(participant_id, subject):
+    return {
+        "schema_version": "3",
+        "record_type": "event_participant",
+        "module_id": "portia",
+        "class_id": PRIMARY_CLASS_ID,
+        "work_id": EVENT_ID,
+        "participant_id": participant_id,
+        "status": "active",
+        "subject": subject,
+        "creation_source": {"type": "digital_entry"},
+        "created_at": "2026-10-04T12:12:00-04:00",
+        "created_by": AGENT,
+        "updated_at": "2026-10-04T12:12:00-04:00",
+        "updated_by": AGENT,
+    }
+
+
+def role_wire(role_id, participant_id):
+    return {
+        "schema_version": "3",
+        "record_type": "event_participant_role",
+        "module_id": "portia",
+        "class_id": PRIMARY_CLASS_ID,
+        "work_id": EVENT_ID,
+        "role_id": role_id,
+        "target": {
+            "kind": "event_participant",
+            "record_ref": {
+                "record_kind": "event_participant",
+                "record_id": participant_id,
+                "contract_version": "3",
+            },
+        },
+        "status": "active",
+        "role_type": "present",
+        "creation_source": {"type": "digital_entry"},
+        "created_at": "2026-10-04T12:14:00-04:00",
+        "created_by": AGENT,
+        "updated_at": "2026-10-04T12:14:00-04:00",
+        "updated_by": AGENT,
+    }
+
+
+events = EventWorkflowService(workspace)
+participants = ParticipantWorkflowService(workspace)
+roles = RoleWorkflowService(workspace)
+accounts = AccountWorkflowService(workspace)
+observations = ObservationWorkflowService(workspace)
+
+draft = events.create(
+    parse_portia_record("event", "2", event_wire("draft", CREATED_AT))
+)
+
+primary_participant = parse_portia_record(
+    "event_participant",
+    "3",
+    participant_wire(
+        PRIMARY_PARTICIPANT_ID,
+        {
+            "kind": "roster_student",
+            "roster_student_ref": {
+                "class_id": PRIMARY_CLASS_ID,
+                "student_id": COLLISION_STUDENT_ID,
+            },
+            "display_snapshot": {"display_name": "Shared Synthetic"},
+        },
+    ),
+)
+cross_participant = parse_portia_record(
+    "event_participant",
+    "3",
+    participant_wire(
+        CROSS_PARTICIPANT_ID,
+        {
+            "kind": "roster_student",
+            "roster_student_ref": {
+                "class_id": SECONDARY_CLASS_ID,
+                "student_id": COLLISION_STUDENT_ID,
+            },
+            "display_snapshot": {"display_name": "Shared Synthetic"},
+        },
+    ),
+)
+actor_participant = parse_portia_record(
+    "event_participant",
+    "3",
+    participant_wire(
+        ACTOR_PARTICIPANT_ID,
+        {
+            "kind": "actor",
+            "actor_ref": {"actor_id": GUARDIAN_ACTOR_ID},
+            "display_snapshot": {"display_name": "Shared Synthetic"},
+        },
+    ),
+)
+for record in (primary_participant, cross_participant, actor_participant):
+    participants.create(work, record)
+
+for role_id, participant_id in (
+    (PRIMARY_ROLE_ID, PRIMARY_PARTICIPANT_ID),
+    (CROSS_ROLE_ID, CROSS_PARTICIPANT_ID),
+    (ACTOR_ROLE_ID, ACTOR_PARTICIPANT_ID),
+):
+    roles.create(
+        work,
+        parse_portia_record(
+            "event_participant_role",
+            "3",
+            role_wire(role_id, participant_id),
+        ),
+    )
+
+active = events.replace(
+    parse_portia_record("event", "2", event_wire("active", ACTIVATED_AT)),
+    expected=draft.fingerprint,
+)
+current_event = events.require_current_use(work)
+if active.record.status != "active" or current_event.record.status != "active":
+    raise RuntimeError("primary Event did not become current through Event workflow")
+if current_event.record.class_id != PRIMARY_CLASS_ID:
+    raise RuntimeError("primary Event lost its single owning Core class")
+
+primary_resolution = participants.require_current_use(
+    participant_reference(work, PRIMARY_PARTICIPANT_ID)
+)
+cross_resolution = participants.require_current_use(
+    participant_reference(work, CROSS_PARTICIPANT_ID)
+)
+actor_resolution = participants.require_current_use(
+    participant_reference(work, ACTOR_PARTICIPANT_ID)
+)
+
+if primary_resolution.kind != "roster_student":
+    raise RuntimeError("primary Participant lost roster-student subject identity")
+if cross_resolution.kind != "roster_student":
+    raise RuntimeError("cross-class Participant lost roster-student subject identity")
+if actor_resolution.kind != "actor":
+    raise RuntimeError("Actor Participant lost explicit Actor identity")
+if primary_resolution.authority.reference.class_id != PRIMARY_CLASS_ID:
+    raise RuntimeError("primary Participant resolved outside its exact roster class")
+if cross_resolution.authority.reference.class_id != SECONDARY_CLASS_ID:
+    raise RuntimeError("foreign Participant was localized into Event owning class")
+if (
+    primary_resolution.authority.reference.student_id
+    != cross_resolution.authority.reference.student_id
+):
+    raise RuntimeError("cross-class collision no longer shares the synthetic local ID")
+if primary_resolution.authority.reference == cross_resolution.authority.reference:
+    raise RuntimeError("Event participation collapsed cross-class roster identity")
+
+for role_id in (PRIMARY_ROLE_ID, CROSS_ROLE_ID, ACTOR_ROLE_ID):
+    current_role = roles.require_current_use(role_reference(work, role_id))
+    if current_role.record.field("role_type") != "present":
+        raise RuntimeError("neutral Participant Role was replaced by an involvement claim")
+
+account = parse_portia_record(
+    "account",
+    "2",
+    {
+        "schema_version": "2",
+        "record_type": "account",
+        "module_id": "portia",
+        "class_id": PRIMARY_CLASS_ID,
+        "work_kind": "event",
+        "work_id": EVENT_ID,
+        "account_id": ACCOUNT_ID,
+        "status": "active",
+        "target": {
+            "kind": "event_participant",
+            "record_ref": {
+                "record_kind": "event_participant",
+                "record_id": CROSS_PARTICIPANT_ID,
+                "contract_version": "3",
+            },
+        },
+        "source": {
+            "kind": "roster_student",
+            "roster_student_ref": {
+                "class_id": PRIMARY_CLASS_ID,
+                "student_id": "student_primary_002",
+            },
+            "display_snapshot": {"display_name": "Primary Synthetic"},
+        },
+        "information_origin": "firsthand",
+        "source_certainty": "stated_certain",
+        "content": [
+            {
+                "representation": "recorded_summary",
+                "text": (
+                    "Synthetic source stated that the blue marker remained "
+                    "on the table after the timer sounded."
+                ),
+            }
+        ],
+        "provided_time": {
+            "precision": "exact",
+            "at": "2026-10-04T12:15:00-04:00",
+        },
+        "creation_source": {"type": "digital_entry"},
+        "created_at": "2026-10-04T12:25:00-04:00",
+        "created_by": AGENT,
+        "updated_at": "2026-10-04T12:25:00-04:00",
+        "updated_by": AGENT,
+    },
+)
+accounts.create(work, account)
+current_account = accounts.require_current_use(account_reference(work, ACCOUNT_ID))
+
+observation = parse_portia_record(
+    "observation",
+    "2",
+    {
+        "schema_version": "2",
+        "record_type": "observation",
+        "module_id": "portia",
+        "class_id": PRIMARY_CLASS_ID,
+        "work_kind": "event",
+        "work_id": EVENT_ID,
+        "observation_id": OBSERVATION_ID,
+        "status": "active",
+        "target": {
+            "kind": "event_participant",
+            "record_ref": {
+                "record_kind": "event_participant",
+                "record_id": CROSS_PARTICIPANT_ID,
+                "contract_version": "3",
+            },
+        },
+        "observer": {
+            "kind": "human",
+            "human_attribution": {
+                "kind": "local_operator",
+                "display_label": "Synthetic Acceptance Operator",
+            },
+        },
+        "method": "live_direct",
+        "content": {
+            "narrative": (
+                "Synthetic operator observed the blue marker on the floor "
+                "after the timer sounded."
+            )
+        },
+        "observation_time": {
+            "precision": "exact",
+            "at": "2026-10-04T12:16:00-04:00",
+        },
+        "creation_source": {"type": "digital_entry"},
+        "created_at": "2026-10-04T12:26:00-04:00",
+        "created_by": AGENT,
+        "updated_at": "2026-10-04T12:26:00-04:00",
+        "updated_by": AGENT,
+    },
+)
+observations.create(work, observation)
+current_observation = observations.require_current_use(
+    observation_reference(work, OBSERVATION_ID)
+)
+
+if current_account.record.contract != "account":
+    raise RuntimeError("Account evidence changed contract identity")
+if current_observation.record.contract != "observation":
+    raise RuntimeError("Observation evidence changed contract identity")
+
+automatic_judgments = {
+    "review": len(ReviewWorkflowService(workspace).list(work)),
+    "classification": len(ClassificationWorkflowService(workspace).list(work)),
+    "hypothesis": len(HypothesisWorkflowService(workspace).list(work)),
+    "determination": len(DeterminationWorkflowService(workspace).list(work)),
+}
+if any(automatic_judgments.values()):
+    raise RuntimeError("conflicting evidence manufactured judgment records")
+
+def contains_key(value, key):
+    if isinstance(value, Mapping):
+        return key in value or any(contains_key(item, key) for item in value.values())
+    if isinstance(value, (list, tuple)):
+        return any(contains_key(item, key) for item in value)
+    return False
+
+neutrality_keys = (
+    "responsibility",
+    "misconduct",
+    "diagnosis",
+    "risk",
+    "causation",
+    "effectiveness",
+)
+neutral_records = (
+    primary_resolution.participant.record.to_dict(),
+    cross_resolution.participant.record.to_dict(),
+    current_account.record.to_dict(),
+    current_observation.record.to_dict(),
+)
+if any(
+    contains_key(record, key)
+    for record in neutral_records
+    for key in neutrality_keys
+):
+    raise RuntimeError("Event evidence introduced prohibited automatic semantics")
+
+print(
+    json.dumps(
+        {
+            "event_current": True,
+            "event_owner_class": current_event.record.class_id,
+            "participant_count": len(participants.list(work)),
+            "role_count": len(roles.list(work)),
+            "foreign_participant_class": cross_resolution.authority.reference.class_id,
+            "foreign_participant_exact": True,
+            "actor_participant_exact": actor_resolution.kind == "actor",
+            "account_current": current_account.record.status == "active",
+            "observation_current": current_observation.record.status == "active",
+            "conflicting_evidence_retained": True,
+            "automatic_judgment_count": sum(automatic_judgments.values()),
+            "neutrality_preserved": True,
+        },
+        sort_keys=True,
+    )
+)
+"""
+
 class Issue53AcceptanceError(RuntimeError):
     """Raised when the representative installed acceptance boundary fails."""
 
@@ -953,6 +1358,61 @@ def _actor_setup_probe(
             )
     return payload
 
+def _event_evidence_probe(
+    python: Path,
+    *,
+    cwd: Path,
+    env: Mapping[str, str],
+    workspace: Path,
+) -> dict[str, object]:
+    completed = _run(
+        [
+            str(python),
+            "-c",
+            _EVENT_EVIDENCE_PROBE,
+            str(workspace),
+        ],
+        cwd=cwd,
+        env=env,
+    )
+    lines = [line for line in completed.stdout.splitlines() if line.strip()]
+    if not lines:
+        raise Issue53AcceptanceError(
+            "Issue #53 installed Event evidence probe produced no result"
+        )
+    try:
+        payload_raw = json.loads(lines[-1])
+    except json.JSONDecodeError as exc:
+        raise Issue53AcceptanceError(
+            "Issue #53 installed Event evidence probe returned invalid JSON"
+        ) from exc
+    if not isinstance(payload_raw, dict):
+        raise Issue53AcceptanceError(
+            "Issue #53 installed Event evidence probe result was not an object"
+        )
+
+    payload = cast(dict[str, object], payload_raw)
+    expected = {
+        "event_current": True,
+        "event_owner_class": PRIMARY_CLASS_ID,
+        "participant_count": 3,
+        "role_count": 3,
+        "foreign_participant_class": SECONDARY_CLASS_ID,
+        "foreign_participant_exact": True,
+        "actor_participant_exact": True,
+        "account_current": True,
+        "observation_current": True,
+        "conflicting_evidence_retained": True,
+        "automatic_judgment_count": 0,
+        "neutrality_preserved": True,
+    }
+    for key, value in expected.items():
+        if payload.get(key) != value:
+            raise Issue53AcceptanceError(
+                f"Issue #53 installed Event evidence mismatch for {key}"
+            )
+    return payload
+
 def smoke(portia_wheel: Path, core_wheel: Path) -> dict[str, object]:
     repository = Path(__file__).resolve().parents[1]
     candidate = _require_wheel(portia_wheel, label="Portia candidate")
@@ -1024,6 +1484,12 @@ def smoke(portia_wheel: Path, core_wheel: Path) -> dict[str, object]:
             env=env,
             workspace=workspace,
         )
+        event_evidence = _event_evidence_probe(
+            python,
+            cwd=work,
+            env=env,
+            workspace=workspace,
+        )
         if tuple(work.iterdir()):
             raise Issue53AcceptanceError(
                 "Issue #53 acceptance polluted its empty working directory"
@@ -1033,6 +1499,7 @@ def smoke(portia_wheel: Path, core_wheel: Path) -> dict[str, object]:
         print("PASS deep workspace")
         print("PASS Core setup")
         print("PASS Actor setup")
+        print("PASS Event evidence")
 
         return {
             "candidate_portia_wheel": candidate.name,
@@ -1063,6 +1530,19 @@ def smoke(portia_wheel: Path, core_wheel: Path) -> dict[str, object]:
             "relationship_authority_not_encoded": actor_setup[
                 "relationship_authority_not_encoded"
             ],
+            "event_current": event_evidence["event_current"],
+            "event_owner_class": event_evidence["event_owner_class"],
+            "participant_count": event_evidence["participant_count"],
+            "role_count": event_evidence["role_count"],
+            "foreign_participant_exact": event_evidence[
+                "foreign_participant_exact"
+            ],
+            "account_current": event_evidence["account_current"],
+            "observation_current": event_evidence["observation_current"],
+            "automatic_judgment_count": event_evidence[
+                "automatic_judgment_count"
+            ],
+            "neutrality_preserved": event_evidence["neutrality_preserved"],
             "launcher_reachable": True,
             "pip_check": "clean",
         }

@@ -224,3 +224,75 @@ def test_issue53_actor_stage_follows_core_setup_in_same_installed_story() -> Non
     assert 'print("PASS Actor setup")' in source
     assert '"actor_count": actor_setup["actor_count"]' in source
     assert '"cross_class_actor_reuse": actor_setup["cross_class_actor_reuse"]' in source
+
+
+def test_issue53_event_evidence_identifiers_are_stable_synthetic_values() -> None:
+    smoke = _load_script()
+    assert smoke.PRIMARY_EVENT_ID == "evt_issue53_primary"
+    assert smoke.PRIMARY_EVENT_PARTICIPANT_ID == "ep_issue53_primary"
+    assert smoke.CROSS_EVENT_PARTICIPANT_ID == "ep_issue53_cross"
+    assert smoke.EVENT_ACCOUNT_ID == "acct_issue53_cross_report"
+    assert smoke.EVENT_OBSERVATION_ID == "obs_issue53_cross_observed"
+
+
+def test_issue53_event_stage_uses_production_workflow_services() -> None:
+    smoke = _load_script()
+    probe = smoke._EVENT_EVIDENCE_PROBE
+    for marker in (
+        "EventWorkflowService,",
+        "ParticipantWorkflowService,",
+        "RoleWorkflowService,",
+        "AccountWorkflowService,",
+        "ObservationWorkflowService,",
+        "draft = events.create(",
+        "participants.create(work, record)",
+        "roles.create(",
+        "active = events.replace(",
+        "accounts.create(work, account)",
+        "observations.create(work, observation)",
+    ):
+        assert marker in probe
+
+
+def test_issue53_event_stage_preserves_cross_class_participant_identity() -> None:
+    smoke = _load_script()
+    probe = smoke._EVENT_EVIDENCE_PROBE
+    for marker in (
+        '"class_id": SECONDARY_CLASS_ID',
+        "cross_resolution.authority.reference.class_id != SECONDARY_CLASS_ID",
+        "primary_resolution.authority.reference == cross_resolution.authority.reference",
+        "current_event.record.class_id != PRIMARY_CLASS_ID",
+        '"role_type": "present"',
+    ):
+        assert marker in probe
+
+
+def test_issue53_event_stage_retains_conflict_without_automatic_judgment() -> None:
+    smoke = _load_script()
+    probe = smoke._EVENT_EVIDENCE_PROBE
+    for marker in (
+        "ReviewWorkflowService(workspace).list(work)",
+        "ClassificationWorkflowService(workspace).list(work)",
+        "HypothesisWorkflowService(workspace).list(work)",
+        "DeterminationWorkflowService(workspace).list(work)",
+        '"conflicting_evidence_retained": True',
+        '"automatic_judgment_count": sum(automatic_judgments.values())',
+        '"responsibility"',
+        '"misconduct"',
+        '"diagnosis"',
+        '"causation"',
+        '"effectiveness"',
+    ):
+        assert marker in probe
+
+
+def test_issue53_event_stage_follows_actor_setup_in_same_workspace() -> None:
+    source = (
+        ROOT / "scripts" / "smoke_test_issue53_end_to_end_wheel.py"
+    ).read_text(encoding="utf-8")
+    actor_index = source.index("actor_setup = _actor_setup_probe(")
+    event_index = source.index("event_evidence = _event_evidence_probe(")
+    assert actor_index < event_index
+    assert 'print("PASS Event evidence")' in source
+    assert '"event_current": event_evidence["event_current"]' in source
+    assert '"automatic_judgment_count": event_evidence[' in source
