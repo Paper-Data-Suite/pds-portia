@@ -156,3 +156,71 @@ def test_issue53_core_setup_extends_same_deep_workspace_after_foundation() -> No
     assert 'print("PASS Core setup")' in source
     assert '"active_school_year": core_setup["active_school_year"]' in source
     assert '"collision_reference_distinct": core_setup[' in source
+
+
+def test_issue53_actor_setup_identifiers_are_stable_synthetic_values() -> None:
+    smoke = _load_script()
+    assert smoke.GUARDIAN_ACTOR_ID == "actr_guardian_001"
+    assert smoke.COUNSELOR_ACTOR_ID == "actr_counselor_001"
+    assert smoke.GUARDIAN_CONTACT_POINT_ID == "acp_guardian_email_001"
+
+
+def test_issue53_actor_setup_uses_production_actor_directory_service() -> None:
+    smoke = _load_script()
+    probe = smoke._ACTOR_SETUP_PROBE
+    for marker in (
+        "ActorDirectoryService,",
+        "service = ActorDirectoryService(workspace)",
+        "service.create_actor(guardian)",
+        "service.create_actor(counselor)",
+        "service.create_actor_child(GUARDIAN_ACTOR_ID, contact)",
+        "service.resolve_student_relationship(",
+        "service.load_contact_point(",
+        "require_current_use=True",
+    ):
+        assert marker in probe
+
+
+def test_issue53_actor_setup_proves_workspace_scope_and_cross_class_links() -> None:
+    smoke = _load_script()
+    probe = smoke._ACTOR_SETUP_PROBE
+    for marker in (
+        'relative_parts[:2] != ("portia", "actors")',
+        '"asrel_guardian_primary"',
+        '"asrel_guardian_secondary"',
+        "PRIMARY_CLASS_ID,",
+        "SECONDARY_CLASS_ID,",
+        "guardian_primary.roster_student.reference",
+        "guardian_secondary.roster_student.reference",
+        "service.list_relationships(GUARDIAN_ACTOR_ID)",
+    ):
+        assert marker in probe
+
+
+def test_issue53_actor_setup_executes_identity_and_authority_negative_assertions() -> None:
+    smoke = _load_script()
+    probe = smoke._ACTOR_SETUP_PROBE
+    for marker in (
+        "RosterStudentNotFoundError",
+        "roster_resolver.resolve(PRIMARY_CLASS_ID, GUARDIAN_ACTOR_ID)",
+        "student_display_name(",
+        "prohibited_authority_fields",
+        '"legal_authority"',
+        '"disclosure_authority"',
+        '"decision_authority"',
+        '"consent"',
+        '"custody"',
+    ):
+        assert marker in probe
+
+
+def test_issue53_actor_stage_follows_core_setup_in_same_installed_story() -> None:
+    source = (
+        ROOT / "scripts" / "smoke_test_issue53_end_to_end_wheel.py"
+    ).read_text(encoding="utf-8")
+    core_index = source.index("core_setup = _core_setup_probe(")
+    actor_index = source.index("actor_setup = _actor_setup_probe(")
+    assert core_index < actor_index
+    assert 'print("PASS Actor setup")' in source
+    assert '"actor_count": actor_setup["actor_count"]' in source
+    assert '"cross_class_actor_reuse": actor_setup["cross_class_actor_reuse"]' in source

@@ -31,6 +31,9 @@ SYNTHETIC_SCHOOL_YEAR: Final[str] = "2026-2027"
 PRIMARY_CLASS_ID: Final[str] = "eng10_p2_2026"
 SECONDARY_CLASS_ID: Final[str] = "journalism_p6_2026"
 COLLISION_STUDENT_ID: Final[str] = "student_shared_001"
+GUARDIAN_ACTOR_ID: Final[str] = "actr_guardian_001"
+COUNSELOR_ACTOR_ID: Final[str] = "actr_counselor_001"
+GUARDIAN_CONTACT_POINT_ID: Final[str] = "acp_guardian_email_001"
 
 _AUTHORITY_ENVIRONMENT_KEYS: Final[frozenset[str]] = frozenset(
     {"PYTHONPATH", "PDS_WORKSPACE_ROOT"}
@@ -287,6 +290,330 @@ print(
             "resolver_reference_distinct": (
                 primary_resolution.reference != secondary_resolution.reference
             ),
+        },
+        sort_keys=True,
+    )
+)
+"""
+
+_ACTOR_SETUP_PROBE = r"""
+import json
+import sys
+from collections.abc import Mapping
+from datetime import date
+from pathlib import Path
+
+from pds_core.rosters import student_display_name
+
+from portia.identity import (
+    ActorDirectoryService,
+    CoreRosterResolver,
+    RosterStudentNotFoundError,
+)
+from portia.models import parse_portia_record
+from portia.models.references import (
+    ExactActorContactPointRef,
+    ExactActorRef,
+    ExactActorStudentRelationshipRef,
+)
+
+PRIMARY_CLASS_ID = "eng10_p2_2026"
+SECONDARY_CLASS_ID = "journalism_p6_2026"
+COLLISION_STUDENT_ID = "student_shared_001"
+GUARDIAN_ACTOR_ID = "actr_guardian_001"
+COUNSELOR_ACTOR_ID = "actr_counselor_001"
+CONTACT_POINT_ID = "acp_guardian_email_001"
+AS_OF = date(2026, 10, 4)
+STAMP = "2026-10-04T12:00:00-04:00"
+AGENT = {
+    "type": "local_operator",
+    "display_label": "Synthetic Acceptance Operator",
+}
+
+workspace = Path(sys.argv[1]).resolve()
+service = ActorDirectoryService(workspace)
+
+
+def actor_wire(actor_id, display_name, category, title=None):
+    display = {"display_name": display_name}
+    if title is not None:
+        display["title"] = title
+    return {
+        "schema_version": "1",
+        "record_type": "actor",
+        "module_id": "portia",
+        "actor_id": actor_id,
+        "status": "active",
+        "display": display,
+        "actor_category": {"kind": category},
+        "creation_source": {"type": "digital_entry"},
+        "created_at": STAMP,
+        "created_by": AGENT,
+        "updated_at": STAMP,
+        "updated_by": AGENT,
+    }
+
+
+def relationship_wire(
+    actor_id,
+    relationship_id,
+    class_id,
+    student_id,
+    relationship_type,
+):
+    return {
+        "schema_version": "1",
+        "record_type": "actor_student_relationship",
+        "module_id": "portia",
+        "actor_id": actor_id,
+        "relationship_id": relationship_id,
+        "status": "active",
+        "student_ref": {"class_id": class_id, "student_id": student_id},
+        "relationship": {"type": relationship_type},
+        "basis": {"kind": "local_operator_knowledge"},
+        "review": {
+            "kind": "locally_reviewed",
+            "reviewed_at": STAMP,
+            "reviewed_by": AGENT,
+        },
+        "effective_period": {"starts_on": "2026-09-01"},
+        "creation_source": {"type": "digital_entry"},
+        "created_at": STAMP,
+        "created_by": AGENT,
+        "updated_at": STAMP,
+        "updated_by": AGENT,
+    }
+
+
+guardian = parse_portia_record(
+    "actor",
+    "1",
+    actor_wire(
+        GUARDIAN_ACTOR_ID,
+        "Shared Synthetic",
+        "family_or_caregiver",
+    ),
+)
+counselor = parse_portia_record(
+    "actor",
+    "1",
+    actor_wire(
+        COUNSELOR_ACTOR_ID,
+        "Synthetic Counselor",
+        "school_staff",
+        title="Counselor",
+    ),
+)
+guardian_created = service.create_actor(guardian)
+counselor_created = service.create_actor(counselor)
+
+for stored in (guardian_created, counselor_created):
+    relative_parts = stored.path.resolve().relative_to(workspace).parts
+    if relative_parts[:2] != ("portia", "actors"):
+        raise RuntimeError("Actor was not persisted in workspace-scoped Actor Directory")
+    if PRIMARY_CLASS_ID in relative_parts or SECONDARY_CLASS_ID in relative_parts:
+        raise RuntimeError("Actor identity was incorrectly persisted under a Core class")
+
+contact = parse_portia_record(
+    "actor_contact_point",
+    "1",
+    {
+        "schema_version": "1",
+        "record_type": "actor_contact_point",
+        "module_id": "portia",
+        "actor_id": GUARDIAN_ACTOR_ID,
+        "contact_point_id": CONTACT_POINT_ID,
+        "status": "active",
+        "contact": {
+            "kind": "email",
+            "address": "guardian.issue53@example.invalid",
+            "label": "personal",
+        },
+        "use_preference": "preferred",
+        "source": {"kind": "local_operator_knowledge"},
+        "verification": {
+            "kind": "locally_confirmed",
+            "verified_at": STAMP,
+            "verified_by": AGENT,
+        },
+        "creation_source": {"type": "digital_entry"},
+        "created_at": STAMP,
+        "created_by": AGENT,
+        "updated_at": STAMP,
+        "updated_by": AGENT,
+    },
+)
+service.create_actor_child(GUARDIAN_ACTOR_ID, contact)
+
+relationships = (
+    (
+        GUARDIAN_ACTOR_ID,
+        "asrel_guardian_primary",
+        PRIMARY_CLASS_ID,
+        COLLISION_STUDENT_ID,
+        "caregiver",
+    ),
+    (
+        GUARDIAN_ACTOR_ID,
+        "asrel_guardian_secondary",
+        SECONDARY_CLASS_ID,
+        COLLISION_STUDENT_ID,
+        "caregiver",
+    ),
+    (
+        COUNSELOR_ACTOR_ID,
+        "asrel_counselor_primary",
+        PRIMARY_CLASS_ID,
+        "student_primary_002",
+        "counselor",
+    ),
+)
+for (
+    actor_id,
+    relationship_id,
+    class_id,
+    student_id,
+    relationship_type,
+) in relationships:
+    service.create_actor_child(
+        actor_id,
+        parse_portia_record(
+            "actor_student_relationship",
+            "1",
+            relationship_wire(
+                actor_id,
+                relationship_id,
+                class_id,
+                student_id,
+                relationship_type,
+            ),
+        ),
+    )
+
+guardian_ref = ExactActorRef(
+    actor_id=GUARDIAN_ACTOR_ID,
+    contract_version="1",
+)
+counselor_ref = ExactActorRef(
+    actor_id=COUNSELOR_ACTOR_ID,
+    contract_version="1",
+)
+service.load_actor(guardian_ref, require_current_use=True)
+service.load_actor(counselor_ref, require_current_use=True)
+
+contact_ref = ExactActorContactPointRef(
+    actor_id=GUARDIAN_ACTOR_ID,
+    contact_point_id=CONTACT_POINT_ID,
+    contract_version="1",
+)
+current_contact = service.load_contact_point(
+    contact_ref,
+    require_current_use=True,
+)
+if current_contact.record.logical_id != CONTACT_POINT_ID:
+    raise RuntimeError("current Actor Contact Point did not reload exactly")
+
+guardian_primary_ref = ExactActorStudentRelationshipRef(
+    actor_id=GUARDIAN_ACTOR_ID,
+    relationship_id="asrel_guardian_primary",
+    contract_version="1",
+)
+guardian_secondary_ref = ExactActorStudentRelationshipRef(
+    actor_id=GUARDIAN_ACTOR_ID,
+    relationship_id="asrel_guardian_secondary",
+    contract_version="1",
+)
+counselor_primary_ref = ExactActorStudentRelationshipRef(
+    actor_id=COUNSELOR_ACTOR_ID,
+    relationship_id="asrel_counselor_primary",
+    contract_version="1",
+)
+
+guardian_primary = service.resolve_student_relationship(
+    guardian_primary_ref,
+    require_current_use=True,
+    on_date=AS_OF,
+)
+guardian_secondary = service.resolve_student_relationship(
+    guardian_secondary_ref,
+    require_current_use=True,
+    on_date=AS_OF,
+)
+counselor_primary = service.resolve_student_relationship(
+    counselor_primary_ref,
+    require_current_use=True,
+    on_date=AS_OF,
+)
+
+if guardian_primary.roster_student.reference.class_id != PRIMARY_CLASS_ID:
+    raise RuntimeError("guardian primary relationship lost exact Core class identity")
+if guardian_secondary.roster_student.reference.class_id != SECONDARY_CLASS_ID:
+    raise RuntimeError("guardian secondary relationship lost exact Core class identity")
+if (
+    guardian_primary.roster_student.reference.student_id
+    != guardian_secondary.roster_student.reference.student_id
+):
+    raise RuntimeError("cross-class relationship case no longer shares local student_id")
+if guardian_primary.roster_student.reference == guardian_secondary.roster_student.reference:
+    raise RuntimeError("Actor relationships collapsed distinct class-qualified students")
+if counselor_primary.roster_student.reference.student_id != "student_primary_002":
+    raise RuntimeError("counselor relationship resolved the wrong exact student")
+
+guardian_relationships = service.list_relationships(GUARDIAN_ACTOR_ID)
+if {item.record.logical_id for item in guardian_relationships} != {
+    "asrel_guardian_primary",
+    "asrel_guardian_secondary",
+}:
+    raise RuntimeError("workspace Actor did not retain two separate class relationships")
+
+roster_resolver = CoreRosterResolver(workspace)
+try:
+    roster_resolver.resolve(PRIMARY_CLASS_ID, GUARDIAN_ACTOR_ID)
+except RosterStudentNotFoundError:
+    pass
+else:
+    raise RuntimeError("Actor identity was substituted for Core roster identity")
+
+guardian_display = guardian_created.record.field("display")
+if not isinstance(guardian_display, Mapping):
+    raise RuntimeError("guardian Actor display is malformed")
+if guardian_display.get("display_name") != student_display_name(
+    guardian_primary.roster_student.student
+):
+    raise RuntimeError("synthetic Actor/student display-name collision was not exercised")
+
+for resolved_relationship in (
+    guardian_primary,
+    guardian_secondary,
+    counselor_primary,
+):
+    wire = resolved_relationship.relationship.record.to_dict()
+    prohibited_authority_fields = {
+        "authority",
+        "legal_authority",
+        "disclosure_authority",
+        "consent",
+        "custody",
+        "decision_authority",
+    }
+    if prohibited_authority_fields.intersection(wire):
+        raise RuntimeError("Actor relationship improperly encoded authority semantics")
+
+print(
+    json.dumps(
+        {
+            "actor_count": 2,
+            "guardian_relationship_count": len(guardian_relationships),
+            "cross_class_actor_reuse": True,
+            "cross_class_relationships_distinct": (
+                guardian_primary.roster_student.reference
+                != guardian_secondary.roster_student.reference
+            ),
+            "actor_roster_identity_separate": True,
+            "display_name_not_identity": True,
+            "reviewed_relationships_current": True,
+            "contact_point_current": True,
+            "relationship_authority_not_encoded": True,
         },
         sort_keys=True,
     )
@@ -574,6 +901,58 @@ def _core_setup_probe(
             )
     return payload
 
+def _actor_setup_probe(
+    python: Path,
+    *,
+    cwd: Path,
+    env: Mapping[str, str],
+    workspace: Path,
+) -> dict[str, object]:
+    completed = _run(
+        [
+            str(python),
+            "-c",
+            _ACTOR_SETUP_PROBE,
+            str(workspace),
+        ],
+        cwd=cwd,
+        env=env,
+    )
+    lines = [line for line in completed.stdout.splitlines() if line.strip()]
+    if not lines:
+        raise Issue53AcceptanceError(
+            "Issue #53 installed Actor setup probe produced no result"
+        )
+    try:
+        payload_raw = json.loads(lines[-1])
+    except json.JSONDecodeError as exc:
+        raise Issue53AcceptanceError(
+            "Issue #53 installed Actor setup probe returned invalid JSON"
+        ) from exc
+    if not isinstance(payload_raw, dict):
+        raise Issue53AcceptanceError(
+            "Issue #53 installed Actor setup probe result was not an object"
+        )
+
+    payload = cast(dict[str, object], payload_raw)
+    expected = {
+        "actor_count": 2,
+        "guardian_relationship_count": 2,
+        "cross_class_actor_reuse": True,
+        "cross_class_relationships_distinct": True,
+        "actor_roster_identity_separate": True,
+        "display_name_not_identity": True,
+        "reviewed_relationships_current": True,
+        "contact_point_current": True,
+        "relationship_authority_not_encoded": True,
+    }
+    for key, value in expected.items():
+        if payload.get(key) != value:
+            raise Issue53AcceptanceError(
+                f"Issue #53 installed Actor setup mismatch for {key}"
+            )
+    return payload
+
 def smoke(portia_wheel: Path, core_wheel: Path) -> dict[str, object]:
     repository = Path(__file__).resolve().parents[1]
     candidate = _require_wheel(portia_wheel, label="Portia candidate")
@@ -639,6 +1018,12 @@ def smoke(portia_wheel: Path, core_wheel: Path) -> dict[str, object]:
             env=env,
             workspace=workspace,
         )
+        actor_setup = _actor_setup_probe(
+            python,
+            cwd=work,
+            env=env,
+            workspace=workspace,
+        )
         if tuple(work.iterdir()):
             raise Issue53AcceptanceError(
                 "Issue #53 acceptance polluted its empty working directory"
@@ -647,6 +1032,7 @@ def smoke(portia_wheel: Path, core_wheel: Path) -> dict[str, object]:
         print("PASS install")
         print("PASS deep workspace")
         print("PASS Core setup")
+        print("PASS Actor setup")
 
         return {
             "candidate_portia_wheel": candidate.name,
@@ -664,6 +1050,18 @@ def smoke(portia_wheel: Path, core_wheel: Path) -> dict[str, object]:
             ],
             "resolver_reference_distinct": core_setup[
                 "resolver_reference_distinct"
+            ],
+            "actor_count": actor_setup["actor_count"],
+            "cross_class_actor_reuse": actor_setup["cross_class_actor_reuse"],
+            "cross_class_relationships_distinct": actor_setup[
+                "cross_class_relationships_distinct"
+            ],
+            "actor_roster_identity_separate": actor_setup[
+                "actor_roster_identity_separate"
+            ],
+            "contact_point_current": actor_setup["contact_point_current"],
+            "relationship_authority_not_encoded": actor_setup[
+                "relationship_authority_not_encoded"
             ],
             "launcher_reachable": True,
             "pip_check": "clean",
