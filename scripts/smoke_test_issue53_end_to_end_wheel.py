@@ -4573,6 +4573,358 @@ print(
 )
 """
 
+_TEACHER_REFERENCE_EXPORT_PROBE = r"""
+import json
+import sys
+from pathlib import Path
+
+from portia.exports import (
+    TEACHER_REFERENCE_CONFIRMATION,
+    TeacherReferenceExportExecutionService,
+    TeacherReferenceExportExecutionSuccess,
+    TeacherReferenceExportHistoryService,
+    TeacherReferenceExportPreparationService,
+    TeacherReferenceExportScope,
+    TeacherReferenceManualReviewChoice,
+    TeacherReferenceProjectionService,
+    TeacherReferenceScopeDiscoveryService,
+    TeacherReferenceSourceInventoryService,
+)
+from portia.menu.identifiers import PortiaIdGenerator
+from portia.models.references import (
+    ExactPortiaWorkRecordRef,
+    ExactPortiaWorkRef,
+)
+from portia.storage import PortiaRepository
+
+PRIMARY_CLASS_ID = "eng10_p2_2026"
+SECONDARY_CLASS_ID = "journalism_p6_2026"
+SUPPORT_PROCESS_ID = "sup_issue53_support"
+ORIGINAL_SUPPORT_ID = "spt_issue53_access"
+CORRECTED_SUPPORT_ID = "spt_issue53_access_corrected"
+GUARDIAN_ACTOR_ID = "actr_guardian_001"
+COUNSELOR_ACTOR_ID = "actr_counselor_001"
+GUARDIAN_CONTACT_POINT_ID = "acp_guardian_email_001"
+GUARDIAN_EMAIL = "guardian.issue53@example.invalid"
+EVENT_ID = "evt_issue53_primary"
+REVIEWED_AT = "2026-10-04T18:00:00-04:00"
+GENERATED_AT = "2026-10-04T18:01:00-04:00"
+CONFIRMED_AT = "2026-10-04T18:02:00-04:00"
+OPERATOR = {
+    "type": "local_operator",
+    "display_label": "Synthetic Acceptance Operator",
+}
+
+workspace = Path(sys.argv[1]).resolve()
+repository = PortiaRepository(workspace)
+support_work = ExactPortiaWorkRef(
+    class_id=PRIMARY_CLASS_ID,
+    work_id=SUPPORT_PROCESS_ID,
+    work_kind="support_process",
+    contract_version="1",
+)
+scope = TeacherReferenceExportScope("teacher_current", support_work)
+
+discovery_service = TeacherReferenceScopeDiscoveryService(
+    workspace,
+    repository=repository,
+)
+discovery = discovery_service.discover(scope)
+if discovery.scope != scope:
+    raise RuntimeError("teacher-reference discovery changed exact selected scope")
+if not discovery.observations:
+    raise RuntimeError("teacher-reference discovery found no exact support sources")
+if any(observation.work_ref != support_work for observation in discovery.observations):
+    raise RuntimeError("teacher-reference discovery widened beyond selected Support Process")
+
+projection_service = TeacherReferenceProjectionService(
+    workspace,
+    repository=repository,
+)
+pending = projection_service.project(discovery)
+if pending.manual_review.status != "pending":
+    raise RuntimeError("representative teacher-reference export did not require review")
+
+choices = []
+summary_included = False
+initiation_omitted = False
+for item in pending.unresolved_manual_items:
+    if item.field_name is None:
+        raise RuntimeError("teacher-reference manual item lacks exact field identity")
+    if item.source_ref == support_work and item.field_name == "summary":
+        resolution = "include_exact"
+        summary_included = True
+    else:
+        resolution = "omit"
+        if item.source_ref == support_work and item.field_name == "initiation":
+            initiation_omitted = True
+    choices.append(
+        TeacherReferenceManualReviewChoice(
+            item.source_ref,
+            item.field_name,
+            resolution,
+        )
+    )
+
+if not summary_included:
+    raise RuntimeError("teacher-reference review did not include exact Support summary")
+if not initiation_omitted:
+    raise RuntimeError("teacher-reference review did not deliberately omit Support initiation")
+if not any(choice.resolution == "include_exact" for choice in choices):
+    raise RuntimeError("teacher-reference review lacked an explicit include choice")
+if not any(choice.resolution == "omit" for choice in choices):
+    raise RuntimeError("teacher-reference review lacked an explicit omit choice")
+
+decision = projection_service.resolve_manual_review(
+    pending,
+    tuple(choices),
+    reviewed_at=REVIEWED_AT,
+    reviewed_by=OPERATOR,
+)
+if not decision.is_final or decision.manual_review.status != "resolved":
+    raise RuntimeError("teacher-reference manual review did not finalize exact projection")
+
+inventory_service = TeacherReferenceSourceInventoryService(
+    workspace,
+    repository=repository,
+)
+inventory = inventory_service.author(decision)
+inventory_identities = {
+    json.dumps(ref.to_dict(), sort_keys=True)
+    for ref in inventory.source_refs
+}
+contributing_identities = {
+    json.dumps(ref.to_dict(), sort_keys=True)
+    for ref in decision.contributing_source_refs
+}
+if inventory_identities != contributing_identities:
+    raise RuntimeError("teacher-reference inventory drifted from exact contributing sources")
+if any(
+    (
+        ref != support_work
+        if isinstance(ref, ExactPortiaWorkRef)
+        else ref.work_ref != support_work
+    )
+    for ref in inventory.source_refs
+):
+    raise RuntimeError("teacher-reference inventory escaped selected Support Process")
+
+inventory_wire = inventory.to_dict()
+inventory_serialized = json.dumps(inventory_wire, sort_keys=True)
+for prohibited in (
+    SECONDARY_CLASS_ID,
+    GUARDIAN_ACTOR_ID,
+    COUNSELOR_ACTOR_ID,
+    GUARDIAN_CONTACT_POINT_ID,
+    GUARDIAN_EMAIL,
+    EVENT_ID,
+):
+    if prohibited in inventory_serialized:
+        raise RuntimeError(
+            f"teacher-reference inventory widened into identity/context source: {prohibited}"
+        )
+
+source_fingerprints = []
+for source_ref in inventory.source_refs:
+    if isinstance(source_ref, ExactPortiaWorkRef):
+        stored = repository.load_work(source_ref)
+    elif isinstance(source_ref, ExactPortiaWorkRecordRef):
+        stored = repository.load_work_record(
+            source_ref.work_ref,
+            source_ref.record_ref.record_kind,
+            source_ref.record_ref.contract_version,
+            source_ref.record_ref.record_id,
+        )
+    else:
+        raise RuntimeError("teacher-reference inventory exposed unsupported source type")
+    source_fingerprints.append((source_ref, stored.fingerprint))
+
+def id_generator():
+    tokens = iter(
+        (
+            "issue53_teacher_export",
+            "issue53_teacher_operation",
+            "issue53_teacher_artifact",
+            "issue53_teacher_provenance",
+        )
+    )
+    return PortiaIdGenerator(token_source=tokens.__next__)
+
+def prepare():
+    return TeacherReferenceExportPreparationService(
+        workspace,
+        repository=repository,
+        id_generator=id_generator(),
+    ).prepare(
+        decision,
+        requested_at=REVIEWED_AT,
+        requested_by=OPERATOR,
+        generated_at=GENERATED_AT,
+        deployment_instance_id="issue53_installed_acceptance",
+        process_instance_id="issue53_installed_acceptance_process",
+    )
+
+prepared = prepare()
+repeated = prepare()
+if prepared.preparation_digest != repeated.preparation_digest:
+    raise RuntimeError("teacher-reference preparation was not deterministic")
+if prepared.artifact_bytes != repeated.artifact_bytes:
+    raise RuntimeError("teacher-reference HTML rendering was not deterministic")
+if prepared.provenance_bytes != repeated.provenance_bytes:
+    raise RuntimeError("teacher-reference provenance rendering was not deterministic")
+
+expected_artifact_path = f"portia/exports/{prepared.export_id}/artifact.html"
+expected_provenance_path = f"portia/exports/{prepared.export_id}/export.json"
+if prepared.artifact_relative_path != expected_artifact_path:
+    raise RuntimeError("teacher-reference artifact path escaped exact export location")
+if prepared.provenance_relative_path != expected_provenance_path:
+    raise RuntimeError("teacher-reference provenance path escaped exact export location")
+if prepared.inventory.to_dict() != inventory_wire:
+    raise RuntimeError("teacher-reference preparation changed exact source inventory")
+if prepared.decision.projection_decision_digest != decision.projection_decision_digest:
+    raise RuntimeError("teacher-reference preparation changed reviewed projection")
+
+warning = (
+    "Local teacher reference only; this export is not a disclosure or official "
+    "institutional record."
+)
+if warning not in prepared.preview.warnings:
+    raise RuntimeError("teacher-reference preview lost local-reference boundary warning")
+
+execution = TeacherReferenceExportExecutionService(
+    workspace,
+    repository=repository,
+    discovery_service=discovery_service,
+    projection_service=projection_service,
+)
+result = execution.execute(
+    prepared,
+    confirmation=TEACHER_REFERENCE_CONFIRMATION,
+    confirmed_preparation_digest=prepared.preparation_digest,
+    confirmed_at=CONFIRMED_AT,
+)
+if not isinstance(result, TeacherReferenceExportExecutionSuccess):
+    raise RuntimeError("teacher-reference export did not complete through production execution")
+if result.status != "completed":
+    raise RuntimeError("teacher-reference export did not reach completed state")
+if result.export_id != prepared.export_id or result.operation_id != prepared.operation_id:
+    raise RuntimeError("teacher-reference execution changed reviewed export identity")
+
+artifact_path = workspace / prepared.artifact_relative_path
+provenance_path = workspace / prepared.provenance_relative_path
+artifact_bytes_after_success = artifact_path.read_bytes()
+provenance_bytes_after_success = provenance_path.read_bytes()
+if artifact_bytes_after_success != prepared.artifact_bytes:
+    raise RuntimeError("persisted teacher-reference artifact differs from reviewed bytes")
+if provenance_bytes_after_success != prepared.provenance_bytes:
+    raise RuntimeError("persisted teacher-reference provenance differs from reviewed bytes")
+
+provenance_wire = json.loads(provenance_bytes_after_success)
+if provenance_wire != prepared.deliberate_export.to_dict():
+    raise RuntimeError("teacher-reference export.json is not exact reviewed provenance")
+if provenance_wire.get("source_inventory") != inventory_wire:
+    raise RuntimeError("teacher-reference export.json source inventory changed")
+if provenance_wire.get("projection_decision_digest") != decision.projection_decision_digest:
+    raise RuntimeError("teacher-reference export.json lost reviewed projection digest")
+
+artifact_text = artifact_bytes_after_success.decode("utf-8")
+if "Synthetic Counselor" not in artifact_text:
+    raise RuntimeError("teacher-reference artifact lost embedded participant snapshot")
+for prohibited in (
+    GUARDIAN_EMAIL,
+    GUARDIAN_CONTACT_POINT_ID,
+    GUARDIAN_ACTOR_ID,
+    COUNSELOR_ACTOR_ID,
+    SECONDARY_CLASS_ID,
+    EVENT_ID,
+    ORIGINAL_SUPPORT_ID,
+):
+    if prohibited in artifact_text:
+        raise RuntimeError(
+            f"teacher-reference artifact leaked live/unrelated source value: {prohibited}"
+        )
+
+provenance_serialized = json.dumps(provenance_wire, sort_keys=True)
+for prohibited in (
+    GUARDIAN_EMAIL,
+    GUARDIAN_CONTACT_POINT_ID,
+    GUARDIAN_ACTOR_ID,
+    COUNSELOR_ACTOR_ID,
+    SECONDARY_CLASS_ID,
+    EVENT_ID,
+):
+    if prohibited in provenance_serialized:
+        raise RuntimeError(
+            f"teacher-reference provenance widened into unrelated identity: {prohibited}"
+        )
+
+for source_ref, expected_fingerprint in source_fingerprints:
+    if isinstance(source_ref, ExactPortiaWorkRef):
+        stored = repository.load_work(source_ref)
+    else:
+        stored = repository.load_work_record(
+            source_ref.work_ref,
+            source_ref.record_ref.record_kind,
+            source_ref.record_ref.contract_version,
+            source_ref.record_ref.record_id,
+        )
+    if stored.fingerprint != expected_fingerprint:
+        raise RuntimeError("teacher-reference export mutated canonical source representation")
+
+history = TeacherReferenceExportHistoryService(workspace).list_for_work(support_work)
+matching = [entry for entry in history if entry.export_id == prepared.export_id]
+if len(matching) != 1:
+    raise RuntimeError("teacher-reference export history did not return exact export")
+if matching[0].verification_status != "available_verified":
+    raise RuntimeError("teacher-reference export history verification did not succeed")
+if matching[0].operation_id != prepared.operation_id:
+    raise RuntimeError("teacher-reference history lost exact coordinated operation identity")
+
+if artifact_path.read_bytes() != artifact_bytes_after_success:
+    raise RuntimeError("teacher-reference artifact changed after successful persistence")
+if provenance_path.read_bytes() != provenance_bytes_after_success:
+    raise RuntimeError("teacher-reference provenance changed during history verification")
+
+print(
+    json.dumps(
+        {
+            "projection_purpose": scope.projection_purpose,
+            "manual_include_count": sum(
+                choice.resolution == "include_exact" for choice in choices
+            ),
+            "manual_omit_count": sum(choice.resolution == "omit" for choice in choices),
+            "source_inventory_count": len(inventory.source_refs),
+            "source_inventory_exact": inventory_identities
+            == contributing_identities,
+            "render_deterministic": prepared.artifact_bytes
+            == repeated.artifact_bytes,
+            "provenance_exact": provenance_wire
+            == prepared.deliberate_export.to_dict(),
+            "artifact_path_exact": prepared.artifact_relative_path
+            == expected_artifact_path,
+            "provenance_path_exact": prepared.provenance_relative_path
+            == expected_provenance_path,
+            "history_verified": matching[0].verification_status
+            == "available_verified",
+            "artifact_immutable_after_success": artifact_path.read_bytes()
+            == artifact_bytes_after_success,
+            "provenance_immutable_after_success": provenance_path.read_bytes()
+            == provenance_bytes_after_success,
+            "canonical_sources_unchanged": True,
+            "actor_directory_not_live_enrichment": (
+                "Synthetic Counselor" in artifact_text
+                and COUNSELOR_ACTOR_ID not in artifact_text
+            ),
+            "contact_point_data_absent": GUARDIAN_EMAIL not in artifact_text,
+            "unrelated_class_not_widened": SECONDARY_CLASS_ID
+            not in provenance_serialized,
+            "local_teacher_reference_only": warning in prepared.preview.warnings,
+        },
+        sort_keys=True,
+    )
+)
+"""
+
 class Issue53AcceptanceError(RuntimeError):
     """Raised when the representative installed acceptance boundary fails."""
 
@@ -5639,6 +5991,65 @@ def _student_view_privacy_probe(
             )
     return payload
 
+
+def _teacher_reference_export_probe(
+    python: Path,
+    *,
+    cwd: Path,
+    env: Mapping[str, str],
+    workspace: Path,
+) -> dict[str, object]:
+    completed = _run(
+        [str(python), "-c", _TEACHER_REFERENCE_EXPORT_PROBE, str(workspace)],
+        cwd=cwd,
+        env=env,
+    )
+    lines = [line for line in completed.stdout.splitlines() if line.strip()]
+    if not lines:
+        raise Issue53AcceptanceError(
+            "Issue #53 installed teacher-reference export probe produced no result"
+        )
+    try:
+        payload_raw = json.loads(lines[-1])
+    except json.JSONDecodeError as exc:
+        raise Issue53AcceptanceError(
+            "Issue #53 installed teacher-reference export probe returned invalid JSON"
+        ) from exc
+    if not isinstance(payload_raw, dict):
+        raise Issue53AcceptanceError(
+            "Issue #53 installed teacher-reference export result was not an object"
+        )
+
+    payload = cast(dict[str, object], payload_raw)
+    expected = {
+        "projection_purpose": "teacher_current",
+        "source_inventory_exact": True,
+        "render_deterministic": True,
+        "provenance_exact": True,
+        "artifact_path_exact": True,
+        "provenance_path_exact": True,
+        "history_verified": True,
+        "artifact_immutable_after_success": True,
+        "provenance_immutable_after_success": True,
+        "canonical_sources_unchanged": True,
+        "actor_directory_not_live_enrichment": True,
+        "contact_point_data_absent": True,
+        "unrelated_class_not_widened": True,
+        "local_teacher_reference_only": True,
+    }
+    for key, value in expected.items():
+        if payload.get(key) != value:
+            raise Issue53AcceptanceError(
+                f"Issue #53 teacher-reference export mismatch for {key}"
+            )
+    for key in ("manual_include_count", "manual_omit_count", "source_inventory_count"):
+        value = payload.get(key)
+        if not isinstance(value, int) or isinstance(value, bool) or value < 1:
+            raise Issue53AcceptanceError(
+                f"Issue #53 teacher-reference export count invalid for {key}"
+            )
+    return payload
+
 def smoke(portia_wheel: Path, core_wheel: Path) -> dict[str, object]:
     repository = Path(__file__).resolve().parents[1]
     candidate = _require_wheel(portia_wheel, label="Portia candidate")
@@ -5782,6 +6193,12 @@ def smoke(portia_wheel: Path, core_wheel: Path) -> dict[str, object]:
             env=env,
             workspace=workspace,
         )
+        teacher_reference_export = _teacher_reference_export_probe(
+            python,
+            cwd=work,
+            env=env,
+            workspace=workspace,
+        )
         if tuple(work.iterdir()):
             raise Issue53AcceptanceError(
                 "Issue #53 acceptance polluted its empty working directory"
@@ -5808,6 +6225,7 @@ def smoke(portia_wheel: Path, core_wheel: Path) -> dict[str, object]:
         print("PASS integrity")
         print("PASS fresh reload")
         print("PASS privacy view")
+        print("PASS teacher-reference export")
 
         return {
             "candidate_portia_wheel": candidate.name,
@@ -6091,6 +6509,57 @@ def smoke(portia_wheel: Path, core_wheel: Path) -> dict[str, object]:
             ],
             "student_view_accepted_policy": student_view_privacy[
                 "accepted_policy"
+            ],
+            "teacher_reference_projection_purpose": teacher_reference_export[
+                "projection_purpose"
+            ],
+            "teacher_reference_manual_include_count": teacher_reference_export[
+                "manual_include_count"
+            ],
+            "teacher_reference_manual_omit_count": teacher_reference_export[
+                "manual_omit_count"
+            ],
+            "teacher_reference_source_inventory_count": teacher_reference_export[
+                "source_inventory_count"
+            ],
+            "teacher_reference_source_inventory_exact": teacher_reference_export[
+                "source_inventory_exact"
+            ],
+            "teacher_reference_render_deterministic": teacher_reference_export[
+                "render_deterministic"
+            ],
+            "teacher_reference_provenance_exact": teacher_reference_export[
+                "provenance_exact"
+            ],
+            "teacher_reference_artifact_path_exact": teacher_reference_export[
+                "artifact_path_exact"
+            ],
+            "teacher_reference_provenance_path_exact": teacher_reference_export[
+                "provenance_path_exact"
+            ],
+            "teacher_reference_history_verified": teacher_reference_export[
+                "history_verified"
+            ],
+            "teacher_reference_artifact_immutable": teacher_reference_export[
+                "artifact_immutable_after_success"
+            ],
+            "teacher_reference_provenance_immutable": teacher_reference_export[
+                "provenance_immutable_after_success"
+            ],
+            "teacher_reference_canonical_sources_unchanged": teacher_reference_export[
+                "canonical_sources_unchanged"
+            ],
+            "teacher_reference_actor_not_live_enriched": teacher_reference_export[
+                "actor_directory_not_live_enrichment"
+            ],
+            "teacher_reference_contact_data_absent": teacher_reference_export[
+                "contact_point_data_absent"
+            ],
+            "teacher_reference_unrelated_class_not_widened": teacher_reference_export[
+                "unrelated_class_not_widened"
+            ],
+            "teacher_reference_local_only": teacher_reference_export[
+                "local_teacher_reference_only"
             ],
             "launcher_reachable": True,
             "pip_check": "clean",

@@ -1295,3 +1295,123 @@ def test_issue53_student_view_stage_follows_fresh_reload() -> None:
     )
     assert 'print("PASS privacy view")' in source
     assert '"student_view_read_only": student_view_privacy[' in source
+def test_issue53_teacher_reference_export_uses_production_issue51_pipeline() -> None:
+    smoke = _load_script()
+    probe = smoke._TEACHER_REFERENCE_EXPORT_PROBE
+    for marker in (
+        'TeacherReferenceExportScope("teacher_current", support_work)',
+        "TeacherReferenceScopeDiscoveryService(",
+        "TeacherReferenceProjectionService(",
+        "TeacherReferenceSourceInventoryService(",
+        "TeacherReferenceExportPreparationService(",
+        "TeacherReferenceExportExecutionService(",
+        "TeacherReferenceExportHistoryService(workspace).list_for_work(support_work)",
+    ):
+        assert marker in probe
+
+
+def test_issue53_teacher_reference_export_requires_explicit_manual_include_and_omit() -> None:
+    smoke = _load_script()
+    probe = smoke._TEACHER_REFERENCE_EXPORT_PROBE
+    for marker in (
+        'pending.manual_review.status != "pending"',
+        'item.source_ref == support_work and item.field_name == "summary"',
+        'resolution = "include_exact"',
+        'item.source_ref == support_work and item.field_name == "initiation"',
+        'resolution = "omit"',
+        "projection_service.resolve_manual_review(",
+        'decision.manual_review.status != "resolved"',
+        '"manual_include_count": sum(',
+        '"manual_omit_count": sum(',
+    ):
+        assert marker in probe
+
+
+def test_issue53_teacher_reference_export_binds_exact_inventory_and_deterministic_render() -> None:
+    smoke = _load_script()
+    probe = smoke._TEACHER_REFERENCE_EXPORT_PROBE
+    for marker in (
+        "inventory_identities != contributing_identities",
+        "prepared = prepare()",
+        "repeated = prepare()",
+        "prepared.preparation_digest != repeated.preparation_digest",
+        "prepared.artifact_bytes != repeated.artifact_bytes",
+        "prepared.provenance_bytes != repeated.provenance_bytes",
+        "prepared.inventory.to_dict() != inventory_wire",
+        "provenance_wire.get(\"source_inventory\") != inventory_wire",
+        "provenance_wire.get(\"projection_decision_digest\")",
+    ):
+        assert marker in probe
+
+
+def test_issue53_teacher_reference_export_privacy_uses_frozen_work_owned_sources() -> None:
+    smoke = _load_script()
+    probe = smoke._TEACHER_REFERENCE_EXPORT_PROBE
+    for marker in (
+        '"Synthetic Counselor" not in artifact_text',
+        "GUARDIAN_EMAIL",
+        "GUARDIAN_CONTACT_POINT_ID",
+        "GUARDIAN_ACTOR_ID",
+        "COUNSELOR_ACTOR_ID",
+        "SECONDARY_CLASS_ID",
+        "EVENT_ID",
+        "ORIGINAL_SUPPORT_ID",
+        "stored.fingerprint != expected_fingerprint",
+        '"actor_directory_not_live_enrichment":',
+        '"contact_point_data_absent":',
+        '"unrelated_class_not_widened":',
+    ):
+        assert marker in probe
+
+
+def test_issue53_teacher_reference_export_executes_exact_reviewed_candidate() -> None:
+    smoke = _load_script()
+    probe = smoke._TEACHER_REFERENCE_EXPORT_PROBE
+    for marker in (
+        "confirmation=TEACHER_REFERENCE_CONFIRMATION",
+        "confirmed_preparation_digest=prepared.preparation_digest",
+        "confirmed_at=CONFIRMED_AT",
+        "isinstance(result, TeacherReferenceExportExecutionSuccess)",
+        'expected_artifact_path = f"portia/exports/{prepared.export_id}/artifact.html"',
+        'expected_provenance_path = f"portia/exports/{prepared.export_id}/export.json"',
+        "artifact_bytes_after_success != prepared.artifact_bytes",
+        "provenance_bytes_after_success != prepared.provenance_bytes",
+        "provenance_wire != prepared.deliberate_export.to_dict()",
+    ):
+        assert marker in probe
+
+
+def test_issue53_teacher_reference_export_history_verifies_immutable_success() -> None:
+    smoke = _load_script()
+    probe = smoke._TEACHER_REFERENCE_EXPORT_PROBE
+    for marker in (
+        "matching = [entry for entry in history if entry.export_id == prepared.export_id]",
+        'matching[0].verification_status != "available_verified"',
+        "matching[0].operation_id != prepared.operation_id",
+        "artifact_path.read_bytes() != artifact_bytes_after_success",
+        "provenance_path.read_bytes() != provenance_bytes_after_success",
+        '"history_verified": matching[0].verification_status',
+        '"artifact_immutable_after_success": artifact_path.read_bytes()',
+        '"provenance_immutable_after_success": provenance_path.read_bytes()',
+    ):
+        assert marker in probe
+
+
+def test_issue53_teacher_reference_export_follows_student_privacy_stage() -> None:
+    source = (
+        ROOT / "scripts" / "smoke_test_issue53_end_to_end_wheel.py"
+    ).read_text(encoding="utf-8")
+    privacy_index = source.index(
+        "student_view_privacy = _student_view_privacy_probe("
+    )
+    export_index = source.index(
+        "teacher_reference_export = _teacher_reference_export_probe("
+    )
+    assert privacy_index < export_index
+    assert 'print("PASS privacy view")' in source
+    assert 'print("PASS teacher-reference export")' in source
+    assert source.index('print("PASS privacy view")') < source.index(
+        'print("PASS teacher-reference export")'
+    )
+    assert '"teacher_reference_history_verified": teacher_reference_export[' in source
+    assert '"teacher_reference_canonical_sources_unchanged": teacher_reference_export[' in source
