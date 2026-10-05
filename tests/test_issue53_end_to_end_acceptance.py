@@ -1494,3 +1494,92 @@ def test_issue53_read_only_phase_follows_intentional_export_write() -> None:
         'print("PASS read-only surfaces")'
     )
     assert '"read_only_whole_phase_zero_write": read_only_surfaces[' in source
+
+def test_issue53_deep_path_integration_uses_same_representative_workspace() -> None:
+    smoke = _load_script()
+    probe = smoke._DEEP_PATH_INTEGRATION_PROBE
+    for marker in (
+        'TARGET_DEEP_WORKSPACE_LENGTH = 119',
+        "if len(str(workspace)) < TARGET_DEEP_WORKSPACE_LENGTH:",
+        '"one_deep_workspace": True',
+        "require_workspace_descendant(",
+    ):
+        assert marker in probe
+
+
+def test_issue53_deep_path_integration_binds_guarded_replacement_and_history() -> None:
+    smoke = _load_script()
+    probe = smoke._DEEP_PATH_INTEGRATION_PROBE
+    for marker in (
+        'ACCOUNT_CORRECTION_OPERATION_ID = "op_issue53_account_corrected"',
+        'RECOVERY_OPERATION_ID = "op_issue53_support_recovery"',
+        'exact_step(journal, "step_history")',
+        '"/history/storage_revisions/"',
+        "if len(path.name) != 40:",
+        'legacy_kind_root = path.parent / legacy_kind',
+        'account_predecessor.record.status != "superseded"',
+        'support_predecessor.record.status != "superseded"',
+    ):
+        assert marker in probe
+
+
+def test_issue53_deep_path_integration_uses_bounded_staging_identities() -> None:
+    smoke = _load_script()
+    probe = smoke._DEEP_PATH_INTEGRATION_PROBE
+    for marker in (
+        "staging_path_for(",
+        "legacy_staging_path_for(",
+        'relative.startswith("portia/.staging/")',
+        "ACCOUNT_CORRECTION_OPERATION_ID,",
+        "recovering_only=False,",
+        "RECOVERY_OPERATION_ID,",
+        "recovering_only=True,",
+        '"staging_cleaned": not any(',
+    ):
+        assert marker in probe
+
+
+def test_issue53_deep_path_integration_uses_bounded_integrity_and_export_paths() -> None:
+    smoke = _load_script()
+    probe = smoke._DEEP_PATH_INTEGRATION_PROBE
+    for marker in (
+        "derived_projection_root(",
+        "legacy_derived_projection_root(",
+        'workspace / "portia" / "derived-v2"',
+        'not (integrity_root / "current.json").is_file()',
+        "TeacherReferenceExportHistoryService(workspace).list_for_work(",
+        'f"portia/exports/{export.export_id}/artifact.html"',
+        '"teacher_export_in_deep_workspace": (',
+    ):
+        assert marker in probe
+
+
+def test_issue53_deep_path_integration_does_not_manufacture_legacy_paths() -> None:
+    smoke = _load_script()
+    probe = smoke._DEEP_PATH_INTEGRATION_PROBE
+    for marker in (
+        '"Issue #53 manufactured a legacy technical-history layout"',
+        '"Issue #53 created a legacy target-adjacent staging artifact"',
+        '"Issue #53 migrated Integrity state into a legacy derived layout"',
+        '"legacy_writer_paths_absent": (',
+    ):
+        assert marker in probe
+
+
+def test_issue53_deep_path_integration_follows_read_only_phase() -> None:
+    source = (
+        ROOT / "scripts" / "smoke_test_issue53_end_to_end_wheel.py"
+    ).read_text(encoding="utf-8")
+    read_only_index = source.index(
+        "read_only_surfaces = _read_only_surfaces_probe("
+    )
+    path_index = source.index(
+        "deep_path_integration = _deep_path_integration_probe("
+    )
+    assert read_only_index < path_index
+    assert 'print("PASS read-only surfaces")' in source
+    assert 'print("PASS deep path integration")' in source
+    assert source.index('print("PASS read-only surfaces")') < source.index(
+        'print("PASS deep path integration")'
+    )
+    assert '"deep_path_legacy_writer_paths_absent": deep_path_integration[' in source

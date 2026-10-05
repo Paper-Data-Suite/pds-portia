@@ -5157,6 +5157,349 @@ print(
 )
 """
 
+_DEEP_PATH_INTEGRATION_PROBE = r"""
+import hashlib
+import json
+import sys
+from pathlib import Path
+
+from portia.exports import TeacherReferenceExportHistoryService
+from portia.models.references import ExactPortiaWorkRef
+from portia.storage.io import read_json
+from portia.storage.paths import (
+    derived_projection_root,
+    legacy_derived_projection_root,
+    operation_root,
+    resolve_workspace_relative,
+)
+from portia.storage.series import OperationJournalStore
+from portia.storage.staging import (
+    legacy_staging_path_for,
+    staging_path_for,
+)
+from portia.workflows import (
+    AccountWorkflowService,
+    IntegrityWorkflowService,
+    SupportWorkflowService,
+    account_reference,
+    support_reference,
+)
+
+PRIMARY_CLASS_ID = "eng10_p2_2026"
+EVENT_ID = "evt_issue53_primary"
+SUPPORT_PROCESS_ID = "sup_issue53_support"
+ORIGINAL_ACCOUNT_ID = "acct_issue53_cross_report"
+ORIGINAL_SUPPORT_ID = "spt_issue53_access"
+ACCOUNT_CORRECTION_OPERATION_ID = "op_issue53_account_corrected"
+RECOVERY_OPERATION_ID = "op_issue53_support_recovery"
+PROJECTION_KIND = "active_integrity_finding_index"
+TARGET_DEEP_WORKSPACE_LENGTH = 119
+
+workspace = Path(sys.argv[1]).resolve()
+event_work = ExactPortiaWorkRef(
+    class_id=PRIMARY_CLASS_ID,
+    work_id=EVENT_ID,
+    work_kind="event",
+    contract_version="2",
+)
+support_work = ExactPortiaWorkRef(
+    class_id=PRIMARY_CLASS_ID,
+    work_id=SUPPORT_PROCESS_ID,
+    work_kind="support_process",
+    contract_version="1",
+)
+
+
+def snapshot(root):
+    directories = tuple(
+        sorted(
+            path.relative_to(root).as_posix()
+            for path in root.rglob("*")
+            if path.is_dir()
+        )
+    )
+    files = tuple(
+        sorted(
+            (
+                path.relative_to(root).as_posix(),
+                hashlib.sha256(path.read_bytes()).hexdigest(),
+            )
+            for path in root.rglob("*")
+            if path.is_file()
+        )
+    )
+    return directories, files
+
+
+def require_workspace_descendant(path):
+    resolved = path.resolve(strict=False)
+    try:
+        resolved.relative_to(workspace)
+    except ValueError as exc:
+        raise RuntimeError("Issue #53 path evidence escaped the deep workspace") from exc
+    return resolved
+
+
+def operation_revisions(operation_id):
+    revisions_root = operation_root(workspace, operation_id) / "revisions"
+    if not revisions_root.is_dir():
+        raise RuntimeError("operation revision history is unavailable")
+    revisions = []
+    for path in sorted(
+        revisions_root.glob("*.json"),
+        key=lambda candidate: int(candidate.stem),
+    ):
+        value, _content, _fingerprint = read_json(path)
+        if not isinstance(value, dict):
+            raise RuntimeError("operation revision is not an object")
+        revisions.append(value)
+    if not revisions:
+        raise RuntimeError("operation revision history is empty")
+    return tuple(revisions)
+
+
+def current_operation(operation_id):
+    return OperationJournalStore(workspace).load_current(operation_id).revision.to_dict()
+
+
+def exact_step(journal, step_id):
+    write_set = journal.get("write_set")
+    if not isinstance(write_set, list):
+        raise RuntimeError("operation journal write set is malformed")
+    matches = [
+        step
+        for step in write_set
+        if isinstance(step, dict) and step.get("step_id") == step_id
+    ]
+    if len(matches) != 1:
+        raise RuntimeError(f"operation journal lost exact {step_id} identity")
+    return matches[0]
+
+
+def technical_history_evidence(operation_id, legacy_kind):
+    journal = current_operation(operation_id)
+    if journal.get("state") != "completed":
+        raise RuntimeError("technical-history operation is not completed")
+    history_step = exact_step(journal, "step_history")
+    if history_step.get("disposition") != "accepted":
+        raise RuntimeError("technical-history step is not durably accepted")
+    relative = history_step.get("destination_path")
+    if not isinstance(relative, str):
+        raise RuntimeError("technical-history destination is malformed")
+    if "/history/storage_revisions/" not in f"/{relative}":
+        raise RuntimeError("technical-history path is outside bounded history namespace")
+    path = require_workspace_descendant(
+        resolve_workspace_relative(workspace, relative)
+    )
+    if not path.is_file():
+        raise RuntimeError("technical-history artifact is missing")
+    if len(path.name) != 40:
+        raise RuntimeError("technical-history writer did not use bounded Issue #92 leaf")
+    legacy_kind_root = path.parent / legacy_kind
+    if legacy_kind_root.exists() or legacy_kind_root.is_symlink():
+        raise RuntimeError("Issue #53 manufactured a legacy technical-history layout")
+    return path, legacy_kind_root
+
+
+def staged_path_evidence(operation_id, *, recovering_only):
+    observed = []
+    legacy_candidates = []
+    for revision in operation_revisions(operation_id):
+        if recovering_only and revision.get("state") != "recovering":
+            continue
+        staged = revision.get("staged_artifacts")
+        if not isinstance(staged, list) or not staged:
+            continue
+        write_set = revision.get("write_set")
+        if not isinstance(write_set, list):
+            raise RuntimeError("staged operation revision lost write set")
+        for entry in staged:
+            if not isinstance(entry, dict):
+                raise RuntimeError("staged operation evidence is malformed")
+            relative = entry.get("staging_path")
+            if not isinstance(relative, str):
+                raise RuntimeError("staged operation path is malformed")
+            matches = []
+            for step in write_set:
+                if not isinstance(step, dict):
+                    continue
+                step_id = step.get("step_id")
+                destination = step.get("destination_path")
+                if not isinstance(step_id, str) or not isinstance(destination, str):
+                    continue
+                bounded = staging_path_for(
+                    workspace,
+                    operation_id,
+                    step_id,
+                    destination,
+                )
+                bounded_relative = bounded.relative_to(workspace).as_posix()
+                if bounded_relative == relative:
+                    matches.append((step_id, destination, bounded))
+            if len(matches) != 1:
+                raise RuntimeError(
+                    "journaled staging path does not match exact Issue #92 identity"
+                )
+            step_id, destination, bounded = matches[0]
+            if not relative.startswith("portia/.staging/"):
+                raise RuntimeError("journaled staging path is not workspace-level bounded staging")
+            legacy = legacy_staging_path_for(
+                workspace,
+                operation_id,
+                step_id,
+                destination,
+            )
+            legacy_relative = legacy.relative_to(workspace).as_posix()
+            if relative == legacy_relative:
+                raise RuntimeError("journaled staging path used legacy target-adjacent identity")
+            observed.append(require_workspace_descendant(bounded))
+            legacy_candidates.append(require_workspace_descendant(legacy))
+    if not observed:
+        description = "recovery" if recovering_only else "coordinated"
+        raise RuntimeError(f"{description} operation retained no historical staging evidence")
+    return tuple(observed), tuple(legacy_candidates)
+
+
+before = snapshot(workspace)
+
+if len(str(workspace)) < TARGET_DEEP_WORKSPACE_LENGTH:
+    raise RuntimeError("Issue #53 semantic story is not using the representative deep root")
+
+account_history, account_legacy_history = technical_history_evidence(
+    ACCOUNT_CORRECTION_OPERATION_ID,
+    "account",
+)
+support_history, support_legacy_history = technical_history_evidence(
+    RECOVERY_OPERATION_ID,
+    "support",
+)
+
+account_predecessor = AccountWorkflowService(workspace).load_exact(
+    account_reference(event_work, ORIGINAL_ACCOUNT_ID)
+)
+support_predecessor = SupportWorkflowService(workspace).load_exact(
+    support_reference(support_work, ORIGINAL_SUPPORT_ID)
+)
+if account_predecessor.record.status != "superseded":
+    raise RuntimeError("Account guarded replacement evidence is no longer superseded")
+if support_predecessor.record.status != "superseded":
+    raise RuntimeError("Support recovery replacement evidence is no longer superseded")
+
+coordinated_staging, coordinated_legacy = staged_path_evidence(
+    ACCOUNT_CORRECTION_OPERATION_ID,
+    recovering_only=False,
+)
+recovery_staging, recovery_legacy = staged_path_evidence(
+    RECOVERY_OPERATION_ID,
+    recovering_only=True,
+)
+
+for staged in (*coordinated_staging, *recovery_staging):
+    if staged.exists() or staged.is_symlink():
+        raise RuntimeError("completed story retained operation-owned staging")
+for legacy in (*coordinated_legacy, *recovery_legacy):
+    if legacy.exists() or legacy.is_symlink():
+        raise RuntimeError("Issue #53 created a legacy target-adjacent staging artifact")
+
+integrity = IntegrityWorkflowService(workspace)
+integrity_scope = integrity.operation_scope(RECOVERY_OPERATION_ID)
+if integrity.current_findings(integrity_scope) != ():
+    raise RuntimeError("current recovered Integrity projection is not clean")
+integrity_root = require_workspace_descendant(
+    derived_projection_root(
+        workspace,
+        PROJECTION_KIND,
+        integrity_scope,
+    )
+)
+legacy_integrity_root = require_workspace_descendant(
+    legacy_derived_projection_root(
+        workspace,
+        PROJECTION_KIND,
+        integrity_scope,
+    )
+)
+if integrity_root.parent != workspace / "portia" / "derived-v2":
+    raise RuntimeError("Integrity state is not using bounded derived-v2 namespace")
+if not (integrity_root / "current.json").is_file():
+    raise RuntimeError("bounded Integrity current projection is missing")
+if legacy_integrity_root.exists() or legacy_integrity_root.is_symlink():
+    raise RuntimeError("Issue #53 migrated Integrity state into a legacy derived layout")
+
+export_history = TeacherReferenceExportHistoryService(workspace).list_for_work(
+    support_work
+)
+verified_exports = tuple(
+    entry
+    for entry in export_history
+    if entry.verification_status == "available_verified"
+)
+if len(verified_exports) != 1:
+    raise RuntimeError("Issue #53 deep-path probe expected one verified teacher export")
+export = verified_exports[0]
+expected_artifact_relative = f"portia/exports/{export.export_id}/artifact.html"
+if export.artifact_relative_path != expected_artifact_relative:
+    raise RuntimeError("teacher-reference artifact path changed from bounded export identity")
+artifact_path = require_workspace_descendant(
+    resolve_workspace_relative(workspace, expected_artifact_relative)
+)
+provenance_path = require_workspace_descendant(
+    workspace / "portia" / "exports" / export.export_id / "export.json"
+)
+if not artifact_path.is_file() or not provenance_path.is_file():
+    raise RuntimeError("teacher-reference export artifacts are missing from deep workspace")
+if artifact_path.parent != provenance_path.parent:
+    raise RuntimeError("teacher-reference artifact/provenance escaped one export root")
+
+after = snapshot(workspace)
+if after != before:
+    raise RuntimeError("Issue #53 deep-path integration inspection mutated workspace")
+
+print(
+    json.dumps(
+        {
+            "deep_workspace_length": len(str(workspace)),
+            "one_deep_workspace": True,
+            "guarded_replacement_history": (
+                account_predecessor.record.status == "superseded"
+                and support_predecessor.record.status == "superseded"
+            ),
+            "account_history_leaf_length": len(account_history.name),
+            "support_history_leaf_length": len(support_history.name),
+            "technical_history_bounded": (
+                len(account_history.name) == 40
+                and len(support_history.name) == 40
+            ),
+            "coordinated_staging_count": len(coordinated_staging),
+            "recovery_staging_count": len(recovery_staging),
+            "coordinated_staging_bounded": True,
+            "recovery_staging_bounded": True,
+            "staging_cleaned": not any(
+                path.exists()
+                for path in (*coordinated_staging, *recovery_staging)
+            ),
+            "integrity_derived_v2": (
+                integrity_root.parent == workspace / "portia" / "derived-v2"
+            ),
+            "teacher_export_in_deep_workspace": (
+                artifact_path.is_file() and provenance_path.is_file()
+            ),
+            "legacy_writer_paths_absent": (
+                not account_legacy_history.exists()
+                and not support_legacy_history.exists()
+                and not legacy_integrity_root.exists()
+                and not any(
+                    path.exists()
+                    for path in (*coordinated_legacy, *recovery_legacy)
+                )
+            ),
+            "inspection_read_only": before == after,
+        },
+        sort_keys=True,
+    )
+)
+"""
+
 class Issue53AcceptanceError(RuntimeError):
     """Raised when the representative installed acceptance boundary fails."""
 
@@ -6340,6 +6683,77 @@ def _read_only_surfaces_probe(
         )
     return payload
 
+
+def _deep_path_integration_probe(
+    python: Path,
+    *,
+    cwd: Path,
+    env: Mapping[str, str],
+    workspace: Path,
+) -> dict[str, object]:
+    completed = _run(
+        [str(python), "-c", _DEEP_PATH_INTEGRATION_PROBE, str(workspace)],
+        cwd=cwd,
+        env=env,
+    )
+    lines = [line for line in completed.stdout.splitlines() if line.strip()]
+    if not lines:
+        raise Issue53AcceptanceError(
+            "Issue #53 installed deep-path integration probe produced no result"
+        )
+    try:
+        payload_raw = json.loads(lines[-1])
+    except json.JSONDecodeError as exc:
+        raise Issue53AcceptanceError(
+            "Issue #53 installed deep-path integration probe returned invalid JSON"
+        ) from exc
+    if not isinstance(payload_raw, dict):
+        raise Issue53AcceptanceError(
+            "Issue #53 installed deep-path integration result was not an object"
+        )
+
+    payload = cast(dict[str, object], payload_raw)
+    expected = {
+        "one_deep_workspace": True,
+        "guarded_replacement_history": True,
+        "account_history_leaf_length": 40,
+        "support_history_leaf_length": 40,
+        "technical_history_bounded": True,
+        "coordinated_staging_bounded": True,
+        "recovery_staging_bounded": True,
+        "staging_cleaned": True,
+        "integrity_derived_v2": True,
+        "teacher_export_in_deep_workspace": True,
+        "legacy_writer_paths_absent": True,
+        "inspection_read_only": True,
+    }
+    for key, value in expected.items():
+        if payload.get(key) != value:
+            raise Issue53AcceptanceError(
+                f"Issue #53 deep-path integration mismatch for {key}"
+            )
+
+    workspace_length = payload.get("deep_workspace_length")
+    if (
+        not isinstance(workspace_length, int)
+        or isinstance(workspace_length, bool)
+        or workspace_length < TARGET_DEEP_WORKSPACE_LENGTH
+    ):
+        raise Issue53AcceptanceError(
+            "Issue #53 deep-path integration lost representative workspace geometry"
+        )
+    for key in ("coordinated_staging_count", "recovery_staging_count"):
+        staging_count = payload.get(key)
+        if (
+            not isinstance(staging_count, int)
+            or isinstance(staging_count, bool)
+            or staging_count < 1
+        ):
+            raise Issue53AcceptanceError(
+                f"Issue #53 deep-path integration count invalid for {key}"
+            )
+    return payload
+
 def smoke(portia_wheel: Path, core_wheel: Path) -> dict[str, object]:
     repository = Path(__file__).resolve().parents[1]
     candidate = _require_wheel(portia_wheel, label="Portia candidate")
@@ -6495,6 +6909,12 @@ def smoke(portia_wheel: Path, core_wheel: Path) -> dict[str, object]:
             env=env,
             workspace=workspace,
         )
+        deep_path_integration = _deep_path_integration_probe(
+            python,
+            cwd=work,
+            env=env,
+            workspace=workspace,
+        )
         if tuple(work.iterdir()):
             raise Issue53AcceptanceError(
                 "Issue #53 acceptance polluted its empty working directory"
@@ -6523,6 +6943,7 @@ def smoke(portia_wheel: Path, core_wheel: Path) -> dict[str, object]:
         print("PASS privacy view")
         print("PASS teacher-reference export")
         print("PASS read-only surfaces")
+        print("PASS deep path integration")
 
         return {
             "candidate_portia_wheel": candidate.name,
@@ -6875,6 +7296,33 @@ def smoke(portia_wheel: Path, core_wheel: Path) -> dict[str, object]:
             ],
             "read_only_whole_phase_zero_write": read_only_surfaces[
                 "whole_read_only_phase_zero_write"
+            ],
+            "deep_path_one_workspace": deep_path_integration[
+                "one_deep_workspace"
+            ],
+            "deep_path_guarded_replacement_history": deep_path_integration[
+                "guarded_replacement_history"
+            ],
+            "deep_path_technical_history_bounded": deep_path_integration[
+                "technical_history_bounded"
+            ],
+            "deep_path_coordinated_staging_bounded": deep_path_integration[
+                "coordinated_staging_bounded"
+            ],
+            "deep_path_recovery_staging_bounded": deep_path_integration[
+                "recovery_staging_bounded"
+            ],
+            "deep_path_integrity_derived_v2": deep_path_integration[
+                "integrity_derived_v2"
+            ],
+            "deep_path_teacher_export": deep_path_integration[
+                "teacher_export_in_deep_workspace"
+            ],
+            "deep_path_legacy_writer_paths_absent": deep_path_integration[
+                "legacy_writer_paths_absent"
+            ],
+            "deep_path_inspection_read_only": deep_path_integration[
+                "inspection_read_only"
             ],
             "launcher_reachable": True,
             "pip_check": "clean",
