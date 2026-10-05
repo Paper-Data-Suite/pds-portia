@@ -1415,3 +1415,82 @@ def test_issue53_teacher_reference_export_follows_student_privacy_stage() -> Non
     )
     assert '"teacher_reference_history_verified": teacher_reference_export[' in source
     assert '"teacher_reference_canonical_sources_unchanged": teacher_reference_export[' in source
+
+def test_issue53_read_only_phase_snapshots_each_required_surface() -> None:
+    smoke = _load_script()
+    probe = smoke._READ_ONLY_SURFACES_PROBE
+    for marker in (
+        "student_result = require_read_only(",
+        '"student timeline/view query",',
+        "attention_result = require_read_only(",
+        '"attention query",',
+        '"Core readiness/attention provider invocation",',
+        '"teacher-reference export history verification",',
+        '"exact historical predecessor loads",',
+        "before = snapshot(workspace)",
+        "after = snapshot(workspace)",
+        'raise RuntimeError(f"{label} mutated workspace bytes")',
+    ):
+        assert marker in probe
+
+
+def test_issue53_read_only_phase_uses_production_services() -> None:
+    smoke = _load_script()
+    probe = smoke._READ_ONLY_SURFACES_PROBE
+    for marker in (
+        "StudentTimelineService(workspace).generate(student_query)",
+        "AttentionQueryService(workspace).query(attention_query)",
+        'diagnose_core_providers(provider_kind="module_operations")',
+        "invoke_module_operations(profile, request)",
+        "TeacherReferenceExportHistoryService(workspace).list_for_work(",
+        "AccountWorkflowService(workspace)",
+        "SupportWorkflowService(workspace)",
+        "accounts.load_exact(",
+        "supports.load_exact(",
+    ):
+        assert marker in probe
+
+
+def test_issue53_read_only_phase_verifies_historical_predecessors_exactly() -> None:
+    smoke = _load_script()
+    probe = smoke._READ_ONLY_SURFACES_PROBE
+    for marker in (
+        'ORIGINAL_ACCOUNT_ID = "acct_issue53_cross_report"',
+        'ORIGINAL_SUPPORT_ID = "spt_issue53_access"',
+        "account_reference(event_work, ORIGINAL_ACCOUNT_ID)",
+        "support_reference(support_work, ORIGINAL_SUPPORT_ID)",
+        'original_account.record.status != "superseded"',
+        'original_support.record.status != "superseded"',
+    ):
+        assert marker in probe
+
+
+def test_issue53_read_only_phase_has_combined_byte_snapshot_guard() -> None:
+    smoke = _load_script()
+    probe = smoke._READ_ONLY_SURFACES_PROBE
+    for marker in (
+        "whole_phase_before = snapshot(workspace)",
+        "whole_phase_after = snapshot(workspace)",
+        "if whole_phase_after != whole_phase_before:",
+        '"whole_read_only_phase_zero_write": (',
+    ):
+        assert marker in probe
+
+
+def test_issue53_read_only_phase_follows_intentional_export_write() -> None:
+    source = (
+        ROOT / "scripts" / "smoke_test_issue53_end_to_end_wheel.py"
+    ).read_text(encoding="utf-8")
+    export_index = source.index(
+        "teacher_reference_export = _teacher_reference_export_probe("
+    )
+    read_only_index = source.index(
+        "read_only_surfaces = _read_only_surfaces_probe("
+    )
+    assert export_index < read_only_index
+    assert 'print("PASS teacher-reference export")' in source
+    assert 'print("PASS read-only surfaces")' in source
+    assert source.index('print("PASS teacher-reference export")') < source.index(
+        'print("PASS read-only surfaces")'
+    )
+    assert '"read_only_whole_phase_zero_write": read_only_surfaces[' in source

@@ -4925,6 +4925,238 @@ print(
 )
 """
 
+_READ_ONLY_SURFACES_PROBE = r"""
+import hashlib
+import json
+import sys
+from pathlib import Path
+
+from pds_core.module_operations import (
+    ModuleOperationsRequest,
+    invoke_module_operations,
+)
+from pds_core.provider_diagnostics import diagnose_core_providers
+
+from portia.attention import (
+    AttentionQueryService,
+    PortiaAttentionQuery,
+    PortiaAttentionScope,
+)
+from portia.exports import TeacherReferenceExportHistoryService
+from portia.models.common import ExplicitOffsetTimestamp
+from portia.models.references import ExactPortiaWorkRef, RosterStudentRef
+from portia.views import (
+    StudentTimelineQuery,
+    StudentTimelineService,
+    StudentViewScope,
+)
+from portia.workflows import (
+    AccountWorkflowService,
+    SupportWorkflowService,
+    account_reference,
+    support_reference,
+)
+
+PRIMARY_CLASS_ID = "eng10_p2_2026"
+SECONDARY_CLASS_ID = "journalism_p6_2026"
+ACTIVE_SCHOOL_YEAR = "2026-2027"
+COLLISION_STUDENT_ID = "student_shared_001"
+EVENT_ID = "evt_issue53_primary"
+SUPPORT_PROCESS_ID = "sup_issue53_support"
+ORIGINAL_ACCOUNT_ID = "acct_issue53_cross_report"
+ORIGINAL_SUPPORT_ID = "spt_issue53_access"
+ATTENTION_AS_OF = ExplicitOffsetTimestamp("2026-10-19T09:00:00-04:00")
+
+workspace = Path(sys.argv[1]).resolve()
+
+event_work = ExactPortiaWorkRef(
+    class_id=PRIMARY_CLASS_ID,
+    work_id=EVENT_ID,
+    work_kind="event",
+    contract_version="2",
+)
+support_work = ExactPortiaWorkRef(
+    class_id=PRIMARY_CLASS_ID,
+    work_id=SUPPORT_PROCESS_ID,
+    work_kind="support_process",
+    contract_version="1",
+)
+focal_student = RosterStudentRef(
+    class_id=SECONDARY_CLASS_ID,
+    student_id=COLLISION_STUDENT_ID,
+)
+
+
+def snapshot(root):
+    directories = tuple(
+        sorted(
+            path.relative_to(root).as_posix()
+            for path in root.rglob("*")
+            if path.is_dir()
+        )
+    )
+    files = tuple(
+        sorted(
+            (
+                path.relative_to(root).as_posix(),
+                hashlib.sha256(path.read_bytes()).hexdigest(),
+            )
+            for path in root.rglob("*")
+            if path.is_file()
+        )
+    )
+    return directories, files
+
+
+def require_read_only(label, operation):
+    before = snapshot(workspace)
+    result = operation()
+    after = snapshot(workspace)
+    if after != before:
+        raise RuntimeError(f"{label} mutated workspace bytes")
+    return result
+
+
+whole_phase_before = snapshot(workspace)
+
+student_query = StudentTimelineQuery(
+    scope=StudentViewScope(
+        focal_students=(focal_student,),
+        allowed_works=(event_work, support_work),
+        allowed_class_ids=(PRIMARY_CLASS_ID,),
+    ),
+    mode="current",
+    exact_works=(event_work, support_work),
+)
+student_result = require_read_only(
+    "student timeline/view query",
+    lambda: StudentTimelineService(workspace).generate(student_query),
+)
+if student_result.discovery.resolved_students != (focal_student,):
+    raise RuntimeError("read-only student view changed exact focal identity")
+if set(student_result.discovery.work_refs) != {event_work, support_work}:
+    raise RuntimeError("read-only student view changed exact work scope")
+
+attention_query = PortiaAttentionQuery(
+    scope=PortiaAttentionScope.work_scope(support_work),
+    as_of=ATTENTION_AS_OF,
+    active_school_year=ACTIVE_SCHOOL_YEAR,
+    attention_codes=(
+        "portia_follow_up_due",
+        "portia_follow_up_overdue",
+    ),
+)
+attention_result = require_read_only(
+    "attention query",
+    lambda: AttentionQueryService(workspace).query(attention_query),
+)
+if attention_result.evaluation != "evaluated":
+    raise RuntimeError("read-only attention query was not evaluated")
+if attention_result.items:
+    raise RuntimeError("completed Follow-Up unexpectedly remained outstanding attention")
+
+
+def invoke_core_provider():
+    diagnostics = diagnose_core_providers(provider_kind="module_operations")
+    portia_diagnostics = tuple(
+        result
+        for result in diagnostics
+        if result.metadata.entry_point_name == "portia"
+    )
+    if len(portia_diagnostics) != 1:
+        raise RuntimeError("read-only Core provider discovery did not isolate Portia")
+    diagnostic = portia_diagnostics[0]
+    if diagnostic.code != "provider.valid":
+        raise RuntimeError("read-only Core provider diagnosis was not valid")
+    profile = diagnostic.validated_profile
+    if profile is None:
+        raise RuntimeError("read-only Core provider diagnosis lost validated profile")
+    request = ModuleOperationsRequest(
+        workspace_root=workspace,
+        active_school_year=ACTIVE_SCHOOL_YEAR,
+        class_id=PRIMARY_CLASS_ID,
+    )
+    return invoke_module_operations(profile, request)
+
+
+readiness_result, shared_attention_result = require_read_only(
+    "Core readiness/attention provider invocation",
+    invoke_core_provider,
+)
+if readiness_result.report is None or readiness_result.report.ready is not True:
+    raise RuntimeError("read-only Core readiness provider did not return ready")
+if (
+    shared_attention_result.report is None
+    or shared_attention_result.report.evaluation != "evaluated"
+):
+    raise RuntimeError("read-only Core attention provider did not evaluate")
+
+history = require_read_only(
+    "teacher-reference export history verification",
+    lambda: TeacherReferenceExportHistoryService(workspace).list_for_work(
+        support_work
+    ),
+)
+verified_history = tuple(
+    entry for entry in history if entry.verification_status == "available_verified"
+)
+if not verified_history:
+    raise RuntimeError(
+        "read-only teacher-reference history did not verify the completed export"
+    )
+
+
+def load_exact_history():
+    accounts = AccountWorkflowService(workspace)
+    supports = SupportWorkflowService(workspace)
+    original_account = accounts.load_exact(
+        account_reference(event_work, ORIGINAL_ACCOUNT_ID)
+    )
+    original_support = supports.load_exact(
+        support_reference(support_work, ORIGINAL_SUPPORT_ID)
+    )
+    return original_account, original_support
+
+
+original_account, original_support = require_read_only(
+    "exact historical predecessor loads",
+    load_exact_history,
+)
+if original_account.record.logical_id != ORIGINAL_ACCOUNT_ID:
+    raise RuntimeError("exact historical Account load changed identity")
+if original_support.record.logical_id != ORIGINAL_SUPPORT_ID:
+    raise RuntimeError("exact historical Support load changed identity")
+if original_account.record.status != "superseded":
+    raise RuntimeError("exact historical Account predecessor is no longer superseded")
+if original_support.record.status != "superseded":
+    raise RuntimeError("exact historical Support predecessor is no longer superseded")
+
+whole_phase_after = snapshot(workspace)
+if whole_phase_after != whole_phase_before:
+    raise RuntimeError("combined Issue #53 read-only phase mutated workspace bytes")
+
+print(
+    json.dumps(
+        {
+            "student_view_zero_write": True,
+            "attention_zero_write": True,
+            "core_provider_zero_write": True,
+            "export_history_zero_write": True,
+            "historical_loads_zero_write": True,
+            "whole_read_only_phase_zero_write": (
+                whole_phase_after == whole_phase_before
+            ),
+            "student_work_count": len(student_result.discovery.work_refs),
+            "attention_item_count": len(attention_result.items),
+            "verified_export_history_count": len(verified_history),
+            "historical_account_status": original_account.record.status,
+            "historical_support_status": original_support.record.status,
+        },
+        sort_keys=True,
+    )
+)
+"""
+
 class Issue53AcceptanceError(RuntimeError):
     """Raised when the representative installed acceptance boundary fails."""
 
@@ -6050,6 +6282,64 @@ def _teacher_reference_export_probe(
             )
     return payload
 
+
+def _read_only_surfaces_probe(
+    python: Path,
+    *,
+    cwd: Path,
+    env: Mapping[str, str],
+    workspace: Path,
+) -> dict[str, object]:
+    completed = _run(
+        [str(python), "-c", _READ_ONLY_SURFACES_PROBE, str(workspace)],
+        cwd=cwd,
+        env=env,
+    )
+    lines = [line for line in completed.stdout.splitlines() if line.strip()]
+    if not lines:
+        raise Issue53AcceptanceError(
+            "Issue #53 installed read-only surfaces probe produced no result"
+        )
+    try:
+        payload_raw = json.loads(lines[-1])
+    except json.JSONDecodeError as exc:
+        raise Issue53AcceptanceError(
+            "Issue #53 installed read-only surfaces probe returned invalid JSON"
+        ) from exc
+    if not isinstance(payload_raw, dict):
+        raise Issue53AcceptanceError(
+            "Issue #53 installed read-only surfaces result was not an object"
+        )
+
+    payload = cast(dict[str, object], payload_raw)
+    expected = {
+        "student_view_zero_write": True,
+        "attention_zero_write": True,
+        "core_provider_zero_write": True,
+        "export_history_zero_write": True,
+        "historical_loads_zero_write": True,
+        "whole_read_only_phase_zero_write": True,
+        "student_work_count": 2,
+        "attention_item_count": 0,
+        "historical_account_status": "superseded",
+        "historical_support_status": "superseded",
+    }
+    for key, value in expected.items():
+        if payload.get(key) != value:
+            raise Issue53AcceptanceError(
+                f"Issue #53 read-only surfaces mismatch for {key}"
+            )
+    history_count = payload.get("verified_export_history_count")
+    if (
+        not isinstance(history_count, int)
+        or isinstance(history_count, bool)
+        or history_count < 1
+    ):
+        raise Issue53AcceptanceError(
+            "Issue #53 read-only export history verification count is invalid"
+        )
+    return payload
+
 def smoke(portia_wheel: Path, core_wheel: Path) -> dict[str, object]:
     repository = Path(__file__).resolve().parents[1]
     candidate = _require_wheel(portia_wheel, label="Portia candidate")
@@ -6199,6 +6489,12 @@ def smoke(portia_wheel: Path, core_wheel: Path) -> dict[str, object]:
             env=env,
             workspace=workspace,
         )
+        read_only_surfaces = _read_only_surfaces_probe(
+            python,
+            cwd=work,
+            env=env,
+            workspace=workspace,
+        )
         if tuple(work.iterdir()):
             raise Issue53AcceptanceError(
                 "Issue #53 acceptance polluted its empty working directory"
@@ -6226,6 +6522,7 @@ def smoke(portia_wheel: Path, core_wheel: Path) -> dict[str, object]:
         print("PASS fresh reload")
         print("PASS privacy view")
         print("PASS teacher-reference export")
+        print("PASS read-only surfaces")
 
         return {
             "candidate_portia_wheel": candidate.name,
@@ -6560,6 +6857,24 @@ def smoke(portia_wheel: Path, core_wheel: Path) -> dict[str, object]:
             ],
             "teacher_reference_local_only": teacher_reference_export[
                 "local_teacher_reference_only"
+            ],
+            "read_only_student_view_zero_write": read_only_surfaces[
+                "student_view_zero_write"
+            ],
+            "read_only_attention_zero_write": read_only_surfaces[
+                "attention_zero_write"
+            ],
+            "read_only_core_provider_zero_write": read_only_surfaces[
+                "core_provider_zero_write"
+            ],
+            "read_only_export_history_zero_write": read_only_surfaces[
+                "export_history_zero_write"
+            ],
+            "read_only_historical_loads_zero_write": read_only_surfaces[
+                "historical_loads_zero_write"
+            ],
+            "read_only_whole_phase_zero_write": read_only_surfaces[
+                "whole_read_only_phase_zero_write"
             ],
             "launcher_reachable": True,
             "pip_check": "clean",
