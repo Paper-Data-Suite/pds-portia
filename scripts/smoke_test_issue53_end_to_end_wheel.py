@@ -5723,6 +5723,41 @@ def _assert_no_fixture_bypass() -> dict[str, object]:
         "fixture_bypass_excluded": True,
     }
 
+_LAUNCHER_METADATA_PROBE = r"""
+import json
+from importlib import metadata
+
+matches = []
+for entry_point in metadata.entry_points(group="console_scripts"):
+    if entry_point.name == "portia":
+        matches.append(
+            {
+                "name": entry_point.name,
+                "value": entry_point.value,
+                "group": entry_point.group,
+                "distribution": (
+                    entry_point.dist.metadata.get("Name")
+                    if entry_point.dist is not None
+                    else None
+                ),
+            }
+        )
+
+if len(matches) != 1:
+    raise RuntimeError("installed metadata did not expose exactly one portia console script")
+
+entry = matches[0]
+if entry["value"] != "portia.cli:main":
+    raise RuntimeError("installed portia console script target changed")
+distribution = entry["distribution"]
+if not isinstance(distribution, str):
+    raise RuntimeError("installed portia console script lost distribution identity")
+if distribution.casefold().replace("_", "-") != "pds-portia":
+    raise RuntimeError("installed portia console script points at the wrong distribution")
+
+print(json.dumps(entry, sort_keys=True))
+"""
+
 class Issue53AcceptanceError(RuntimeError):
     """Raised when the representative installed acceptance boundary fails."""
 
@@ -5892,6 +5927,127 @@ def _assert_launcher_reachable(
             "isolated PATH resolved a different Portia console launcher"
         )
 
+
+
+def _installed_launcher_boundary(
+    python: Path,
+    *,
+    cwd: Path,
+    env: Mapping[str, str],
+) -> dict[str, object]:
+    launcher = _console_path(python)
+    _assert_launcher_reachable(python, env=env)
+
+    metadata_result = _run(
+        [str(python), "-c", _LAUNCHER_METADATA_PROBE],
+        cwd=cwd,
+        env=env,
+    )
+    metadata_lines = [
+        line for line in metadata_result.stdout.splitlines() if line.strip()
+    ]
+    if not metadata_lines:
+        raise Issue53AcceptanceError(
+            "Issue #53 installed launcher metadata probe produced no result"
+        )
+    try:
+        metadata_payload_raw = json.loads(metadata_lines[-1])
+    except json.JSONDecodeError as exc:
+        raise Issue53AcceptanceError(
+            "Issue #53 installed launcher metadata probe returned invalid JSON"
+        ) from exc
+    if not isinstance(metadata_payload_raw, dict):
+        raise Issue53AcceptanceError(
+            "Issue #53 installed launcher metadata result was not an object"
+        )
+    metadata_payload = cast(dict[str, object], metadata_payload_raw)
+    if metadata_payload.get("name") != "portia":
+        raise Issue53AcceptanceError(
+            "Issue #53 installed launcher metadata lost console-script name"
+        )
+    if metadata_payload.get("value") != "portia.cli:main":
+        raise Issue53AcceptanceError(
+            "Issue #53 installed launcher metadata lost exact cli:main target"
+        )
+    if metadata_payload.get("group") != "console_scripts":
+        raise Issue53AcceptanceError(
+            "Issue #53 installed launcher metadata changed entry-point group"
+        )
+
+    version_result = _run(
+        [str(launcher), "--version"],
+        cwd=cwd,
+        env=env,
+    )
+    version_output = version_result.stdout.strip()
+    if version_output != f"Portia {EXPECTED_PORTIA_VERSION}":
+        raise Issue53AcceptanceError(
+            "Issue #53 installed launcher --version output changed"
+        )
+
+    status_result = _run(
+        [str(launcher), "status"],
+        cwd=cwd,
+        env=env,
+    )
+    status_output = status_result.stdout
+    required_status = (
+        f"Portia {EXPECTED_PORTIA_VERSION}",
+        "Runtime stage: v0.2 task-oriented teacher menu",
+        "Core requirement: pds-core>=0.6.3,<0.7",
+        f"Installed Core: {EXPECTED_CORE_VERSION}",
+        "Teacher data access: none in this status command",
+    )
+    if any(marker not in status_output for marker in required_status):
+        raise Issue53AcceptanceError(
+            "Issue #53 installed launcher status output lost required boundary text"
+        )
+
+    menu_result = subprocess.run(
+        [str(launcher), "menu"],
+        cwd=cwd,
+        env=dict(env),
+        input="q\n",
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+    if menu_result.returncode != 0:
+        raise Issue53AcceptanceError(
+            "Issue #53 installed launcher menu did not exit cleanly"
+        )
+    if menu_result.stderr.strip():
+        raise Issue53AcceptanceError(
+            "Issue #53 installed launcher menu wrote unexpected stderr"
+        )
+    menu_output = menu_result.stdout
+    for marker in (
+        "Portia",
+        "1. Record Event",
+        "5. Complete Follow-Up",
+        "9. Advanced Portia tools",
+        "H. Help",
+        "Q. Quit",
+        "Select an option:",
+    ):
+        if marker not in menu_output:
+            raise Issue53AcceptanceError(
+                "Issue #53 installed launcher menu did not render production taxonomy"
+            )
+
+    return {
+        "entry_point_name": metadata_payload["name"],
+        "entry_point_value": metadata_payload["value"],
+        "entry_point_group": metadata_payload["group"],
+        "launcher_version": version_output,
+        "status_rendered": True,
+        "status_core_exact": f"Installed Core: {EXPECTED_CORE_VERSION}"
+        in status_output,
+        "menu_rendered": True,
+        "menu_exit_code": menu_result.returncode,
+        "menu_quit_clean": menu_result.returncode == 0,
+        "interactive_story_not_required": True,
+    }
 
 def _foundation_probe(
     python: Path,
@@ -7027,7 +7183,11 @@ def smoke(portia_wheel: Path, core_wheel: Path) -> dict[str, object]:
             env=env,
         )
         _run([str(python), "-m", "pip", "check"], cwd=work, env=env)
-        _assert_launcher_reachable(python, env=env)
+        launcher_boundary = _installed_launcher_boundary(
+            python,
+            cwd=work,
+            env=env,
+        )
 
         foundation = _foundation_probe(
             python,
@@ -7146,6 +7306,7 @@ def smoke(portia_wheel: Path, core_wheel: Path) -> dict[str, object]:
 
         print("PASS no fixture bypass")
         print("PASS install")
+        print("PASS launcher boundary")
         print("PASS deep workspace")
         print("PASS Core setup")
         print("PASS Actor setup")
@@ -7181,6 +7342,12 @@ def smoke(portia_wheel: Path, core_wheel: Path) -> dict[str, object]:
             "fixture_bypass_repository_instance_count": no_fixture_bypass[
                 "repository_instance_count"
             ],
+            "launcher_entry_point": launcher_boundary["entry_point_value"],
+            "launcher_version": launcher_boundary["launcher_version"],
+            "launcher_status_rendered": launcher_boundary["status_rendered"],
+            "launcher_status_core_exact": launcher_boundary["status_core_exact"],
+            "launcher_menu_rendered": launcher_boundary["menu_rendered"],
+            "launcher_menu_quit_clean": launcher_boundary["menu_quit_clean"],
             "candidate_portia_wheel": candidate.name,
             "candidate_portia_sha256": portia_digest,
             "core_wheel": core.name,

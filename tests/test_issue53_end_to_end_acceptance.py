@@ -1692,3 +1692,74 @@ def test_issue53_smoke_runs_no_fixture_bypass_guard_before_story() -> None:
     assert guard_index < temp_index
     assert 'print("PASS no fixture bypass")' in source
     assert '"fixture_bypass_excluded": no_fixture_bypass[' in source
+
+def test_issue53_installed_launcher_metadata_is_exact() -> None:
+    smoke = _load_script()
+    probe = smoke._LAUNCHER_METADATA_PROBE
+    for marker in (
+        'metadata.entry_points(group="console_scripts")',
+        'entry_point.name == "portia"',
+        'entry["value"] != "portia.cli:main"',
+        '"pds-portia"',
+    ):
+        assert marker in probe
+
+
+def test_issue53_installed_launcher_executes_version_status_and_menu() -> None:
+    source = (
+        ROOT / "scripts" / "smoke_test_issue53_end_to_end_wheel.py"
+    ).read_text(encoding="utf-8")
+    for marker in (
+        "def _installed_launcher_boundary(",
+        '[str(launcher), "--version"]',
+        '[str(launcher), "status"]',
+        '[str(launcher), "menu"]',
+        'input="q\\n"',
+        'menu_result.returncode != 0',
+    ):
+        assert marker in source
+
+
+def test_issue53_installed_launcher_menu_renders_production_taxonomy() -> None:
+    source = (
+        ROOT / "scripts" / "smoke_test_issue53_end_to_end_wheel.py"
+    ).read_text(encoding="utf-8")
+    for marker in (
+        '"1. Record Event"',
+        '"5. Complete Follow-Up"',
+        '"9. Advanced Portia tools"',
+        '"H. Help"',
+        '"Q. Quit"',
+        '"Select an option:"',
+    ):
+        assert marker in source
+
+
+def test_issue53_installed_launcher_status_is_zero_read_boundary() -> None:
+    source = (
+        ROOT / "scripts" / "smoke_test_issue53_end_to_end_wheel.py"
+    ).read_text(encoding="utf-8")
+    for marker in (
+        '"Runtime stage: v0.2 task-oriented teacher menu"',
+        '"Core requirement: pds-core>=0.6.3,<0.7"',
+        '"Teacher data access: none in this status command"',
+        '"status_rendered": True',
+        '"status_core_exact":',
+    ):
+        assert marker in source
+
+
+def test_issue53_launcher_boundary_runs_after_install_before_story() -> None:
+    source = (
+        ROOT / "scripts" / "smoke_test_issue53_end_to_end_wheel.py"
+    ).read_text(encoding="utf-8")
+    install_index = source.index(
+        '_run([str(python), "-m", "pip", "check"], cwd=work, env=env)'
+    )
+    launcher_index = source.index(
+        "launcher_boundary = _installed_launcher_boundary("
+    )
+    foundation_index = source.index("foundation = _foundation_probe(")
+    assert install_index < launcher_index < foundation_index
+    assert 'print("PASS launcher boundary")' in source
+    assert '"launcher_entry_point": launcher_boundary[' in source
