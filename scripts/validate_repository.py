@@ -1,4 +1,4 @@
-"""Run the complete Portia repository qualification through Issue #92."""
+"""Run the complete Portia repository qualification through Issue #53."""
 
 from __future__ import annotations
 
@@ -95,6 +95,15 @@ _ISSUE52_CLOSEOUT_COMPATIBILITY_MARKERS = (
 )
 
 
+# Historical source-level markers retained for the accepted Issue #92
+# qualification boundary. Current execution proceeds through Issue #53.
+_ISSUE92_CLOSEOUT_COMPATIBILITY_MARKERS = (
+    "Run the complete Portia repository qualification through Issue #92.",
+    "Issue #92 qualification requires the authenticated Core 0.6.4 wheel",
+    "Portia Issue #92 repository qualification passed",
+)
+
+
 def _run(command: list[str], root: Path) -> None:
     print(f"+ {' '.join(command)}", flush=True)
     subprocess.run(command, cwd=root, check=True)
@@ -143,7 +152,7 @@ def qualify(
     expected_core_version = _core_version_from_wheel(core_wheel)
     if expected_core_version != "0.6.4":
         raise ValueError(
-            "Issue #92 qualification requires the authenticated Core 0.6.4 wheel; "
+            "Issue #53 qualification requires the authenticated Core 0.6.4 wheel; "
             f"received {expected_core_version}"
         )
     expected_historical_core_version = _core_version_from_wheel(
@@ -268,6 +277,7 @@ def qualify(
     _run([sys.executable, "scripts/check_issue51_package.py", "dist"], root)
     _run([sys.executable, "scripts/check_issue52_package.py", "dist"], root)
     _run([sys.executable, "scripts/check_issue92_package.py", "dist"], root)
+    _run([sys.executable, "scripts/check_issue53_package.py", "dist"], root)
 
     wheels = sorted((root / "dist").glob("pds_portia-*.whl"))
     if len(wheels) != 1:
@@ -398,6 +408,15 @@ def qualify(
         ],
         root,
     )
+    _run(
+        [
+            sys.executable,
+            "scripts/smoke_test_issue53_end_to_end_wheel.py",
+            str(wheels[0]),
+            str(core_wheel.resolve()),
+        ],
+        root,
+    )
     if (root / ".git").exists():
         _run(["git", "diff", "--check"], root)
 
@@ -418,7 +437,7 @@ def main() -> int:
     except (OSError, RuntimeError, ValueError, subprocess.CalledProcessError) as exc:
         print(f"Repository qualification failed: {exc}", file=sys.stderr)
         return 1
-    print("Portia Issue #92 repository qualification passed")
+    print("Portia Issue #53 repository qualification passed")
     return 0
 
 

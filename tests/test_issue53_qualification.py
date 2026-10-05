@@ -240,3 +240,89 @@ def test_issue53_documentation_index_and_changelog_are_wired() -> None:
     )
     assert "Issue #53 representative installed end-to-end acceptance harness" in changelog
     assert "final v0.2.0 release approval owned by Issue #54" in changelog
+
+def test_generic_package_checker_carries_issue53_closeout_boundary() -> None:
+    generic = _load_script(
+        "scripts/check_package.py",
+        "generic_package_checker_issue53",
+    )
+    dedicated = _load_script(
+        "scripts/check_issue53_package.py",
+        "dedicated_package_checker_issue53",
+    )
+    assert dedicated._REQUIRED_RUNTIME <= generic.REQUIRED_RUNTIME_FILES
+    assert dedicated._REQUIRED_SDIST <= generic.REQUIRED_SDIST_FILES
+
+
+def test_issue53_repository_qualification_is_authoritative_terminal_boundary() -> None:
+    validator = (ROOT / "scripts" / "validate_repository.py").read_text(
+        encoding="utf-8"
+    )
+    assert (
+        "Run the complete Portia repository qualification through Issue #53."
+        in validator
+    )
+    assert (
+        "Issue #53 qualification requires the authenticated Core 0.6.4 wheel"
+        in validator
+    )
+
+    package_52 = validator.index("scripts/check_issue52_package.py")
+    package_92 = validator.index("scripts/check_issue92_package.py")
+    package_53 = validator.index("scripts/check_issue53_package.py")
+    assert package_52 < package_92 < package_53
+
+    smoke_52 = validator.index(
+        "scripts/smoke_test_issue52_module_operations_wheel.py"
+    )
+    smoke_92 = validator.index(
+        "scripts/smoke_test_issue92_deep_workspace_wheel.py"
+    )
+    smoke_53 = validator.index(
+        "scripts/smoke_test_issue53_end_to_end_wheel.py"
+    )
+    diff_check = validator.index('["git", "diff", "--check"]')
+    assert smoke_52 < smoke_92 < smoke_53 < diff_check
+
+    assert "Portia Issue #53 repository qualification passed" in validator
+
+
+def test_issue53_repository_qualification_preserves_issue92_markers() -> None:
+    validator = (ROOT / "scripts" / "validate_repository.py").read_text(
+        encoding="utf-8"
+    )
+    for marker in (
+        "Run the complete Portia repository qualification through Issue #92.",
+        "Issue #92 qualification requires the authenticated Core 0.6.4 wheel",
+        "Portia Issue #92 repository qualification passed",
+    ):
+        assert marker in validator
+
+
+def test_issue53_repository_qualification_has_one_full_pytest_stage() -> None:
+    validator = (ROOT / "scripts" / "validate_repository.py").read_text(
+        encoding="utf-8"
+    )
+    smoke = (
+        ROOT / "scripts" / "smoke_test_issue53_end_to_end_wheel.py"
+    ).read_text(encoding="utf-8")
+    assert validator.count('[sys.executable, "-m", "pytest"]') == 1
+    assert '"-m", "pytest"' not in smoke
+
+
+def test_issue53_ci_uses_existing_cross_platform_cumulative_gate() -> None:
+    workflow = (ROOT / ".github" / "workflows" / "ci.yml").read_text(
+        encoding="utf-8"
+    )
+    for marker in (
+        "os: ubuntu-latest",
+        "os: windows-latest",
+        'python: "3.11"',
+        'current_core: "0.6.4"',
+        'core: "0.6.3"',
+        "python scripts/validate_repository.py",
+        '--core-wheel "$env:PDS_CORE_WHEEL"',
+        '--historical-core-wheel "$env:PDS_HISTORICAL_CORE_WHEEL"',
+    ):
+        assert marker in workflow
+    assert "smoke_test_issue53_end_to_end_wheel.py" not in workflow

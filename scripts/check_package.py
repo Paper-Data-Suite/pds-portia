@@ -296,6 +296,62 @@ REQUIRED_SDIST_FILES.update(
 )
 
 
+_ISSUE53_REQUIRED_RUNTIME_FILES = {
+    "portia/workflows/events.py",
+    "portia/workflows/participants.py",
+    "portia/workflows/roles.py",
+    "portia/workflows/accounts.py",
+    "portia/workflows/observations.py",
+    "portia/workflows/reviews.py",
+    "portia/workflows/determinations.py",
+    "portia/workflows/responses.py",
+    "portia/workflows/communications.py",
+    "portia/workflows/support_processes.py",
+    "portia/workflows/support_needs.py",
+    "portia/workflows/support_goals.py",
+    "portia/workflows/supports.py",
+    "portia/workflows/implementations.py",
+    "portia/workflows/fidelity.py",
+    "portia/workflows/follow_ups.py",
+    "portia/identity/actors.py",
+    "portia/storage/actor_directory.py",
+    "portia/storage/recovery.py",
+    "portia/storage/integrity.py",
+    "portia/workflows/recovery.py",
+    "portia/workflows/integrity.py",
+    "portia/views/student.py",
+    "portia/attention/__init__.py",
+    "portia/attention_provider.py",
+    "portia/readiness_provider.py",
+    "portia/pds_operations.py",
+    "portia/exports/__init__.py",
+    "portia/exports/discovery.py",
+    "portia/exports/projection.py",
+    "portia/exports/inventory.py",
+    "portia/exports/preparation.py",
+    "portia/exports/execution.py",
+    "portia/exports/history.py",
+    "portia/storage/generated_paths.py",
+    "portia/storage/paths.py",
+    "portia/storage/staging.py",
+    "portia/storage/derived.py",
+    "portia/cli.py",
+}
+REQUIRED_RUNTIME_FILES.update(_ISSUE53_REQUIRED_RUNTIME_FILES)
+REQUIRED_SDIST_FILES.update(
+    _ISSUE53_REQUIRED_RUNTIME_FILES
+    | {
+        "CHANGELOG.md",
+        "docs/README.md",
+        "docs/validation/issue-53-representative-installed-end-to-end-validation.md",
+        "scripts/check_issue53_package.py",
+        "scripts/smoke_test_issue53_end_to_end_wheel.py",
+        "tests/test_issue53_end_to_end_acceptance.py",
+        "tests/test_issue53_qualification.py",
+    }
+)
+
+
 def _unsafe_path(name: str) -> bool:
     path = PurePosixPath(name)
     return path.is_absolute() or any(part in {"", ".", ".."} for part in path.parts)
