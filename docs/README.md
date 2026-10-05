@@ -27,3 +27,9 @@ For Portia-owned filesystem path policy and the Issue #92 audit, see:
 - `path-safety.md` â€” domain identity vs. filesystem infrastructure identity,
   bounded generated-token policy, current path-surface classification, legacy
   reader compatibility, and the future Core-retained-source byte-read rule.
+
+## Representative installed end-to-end acceptance
+
+For the Issue #53 integrated installed-runtime boundary, see:
+
+- `validation/issue-53-representative-installed-end-to-end-validation.md` - exact candidate/Core artifact evidence, one continuous deep synthetic workspace, cross-class identity, production service boundaries, correction/conflict/recovery, fresh-process reload, privacy, export, provider, Integrity, no-fixture-bypass, launcher, package, and final cumulative qualification contract.

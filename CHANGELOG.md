@@ -4,6 +4,9 @@
 
 ### Added
 
+- Issue #53 representative installed end-to-end acceptance harness spanning Core class/roster setup, workspace Actors, cross-class Event evidence, bounded judgment, correction/history, Response/Communication, Support planning/execution, Follow-Up, conflict, recovery, restart, privacy views, teacher-reference export, Core providers, Integrity, and deep-path integration.
+- Issue #53 no-fixture-bypass and installed-launcher qualification, preserving production service boundaries while proving `portia = portia.cli:main` from the isolated installed wheel.
+- Issue #53 dedicated package qualification foundation and validation evidence contract for the exact Portia candidate plus authenticated Core 0.6.4 artifact.
 - Issue #92 isolated installed-wheel deep-workspace qualification against the exact released Core 0.6.4 wheel, plus package inventory enforcement for path-hardening runtime modules.
 - Issue #92 physical deep-workspace qualification at a targeted 119-character workspace root across staging/history, bounded derived state, and complete teacher-reference export execution.
 - Issue #92 bounded `derived-v2` filesystem serialization with deterministic legacy-reader compatibility and non-destructive legacy-to-bounded current-pointer cutover.
@@ -26,6 +29,7 @@
 
 ### Boundaries
 
+- Issue #53 acceptance uses only synthetic records, does not replace Issue #22 focused fixtures/tests, does not migrate historical workspaces, and does not constitute the final v0.2.0 release approval owned by Issue #54.
 - Export generation remains a local teacher-reference action, not disclosure, delivery, receipt, filing, or official institutional record creation.
 - No student-global export, sibling-module runtime dependency, generic JSON export, automatic privacy rewriting, or export overwrite path is introduced.
 - Module operations remain read-only and privacy-minimal; readiness is structural rather than a behavior, risk, priority, recovery, or Suite-launch judgment.

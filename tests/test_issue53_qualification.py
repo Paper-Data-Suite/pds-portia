@@ -162,3 +162,81 @@ def test_issue53_package_checker_forbids_source_fixture_runtime_packaging() -> N
     )
     assert "tests/" in checker._FORBIDDEN_WHEEL_PREFIXES
     assert "scripts/" in checker._FORBIDDEN_WHEEL_PREFIXES
+
+def test_issue53_validation_record_defines_exact_artifact_handoff() -> None:
+    validation = (
+        ROOT
+        / "docs"
+        / "validation"
+        / "issue-53-representative-installed-end-to-end-validation.md"
+    ).read_text(encoding="utf-8")
+    for marker in (
+        "candidate Portia source commit:",
+        "candidate Portia wheel filename:",
+        "candidate Portia wheel SHA-256:",
+        "pds_core-0.6.4-py3-none-any.whl",
+        CORE_064_SHA256,
+        "Python version:",
+        "host platform:",
+        "deep workspace geometry:",
+    ):
+        assert marker in validation
+
+
+def test_issue53_validation_record_preserves_scope_and_synthetic_warning() -> None:
+    validation = (
+        ROOT
+        / "docs"
+        / "validation"
+        / "issue-53-representative-installed-end-to-end-validation.md"
+    ).read_text(encoding="utf-8")
+    assert (
+        "Issue #53 proves representative coherence of the installed v0.2 "
+        "application."
+    ) in validation
+    assert (
+        "It does not assert that every possible Portia workflow combination "
+        "has been exhaustively explored."
+    ) in validation
+    assert (
+        "The acceptance story uses only synthetic records and must never be "
+        "run against or populated from a real teacher workspace."
+    ) in validation
+    assert "v0.2.0 release approved" in validation
+    assert "Issue #54" in validation
+
+
+def test_issue53_validation_record_documents_final_cumulative_order() -> None:
+    validation = (
+        ROOT
+        / "docs"
+        / "validation"
+        / "issue-53-representative-installed-end-to-end-validation.md"
+    ).read_text(encoding="utf-8")
+    ordered = (
+        "full pytest",
+        "Ruff",
+        "strict mypy",
+        "pip check",
+        "clean build",
+        "Twine",
+        "Issue #53 package check",
+        "Issue #52 Core 0.6.4 provider smoke",
+        "Issue #92 deep-workspace smoke",
+        "Issue #53 representative installed end-to-end smoke",
+        "git diff --check",
+    )
+    positions = [validation.index(marker) for marker in ordered]
+    assert positions == sorted(positions)
+    assert "Portia Issue #53 repository qualification passed" in validation
+
+
+def test_issue53_documentation_index_and_changelog_are_wired() -> None:
+    docs_index = (ROOT / "docs" / "README.md").read_text(encoding="utf-8")
+    changelog = (ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
+    assert (
+        "validation/issue-53-representative-installed-end-to-end-validation.md"
+        in docs_index
+    )
+    assert "Issue #53 representative installed end-to-end acceptance harness" in changelog
+    assert "final v0.2.0 release approval owned by Issue #54" in changelog
