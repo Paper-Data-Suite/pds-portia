@@ -1090,3 +1090,119 @@ def test_issue53_integrity_stage_follows_recovery_stage() -> None:
     )
     assert '"integrity_pre_findings_count": recovery[' in source
     assert '"integrity_operation_completion_allowed": recovery[' in source
+
+
+def test_issue53_fresh_reload_is_a_separate_installed_process() -> None:
+    _load_script()
+    source = (
+        ROOT / "scripts" / "smoke_test_issue53_end_to_end_wheel.py"
+    ).read_text(encoding="utf-8")
+    assert "_DURABLE_RELOAD_PROBE = r" in source
+    runner_index = source.index("def _durable_reload_probe(")
+    smoke_index = source.index(
+        "def smoke(portia_wheel: Path, core_wheel: Path)"
+    )
+    runner = source[runner_index:smoke_index]
+    assert "_run(" in runner
+    assert '"-c"' in runner
+    assert "_DURABLE_RELOAD_PROBE" in runner
+    assert "workspace" in runner
+
+
+def test_issue53_fresh_reload_covers_core_actors_and_event_identity() -> None:
+    smoke = _load_script()
+    probe = smoke._DURABLE_RELOAD_PROBE
+    for marker in (
+        "load_class_roster(workspace, PRIMARY_CLASS_ID)",
+        "load_class_roster(workspace, SECONDARY_CLASS_ID)",
+        "ActorDirectoryService(workspace)",
+        "resolve_student_relationship(",
+        "EventWorkflowService(workspace)",
+        "ParticipantWorkflowService(workspace)",
+        "participants.resolve_exact(",
+        "cross_authority.reference.class_id != SECONDARY_CLASS_ID",
+    ):
+        assert marker in probe
+
+
+def test_issue53_fresh_reload_preserves_corrections_and_historical_pins() -> None:
+    smoke = _load_script()
+    probe = smoke._DURABLE_RELOAD_PROBE
+    for marker in (
+        "accounts.load_exact(original_account_ref)",
+        "accounts.require_current_use(corrected_account_ref)",
+        'original_account.record.status != "superseded"',
+        "review_account_ids != [ACCOUNT_ID]",
+        "determination_account_ids != [ACCOUNT_ID]",
+        "supports.load_exact(support_reference(support_work, SUPPORT_ID))",
+        "supports.require_current_use(",
+        'corrected_support.record.field("plan_state") != "paused"',
+    ):
+        assert marker in probe
+
+
+def test_issue53_fresh_reload_preserves_action_and_support_execution_records() -> None:
+    smoke = _load_script()
+    probe = smoke._DURABLE_RELOAD_PROBE
+    for marker in (
+        "responses.require_current_use(",
+        "communications.require_current_use(",
+        "support_roots.require_current_use(support_work)",
+        "repository.list_work_records(",
+        '"implementation"',
+        "implementation_ids !=",
+        "IMPLEMENTATION_ONE_ID",
+        "IMPLEMENTATION_TWO_ID",
+        '"fidelity"',
+        "FIDELITY_ID",
+        '"follow_up"',
+        "FOLLOW_UP_ID",
+        '"workflow_state") != "completed"',
+    ):
+        assert marker in probe
+
+
+def test_issue53_fresh_reload_proves_terminal_recovery_and_no_staging() -> None:
+    smoke = _load_script()
+    probe = smoke._DURABLE_RELOAD_PROBE
+    for marker in (
+        "journals.load_current(RECOVERY_OPERATION_ID)",
+        'terminal_data.get("state") != "completed"',
+        "recovery.assess(RECOVERY_OPERATION_ID)",
+        '"terminal_consistent"',
+        "staging_path_for(",
+        "if staging.exists() or staging.is_symlink():",
+        '"recovery_staging_gone": True',
+    ):
+        assert marker in probe
+
+
+def test_issue53_fresh_reload_reads_technical_history_from_journal_authority() -> None:
+    smoke = _load_script()
+    probe = smoke._DURABLE_RELOAD_PROBE
+    for marker in (
+        "def verify_technical_history(operation_id):",
+        '"step_history"',
+        'ContentFingerprint.from_dict(intended.get("fingerprint"))',
+        "resolve_workspace_relative(workspace, destination)",
+        "read_bytes(path)",
+        "fingerprint_bytes(content) != expected",
+        "ACCOUNT_CORRECTION_OPERATION_ID",
+        "RECOVERY_OPERATION_ID",
+    ):
+        assert marker in probe
+
+
+def test_issue53_fresh_reload_follows_integrity_and_has_exact_stage_label() -> None:
+    source = (
+        ROOT / "scripts" / "smoke_test_issue53_end_to_end_wheel.py"
+    ).read_text(encoding="utf-8")
+    recovery_index = source.index("recovery = _recovery_probe(")
+    reload_index = source.index("durable_reload = _durable_reload_probe(")
+    assert recovery_index < reload_index
+    assert 'print("PASS integrity")' in source
+    assert 'print("PASS fresh reload")' in source
+    assert source.index('print("PASS integrity")') < source.index(
+        'print("PASS fresh reload")'
+    )
+    assert '"fresh_process_reload": durable_reload[' in source

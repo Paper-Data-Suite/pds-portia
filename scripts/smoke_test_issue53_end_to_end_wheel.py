@@ -3866,6 +3866,415 @@ print(
 )
 """
 
+_DURABLE_RELOAD_PROBE = r"""
+import json
+import sys
+from datetime import date
+from pathlib import Path
+
+from pds_core.classes import load_class_roster
+
+from portia.identity import ActorDirectoryService
+from portia.models.references import (
+    ExactActorRef,
+    ExactActorStudentRelationshipRef,
+    ExactPortiaWorkRef,
+)
+from portia.storage.fingerprint import ContentFingerprint, fingerprint_bytes
+from portia.storage.io import read_bytes
+from portia.storage.paths import resolve_workspace_relative
+from portia.storage.repository import PortiaRepository
+from portia.storage.series import OperationJournalStore
+from portia.storage.staging import staging_path_for
+from portia.workflows import (
+    AccountWorkflowService,
+    CommunicationWorkflowService,
+    EventWorkflowService,
+    ParticipantWorkflowService,
+    RecoveryWorkflowService,
+    ResponseWorkflowService,
+    SupportProcessWorkflowService,
+    SupportWorkflowService,
+    account_reference,
+    communication_reference,
+    fidelity_reference,
+    follow_up_reference,
+    implementation_reference,
+    participant_reference,
+    response_reference,
+    support_reference,
+)
+
+SCHOOL_YEAR = "2026-2027"
+PRIMARY_CLASS_ID = "eng10_p2_2026"
+SECONDARY_CLASS_ID = "journalism_p6_2026"
+COLLISION_STUDENT_ID = "student_shared_001"
+GUARDIAN_ACTOR_ID = "actr_guardian_001"
+COUNSELOR_ACTOR_ID = "actr_counselor_001"
+EVENT_ID = "evt_issue53_primary"
+CROSS_PARTICIPANT_ID = "ep_issue53_cross"
+ACCOUNT_ID = "acct_issue53_cross_report"
+CORRECTED_ACCOUNT_ID = "acct_issue53_cross_corrected"
+REVIEW_ID = "rvw_issue53_evidence"
+DETERMINATION_ID = "det_issue53_insufficient"
+RESPONSE_ID = "rsp_issue53_neutral_support"
+COMMUNICATION_ID = "comm_issue53_guardian"
+SUPPORT_PROCESS_ID = "sup_issue53_support"
+SUPPORT_ID = "spt_issue53_access"
+CORRECTED_SUPPORT_ID = "spt_issue53_access_corrected"
+IMPLEMENTATION_ONE_ID = "imp_issue53_access_001"
+IMPLEMENTATION_TWO_ID = "imp_issue53_access_002"
+FIDELITY_ID = "fid_issue53_access"
+FOLLOW_UP_ID = "fup_issue53_review"
+ACCOUNT_CORRECTION_OPERATION_ID = "op_issue53_account_corrected"
+RECOVERY_OPERATION_ID = "op_issue53_support_recovery"
+AS_OF = date(2026, 10, 4)
+
+workspace = Path(sys.argv[1]).resolve()
+
+# This process is intentionally started after every writer/recovery probe has
+# exited. Instantiate all repositories/services fresh from the durable root.
+repository = PortiaRepository(workspace)
+actors = ActorDirectoryService(workspace)
+events = EventWorkflowService(workspace)
+participants = ParticipantWorkflowService(workspace)
+accounts = AccountWorkflowService(workspace)
+responses = ResponseWorkflowService(workspace)
+communications = CommunicationWorkflowService(workspace)
+support_roots = SupportProcessWorkflowService(workspace)
+supports = SupportWorkflowService(workspace)
+journals = OperationJournalStore(workspace)
+recovery = RecoveryWorkflowService(workspace)
+
+primary_roster = load_class_roster(workspace, PRIMARY_CLASS_ID)
+secondary_roster = load_class_roster(workspace, SECONDARY_CLASS_ID)
+primary_ids = {student.student_id for student in primary_roster.students}
+secondary_ids = {student.student_id for student in secondary_roster.students}
+if COLLISION_STUDENT_ID not in primary_ids:
+    raise RuntimeError("fresh process lost focal student from primary Core roster")
+if COLLISION_STUDENT_ID not in secondary_ids:
+    raise RuntimeError("fresh process lost focal student from secondary Core roster")
+if primary_roster.class_id != PRIMARY_CLASS_ID:
+    raise RuntimeError("fresh process loaded primary roster under wrong class")
+if secondary_roster.class_id != SECONDARY_CLASS_ID:
+    raise RuntimeError("fresh process loaded secondary roster under wrong class")
+
+guardian = actors.load_actor(
+    ExactActorRef(actor_id=GUARDIAN_ACTOR_ID, contract_version="1"),
+    require_current_use=True,
+)
+counselor = actors.load_actor(
+    ExactActorRef(actor_id=COUNSELOR_ACTOR_ID, contract_version="1"),
+    require_current_use=True,
+)
+for stored in (guardian, counselor):
+    relative = stored.path.resolve().relative_to(workspace)
+    if relative.parts[:2] != ("portia", "actors"):
+        raise RuntimeError("fresh Actor reload escaped workspace Actor Directory")
+    if PRIMARY_CLASS_ID in relative.parts or SECONDARY_CLASS_ID in relative.parts:
+        raise RuntimeError("fresh Actor reload became class-owned")
+
+guardian_primary = actors.resolve_student_relationship(
+    ExactActorStudentRelationshipRef(
+        actor_id=GUARDIAN_ACTOR_ID,
+        relationship_id="asrel_guardian_primary",
+        contract_version="1",
+    ),
+    require_current_use=True,
+    on_date=AS_OF,
+)
+guardian_secondary = actors.resolve_student_relationship(
+    ExactActorStudentRelationshipRef(
+        actor_id=GUARDIAN_ACTOR_ID,
+        relationship_id="asrel_guardian_secondary",
+        contract_version="1",
+    ),
+    require_current_use=True,
+    on_date=AS_OF,
+)
+if guardian_primary.roster_student.reference.class_id != PRIMARY_CLASS_ID:
+    raise RuntimeError("fresh primary Actor relationship lost exact Core class")
+if guardian_secondary.roster_student.reference.class_id != SECONDARY_CLASS_ID:
+    raise RuntimeError("fresh secondary Actor relationship lost exact Core class")
+if (
+    guardian_primary.roster_student.reference.student_id
+    != COLLISION_STUDENT_ID
+    or guardian_secondary.roster_student.reference.student_id
+    != COLLISION_STUDENT_ID
+):
+    raise RuntimeError("fresh Actor relationship lost focal local student identity")
+if (
+    guardian_primary.roster_student.reference
+    == guardian_secondary.roster_student.reference
+):
+    raise RuntimeError("fresh Actor reload collapsed class-qualified students")
+
+event_work = ExactPortiaWorkRef(
+    class_id=PRIMARY_CLASS_ID,
+    work_id=EVENT_ID,
+    work_kind="event",
+    contract_version="2",
+)
+event = events.require_current_use(event_work)
+if event.record.status != "active":
+    raise RuntimeError("fresh Event reload is not current")
+
+cross_participant = participants.resolve_exact(
+    participant_reference(event_work, CROSS_PARTICIPANT_ID)
+)
+if cross_participant.kind != "roster_student":
+    raise RuntimeError("fresh cross-class Participant lost roster-student identity")
+cross_authority = cross_participant.authority
+if cross_authority is None:
+    raise RuntimeError("fresh cross-class Participant lost roster authority")
+if cross_authority.reference.class_id != SECONDARY_CLASS_ID:
+    raise RuntimeError("fresh cross-class Participant resolved wrong Core class")
+if cross_authority.reference.student_id != COLLISION_STUDENT_ID:
+    raise RuntimeError("fresh cross-class Participant resolved wrong local student")
+
+original_account_ref = account_reference(event_work, ACCOUNT_ID)
+corrected_account_ref = account_reference(event_work, CORRECTED_ACCOUNT_ID)
+original_account = accounts.load_exact(original_account_ref)
+corrected_account = accounts.require_current_use(corrected_account_ref)
+if original_account.record.status != "superseded":
+    raise RuntimeError("fresh exact Account predecessor is not superseded")
+if corrected_account.record.status != "active":
+    raise RuntimeError("fresh corrected Account successor is not current")
+
+review = repository.load_work_record(
+    event_work,
+    "review",
+    "1",
+    REVIEW_ID,
+)
+determination = repository.load_work_record(
+    event_work,
+    "determination",
+    "1",
+    DETERMINATION_ID,
+)
+review_evidence = review.record.to_dict().get("evidence_considered")
+if not isinstance(review_evidence, list):
+    raise RuntimeError("fresh Review evidence is malformed")
+review_account_ids = [
+    item["work_record_ref"]["record_ref"]["record_id"]
+    for item in review_evidence
+    if isinstance(item, dict)
+    and item.get("kind") == "portia_record"
+    and isinstance(item.get("work_record_ref"), dict)
+    and isinstance(item["work_record_ref"].get("record_ref"), dict)
+    and item["work_record_ref"]["record_ref"].get("record_kind") == "account"
+]
+if review_account_ids != [ACCOUNT_ID]:
+    raise RuntimeError("fresh Review silently retargeted corrected Account")
+
+determination_basis = determination.record.to_dict().get("basis")
+if not isinstance(determination_basis, list):
+    raise RuntimeError("fresh Determination basis is malformed")
+determination_account_ids = [
+    item["evidence_ref"]["work_record_ref"]["record_ref"]["record_id"]
+    for item in determination_basis
+    if isinstance(item, dict)
+    and isinstance(item.get("evidence_ref"), dict)
+    and item["evidence_ref"].get("kind") == "portia_record"
+    and isinstance(item["evidence_ref"].get("work_record_ref"), dict)
+    and isinstance(
+        item["evidence_ref"]["work_record_ref"].get("record_ref"),
+        dict,
+    )
+    and item["evidence_ref"]["work_record_ref"]["record_ref"].get(
+        "record_kind"
+    )
+    == "account"
+]
+if determination_account_ids != [ACCOUNT_ID]:
+    raise RuntimeError("fresh Determination silently retargeted corrected Account")
+
+response = responses.require_current_use(response_reference(event_work, RESPONSE_ID))
+communication = communications.require_current_use(
+    communication_reference(event_work, COMMUNICATION_ID)
+)
+if response.record.field("execution_state") != "completed":
+    raise RuntimeError("fresh Response reload lost completed execution state")
+if communication.record.field("act_state") != "completed":
+    raise RuntimeError("fresh Communication reload lost completed act state")
+
+support_work = ExactPortiaWorkRef(
+    class_id=PRIMARY_CLASS_ID,
+    work_id=SUPPORT_PROCESS_ID,
+    work_kind="support_process",
+    contract_version="1",
+)
+support_process = support_roots.require_current_use(support_work)
+if support_process.record.status != "active":
+    raise RuntimeError("fresh Support Process reload is not current")
+if support_process.record.field("workflow_state") != "active":
+    raise RuntimeError("fresh Support Process workflow state changed")
+
+original_support = supports.load_exact(support_reference(support_work, SUPPORT_ID))
+corrected_support = supports.require_current_use(
+    support_reference(support_work, CORRECTED_SUPPORT_ID)
+)
+if original_support.record.status != "superseded":
+    raise RuntimeError("fresh recovered Support predecessor is not superseded")
+if corrected_support.record.status != "active":
+    raise RuntimeError("fresh recovered Support successor is not current")
+if corrected_support.record.field("plan_state") != "paused":
+    raise RuntimeError("fresh recovered Support successor lost paused plan state")
+
+implementation_records = repository.list_work_records(
+    support_work,
+    "implementation",
+    version="1",
+)
+implementation_ids = {
+    stored.record.logical_id for stored in implementation_records
+}
+if implementation_ids != {
+    IMPLEMENTATION_ONE_ID,
+    IMPLEMENTATION_TWO_ID,
+}:
+    raise RuntimeError("fresh Implementation set changed after restart")
+implementation_one = repository.load_work_record(
+    support_work,
+    "implementation",
+    "1",
+    IMPLEMENTATION_ONE_ID,
+)
+implementation_two = repository.load_work_record(
+    support_work,
+    "implementation",
+    "1",
+    IMPLEMENTATION_TWO_ID,
+)
+fidelity = repository.load_work_record(
+    support_work,
+    "fidelity",
+    "1",
+    FIDELITY_ID,
+)
+follow_up = repository.load_work_record(
+    support_work,
+    "follow_up",
+    "1",
+    FOLLOW_UP_ID,
+)
+if implementation_one.record.field("execution_state") != "completed":
+    raise RuntimeError("fresh Implementation one reload lost completed state")
+if implementation_two.record.field("execution_state") != "completed":
+    raise RuntimeError("fresh Implementation two reload lost completed state")
+if fidelity.record.field("result") != "as_planned":
+    raise RuntimeError("fresh Fidelity reload lost bounded result")
+if follow_up.record.field("workflow_state") != "completed":
+    raise RuntimeError("fresh Follow-Up reload lost completed workflow state")
+if follow_up.record.field("disposition") != "continue_current_support":
+    raise RuntimeError("fresh Follow-Up reload lost explicit disposition")
+
+terminal = journals.load_current(RECOVERY_OPERATION_ID)
+terminal_data = terminal.revision.to_dict()
+if terminal_data.get("state") != "completed":
+    raise RuntimeError("fresh recovery journal reload is not terminal")
+terminal_assessment = recovery.assess(RECOVERY_OPERATION_ID)
+if terminal_assessment.disposition != "terminal_consistent":
+    raise RuntimeError("fresh recovery assessment is not terminal-consistent")
+if terminal_assessment.findings:
+    raise RuntimeError("fresh recovery assessment retained blocking findings")
+
+write_set = terminal_data.get("write_set")
+if not isinstance(write_set, list):
+    raise RuntimeError("fresh recovery journal write set is malformed")
+for step in write_set:
+    if not isinstance(step, dict):
+        raise RuntimeError("fresh recovery journal step is malformed")
+    step_id = step.get("step_id")
+    destination = step.get("destination_path")
+    if not isinstance(step_id, str) or not isinstance(destination, str):
+        raise RuntimeError("fresh recovery step identity is malformed")
+    staging = staging_path_for(
+        workspace,
+        RECOVERY_OPERATION_ID,
+        step_id,
+        destination,
+    )
+    if staging.exists() or staging.is_symlink():
+        raise RuntimeError("fresh process found retained recovery staging")
+
+def verify_technical_history(operation_id):
+    current = journals.load_current(operation_id)
+    data = current.revision.to_dict()
+    if data.get("state") != "completed":
+        raise RuntimeError("technical-history source operation is not completed")
+    steps = data.get("write_set")
+    if not isinstance(steps, list):
+        raise RuntimeError("technical-history source write set is malformed")
+    history_steps = [
+        step
+        for step in steps
+        if isinstance(step, dict) and step.get("step_id") == "step_history"
+    ]
+    if len(history_steps) != 1:
+        raise RuntimeError("technical-history source did not retain one history step")
+    step = history_steps[0]
+    destination = step.get("destination_path")
+    intended = step.get("intended_result")
+    if not isinstance(destination, str) or not isinstance(intended, dict):
+        raise RuntimeError("technical-history step identity is malformed")
+    expected = ContentFingerprint.from_dict(intended.get("fingerprint"))
+    path = resolve_workspace_relative(workspace, destination)
+    content = read_bytes(path)
+    if fingerprint_bytes(content) != expected:
+        raise RuntimeError("technical storage history bytes changed after restart")
+    return path.relative_to(workspace).as_posix()
+
+account_history_path = verify_technical_history(
+    ACCOUNT_CORRECTION_OPERATION_ID
+)
+support_history_path = verify_technical_history(RECOVERY_OPERATION_ID)
+
+print(
+    json.dumps(
+        {
+            "core_rosters_readable": True,
+            "actor_directory_reloaded": True,
+            "actor_relationships_class_qualified": True,
+            "event_current": True,
+            "cross_participant_class": cross_authority.reference.class_id,
+            "account_predecessor_exact": original_account.record.status
+            == "superseded",
+            "account_successor_current": corrected_account.record.status
+            == "active",
+            "review_history_pinned": review_account_ids == [ACCOUNT_ID],
+            "determination_history_pinned": (
+                determination_account_ids == [ACCOUNT_ID]
+            ),
+            "response_exact": response.record.logical_id == RESPONSE_ID,
+            "communication_exact": (
+                communication.record.logical_id == COMMUNICATION_ID
+            ),
+            "support_process_current": support_process.record.status == "active",
+            "support_predecessor_exact": original_support.record.status
+            == "superseded",
+            "support_successor_current": corrected_support.record.status
+            == "active",
+            "implementation_count_exact": len(implementation_ids),
+            "fidelity_exact": fidelity.record.logical_id == FIDELITY_ID,
+            "follow_up_completed": (
+                follow_up.record.field("workflow_state") == "completed"
+            ),
+            "operation_terminal": terminal_data.get("state") == "completed",
+            "recovery_terminal_consistent": (
+                terminal_assessment.disposition == "terminal_consistent"
+            ),
+            "recovery_staging_gone": True,
+            "account_history_readable": bool(account_history_path),
+            "support_history_readable": bool(support_history_path),
+            "fresh_process_reload": True,
+        },
+        sort_keys=True,
+    )
+)
+"""
+
 class Issue53AcceptanceError(RuntimeError):
     """Raised when the representative installed acceptance boundary fails."""
 
@@ -4810,6 +5219,72 @@ def _recovery_probe(
             )
     return payload
 
+def _durable_reload_probe(
+    python: Path,
+    *,
+    cwd: Path,
+    env: Mapping[str, str],
+    workspace: Path,
+) -> dict[str, object]:
+    completed = _run(
+        [
+            str(python),
+            "-c",
+            _DURABLE_RELOAD_PROBE,
+            str(workspace),
+        ],
+        cwd=cwd,
+        env=env,
+    )
+    lines = [line for line in completed.stdout.splitlines() if line.strip()]
+    if not lines:
+        raise Issue53AcceptanceError(
+            "Issue #53 fresh-process durable reload produced no result"
+        )
+    try:
+        payload_raw = json.loads(lines[-1])
+    except json.JSONDecodeError as exc:
+        raise Issue53AcceptanceError(
+            "Issue #53 fresh-process durable reload returned invalid JSON"
+        ) from exc
+    if not isinstance(payload_raw, dict):
+        raise Issue53AcceptanceError(
+            "Issue #53 fresh-process durable reload result was not an object"
+        )
+
+    payload = cast(dict[str, object], payload_raw)
+    expected = {
+        "core_rosters_readable": True,
+        "actor_directory_reloaded": True,
+        "actor_relationships_class_qualified": True,
+        "event_current": True,
+        "cross_participant_class": "journalism_p6_2026",
+        "account_predecessor_exact": True,
+        "account_successor_current": True,
+        "review_history_pinned": True,
+        "determination_history_pinned": True,
+        "response_exact": True,
+        "communication_exact": True,
+        "support_process_current": True,
+        "support_predecessor_exact": True,
+        "support_successor_current": True,
+        "implementation_count_exact": 2,
+        "fidelity_exact": True,
+        "follow_up_completed": True,
+        "operation_terminal": True,
+        "recovery_terminal_consistent": True,
+        "recovery_staging_gone": True,
+        "account_history_readable": True,
+        "support_history_readable": True,
+        "fresh_process_reload": True,
+    }
+    for key, value in expected.items():
+        if payload.get(key) != value:
+            raise Issue53AcceptanceError(
+                f"Issue #53 fresh-process reload mismatch for {key}"
+            )
+    return payload
+
 def smoke(portia_wheel: Path, core_wheel: Path) -> dict[str, object]:
     repository = Path(__file__).resolve().parents[1]
     candidate = _require_wheel(portia_wheel, label="Portia candidate")
@@ -4941,6 +5416,12 @@ def smoke(portia_wheel: Path, core_wheel: Path) -> dict[str, object]:
             env=env,
             workspace=workspace,
         )
+        durable_reload = _durable_reload_probe(
+            python,
+            cwd=work,
+            env=env,
+            workspace=workspace,
+        )
         if tuple(work.iterdir()):
             raise Issue53AcceptanceError(
                 "Issue #53 acceptance polluted its empty working directory"
@@ -4965,6 +5446,7 @@ def smoke(portia_wheel: Path, core_wheel: Path) -> dict[str, object]:
         print("PASS conflict")
         print("PASS recovery")
         print("PASS integrity")
+        print("PASS fresh reload")
 
         return {
             "candidate_portia_wheel": candidate.name,
@@ -5203,6 +5685,34 @@ def smoke(portia_wheel: Path, core_wheel: Path) -> dict[str, object]:
             "integrity_privacy_bounded": recovery[
                 "integrity_privacy_bounded"
             ],
+            "fresh_process_reload": durable_reload["fresh_process_reload"],
+            "reload_core_rosters_readable": durable_reload[
+                "core_rosters_readable"
+            ],
+            "reload_actor_relationships_class_qualified": durable_reload[
+                "actor_relationships_class_qualified"
+            ],
+            "reload_event_current": durable_reload["event_current"],
+            "reload_account_history_pinned": (
+                durable_reload["review_history_pinned"]
+                and durable_reload["determination_history_pinned"]
+            ),
+            "reload_support_successor_current": durable_reload[
+                "support_successor_current"
+            ],
+            "reload_follow_up_completed": durable_reload[
+                "follow_up_completed"
+            ],
+            "reload_operation_terminal": durable_reload[
+                "operation_terminal"
+            ],
+            "reload_recovery_staging_gone": durable_reload[
+                "recovery_staging_gone"
+            ],
+            "reload_technical_history_readable": (
+                durable_reload["account_history_readable"]
+                and durable_reload["support_history_readable"]
+            ),
             "launcher_reachable": True,
             "pip_check": "clean",
         }
