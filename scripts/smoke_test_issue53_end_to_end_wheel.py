@@ -8,6 +8,7 @@ production-service story while preserving this single environment and workspace.
 from __future__ import annotations
 
 import argparse
+import ast
 import hashlib
 import json
 import os
@@ -5500,6 +5501,228 @@ print(
 )
 """
 
+_DIRECT_IO_WRITER_NAMES: Final[frozenset[str]] = frozenset(
+    {"exclusive_create", "guarded_replace", "exact_delete"}
+)
+_DIRECT_STAGING_WRITER_NAMES: Final[frozenset[str]] = frozenset(
+    {"stage_bytes", "publish_staged", "cleanup_staged", "replace_staging_candidate"}
+)
+_REPOSITORY_MUTATOR_NAMES: Final[frozenset[str]] = frozenset(
+    {
+        "create_work",
+        "replace_work",
+        "create_work_record",
+        "replace_work_record",
+        "create_exceptional_removal",
+        "create_actor",
+        "replace_actor",
+        "create_actor_child",
+        "replace_actor_child",
+        "create_actor_directory_removal",
+    }
+)
+_DIRECT_PATH_WRITER_NAMES: Final[frozenset[str]] = frozenset(
+    {"write_text", "write_bytes", "touch"}
+)
+_COPY_WRITER_NAMES: Final[frozenset[str]] = frozenset(
+    {"copy", "copy2", "copyfile", "copytree", "move"}
+)
+
+
+def _write_mode(call: ast.Call) -> str | None:
+    mode: object | None = None
+    if isinstance(call.func, ast.Name) and call.func.id == "open":
+        if len(call.args) >= 2 and isinstance(call.args[1], ast.Constant):
+            mode = call.args[1].value
+    elif isinstance(call.func, ast.Attribute) and call.func.attr == "open":
+        if call.args and isinstance(call.args[0], ast.Constant):
+            mode = call.args[0].value
+    for keyword in call.keywords:
+        if keyword.arg == "mode" and isinstance(keyword.value, ast.Constant):
+            mode = keyword.value.value
+    return mode if isinstance(mode, str) else None
+
+
+def _assert_no_fixture_bypass() -> dict[str, object]:
+    probe_sources = tuple(
+        sorted(
+            (name, value)
+            for name, value in globals().items()
+            if name.startswith("_")
+            and name.endswith("_PROBE")
+            and isinstance(value, str)
+        )
+    )
+    if not probe_sources:
+        raise Issue53AcceptanceError(
+            "Issue #53 no-fixture-bypass audit found no embedded probes"
+        )
+
+    parsed_input_count = 0
+    repository_instance_count = 0
+
+    for probe_name, source in probe_sources:
+        try:
+            tree = ast.parse(source, filename=f"<{probe_name}>")
+        except SyntaxError as exc:
+            raise Issue53AcceptanceError(
+                f"Issue #53 embedded probe {probe_name} is not valid Python"
+            ) from exc
+
+        repository_constructors: set[str] = set()
+        shutil_modules: set[str] = set()
+        shutil_functions: set[str] = set()
+
+        for node in ast.walk(tree):
+            if isinstance(node, ast.ImportFrom):
+                module = node.module or ""
+                if module in {"portia.storage", "portia.storage.repository"}:
+                    for alias in node.names:
+                        if alias.name == "PortiaRepository":
+                            repository_constructors.add(alias.asname or alias.name)
+
+                if module == "portia.storage.io":
+                    forbidden = {
+                        alias.name
+                        for alias in node.names
+                        if alias.name in _DIRECT_IO_WRITER_NAMES
+                    }
+                    if forbidden:
+                        raise Issue53AcceptanceError(
+                            f"Issue #53 probe {probe_name} imports direct canonical "
+                            f"storage writer(s): {sorted(forbidden)}"
+                        )
+
+                if module == "portia.storage.staging":
+                    forbidden = {
+                        alias.name
+                        for alias in node.names
+                        if alias.name in _DIRECT_STAGING_WRITER_NAMES
+                    }
+                    if forbidden:
+                        raise Issue53AcceptanceError(
+                            f"Issue #53 probe {probe_name} imports direct staging "
+                            f"writer(s): {sorted(forbidden)}"
+                        )
+
+                if module == "shutil":
+                    for alias in node.names:
+                        if alias.name in _COPY_WRITER_NAMES:
+                            shutil_functions.add(alias.asname or alias.name)
+
+            elif isinstance(node, ast.Import):
+                for alias in node.names:
+                    if alias.name == "shutil":
+                        shutil_modules.add(alias.asname or alias.name)
+
+            if isinstance(node, ast.Constant) and isinstance(node.value, str):
+                normalized = node.value.replace("\\", "/").casefold()
+                if "issue_22" in normalized or "issue22" in normalized:
+                    raise Issue53AcceptanceError(
+                        f"Issue #53 probe {probe_name} references Issue #22 fixture authority"
+                    )
+                if "tests/fixtures" in normalized:
+                    raise Issue53AcceptanceError(
+                        f"Issue #53 probe {probe_name} references source-tree fixtures"
+                    )
+
+        repository_variables: set[str] = set()
+        for node in ast.walk(tree):
+            value: ast.AST | None = None
+            targets: tuple[ast.AST, ...] = ()
+            if isinstance(node, ast.Assign):
+                value = node.value
+                targets = tuple(node.targets)
+            elif isinstance(node, ast.AnnAssign):
+                value = node.value
+                targets = (node.target,)
+
+            if not isinstance(value, ast.Call):
+                continue
+            if (
+                isinstance(value.func, ast.Name)
+                and value.func.id in repository_constructors
+            ):
+                for target in targets:
+                    if isinstance(target, ast.Name):
+                        repository_variables.add(target.id)
+                        repository_instance_count += 1
+
+        for node in ast.walk(tree):
+            if not isinstance(node, ast.Call):
+                continue
+
+            if (
+                isinstance(node.func, ast.Name)
+                and node.func.id == "parse_portia_record"
+            ):
+                parsed_input_count += 1
+
+            if isinstance(node.func, ast.Attribute):
+                if node.func.attr in _DIRECT_PATH_WRITER_NAMES:
+                    raise Issue53AcceptanceError(
+                        f"Issue #53 probe {probe_name} uses direct filesystem "
+                        f"writer {node.func.attr}"
+                    )
+
+                if (
+                    isinstance(node.func.value, ast.Name)
+                    and node.func.value.id in shutil_modules
+                    and node.func.attr in _COPY_WRITER_NAMES
+                ):
+                    raise Issue53AcceptanceError(
+                        f"Issue #53 probe {probe_name} copies fixture/filesystem state"
+                    )
+
+                if (
+                    node.func.attr in _REPOSITORY_MUTATOR_NAMES
+                    and isinstance(node.func.value, ast.Name)
+                    and node.func.value.id in repository_variables
+                ):
+                    raise Issue53AcceptanceError(
+                        f"Issue #53 probe {probe_name} bypasses production workflow "
+                        f"services through PortiaRepository.{node.func.attr}"
+                    )
+
+                if (
+                    node.func.attr in _REPOSITORY_MUTATOR_NAMES
+                    and isinstance(node.func.value, ast.Call)
+                    and isinstance(node.func.value.func, ast.Name)
+                    and node.func.value.func.id in repository_constructors
+                ):
+                    raise Issue53AcceptanceError(
+                        f"Issue #53 probe {probe_name} chains a direct "
+                        f"PortiaRepository.{node.func.attr} mutation"
+                    )
+
+            if isinstance(node.func, ast.Name) and node.func.id in shutil_functions:
+                raise Issue53AcceptanceError(
+                    f"Issue #53 probe {probe_name} copies fixture/filesystem state"
+                )
+
+            mode = _write_mode(node)
+            if mode is not None and any(flag in mode for flag in ("w", "a", "x", "+")):
+                raise Issue53AcceptanceError(
+                    f"Issue #53 probe {probe_name} opens a file in write mode"
+                )
+
+    if parsed_input_count < 1:
+        raise Issue53AcceptanceError(
+            "Issue #53 story no longer constructs deliberate synthetic record inputs"
+        )
+
+    return {
+        "probe_count": len(probe_sources),
+        "parsed_input_count": parsed_input_count,
+        "repository_instance_count": repository_instance_count,
+        "issue22_fixture_reads_absent": True,
+        "source_fixture_reads_absent": True,
+        "direct_filesystem_writes_absent": True,
+        "direct_storage_writer_imports_absent": True,
+        "direct_repository_mutations_absent": True,
+        "fixture_bypass_excluded": True,
+    }
+
 class Issue53AcceptanceError(RuntimeError):
     """Raised when the representative installed acceptance boundary fails."""
 
@@ -6756,6 +6979,7 @@ def _deep_path_integration_probe(
 
 def smoke(portia_wheel: Path, core_wheel: Path) -> dict[str, object]:
     repository = Path(__file__).resolve().parents[1]
+    no_fixture_bypass = _assert_no_fixture_bypass()
     candidate = _require_wheel(portia_wheel, label="Portia candidate")
     core = _require_wheel(core_wheel, label="Core")
     core_digest = _authenticate_core(repository, core)
@@ -6920,6 +7144,7 @@ def smoke(portia_wheel: Path, core_wheel: Path) -> dict[str, object]:
                 "Issue #53 acceptance polluted its empty working directory"
             )
 
+        print("PASS no fixture bypass")
         print("PASS install")
         print("PASS deep workspace")
         print("PASS Core setup")
@@ -6946,6 +7171,16 @@ def smoke(portia_wheel: Path, core_wheel: Path) -> dict[str, object]:
         print("PASS deep path integration")
 
         return {
+            "fixture_bypass_excluded": no_fixture_bypass[
+                "fixture_bypass_excluded"
+            ],
+            "fixture_bypass_probe_count": no_fixture_bypass["probe_count"],
+            "fixture_bypass_parsed_input_count": no_fixture_bypass[
+                "parsed_input_count"
+            ],
+            "fixture_bypass_repository_instance_count": no_fixture_bypass[
+                "repository_instance_count"
+            ],
             "candidate_portia_wheel": candidate.name,
             "candidate_portia_sha256": portia_digest,
             "core_wheel": core.name,

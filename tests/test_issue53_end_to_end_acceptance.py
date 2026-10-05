@@ -1583,3 +1583,112 @@ def test_issue53_deep_path_integration_follows_read_only_phase() -> None:
         'print("PASS deep path integration")'
     )
     assert '"deep_path_legacy_writer_paths_absent": deep_path_integration[' in source
+
+def test_issue53_no_fixture_bypass_audits_every_embedded_probe() -> None:
+    smoke = _load_script()
+    source = (
+        ROOT / "scripts" / "smoke_test_issue53_end_to_end_wheel.py"
+    ).read_text(encoding="utf-8")
+    for marker in (
+        "def _assert_no_fixture_bypass()",
+        'name.endswith("_PROBE")',
+        'ast.parse(source, filename=f"<{probe_name}>")',
+        '"issue_22" in normalized or "issue22" in normalized',
+        '"tests/fixtures" in normalized',
+    ):
+        assert marker in source
+    probe_names = {
+        name
+        for name, value in vars(smoke).items()
+        if name.startswith("_")
+        and name.endswith("_PROBE")
+        and isinstance(value, str)
+    }
+    assert len(probe_names) >= 18
+
+
+def test_issue53_no_fixture_bypass_rejects_direct_storage_writers() -> None:
+    source = (
+        ROOT / "scripts" / "smoke_test_issue53_end_to_end_wheel.py"
+    ).read_text(encoding="utf-8")
+    for marker in (
+        '"exclusive_create"',
+        '"guarded_replace"',
+        '"exact_delete"',
+        '"stage_bytes"',
+        '"publish_staged"',
+        '"cleanup_staged"',
+        '"replace_staging_candidate"',
+        '"write_text"',
+        '"write_bytes"',
+        '"touch"',
+    ):
+        assert marker in source
+    assert "imports direct canonical " in source
+    assert "storage writer(s):" in source
+    assert "imports direct staging " in source
+    assert "writer(s):" in source
+    assert "uses direct filesystem " in source
+    assert "writer {node.func.attr}" in source
+
+
+def test_issue53_no_fixture_bypass_rejects_raw_repository_mutation() -> None:
+    source = (
+        ROOT / "scripts" / "smoke_test_issue53_end_to_end_wheel.py"
+    ).read_text(encoding="utf-8")
+    for marker in (
+        '"create_work"',
+        '"replace_work"',
+        '"create_work_record"',
+        '"replace_work_record"',
+        '"create_actor"',
+        '"replace_actor"',
+        '"create_actor_child"',
+        '"replace_actor_child"',
+        "repository_variables",
+        "PortiaRepository.{node.func.attr}",
+    ):
+        assert marker in source
+
+
+def test_issue53_synthetic_inputs_still_use_parser_and_production_services() -> None:
+    smoke = _load_script()
+    assert "parse_portia_record(" in smoke._ACTOR_SETUP_PROBE
+    assert "ActorDirectoryService(workspace)" in smoke._ACTOR_SETUP_PROBE
+    assert "events.create(" in smoke._EVENT_EVIDENCE_PROBE
+    assert "accounts.create(" in smoke._EVENT_EVIDENCE_PROBE
+    assert "accounts.correct(" in smoke._JUDGMENT_CORRECTION_PROBE
+    assert "ResponseWorkflowService(workspace)" in smoke._RESPONSE_COMMUNICATION_PROBE
+    assert "SupportProcessWorkflowService(workspace)" in smoke._SUPPORT_PROCESS_PROBE
+    assert "SupportWorkflowService(workspace)" in smoke._SUPPORT_PLANNING_PROBE
+    assert (
+        "ImplementationWorkflowService(workspace)"
+        in smoke._IMPLEMENTATION_FIDELITY_PROBE
+    )
+    assert "FollowUpWorkflowService(workspace)" in smoke._FOLLOW_UP_ATTENTION_PROBE
+
+
+def test_issue53_core_setup_remains_core_api_owned() -> None:
+    smoke = _load_script()
+    probe = smoke._CORE_SETUP_PROBE
+    for marker in (
+        "open_school_year(",
+        "write_class_metadata_for_class(",
+        "create_roster(",
+        "write_class_roster(",
+        "load_class_roster(",
+    ):
+        assert marker in probe
+
+
+def test_issue53_smoke_runs_no_fixture_bypass_guard_before_story() -> None:
+    source = (
+        ROOT / "scripts" / "smoke_test_issue53_end_to_end_wheel.py"
+    ).read_text(encoding="utf-8")
+    guard_index = source.index("no_fixture_bypass = _assert_no_fixture_bypass()")
+    temp_index = source.index(
+        'with tempfile.TemporaryDirectory(prefix="pds-portia-issue53-") as temp:'
+    )
+    assert guard_index < temp_index
+    assert 'print("PASS no fixture bypass")' in source
+    assert '"fixture_bypass_excluded": no_fixture_bypass[' in source
