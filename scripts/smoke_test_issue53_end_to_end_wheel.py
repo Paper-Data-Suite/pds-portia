@@ -4275,6 +4275,304 @@ print(
 )
 """
 
+_STUDENT_VIEW_PRIVACY_PROBE = r"""
+import hashlib
+import json
+import sys
+from pathlib import Path
+
+from portia.models.references import (
+    ExactPortiaWorkRecordRef,
+    ExactPortiaWorkRef,
+    RosterStudentRef,
+)
+from portia.views import (
+    STUDENT_VIEW_POLICY,
+    StudentTimelineQuery,
+    StudentTimelineService,
+    StudentViewScope,
+)
+
+PRIMARY_CLASS_ID = "eng10_p2_2026"
+SECONDARY_CLASS_ID = "journalism_p6_2026"
+COLLISION_STUDENT_ID = "student_shared_001"
+EVENT_ID = "evt_issue53_primary"
+SUPPORT_PROCESS_ID = "sup_issue53_support"
+ORIGINAL_ACCOUNT_ID = "acct_issue53_cross_report"
+CORRECTED_ACCOUNT_ID = "acct_issue53_cross_corrected"
+ORIGINAL_SUPPORT_ID = "spt_issue53_access"
+CORRECTED_SUPPORT_ID = "spt_issue53_access_corrected"
+COMMUNICATION_ID = "comm_issue53_guardian"
+
+workspace = Path(sys.argv[1]).resolve()
+
+event_work = ExactPortiaWorkRef(
+    class_id=PRIMARY_CLASS_ID,
+    work_id=EVENT_ID,
+    work_kind="event",
+    contract_version="2",
+)
+support_work = ExactPortiaWorkRef(
+    class_id=PRIMARY_CLASS_ID,
+    work_id=SUPPORT_PROCESS_ID,
+    work_kind="support_process",
+    contract_version="1",
+)
+focal_student = RosterStudentRef(
+    class_id=SECONDARY_CLASS_ID,
+    student_id=COLLISION_STUDENT_ID,
+)
+
+
+def snapshot(root):
+    directories = tuple(
+        sorted(
+            path.relative_to(root).as_posix()
+            for path in root.rglob("*")
+            if path.is_dir()
+        )
+    )
+    files = tuple(
+        sorted(
+            (
+                path.relative_to(root).as_posix(),
+                hashlib.sha256(path.read_bytes()).hexdigest(),
+            )
+            for path in root.rglob("*")
+            if path.is_file()
+        )
+    )
+    return directories, files
+
+
+query = StudentTimelineQuery(
+    scope=StudentViewScope(
+        focal_students=(focal_student,),
+        allowed_works=(event_work, support_work),
+        allowed_class_ids=(PRIMARY_CLASS_ID,),
+    ),
+    mode="current",
+    exact_works=(event_work, support_work),
+)
+
+before = snapshot(workspace)
+result = StudentTimelineService(workspace).generate(query)
+after = snapshot(workspace)
+
+if before != after:
+    raise RuntimeError("student timeline/view query mutated the workspace")
+if result.query != query:
+    raise RuntimeError("student timeline result lost exact query identity")
+if result.projection.policy != STUDENT_VIEW_POLICY:
+    raise RuntimeError("student timeline did not use accepted Issue #48 policy")
+if result.history is not None:
+    raise RuntimeError("current student timeline unexpectedly assembled history")
+if set(result.discovery.work_refs) != {event_work, support_work}:
+    raise RuntimeError("student timeline discovery widened or narrowed exact work scope")
+if result.discovery.resolved_students != (focal_student,):
+    raise RuntimeError("student timeline discovery changed focal roster identity")
+if {work.work_ref for work in result.works} != {event_work, support_work}:
+    raise RuntimeError("student timeline grouping changed exact discovered works")
+
+presentation = []
+source_ids = set()
+semantic_types = set()
+manual_review_count = 0
+withheld_field_count = 0
+
+for entry in result.entries:
+    source = entry.source_ref
+    if isinstance(source, ExactPortiaWorkRef):
+        source_id = source.work_id
+        source_wire = {
+            "class_id": source.class_id,
+            "work_kind": source.work_kind,
+            "work_id": source.work_id,
+            "contract_version": source.contract_version,
+        }
+    elif isinstance(source, ExactPortiaWorkRecordRef):
+        source_id = source.record_ref.record_id
+        source_wire = {
+            "class_id": source.work_ref.class_id,
+            "work_kind": source.work_ref.work_kind,
+            "work_id": source.work_ref.work_id,
+            "record_kind": source.record_ref.record_kind,
+            "record_id": source.record_ref.record_id,
+            "contract_version": source.record_ref.contract_version,
+        }
+    else:
+        raise RuntimeError("student timeline exposed unsupported source reference")
+    source_ids.add(source_id)
+    semantic_types.add(entry.semantic_type)
+
+    fields = []
+    for field in entry.fields:
+        if field.disposition != "included" and field.value is not None:
+            raise RuntimeError("privacy-limited field carried a source value")
+        if field.disposition == "requires_manual_review":
+            manual_review_count += 1
+        if field.disposition == "withheld":
+            withheld_field_count += 1
+        fields.append(
+            {
+                "name": field.name,
+                "disposition": field.disposition,
+                "value": field.value,
+            }
+        )
+    presentation.append(
+        {
+            "source_ref": source_wire,
+            "disposition": entry.disposition,
+            "category": entry.category,
+            "semantic_type": entry.semantic_type,
+            "status": entry.status,
+            "native_scope": entry.native_scope,
+            "focal_applicability": entry.focal_applicability,
+            "fields": fields,
+            "history_kind": entry.history_kind,
+        }
+    )
+
+if ORIGINAL_ACCOUNT_ID in source_ids:
+    raise RuntimeError("student view exposed superseded Account as current")
+if CORRECTED_ACCOUNT_ID not in source_ids:
+    raise RuntimeError("student view omitted current corrected Account")
+if ORIGINAL_SUPPORT_ID in source_ids:
+    raise RuntimeError("student view exposed superseded Support as current")
+if CORRECTED_SUPPORT_ID not in source_ids:
+    raise RuntimeError("student view omitted current corrected Support")
+
+for unrelated_id in (
+    "ep_issue53_primary",
+    "ep_issue53_guardian",
+    "spp_issue53_counselor",
+    COMMUNICATION_ID,
+):
+    if unrelated_id in source_ids:
+        raise RuntimeError("student view widened to unrelated person/communication")
+
+account_entries = [
+    entry
+    for entry in result.entries
+    if isinstance(entry.source_ref, ExactPortiaWorkRecordRef)
+    and entry.source_ref.record_ref.record_id == CORRECTED_ACCOUNT_ID
+]
+if len(account_entries) != 1:
+    raise RuntimeError("student view did not produce one corrected Account entry")
+account_fields = {field.name: field for field in account_entries[0].fields}
+content_field = account_fields.get("content")
+if content_field is None or content_field.disposition != "requires_manual_review":
+    raise RuntimeError("unsafe Account narrative did not require manual review")
+if content_field.value is not None:
+    raise RuntimeError("manual-review Account content leaked raw narrative")
+
+event_entries = [
+    entry
+    for entry in result.entries
+    if isinstance(entry.source_ref, ExactPortiaWorkRef)
+    and entry.source_ref == event_work
+]
+if len(event_entries) != 1:
+    raise RuntimeError("student view did not preserve exact Event root")
+event_fields = {field.name: field for field in event_entries[0].fields}
+summary_field = event_fields.get("summary")
+if summary_field is None or summary_field.disposition != "withheld":
+    raise RuntimeError("Event summary was not withheld by accepted policy")
+if summary_field.value is not None:
+    raise RuntimeError("withheld Event summary leaked source value")
+
+support_entries = [
+    entry
+    for entry in result.entries
+    if isinstance(entry.source_ref, ExactPortiaWorkRecordRef)
+    and entry.source_ref.record_ref.record_id == CORRECTED_SUPPORT_ID
+]
+if len(support_entries) != 1:
+    raise RuntimeError("student view did not preserve corrected Support")
+support_fields = {field.name: field for field in support_entries[0].fields}
+strategy_field = support_fields.get("strategy")
+if strategy_field is None or strategy_field.disposition != "requires_manual_review":
+    raise RuntimeError("Support strategy did not require manual review")
+if strategy_field.value is not None:
+    raise RuntimeError("manual-review Support strategy leaked raw plan text")
+
+operational_semantics = {
+    "operation_journal",
+    "operation_current_pointer",
+    "operation_lock",
+    "quarantine_record",
+    "integrity_finding",
+    "source_snapshot",
+    "derived_index_metadata",
+    "derived_current_pointer",
+}
+if semantic_types.intersection(operational_semantics):
+    raise RuntimeError("student view exposed operational/Integrity internals")
+
+serialized = json.dumps(presentation, sort_keys=True, default=str)
+for prohibited in (
+    "guardian.issue53@example.invalid",
+    "Shared Synthetic",
+    "Synthetic Counselor",
+    "actr_guardian_001",
+    "actr_counselor_001",
+    "acp_guardian_email_001",
+    "student_primary_002",
+    "student_secondary_002",
+    "Synthetic classroom material-location discrepancy.",
+    "blue marker",
+    "op_issue53_support_recovery",
+    "op_issue53_account_corrected",
+    ".portia-staging",
+    "/.staging/",
+    "sha256_digest",
+    "fingerprint",
+    str(workspace),
+):
+    if prohibited in serialized:
+        raise RuntimeError(
+            f"student view leaked prohibited privacy/operational value: {prohibited}"
+        )
+
+if manual_review_count < 1:
+    raise RuntimeError("student view did not exercise manual-review handling")
+if withheld_field_count < 1:
+    raise RuntimeError("student view did not exercise withheld handling")
+
+print(
+    json.dumps(
+        {
+            "focal_class": focal_student.class_id,
+            "work_count": len(result.works),
+            "entry_count": len(result.entries),
+            "manual_review_field_count": manual_review_count,
+            "withheld_field_count": withheld_field_count,
+            "corrected_account_present": CORRECTED_ACCOUNT_ID in source_ids,
+            "superseded_account_absent": ORIGINAL_ACCOUNT_ID not in source_ids,
+            "corrected_support_present": CORRECTED_SUPPORT_ID in source_ids,
+            "superseded_support_absent": ORIGINAL_SUPPORT_ID not in source_ids,
+            "unrelated_participants_absent": all(
+                value not in source_ids
+                for value in (
+                    "ep_issue53_primary",
+                    "ep_issue53_guardian",
+                    "spp_issue53_counselor",
+                )
+            ),
+            "communication_not_focally_inferred": COMMUNICATION_ID not in source_ids,
+            "operational_internals_absent": not bool(
+                semantic_types.intersection(operational_semantics)
+            ),
+            "privacy_values_absent": True,
+            "student_view_read_only": before == after,
+            "accepted_policy": result.projection.policy == STUDENT_VIEW_POLICY,
+        },
+        sort_keys=True,
+    )
+)
+"""
+
 class Issue53AcceptanceError(RuntimeError):
     """Raised when the representative installed acceptance boundary fails."""
 
@@ -5285,6 +5583,62 @@ def _durable_reload_probe(
             )
     return payload
 
+def _student_view_privacy_probe(
+    python: Path,
+    *,
+    cwd: Path,
+    env: Mapping[str, str],
+    workspace: Path,
+) -> dict[str, object]:
+    completed = _run(
+        [str(python), "-c", _STUDENT_VIEW_PRIVACY_PROBE, str(workspace)],
+        cwd=cwd,
+        env=env,
+    )
+    lines = [line for line in completed.stdout.splitlines() if line.strip()]
+    if not lines:
+        raise Issue53AcceptanceError(
+            "Issue #53 installed student-view privacy probe produced no result"
+        )
+    try:
+        payload_raw = json.loads(lines[-1])
+    except json.JSONDecodeError as exc:
+        raise Issue53AcceptanceError(
+            "Issue #53 installed student-view privacy probe returned invalid JSON"
+        ) from exc
+    if not isinstance(payload_raw, dict):
+        raise Issue53AcceptanceError(
+            "Issue #53 installed student-view privacy result was not an object"
+        )
+
+    payload = cast(dict[str, object], payload_raw)
+    expected = {
+        "focal_class": "journalism_p6_2026",
+        "work_count": 2,
+        "corrected_account_present": True,
+        "superseded_account_absent": True,
+        "corrected_support_present": True,
+        "superseded_support_absent": True,
+        "unrelated_participants_absent": True,
+        "communication_not_focally_inferred": True,
+        "operational_internals_absent": True,
+        "privacy_values_absent": True,
+        "student_view_read_only": True,
+        "accepted_policy": True,
+    }
+    for key, value in expected.items():
+        if payload.get(key) != value:
+            raise Issue53AcceptanceError(
+                f"Issue #53 student-view privacy mismatch for {key}"
+            )
+    for key in ("entry_count", "manual_review_field_count", "withheld_field_count"):
+        value = payload.get(key)
+        if not isinstance(value, int) or isinstance(value, bool) or value < 1:
+            raise Issue53AcceptanceError(
+                f"Issue #53 student-view privacy count invalid for {key}"
+            )
+    return payload
+
 def smoke(portia_wheel: Path, core_wheel: Path) -> dict[str, object]:
     repository = Path(__file__).resolve().parents[1]
     candidate = _require_wheel(portia_wheel, label="Portia candidate")
@@ -5422,6 +5776,12 @@ def smoke(portia_wheel: Path, core_wheel: Path) -> dict[str, object]:
             env=env,
             workspace=workspace,
         )
+        student_view_privacy = _student_view_privacy_probe(
+            python,
+            cwd=work,
+            env=env,
+            workspace=workspace,
+        )
         if tuple(work.iterdir()):
             raise Issue53AcceptanceError(
                 "Issue #53 acceptance polluted its empty working directory"
@@ -5447,6 +5807,7 @@ def smoke(portia_wheel: Path, core_wheel: Path) -> dict[str, object]:
         print("PASS recovery")
         print("PASS integrity")
         print("PASS fresh reload")
+        print("PASS privacy view")
 
         return {
             "candidate_portia_wheel": candidate.name,
@@ -5713,6 +6074,24 @@ def smoke(portia_wheel: Path, core_wheel: Path) -> dict[str, object]:
                 durable_reload["account_history_readable"]
                 and durable_reload["support_history_readable"]
             ),
+            "student_view_focal_class": student_view_privacy["focal_class"],
+            "student_view_work_count": student_view_privacy["work_count"],
+            "student_view_entry_count": student_view_privacy["entry_count"],
+            "student_view_privacy_values_absent": student_view_privacy[
+                "privacy_values_absent"
+            ],
+            "student_view_operational_internals_absent": student_view_privacy[
+                "operational_internals_absent"
+            ],
+            "student_view_unrelated_participants_absent": student_view_privacy[
+                "unrelated_participants_absent"
+            ],
+            "student_view_read_only": student_view_privacy[
+                "student_view_read_only"
+            ],
+            "student_view_accepted_policy": student_view_privacy[
+                "accepted_policy"
+            ],
             "launcher_reachable": True,
             "pip_check": "clean",
         }

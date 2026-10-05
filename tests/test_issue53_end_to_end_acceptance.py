@@ -1206,3 +1206,92 @@ def test_issue53_fresh_reload_follows_integrity_and_has_exact_stage_label() -> N
         'print("PASS fresh reload")'
     )
     assert '"fresh_process_reload": durable_reload[' in source
+
+
+def test_issue53_student_view_uses_exact_cross_class_focal_scope() -> None:
+    smoke = _load_script()
+    probe = smoke._STUDENT_VIEW_PRIVACY_PROBE
+    for marker in (
+        "StudentTimelineService(workspace).generate(query)",
+        "class_id=SECONDARY_CLASS_ID",
+        "student_id=COLLISION_STUDENT_ID",
+        "allowed_class_ids=(PRIMARY_CLASS_ID,)",
+        "allowed_works=(event_work, support_work)",
+        "exact_works=(event_work, support_work)",
+        "result.discovery.resolved_students != (focal_student,)",
+    ):
+        assert marker in probe
+
+
+def test_issue53_student_view_is_snapshot_proven_read_only() -> None:
+    smoke = _load_script()
+    probe = smoke._STUDENT_VIEW_PRIVACY_PROBE
+    for marker in (
+        "before = snapshot(workspace)",
+        "result = StudentTimelineService(workspace).generate(query)",
+        "after = snapshot(workspace)",
+        "if before != after:",
+        '"student_view_read_only": before == after',
+    ):
+        assert marker in probe
+
+
+def test_issue53_student_view_respects_currentness() -> None:
+    smoke = _load_script()
+    probe = smoke._STUDENT_VIEW_PRIVACY_PROBE
+    for marker in (
+        "ORIGINAL_ACCOUNT_ID in source_ids",
+        "CORRECTED_ACCOUNT_ID not in source_ids",
+        "ORIGINAL_SUPPORT_ID in source_ids",
+        "CORRECTED_SUPPORT_ID not in source_ids",
+        '"superseded_account_absent": ORIGINAL_ACCOUNT_ID not in source_ids',
+        '"superseded_support_absent": ORIGINAL_SUPPORT_ID not in source_ids',
+    ):
+        assert marker in probe
+
+
+def test_issue53_student_view_privacy_dispositions_carry_no_unsafe_values() -> None:
+    smoke = _load_script()
+    probe = smoke._STUDENT_VIEW_PRIVACY_PROBE
+    for marker in (
+        'content_field.disposition != "requires_manual_review"',
+        "content_field.value is not None",
+        'summary_field.disposition != "withheld"',
+        "summary_field.value is not None",
+        'strategy_field.disposition != "requires_manual_review"',
+        "strategy_field.value is not None",
+        'field.disposition != "included" and field.value is not None',
+    ):
+        assert marker in probe
+
+
+def test_issue53_student_view_excludes_unrelated_people_and_operational_state() -> None:
+    smoke = _load_script()
+    probe = smoke._STUDENT_VIEW_PRIVACY_PROBE
+    for marker in (
+        '"ep_issue53_primary"',
+        '"ep_issue53_guardian"',
+        '"spp_issue53_counselor"',
+        "COMMUNICATION_ID",
+        '"guardian.issue53@example.invalid"',
+        '"Shared Synthetic"',
+        '"Synthetic Counselor"',
+        '"student_primary_002"',
+        '"student_secondary_002"',
+        '"blue marker"',
+        '"operation_journal"',
+        '"integrity_finding"',
+        "str(workspace)",
+    ):
+        assert marker in probe
+
+
+def test_issue53_student_view_stage_follows_fresh_reload() -> None:
+    source = (
+        ROOT / "scripts" / "smoke_test_issue53_end_to_end_wheel.py"
+    ).read_text(encoding="utf-8")
+    assert source.index("durable_reload = _durable_reload_probe(") < source.index(
+        "student_view_privacy = _student_view_privacy_probe("
+    )
+    assert 'print("PASS privacy view")' in source
+    assert '"student_view_read_only": student_view_privacy[' in source
