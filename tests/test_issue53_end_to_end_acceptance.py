@@ -459,12 +459,22 @@ def test_issue53_support_process_uses_response_handoff_bootstrap() -> None:
         '"kind": "response_handoff"',
         '"record_ref": response_ref.to_dict()',
         "root_created = root_service.create(root_record)",
+        "participant_service.require_activation_eligibility(",
         "root_service.transition_lifecycle(",
+        "participant_service.require_current_use(",
         '"step_history"',
         '"step_transition"',
+        '"step_action"',
         '"step_work"',
     ):
         assert marker in probe
+    assert probe.index(
+        "participant_service.require_activation_eligibility("
+    ) < probe.index("root_service.transition_lifecycle(")
+    assert probe.index(
+        "participant_service.require_current_use("
+    ) > probe.index("root_service.transition_lifecycle(")
+    assert '"step_record"' not in probe
 
 
 def test_issue53_support_process_preserves_exact_supported_student_and_actor() -> None:
@@ -623,9 +633,14 @@ def test_issue53_implementations_preserve_exact_plan_target_and_provider() -> No
         '"record_id": COUNSELOR_PARTICIPANT_ID',
         "current_one.record.field(\"plan_ref\") != plan_ref",
         "current_two.record.field(\"actual_target\") != participant_target",
-        "current_two.record.field(\"implementation_provider\") != participant_provider",
+        'current_one.record.to_dict().get("implementation_provider")',
+        'current_two.record.to_dict().get("implementation_provider")',
     ):
         assert marker in probe
+    assert (
+        'record.field("implementation_provider") != participant_provider'
+        not in probe
+    )
 
 
 def test_issue53_fidelity_uses_exact_two_implementation_scope_and_basis() -> None:
@@ -1534,9 +1549,14 @@ def test_issue53_deep_path_integration_uses_bounded_staging_identities() -> None
         "recovering_only=False,",
         "RECOVERY_OPERATION_ID,",
         "recovering_only=True,",
+        '"completed_write_set"',
+        '"recovering_journal"',
+        'journal.get("state") != "completed"',
+        'step.get("phase") != "canonical_gate"',
         '"staging_cleaned": not any(',
     ):
         assert marker in probe
+    assert "retained no historical staging evidence" not in probe
 
 
 def test_issue53_deep_path_integration_uses_bounded_integrity_and_export_paths() -> None:
@@ -1763,3 +1783,98 @@ def test_issue53_launcher_boundary_runs_after_install_before_story() -> None:
     assert install_index < launcher_index < foundation_index
     assert 'print("PASS launcher boundary")' in source
     assert '"launcher_entry_point": launcher_boundary[' in source
+
+def test_issue53_failure_reporting_names_embedded_probe_stage() -> None:
+    smoke = _load_script()
+    command = (
+        "python",
+        "-c",
+        smoke._CORE_SETUP_PROBE,
+        "synthetic-workspace",
+    )
+    assert smoke._command_stage(command) == "core setup"
+
+
+def test_issue53_failure_reporting_bounds_and_redacts_detail() -> None:
+    smoke = _load_script()
+    detail = "C:\\secret\\workspace\\student.json " + ("x" * 400)
+    result = smoke.subprocess.CompletedProcess(
+        args=["python"],
+        returncode=1,
+        stdout="",
+        stderr=f"Traceback\\nRuntimeError: {detail}\\n",
+    )
+    bounded = smoke._bounded_failure_detail(
+        result,
+        cwd=smoke.Path("C:\\secret\\workspace"),
+    )
+    assert "C:\\secret" not in bounded
+    assert "<path>" in bounded or "<work>" in bounded
+    assert len(bounded) <= 240
+
+
+def test_issue53_failure_reporting_does_not_dump_complete_traceback() -> None:
+    smoke = _load_script()
+    result = smoke.subprocess.CompletedProcess(
+        args=["python"],
+        returncode=1,
+        stdout="",
+        stderr=(
+            "Traceback (most recent call last):\n"
+            "  internal frame one\n"
+            "  internal frame two\n"
+            "RuntimeError: bounded final diagnostic\n"
+        ),
+    )
+    bounded = smoke._bounded_failure_detail(result, cwd=smoke.Path("."))
+    assert bounded == "RuntimeError: bounded final diagnostic"
+    assert "internal frame" not in bounded
+
+
+def test_issue53_main_failure_label_is_not_misleading_foundation_label() -> None:
+    source = (
+        ROOT / "scripts" / "smoke_test_issue53_end_to_end_wheel.py"
+    ).read_text(encoding="utf-8")
+    assert "ERROR Issue #53 acceptance:" in source
+    assert "ERROR Issue #53 foundation:" not in source
+
+def test_issue53_durable_reload_preserves_follow_up_disposition_shape() -> None:
+    smoke = _load_script()
+    probe = smoke._DURABLE_RELOAD_PROBE
+    assert 'follow_up_wire = follow_up.record.to_dict()' in probe
+    assert (
+        'follow_up_wire.get("disposition") != {'
+        in probe
+    )
+    assert '"kind": "continue_current_support"' in probe
+    assert (
+        'follow_up.record.field("disposition") != "continue_current_support"'
+        not in probe
+    )
+    assert (
+        '"follow_up_disposition": follow_up_wire["disposition"]["kind"]'
+        in probe
+    )
+
+def test_issue53_student_view_probe_uses_public_entry_contract() -> None:
+    smoke = _load_script()
+    probe = smoke._STUDENT_VIEW_PRIVACY_PROBE
+    for marker in (
+        "entry.target_refs",
+        "entry.navigation",
+        'entry.history_kind != "current_representation"',
+        'navigation.scope != "work"',
+        'navigation.scope != "work_record"',
+        "entries_with_sources",
+    ):
+        assert marker in probe
+    assert "entry.source_ref" not in probe
+    assert "entry.native_scope" not in probe
+    assert "entry.focal_applicability" not in probe
+
+def test_issue53_terminal_success_label_is_final_acceptance_label() -> None:
+    source = (
+        ROOT / "scripts" / "smoke_test_issue53_end_to_end_wheel.py"
+    ).read_text(encoding="utf-8")
+    assert 'Portia Issue #53 installed acceptance passed' in source
+    assert 'installed acceptance foundation passed' not in source

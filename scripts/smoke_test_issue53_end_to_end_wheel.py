@@ -12,6 +12,7 @@ import ast
 import hashlib
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -1830,10 +1831,10 @@ def activate_participant(created, participant_id, transition_id, operation_id):
     if result.accepted_steps != (
         "step_history",
         "step_transition",
-        "step_record",
+        "step_action",
     ):
         raise RuntimeError("Support Process Participant activation path changed")
-    return participant_service.require_current_use(
+    return participant_service.require_activation_eligibility(
         support_process_participant_reference(support_work, participant_id)
     )
 
@@ -1896,6 +1897,23 @@ if current_root.record.status != "active":
     raise RuntimeError("Support Process did not become current/active")
 if current_root.record.field("workflow_state") != "planning":
     raise RuntimeError("Support Process activation silently changed planning state")
+
+supported_current_use = participant_service.require_current_use(
+    support_process_participant_reference(
+        support_work,
+        SUPPORTED_PARTICIPANT_ID,
+    )
+)
+counselor_current_use = participant_service.require_current_use(
+    support_process_participant_reference(
+        support_work,
+        COUNSELOR_PARTICIPANT_ID,
+    )
+)
+if supported_current_use.kind != "roster_student":
+    raise RuntimeError("active Support Process lost supported student current use")
+if counselor_current_use.kind != "actor":
+    raise RuntimeError("active Support Process lost counselor Actor current use")
 
 initiation = current_root.record.field("initiation")
 if not isinstance(initiation, Mapping):
@@ -2447,9 +2465,15 @@ if current_one.record.field("actual_target") != participant_target:
     raise RuntimeError("first Implementation changed exact supported target")
 if current_two.record.field("actual_target") != participant_target:
     raise RuntimeError("second Implementation changed exact supported target")
-if current_one.record.field("implementation_provider") != participant_provider:
+if (
+    current_one.record.to_dict().get("implementation_provider")
+    != participant_provider
+):
     raise RuntimeError("first Implementation changed exact counselor provider")
-if current_two.record.field("implementation_provider") != participant_provider:
+if (
+    current_two.record.to_dict().get("implementation_provider")
+    != participant_provider
+):
     raise RuntimeError("second Implementation changed exact counselor provider")
 if current_one.record.field("execution_state") != "completed":
     raise RuntimeError("first Implementation did not remain completed")
@@ -2610,9 +2634,9 @@ print(
                 and current_two.record.field("actual_target") == participant_target
             ),
             "implementation_provider_exact": (
-                current_one.record.field("implementation_provider")
+                current_one.record.to_dict().get("implementation_provider")
                 == participant_provider
-                and current_two.record.field("implementation_provider")
+                and current_two.record.to_dict().get("implementation_provider")
                 == participant_provider
             ),
             "fidelity_current": True,
@@ -4168,7 +4192,10 @@ if fidelity.record.field("result") != "as_planned":
     raise RuntimeError("fresh Fidelity reload lost bounded result")
 if follow_up.record.field("workflow_state") != "completed":
     raise RuntimeError("fresh Follow-Up reload lost completed workflow state")
-if follow_up.record.field("disposition") != "continue_current_support":
+follow_up_wire = follow_up.record.to_dict()
+if follow_up_wire.get("disposition") != {
+    "kind": "continue_current_support"
+}:
     raise RuntimeError("fresh Follow-Up reload lost explicit disposition")
 
 terminal = journals.load_current(RECOVERY_OPERATION_ID)
@@ -4262,6 +4289,7 @@ print(
             "follow_up_completed": (
                 follow_up.record.field("workflow_state") == "completed"
             ),
+            "follow_up_disposition": follow_up_wire["disposition"]["kind"],
             "operation_terminal": terminal_data.get("state") == "completed",
             "recovery_terminal_consistent": (
                 terminal_assessment.disposition == "terminal_consistent"
@@ -4380,9 +4408,42 @@ source_ids = set()
 semantic_types = set()
 manual_review_count = 0
 withheld_field_count = 0
+entries_with_sources = []
+
+
+def current_entry_source(entry):
+    if entry.history_kind != "current_representation":
+        raise RuntimeError("current student view exposed historical entry detail")
+    if len(entry.target_refs) != 1:
+        raise RuntimeError("current student view entry lost one exact bounded target")
+    source = entry.target_refs[0]
+    navigation = entry.navigation
+    if isinstance(source, ExactPortiaWorkRef):
+        if (
+            navigation.scope != "work"
+            or navigation.work_ref != source
+            or navigation.record_kind != source.work_kind
+            or navigation.record_id != source.work_id
+            or navigation.contract_version != source.contract_version
+        ):
+            raise RuntimeError("student view root navigation changed exact source")
+        return source
+    if isinstance(source, ExactPortiaWorkRecordRef):
+        if (
+            navigation.scope != "work_record"
+            or navigation.work_ref != source.work_ref
+            or navigation.record_kind != source.record_ref.record_kind
+            or navigation.record_id != source.record_ref.record_id
+            or navigation.contract_version != source.record_ref.contract_version
+        ):
+            raise RuntimeError("student view record navigation changed exact source")
+        return source
+    raise RuntimeError("student timeline exposed unsupported bounded target reference")
+
 
 for entry in result.entries:
-    source = entry.source_ref
+    source = current_entry_source(entry)
+    entries_with_sources.append((entry, source))
     if isinstance(source, ExactPortiaWorkRef):
         source_id = source.work_id
         source_wire = {
@@ -4391,7 +4452,7 @@ for entry in result.entries:
             "work_id": source.work_id,
             "contract_version": source.contract_version,
         }
-    elif isinstance(source, ExactPortiaWorkRecordRef):
+    else:
         source_id = source.record_ref.record_id
         source_wire = {
             "class_id": source.work_ref.class_id,
@@ -4401,8 +4462,6 @@ for entry in result.entries:
             "record_id": source.record_ref.record_id,
             "contract_version": source.record_ref.contract_version,
         }
-    else:
-        raise RuntimeError("student timeline exposed unsupported source reference")
     source_ids.add(source_id)
     semantic_types.add(entry.semantic_type)
 
@@ -4424,12 +4483,11 @@ for entry in result.entries:
     presentation.append(
         {
             "source_ref": source_wire,
+            "navigation_scope": entry.navigation.scope,
             "disposition": entry.disposition,
             "category": entry.category,
             "semantic_type": entry.semantic_type,
             "status": entry.status,
-            "native_scope": entry.native_scope,
-            "focal_applicability": entry.focal_applicability,
             "fields": fields,
             "history_kind": entry.history_kind,
         }
@@ -4455,9 +4513,9 @@ for unrelated_id in (
 
 account_entries = [
     entry
-    for entry in result.entries
-    if isinstance(entry.source_ref, ExactPortiaWorkRecordRef)
-    and entry.source_ref.record_ref.record_id == CORRECTED_ACCOUNT_ID
+    for entry, source in entries_with_sources
+    if isinstance(source, ExactPortiaWorkRecordRef)
+    and source.record_ref.record_id == CORRECTED_ACCOUNT_ID
 ]
 if len(account_entries) != 1:
     raise RuntimeError("student view did not produce one corrected Account entry")
@@ -4470,9 +4528,9 @@ if content_field.value is not None:
 
 event_entries = [
     entry
-    for entry in result.entries
-    if isinstance(entry.source_ref, ExactPortiaWorkRef)
-    and entry.source_ref == event_work
+    for entry, source in entries_with_sources
+    if isinstance(source, ExactPortiaWorkRef)
+    and source == event_work
 ]
 if len(event_entries) != 1:
     raise RuntimeError("student view did not preserve exact Event root")
@@ -4485,9 +4543,9 @@ if summary_field.value is not None:
 
 support_entries = [
     entry
-    for entry in result.entries
-    if isinstance(entry.source_ref, ExactPortiaWorkRecordRef)
-    and entry.source_ref.record_ref.record_id == CORRECTED_SUPPORT_ID
+    for entry, source in entries_with_sources
+    if isinstance(source, ExactPortiaWorkRecordRef)
+    and source.record_ref.record_id == CORRECTED_SUPPORT_ID
 ]
 if len(support_entries) != 1:
     raise RuntimeError("student view did not preserve corrected Support")
@@ -5343,7 +5401,9 @@ def staged_path_evidence(operation_id, *, recovering_only):
                 )
             step_id, destination, bounded = matches[0]
             if not relative.startswith("portia/.staging/"):
-                raise RuntimeError("journaled staging path is not workspace-level bounded staging")
+                raise RuntimeError(
+                    "journaled staging path is not workspace-level bounded staging"
+                )
             legacy = legacy_staging_path_for(
                 workspace,
                 operation_id,
@@ -5352,13 +5412,67 @@ def staged_path_evidence(operation_id, *, recovering_only):
             )
             legacy_relative = legacy.relative_to(workspace).as_posix()
             if relative == legacy_relative:
-                raise RuntimeError("journaled staging path used legacy target-adjacent identity")
+                raise RuntimeError(
+                    "journaled staging path used legacy target-adjacent identity"
+                )
             observed.append(require_workspace_descendant(bounded))
             legacy_candidates.append(require_workspace_descendant(legacy))
+
+    if observed:
+        return (
+            tuple(observed),
+            tuple(legacy_candidates),
+            "recovering_journal" if recovering_only else "journaled_staged_artifacts",
+        )
+
+    if recovering_only:
+        raise RuntimeError("recovery operation retained no staged recovery evidence")
+
+    # A successful coordinated operation deliberately clears transient staged
+    # artifacts instead of retaining them as historical journal payload. Its
+    # completed write_set still carries the exact operation-step/destination
+    # identities from which the bounded staging locations are deterministically
+    # derived. Verify those locations and their legacy alternatives are absent.
+    journal = current_operation(operation_id)
+    if journal.get("state") != "completed":
+        raise RuntimeError("coordinated staging derivation requires completed operation")
+    write_set = journal.get("write_set")
+    if not isinstance(write_set, list):
+        raise RuntimeError("completed coordinated operation lost write set")
+    for step in write_set:
+        if not isinstance(step, dict) or step.get("phase") != "canonical_gate":
+            continue
+        step_id = step.get("step_id")
+        destination = step.get("destination_path")
+        if not isinstance(step_id, str) or not isinstance(destination, str):
+            raise RuntimeError("completed coordinated write step is malformed")
+        bounded = staging_path_for(
+            workspace,
+            operation_id,
+            step_id,
+            destination,
+        )
+        relative = bounded.relative_to(workspace).as_posix()
+        if not relative.startswith("portia/.staging/"):
+            raise RuntimeError(
+                "derived coordinated staging path is not workspace-level bounded staging"
+            )
+        legacy = legacy_staging_path_for(
+            workspace,
+            operation_id,
+            step_id,
+            destination,
+        )
+        if bounded == legacy:
+            raise RuntimeError(
+                "bounded and legacy coordinated staging identities collapsed"
+            )
+        observed.append(require_workspace_descendant(bounded))
+        legacy_candidates.append(require_workspace_descendant(legacy))
+
     if not observed:
-        description = "recovery" if recovering_only else "coordinated"
-        raise RuntimeError(f"{description} operation retained no historical staging evidence")
-    return tuple(observed), tuple(legacy_candidates)
+        raise RuntimeError("completed coordinated write set exposed no staging identities")
+    return tuple(observed), tuple(legacy_candidates), "completed_write_set"
 
 
 before = snapshot(workspace)
@@ -5386,11 +5500,19 @@ if account_predecessor.record.status != "superseded":
 if support_predecessor.record.status != "superseded":
     raise RuntimeError("Support recovery replacement evidence is no longer superseded")
 
-coordinated_staging, coordinated_legacy = staged_path_evidence(
+(
+    coordinated_staging,
+    coordinated_legacy,
+    coordinated_staging_source,
+) = staged_path_evidence(
     ACCOUNT_CORRECTION_OPERATION_ID,
     recovering_only=False,
 )
-recovery_staging, recovery_legacy = staged_path_evidence(
+(
+    recovery_staging,
+    recovery_legacy,
+    recovery_staging_source,
+) = staged_path_evidence(
     RECOVERY_OPERATION_ID,
     recovering_only=True,
 )
@@ -5473,6 +5595,8 @@ print(
             ),
             "coordinated_staging_count": len(coordinated_staging),
             "recovery_staging_count": len(recovery_staging),
+            "coordinated_staging_source": coordinated_staging_source,
+            "recovery_staging_source": recovery_staging_source,
             "coordinated_staging_bounded": True,
             "recovery_staging_bounded": True,
             "staging_cleaned": not any(
@@ -5762,6 +5886,64 @@ class Issue53AcceptanceError(RuntimeError):
     """Raised when the representative installed acceptance boundary fails."""
 
 
+def _command_stage(command: Sequence[str]) -> str:
+    if len(command) >= 3 and command[1] == "-c":
+        embedded = command[2]
+        for name, value in globals().items():
+            if (
+                name.startswith("_")
+                and name.endswith("_PROBE")
+                and isinstance(value, str)
+                and value == embedded
+            ):
+                return name.removeprefix("_").removesuffix("_PROBE").lower().replace(
+                    "_", " "
+                )
+
+    if len(command) >= 4 and tuple(command[1:3]) == ("-m", "pip"):
+        return f"pip {command[3]}"
+
+    if command:
+        executable = Path(command[0]).name.casefold()
+        if executable in {"portia", "portia.exe"}:
+            action = command[1] if len(command) > 1 else "menu"
+            return f"launcher {action}"
+
+    return "command"
+
+
+def _bounded_failure_detail(
+    result: subprocess.CompletedProcess[str],
+    *,
+    cwd: Path,
+) -> str:
+    detail = ""
+    for stream in (result.stderr, result.stdout):
+        lines = [line.strip() for line in stream.splitlines() if line.strip()]
+        if lines:
+            detail = lines[-1]
+            break
+
+    if not detail:
+        return "no diagnostic output"
+
+    detail = detail.replace(str(cwd), "<work>")
+    detail = re.sub(
+        r"(?i)\b[A-Z]:\\[^\s'\"<>]+",
+        "<path>",
+        detail,
+    )
+    detail = re.sub(
+        r"(?<![\w.])/(?:[^/\s'\"<>]+/)+[^/\s'\"<>:]+",
+        "<path>",
+        detail,
+    )
+    detail = " ".join(detail.split())
+    if len(detail) > 240:
+        detail = detail[:237] + "..."
+    return detail
+
+
 def _run(
     command: Sequence[str],
     *,
@@ -5777,8 +5959,11 @@ def _run(
         text=True,
     )
     if result.returncode != 0:
+        stage = _command_stage(command)
+        detail = _bounded_failure_detail(result, cwd=cwd)
         raise Issue53AcceptanceError(
-            f"installed acceptance command failed with exit code {result.returncode}"
+            f"installed acceptance {stage} failed with exit code "
+            f"{result.returncode}: {detail}"
         )
     return result
 
@@ -6875,6 +7060,7 @@ def _durable_reload_probe(
         "implementation_count_exact": 2,
         "fidelity_exact": True,
         "follow_up_completed": True,
+        "follow_up_disposition": "continue_current_support",
         "operation_terminal": True,
         "recovery_terminal_consistent": True,
         "recovery_staging_gone": True,
@@ -7098,6 +7284,8 @@ def _deep_path_integration_probe(
         "account_history_leaf_length": 40,
         "support_history_leaf_length": 40,
         "technical_history_bounded": True,
+        "coordinated_staging_source": "completed_write_set",
+        "recovery_staging_source": "recovering_journal",
         "coordinated_staging_bounded": True,
         "recovery_staging_bounded": True,
         "staging_cleaned": True,
@@ -7602,6 +7790,9 @@ def smoke(portia_wheel: Path, core_wheel: Path) -> dict[str, object]:
             "reload_follow_up_completed": durable_reload[
                 "follow_up_completed"
             ],
+            "reload_follow_up_disposition": durable_reload[
+                "follow_up_disposition"
+            ],
             "reload_operation_terminal": durable_reload[
                 "operation_terminal"
             ],
@@ -7744,11 +7935,11 @@ def main() -> int:
         OSError,
         subprocess.SubprocessError,
     ) as exc:
-        print(f"ERROR Issue #53 foundation: {exc}", file=sys.stderr)
+        print(f"ERROR Issue #53 acceptance: {exc}", file=sys.stderr)
         return 1
 
     print(json.dumps(evidence, sort_keys=True))
-    print("Portia Issue #53 installed acceptance foundation passed")
+    print("Portia Issue #53 installed acceptance passed")
     return 0
 
 
