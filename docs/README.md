@@ -33,3 +33,14 @@ For Portia-owned filesystem path policy and the Issue #92 audit, see:
 For the Issue #53 integrated installed-runtime boundary, see:
 
 - `validation/issue-53-representative-installed-end-to-end-validation.md` - exact candidate/Core artifact evidence, one continuous deep synthetic workspace, cross-class identity, production service boundaries, correction/conflict/recovery, fresh-process reload, privacy, export, provider, Integrity, no-fixture-bypass, launcher, package, and final cumulative qualification contract.
+
+## v0.2.0 release audit
+
+For the Issue #54 release gate, see:
+
+- `audits/portia-v0.2.0-release-audit.md` - human-readable ethical/privacy/architecture/usability/release audit state;
+- `audits/portia-v0.2.0-release-audit.json` - machine-readable audit state, exact starting authority, Core qualification inputs, domain status, and publication state;
+- `audits/portia-v0.2.0-release-findings.md` - durable finding classification and disposition register;
+- `validation/issue-54-v0.2.0-release-audit-validation.md` - Phase 0 baseline and Slice 1 qualification evidence.
+
+Issue #54 remains open through exact-artifact publication and fresh-download verification. The presence of release-preparation evidence does not itself mean `RELEASED — VERIFIED`.
