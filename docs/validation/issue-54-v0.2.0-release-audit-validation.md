@@ -139,3 +139,53 @@ Portia Issue #54 ethical/epistemic audit validation passed
 ```
 
 This PASS is domain-scoped. It is not final v0.2.0 release approval.
+
+## Slice 3 — Teacher-local authority and external authority boundaries
+
+Slice 3 audits teacher-local and external authority boundaries against accepted ADRs, executable validation, teacher-facing language, export semantics, external-policy ownership, and the Core module-operations surface.
+
+No production runtime code is changed by Slice 3.
+
+Focused evidence is protected by:
+
+```text
+scripts/validate_issue54_authority_audit.py
+tests/test_issue54_authority_audit.py
+```
+
+The validator checks:
+
+```text
+teacher_local_authority == pass
+PF-AUD-008 and PF-AUD-012 == reconciled
+other inherited obligations are not prematurely reconciled
+teacher-local Determinations require local-operator decision-makers
+recorded-institutional authority remains provenance rather than authentication
+Actor relationships do not establish legal/institutional authority
+recorded-institutional Response consequence context requires Determination context
+teacher-reference export is not disclosure or an official institutional record
+ADR 0017 keeps entitlement/retention/hold/destruction authority external
+Core module-operations remains bounded to readiness and attention providers
+legal/compliance non-certification remains explicit
+Slice 3 opens no authority finding when no defect was identified
+```
+
+Focused validation:
+
+```text
+python scripts/validate_issue54_release_audit.py
+python scripts/validate_issue54_ethics_audit.py
+python scripts/validate_issue54_authority_audit.py
+python -m pytest -q tests/test_issue54_release_audit.py tests/test_issue54_ethics_audit.py tests/test_issue54_authority_audit.py
+python -m ruff check scripts/validate_issue54_release_audit.py scripts/validate_issue54_ethics_audit.py scripts/validate_issue54_authority_audit.py tests/test_issue54_release_audit.py tests/test_issue54_ethics_audit.py tests/test_issue54_authority_audit.py
+python -m mypy scripts/validate_issue54_release_audit.py scripts/validate_issue54_ethics_audit.py scripts/validate_issue54_authority_audit.py
+git diff --check
+```
+
+Expected new terminal result:
+
+```text
+Portia Issue #54 teacher-local authority audit validation passed
+```
+
+This PASS is domain-scoped. It is not final v0.2.0 release approval.

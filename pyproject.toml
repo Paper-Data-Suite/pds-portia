@@ -94,6 +94,7 @@ files = [
     "scripts/validate_teacher_reference_exports.py",
     "scripts/validate_issue54_release_audit.py",
     "scripts/validate_issue54_ethics_audit.py",
+    "scripts/validate_issue54_authority_audit.py",
     "scripts/validate_repository.py",
     "scripts/validate_runtime_models.py",
     "scripts/validate_storage.py",

@@ -94,10 +94,20 @@ def test_issue54_foundation_reaudit_obligations_are_explicit() -> None:
         "PF-AUD-011",
         "PF-AUD-012",
     )
-    assert all(
-        entry["status"] == "pending_reaudit"
+    statuses = {
+        entry["finding_id"]: entry["status"]
         for entry in audit["inherited_foundation_obligations"]
-    )
+    }
+    assert statuses == {
+        "PF-AUD-005": "pending_reaudit",
+        "PF-AUD-006": "pending_reaudit",
+        "PF-AUD-007": "pending_reaudit",
+        "PF-AUD-008": "reconciled",
+        "PF-AUD-009": "pending_reaudit",
+        "PF-AUD-010": "pending_reaudit",
+        "PF-AUD-011": "pending_reaudit",
+        "PF-AUD-012": "reconciled",
+    }
 
 
 def test_issue54_release_contract_remains_exact() -> None:

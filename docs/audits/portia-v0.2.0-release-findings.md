@@ -48,11 +48,11 @@ The following historical Issue #23 findings are not reopened as defects merely b
 | PF-AUD-005 | append-preserving coordinated persistence and recovery | Pending re-audit |
 | PF-AUD-006 | privacy-safe manual review without low-level teacher administration | Pending re-audit |
 | PF-AUD-007 | production application validation rather than schema-only acceptance | Pending re-audit |
-| PF-AUD-008 | external retention/legal-hold/entitlement/disclosure/destruction authority | Pending re-audit |
+| PF-AUD-008 | external retention/legal-hold/entitlement/disclosure/destruction authority | Reconciled in Slice 3 |
 | PF-AUD-009 | future Suite retention orchestration remains unclaimed | Pending re-audit |
 | PF-AUD-010 | future Core intervention publication remains unclaimed | Pending re-audit |
 | PF-AUD-011 | historical no-runtime scope is reconciled with the executable milestone | Pending re-audit |
-| PF-AUD-012 | legal/regulatory non-certification remains explicit | Pending re-audit |
+| PF-AUD-012 | legal/regulatory non-certification remains explicit | Reconciled in Slice 3 |
 
 ## Active findings
 
@@ -65,3 +65,11 @@ The absence of Slice 1 findings is not an audit verdict. Audit domains remain `p
 No `P54-AUD-*` finding was opened for the ethical-neutrality / epistemic-distinction domain.
 
 This is an evidence-backed no-defect result, not an assumption: Slice 2 reviewed ADRs 0011–0015 and the executable judgment, Response/Communication, Support, Implementation/Fidelity, Follow-Up, and attention surfaces. The focused validator preserves those audited boundaries during the remaining release work.
+
+## Slice 3 audit result
+
+No `P54-AUD-*` finding was opened for the teacher-local-authority domain.
+
+The audit found the executable authority model consistent with the accepted architecture: teacher-local decisions remain bounded; recorded-institutional authority remains provenance rather than authentication; Actor relationships do not prove legal authority; local export generation is not disclosure; and Core/Suite integration does not acquire Portia domain authority.
+
+Inherited foundation obligations PF-AUD-008 and PF-AUD-012 are now **Reconciled** for the v0.2.0 release audit. External retention/legal-hold/entitlement/disclosure/destruction authority remains institution/deployment-owned, and release approval remains explicitly non-certifying. PF-AUD-009, PF-AUD-010, and PF-AUD-011 remain pending for later Issue #54 architecture/release slices.

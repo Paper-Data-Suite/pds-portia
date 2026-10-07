@@ -46,7 +46,7 @@
     },
     {
       "domain_id": "teacher_local_authority",
-      "status": "pending"
+      "status": "pass"
     },
     {
       "domain_id": "sensitive_data_minimization_privacy",
@@ -120,7 +120,7 @@
     {
       "finding_id": "PF-AUD-008",
       "topic": "external retention, legal-hold, entitlement, disclosure, and destruction authority",
-      "status": "pending_reaudit"
+      "status": "reconciled"
     },
     {
       "finding_id": "PF-AUD-009",
@@ -140,7 +140,7 @@
     {
       "finding_id": "PF-AUD-012",
       "topic": "legal and regulatory non-certification remains explicit",
-      "status": "pending_reaudit"
+      "status": "reconciled"
     }
   ],
   "findings": [],

@@ -212,3 +212,68 @@ No `P54-AUD-*` defect was identified in this domain.
 No production runtime code changed in Slice 2. The new focused validator protects the accepted semantic markers and the one-record-at-a-time judgment menu behavior against release-preparation drift.
 
 Final verdict remains **PENDING** because the remaining Issue #54 audit domains, cumulative qualification, artifact freeze, publication, and fresh-download verification are not complete.
+
+## Slice 3 — Teacher-local authority and external authority boundaries
+
+Domain result: **PASS**
+
+Slice 3 reviewed Portia's authority boundaries across accepted architecture, production validation, teacher-facing language, deliberate export, external policy dependencies, and the Core/Suite integration surface.
+
+The reviewed authority model preserves:
+
+```text
+teacher-local decision != institutional decision
+represented human identity != authenticated authority
+Actor relationship != legal guardianship or institutional authority
+recorded institutional provenance != PDS authentication of authority
+policy/process source reference != proof of applicability or correct application
+teacher-reference export generation != disclosure/delivery/official institutional filing
+projection scope != recipient entitlement or disclosure authorization
+retention class != retention duration
+retention eligibility != destruction authorization
+Portia/Core local evidence != legal-hold adjudication
+Core/Suite discovery/readiness/attention != permission to reinterpret or mutate Portia domain state
+```
+
+Reviewed authority and implementation evidence includes:
+
+```text
+docs/decisions/0010-define-actor-directory-domain-model-and-lifecycle.md
+docs/decisions/0012-define-review-classification-hypothesis-and-determination-domain-models.md
+docs/decisions/0017-define-privacy-projections-redaction-export-retention-and-sunset-boundaries.md
+portia/workflows/determinations.py
+portia/workflows/response_common.py
+portia/menu/judgment.py
+portia/exports/preparation.py
+portia/pds_operations.py
+portia/attention_provider.py
+portia/readiness_provider.py
+SECURITY.md
+tests/test_workflow_determinations.py
+tests/test_workflow_response_decision_context.py
+tests/test_identity_actors.py
+tests/test_teacher_reference_export_preparation.py
+tests/test_issue52_operations_profile.py
+tests/test_issue52_attention_provider.py
+tests/test_issue52_readiness_provider.py
+```
+
+Production Determination validation requires teacher-local decisions to use a local-operator decision-maker. Recorded-institutional records preserve a separate authority context and may retain asserted, documented, or historically unknown authority provenance without claiming that PDS authenticated the person or proved the authority legally sufficient. An active representation of an unidentified historical institutional decision remains an uncertain historical representation; it does not authenticate current institutional authority.
+
+Actor-to-student relationships remain explicit teacher-local assertions with provenance and lifecycle. A parent/guardian/counselor/administrator relationship label does not independently prove legal or institutional authority and does not propagate automatically across rosters.
+
+Recorded-institutional Response consequence context remains coupled to an exact Determination and an eligible represented provider. The routine teacher judgment menu authors teacher-local Determinations and explicitly labels local-operator identity as provenance rather than authentication.
+
+Teacher-reference export remains deliberately local and warns that the generated artifact is neither a disclosure nor an official institutional record. Participant-specific scope does not establish recipient or disclosure authorization.
+
+ADR 0017 continues to leave requester entitlement, retention durations, legal/preservation holds, disclosure authority, and destruction authorization with institution/deployment authority. Portia does not claim current Suite-wide retention orchestration. The installed Core module-operations profile remains bounded to readiness and attention providers and does not expose mutation, disclosure, discipline, retention, or domain-adjudication authority.
+
+The Security policy and this release audit continue to state that Portia is not a compliance certification or substitute for approved institutional/legal processes.
+
+PF-AUD-008 and PF-AUD-012 are reconciled by this slice. Their historical foundation-audit dispositions are not rewritten; the release-audit state records that the executable v0.2.0 implementation still preserves the required external-policy and legal-noncertification boundaries.
+
+No `P54-AUD-*` defect was identified in this domain.
+
+No production runtime code changed in Slice 3. The focused authority validator protects the audited boundaries against release-preparation drift.
+
+Final verdict remains **PENDING** because the remaining Issue #54 audit domains, cumulative qualification, artifact freeze, publication, and fresh-download verification are not complete.
