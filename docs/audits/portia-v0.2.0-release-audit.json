@@ -42,7 +42,7 @@
   "audit_domains": [
     {
       "domain_id": "ethical_neutrality_epistemic_distinctions",
-      "status": "pending"
+      "status": "pass"
     },
     {
       "domain_id": "teacher_local_authority",

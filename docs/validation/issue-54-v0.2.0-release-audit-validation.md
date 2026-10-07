@@ -96,3 +96,46 @@ claim RELEASED — VERIFIED
 ```
 
 The next slices may perform the skeptical semantic/privacy/usability audit and record concrete findings or reconciliations against this evidence foundation.
+
+## Slice 2 — Ethical neutrality and epistemic distinctions
+
+Slice 2 audits the accepted semantic distinctions in ADRs 0011–0015 against executable workflow/menu surfaces and records the first substantive Issue #54 domain PASS.
+
+No production runtime code is changed by Slice 2.
+
+Focused evidence is protected by:
+
+```text
+scripts/validate_issue54_ethics_audit.py
+tests/test_issue54_ethics_audit.py
+```
+
+The validator checks:
+
+```text
+ethical_neutrality_epistemic_distinctions == pass
+accepted ADR markers remain present
+teacher-facing distinction/neutrality wording remains present
+Review / Classification / Hypothesis / Determination each creates only its own record family
+native attention definition has no score/risk/ranking fields
+Slice 2 audit/findings/validation evidence is durable
+```
+
+Focused validation:
+
+```text
+python scripts/validate_issue54_release_audit.py
+python scripts/validate_issue54_ethics_audit.py
+python -m pytest -q tests/test_issue54_release_audit.py tests/test_issue54_ethics_audit.py
+python -m ruff check scripts/validate_issue54_release_audit.py scripts/validate_issue54_ethics_audit.py tests/test_issue54_release_audit.py tests/test_issue54_ethics_audit.py
+python -m mypy scripts/validate_issue54_release_audit.py scripts/validate_issue54_ethics_audit.py
+git diff --check
+```
+
+Expected new terminal result:
+
+```text
+Portia Issue #54 ethical/epistemic audit validation passed
+```
+
+This PASS is domain-scoped. It is not final v0.2.0 release approval.

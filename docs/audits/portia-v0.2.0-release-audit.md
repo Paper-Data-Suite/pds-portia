@@ -162,3 +162,53 @@ Issue #54 qualification uses synthetic evidence only. It must never be run again
 Slice 1 creates durable audit state and a focused mechanical validator. It intentionally makes no production runtime changes and records no substantive audit-domain PASS result yet.
 
 Final verdict: **PENDING**
+
+## Slice 2 — Ethical neutrality and epistemic distinctions
+
+Domain result: **PASS**
+
+Slice 2 reviewed the accepted semantic authority in ADRs 0011–0015 together with the corresponding executable workflow and teacher-facing surfaces. The audit specifically checked the release-gate distinctions across:
+
+```text
+Account != Observation
+Review != Classification != Hypothesis != Determination
+Response recorded != effective Response
+Communication act/attempt != delivery != reading != understanding != agreement
+Need != diagnosis
+Goal != achieved Outcome
+Support/Intervention plan != Implementation
+Implementation != Fidelity
+Fidelity != Outcome/effectiveness
+Follow-Up completion != success/resolution/effectiveness/Outcome
+attention count/order != severity/risk/urgency/priority/recommendation
+```
+
+Reviewed authority and implementation evidence includes:
+
+```text
+docs/decisions/0011-define-account-and-observation-domain-models.md
+docs/decisions/0012-define-review-classification-hypothesis-and-determination-domain-models.md
+docs/decisions/0013-define-response-and-communication-domain-models.md
+docs/decisions/0014-define-support-process-support-intervention-implementation-and-fidelity-contracts.md
+docs/decisions/0015-define-follow-up-outcome-reentry-and-repair-domain-models.md
+portia/menu/judgment.py
+portia/menu/response_communication.py
+portia/menu/support.py
+portia/menu/support_delivery.py
+portia/menu/follow_up.py
+portia/attention/taxonomy.py
+portia/menu/attention.py
+portia/workflows/responses.py
+portia/workflows/support_needs.py
+portia/workflows/support_goals.py
+```
+
+The executable surfaces preserve explicit human selection/attribution and do not silently promote one semantic stage into a later stage. The judgment menu writes only the record family explicitly selected by the teacher. Response and Communication wording separates action/communication facts from effectiveness, receipt, understanding, and agreement. Support planning separates Need/Goal from diagnosis, eligibility, attainment, and Outcome. Implementation and Fidelity remain separate from effectiveness and Outcome. Follow-Up completion remains a bounded workflow fact. Native attention is defined as workflow/recovery/integrity state with deterministic presentation order rather than a student score, severity/risk measure, urgency ranking, priority ranking, or recommendation system.
+
+The review found no evidence in these audited surfaces of automatic misconduct adjudication, culpability inference, truthfulness inference, intent inference, dangerousness/risk scoring, diagnosis, intervention selection, effectiveness inference, Outcome inference, or institutional discipline generation.
+
+No `P54-AUD-*` defect was identified in this domain.
+
+No production runtime code changed in Slice 2. The new focused validator protects the accepted semantic markers and the one-record-at-a-time judgment menu behavior against release-preparation drift.
+
+Final verdict remains **PENDING** because the remaining Issue #54 audit domains, cumulative qualification, artifact freeze, publication, and fresh-download verification are not complete.
