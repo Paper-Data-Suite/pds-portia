@@ -73,3 +73,9 @@ No `P54-AUD-*` finding was opened for the teacher-local-authority domain.
 The audit found the executable authority model consistent with the accepted architecture: teacher-local decisions remain bounded; recorded-institutional authority remains provenance rather than authentication; Actor relationships do not prove legal authority; local export generation is not disclosure; and Core/Suite integration does not acquire Portia domain authority.
 
 Inherited foundation obligations PF-AUD-008 and PF-AUD-012 are now **Reconciled** for the v0.2.0 release audit. External retention/legal-hold/entitlement/disclosure/destruction authority remains institution/deployment-owned, and release approval remains explicitly non-certifying. PF-AUD-009, PF-AUD-010, and PF-AUD-011 remain pending for later Issue #54 architecture/release slices.
+
+## Slice 4 audit result
+
+No `P54-AUD-*` finding was opened for the sensitive-data-minimization / privacy domain.
+
+The executable student-view, attention/readiness, export, integrity-evidence, generated-path, and security-policy surfaces preserve the audited minimization boundaries. PF-AUD-006 remains pending because its teacher-workload/manual-administration requirement is broader than the privacy-only result established here.

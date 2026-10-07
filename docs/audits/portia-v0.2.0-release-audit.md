@@ -277,3 +277,73 @@ No `P54-AUD-*` defect was identified in this domain.
 No production runtime code changed in Slice 3. The focused authority validator protects the audited boundaries against release-preparation drift.
 
 Final verdict remains **PENDING** because the remaining Issue #54 audit domains, cumulative qualification, artifact freeze, publication, and fresh-download verification are not complete.
+
+## Slice 4 — Sensitive-data minimization and privacy
+
+Domain result: **PASS**
+
+Slice 4 reviewed privacy and sensitive-data minimization across the current student view, teacher-reference export, native/Core-facing attention and readiness surfaces, operational/integrity evidence, generated paths, and repository security policy.
+
+The reviewed implementation preserves these boundaries:
+
+```text
+student view != raw canonical-record bypass
+student view != unrelated participant enumeration
+withheld/unavailable/absent != leaked source value
+restricted Communication != recipient disclosure
+manual-review candidate != automatically included narrative
+attention != student dossier or narrative copy
+Core-facing notice != raw exception/path/message disclosure
+readiness != roster-content report
+Integrity evidence != copied narrative/name/removed payload
+generated filesystem leaf != embedded display name/narrative/contact value
+teacher-reference export provenance != disclosure record
+export disposition summary != withheld-source identity list
+local-first != hosted upload/telemetry claim
+content fingerprint != anonymization
+```
+
+Reviewed evidence includes:
+
+```text
+portia/views/policy.py
+portia/views/projection.py
+portia/views/student.py
+portia/attention/models.py
+portia/attention/operational_sources.py
+portia/attention_provider.py
+portia/readiness_provider.py
+portia/exports/projection.py
+portia/exports/inventory.py
+portia/exports/preparation.py
+portia/storage/generated_paths.py
+schemas/v1/projections/integrity-finding.schema.json
+schemas/v1/exports/deliberate-export.schema.json
+SECURITY.md
+tests/test_student_view_privacy_currentness.py
+tests/test_attention_privacy.py
+tests/test_teacher_reference_export_projection.py
+tests/test_teacher_reference_export_preparation.py
+tests/test_issue52_attention_provider.py
+tests/test_issue52_readiness_provider.py
+```
+
+The student view uses a closed positive projection policy. Sensitive narrative fields require manual review or are withheld; unrelated participants are not surfaced merely because they share a work root; restricted Communication is withheld without recipient leakage; unavailable state is not rewritten as absence; and projected fields cannot carry raw nested source objects.
+
+Native attention uses a deliberately low-density contract containing bounded codes, exact/opaque source identity, class/work context, reason codes, and timing. It does not duplicate participant names, narrative, contact data, or behavior content. The Core-facing attention adapter converts native notices to fixed summaries rather than forwarding raw diagnostic messages. Readiness reports structural readiness only and uses bounded fixed notices rather than roster content.
+
+Teacher-reference export remains deliberate and review-before-write. Projection decisions preserve exact include/omit choices without silently rewriting content. Export provenance records exact contributing representations and integrity digests while privacy-minimized disposition summaries intentionally omit identities of withheld/unavailable sources. Opaque `pexp_` export identity determines output paths rather than student/person/display text.
+
+Integrity-finding evidence is specified as bounded machine-readable evidence and explicitly excludes narrative payloads, names, Statements of Disagreement, removed content, credentials, and secrets. Generated technical paths use fixed-length opaque tokens over canonical identity/provenance inputs rather than display labels; target-adjacent temporary leaves do not embed destination filenames.
+
+The runtime-source audit found no import of network-I/O/client modules from the bounded audit set (`requests`, `httpx`, `aiohttp`, `urllib.request`, `urllib3`, `http.client`, `socket`, `smtplib`, `ftplib`, `boto3`, `botocore`, `paramiko`). `urllib.parse` URI parsing remains permitted and is used by Portia for local schema/URI handling; those parsing functions do not perform network I/O. This is supporting evidence for the local-first/no-implicit-upload boundary; it is not a claim that the host operating system, synchronized folder, backup agent, editor, or another process cannot transmit workspace data.
+
+`SECURITY.md` continues to prohibit real student/staff data in repository, development, tests, fixtures, logs, screenshots, exports, and generated artifacts, and explicitly warns that local-first storage is not automatically private or free from telemetry/synchronization by the host environment. The audit state retains its synthetic-only qualification requirement.
+
+PF-AUD-006 remains pending. Slice 4 confirms the privacy-safe projection/manual-review boundary, but that inherited obligation also requires judging whether the workflow avoids low-level teacher administration; that workload/usability question is intentionally reserved for the later teacher-usability audit.
+
+No `P54-AUD-*` defect was identified in this domain.
+
+No production runtime code changed in Slice 4. The focused privacy validator protects the audited minimization markers, low-density attention shape, synthetic-only state, lack of runtime network-client imports in the bounded set, and the decision not to prematurely reconcile PF-AUD-006.
+
+Final verdict remains **PENDING** because the remaining Issue #54 audit domains, cumulative qualification, artifact freeze, publication, and fresh-download verification are not complete.

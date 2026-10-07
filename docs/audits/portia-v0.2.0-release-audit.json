@@ -50,7 +50,7 @@
     },
     {
       "domain_id": "sensitive_data_minimization_privacy",
-      "status": "pending"
+      "status": "pass"
     },
     {
       "domain_id": "record_distinction_identity",

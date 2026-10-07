@@ -189,3 +189,53 @@ Portia Issue #54 teacher-local authority audit validation passed
 ```
 
 This PASS is domain-scoped. It is not final v0.2.0 release approval.
+
+## Slice 4 — Sensitive-data minimization and privacy
+
+Slice 4 audits sensitive-data minimization and privacy across student views, teacher-reference export, native/Core-facing operational summaries, operational evidence, generated paths, and repository security boundaries.
+
+No production runtime code is changed by Slice 4.
+
+Focused evidence is protected by:
+
+```text
+scripts/validate_issue54_privacy_audit.py
+tests/test_issue54_privacy_audit.py
+```
+
+The validator checks:
+
+```text
+sensitive_data_minimization_privacy == pass
+synthetic-only release-audit state remains true
+PF-AUD-006 remains pending for the later workload/usability audit
+student-view projection stays fail-closed and field-bounded
+attention contracts stay low-density
+Core-facing notices remain fixed/bounded rather than forwarding raw diagnostic text
+deliberate-export provenance retains non-disclosure/minimization semantics
+Integrity evidence excludes narrative/name/removed-payload material
+generated technical paths remain opaque
+Portia runtime source does not import the bounded set of network-I/O/client modules; `urllib.parse` parsing is not classified as network I/O
+Slice 4 opens no privacy finding when no defect was identified
+```
+
+Focused validation:
+
+```text
+python scripts/validate_issue54_release_audit.py
+python scripts/validate_issue54_ethics_audit.py
+python scripts/validate_issue54_authority_audit.py
+python scripts/validate_issue54_privacy_audit.py
+python -m pytest -q tests/test_issue54_release_audit.py tests/test_issue54_ethics_audit.py tests/test_issue54_authority_audit.py tests/test_issue54_privacy_audit.py
+python -m ruff check scripts/validate_issue54_release_audit.py scripts/validate_issue54_ethics_audit.py scripts/validate_issue54_authority_audit.py scripts/validate_issue54_privacy_audit.py tests/test_issue54_release_audit.py tests/test_issue54_ethics_audit.py tests/test_issue54_authority_audit.py tests/test_issue54_privacy_audit.py
+python -m mypy scripts/validate_issue54_release_audit.py scripts/validate_issue54_ethics_audit.py scripts/validate_issue54_authority_audit.py scripts/validate_issue54_privacy_audit.py
+git diff --check
+```
+
+Expected new terminal result:
+
+```text
+Portia Issue #54 sensitive-data/privacy audit validation passed
+```
+
+This PASS is domain-scoped. It is not final v0.2.0 release approval.
