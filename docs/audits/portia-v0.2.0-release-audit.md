@@ -347,3 +347,63 @@ No `P54-AUD-*` defect was identified in this domain.
 No production runtime code changed in Slice 4. The focused privacy validator protects the audited minimization markers, low-density attention shape, synthetic-only state, lack of runtime network-client imports in the bounded set, and the decision not to prematurely reconcile PF-AUD-006.
 
 Final verdict remains **PENDING** because the remaining Issue #54 audit domains, cumulative qualification, artifact freeze, publication, and fresh-download verification are not complete.
+
+## Slice 5 — Record distinction and identity
+
+Domain result: **PASS**
+
+Slice 5 reviewed record distinction and identity across Core roster identity, Portia Actor identity, Event-local Participant identity, exact work/record references, display snapshots, cross-roster participation, replacement/supersession behavior, and historical resolution.
+
+The audited identity model preserves:
+
+```text
+roster student identity = exact class_id + student_id
+same textual student_id in two rosters != same canonical identity
+display snapshot != identity
+name/contact similarity != identity
+Actor identity = exact opaque actor_id
+Actor != roster student
+Event Participant record identity != underlying person identity
+participant target != person identity outside that Event
+exact historical reference != current successor
+superseded record != silently followed successor
+missing historical reference != name-based/fuzzy repair
+cross-class participant != transferred Event ownership
+```
+
+Reviewed evidence includes:
+
+```text
+docs/decisions/0004-define-portia-identity-ownership-and-storage.md
+docs/decisions/0005-define-event-and-participant-domain-model.md
+docs/decisions/0007-define-shared-reference-targeting-and-relationship-contracts.md
+docs/decisions/0010-define-actor-directory-domain-model-and-lifecycle.md
+portia/models/references.py
+portia/identity/roster.py
+portia/identity/actors.py
+portia/workflows/participants.py
+portia/workflows/relationships.py
+tests/test_runtime_references.py
+tests/test_identity_roster.py
+tests/test_identity_actors.py
+tests/test_workflow_participants.py
+tests/test_workflow_relationships.py
+```
+
+`RosterStudentRef` remains exactly class-qualified. Core roster resolution accepts the explicit `class_id` and `student_id`, verifies that the loaded Core roster agrees with the requested class, and does not use display names, preferred names, bare IDs, or Actor identity as substitutes.
+
+Actor identity remains a separate opaque `actor_id` namespace. Actor-to-student Relationships bind one exact Actor to one exact Core roster-qualified student; they do not merge those identity families. Similarity may generate review work but does not prove identity. Actor-family exact resolution explicitly does not silently follow successors.
+
+Event Participants remain separate Event-local records. Their subject may represent a roster student, Actor, descriptive person, or unknown person without collapsing those branches. For canonical person identity comparison, roster subjects use `(kind, class_id, student_id)` and Actor subjects use `(kind, actor_id)`. In-place replacement rejects any change to that person identity while allowing nonauthoritative display-snapshot revision where the underlying exact identity is unchanged.
+
+Exact local-record, work, work-record, and Actor-family references remain version-aware. Historical references resolve exactly and current-use eligibility is evaluated separately; Portia does not silently search by name, choose a newer contract version, normalize identifiers, retarget a referring record, or follow a successor to make an exact reference appear current.
+
+Cross-roster participation remains explicit and does not create a workspace-wide student identity. The same real-world student may therefore appear through multiple roster-qualified references unless and until a future explicit reviewed linking architecture establishes broader identity authority.
+
+No `P54-AUD-*` defect was identified in this domain.
+
+No inherited foundation obligation is reconciled by Slice 5. PF-AUD-007 and PF-AUD-011 are broader application/runtime architecture obligations and remain pending for later Issue #54 slices.
+
+No production runtime code changed in Slice 5. The focused identity validator protects exact reference shapes, accepted architecture markers, participant identity keys, and the in-place retarget prohibition against release-preparation drift.
+
+Final verdict remains **PENDING** because the remaining Issue #54 audit domains, cumulative qualification, artifact freeze, publication, and fresh-download verification are not complete.

@@ -54,7 +54,7 @@
     },
     {
       "domain_id": "record_distinction_identity",
-      "status": "pending"
+      "status": "pass"
     },
     {
       "domain_id": "architecture_ownership",

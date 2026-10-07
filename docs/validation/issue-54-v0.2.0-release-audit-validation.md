@@ -239,3 +239,52 @@ Portia Issue #54 sensitive-data/privacy audit validation passed
 ```
 
 This PASS is domain-scoped. It is not final v0.2.0 release approval.
+
+## Slice 5 — Record distinction and identity
+
+Slice 5 audits record distinction and identity across Core roster identity, Actor identity, Event-local Participants, exact references, snapshots, cross-roster scope, and successor behavior.
+
+No production runtime code is changed by Slice 5.
+
+Focused evidence is protected by:
+
+```text
+scripts/validate_issue54_identity_audit.py
+tests/test_issue54_identity_audit.py
+```
+
+The validator checks:
+
+```text
+record_distinction_identity == pass
+accepted ADR identity markers remain present
+RosterStudentRef remains exactly class_id + student_id
+ActorRef remains exactly actor_id
+exact local/work/work-record references remain version-aware
+Participant canonical person identity uses class-qualified roster keys or actor_id
+Participant replacement retains the in-place person-retarget prohibition
+Actor resolution retains exact/no-silent-successor semantics
+Slice 5 opens no identity finding when no defect was identified
+```
+
+Focused validation:
+
+```text
+python scripts/validate_issue54_release_audit.py
+python scripts/validate_issue54_ethics_audit.py
+python scripts/validate_issue54_authority_audit.py
+python scripts/validate_issue54_privacy_audit.py
+python scripts/validate_issue54_identity_audit.py
+python -m pytest -q tests/test_issue54_release_audit.py tests/test_issue54_ethics_audit.py tests/test_issue54_authority_audit.py tests/test_issue54_privacy_audit.py tests/test_issue54_identity_audit.py
+python -m ruff check scripts/validate_issue54_identity_audit.py tests/test_issue54_identity_audit.py
+python -m mypy scripts/validate_issue54_identity_audit.py
+git diff --check
+```
+
+Expected new terminal result:
+
+```text
+Portia Issue #54 record-distinction/identity audit validation passed
+```
+
+This PASS is domain-scoped. It is not final v0.2.0 release approval.
