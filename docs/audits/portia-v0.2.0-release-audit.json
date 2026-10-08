@@ -66,7 +66,7 @@
     },
     {
       "domain_id": "recovery_error_integrity",
-      "status": "pending"
+      "status": "pass"
     },
     {
       "domain_id": "teacher_usability_workload",
@@ -105,7 +105,7 @@
     {
       "finding_id": "PF-AUD-005",
       "topic": "append-preserving coordinated persistence and recovery",
-      "status": "pending_reaudit"
+      "status": "reconciled"
     },
     {
       "finding_id": "PF-AUD-006",
@@ -115,7 +115,7 @@
     {
       "finding_id": "PF-AUD-007",
       "topic": "production application validation rather than schema-only acceptance",
-      "status": "pending_reaudit"
+      "status": "reconciled"
     },
     {
       "finding_id": "PF-AUD-008",

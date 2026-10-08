@@ -57,17 +57,11 @@ def test_issue54_architecture_domain_pass_does_not_claim_release() -> None:
     assert audit["release_publication"]["status"] == "not_started"
 
 
-def test_issue54_architecture_reconciles_only_the_expected_foundation_scope() -> None:
-    assert _obligation_statuses() == {
-        "PF-AUD-005": "pending_reaudit",
-        "PF-AUD-006": "pending_reaudit",
-        "PF-AUD-007": "pending_reaudit",
-        "PF-AUD-008": "reconciled",
-        "PF-AUD-009": "reconciled",
-        "PF-AUD-010": "reconciled",
-        "PF-AUD-011": "reconciled",
-        "PF-AUD-012": "reconciled",
-    }
+def test_issue54_architecture_owned_foundation_obligations_remain_reconciled() -> None:
+    statuses = _obligation_statuses()
+    assert statuses["PF-AUD-009"] == "reconciled"
+    assert statuses["PF-AUD-010"] == "reconciled"
+    assert statuses["PF-AUD-011"] == "reconciled"
 
 
 def test_issue54_runtime_dependency_surface_is_core_only() -> None:

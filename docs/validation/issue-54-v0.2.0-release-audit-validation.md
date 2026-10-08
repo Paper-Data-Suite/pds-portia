@@ -387,3 +387,42 @@ Portia Issue #54 storage/path/history compatibility audit validation passed
 ```
 
 This PASS is domain-scoped. It is not final v0.2.0 release approval.
+
+## Slice 8 — Recovery, error handling, and Integrity
+
+Slice 8 audits partial-write behavior, Operation Journal recovery, locks/staging, Integrity/Quarantine, and production application validation beyond JSON Schema.
+
+No production runtime code is changed by Slice 8.
+
+Focused evidence is protected by:
+
+```text
+scripts/validate_issue54_recovery_integrity_audit.py
+tests/test_issue54_recovery_integrity_audit.py
+```
+
+The validator checks:
+
+```text
+recovery_error_integrity == pass
+PF-AUD-005 == reconciled
+PF-AUD-007 == reconciled
+PF-AUD-006 remains pending
+accepted canonical bytes are not deleted as fictitious rollback
+partial durable success surfaces explicit recovery
+recovery remains exact and fail-closed
+Integrity evaluates exact current journal authority
+production graph validation remains active
+workflow mutation uses require_internal_resolution=True
+Issue #22 schema-valid/application-invalid evidence remains present
+Issue #53 installed recovery/integrity evidence remains present
+Slice 8 opens no recovery/Integrity finding when no defect was identified
+```
+
+Expected new terminal result:
+
+```text
+Portia Issue #54 recovery/error/Integrity audit validation passed
+```
+
+This PASS is domain-scoped. It is not final v0.2.0 release approval.

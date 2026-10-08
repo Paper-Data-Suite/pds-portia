@@ -539,3 +539,72 @@ No `P54-AUD-*` defect was identified in this domain.
 No production runtime code changed in Slice 7. The focused validator protects bounded writer/legacy reader pairs, migration no-implicit-rewrite semantics, Core compatibility authority separation, and the decision not to prematurely reconcile recovery/application-validation obligations.
 
 Final verdict remains **PENDING** because the remaining Issue #54 audit domains, cumulative qualification, artifact freeze, publication, and fresh-download verification are not complete.
+
+## Slice 8 — Recovery, error handling, and Integrity
+
+Domain result: **PASS**
+
+Slice 8 reviewed interruption semantics, partial durable success, Operation Journal authority, lock/staging preservation, exact recovery, recovery idempotence, Quarantine/Integrity blocking, stale projection handling, and production application validation beyond JSON Schema.
+
+The audited boundary preserves:
+
+```text
+one-file atomicity != graph-wide atomicity
+partial durable success != rollback
+accepted canonical bytes != disposable compensation artifacts
+incomplete journal != cache
+recovery assessment != implicit repair
+ambiguous recovery evidence != guessed authority
+missing lock != proof of safety
+indeterminate canonical result != accepted result
+quarantine != lifecycle state
+Integrity finding != canonical domain assertion
+schema validity != application validity
+ordinary schema parse != permission to mutate canonical state
+```
+
+Reviewed evidence includes:
+
+```text
+docs/decisions/0009-define-coordinated-persistence-recovery-and-derived-index-contracts.md
+docs/decisions/0018-represent-verified-canonical-absence-in-operation-journals.md
+portia/storage/operation_journal.py
+portia/storage/orchestration.py
+portia/storage/recovery.py
+portia/storage/integrity.py
+portia/storage/quarantine.py
+portia/workflows/recovery.py
+portia/workflows/integrity.py
+portia/workflows/integrity_authority.py
+portia/validation/graph.py
+portia/workflows/common.py
+tests/test_storage_orchestration.py
+tests/test_storage_recovery.py
+tests/test_storage_integrity.py
+tests/test_storage_quarantine.py
+tests/test_application_validation.py
+tests/test_runtime_issue22_application.py
+tests/test_storage_issue22_parity.py
+tests/test_issue53_end_to_end_acceptance.py
+scripts/smoke_test_issue53_end_to_end_wheel.py
+```
+
+Portia does not claim graph-wide filesystem transactions. Coordinated writes freeze a deterministic canonical-gate set, stage exact candidate bytes, acquire exact locks, publish with readback verification, and surface interruption after accepted canonical writes as `PortiaOperationPartialCommitError`. Accepted canonical bytes are preserved rather than deleted to imitate rollback.
+
+Recovery is evidence-first and explicit. Assessment is non-mutating. Generic resume requires the exact selected recovering journal, exact staged candidates, exact lock evidence, and agreement between durable bytes and journaled intent. Ambiguous branches, changed pointers, missing proof, contradictory durable results, or indeterminate canonical state fail closed rather than being guessed from timestamps, greatest revisions, or path presence.
+
+Issue #53 installed acceptance exercises a real interrupted Support correction. It proves the accepted history/successor writes remain byte-stable, recovery resumes only the remaining canonical steps, terminal completion clears locks and staging, a second recovery pass is idempotent, Integrity projection freshness changes after recovery, and a fresh installed process sees the completed durable state.
+
+Integrity is a separate protective authority. Persistence evaluation reads the exact current journal, verifies recovery topology before and after evaluation, and installs deterministic findings without converting those findings into canonical domain truth. Quarantine/Integrity guards block named unsafe effects while preserving lifecycle distinction. Stale or changing recovery authority is not silently treated as clean.
+
+PF-AUD-005 is reconciled by this slice. The executable application now demonstrates append-preserving coordinated persistence and recovery without pretending graph-wide atomic rollback.
+
+PF-AUD-007 is reconciled by this slice. `portia.validation.graph` is production in-memory application validation, and production workflow services invoke `validate_record_graph(... require_internal_resolution=True)` before canonical mutation. The representative Issue #22 corpus retains 15 positive and 37 schema-valid graph-invalid scenarios, explicitly demonstrating that JSON Schema validity alone is insufficient.
+
+The older Slice 6 and Slice 7 regression guards are narrowed here to protect only the obligations those slices actually own. They no longer freeze PF-AUD-005/PF-AUD-007 at historical `pending_reaudit` status after this later audit legitimately reconciles them.
+
+No `P54-AUD-*` defect was identified in this domain.
+
+No production runtime code changed in Slice 8. Changes are limited to audit evidence, focused validators/tests, and cross-slice regression guards.
+
+Final verdict remains **PENDING** because the remaining Issue #54 audit domains, cumulative qualification, artifact freeze, publication, and fresh-download verification are not complete.

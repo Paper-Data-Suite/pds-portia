@@ -101,3 +101,11 @@ No `P54-AUD-*` finding was opened for the storage/path/history/compatibility dom
 Bounded Issue #92 writer paths, exact legacy-reader compatibility, immutable version-qualified migration representations, exact historical/currentness semantics, and the Core 0.6.4/current versus Core 0.6.3/historical qualification split remain coherent.
 
 PF-AUD-005 and PF-AUD-007 remain pending for the recovery/error/Integrity audit.
+
+## Slice 8 audit result
+
+No `P54-AUD-*` finding was opened for the recovery/error/Integrity domain.
+
+PF-AUD-005 is **Reconciled**: accepted canonical writes survive partial failure, Operation Journal evidence preserves exact progress, bounded recovery resumes only proven remaining work, and no graph-wide rollback claim is made.
+
+PF-AUD-007 is **Reconciled**: production application validation is active before canonical workflow mutation and the representative runtime corpus preserves schema-valid/application-invalid cases demonstrating that schema acceptance is not sufficient.

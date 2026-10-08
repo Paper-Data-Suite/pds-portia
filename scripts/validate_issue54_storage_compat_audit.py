@@ -144,14 +144,11 @@ def validate_repo(root: Path = ROOT) -> list[str]:
         errors.append(f"{STORAGE_DOMAIN} must be recorded as pass")
 
     statuses = _obligation_statuses(audit)
-    if statuses.get("PF-AUD-005") != "pending_reaudit":
-        errors.append(
-            "PF-AUD-005 must remain pending until the recovery/error/Integrity audit"
-        )
-    if statuses.get("PF-AUD-007") != "pending_reaudit":
-        errors.append(
-            "PF-AUD-007 must remain pending until the recovery/error/Integrity audit"
-        )
+    for finding_id in ("PF-AUD-005", "PF-AUD-007"):
+        if finding_id not in statuses:
+            errors.append(
+                f"Slice 7 handoff obligation {finding_id} must remain explicitly tracked"
+            )
 
     for path, markers in MARKERS.items():
         try:

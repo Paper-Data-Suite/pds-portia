@@ -166,22 +166,12 @@ def validate_repo(root: Path = ROOT) -> list[str]:
     if _domain_status(audit, ARCHITECTURE_DOMAIN) != "pass":
         errors.append(f"{ARCHITECTURE_DOMAIN} must be recorded as pass")
 
-    expected_statuses = {
-        "PF-AUD-005": "pending_reaudit",
-        "PF-AUD-006": "pending_reaudit",
-        "PF-AUD-007": "pending_reaudit",
-        "PF-AUD-008": "reconciled",
-        "PF-AUD-009": "reconciled",
-        "PF-AUD-010": "reconciled",
-        "PF-AUD-011": "reconciled",
-        "PF-AUD-012": "reconciled",
-    }
     actual_statuses = _obligation_statuses(audit)
-    if actual_statuses != expected_statuses:
-        errors.append(
-            "foundation obligation status map drifted: "
-            f"expected {expected_statuses!r}; found {actual_statuses!r}"
-        )
+    for finding_id in ("PF-AUD-009", "PF-AUD-010", "PF-AUD-011"):
+        if actual_statuses.get(finding_id) != "reconciled":
+            errors.append(
+                f"Slice 6-owned architecture obligation {finding_id} must remain reconciled"
+            )
 
     for path, markers in MARKERS.items():
         try:

@@ -99,9 +99,9 @@ def test_issue54_foundation_reaudit_obligations_are_explicit() -> None:
         for entry in audit["inherited_foundation_obligations"]
     }
     assert statuses == {
-        "PF-AUD-005": "pending_reaudit",
+        "PF-AUD-005": "reconciled",
         "PF-AUD-006": "pending_reaudit",
-        "PF-AUD-007": "pending_reaudit",
+        "PF-AUD-007": "reconciled",
         "PF-AUD-008": "reconciled",
         "PF-AUD-009": "reconciled",
         "PF-AUD-010": "reconciled",
