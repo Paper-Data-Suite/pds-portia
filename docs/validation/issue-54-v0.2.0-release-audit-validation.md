@@ -476,3 +476,53 @@ Portia Issue #54 teacher usability/workload audit validation passed
 ```
 
 This PASS is domain-scoped. It is not final v0.2.0 release approval.
+
+## Slice 10 — Menu terminology
+
+Slice 10 audits teacher-facing terms and navigation labels across the production menu.
+
+No production runtime code is changed by Slice 10.
+
+Focused evidence is protected by:
+
+```text
+scripts/validate_issue54_menu_terminology_audit.py
+tests/test_issue54_menu_terminology_audit.py
+```
+
+The validator checks:
+
+```text
+menu_terminology == pass
+all inherited foundation obligations remain reconciled
+eight primary task labels remain exact
+H/B/M/Q labels remain consistent
+Review / Classification / Hypothesis / Determination remain distinct
+Response / Communication / Outcome terminology remains distinct
+Support / Implementation / Fidelity / Outcome terminology remains distinct
+Follow-Up completion does not imply Outcome
+Attention remains non-ranking/non-risk terminology
+Teacher Reference remains local/nonofficial
+Slice 10 opens no terminology finding when no defect was identified
+```
+
+Focused validation:
+
+```text
+python scripts/validate_issue54_release_audit.py
+python scripts/validate_issue54_usability_audit.py
+python scripts/validate_issue54_menu_terminology_audit.py
+python scripts/validate_teacher_menu.py --stage source
+python -m pytest -q tests/test_issue54_release_audit.py tests/test_issue54_usability_audit.py tests/test_issue54_menu_terminology_audit.py tests/test_teacher_menu_foundation.py tests/test_teacher_menu_judgment.py tests/test_teacher_menu_response_communication.py tests/test_teacher_menu_support_delivery.py tests/test_teacher_menu_follow_up.py tests/test_teacher_menu_attention.py
+python -m ruff check scripts/validate_issue54_menu_terminology_audit.py tests/test_issue54_menu_terminology_audit.py
+python -m mypy scripts/validate_issue54_menu_terminology_audit.py
+git diff --check
+```
+
+Expected new terminal result:
+
+```text
+Portia Issue #54 menu terminology audit validation passed
+```
+
+This PASS is domain-scoped. It is not final v0.2.0 release approval.

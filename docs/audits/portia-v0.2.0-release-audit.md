@@ -654,3 +654,56 @@ No `P54-AUD-*` defect was identified in this domain.
 No production runtime code changed in Slice 9. Changes are limited to audit evidence, focused validation/tests, and cross-slice regression guards.
 
 Final verdict remains **PENDING** because menu terminology, read-only surfaces, packaging/public surface, documentation reconciliation, release-contract mechanics, cumulative repository qualification, Python/platform qualification, artifact freeze, publication, and fresh-download verification are not complete.
+
+## Slice 10 — Menu terminology
+
+Domain result: **PASS**
+
+Slice 10 reviewed the teacher-facing vocabulary across the main menu, evidence/judgment workflow, response/communication workflow, support planning and delivery, Follow-Up, Attention, correction, Teacher Reference export, and shared navigation.
+
+The audited terminology preserves:
+
+```text
+Review recorded evidence != Review record
+Review != Classification != Hypothesis != Determination
+Determination outcome field != Outcome record
+Response != Communication
+Response recorded != effective
+Communication act != delivered/read/understood/agreed
+Need != diagnosis
+Support plan != delivery
+Intervention != Implementation
+Implementation != Fidelity
+Fidelity != Outcome
+Follow-Up completed != success/resolution
+Attention Needed != risk/severity/urgency/priority
+Correct / Retract != generic edit/delete
+Teacher Reference != official record/disclosure/delivery/filing
+display label != identity authority
+```
+
+The eight routine top-level labels remain concise teacher tasks rather than schema-family names: `Record Event`, `Add Information`, `Record Response / Communication`, `Manage Support`, `Complete Follow-Up`, `View Timeline`, `Correct / Retract`, and `Attention Needed`.
+
+`Add Information` contains both `Review recorded Accounts / Observations` and `Start a Review`. The former is clearly a read action over recorded evidence; the latter opens the distinct Review judgment record. Classification, Hypothesis, and Determination are presented as separate actions, and contextual help explicitly states that they remain distinct. Hypothesis is described as provisional; Determination is explicitly teacher-local and bounded.
+
+Determination's internal `outcome` state is presented as the conclusion state of that Determination, while confirmation text explicitly says the action does not create an `Outcome` record. This prevents the shared English word from collapsing the domain distinction.
+
+Response and Communication remain separate teacher actions. Response language states that recording an action does not establish effectiveness or Outcome. Communication language distinguishes an act/attempt from delivery, reading, understanding, agreement, and support participation.
+
+Support terminology preserves planning, delivery, implementation, fidelity, and outcome boundaries. Activation explicitly does not establish service delivery, Implementation, Fidelity, effectiveness, or Outcome. Existing regression tests retain Fidelity as plan adherence rather than outcome.
+
+Follow-Up remains a scheduling/completion concept. Existing tests preserve support-review completion that may add disposition without creating Outcome, and the task label `Complete Follow-Up` does not imply success, resolution, clearance, remorse, forgiveness, or restored relationship.
+
+`Attention Needed` is intentionally operational rather than evaluative. Help text defines it as workflow/integrity/recovery state and explicitly rejects behavior score, risk score, urgency ranking, recommendation, student risk, severity, and priority.
+
+`Correct / Retract` is a family-specific lifecycle/correction route rather than generic edit/delete terminology. Teacher Reference is consistently described as a local teacher reference rather than an official record, disclosure authorization, delivery record, or filing.
+
+Shared navigation remains consistent: H = Help, B = Back, M = Main Menu, Q = Quit. The main menu intentionally exposes only the applicable subset.
+
+No inherited foundation disposition changes in Slice 10.
+
+No `P54-AUD-*` defect was identified in this domain.
+
+No production runtime code changed in Slice 10. Changes are limited to audit evidence and focused terminology regression validation.
+
+Final verdict remains **PENDING** because read-only surfaces, packaging/public surface, documentation reconciliation, release-contract mechanics, cumulative repository qualification, Python/platform qualification, artifact freeze, publication, and fresh-download verification are not complete.
