@@ -97,6 +97,7 @@ files = [
     "scripts/validate_issue54_authority_audit.py",
     "scripts/validate_issue54_privacy_audit.py",
     "scripts/validate_issue54_identity_audit.py",
+    "scripts/validate_issue54_architecture_audit.py",
     "scripts/validate_repository.py",
     "scripts/validate_runtime_models.py",
     "scripts/validate_storage.py",

@@ -85,3 +85,11 @@ The executable student-view, attention/readiness, export, integrity-evidence, ge
 No `P54-AUD-*` finding was opened for the record-distinction / identity domain.
 
 The executable identity model preserves class-qualified Core roster identity, opaque Actor identity, Event-local Participant identity, exact version-aware references, nonauthoritative display snapshots, and no silent successor/name-based repair behavior. No inherited foundation obligation is reconciled by this slice.
+
+## Slice 6 audit result
+
+No `P54-AUD-*` finding was opened for the architecture / ownership domain.
+
+Portia remains a Core-dependent peer domain module with no sibling runtime dependency, no publication-producer capability, nonauthoritative derived state, and one bounded Core module-operations integration surface.
+
+Inherited foundation obligations PF-AUD-009, PF-AUD-010, and PF-AUD-011 are now **Reconciled** for the v0.2.0 release audit. PF-AUD-007 remains pending for the later production application-validation / Integrity audit.

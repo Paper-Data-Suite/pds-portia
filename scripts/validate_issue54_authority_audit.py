@@ -62,6 +62,18 @@ EXPECTED_MODULE_PROFILE_KEYWORDS = (
     "readiness_provider",
     "attention_provider",
 )
+EXPECTED_FOUNDATION_IDS = frozenset(
+    {
+        "PF-AUD-005",
+        "PF-AUD-006",
+        "PF-AUD-007",
+        "PF-AUD-008",
+        "PF-AUD-009",
+        "PF-AUD-010",
+        "PF-AUD-011",
+        "PF-AUD-012",
+    }
+)
 
 
 def _read(root: Path, relative: str) -> str:
@@ -137,22 +149,18 @@ def validate_repo(root: Path = ROOT) -> list[str]:
     if _domain_status(audit, AUTHORITY_DOMAIN) != "pass":
         errors.append(f"{AUTHORITY_DOMAIN} must be recorded as pass")
 
-    expected_foundation = {
-        "PF-AUD-005": "pending_reaudit",
-        "PF-AUD-006": "pending_reaudit",
-        "PF-AUD-007": "pending_reaudit",
-        "PF-AUD-008": "reconciled",
-        "PF-AUD-009": "pending_reaudit",
-        "PF-AUD-010": "pending_reaudit",
-        "PF-AUD-011": "pending_reaudit",
-        "PF-AUD-012": "reconciled",
-    }
     actual_foundation = _foundation_statuses(audit)
-    if actual_foundation != expected_foundation:
+    if frozenset(actual_foundation) != EXPECTED_FOUNDATION_IDS:
         errors.append(
-            "Slice 3 foundation re-audit dispositions drifted: "
-            f"expected={expected_foundation!r}, actual={actual_foundation!r}"
+            "foundation obligation identity set drifted: "
+            f"expected={sorted(EXPECTED_FOUNDATION_IDS)!r}, "
+            f"actual={sorted(actual_foundation)!r}"
         )
+    for finding_id in ("PF-AUD-008", "PF-AUD-012"):
+        if actual_foundation.get(finding_id) != "reconciled":
+            errors.append(
+                f"Slice 3-owned authority obligation {finding_id} must remain reconciled"
+            )
 
     if audit.get("final_verdict") != "PENDING":
         errors.append("Slice 3 must not advance the final release verdict")

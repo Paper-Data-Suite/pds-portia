@@ -58,7 +58,7 @@
     },
     {
       "domain_id": "architecture_ownership",
-      "status": "pending"
+      "status": "pass"
     },
     {
       "domain_id": "storage_path_history_compatibility",
@@ -125,17 +125,17 @@
     {
       "finding_id": "PF-AUD-009",
       "topic": "future Suite-wide retention orchestration remains unclaimed",
-      "status": "pending_reaudit"
+      "status": "reconciled"
     },
     {
       "finding_id": "PF-AUD-010",
       "topic": "future Core intervention publication remains unclaimed",
-      "status": "pending_reaudit"
+      "status": "reconciled"
     },
     {
       "finding_id": "PF-AUD-011",
       "topic": "historical runtime-scope boundary is reconciled with the now-executable application",
-      "status": "pending_reaudit"
+      "status": "reconciled"
     },
     {
       "finding_id": "PF-AUD-012",

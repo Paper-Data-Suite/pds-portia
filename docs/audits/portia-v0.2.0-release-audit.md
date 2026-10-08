@@ -407,3 +407,65 @@ No inherited foundation obligation is reconciled by Slice 5. PF-AUD-007 and PF-A
 No production runtime code changed in Slice 5. The focused identity validator protects exact reference shapes, accepted architecture markers, participant identity keys, and the in-place retarget prohibition against release-preparation drift.
 
 Final verdict remains **PENDING** because the remaining Issue #54 audit domains, cumulative qualification, artifact freeze, publication, and fresh-download verification are not complete.
+
+## Slice 6 — Architecture and ownership
+
+Domain result: **PASS**
+
+Slice 6 reviewed Portia's executable architecture and ownership boundaries across Core integration, sibling-module isolation, canonical/derived responsibility, installed entry points, future Suite retention orchestration, and future Core publication.
+
+The audited architecture preserves:
+
+```text
+Portia domain authority != Core shared-infrastructure authority
+Portia -> Core dependency != Core -> Portia dependency
+typed sibling reference != sibling runtime dependency
+referenced sibling record != Portia-owned copy
+canonical Portia state != derived view/index/export
+Core module-operations provider != mutation authority
+future Suite retention orchestration != current Portia capability
+future Core intervention publication != current Portia publication capability
+foundation-era no-runtime scope != current executable v0.2.0 state
+```
+
+Reviewed evidence includes:
+
+```text
+docs/decisions/0002-define-portia-module-boundaries.md
+docs/decisions/0003-adopt-teacher-local-initial-deployment.md
+docs/decisions/0004-define-portia-identity-ownership-and-storage.md
+docs/decisions/0017-define-privacy-projections-redaction-export-retention-and-sunset-boundaries.md
+portia/pds_operations.py
+portia/attention_provider.py
+portia/readiness_provider.py
+portia/storage/repository.py
+portia/storage/derived.py
+portia/views/projection.py
+README.md
+pyproject.toml
+tests/test_issue52_operations_profile.py
+tests/test_issue52_attention_provider.py
+tests/test_issue52_readiness_provider.py
+tests/test_issue53_end_to_end_acceptance.py
+scripts/smoke_test_issue53_end_to_end_wheel.py
+```
+
+Portia remains a peer domain module whose only mandatory PDS runtime dependency is `pds-core>=0.6.3,<0.7`. The production source tree imports no ScoreForm, Quillan, Concord, Meridian, Vitrine, or Sunset sibling runtime package. Cross-module relationships remain reference/provenance boundaries; the originating module remains authoritative for its own record and Portia does not acquire sibling mutation authority.
+
+Core remains responsible for shared workspace/class/roster/module-integration infrastructure while Portia owns its behavior-support domain records, application validation, Portia persistence semantics, and teacher-facing workflows. The installed Core integration surface is one `paper_data_suite.module_operations / portia` profile exposing bounded readiness and attention providers. No publication-producer entry point exists.
+
+Canonical records retain one authoritative Portia location. Derived generations, navigation/reporting views, privacy projections, attention projections, and exports remain nonauthoritative or purpose-bounded artifacts rather than competing canonical stores. `DerivedStore` explicitly installs and loads derived state without treating it as canonical authority.
+
+PF-AUD-009, PF-AUD-010, and PF-AUD-011 are reconciled by this slice:
+
+- PF-AUD-009: Portia still has no `pds-sunset` dependency or Suite-wide retention orchestrator. A future Sunset-like capability remains explicitly suite-owned and unclaimed.
+- PF-AUD-010: Core `intervention_record_set` publication remains a future privacy-minimized projection. The package exposes no `paper_data_suite.publication_producers` capability.
+- PF-AUD-011: the historical foundation audit's no-runtime scope is no longer the current state. Portia now has an executable `portia = portia.cli:main` application, an installed Core module-operations provider, and representative installed-wheel end-to-end acceptance from Issue #53 using only `pds-core` and `pds-portia`.
+
+PF-AUD-007 remains pending. Although the executable runtime contains substantial application validation, the foundation obligation specifically requires final implementation-era reconciliation of production application validation versus schema-only acceptance; that is reserved for the later recovery/error/Integrity validation slice where those gates can be audited together.
+
+No `P54-AUD-*` defect was identified in this domain.
+
+No production runtime code changed in Slice 6. The focused architecture validator protects Core-only dependency direction, sibling-import isolation, installed entry-point boundaries, nonauthoritative derived-state semantics, and the exact inherited-obligation dispositions established here.
+
+Final verdict remains **PENDING** because the remaining Issue #54 audit domains, cumulative qualification, artifact freeze, publication, and fresh-download verification are not complete.

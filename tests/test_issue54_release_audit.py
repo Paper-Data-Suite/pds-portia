@@ -103,9 +103,9 @@ def test_issue54_foundation_reaudit_obligations_are_explicit() -> None:
         "PF-AUD-006": "pending_reaudit",
         "PF-AUD-007": "pending_reaudit",
         "PF-AUD-008": "reconciled",
-        "PF-AUD-009": "pending_reaudit",
-        "PF-AUD-010": "pending_reaudit",
-        "PF-AUD-011": "pending_reaudit",
+        "PF-AUD-009": "reconciled",
+        "PF-AUD-010": "reconciled",
+        "PF-AUD-011": "reconciled",
         "PF-AUD-012": "reconciled",
     }
 

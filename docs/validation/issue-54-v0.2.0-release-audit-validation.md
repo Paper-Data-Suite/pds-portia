@@ -288,3 +288,55 @@ Portia Issue #54 record-distinction/identity audit validation passed
 ```
 
 This PASS is domain-scoped. It is not final v0.2.0 release approval.
+
+## Slice 6 — Architecture and ownership
+
+Slice 6 audits Core/Portia ownership, sibling-module isolation, canonical-versus-derived authority, installed integration surfaces, and the foundation-era runtime-scope handoff.
+
+No production runtime code is changed by Slice 6.
+
+Focused evidence is protected by:
+
+```text
+scripts/validate_issue54_architecture_audit.py
+tests/test_issue54_architecture_audit.py
+```
+
+The validator checks:
+
+```text
+architecture_ownership == pass
+PF-AUD-009, PF-AUD-010, and PF-AUD-011 == reconciled
+PF-AUD-007 remains pending
+runtime dependency surface remains pds-core only
+Portia production source imports no sibling PDS runtime module
+console entry point remains portia = portia.cli:main
+Core module-operations entry point remains exact
+no publication-producer entry point exists
+DerivedStore remains explicitly nonauthoritative
+Issue #53 installed-runtime evidence remains present
+Slice 6 opens no architecture finding when no defect was identified
+```
+
+Focused validation:
+
+```text
+python scripts/validate_issue54_release_audit.py
+python scripts/validate_issue54_ethics_audit.py
+python scripts/validate_issue54_authority_audit.py
+python scripts/validate_issue54_privacy_audit.py
+python scripts/validate_issue54_identity_audit.py
+python scripts/validate_issue54_architecture_audit.py
+python -m pytest -q tests/test_issue54_release_audit.py tests/test_issue54_ethics_audit.py tests/test_issue54_authority_audit.py tests/test_issue54_privacy_audit.py tests/test_issue54_identity_audit.py tests/test_issue54_architecture_audit.py
+python -m ruff check scripts/validate_issue54_architecture_audit.py tests/test_issue54_architecture_audit.py tests/test_issue54_release_audit.py
+python -m mypy scripts/validate_issue54_architecture_audit.py
+git diff --check
+```
+
+Expected new terminal result:
+
+```text
+Portia Issue #54 architecture/ownership audit validation passed
+```
+
+This PASS is domain-scoped. It is not final v0.2.0 release approval.

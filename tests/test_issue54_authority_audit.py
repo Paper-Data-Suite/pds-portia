@@ -68,10 +68,18 @@ def test_issue54_external_policy_and_legal_nonclaim_obligations_are_reconciled()
         entry["finding_id"]: entry["status"]
         for entry in _audit()["inherited_foundation_obligations"]
     }
+    assert set(statuses) == {
+        "PF-AUD-005",
+        "PF-AUD-006",
+        "PF-AUD-007",
+        "PF-AUD-008",
+        "PF-AUD-009",
+        "PF-AUD-010",
+        "PF-AUD-011",
+        "PF-AUD-012",
+    }
     assert statuses["PF-AUD-008"] == "reconciled"
     assert statuses["PF-AUD-012"] == "reconciled"
-    assert statuses["PF-AUD-009"] == "pending_reaudit"
-    assert statuses["PF-AUD-010"] == "pending_reaudit"
 
 
 def test_issue54_determination_runtime_preserves_authority_separation() -> None:
