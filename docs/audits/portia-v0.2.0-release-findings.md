@@ -129,3 +129,9 @@ Teacher-facing language remains task-oriented while preserving Portia's epistemi
 No `P54-AUD-*` finding was opened for the read-only-surfaces domain.
 
 Installed acceptance snapshots directories and file hashes around each required read-only production surface and around the combined phase. Independent menu/provider regressions also protect byte-zero-write behavior. No read-time migration, repair, pointer refresh, derived rebuild, journal/lock/staging creation, workspace creation, or other hidden persistence defect was identified.
+
+## Slice 12 audit result
+
+No `P54-AUD-*` finding was opened for the packaging/public-surface domain.
+
+The wheel remains runtime-only, the sdist remains auditable source, runtime schema validation is delivered through a compiled contract bundle, the dependency closure is Core-only, the console/module-operations entry points are exact, and installed acceptance rejects source shadowing and unexpected PDS distributions.

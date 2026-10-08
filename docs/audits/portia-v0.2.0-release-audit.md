@@ -761,3 +761,49 @@ No `P54-AUD-*` defect was identified in this domain.
 No production runtime code changed in Slice 11. Changes are limited to audit evidence and focused read-only regression validation.
 
 Final verdict remains **PENDING** because packaging/public surface, documentation reconciliation, release-contract mechanics, cumulative repository qualification, Python/platform qualification, artifact freeze, publication, and fresh-download verification are not complete.
+
+## Slice 12 — Packaging and public surface
+
+Domain result: **PASS**
+
+Slice 12 reviewed source metadata, build hooks, wheel/sdist inventory policy, runtime schema delivery, console/plugin entry points, runtime dependency closure, root-package exports, isolated installed imports, and the boundary between runtime artifacts and auditable source materials.
+
+The audited packaging boundary preserves:
+
+```text
+wheel runtime surface != source-distribution audit surface
+compiled runtime schema bundle != repository schema tree
+Portia runtime dependency != sibling PDS module dependency
+module-operations provider != Suite routing provider
+module-operations provider != publication producer
+package import != source-checkout shadowing
+top-level package surface != every internal module
+development dependency != runtime dependency
+sdist inclusion of tests/docs/schemas != wheel leakage
+```
+
+`pyproject.toml` defines exactly one runtime dependency: `pds-core>=0.6.3,<0.7`. No sibling PDS module is a runtime dependency. Development tooling such as `jsonschema`, pytest, Ruff, mypy, build, packaging, referencing, and Twine remains confined to the `dev` extra.
+
+The entry-point surface is exact: the `portia` console command targets `portia.cli:main`, and the single `paper_data_suite.module_operations` provider targets `portia.pds_operations:get_module_operations_profile`. Package checks explicitly reject premature Suite-routing and publication-producer entry-point groups.
+
+The root package public surface is intentionally minimal: `portia.__all__` contains only `__version__`. Deliberate subpackage APIs such as `portia.models`, `portia.storage`, `portia.workflows`, `portia.attention`, and `portia.exports` define their own explicit public exports rather than being re-exported from the package root.
+
+Wheel and sdist roles are intentionally different. The runtime wheel contains Portia Python modules plus `py.typed`, `runtime-coverage.json`, and the compiled `_runtime_contract_bundle.json`. Generic and Issue #53 package checkers reject repository-level `docs/`, `schemas/`, `scripts/`, `tests/`, `.github/`, fixture content, cache files, unsafe paths, and raw `portia/schemas/` leakage from the wheel.
+
+The source distribution intentionally retains documentation, raw schemas, scripts, tests, and validation evidence so the release source remains inspectable and reproducible. `MANIFEST.in` explicitly includes those source/audit materials while excluding Python caches.
+
+Runtime schema validation does not require `jsonschema` or the repository schema tree. `setup.py` compiles the selected public-contract closure into `_runtime_contract_bundle.json`; installed runtime code loads that package resource through `importlib.resources`. Source checkouts may build the same bundle from repository schemas only when the packaged resource is absent.
+
+Issue #53 installed acceptance supplies the executable distribution boundary. It installs the exact candidate into a temporary isolated virtual environment with `PIP_NO_INDEX=1`, removes inherited `PYTHONPATH`/workspace authority, requires imports to resolve inside that temporary environment rather than the source checkout, verifies Portia `0.2.0`, and rejects any installed PDS distribution set other than exactly `pds-core` plus `pds-portia`.
+
+Package checkers validate wheel and sdist metadata, required runtime capability files, exact entry points, the Core compatibility floor, absence of sibling runtime dependencies, and the runtime contract bundle. The cumulative repository qualification already places build, Twine, generic and issue-specific package checks, and installed-wheel smokes after source validation.
+
+Slice 12 does not freeze a final release artifact. Exact v0.2.0 wheel/sdist construction, hashes, final package verification, tag/release publication, and fresh-download verification remain Phase 2 release work after all Phase 1 domains pass.
+
+No inherited foundation disposition changes in Slice 12.
+
+No `P54-AUD-*` defect was identified in this domain.
+
+No production runtime code changed in Slice 12. Changes are limited to audit evidence and focused packaging/public-surface regression validation.
+
+Final verdict remains **PENDING** because documentation reconciliation, release-contract mechanics, cumulative repository qualification, Python/platform qualification, artifact freeze, publication, and fresh-download verification are not complete.

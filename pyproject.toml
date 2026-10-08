@@ -103,6 +103,7 @@ files = [
     "scripts/validate_issue54_usability_audit.py",
     "scripts/validate_issue54_menu_terminology_audit.py",
     "scripts/validate_issue54_read_only_audit.py",
+    "scripts/validate_issue54_packaging_audit.py",
     "scripts/validate_repository.py",
     "scripts/validate_runtime_models.py",
     "scripts/validate_storage.py",

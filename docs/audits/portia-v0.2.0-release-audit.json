@@ -82,7 +82,7 @@
     },
     {
       "domain_id": "packaging_public_surface",
-      "status": "pending"
+      "status": "pass"
     },
     {
       "domain_id": "documentation_reconciliation",

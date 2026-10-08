@@ -578,3 +578,54 @@ Portia Issue #54 read-only surfaces audit validation passed
 ```
 
 This PASS is domain-scoped. It is not final v0.2.0 release approval.
+
+## Slice 12 — Packaging and public surface
+
+Slice 12 audits source metadata, build/package inventory policy, runtime schema delivery, dependency closure, public entry points, and isolated installed-runtime boundaries.
+
+No production runtime code is changed by Slice 12.
+
+Focused evidence is protected by:
+
+```text
+scripts/validate_issue54_packaging_audit.py
+tests/test_issue54_packaging_audit.py
+```
+
+The validator checks:
+
+```text
+packaging_public_surface == pass
+all inherited foundation obligations remain reconciled
+release contract remains Python >=3.11 / Core >=0.6.3,<0.7
+runtime dependencies remain Core-only
+console entry point remains portia.cli:main
+module-operations entry point remains the sole plugin surface
+publication-producer and Suite-routing entry points remain absent
+wheel policy excludes docs/schemas/scripts/tests/.github and raw schema tree
+sdist policy retains auditable docs/schemas/scripts/tests
+compiled runtime-contract bundle remains required
+root package exports only __version__
+Issue #53 isolated acceptance retains exact Core+Portia distribution boundary
+Slice 12 opens no packaging finding when no defect was identified
+```
+
+Focused validation:
+
+```text
+python scripts/validate_issue54_release_audit.py
+python scripts/validate_issue54_architecture_audit.py
+python scripts/validate_issue54_packaging_audit.py
+python -m pytest -q tests/test_issue54_release_audit.py tests/test_issue54_architecture_audit.py tests/test_issue54_packaging_audit.py tests/test_package_baseline.py tests/test_issue52_packaging.py tests/test_issue53_qualification.py
+python -m ruff check scripts/validate_issue54_packaging_audit.py tests/test_issue54_packaging_audit.py
+python -m mypy scripts/validate_issue54_packaging_audit.py
+git diff --check
+```
+
+Expected new terminal result:
+
+```text
+Portia Issue #54 packaging/public-surface audit validation passed
+```
+
+This PASS is domain-scoped. It is not final v0.2.0 release approval and does not freeze release artifacts.
