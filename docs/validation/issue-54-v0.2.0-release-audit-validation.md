@@ -629,3 +629,60 @@ Portia Issue #54 packaging/public-surface audit validation passed
 ```
 
 This PASS is domain-scoped. It is not final v0.2.0 release approval and does not freeze release artifacts.
+
+## Slice 13 — Documentation reconciliation
+
+Slice 13 audits and reconciles the release-facing documentation against the
+current v0.2.0 candidate.
+
+P54-AUD-001 is resolved as a MINOR documentation-reconciliation finding.
+
+No production runtime code is changed by Slice 13. The release-notes file is
+added to source-distribution documentation inventory only.
+
+Focused evidence is protected by:
+
+```text
+scripts/validate_issue54_documentation_audit.py
+tests/test_issue54_documentation_audit.py
+```
+
+The validator checks:
+
+```text
+documentation_reconciliation == pass
+P54-AUD-001 exists as MINOR/resolved
+finding_counts and unresolved IDs are exact
+all inherited foundation obligations remain reconciled
+README release status is candidate-scoped, not implementation-era
+README accepted ADR inventory reaches ADR 0020
+README no longer lists implemented v0.2 work as future
+README license statement matches MIT
+SECURITY duplicate identity heading is removed
+docs index has no visible em-dash mojibake
+RELEASE_NOTES_v0.2.0.md exists and remains publication-pending
+release notes preserve Core/runtime/privacy/authority/retention boundaries
+CHANGELOG has a fresh Unreleased section plus v0.2.0 section
+release notes are required in the source distribution
+final verdict remains PENDING and publication remains not_started
+```
+
+Focused validation:
+
+```text
+python scripts/validate_issue54_release_audit.py
+python scripts/validate_issue54_packaging_audit.py
+python scripts/validate_issue54_documentation_audit.py
+python -m pytest -q tests/test_issue54_release_audit.py tests/test_issue54_packaging_audit.py tests/test_issue54_documentation_audit.py tests/test_package_baseline.py tests/test_issue53_qualification.py
+python -m ruff check scripts/validate_issue54_documentation_audit.py tests/test_issue54_documentation_audit.py
+python -m mypy scripts/validate_issue54_documentation_audit.py
+git diff --check
+```
+
+Expected new terminal result:
+
+```text
+Portia Issue #54 documentation reconciliation audit validation passed
+```
+
+`P54-AUD-001` is resolved. This domain PASS is not final v0.2.0 release approval.

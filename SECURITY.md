@@ -36,8 +36,6 @@ Consumers must preserve these distinctions in user interfaces, exports, automati
 
 ## Identity and Cross-Module Boundaries
 
-## Identity and Cross-Module Boundaries
-
 `pds-core` provides shared Paper Data Suite infrastructure and authority for workspace routing, Core class and roster identity, and accepted cross-module primitives. Portia owns its domain records, Portia-specific application validation, guarded persistence, lifecycle behavior, and domain semantics. Neither layer may silently assume authority assigned to the other.
 
 Roster references are scoped to the exact Core class authority and must not be treated as global identifiers. Authoritative roster identity is the exact `class_id + student_id` pair. Actor Directory identity is separate from Core roster identity, and names or display snapshots are never identity.

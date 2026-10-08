@@ -74,6 +74,7 @@ REQUIRED_FOUNDATION_REAUDITS = (
 )
 
 REQUIRED_FILES = (
+    "RELEASE_NOTES_v0.2.0.md",
     "docs/audits/portia-v0.2.0-release-audit.md",
     "docs/audits/portia-v0.2.0-release-audit.json",
     "docs/audits/portia-v0.2.0-release-findings.md",

@@ -86,7 +86,7 @@
     },
     {
       "domain_id": "documentation_reconciliation",
-      "status": "pending"
+      "status": "pass"
     },
     {
       "domain_id": "release_contract_mechanical",
@@ -143,11 +143,47 @@
       "status": "reconciled"
     }
   ],
-  "findings": [],
+  "findings": [
+    {
+      "finding_id": "P54-AUD-001",
+      "audit_domain": "documentation_reconciliation",
+      "classification": "MINOR",
+      "summary": "Release-facing documentation retained stale implementation-era language and duplicated/garbled text.",
+      "exact_evidence": [
+        "README.md described v0.2.0 as an implementation phase.",
+        "README.md stopped accepted ADR inventory at ADR 0019 although ADR 0020 is accepted.",
+        "README.md listed already-implemented v0.2 capabilities as likely next work.",
+        "README.md promised future license documentation despite the MIT LICENSE.",
+        "SECURITY.md duplicated the Identity and Cross-Module Boundaries heading.",
+        "docs/README.md contained visible em-dash mojibake and stale Slice-1-only wording for Issue #54 validation."
+      ],
+      "affected_files_or_contracts": [
+        "README.md",
+        "SECURITY.md",
+        "CHANGELOG.md",
+        "docs/README.md",
+        "RELEASE_NOTES_v0.2.0.md",
+        "source-distribution documentation inventory"
+      ],
+      "expected_behavior": "Release-facing documentation accurately describes the current candidate, accepted architecture, license, deferred scope, and publication state.",
+      "observed_problem": "Top-level documentation lagged the executable candidate and accepted architecture.",
+      "risk_or_consequence": "Readers could mistake implemented capabilities for future work or misunderstand release/license/architecture status.",
+      "required_disposition": "Reconcile release-facing documentation and mechanically guard the corrected claims before release preparation completes.",
+      "resolution": "Updated README, SECURITY, CHANGELOG, docs index, added candidate release notes, and wired release notes into sdist/package validation.",
+      "validation_evidence": [
+        "scripts/validate_issue54_documentation_audit.py",
+        "tests/test_issue54_documentation_audit.py",
+        "scripts/validate_issue54_release_audit.py",
+        "scripts/validate_issue54_packaging_audit.py"
+      ],
+      "follow_up_issue_if_any": null,
+      "status": "resolved"
+    }
+  ],
   "finding_counts": {
     "BLOCKER": 0,
     "MAJOR": 0,
-    "MINOR": 0,
+    "MINOR": 1,
     "ACCEPTED LIMITATION": 0,
     "DEFERRED / FUTURE": 0
   },

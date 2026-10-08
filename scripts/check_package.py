@@ -98,6 +98,7 @@ REQUIRED_RUNTIME_FILES = {
 }
 REQUIRED_SDIST_FILES = {
     "LICENSE",
+    "RELEASE_NOTES_v0.2.0.md",
     "MANIFEST.in",
     "README.md",
     "SECURITY.md",

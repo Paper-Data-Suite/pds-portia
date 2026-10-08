@@ -135,3 +135,54 @@ Installed acceptance snapshots directories and file hashes around each required 
 No `P54-AUD-*` finding was opened for the packaging/public-surface domain.
 
 The wheel remains runtime-only, the sdist remains auditable source, runtime schema validation is delivered through a compiled contract bundle, the dependency closure is Core-only, the console/module-operations entry points are exact, and installed acceptance rejects source shadowing and unexpected PDS distributions.
+
+## P54-AUD-001 — Stale release-facing documentation
+
+Audit domain: `documentation_reconciliation`
+Classification: **MINOR**
+Status: **RESOLVED**
+
+**Summary:** Release-facing documentation retained implementation-era and
+duplicated text that no longer matched the v0.2.0 candidate.
+
+**Exact evidence:** `README.md` described v0.2.0 as an implementation phase,
+listed accepted ADRs only through 0019, described implemented persistence,
+identity, evidence, judgment, support, privacy, and export work as future work,
+and promised future license documentation despite the MIT license.
+`SECURITY.md` duplicated the `Identity and Cross-Module Boundaries` heading.
+`docs/README.md` contained visible `â€”` mojibake and described the Issue #54
+validation record as only Phase 0/Slice 1 evidence.
+
+**Affected files/contracts:** `README.md`, `SECURITY.md`, `CHANGELOG.md`,
+`docs/README.md`, release-audit documentation, source-distribution documentation
+inventory.
+
+**Expected behavior:** Release-facing documentation must describe the current
+candidate accurately, preserve completed-vs-deferred boundaries, expose the
+actual license and accepted ADR range, and avoid implying publication before
+Phase 2 verification.
+
+**Observed problem:** Several top-level documents lagged the executable and
+accepted architecture.
+
+**Risk/consequence:** A reader could incorrectly conclude that implemented
+v0.2.0 capabilities were absent, that ADR 0020 was not accepted, that licensing
+was unresolved, or that the release documentation was less mature than the
+candidate actually is.
+
+**Required disposition:** Reconcile all release-facing claims before release
+preparation completes; add candidate release notes; mechanically guard the
+corrected documentation and sdist inclusion.
+
+**Resolution:** Updated README status/ADR/deferred-work/license language, removed
+the duplicate SECURITY heading, corrected docs-index encoding and Issue #54
+description, created `RELEASE_NOTES_v0.2.0.md`, created a fresh changelog
+`Unreleased` section plus v0.2.0 section, and included release notes in the sdist.
+
+**Validation evidence:** `scripts/validate_issue54_documentation_audit.py`,
+`tests/test_issue54_documentation_audit.py`, the generic Issue #54 validator,
+packaging audit regression, and focused package/document tests.
+
+**Follow-up issue if any:** None. Later Issue #54 slices own release mechanics,
+full cumulative/platform qualification, publication, and fresh-download
+verification.

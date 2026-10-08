@@ -4,7 +4,7 @@
 
 Issue #54 is the final ethical, privacy, architecture, usability, package, and release gate for Portia v0.2.0.
 
-Phase: **Phase 1 — audit and release preparation**  
+Phase: **Phase 1 — audit and release preparation**
 Final verdict: **PENDING**
 
 `RELEASED — VERIFIED` is not available until publication and fresh-download verification are complete.
@@ -807,3 +807,53 @@ No `P54-AUD-*` defect was identified in this domain.
 No production runtime code changed in Slice 12. Changes are limited to audit evidence and focused packaging/public-surface regression validation.
 
 Final verdict remains **PENDING** because documentation reconciliation, release-contract mechanics, cumulative repository qualification, Python/platform qualification, artifact freeze, publication, and fresh-download verification are not complete.
+
+## Slice 13 — Documentation reconciliation
+
+Domain result: **PASS**
+
+Slice 13 reconciled the release-facing documentation against the executable
+v0.2.0 candidate and the already-completed Issue #54 domain audits.
+
+One concrete release finding was identified and resolved in this slice.
+
+### P54-AUD-001 — stale release-facing documentation
+
+Classification: **MINOR**
+Status: **RESOLVED**
+
+The root README still described v0.2.0 as being in an implementation phase,
+stopped the accepted ADR inventory at ADR 0019 even though ADR 0020 is accepted,
+listed already-implemented v0.2 capabilities as "Likely next work," and promised
+that licensing would be documented later despite the existing MIT license.
+`SECURITY.md` also repeated the `Identity and Cross-Module Boundaries` heading,
+and the docs index contained visible em-dash mojibake.
+
+The stale README future-work section is replaced with only genuinely deferred
+post-v0.2 work; the current status is release-candidate audit/release preparation;
+the accepted ADR range is 0001–0020; the license statement now points to MIT; the
+duplicate SECURITY heading and docs-index mojibake are removed.
+
+`RELEASE_NOTES_v0.2.0.md` is added as candidate-scoped release documentation. It
+records Python/Core compatibility, runtime/package surfaces, principal
+capabilities, privacy/authority/retention boundaries, deliberate deferrals, and
+the fact that publication/fresh-download verification remain pending. The notes
+are included in the source distribution and are not added to the runtime wheel.
+
+`CHANGELOG.md` now has a fresh `Unreleased` section followed by the v0.2.0
+candidate change set. The docs index now points to the release notes and describes
+the Issue #54 validation record as cumulative through Slice 13 rather than a
+Slice-1-only record.
+
+Historical statements inside earlier Slice 1–12 audit sections are preserved
+where they accurately describe what was pending at those checkpoints. They are
+not rewritten into ahistorical present-tense claims.
+
+No inherited foundation disposition changes in Slice 13.
+
+No production runtime code changed in Slice 13. The only package-boundary change
+is source-distribution documentation wiring for the release-notes file.
+
+Final verdict remains **PENDING**. Release-contract mechanical qualification,
+cumulative repository qualification, Python/platform qualification, artifact
+freeze, publication, and fresh-download verification are not complete.
