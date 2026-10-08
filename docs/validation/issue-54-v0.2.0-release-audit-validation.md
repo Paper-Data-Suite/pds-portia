@@ -340,3 +340,50 @@ Portia Issue #54 architecture/ownership audit validation passed
 ```
 
 This PASS is domain-scoped. It is not final v0.2.0 release approval.
+
+## Slice 7 — Storage, path, history, and compatibility
+
+Slice 7 audits canonical storage ownership, bounded/deep paths, technical and semantic history, legacy-reader compatibility, migration representations, and current/historical Core compatibility.
+
+No production runtime code is changed by Slice 7.
+
+Focused evidence is protected by:
+
+```text
+scripts/validate_issue54_storage_compat_audit.py
+tests/test_issue54_storage_compat_audit.py
+```
+
+The validator checks:
+
+```text
+storage_path_history_compatibility == pass
+PF-AUD-005 and PF-AUD-007 remain pending
+bounded writer and explicit legacy reader helper pairs remain present
+generated path/storage-history leaves remain bounded by accepted Issue #92 contracts
+migration representation reads remain exact and non-migrating
+accepted lifecycle/history non-rewrite markers remain present
+Core 0.6.4 remains current authority
+Core 0.6.3 remains historical checkpoint authority
+Slice 7 opens no storage/history finding when no defect was identified
+```
+
+Focused validation:
+
+```text
+python scripts/validate_issue54_release_audit.py
+python scripts/validate_issue54_architecture_audit.py
+python scripts/validate_issue54_storage_compat_audit.py
+python -m pytest -q tests/test_issue54_release_audit.py tests/test_issue54_architecture_audit.py tests/test_issue54_storage_compat_audit.py
+python -m ruff check scripts/validate_issue54_storage_compat_audit.py tests/test_issue54_storage_compat_audit.py
+python -m mypy scripts/validate_issue54_storage_compat_audit.py
+git diff --check
+```
+
+Expected new terminal result:
+
+```text
+Portia Issue #54 storage/path/history compatibility audit validation passed
+```
+
+This PASS is domain-scoped. It is not final v0.2.0 release approval.

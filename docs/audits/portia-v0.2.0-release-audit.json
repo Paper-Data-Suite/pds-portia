@@ -62,7 +62,7 @@
     },
     {
       "domain_id": "storage_path_history_compatibility",
-      "status": "pending"
+      "status": "pass"
     },
     {
       "domain_id": "recovery_error_integrity",

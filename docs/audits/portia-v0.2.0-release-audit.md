@@ -469,3 +469,73 @@ No `P54-AUD-*` defect was identified in this domain.
 No production runtime code changed in Slice 6. The focused architecture validator protects Core-only dependency direction, sibling-import isolation, installed entry-point boundaries, nonauthoritative derived-state semantics, and the exact inherited-obligation dispositions established here.
 
 Final verdict remains **PENDING** because the remaining Issue #54 audit domains, cumulative qualification, artifact freeze, publication, and fresh-download verification are not complete.
+
+## Slice 7 — Storage, path, history, and compatibility
+
+Domain result: **PASS**
+
+Slice 7 reviewed canonical storage ownership, bounded generated paths, deep-workspace behavior, technical storage history, legacy-path reader compatibility, migration representations, exact historical/currentness semantics, and the split current/historical Core compatibility authorities.
+
+The audited storage/history model preserves:
+
+```text
+canonical record != derived projection/index/export
+one canonical identity != multiple authoritative storage locations
+new bounded writer path != destructive migration of accepted legacy path
+legacy reader compatibility != legacy writer continuation
+technical storage revision != semantic lifecycle history
+exact historical reference != newest/current representation
+contract migration != semantic correction
+ordinary read != migration
+current representation != silent version winner
+removed historical payload != reconstructable derived history
+Core 0.6.4 current qualification != Core 0.6.3 historical checkpoint authority
+```
+
+Reviewed evidence includes:
+
+```text
+docs/decisions/0004-define-portia-identity-ownership-and-storage.md
+docs/decisions/0008-define-lifecycle-correction-and-migration-contracts.md
+docs/decisions/0009-define-coordinated-persistence-recovery-and-derived-index-contracts.md
+docs/decisions/0019-generalize-child-work-root-ownership-correction.md
+portia/storage/generated_paths.py
+portia/storage/paths.py
+portia/storage/repository.py
+portia/storage/migration_representations.py
+portia/storage/series.py
+portia/storage/derived.py
+portia/views/currentness.py
+portia/views/history.py
+tests/test_generated_paths_issue92.py
+tests/test_derived_paths_issue92.py
+tests/test_deep_workspace_issue92.py
+tests/test_path_geometry_issue92.py
+tests/test_storage_repository.py
+tests/test_storage_migration_representations.py
+tests/test_student_view_work_history.py
+tests/test_issue92_qualification.py
+tests/test_issue53_end_to_end_acceptance.py
+scripts/smoke_test_issue53_end_to_end_wheel.py
+scripts/validate_repository.py
+```
+
+Issue #92's path-hardening boundary remains active. Generated infrastructure tokens and storage-revision leaves have fixed budgets independent of user/domain identity length. New work and Actor storage-history writes use bounded opaque leaves; derived projection/generation writers use bounded tokenized roots; target-adjacent temporary leaves do not embed destination filenames.
+
+Compatibility is intentionally asymmetric. The runtime retains explicit `legacy_*` path helpers for exact reads of accepted pre-Issue-92 storage-history and derived layouts, while new writes use the bounded layout. Tests prove that legacy derived generations load without migration and that cutting over to a new bounded generation does not rewrite retained legacy bytes.
+
+Technical storage-history preservation remains distinct from semantic lifecycle history. Repository replacement preserves exact accepted prior bytes under digest identity and rejects collisions. Lifecycle/currentness logic does not silently rewrite historical snapshots, fabricate missing canonical state from derived views, or reinterpret a superseded predecessor as its successor.
+
+Migration representation storage remains version-qualified and immutable. Ordinary reads never migrate, never select a version winner merely because another contract version exists, and fall back to an exact preserved representation only for the exact requested version. Representation migration remains distinct from semantic correction.
+
+Student-history projection keeps the current frontier while preserving explicit historical correction context. Exceptional-removal history is represented as unavailable rather than reconstructing removed payload, and migration context does not retarget out-of-scope legacy sources.
+
+Core compatibility remains intentionally split: released Core 0.6.4 is the current installed/path-hardening authority, while Core 0.6.3 remains the authenticated historical wheel authority for frozen earlier installed checkpoints. The package requirement remains `pds-core>=0.6.3,<0.7`.
+
+PF-AUD-005 and PF-AUD-007 remain pending. Slice 7 establishes storage/history compatibility, but append-preserving partial-commit recovery and final production application-validation/Integrity reconciliation belong in Slice 8.
+
+No `P54-AUD-*` defect was identified in this domain.
+
+No production runtime code changed in Slice 7. The focused validator protects bounded writer/legacy reader pairs, migration no-implicit-rewrite semantics, Core compatibility authority separation, and the decision not to prematurely reconcile recovery/application-validation obligations.
+
+Final verdict remains **PENDING** because the remaining Issue #54 audit domains, cumulative qualification, artifact freeze, publication, and fresh-download verification are not complete.
