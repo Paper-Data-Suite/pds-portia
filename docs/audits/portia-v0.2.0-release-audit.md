@@ -707,3 +707,57 @@ No `P54-AUD-*` defect was identified in this domain.
 No production runtime code changed in Slice 10. Changes are limited to audit evidence and focused terminology regression validation.
 
 Final verdict remains **PENDING** because read-only surfaces, packaging/public surface, documentation reconciliation, release-contract mechanics, cumulative repository qualification, Python/platform qualification, artifact freeze, publication, and fresh-download verification are not complete.
+
+## Slice 11 — Read-only surfaces
+
+Domain result: **PASS**
+
+Slice 11 reviewed the surfaces that are represented to the teacher, Core, or release qualification as read-only: student Timeline/current/history views, Attention queries, Core module-operations readiness/attention invocation, teacher-reference export history verification, exact historical predecessor loads, advanced technical inspection, metadata/provider discovery, and cancelled export preview.
+
+The audited boundary preserves:
+
+```text
+read != migrate
+read != repair
+read != refresh current pointer
+read != rebuild derived state
+read != create operation journal
+read != acquire lock
+read != create staging
+read != create workspace
+read != touch timestamp
+read != cleanup mutation
+history verification != regeneration
+Attention query != acknowledgement/suppression
+Integrity inspection != finding mutation
+provider discovery/invocation != canonical mutation
+```
+
+The strongest release evidence is Issue #53's installed-wheel read-only probe. It snapshots both the complete directory set and SHA-256 of every workspace file before and after each required operation, then repeats the guard around the entire combined read-only phase. Any created/deleted directory, created/deleted file, byte mutation, pointer rewrite, generated journal/lock/staging artifact, migration, rebuild, or persisted cache would change that snapshot and fail the installed acceptance.
+
+The installed probe executes production services rather than fixture-only readers:
+
+```text
+StudentTimelineService.generate(...)
+AttentionQueryService.query(...)
+Core diagnose_core_providers(...) + invoke_module_operations(...)
+TeacherReferenceExportHistoryService.list_for_work(...)
+AccountWorkflowService.load_exact(...)
+SupportWorkflowService.load_exact(...)
+```
+
+The probe also checks exact historical predecessors after later corrections and requires them to remain the expected superseded records. Reading historical state therefore does not silently follow successors, migrate representations, or rewrite currentness.
+
+Independent source-level/runtime tests reinforce the installed boundary. Current and deliberate-history Timeline reads are byte-zero-write; interactive Timeline remains zero-write; an empty-workspace Attention query is zero-write; Core readiness is byte-for-byte read-only; missing explicit readiness workspace does not create a directory; advanced Integrity/Quarantine/Recovery inspection is read-only; cancelled Teacher Reference preview is zero-write; and Teacher Reference history display is read-only and does not assign current authority.
+
+Core module-operations metadata loading is separately tested with a nonexistent `PDS_WORKSPACE_ROOT` and must not create that workspace. Provider implementation modules are lazy-loaded only when invoked.
+
+No hidden read-time migration or repair contract was found. History view code explicitly bounds history to discovered focal work, never reads technical storage-history blobs as domain history, and does not select currentness by technical storage chronology.
+
+No inherited foundation disposition changes in Slice 11.
+
+No `P54-AUD-*` defect was identified in this domain.
+
+No production runtime code changed in Slice 11. Changes are limited to audit evidence and focused read-only regression validation.
+
+Final verdict remains **PENDING** because packaging/public surface, documentation reconciliation, release-contract mechanics, cumulative repository qualification, Python/platform qualification, artifact freeze, publication, and fresh-download verification are not complete.

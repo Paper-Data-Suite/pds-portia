@@ -526,3 +526,55 @@ Portia Issue #54 menu terminology audit validation passed
 ```
 
 This PASS is domain-scoped. It is not final v0.2.0 release approval.
+
+## Slice 11 — Read-only surfaces
+
+Slice 11 audits byte-zero-write behavior across production read-only surfaces.
+
+No production runtime code is changed by Slice 11.
+
+Focused evidence is protected by:
+
+```text
+scripts/validate_issue54_read_only_audit.py
+tests/test_issue54_read_only_audit.py
+```
+
+The validator checks:
+
+```text
+read_only_surfaces == pass
+all inherited foundation obligations remain reconciled
+Issue #53 installed read-only probe retains per-surface snapshots
+Issue #53 retains one combined whole-phase snapshot guard
+snapshots include directory topology and every file SHA-256
+student Timeline/view uses production services
+Attention uses production query service
+Core readiness/attention provider invocation remains read-only
+Teacher Reference history verification remains read-only
+exact historical predecessor loads remain read-only
+menu Timeline/Attention/advanced/export read-only regressions remain present
+Core readiness/provider metadata discovery does not create missing workspace
+Slice 11 opens no read-only finding when no defect was identified
+```
+
+Focused validation:
+
+```text
+python scripts/validate_issue54_release_audit.py
+python scripts/validate_issue54_usability_audit.py
+python scripts/validate_issue54_menu_terminology_audit.py
+python scripts/validate_issue54_read_only_audit.py
+python -m pytest -q tests/test_issue54_release_audit.py tests/test_issue54_usability_audit.py tests/test_issue54_menu_terminology_audit.py tests/test_issue54_read_only_audit.py tests/test_teacher_menu_timeline.py::test_current_student_view_delegates_to_production_service_and_is_zero_write tests/test_teacher_menu_timeline.py::test_history_read_is_explicit_and_stays_zero_write tests/test_teacher_menu_timeline.py::test_interactive_current_timeline_view_is_zero_write tests/test_teacher_menu_attention.py::test_empty_workspace_attention_is_evaluated_and_zero_write tests/test_teacher_menu_advanced.py::test_empty_technical_inspection_is_read_only tests/test_teacher_menu_teacher_reference_export.py::test_cancel_at_exact_preview_is_zero_write tests/test_teacher_menu_teacher_reference_export.py::test_history_surface_is_read_only_and_does_not_assign_current_authority tests/test_issue52_readiness_provider.py::test_readiness_is_byte_for_byte_read_only tests/test_issue52_operations_profile.py::test_issue52_profile_loading_is_metadata_safe tests/test_issue53_end_to_end_acceptance.py::test_issue53_read_only_phase_snapshots_each_required_surface tests/test_issue53_end_to_end_acceptance.py::test_issue53_read_only_phase_uses_production_services tests/test_issue53_end_to_end_acceptance.py::test_issue53_read_only_phase_has_combined_byte_snapshot_guard
+python -m ruff check scripts/validate_issue54_read_only_audit.py tests/test_issue54_read_only_audit.py
+python -m mypy scripts/validate_issue54_read_only_audit.py
+git diff --check
+```
+
+Expected new terminal result:
+
+```text
+Portia Issue #54 read-only surfaces audit validation passed
+```
+
+This PASS is domain-scoped. It is not final v0.2.0 release approval.

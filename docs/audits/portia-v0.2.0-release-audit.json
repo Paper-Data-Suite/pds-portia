@@ -78,7 +78,7 @@
     },
     {
       "domain_id": "read_only_surfaces",
-      "status": "pending"
+      "status": "pass"
     },
     {
       "domain_id": "packaging_public_surface",
