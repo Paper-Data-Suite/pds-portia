@@ -70,7 +70,7 @@ def test_issue54_privacy_domain_pass_does_not_claim_release() -> None:
 
 
 def test_issue54_pf_aud_006_waits_for_workload_audit() -> None:
-    assert _obligation_status("PF-AUD-006") == "pending_reaudit"
+    assert _obligation_status("PF-AUD-006") in {"pending_reaudit", "reconciled"}
 
 
 def test_issue54_student_view_policy_keeps_sensitive_fields_bounded() -> None:

@@ -608,3 +608,49 @@ No `P54-AUD-*` defect was identified in this domain.
 No production runtime code changed in Slice 8. Changes are limited to audit evidence, focused validators/tests, and cross-slice regression guards.
 
 Final verdict remains **PENDING** because the remaining Issue #54 audit domains, cumulative qualification, artifact freeze, publication, and fresh-download verification are not complete.
+
+## Slice 9 — Teacher usability and workload
+
+Domain result: **PASS**
+
+Slice 9 reviewed the teacher-facing application surface for routine-task organization, navigation consistency, preview/confirmation burden, correction routing, privacy-safe manual review, technical diagnostics, export workflow, zero-write browsing, and separation between ordinary teaching work and expert record administration.
+
+The audited usability boundary preserves:
+
+```text
+routine teacher task != record-family administration
+display label != identity authority
+selection by listed context != free-text/fuzzy record lookup
+view/navigation != write
+preview != commit
+manual privacy review != canonical record editing
+include exact / omit != rewrite / sanitize / summarize
+teacher-reference generation != disclosure / delivery / filing
+routine correction != generic JSON mutation
+Advanced inspection != repair / lock clearing / Quarantine release
+technical diagnostics != required routine workflow
+```
+
+The ordinary application surface remains organized around eight teacher tasks: Record Event, Add Information, Record Response / Communication, Manage Support, Complete Follow-Up, View Timeline, Correct / Retract, and Attention Needed. Expert record-family inventory, Integrity, Quarantine, recovery, migration/ownership information, and exceptional-operation inspection remain behind the separate `Advanced Portia tools` surface.
+
+Routine selectors use teacher-facing display context while retaining exact underlying identity. Names are display aids rather than lookup authority; duplicate labels add exact disambiguation only when needed. Shared navigation preserves H/B/M/Q semantics, and long selections use deterministic pagination rather than forcing raw identifier entry.
+
+Routine browsing is intentionally zero-write. Timeline reads, attention inspection, technical inspection, history viewing, backing out, and cancelled previews do not create canonical records. Consequential writes use bounded task-specific authoring plus action-specific preview and uppercase confirmation.
+
+Correction remains family-specific. The menu routes through production lifecycle/correction services and does not expose a generic JSON editor, forced current pointer, arbitrary cross-work move, raw filesystem mutation, lock clearing, Quarantine release, or generic delete.
+
+Advanced mode is an expert escape hatch rather than a prerequisite for routine teaching. Even there, record details omit raw record JSON and filesystem paths; technical recovery/Integrity/Quarantine screens are read-only inspection and do not automatically acknowledge, suppress, release, resume, reconcile, or repair state.
+
+Teacher-reference export remains contextual to an exact current work item rather than a root-level export/admin workflow. Privacy-sensitive manual review exposes one flagged source field at a time and permits only `Include exact source content` or `Omit this content`. Portia does not summarize, rewrite, sanitize, or automatically redact that manual-review content. The exact outgoing HTML is then previewed, and execution requires typing `EXPORT` exactly. Cancelling at preview is zero-write.
+
+PF-AUD-006 is reconciled by this slice. The implementation now demonstrates that privacy-safe manual review and routine teacher workflows do not require low-level record administration: low-level/expert diagnostics are segregated, routine navigation and review are read-only until explicit confirmation, and manual privacy review is constrained to content inclusion/omission rather than record mutation.
+
+All inherited foundation obligations are now reconciled.
+
+The older Slice 4 privacy and Slice 8 recovery regression guards are narrowed here so they protect the obligations owned by those slices without freezing PF-AUD-006 at its historical pending state.
+
+No `P54-AUD-*` defect was identified in this domain.
+
+No production runtime code changed in Slice 9. Changes are limited to audit evidence, focused validation/tests, and cross-slice regression guards.
+
+Final verdict remains **PENDING** because menu terminology, read-only surfaces, packaging/public surface, documentation reconciliation, release-contract mechanics, cumulative repository qualification, Python/platform qualification, artifact freeze, publication, and fresh-download verification are not complete.

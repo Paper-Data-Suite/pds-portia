@@ -70,7 +70,7 @@
     },
     {
       "domain_id": "teacher_usability_workload",
-      "status": "pending"
+      "status": "pass"
     },
     {
       "domain_id": "menu_terminology",
@@ -110,7 +110,7 @@
     {
       "finding_id": "PF-AUD-006",
       "topic": "privacy-safe manual review without low-level teacher administration",
-      "status": "pending_reaudit"
+      "status": "reconciled"
     },
     {
       "finding_id": "PF-AUD-007",

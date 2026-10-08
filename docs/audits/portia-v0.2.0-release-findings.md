@@ -109,3 +109,11 @@ No `P54-AUD-*` finding was opened for the recovery/error/Integrity domain.
 PF-AUD-005 is **Reconciled**: accepted canonical writes survive partial failure, Operation Journal evidence preserves exact progress, bounded recovery resumes only proven remaining work, and no graph-wide rollback claim is made.
 
 PF-AUD-007 is **Reconciled**: production application validation is active before canonical workflow mutation and the representative runtime corpus preserves schema-valid/application-invalid cases demonstrating that schema acceptance is not sufficient.
+
+## Slice 9 audit result
+
+No `P54-AUD-*` finding was opened for the teacher-usability/workload domain.
+
+PF-AUD-006 is **Reconciled**. Routine teacher workflows remain task-oriented and separate from expert record administration; privacy-sensitive manual review is bounded to exact include/omit decisions; browsing and preview are zero-write; and consequential writes require explicit task-specific confirmation.
+
+All inherited foundation obligations PF-AUD-005 through PF-AUD-012 are now reconciled.

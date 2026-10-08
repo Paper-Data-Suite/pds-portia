@@ -426,3 +426,53 @@ Portia Issue #54 recovery/error/Integrity audit validation passed
 ```
 
 This PASS is domain-scoped. It is not final v0.2.0 release approval.
+
+## Slice 9 — Teacher usability and workload
+
+Slice 9 audits the task-oriented teacher application surface, navigation burden, zero-write browsing, bounded correction, privacy-safe manual review, export confirmation, and separation from advanced record administration.
+
+No production runtime code is changed by Slice 9.
+
+Focused evidence is protected by:
+
+```text
+scripts/validate_issue54_usability_audit.py
+tests/test_issue54_usability_audit.py
+```
+
+The validator checks:
+
+```text
+teacher_usability_workload == pass
+PF-AUD-006 == reconciled
+all inherited PF-AUD-005..012 obligations == reconciled
+eight routine teacher tasks remain distinct from Advanced Portia tools
+routine screens do not dump raw record JSON/filesystem paths
+advanced technical inspection remains read-only
+manual export review remains include-exact / omit only
+preview/navigation remains zero-write until explicit confirmation
+teacher-menu source validator still prohibits direct canonical mutation
+Slice 9 opens no usability finding when no defect was identified
+```
+
+Focused validation:
+
+```text
+python scripts/validate_issue54_release_audit.py
+python scripts/validate_issue54_privacy_audit.py
+python scripts/validate_issue54_recovery_integrity_audit.py
+python scripts/validate_issue54_usability_audit.py
+python scripts/validate_teacher_menu.py --stage source
+python -m pytest -q tests/test_issue54_release_audit.py tests/test_issue54_privacy_audit.py tests/test_issue54_recovery_integrity_audit.py tests/test_issue54_usability_audit.py
+python -m ruff check scripts/validate_issue54_privacy_audit.py scripts/validate_issue54_recovery_integrity_audit.py scripts/validate_issue54_usability_audit.py tests/test_issue54_privacy_audit.py tests/test_issue54_recovery_integrity_audit.py tests/test_issue54_usability_audit.py tests/test_issue54_release_audit.py
+python -m mypy scripts/validate_issue54_privacy_audit.py scripts/validate_issue54_recovery_integrity_audit.py scripts/validate_issue54_usability_audit.py
+git diff --check
+```
+
+Expected new terminal result:
+
+```text
+Portia Issue #54 teacher usability/workload audit validation passed
+```
+
+This PASS is domain-scoped. It is not final v0.2.0 release approval.

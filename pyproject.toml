@@ -100,6 +100,7 @@ files = [
     "scripts/validate_issue54_architecture_audit.py",
     "scripts/validate_issue54_storage_compat_audit.py",
     "scripts/validate_issue54_recovery_integrity_audit.py",
+    "scripts/validate_issue54_usability_audit.py",
     "scripts/validate_repository.py",
     "scripts/validate_runtime_models.py",
     "scripts/validate_storage.py",

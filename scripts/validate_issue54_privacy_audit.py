@@ -190,8 +190,13 @@ def validate_repo(root: Path = ROOT) -> list[str]:
         errors.append(f"{PRIVACY_DOMAIN} must be recorded as pass")
     if audit.get("synthetic_only_confirmation") is not True:
         errors.append("release audit must retain synthetic-only confirmation")
-    if _obligation_status(audit, "PF-AUD-006") != "pending_reaudit":
-        errors.append("PF-AUD-006 must remain pending until the teacher-usability/workload audit")
+    if _obligation_status(audit, "PF-AUD-006") not in {
+        "pending_reaudit",
+        "reconciled",
+    }:
+        errors.append(
+            "PF-AUD-006 must remain explicitly tracked across the privacy/usability handoff"
+        )
 
     for path, markers in MARKERS.items():
         try:

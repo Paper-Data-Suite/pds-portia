@@ -63,7 +63,6 @@ def test_issue54_recovery_and_application_validation_obligations_are_reconciled(
     statuses = _statuses()
     assert statuses["PF-AUD-005"] == "reconciled"
     assert statuses["PF-AUD-007"] == "reconciled"
-    assert statuses["PF-AUD-006"] == "pending_reaudit"
 
 
 def test_issue54_orchestration_refuses_fictitious_graph_rollback() -> None:
