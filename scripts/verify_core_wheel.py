@@ -23,6 +23,10 @@ KNOWN_WHEELS = {
         "0.6.4",
         "48cea9317f2967bdc0f2d4c14349a56677c7c3f8211f0f33978ccb1a1c75859b",
     ),
+    "pds_core-0.6.5-py3-none-any.whl": (
+        "0.6.5",
+        "9ace75f17b23b7f0ed6a709d531af5120db43d0325b4148d26f2d6ba1d4b3c18",
+    ),
 }
 
 

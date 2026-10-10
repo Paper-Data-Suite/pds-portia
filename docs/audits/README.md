@@ -1,6 +1,6 @@
-# Portia Foundation Audits
+# Portia Audits
 
-This directory contains durable architecture-audit evidence for Portia.
+This directory contains durable architecture- and release-audit evidence for Portia.
 
 The Issue #23 audit is intentionally separate from Portia runtime contracts. Audit JSON and approval JSON are governance metadata; they are not public Portia schemas and must not be added to `schemas/schema-catalog.json`.
 
@@ -23,3 +23,19 @@ A `not_ready` audit is valid without an approval record. A `ready_for_implementa
 The approval uses a post-commit governance attestation: the approval file necessarily lives in a later governance-only commit because a Git commit cannot contain its own final SHA. The later commit does not move the approved substantive target.
 
 Historical construction checkpoints remain historical evidence. They are not rewritten merely because sibling repositories later advance.
+
+## Portia v0.2.0 release audit
+
+Issue #54 is the final executable-milestone release gate. Its durable evidence is separate from the historical Issue #23 foundation audit:
+
+- `portia-v0.2.0-release-audit.md` — human-readable skeptical release-audit record;
+- `portia-v0.2.0-release-audit.json` — machine-readable release-audit state;
+- `portia-v0.2.0-release-findings.md` — durable Issue #54 findings register.
+
+The focused validator is:
+
+```powershell
+python scripts\validate_issue54_release_audit.py
+```
+
+During Phase 1, `PENDING` is the expected audit verdict. `RELEASED — VERIFIED` is reserved for the post-publication state after exact published bytes have passed fresh-download verification.

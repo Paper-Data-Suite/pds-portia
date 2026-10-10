@@ -348,10 +348,12 @@ def _repository_findings(root: Path) -> list[str]:
             "ubuntu-latest",
             "windows-latest",
             'python: "3.11"',
+            'current_core: "0.6.5"',
+            'prior_core: "0.6.4"',
             'core: "0.6.3"',
-            'current_core: "0.6.4"',
             "python scripts/validate_repository.py",
             '--core-wheel "$env:PDS_CORE_WHEEL"',
+            '--prior-core-wheel "$env:PDS_PRIOR_CORE_WHEEL"',
             '--historical-core-wheel "$env:PDS_HISTORICAL_CORE_WHEEL"',
         ):
             if phrase not in text:

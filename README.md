@@ -6,22 +6,22 @@ Portia is intended to help teachers document behavior-related events, preserve m
 
 ## Current Status
 
-Portia is in its executable v0.2.0 implementation phase.
+Portia is in v0.2.0 release-candidate audit and release preparation. It is not yet `RELEASED — VERIFIED`.
 
 The repository currently contains:
 
 * evidence-based research on responsible K–12 behavior documentation and management;
 * accepted design analyses defining Portia’s role, identity model, ownership rules, canonical storage, references, lifecycle, correction, migration, removal, integrity diagnostics, coordinated persistence, recovery, Quarantine, finding administration, derived rebuilding, the Event and Support Process work families, the teacher-local Actor Directory, source-evidence and human-judgment layers, Response/Communication, Support/Intervention/Implementation/Fidelity, Follow-Up/Outcome/Reentry/Repair, paper/import staging, privacy projections, deliberate export, retention hooks, and future retention-orchestration boundaries;
-* accepted Architecture Decision Records ADR 0001 through ADR 0019;
+* accepted Architecture Decision Records ADR 0001 through ADR 0020;
 * independently versioned Draft 2020-12 identifier, reference, target, Actor, Account, Observation, Review, Classification, Hypothesis, Determination, attribution, provenance, lifecycle, correction, disagreement, dependency, migration, ownership-correction, removal, relationship, operational, and derived-projection schemas;
 * retained historical Event-family version-1 schemas, Event version 2, Event Participant and Role version 3, Work Relationship version 2, Actor Directory version-1 contracts, Account and Observation version-1 contracts, Review v1, Classification v1, Hypothesis v1, and Determination v1 contracts, and Actor-aware operational version-2 contracts;
 * validated synthetic examples, focused application-invalid matrices across the foundation issues, and the Issue #22 representative graph corpus with 15 positive and 37 schema-valid graph-invalid scenarios;
 * an installable, strictly typed `pds-portia` package with immutable version-explicit runtime models, exact JSON-native conversion, and in-memory application validation;
 * and automated offline schema-validation, state-machine, compatibility, privacy, example, and documentation-consistency tests.
 
-Portia now contains an installable executable package, immutable runtime models/application validation, the production canonical-storage/recovery layer, the Issue #39 Core-roster / Actor Directory identity service, Issue #40 Event/Participant/Role/Work Relationship services, Issue #41 production Account and Observation workflows, and Issue #42 production Review, Classification, Hypothesis, and Determination workflows. The accepted foundation remains defined by ADRs 0001–0019, the public contract versions listed in `schemas/schema-catalog.json`, the focused validation suites for Issues #11–#21, and the combined representative graph corpus added by Issue #22. Judgment workflows now add guarded digital-entry creation, exact historical reads, current-use qualification, Review progression, lifecycle/correction history, Determination reconsideration/reversal, Quarantine enforcement, and explicit sibling-module evidence authority while preserving the evidence-versus-human-judgment boundary.
+Portia now contains an installable executable package, immutable runtime models/application validation, the production canonical-storage/recovery layer, the Issue #39 Core-roster / Actor Directory identity service, Issue #40 Event/Participant/Role/Work Relationship services, Issue #41 production Account and Observation workflows, and Issue #42 production Review, Classification, Hypothesis, and Determination workflows. The accepted foundation remains defined by ADRs 0001–0020, the public contract versions listed in `schemas/schema-catalog.json`, the focused validation suites for Issues #11–#21, and the combined representative graph corpus added by Issue #22. Judgment workflows now add guarded digital-entry creation, exact historical reads, current-use qualification, Review progression, lifecycle/correction history, Determination reconsideration/reversal, Quarantine enforcement, and explicit sibling-module evidence authority while preserving the evidence-versus-human-judgment boundary.
 
-Historical closeout compatibility is intentionally retained without redefining current authority. Issue #12, Issue #13, and Issue #14 checkpoint tests use the phrases **Architecture Decision Records through ADR 0009** and **Actor Directory version-1 record family** for their then-current milestones. Those phrases describe historical checkpoints only; the current foundation inventory above, ADRs 0001–0019, and the current schema catalog remain authoritative.
+Historical closeout compatibility is intentionally retained without redefining current authority. Issue #12, Issue #13, and Issue #14 checkpoint tests use the phrases **Architecture Decision Records through ADR 0009** and **Actor Directory version-1 record family** for their then-current milestones. Those phrases describe historical checkpoints only; the current foundation inventory above, ADRs 0001–0020, and the current schema catalog remain authoritative.
 
 ### Issue #37 current implementation
 
@@ -1785,27 +1785,20 @@ Development examples, fixtures, screenshots, exports, and tests should use synth
 
 Local-first storage does not make student records inherently non-sensitive. Portia workspace data, exports, synchronized folders, and backups must be handled according to applicable school, district, state, and federal requirements.
 
-## Next Architecture Work
+## Deferred Beyond v0.2.0
 
-Likely next work includes:
+The v0.2.0 release deliberately does not claim later platform or integration work.
+Confirmed deferred areas include:
 
-* implementing the accepted ADR 0009, ADR 0010, and ADR 0011 persistence, Actor Directory, Account/Observation evidence, recovery, Quarantine, integrity, and derived-generation contracts as strictly typed production services in a later executable milestone;
-* building teacher-facing Actor selection plus Account/Observation capture, review, correction, retraction, and privacy-maintenance workflows;
-* defining the minimal Support Process root and status contract, followed by the broader Support, Intervention, implementation, and fidelity model;
-* defining Classification, Hypothesis, Determination, Response, Follow-Up, Outcome, and Communication schemas that consume Account/Observation evidence and exact Actor references while preserving their own contextual roles, review, and authority evidence;
-* defining how teacher schedules assist Event ownership selection;
-* implementing and performance-testing the minimum viable teacher workflow;
-* establishing privacy projections and redaction for multi-student Events;
-* defining deliberate student-specific exports;
-* specifying PDS2 page-record and route schemas;
-* evaluating a capture-batch routing contract for multi-entry paper sheets;
-* defining the Portia intervention producer profile, immutable manifest contract, privacy projection, and Core v0.6 fixture;
-* defining cross-year Support successor workflows;
-* and defining Portia archival integration with Sunset.
+* future privacy-minimized Core intervention publication;
+* future Suite-wide retention/disposition orchestration through a Sunset-like boundary;
+* paper/import operationalization beyond the v0.2.0 digital/local runtime;
+* cross-year Support successor workflows;
+* and institution-wide identity, authentication, authorization, concurrency, records administration, and tenant governance.
 
 ## License
 
-Licensing information will be documented before an initial software release.
+Portia is licensed under the MIT License. See `LICENSE`.
 
 ### Issue #19 current implementation
 
