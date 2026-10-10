@@ -90,7 +90,7 @@
     },
     {
       "domain_id": "release_contract_mechanical",
-      "status": "pending"
+      "status": "pass"
     },
     {
       "domain_id": "cumulative_repository_qualification",

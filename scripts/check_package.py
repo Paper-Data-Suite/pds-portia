@@ -353,6 +353,24 @@ REQUIRED_SDIST_FILES.update(
 )
 
 
+_ISSUE54_REQUIRED_SDIST_FILES = {
+    "RELEASE_NOTES_v0.2.0.md",
+    "docs/audits/portia-v0.2.0-release-audit.json",
+    "docs/audits/portia-v0.2.0-release-audit.md",
+    "docs/audits/portia-v0.2.0-release-findings.md",
+    "docs/validation/issue-54-v0.2.0-release-audit-validation.md",
+    "scripts/check_issue54_release_package.py",
+    "scripts/validate_issue54_release_audit.py",
+    "scripts/validate_issue54_documentation_audit.py",
+    "scripts/validate_issue54_release_mechanics.py",
+    "tests/test_issue54_release_audit.py",
+    "tests/test_issue54_documentation_audit.py",
+    "tests/test_issue54_release_package.py",
+    "tests/test_issue54_release_mechanics.py",
+}
+REQUIRED_SDIST_FILES.update(_ISSUE54_REQUIRED_SDIST_FILES)
+
+
 def _unsafe_path(name: str) -> bool:
     path = PurePosixPath(name)
     return path.is_absolute() or any(part in {"", ".", ".."} for part in path.parts)

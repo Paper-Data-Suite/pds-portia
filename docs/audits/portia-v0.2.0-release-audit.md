@@ -857,3 +857,65 @@ is source-distribution documentation wiring for the release-notes file.
 Final verdict remains **PENDING**. Release-contract mechanical qualification,
 cumulative repository qualification, Python/platform qualification, artifact
 freeze, publication, and fresh-download verification are not complete.
+
+## Slice 14 — Release contract and mechanical qualification
+
+Domain result: **PASS**
+
+Slice 14 audits the release contract as a buildable package contract rather than
+as a publication claim.
+
+The exact candidate identity remains:
+
+```text
+distribution: pds-portia
+version: 0.2.0
+Python: >=3.11
+runtime dependency: pds-core>=0.6.3,<0.7
+wheel: pds_portia-0.2.0-py3-none-any.whl
+sdist: pds_portia-0.2.0.tar.gz
+console: portia = portia.cli:main
+module operations: portia = portia.pds_operations:get_module_operations_profile
+sibling PDS runtime dependency: none
+publication-producer capability: none
+```
+
+A dedicated `scripts/check_issue54_release_package.py` gate now validates actual
+clean-build output. It requires `dist/` to contain exactly the expected wheel and
+sdist, validates wheel integrity and `py3-none-any` metadata, requires the runtime
+contract bundle and typed-package markers, validates distribution metadata and
+exact entry points, rejects sibling runtime dependencies and premature
+Suite/publication entry points, and keeps repository/audit material out of the
+runtime wheel.
+
+The same gate verifies that the sdist uses the exact `pds_portia-0.2.0` root and
+contains release notes, changelog, security policy, Issue #54 audit state,
+findings register, validation record, release/package validator, mechanical
+validator, and focused tests. The sdist-carried machine audit must show
+`release_contract_mechanical = pass`, while cumulative repository and
+Python/platform qualification remain pending.
+
+The generic package checker now also requires Issue #54 release-preparation
+evidence in the sdist.
+
+Slice 14 intentionally does not make candidate hashes authoritative. The package
+checker prints SHA-256 values for the mechanically checked wheel and sdist but
+labels them `NOT FINAL`. Those bytes are built from the release-preparation
+branch before later qualification commits and before merge to `main`.
+
+Final release artifacts must still be rebuilt from the exact clean post-merge
+qualified release commit during Phase 2. If those final bytes are rebuilt after
+their hashes are recorded, the prior hashes are invalid and downstream artifact
+qualification must restart.
+
+No `P54-AUD-*` finding was opened in Slice 14.
+
+No inherited foundation disposition changes in Slice 14.
+
+No production runtime code changed in Slice 14. Changes are release tooling,
+audit evidence, package evidence requirements, and focused tests only.
+
+Final verdict remains **PENDING**. Cumulative repository qualification,
+Python/platform qualification, hosted release-preparation CI, exact-main
+qualification, final artifact freeze, publication, and fresh-download
+verification remain incomplete.

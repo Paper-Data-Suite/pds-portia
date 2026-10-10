@@ -686,3 +686,66 @@ Portia Issue #54 documentation reconciliation audit validation passed
 ```
 
 `P54-AUD-001` is resolved. This domain PASS is not final v0.2.0 release approval.
+
+## Slice 14 — Release contract and mechanical qualification
+
+Slice 14 adds the first Issue #54 package gate that validates actual candidate
+wheel/sdist bytes without freezing them as release artifacts.
+
+Focused source validation:
+
+```text
+python scripts/validate_issue54_release_audit.py
+python scripts/validate_issue54_packaging_audit.py
+python scripts/validate_issue54_documentation_audit.py
+python scripts/validate_issue54_release_mechanics.py
+```
+
+Build the mechanical candidate from a clean build-output state, then require:
+
+```text
+python -m build
+python -m twine check dist/*
+python scripts/check_package.py dist
+python scripts/check_issue53_package.py dist
+python scripts/check_issue54_release_package.py dist
+python -m pip check
+```
+
+The Issue #54 package gate requires exactly:
+
+```text
+pds_portia-0.2.0-py3-none-any.whl
+pds_portia-0.2.0.tar.gz
+```
+
+and prints:
+
+```text
+Portia Issue #54 release/package validation passed
+candidate wheel SHA-256 (NOT FINAL): <diagnostic>
+candidate sdist SHA-256 (NOT FINAL): <diagnostic>
+Candidate hashes are diagnostic only; Phase 2 must rebuild from exact qualified main.
+```
+
+Candidate hashes are diagnostic only. They must not be copied into
+`release_publication` or treated as final v0.2.0 release bytes.
+
+Focused regression validation:
+
+```text
+python -m pytest -q tests/test_issue54_release_audit.py tests/test_issue54_packaging_audit.py tests/test_issue54_documentation_audit.py tests/test_issue54_release_package.py tests/test_issue54_release_mechanics.py tests/test_package_baseline.py tests/test_issue53_qualification.py
+python -m ruff check scripts/check_issue54_release_package.py scripts/validate_issue54_release_mechanics.py tests/test_issue54_release_package.py tests/test_issue54_release_mechanics.py
+python -m mypy scripts/check_issue54_release_package.py scripts/validate_issue54_release_mechanics.py
+git diff --check
+```
+
+Expected source-state result:
+
+```text
+Portia Issue #54 release-contract/mechanical audit validation passed
+```
+
+This domain PASS is not final v0.2.0 release approval. It does not freeze artifact
+hashes, create `SHA256SUMS.txt`, create the `v0.2.0` tag, or publish a GitHub
+Release.

@@ -105,6 +105,8 @@ files = [
     "scripts/validate_issue54_read_only_audit.py",
     "scripts/validate_issue54_packaging_audit.py",
     "scripts/validate_issue54_documentation_audit.py",
+    "scripts/check_issue54_release_package.py",
+    "scripts/validate_issue54_release_mechanics.py",
     "scripts/validate_repository.py",
     "scripts/validate_runtime_models.py",
     "scripts/validate_storage.py",
