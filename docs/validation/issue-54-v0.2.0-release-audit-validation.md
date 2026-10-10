@@ -806,3 +806,67 @@ not Phase 2 release artifacts.
 
 Python/platform qualification remains pending after Slice 15. The final verdict
 therefore remains `PENDING`.
+
+## Slice 16 — Python and platform qualification statement
+
+Slice 16 validates the release-support statement required by Issue #54.
+
+The exact distinction is:
+
+```text
+package metadata:
+Requires-Python >=3.11
+
+release qualification matrix:
+Windows / Python 3.11
+Ubuntu / Python 3.11
+```
+
+Both hosted lanes retain the exact Core authority split:
+
+```text
+current:    Core 0.6.5
+prior:      Core 0.6.4
+historical: Core 0.6.3
+```
+
+Focused validation:
+
+```text
+python scripts/validate_issue54_release_audit.py
+python scripts/validate_issue54_release_mechanics.py
+python scripts/validate_issue54_cumulative_qualification.py
+python scripts/validate_issue54_python_platform_qualification.py
+python -m pytest -q tests/test_issue54_release_mechanics.py tests/test_issue54_cumulative_qualification.py tests/test_issue54_python_platform_qualification.py
+python -m ruff check scripts/validate_issue54_python_platform_qualification.py tests/test_issue54_python_platform_qualification.py
+python -m mypy scripts/validate_issue54_python_platform_qualification.py
+git diff --check
+```
+
+The focused terminal marker is:
+
+```text
+Portia Issue #54 Python/platform qualification validation passed
+```
+
+The authoritative cumulative repository command remains:
+
+```text
+python scripts/validate_repository.py \
+  --core-wheel <released Core 0.6.5 wheel> \
+  --prior-core-wheel <released Core 0.6.4 wheel> \
+  --historical-core-wheel <released Core 0.6.3 wheel>
+```
+
+The repository validator now invokes the Slice 16 platform validator after the
+Slice 15 cumulative-wiring validator and before the single full pytest stage.
+
+Hosted release-preparation PR CI remains pending after Slice 16; it is a
+separate release-phase acceptance gate required before squash merge. Tag CI,
+exact-main qualification, final artifact freeze, publication, and fresh-download
+verification also remain pending.
+
+Candidate wheel/sdist hashes remain non-final and must not be frozen from the
+release-preparation branch.
+
+Final verdict remains `PENDING`.

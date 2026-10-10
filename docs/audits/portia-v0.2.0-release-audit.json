@@ -104,7 +104,7 @@
     },
     {
       "domain_id": "python_platform_qualification",
-      "status": "pending"
+      "status": "pass"
     }
   ],
   "inherited_foundation_obligations": [

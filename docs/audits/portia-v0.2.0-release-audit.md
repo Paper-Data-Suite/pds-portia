@@ -990,3 +990,56 @@ also did not change.
 Final verdict remains **PENDING**. Python/platform qualification, hosted
 release-preparation CI review, exact-main qualification, final artifact freeze,
 publication, and fresh-download verification remain incomplete.
+
+## Slice 16 — Python and platform qualification statement
+
+Domain result: **PASS**
+
+Slice 16 records the exact distinction required by Issue #54:
+
+```text
+package support syntax:
+  Requires-Python >=3.11
+
+release qualification matrix:
+  Python 3.11 on Windows
+  Python 3.11 on Ubuntu
+```
+
+The package metadata remains intentionally broader than the concrete release
+qualification matrix. `Requires-Python >=3.11` permits installation under later
+compatible Python 3 minors, but Portia v0.2.0 does **not** claim that every such
+minor is release-tested.
+
+The established CI matrix remains deliberately narrow rather than expanding for
+symmetry alone. Both Windows and Ubuntu lanes use Python 3.11 and authenticate:
+
+```text
+current Core:    0.6.5
+prior Core:      0.6.4
+historical Core: 0.6.3
+```
+
+Both lanes delegate to the same authoritative
+`scripts/validate_repository.py` cumulative qualification. The workflow retains
+ordinary `push` qualification without excluding tag pushes, so the immutable
+v0.2.0 tag can receive the same normal hosted qualification later in the release
+flow.
+
+This PASS records the truthful Python/platform qualification statement and the
+configured established release matrix. It does **not** claim that the
+release-preparation PR CI or tag CI has already run for the final release state.
+Hosted release-preparation PR CI remains a later release-phase gate.
+
+No `P54-AUD-*` finding was opened in Slice 16.
+
+No Portia production runtime code changed. `Requires-Python` remains `>=3.11`;
+the Core runtime dependency remains `pds-core>=0.6.3,<0.7`.
+
+All fifteen Issue #54 audit domains are now PASS. The release is still not
+published or verified.
+
+Final verdict remains **PENDING** until hosted CI, exact-main qualification,
+final artifact freeze, immutable tag, GitHub Release, fresh-download
+verification, isolated installed acceptance, and Suite handoff metadata are
+complete.

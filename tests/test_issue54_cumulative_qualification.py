@@ -43,7 +43,7 @@ def test_issue54_slice15_advances_only_cumulative_domain() -> None:
     }
     assert statuses["release_contract_mechanical"] == "pass"
     assert statuses["cumulative_repository_qualification"] == "pass"
-    assert statuses["python_platform_qualification"] == "pending"
+    assert statuses["python_platform_qualification"] in {"pending", "pass"}
 
 
 def test_issue54_current_core_authority_is_065_with_prior_history_retained() -> None:

@@ -55,6 +55,8 @@ REQUIRED_SDIST_EVIDENCE: Final[frozenset[str]] = frozenset(
         "scripts/validate_issue54_cumulative_qualification.py",
         "scripts/smoke_test_issue54_core065_wheel.py",
         "tests/test_issue54_cumulative_qualification.py",
+        "scripts/validate_issue54_python_platform_qualification.py",
+        "tests/test_issue54_python_platform_qualification.py",
     }
 )
 
@@ -274,8 +276,8 @@ def _sdist_audit_findings(raw: object) -> list[str]:
         findings.append("sdist must carry release_contract_mechanical == pass")
     if statuses.get("cumulative_repository_qualification") != "pass":
         findings.append("sdist must carry cumulative_repository_qualification == pass")
-    if statuses.get("python_platform_qualification") not in {"pending", "pass"}:
-        findings.append("sdist has invalid Python/platform qualification state")
+    if statuses.get("python_platform_qualification") != "pass":
+        findings.append("sdist must carry python_platform_qualification == pass")
     return findings
 
 

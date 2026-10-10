@@ -11,6 +11,8 @@ already occurred.
 ## Runtime and compatibility
 
 - Python >=3.11.
+- Release qualification matrix: Python 3.11 on Windows and Ubuntu.
+- `Requires-Python >=3.11` is package compatibility syntax; Python minors other than 3.11 are not claimed as release-tested by Portia v0.2.0.
 - Runtime dependency: `pds-core>=0.6.3,<0.7`.
 - Current final qualification authority is the exact released Core 0.6.5 wheel.
 - Prior-release installed compatibility retains the exact released Core 0.6.4 wheel.

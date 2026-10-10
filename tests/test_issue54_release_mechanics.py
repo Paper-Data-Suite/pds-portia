@@ -42,7 +42,7 @@ def test_issue54_slice14_passes_only_release_contract_domain() -> None:
     }
     assert statuses["release_contract_mechanical"] == "pass"
     assert statuses["cumulative_repository_qualification"] in {"pending", "pass"}
-    assert statuses["python_platform_qualification"] == "pending"
+    assert statuses["python_platform_qualification"] in {"pending", "pass"}
 
 
 def test_issue54_slice14_does_not_freeze_publication_identity() -> None:

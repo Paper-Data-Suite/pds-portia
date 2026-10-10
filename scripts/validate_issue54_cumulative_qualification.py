@@ -26,6 +26,7 @@ ISSUE54_SOURCE_VALIDATORS = (
     "scripts/validate_issue54_documentation_audit.py",
     "scripts/validate_issue54_release_mechanics.py",
     "scripts/validate_issue54_cumulative_qualification.py",
+    "scripts/validate_issue54_python_platform_qualification.py",
 )
 
 EARLIER_DOMAINS = (
@@ -105,8 +106,8 @@ def validate_repo(root: Path = ROOT) -> list[str]:
             errors.append(f"earlier audit domain regressed: {domain_id}")
     if statuses.get(DOMAIN) != "pass":
         errors.append(f"{DOMAIN} must be recorded as pass")
-    if statuses.get("python_platform_qualification") != "pending":
-        errors.append("Slice 15 must leave Python/platform qualification pending")
+    if statuses.get("python_platform_qualification") not in {"pending", "pass"}:
+        errors.append("Python/platform qualification has an invalid later-stage status")
 
     core = audit.get("core_qualification")
     if not isinstance(core, dict):

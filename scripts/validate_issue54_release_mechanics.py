@@ -51,8 +51,8 @@ def validate_repo(root: Path = ROOT) -> list[str]:
             errors.append(f"{DOMAIN} must be recorded as pass")
         if statuses.get("cumulative_repository_qualification") not in {"pending", "pass"}:
             errors.append("cumulative qualification has an invalid later-stage status")
-        if statuses.get("python_platform_qualification") != "pending":
-            errors.append("Slice 14 must leave Python/platform qualification pending")
+        if statuses.get("python_platform_qualification") not in {"pending", "pass"}:
+            errors.append("Python/platform qualification has an invalid later-stage status")
 
         earlier = (
             "ethical_neutrality_epistemic_distinctions",

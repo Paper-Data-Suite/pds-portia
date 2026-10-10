@@ -370,6 +370,8 @@ _ISSUE54_REQUIRED_SDIST_FILES = {
     "scripts/validate_issue54_cumulative_qualification.py",
     "scripts/smoke_test_issue54_core065_wheel.py",
     "tests/test_issue54_cumulative_qualification.py",
+    "scripts/validate_issue54_python_platform_qualification.py",
+    "tests/test_issue54_python_platform_qualification.py",
 }
 REQUIRED_SDIST_FILES.update(_ISSUE54_REQUIRED_SDIST_FILES)
 

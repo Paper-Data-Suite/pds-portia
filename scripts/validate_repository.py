@@ -288,6 +288,7 @@ def qualify(
     _run([sys.executable, "scripts/validate_issue54_documentation_audit.py"], root)
     _run([sys.executable, "scripts/validate_issue54_release_mechanics.py"], root)
     _run([sys.executable, "scripts/validate_issue54_cumulative_qualification.py"], root)
+    _run([sys.executable, "scripts/validate_issue54_python_platform_qualification.py"], root)
     _run([sys.executable, "-m", "pytest"], root)
     _run([sys.executable, "-m", "ruff", "check", "."], root)
     _run([sys.executable, "-m", "mypy"], root)

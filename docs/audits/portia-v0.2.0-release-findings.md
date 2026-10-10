@@ -205,3 +205,15 @@ Portia's runtime requirement remains `pds-core>=0.6.3,<0.7`. Exact Core 0.6.4 an
 0.6.3 artifacts remain retained for prior/frozen historical compatibility
 qualification. `P54-AUD-001` remains resolved and there are no unresolved Issue
 #54 findings.
+
+## Slice 16 audit result
+
+No `P54-AUD-*` finding was opened for the Python/platform qualification domain.
+
+Portia v0.2.0 preserves `Requires-Python >=3.11` while recording the narrower
+release qualification matrix exactly as Python 3.11 on Windows and Ubuntu. No
+claim is made that every future Python minor admitted by package metadata is
+release-tested.
+
+All Issue #54 audit domains are now PASS, with zero unresolved BLOCKER or MAJOR
+findings. The overall release verdict remains `PENDING`.
