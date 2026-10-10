@@ -106,4 +106,4 @@ def test_issue54_docs_index_has_no_em_dash_mojibake() -> None:
     docs = (ROOT / "docs" / "README.md").read_text(encoding="utf-8")
     assert "â€”" not in docs
     assert "../RELEASE_NOTES_v0.2.0.md" in docs
-    assert "Slice 1 through Slice 13" in docs
+    assert "Slice 1 through Slice 15" in docs

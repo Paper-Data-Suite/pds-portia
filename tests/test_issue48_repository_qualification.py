@@ -73,10 +73,12 @@ def test_issue48_ci_qualifies_windows_and_ubuntu_through_durable_path() -> None:
         "ubuntu-latest",
         "windows-latest",
         'python: "3.11"',
+        'current_core: "0.6.5"',
+        'prior_core: "0.6.4"',
         'core: "0.6.3"',
-        'current_core: "0.6.4"',
         "python scripts/validate_repository.py",
         '--core-wheel "$env:PDS_CORE_WHEEL"',
+        '--prior-core-wheel "$env:PDS_PRIOR_CORE_WHEEL"',
         '--historical-core-wheel "$env:PDS_HISTORICAL_CORE_WHEEL"',
     ):
         assert required in text

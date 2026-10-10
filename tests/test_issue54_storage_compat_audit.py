@@ -146,9 +146,10 @@ def test_issue54_issue92_compatibility_tests_remain_present() -> None:
     assert "test_storage_revision_leaf_does_not_expand_with_record_identity" in generated
 
 
-def test_issue54_core_current_and_historical_compatibility_authorities_stay_split() -> None:
+def test_issue54_core_current_prior_and_historical_compatibility_authorities_stay_split() -> None:
     core = _audit()["core_qualification"]
-    assert core["current"]["version"] == "0.6.4"
+    assert core["current"]["version"] == "0.6.5"
+    assert core["prior_release_compatibility"]["version"] == "0.6.4"
     assert core["historical"]["version"] == "0.6.3"
 
 

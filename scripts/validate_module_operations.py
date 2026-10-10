@@ -270,8 +270,10 @@ def _validate_repository(root: Path) -> None:
         "scripts/validate_module_operations.py",
         "scripts/check_issue52_package.py",
         "scripts/smoke_test_issue52_module_operations_wheel.py",
+        "prior_core_wheel",
         "historical_core_wheel",
-        'expected_core_version != "0.6.4"',
+        'expected_core_version != "0.6.5"',
+        'expected_prior_core_version != "0.6.4"',
         'expected_historical_core_version != "0.6.3"',
         "Portia Issue #52 repository qualification passed",
     ):
@@ -284,11 +286,14 @@ def _validate_repository(root: Path) -> None:
     _require_markers(
         ci,
         (
-            'current_core: "0.6.4"',
+            'current_core: "0.6.5"',
+            'prior_core: "0.6.4"',
             'core: "0.6.3"',
             "PDS_CORE_WHEEL",
+            "PDS_PRIOR_CORE_WHEEL",
             "PDS_HISTORICAL_CORE_WHEEL",
             '--core-wheel "$env:PDS_CORE_WHEEL"',
+            '--prior-core-wheel "$env:PDS_PRIOR_CORE_WHEEL"',
             '--historical-core-wheel "$env:PDS_HISTORICAL_CORE_WHEEL"',
         ),
         label="Issue #52 durable CI qualification",

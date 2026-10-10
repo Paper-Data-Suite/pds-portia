@@ -39,7 +39,15 @@ The baseline evidence is deliberately pre-change evidence. Later Issue #54 quali
 
 ## Exact Core qualification authority
 
-Current release qualification uses the exact released Core 0.6.4 artifact:
+Current release qualification uses the exact released Core 0.6.5 artifact:
+
+```text
+pds_core-0.6.5-py3-none-any.whl
+SHA-256: 9ace75f17b23b7f0ed6a709d531af5120db43d0325b4148d26f2d6ba1d4b3c18
+release source: 64da9d2e4884ffe78a020aed87b1d5b9500927ad
+```
+
+Prior-release compatibility qualification retains the exact released Core 0.6.4 artifact:
 
 ```text
 pds_core-0.6.4-py3-none-any.whl
@@ -47,7 +55,7 @@ SHA-256: 48cea9317f2967bdc0f2d4c14349a56677c7c3f8211f0f33978ccb1a1c75859b
 release source: 152d1c65064c4f8fe55249ff2ca3379d7c4d6ccb
 ```
 
-Historical compatibility evidence retains the exact released Core 0.6.3 artifact:
+Frozen historical compatibility evidence retains the exact released Core 0.6.3 artifact:
 
 ```text
 pds_core-0.6.3-py3-none-any.whl
@@ -58,7 +66,7 @@ These facts remain distinct:
 
 ```text
 minimum supported Core: pds-core>=0.6.3,<0.7
-current final qualification authority: exact Core 0.6.4 release artifact
+current final qualification authority: exact Core 0.6.5 release artifact
 ```
 
 ## Release contract frozen for audit
@@ -919,3 +927,66 @@ Final verdict remains **PENDING**. Cumulative repository qualification,
 Python/platform qualification, hosted release-preparation CI, exact-main
 qualification, final artifact freeze, publication, and fresh-download
 verification remain incomplete.
+
+## Slice 15 — Cumulative repository qualification
+
+Domain result: **PASS**
+
+Slice 15 promotes the authoritative repository gate to the Issue #54 cumulative
+release-preparation boundary and advances the **current Core qualification
+authority to the latest released Core 0.6.5**.
+
+The runtime dependency contract remains unchanged:
+
+```text
+pds-core>=0.6.3,<0.7
+```
+
+Exact release qualification now uses three distinct artifact roles:
+
+```text
+current release authority:
+  pds_core-0.6.5-py3-none-any.whl
+  SHA-256 9ace75f17b23b7f0ed6a709d531af5120db43d0325b4148d26f2d6ba1d4b3c18
+  release source 64da9d2e4884ffe78a020aed87b1d5b9500927ad
+
+prior-release compatibility authority:
+  pds_core-0.6.4-py3-none-any.whl
+  SHA-256 48cea9317f2967bdc0f2d4c14349a56677c7c3f8211f0f33978ccb1a1c75859b
+  release source 152d1c65064c4f8fe55249ff2ca3379d7c4d6ccb
+
+frozen historical compatibility authority:
+  pds_core-0.6.3-py3-none-any.whl
+  SHA-256 98d7596ce0eed26e4d56a17bbbbd644db3014259b56a45783a173fe8237af5e5
+```
+
+The exact 0.6.4 Issue #52/#92/#53 acceptance scripts are intentionally preserved
+as historical checkpoints rather than rewritten. A new
+`scripts/smoke_test_issue54_core065_wheel.py` independently installs the Portia
+candidate with exact Core 0.6.5, proves the isolated installed PDS set is exactly
+Core+Portia, verifies CLI status, loads and validates the module-operations entry
+point, executes fail-soft missing-context and class-scoped provider invocation,
+and proves those provider reads are zero-write.
+
+`scripts/validate_repository.py` remains the single cumulative orchestrator used
+locally and by CI. It now authenticates Core 0.6.5, 0.6.4, and 0.6.3; requires
+0.6.5 to be installed as current Core; executes every Issue #54 source validator
+before one full pytest stage; then runs Ruff, strict mypy, `pip check`, clean
+build, Twine, generic/historical/Issue #54 package checks, frozen historical
+installed-wheel smokes, Issue #53 representative acceptance against Core 0.6.4,
+and finally the new Core 0.6.5 installed compatibility smoke.
+
+CI retains one delegated cumulative command and now supplies all three exact Core
+release artifacts on Ubuntu and Windows with Python 3.11.
+
+No `P54-AUD-*` finding was opened in Slice 15. Core 0.6.5 compatibility is a
+release-target advancement, not a defect correction.
+
+No inherited foundation disposition changes in Slice 15.
+
+No Portia production runtime code changed in Slice 15. The Core dependency range
+also did not change.
+
+Final verdict remains **PENDING**. Python/platform qualification, hosted
+release-preparation CI review, exact-main qualification, final artifact freeze,
+publication, and fresh-download verification remain incomplete.

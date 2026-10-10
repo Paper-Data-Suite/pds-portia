@@ -12,7 +12,8 @@ already occurred.
 
 - Python >=3.11.
 - Runtime dependency: `pds-core>=0.6.3,<0.7`.
-- Current final qualification authority is the exact released Core 0.6.4 wheel.
+- Current final qualification authority is the exact released Core 0.6.5 wheel.
+- Prior-release installed compatibility retains the exact released Core 0.6.4 wheel.
 - Frozen historical installed-wheel compatibility checks retain the exact released
   Core 0.6.3 wheel.
 - No sibling PDS runtime dependency is required.

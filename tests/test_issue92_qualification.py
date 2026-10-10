@@ -102,7 +102,8 @@ def test_issue92_repository_qualification_preserves_issue52_markers() -> None:
 def test_issue92_ci_uses_cumulative_repository_qualification_path() -> None:
     workflow = (ROOT / ".github/workflows/ci.yml").read_text(encoding="utf-8")
     for marker in (
-        'current_core: "0.6.4"',
+        'current_core: "0.6.5"',
+        'prior_core: "0.6.4"',
         'core: "0.6.3"',
         "python scripts/validate_repository.py",
         '--core-wheel "$env:PDS_CORE_WHEEL"',

@@ -9,6 +9,9 @@ from typing import Any, cast
 ROOT = Path(__file__).resolve().parents[1]
 STARTING_COMMIT = "d2cca3b7d8eb59087016d4da60e623960758a729"
 STARTING_TREE = "33067ffdd35047d2c6ac575cc7d21969c2a3862b"
+CORE_065_SHA256 = (
+    "9ace75f17b23b7f0ed6a709d531af5120db43d0325b4148d26f2d6ba1d4b3c18"
+)
 CORE_064_SHA256 = (
     "48cea9317f2967bdc0f2d4c14349a56677c7c3f8211f0f33978ccb1a1c75859b"
 )
@@ -52,11 +55,18 @@ def test_issue54_audit_binds_exact_phase0_handoff() -> None:
     assert baseline["terminal_message"] == "Portia Issue #53 repository qualification passed"
 
 
-def test_issue54_core_authority_separates_current_and_historical_inputs() -> None:
+def test_issue54_core_authority_separates_current_prior_and_historical_inputs() -> None:
     audit = _audit()
     current = audit["core_qualification"]["current"]
+    prior = audit["core_qualification"]["prior_release_compatibility"]
     historical = audit["core_qualification"]["historical"]
     assert current == {
+        "version": "0.6.5",
+        "filename": "pds_core-0.6.5-py3-none-any.whl",
+        "sha256": CORE_065_SHA256,
+        "source_commit": "64da9d2e4884ffe78a020aed87b1d5b9500927ad",
+    }
+    assert prior == {
         "version": "0.6.4",
         "filename": "pds_core-0.6.4-py3-none-any.whl",
         "sha256": CORE_064_SHA256,

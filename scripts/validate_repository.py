@@ -1,4 +1,4 @@
-"""Run the complete Portia repository qualification through Issue #53."""
+"""Run the complete Portia repository qualification through Issue #54 cumulative qualification."""
 
 from __future__ import annotations
 
@@ -103,6 +103,15 @@ _ISSUE92_CLOSEOUT_COMPATIBILITY_MARKERS = (
     "Portia Issue #92 repository qualification passed",
 )
 
+# Historical source-level markers retained for the accepted Issue #53
+# qualification boundary. Current release qualification proceeds through
+# Issue #54 against Core 0.6.5.
+_ISSUE53_CLOSEOUT_COMPATIBILITY_MARKERS = (
+    "Run the complete Portia repository qualification through Issue #53.",
+    "Issue #53 qualification requires the authenticated Core 0.6.4 wheel",
+    "Portia Issue #53 repository qualification passed",
+)
+
 
 def _run(command: list[str], root: Path) -> None:
     print(f"+ {' '.join(command)}", flush=True)
@@ -146,14 +155,21 @@ def _core_version_from_wheel(core_wheel: Path) -> str:
 def qualify(
     root: Path,
     core_wheel: Path,
+    prior_core_wheel: Path,
     historical_core_wheel: Path,
 ) -> None:
     _validate_security_policy(root)
     expected_core_version = _core_version_from_wheel(core_wheel)
-    if expected_core_version != "0.6.4":
+    if expected_core_version != "0.6.5":
         raise ValueError(
-            "Issue #53 qualification requires the authenticated Core 0.6.4 wheel; "
+            "Issue #54 cumulative qualification requires the authenticated Core 0.6.5 wheel; "
             f"received {expected_core_version}"
+        )
+    expected_prior_core_version = _core_version_from_wheel(prior_core_wheel)
+    if expected_prior_core_version != "0.6.4":
+        raise ValueError(
+            "Issue #54 prior-release compatibility requires the authenticated Core 0.6.4 wheel; "
+            f"received {expected_prior_core_version}"
         )
     expected_historical_core_version = _core_version_from_wheel(
         historical_core_wheel
@@ -165,6 +181,14 @@ def qualify(
         )
     _run(
         [sys.executable, "scripts/verify_core_wheel.py", str(core_wheel.resolve())],
+        root,
+    )
+    _run(
+        [
+            sys.executable,
+            "scripts/verify_core_wheel.py",
+            str(prior_core_wheel.resolve()),
+        ],
         root,
     )
     _run(
@@ -249,6 +273,21 @@ def qualify(
         ],
         root,
     )
+    _run([sys.executable, "scripts/validate_issue54_release_audit.py"], root)
+    _run([sys.executable, "scripts/validate_issue54_ethics_audit.py"], root)
+    _run([sys.executable, "scripts/validate_issue54_authority_audit.py"], root)
+    _run([sys.executable, "scripts/validate_issue54_privacy_audit.py"], root)
+    _run([sys.executable, "scripts/validate_issue54_identity_audit.py"], root)
+    _run([sys.executable, "scripts/validate_issue54_architecture_audit.py"], root)
+    _run([sys.executable, "scripts/validate_issue54_storage_compat_audit.py"], root)
+    _run([sys.executable, "scripts/validate_issue54_recovery_integrity_audit.py"], root)
+    _run([sys.executable, "scripts/validate_issue54_usability_audit.py"], root)
+    _run([sys.executable, "scripts/validate_issue54_menu_terminology_audit.py"], root)
+    _run([sys.executable, "scripts/validate_issue54_read_only_audit.py"], root)
+    _run([sys.executable, "scripts/validate_issue54_packaging_audit.py"], root)
+    _run([sys.executable, "scripts/validate_issue54_documentation_audit.py"], root)
+    _run([sys.executable, "scripts/validate_issue54_release_mechanics.py"], root)
+    _run([sys.executable, "scripts/validate_issue54_cumulative_qualification.py"], root)
     _run([sys.executable, "-m", "pytest"], root)
     _run([sys.executable, "-m", "ruff", "check", "."], root)
     _run([sys.executable, "-m", "mypy"], root)
@@ -278,6 +317,7 @@ def qualify(
     _run([sys.executable, "scripts/check_issue52_package.py", "dist"], root)
     _run([sys.executable, "scripts/check_issue92_package.py", "dist"], root)
     _run([sys.executable, "scripts/check_issue53_package.py", "dist"], root)
+    _run([sys.executable, "scripts/check_issue54_release_package.py", "dist"], root)
 
     wheels = sorted((root / "dist").glob("pds_portia-*.whl"))
     if len(wheels) != 1:
@@ -395,7 +435,7 @@ def qualify(
             sys.executable,
             "scripts/smoke_test_issue52_module_operations_wheel.py",
             str(wheels[0]),
-            str(core_wheel.resolve()),
+            str(prior_core_wheel.resolve()),
         ],
         root,
     )
@@ -404,7 +444,7 @@ def qualify(
             sys.executable,
             "scripts/smoke_test_issue92_deep_workspace_wheel.py",
             str(wheels[0]),
-            str(core_wheel.resolve()),
+            str(prior_core_wheel.resolve()),
         ],
         root,
     )
@@ -412,6 +452,15 @@ def qualify(
         [
             sys.executable,
             "scripts/smoke_test_issue53_end_to_end_wheel.py",
+            str(wheels[0]),
+            str(prior_core_wheel.resolve()),
+        ],
+        root,
+    )
+    _run(
+        [
+            sys.executable,
+            "scripts/smoke_test_issue54_core065_wheel.py",
             str(wheels[0]),
             str(core_wheel.resolve()),
         ],
@@ -425,6 +474,12 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--core-wheel", required=True, type=Path)
     parser.add_argument(
+        "--prior-core-wheel",
+        required=True,
+        type=Path,
+        help="authenticated Core 0.6.4 wheel for frozen Issue #52/#92/#53 smokes",
+    )
+    parser.add_argument(
         "--historical-core-wheel",
         required=True,
         type=Path,
@@ -433,11 +488,11 @@ def main() -> int:
     args = parser.parse_args()
     root = Path(__file__).resolve().parents[1]
     try:
-        qualify(root, args.core_wheel, args.historical_core_wheel)
+        qualify(root, args.core_wheel, args.prior_core_wheel, args.historical_core_wheel)
     except (OSError, RuntimeError, ValueError, subprocess.CalledProcessError) as exc:
         print(f"Repository qualification failed: {exc}", file=sys.stderr)
         return 1
-    print("Portia Issue #53 repository qualification passed")
+    print("Portia Issue #54 cumulative repository qualification passed")
     return 0
 
 

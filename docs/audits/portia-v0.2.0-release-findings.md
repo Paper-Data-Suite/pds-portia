@@ -195,3 +195,13 @@ The exact v0.2.0 source/package identity is mechanically enforceable through the
 Issue #54 release-package checker. Candidate artifact hashes remain explicitly
 non-final until Phase 2 rebuilds from the exact clean qualified release commit.
 `P54-AUD-001` remains resolved and there are no unresolved Issue #54 findings.
+
+## Slice 15 audit result
+
+No `P54-AUD-*` finding was opened for the cumulative repository qualification domain.
+
+The current exact release qualification authority advances to Core 0.6.5 while
+Portia's runtime requirement remains `pds-core>=0.6.3,<0.7`. Exact Core 0.6.4 and
+0.6.3 artifacts remain retained for prior/frozen historical compatibility
+qualification. `P54-AUD-001` remains resolved and there are no unresolved Issue
+#54 findings.

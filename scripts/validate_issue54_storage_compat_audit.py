@@ -72,7 +72,8 @@ MARKERS: dict[str, tuple[str, ...]] = {
         "assert smoke.TARGET_DEEP_WORKSPACE_LENGTH == 119",
     ),
     "scripts/validate_repository.py": (
-        'expected_core_version != "0.6.4"',
+        'expected_core_version != "0.6.5"',
+        'expected_prior_core_version != "0.6.4"',
         'expected_historical_core_version != "0.6.3"',
     ),
 }
@@ -193,9 +194,12 @@ def validate_repo(root: Path = ROOT) -> list[str]:
         errors.append("release audit has no Core qualification state")
     else:
         current = core.get("current")
+        prior = core.get("prior_release_compatibility")
         historical = core.get("historical")
-        if not isinstance(current, dict) or current.get("version") != "0.6.4":
-            errors.append("current storage/path authority must remain Core 0.6.4")
+        if not isinstance(current, dict) or current.get("version") != "0.6.5":
+            errors.append("current storage/path release authority must be Core 0.6.5")
+        if not isinstance(prior, dict) or prior.get("version") != "0.6.4":
+            errors.append("prior storage/path compatibility authority must remain Core 0.6.4")
         if not isinstance(historical, dict) or historical.get("version") != "0.6.3":
             errors.append("historical compatibility authority must remain Core 0.6.3")
 

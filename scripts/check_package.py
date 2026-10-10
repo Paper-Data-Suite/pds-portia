@@ -367,6 +367,9 @@ _ISSUE54_REQUIRED_SDIST_FILES = {
     "tests/test_issue54_documentation_audit.py",
     "tests/test_issue54_release_package.py",
     "tests/test_issue54_release_mechanics.py",
+    "scripts/validate_issue54_cumulative_qualification.py",
+    "scripts/smoke_test_issue54_core065_wheel.py",
+    "tests/test_issue54_cumulative_qualification.py",
 }
 REQUIRED_SDIST_FILES.update(_ISSUE54_REQUIRED_SDIST_FILES)
 

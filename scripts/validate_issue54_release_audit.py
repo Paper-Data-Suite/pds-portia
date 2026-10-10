@@ -22,6 +22,12 @@ EXPECTED_CONSOLE_TARGET = "portia.cli:main"
 EXPECTED_OPERATIONS_TARGET = "portia.pds_operations:get_module_operations_profile"
 
 CURRENT_CORE = {
+    "version": "0.6.5",
+    "filename": "pds_core-0.6.5-py3-none-any.whl",
+    "sha256": "9ace75f17b23b7f0ed6a709d531af5120db43d0325b4148d26f2d6ba1d4b3c18",
+    "source_commit": "64da9d2e4884ffe78a020aed87b1d5b9500927ad",
+}
+PRIOR_CORE = {
     "version": "0.6.4",
     "filename": "pds_core-0.6.4-py3-none-any.whl",
     "sha256": "48cea9317f2967bdc0f2d4c14349a56677c7c3f8211f0f33978ccb1a1c75859b",
@@ -324,6 +330,12 @@ def _validate_audit_state(root: Path, errors: list[str]) -> None:
     core = _require_mapping(audit.get("core_qualification"), "core_qualification", errors)
     if core is not None:
         _validate_core_record(core.get("current"), CURRENT_CORE, "core_qualification.current", errors)
+        _validate_core_record(
+            core.get("prior_release_compatibility"),
+            PRIOR_CORE,
+            "core_qualification.prior_release_compatibility",
+            errors,
+        )
         _validate_core_record(
             core.get("historical"),
             HISTORICAL_CORE,

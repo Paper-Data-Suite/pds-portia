@@ -14,6 +14,7 @@ REQUIRED_RELEASE_NOTE_MARKERS = (
     "Status: **release candidate; publication pending Issue #54 Phase 2 verification**",
     "Python >=3.11",
     "pds-core>=0.6.3,<0.7",
+    "Core 0.6.5",
     "Core 0.6.4",
     "Core 0.6.3",
     "No sibling PDS runtime dependency",
@@ -49,7 +50,7 @@ REQUIRED_DOC_INDEX_MARKERS = (
     "../RELEASE_NOTES_v0.2.0.md",
     "audits/portia-v0.2.0-release-audit.md",
     "validation/issue-54-v0.2.0-release-audit-validation.md",
-    "Slice 1 through Slice 13",
+    "Slice 1 through Slice",
 )
 
 REQUIRED_CHANGELOG_MARKERS = (

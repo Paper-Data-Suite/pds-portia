@@ -40,9 +40,9 @@ Host platform: `Windows-10-10.0.26200-SP0`
 
 The applying script refuses to write Slice 1 if the repository is dirty, the branch/commit/tree do not match the Issue #54 starting authority, or the Phase 0 cumulative validator fails.
 
-## Exact Core inputs
+## Slice 1 exact Core inputs
 
-Current release qualification authority:
+At Slice 1, current release qualification authority:
 
 ```text
 pds_core-0.6.4-py3-none-any.whl
@@ -749,3 +749,60 @@ Portia Issue #54 release-contract/mechanical audit validation passed
 This domain PASS is not final v0.2.0 release approval. It does not freeze artifact
 hashes, create `SHA256SUMS.txt`, create the `v0.2.0` tag, or publish a GitHub
 Release.
+
+## Slice 15 — Cumulative repository qualification
+
+Slice 15 promotes the authoritative cumulative gate and rebases current release
+qualification onto exact released Core 0.6.5.
+
+Exact Core inputs are now:
+
+```text
+current:
+pds_core-0.6.5-py3-none-any.whl
+9ace75f17b23b7f0ed6a709d531af5120db43d0325b4148d26f2d6ba1d4b3c18
+
+prior release compatibility:
+pds_core-0.6.4-py3-none-any.whl
+48cea9317f2967bdc0f2d4c14349a56677c7c3f8211f0f33978ccb1a1c75859b
+
+frozen historical:
+pds_core-0.6.3-py3-none-any.whl
+98d7596ce0eed26e4d56a17bbbbd644db3014259b56a45783a173fe8237af5e5
+```
+
+Focused source validation:
+
+```text
+python scripts/validate_issue54_release_audit.py
+python scripts/validate_issue54_documentation_audit.py
+python scripts/validate_issue54_release_mechanics.py
+python scripts/validate_issue54_cumulative_qualification.py
+```
+
+The authoritative local cumulative command is:
+
+```text
+python scripts/validate_repository.py \
+  --core-wheel <released Core 0.6.5 wheel> \
+  --prior-core-wheel <released Core 0.6.4 wheel> \
+  --historical-core-wheel <released Core 0.6.3 wheel>
+```
+
+The terminal result is:
+
+```text
+Portia Issue #54 cumulative repository qualification passed
+```
+
+That cumulative run includes every Issue #54 source validator, one full pytest
+stage, Ruff, strict mypy, `pip check`, clean build, Twine, all required package
+checks, frozen installed compatibility smokes, Issue #53 representative installed
+acceptance against Core 0.6.4, the new Core 0.6.5 installed compatibility smoke,
+and `git diff --check`.
+
+Candidate wheel/sdist hashes produced inside this run remain non-final. They are
+not Phase 2 release artifacts.
+
+Python/platform qualification remains pending after Slice 15. The final verdict
+therefore remains `PENDING`.

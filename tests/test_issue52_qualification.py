@@ -25,7 +25,8 @@ def test_issue52_source_qualification_validator_passes() -> None:
 def test_issue52_ci_qualifies_current_and_historical_core() -> None:
     workflow = (ROOT / ".github/workflows/ci.yml").read_text(encoding="utf-8")
     for marker in (
-        'current_core: "0.6.4"',
+        'current_core: "0.6.5"',
+        'prior_core: "0.6.4"',
         'core: "0.6.3"',
         "PDS_CORE_WHEEL",
         "PDS_HISTORICAL_CORE_WHEEL",

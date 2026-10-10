@@ -52,6 +52,9 @@ REQUIRED_SDIST_EVIDENCE: Final[frozenset[str]] = frozenset(
         "tests/test_issue54_documentation_audit.py",
         "tests/test_issue54_release_package.py",
         "tests/test_issue54_release_mechanics.py",
+        "scripts/validate_issue54_cumulative_qualification.py",
+        "scripts/smoke_test_issue54_core065_wheel.py",
+        "tests/test_issue54_cumulative_qualification.py",
     }
 )
 
@@ -243,6 +246,15 @@ def _sdist_audit_findings(raw: object) -> list[str]:
         findings.append("sdist release audit has unexpected target distribution")
     if audit.get("target_version") != "0.2.0":
         findings.append("sdist release audit has unexpected target version")
+    core = audit.get("core_qualification")
+    if not isinstance(core, dict):
+        findings.append("sdist release audit has no Core qualification authority")
+    else:
+        current = core.get("current")
+        if not isinstance(current, dict) or current.get("version") != "0.6.5":
+            findings.append("sdist current Core qualification authority is not 0.6.5")
+        elif current.get("sha256") != "9ace75f17b23b7f0ed6a709d531af5120db43d0325b4148d26f2d6ba1d4b3c18":
+            findings.append("sdist Core 0.6.5 authority has unexpected SHA-256")
     if audit.get("final_verdict") != "PENDING":
         findings.append("pre-freeze candidate must retain PENDING final verdict")
     publication = audit.get("release_publication")
@@ -260,10 +272,10 @@ def _sdist_audit_findings(raw: object) -> list[str]:
                     statuses[domain_id] = status
     if statuses.get("release_contract_mechanical") != "pass":
         findings.append("sdist must carry release_contract_mechanical == pass")
-    if statuses.get("cumulative_repository_qualification") != "pending":
-        findings.append("Slice 14 must not pre-pass cumulative repository qualification")
-    if statuses.get("python_platform_qualification") != "pending":
-        findings.append("Slice 14 must not pre-pass Python/platform qualification")
+    if statuses.get("cumulative_repository_qualification") != "pass":
+        findings.append("sdist must carry cumulative_repository_qualification == pass")
+    if statuses.get("python_platform_qualification") not in {"pending", "pass"}:
+        findings.append("sdist has invalid Python/platform qualification state")
     return findings
 
 

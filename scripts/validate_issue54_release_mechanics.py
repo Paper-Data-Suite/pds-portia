@@ -49,8 +49,8 @@ def validate_repo(root: Path = ROOT) -> list[str]:
         statuses = _domain_statuses(audit)
         if statuses.get(DOMAIN) != "pass":
             errors.append(f"{DOMAIN} must be recorded as pass")
-        if statuses.get("cumulative_repository_qualification") != "pending":
-            errors.append("Slice 14 must leave cumulative qualification pending")
+        if statuses.get("cumulative_repository_qualification") not in {"pending", "pass"}:
+            errors.append("cumulative qualification has an invalid later-stage status")
         if statuses.get("python_platform_qualification") != "pending":
             errors.append("Slice 14 must leave Python/platform qualification pending")
 

@@ -9,6 +9,7 @@ No changes yet.
 ### Added
 
 - Issue #54 release-audit evidence through documentation reconciliation, including candidate release notes and a resolved release-facing documentation finding.
+- Release qualification against exact Core 0.6.5 while retaining Core 0.6.4 and 0.6.3 compatibility evidence.
 
 - Issue #53 representative installed end-to-end acceptance harness spanning Core class/roster setup, workspace Actors, cross-class Event evidence, bounded judgment, correction/history, Response/Communication, Support planning/execution, Follow-Up, conflict, recovery, restart, privacy views, teacher-reference export, Core providers, Integrity, and deep-path integration.
 - Issue #53 no-fixture-bypass and installed-launcher qualification, preserving production service boundaries while proving `portia = portia.cli:main` from the isolated installed wheel.
