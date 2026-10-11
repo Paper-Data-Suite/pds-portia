@@ -591,6 +591,15 @@ class DeliberateExportV1(PortiaRecord):
     CONTRACT = "deliberate_export"
     VERSION = "1"
 
+class PageRecordV1(PortiaRecord):
+    """Exact current-v0.3 ``page_record@1`` runtime representation."""
+
+    __slots__ = ()
+
+    CONTRACT = "page_record"
+    VERSION = "1"
+
+
 class PageTargetV1(PortiaRecord):
     """Exact historical ``page_target@1`` runtime representation."""
 
@@ -700,6 +709,7 @@ _RECORD_TYPES: Final[tuple[type[PortiaRecord], ...]] = (
     DerivedCurrentPointerV1,
     ExportSourceInventoryV1,
     DeliberateExportV1,
+    PageRecordV1,
     PageTargetV1,
     PageTargetV2,
 )

@@ -17,7 +17,6 @@ _CORE_065_SHA256 = (
 )
 
 _DEFERRED_CAPTURE_IMPORT: tuple[str, ...] = (
-    "page_record",
     "paper_interpretation",
     "capture_proposal",
     "capture_review",
@@ -152,6 +151,13 @@ def validate(root: Path) -> tuple[str, ...]:
             )
         if entry.get("modelled") is not False:
             findings.append(f"{contract}@1 is unexpectedly modelled at Slice 1")
+
+    page_record = entries.get(("page_record", "1"))
+    if page_record is None or (
+        page_record.get("disposition"),
+        page_record.get("modelled"),
+    ) != ("current_v0_3", True):
+        findings.append("page_record@1 is not current_v0_3/modelled")
 
     capture_batch = entries.get(("capture_batch", "1"))
     if capture_batch is None or (

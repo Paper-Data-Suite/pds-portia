@@ -73,6 +73,7 @@ The primary version transitions relevant to v0.2 are:
 | Follow-Up / Outcome / Reentry / Repair | v1 | — |
 | Capture Batch | v1 | — |
 | Page Target | v2 | v1 |
+| Page Record | v1 | — |
 
 The complete machine-readable disposition is
 `portia/runtime-coverage.json`. It distinguishes:
@@ -197,22 +198,25 @@ test-only graph validator.
 
 ## v0.3 capture-runtime transition
 
-Capture Batch and Page Target are the first v0.3 capture families promoted
-into the executable runtime:
+Capture Batch, Page Target, and Page Record are the first v0.3 capture families
+promoted into the executable runtime:
 
 ```text
 capture_batch@1 → current_v0_3
 page_target@1 → historical_read
 page_target@2 → current_v0_3
+page_record@1 → current_v0_3
 ```
 
 Capture Batch remains operational rather than behavior-domain work:
 `portia_work_ref@1` still targets only Event or Support Process.
 
+Page Record remains non-domain retained-source processing state. Local runtime
+validation does not claim that Core route or retained-source identities exist.
+
 The following operational families remain intentionally unmodeled:
 
 ```text
-Page Record
 Paper Interpretation
 Capture Proposal
 Capture Review

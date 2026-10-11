@@ -74,6 +74,7 @@ IDENTITY_FIELDS: dict[str, tuple[str, ...]] = {
     "derived_current_pointer": ("generation_id", "pointer_id"),
     "deliberate_export": ("export_id",),
     "page_target": ("page_target_id",),
+    "page_record": ("page_record_id",),
 }
 
 

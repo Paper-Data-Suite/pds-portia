@@ -400,3 +400,16 @@ current_v0_3 / modelled=true
 It remains the non-domain operational work root accepted by ADR 0016. Runtime
 promotion does not add `capture_batch` to `portia_work_ref@1`, whose domain work
 kinds remain exactly `event` and `support_process`.
+
+## Slice 5 decision — Page Record runtime
+
+`page_record@1` is sufficient unchanged and is promoted to
+`current_v0_3 / modelled=true`.
+
+The runtime preserves exact Page Record, Capture Batch, Page Target, route,
+retained-source, digest, physical-page, and processing-state values. Core remains
+authoritative for RouteRegistration and retained-source existence/agreement;
+local parsing does not fabricate those cross-system facts.
+
+Page Record processing state remains non-domain and cannot itself materialize or
+confirm a behavior-domain record.
