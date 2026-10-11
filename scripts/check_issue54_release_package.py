@@ -257,11 +257,51 @@ def _sdist_audit_findings(raw: object) -> list[str]:
             findings.append("sdist current Core qualification authority is not 0.6.5")
         elif current.get("sha256") != "9ace75f17b23b7f0ed6a709d531af5120db43d0325b4148d26f2d6ba1d4b3c18":
             findings.append("sdist Core 0.6.5 authority has unexpected SHA-256")
-    if audit.get("final_verdict") != "PENDING":
-        findings.append("pre-freeze candidate must retain PENDING final verdict")
+    verdict = audit.get("final_verdict")
     publication = audit.get("release_publication")
-    if not isinstance(publication, dict) or publication.get("status") != "not_started":
-        findings.append("pre-freeze candidate must retain not_started publication state")
+    publication_status = (
+        publication.get("status")
+        if isinstance(publication, dict)
+        else None
+    )
+    release_state = (verdict, publication_status)
+    if release_state not in {
+        ("PENDING", "not_started"),
+        ("RELEASED — VERIFIED", "verified"),
+    }:
+        findings.append(
+            "sdist release audit must preserve a coherent pre-freeze or "
+            "verified-final state"
+        )
+
+    if release_state == ("RELEASED — VERIFIED", "verified"):
+        assert isinstance(publication, dict)
+        expected_verified_publication = {
+            "release_commit": "83cfe05ef6b03d8453fdb60d1a1702f138d5293d",
+            "release_tree": "2050bd1c7aabb47ccf2df4a8285c7a61ac360f2e",
+            "tag": "v0.2.0",
+            "github_release_url": (
+                "https://github.com/Paper-Data-Suite/pds-portia/"
+                "releases/tag/v0.2.0"
+            ),
+            "wheel_filename": "pds_portia-0.2.0-py3-none-any.whl",
+            "wheel_sha256": (
+                "7ae545e62740b4411736fc55e572a86384ed8714f1f65346d65e36a7943f3550"
+            ),
+            "sdist_filename": "pds_portia-0.2.0.tar.gz",
+            "sdist_sha256": (
+                "ea78dd74b6c9bbabb7da71397c9cdc4985479428b679856040f7fb2fcbcad0c8"
+            ),
+            "sha256sums_sha256": (
+                "aa7f972a6dcc5f1113fe85298827ec7d0b2a11d08b01e8c83d77784980d93403"
+            ),
+        }
+        for field, expected in expected_verified_publication.items():
+            if publication.get(field) != expected:
+                findings.append(
+                    f"verified release publication {field} does not match "
+                    "the immutable v0.2.0 release identity"
+                )
 
     statuses: dict[str, str] = {}
     domains = audit.get("audit_domains")
