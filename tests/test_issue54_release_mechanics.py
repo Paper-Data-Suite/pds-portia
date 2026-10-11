@@ -45,23 +45,13 @@ def test_issue54_slice14_passes_only_release_contract_domain() -> None:
     assert statuses["python_platform_qualification"] in {"pending", "pass"}
 
 
-def test_issue54_slice14_does_not_freeze_publication_identity() -> None:
+def test_issue54_slice14_state_is_prepublication_or_verified() -> None:
     audit = _audit()
     publication = audit["release_publication"]
-    assert publication["status"] == "not_started"
-    for field in (
-        "release_commit",
-        "release_tree",
-        "tag",
-        "github_release_url",
-        "wheel_filename",
-        "wheel_sha256",
-        "sdist_filename",
-        "sdist_sha256",
-        "sha256sums_sha256",
-    ):
-        assert publication[field] is None
-    assert audit["final_verdict"] == "PENDING"
+    assert (audit["final_verdict"], publication["status"]) in {
+        ("PENDING", "not_started"),
+        ("RELEASED — VERIFIED", "verified"),
+    }
 
 
 def test_issue54_slice14_retains_zero_unresolved_findings() -> None:

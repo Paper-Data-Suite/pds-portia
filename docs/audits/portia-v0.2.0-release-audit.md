@@ -4,10 +4,12 @@
 
 Issue #54 is the final ethical, privacy, architecture, usability, package, and release gate for Portia v0.2.0.
 
-Phase: **Phase 1 — audit and release preparation**
-Final verdict: **PENDING**
+Phase: **Phase 2 — released and verified**
+Final verdict: **RELEASED — VERIFIED**
 
-`RELEASED — VERIFIED` is not available until publication and fresh-download verification are complete.
+The exact published v0.2.0 assets have been fresh-downloaded, hash-verified, and
+accepted through the installed-wheel qualification gates. Historical slice text
+below remains a chronological record of the pre-publication audit state.
 
 ## Starting authority
 
@@ -1043,3 +1045,112 @@ Final verdict remains **PENDING** until hosted CI, exact-main qualification,
 final artifact freeze, immutable tag, GitHub Release, fresh-download
 verification, isolated installed acceptance, and Suite handoff metadata are
 complete.
+
+## Final release verification and Suite composition handoff
+
+Final result: **RELEASED — VERIFIED**
+
+Immutable source and publication identity:
+
+```text
+release commit: 83cfe05ef6b03d8453fdb60d1a1702f138d5293d
+release tree: 2050bd1c7aabb47ccf2df4a8285c7a61ac360f2e
+tag: v0.2.0
+tag object: 5a32b2707400c35446d9365cc758cb49bbd6337e
+tag target: 83cfe05ef6b03d8453fdb60d1a1702f138d5293d
+GitHub Release: https://github.com/Paper-Data-Suite/pds-portia/releases/tag/v0.2.0
+published at UTC: 2026-10-11T02:30:52Z
+```
+
+Exact published assets:
+
+```text
+pds_portia-0.2.0-py3-none-any.whl
+SHA-256: 7ae545e62740b4411736fc55e572a86384ed8714f1f65346d65e36a7943f3550
+
+pds_portia-0.2.0.tar.gz
+SHA-256: ea78dd74b6c9bbabb7da71397c9cdc4985479428b679856040f7fb2fcbcad0c8
+
+SHA256SUMS.txt
+SHA-256: aa7f972a6dcc5f1113fe85298827ec7d0b2a11d08b01e8c83d77784980d93403
+```
+
+Release-preparation PR #95 hosted CI passed at qualified head `a13edfb2c546a6144f2d485313a18a572a64f53e` in
+GitHub Actions run `38092134396`.
+
+The exact post-merge release commit/tree completed authoritative local
+qualification with:
+
+```text
+Portia Issue #54 cumulative repository qualification passed
+```
+
+The immutable `v0.2.0` source completed hosted Windows and Ubuntu qualification
+successfully in GitHub Actions run `38099826435`.
+
+The final artifact bytes passed installed acceptance before publication. After
+publication, a fresh directory downloaded exactly the wheel, sdist, and
+`SHA256SUMS.txt`. All downloaded hashes matched the frozen qualified bytes and
+the checksum file independently validated the wheel and sdist.
+
+The fresh-downloaded published wheel then passed the installed acceptance stack,
+including:
+
+```text
+Portia Issue #53 installed acceptance passed
+Portia Issue #54 Core 0.6.5 installed compatibility passed
+```
+
+Core qualification authority remains:
+
+```text
+current:
+pds_core-0.6.5-py3-none-any.whl
+9ace75f17b23b7f0ed6a709d531af5120db43d0325b4148d26f2d6ba1d4b3c18
+
+prior-release compatibility:
+pds_core-0.6.4-py3-none-any.whl
+48cea9317f2967bdc0f2d4c14349a56677c7c3f8211f0f33978ccb1a1c75859b
+
+historical:
+pds_core-0.6.3-py3-none-any.whl
+98d7596ce0eed26e4d56a17bbbbd644db3014259b56a45783a173fe8237af5e5
+```
+
+Final finding summary:
+
+```text
+BLOCKER: 0
+MAJOR: 0
+MINOR: 1 resolved
+ACCEPTED LIMITATION: 0
+DEFERRED / FUTURE: 0
+unresolved findings: 0
+```
+
+Paper Data Suite composition handoff:
+
+```text
+component_id: portia
+display name: Portia
+repository: Paper-Data-Suite/pds-portia
+distribution: pds-portia
+version: 0.2.0
+requires Python: >=3.11
+Core requirement: pds-core>=0.6.3,<0.7
+exact release wheel: pds_portia-0.2.0-py3-none-any.whl
+exact wheel SHA-256: 7ae545e62740b4411736fc55e572a86384ed8714f1f65346d65e36a7943f3550
+GitHub tag: v0.2.0
+console script: portia = portia.cli:main
+module-operations entry point:
+  portia = portia.pds_operations:get_module_operations_profile
+sibling PDS runtime dependency: none
+publication-producer capability: none
+teacher-local launchable application semantics: yes
+readiness and attention provider capability: yes
+```
+
+Issue #54 does not edit the Paper Data Suite compatibility manifest. Portia
+release qualification remains distinct from Suite composition qualification.
+`pds-paper-data-suite` owns independent qualification of any Suite composition
+that includes this Portia release.

@@ -92,27 +92,28 @@ def validate_repo(root: Path = ROOT) -> list[str]:
     elif counts.get("BLOCKER") != 0 or counts.get("MAJOR") != 0:
         errors.append("Slice 16 cannot pass with BLOCKER or MAJOR findings")
 
-    if audit.get("final_verdict") != "PENDING":
+    if audit.get("final_verdict") not in {"PENDING", "RELEASED — VERIFIED"}:
         errors.append("Slice 16 must retain PENDING final verdict")
     publication = audit.get("release_publication")
     if not isinstance(publication, dict):
         errors.append("release publication state is unavailable")
     else:
-        if publication.get("status") != "not_started":
+        if publication.get("status") not in {"not_started", "verified"}:
             errors.append("Slice 16 must not advance publication state")
-        for field in (
-            "release_commit",
-            "release_tree",
-            "tag",
-            "github_release_url",
-            "wheel_filename",
-            "wheel_sha256",
-            "sdist_filename",
-            "sdist_sha256",
-            "sha256sums_sha256",
-        ):
-            if publication.get(field) is not None:
-                errors.append(f"Slice 16 must not freeze publication field {field}")
+        if publication.get("status") == "not_started":
+            for field in (
+                "release_commit",
+                "release_tree",
+                "tag",
+                "github_release_url",
+                "wheel_filename",
+                "wheel_sha256",
+                "sdist_filename",
+                "sdist_sha256",
+                "sha256sums_sha256",
+            ):
+                if publication.get(field) is not None:
+                    errors.append(f"Slice 16 must not freeze publication field {field}")
 
     try:
         with (root / "pyproject.toml").open("rb") as handle:

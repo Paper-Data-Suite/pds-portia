@@ -870,3 +870,59 @@ Candidate wheel/sdist hashes remain non-final and must not be frozen from the
 release-preparation branch.
 
 Final verdict remains `PENDING`.
+
+## Final governance — published release verification
+
+This post-publication governance update records the final Issue #54 state after
+the immutable published bytes passed fresh-download verification and installed
+acceptance. It does not rebuild or replace release artifacts and does not move
+the `v0.2.0` tag.
+
+```text
+release commit: 83cfe05ef6b03d8453fdb60d1a1702f138d5293d
+release tree: 2050bd1c7aabb47ccf2df4a8285c7a61ac360f2e
+tag object: 5a32b2707400c35446d9365cc758cb49bbd6337e
+tag target: 83cfe05ef6b03d8453fdb60d1a1702f138d5293d
+GitHub Release: https://github.com/Paper-Data-Suite/pds-portia/releases/tag/v0.2.0
+
+wheel SHA-256: 7ae545e62740b4411736fc55e572a86384ed8714f1f65346d65e36a7943f3550
+sdist SHA-256: ea78dd74b6c9bbabb7da71397c9cdc4985479428b679856040f7fb2fcbcad0c8
+SHA256SUMS.txt SHA-256: aa7f972a6dcc5f1113fe85298827ec7d0b2a11d08b01e8c83d77784980d93403
+
+release-preparation CI run: 38092134396 — success
+tag CI run: 38099826435 — success
+
+Portia Issue #54 cumulative repository qualification passed
+Portia Issue #53 installed acceptance passed
+Portia Issue #54 Core 0.6.5 installed compatibility passed
+```
+
+The machine audit now records:
+
+```text
+phase: phase_2_release_verified
+final_verdict: RELEASED — VERIFIED
+release_publication.status: verified
+release_verification.status: passed
+suite_composition_handoff.status:
+  ready_for_independent_suite_qualification
+```
+
+Historical Slice 1–16 narrative remains chronological and is not rewritten.
+
+Focused governance validation:
+
+```text
+python scripts/validate_issue54_release_audit.py
+python scripts/validate_issue54_documentation_audit.py
+python scripts/validate_issue54_release_mechanics.py
+python scripts/validate_issue54_cumulative_qualification.py
+python scripts/validate_issue54_python_platform_qualification.py
+python -m pytest -q tests/test_issue54_release_audit.py tests/test_issue54_documentation_audit.py tests/test_issue54_release_mechanics.py tests/test_issue54_cumulative_qualification.py tests/test_issue54_python_platform_qualification.py
+python -m ruff check scripts/validate_issue54_release_audit.py scripts/validate_issue54_documentation_audit.py scripts/validate_issue54_release_mechanics.py scripts/validate_issue54_cumulative_qualification.py scripts/validate_issue54_python_platform_qualification.py tests/test_issue54_release_audit.py tests/test_issue54_documentation_audit.py tests/test_issue54_release_mechanics.py tests/test_issue54_cumulative_qualification.py tests/test_issue54_python_platform_qualification.py
+python -m mypy scripts/validate_issue54_release_audit.py scripts/validate_issue54_documentation_audit.py scripts/validate_issue54_release_mechanics.py scripts/validate_issue54_cumulative_qualification.py scripts/validate_issue54_python_platform_qualification.py
+git diff --check
+```
+
+No `portia/` production runtime file, dependency metadata, tracked release notes,
+release tag, or published release artifact is changed by this governance update.

@@ -69,8 +69,13 @@ def test_issue54_slice2_validator_accepts_ethics_audit() -> None:
 def test_issue54_ethics_domain_is_pass_without_premature_release_claim() -> None:
     audit = _audit()
     assert _domain_status("ethical_neutrality_epistemic_distinctions") == "pass"
-    assert audit["final_verdict"] == "PENDING"
-    assert audit["release_publication"]["status"] == "not_started"
+    assert (
+        audit["final_verdict"],
+        audit["release_publication"]["status"],
+    ) in {
+        ("PENDING", "not_started"),
+        ("RELEASED — VERIFIED", "verified"),
+    }
 
 
 def test_issue54_account_observation_authority_remains_distinct() -> None:

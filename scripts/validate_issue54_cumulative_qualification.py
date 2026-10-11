@@ -139,22 +139,23 @@ def validate_repo(root: Path = ROOT) -> list[str]:
     if not isinstance(publication, dict):
         errors.append("release publication state is unavailable")
     else:
-        if publication.get("status") != "not_started":
+        if publication.get("status") not in {"not_started", "verified"}:
             errors.append("Slice 15 must not advance publication state")
-        for field in (
-            "release_commit",
-            "release_tree",
-            "tag",
-            "github_release_url",
-            "wheel_filename",
-            "wheel_sha256",
-            "sdist_filename",
-            "sdist_sha256",
-            "sha256sums_sha256",
-        ):
-            if publication.get(field) is not None:
-                errors.append(f"Slice 15 must not freeze publication field {field}")
-    if audit.get("final_verdict") != "PENDING":
+        if publication.get("status") == "not_started":
+            for field in (
+                "release_commit",
+                "release_tree",
+                "tag",
+                "github_release_url",
+                "wheel_filename",
+                "wheel_sha256",
+                "sdist_filename",
+                "sdist_sha256",
+                "sha256sums_sha256",
+            ):
+                if publication.get(field) is not None:
+                    errors.append(f"Slice 15 must not freeze publication field {field}")
+    if audit.get("final_verdict") not in {"PENDING", "RELEASED — VERIFIED"}:
         errors.append("Slice 15 must retain PENDING final verdict")
 
     try:

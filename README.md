@@ -6,7 +6,7 @@ Portia is intended to help teachers document behavior-related events, preserve m
 
 ## Current Status
 
-Portia is in v0.2.0 release-candidate audit and release preparation. It is not yet `RELEASED — VERIFIED`.
+Portia v0.2.0 is **RELEASED — VERIFIED**. The exact published GitHub Release bytes completed Issue #54 fresh-download and installed acceptance. Paper Data Suite composition qualification remains separate and is owned by `pds-paper-data-suite`.
 
 The repository currently contains:
 

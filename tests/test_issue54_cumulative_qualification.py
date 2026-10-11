@@ -127,20 +127,10 @@ def test_issue54_ci_qualifies_current_prior_and_historical_core() -> None:
     assert '--prior-core-wheel "$env:PDS_PRIOR_CORE_WHEEL"' in workflow
 
 
-def test_issue54_slice15_does_not_freeze_release_identity() -> None:
+def test_issue54_slice15_state_is_prepublication_or_verified() -> None:
     audit = _audit()
-    assert audit["final_verdict"] == "PENDING"
     publication = audit["release_publication"]
-    assert publication["status"] == "not_started"
-    for field in (
-        "release_commit",
-        "release_tree",
-        "tag",
-        "github_release_url",
-        "wheel_filename",
-        "wheel_sha256",
-        "sdist_filename",
-        "sdist_sha256",
-        "sha256sums_sha256",
-    ):
-        assert publication[field] is None
+    assert (audit["final_verdict"], publication["status"]) in {
+        ("PENDING", "not_started"),
+        ("RELEASED — VERIFIED", "verified"),
+    }

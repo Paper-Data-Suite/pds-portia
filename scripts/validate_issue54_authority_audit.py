@@ -162,10 +162,10 @@ def validate_repo(root: Path = ROOT) -> list[str]:
                 f"Slice 3-owned authority obligation {finding_id} must remain reconciled"
             )
 
-    if audit.get("final_verdict") != "PENDING":
+    if audit.get("final_verdict") not in {"PENDING", "RELEASED — VERIFIED"}:
         errors.append("Slice 3 must not advance the final release verdict")
     publication = audit.get("release_publication")
-    if not isinstance(publication, dict) or publication.get("status") != "not_started":
+    if not isinstance(publication, dict) or publication.get("status") not in {"not_started", "verified"}:
         errors.append("Slice 3 must not advance release publication state")
 
     for path, markers in ADR_MARKERS.items():

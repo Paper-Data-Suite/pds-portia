@@ -79,14 +79,21 @@ def test_issue54_core_authority_separates_current_prior_and_historical_inputs() 
     }
 
 
-def test_issue54_audit_state_does_not_prematurely_claim_release() -> None:
+def test_issue54_audit_state_binds_verified_release() -> None:
     audit = _audit()
-    assert audit["phase"] == "phase_1_audit_in_progress"
-    assert audit["final_verdict"] == "PENDING"
-    assert audit["release_publication"]["status"] == "not_started"
-    assert audit["release_publication"]["wheel_sha256"] is None
-    assert audit["release_publication"]["sdist_sha256"] is None
-    assert audit["release_publication"]["github_release_url"] is None
+    assert audit["phase"] == "phase_2_release_verified"
+    assert audit["final_verdict"] == "RELEASED — VERIFIED"
+    publication = audit["release_publication"]
+    assert publication["status"] == "verified"
+    assert publication["release_commit"] == "83cfe05ef6b03d8453fdb60d1a1702f138d5293d"
+    assert publication["release_tree"] == "2050bd1c7aabb47ccf2df4a8285c7a61ac360f2e"
+    assert publication["tag"] == "v0.2.0"
+    assert publication["tag_object_sha"] == "5a32b2707400c35446d9365cc758cb49bbd6337e"
+    assert publication["tag_target_sha"] == "83cfe05ef6b03d8453fdb60d1a1702f138d5293d"
+    assert publication["github_release_url"] == "https://github.com/Paper-Data-Suite/pds-portia/releases/tag/v0.2.0"
+    assert publication["wheel_sha256"] == "7ae545e62740b4411736fc55e572a86384ed8714f1f65346d65e36a7943f3550"
+    assert publication["sdist_sha256"] == "ea78dd74b6c9bbabb7da71397c9cdc4985479428b679856040f7fb2fcbcad0c8"
+    assert publication["sha256sums_sha256"] == "aa7f972a6dcc5f1113fe85298827ec7d0b2a11d08b01e8c83d77784980d93403"
 
 
 def test_issue54_foundation_reaudit_obligations_are_explicit() -> None:
@@ -146,3 +153,47 @@ def test_issue54_docs_index_the_audit_and_validation_records() -> None:
     assert "validation/issue-54-v0.2.0-release-audit-validation.md" in docs
     assert "portia-v0.2.0-release-audit.json" in audits
     assert "portia-v0.2.0-release-findings.md" in audits
+
+def test_issue54_release_verification_is_complete() -> None:
+    audit = _audit()
+    verification = audit["release_verification"]
+    assert verification["status"] == "passed"
+    assert verification["release_preparation_ci"]["run_id"] == 38092134396
+    assert verification["tag_ci"]["run_id"] == 38099826435
+    assert verification["clean_main_cumulative"]["terminal_message"] == (
+        "Portia Issue #54 cumulative repository qualification passed"
+    )
+    assert verification["fresh_download"]["wheel_sha256"] == "7ae545e62740b4411736fc55e572a86384ed8714f1f65346d65e36a7943f3550"
+    assert verification["fresh_download"]["sdist_sha256"] == "ea78dd74b6c9bbabb7da71397c9cdc4985479428b679856040f7fb2fcbcad0c8"
+    assert verification["fresh_download"]["sha256sums_sha256"] == "aa7f972a6dcc5f1113fe85298827ec7d0b2a11d08b01e8c83d77784980d93403"
+    assert verification["fresh_download"]["issue53_terminal_message"] == (
+        "Portia Issue #53 installed acceptance passed"
+    )
+    assert verification["fresh_download"]["core065_terminal_message"] == (
+        "Portia Issue #54 Core 0.6.5 installed compatibility passed"
+    )
+
+
+def test_issue54_suite_handoff_is_exact() -> None:
+    audit = _audit()
+    assert audit["suite_composition_handoff"] == {
+        "status": "ready_for_independent_suite_qualification",
+        "component_id": "portia",
+        "display_name": "Portia",
+        "repository": "Paper-Data-Suite/pds-portia",
+        "distribution": "pds-portia",
+        "version": "0.2.0",
+        "requires_python": ">=3.11",
+        "core_requirement": "pds-core>=0.6.3,<0.7",
+        "exact_release_wheel": "pds_portia-0.2.0-py3-none-any.whl",
+        "exact_wheel_sha256": "7ae545e62740b4411736fc55e572a86384ed8714f1f65346d65e36a7943f3550",
+        "github_tag": "v0.2.0",
+        "console_script": "portia = portia.cli:main",
+        "module_operations_entry_point": "portia = portia.pds_operations:get_module_operations_profile",
+        "sibling_runtime_dependency": False,
+        "publication_producer_capability": False,
+        "teacher_local_launchable_application": True,
+        "readiness_attention_provider_capability": True,
+        "suite_manifest_modified_by_issue54": False,
+        "suite_composition_qualification_owner": "pds-paper-data-suite"
+}
