@@ -352,3 +352,39 @@ change privacy/export policy
 
 The next slice should use this baseline to make the first explicit contract
 disposition decisions.
+
+## Slice 2 decision — Classroom Observation capture
+
+ADR 0021 freezes the first concrete v0.3 paper decision:
+
+```text
+Capture Batch@1 remains the non-domain operational work root.
+
+Page Target@2 is additive and names:
+- classroom_observation_capture
+- focused_monitoring_capture
+- communication_capture
+
+Daily Classroom Observation lesson/session values are returned-page source
+context, not pre-print Capture Batch fields.
+
+Observation@2 remains Event/Support-Process owned.
+
+No class-day Event container is introduced.
+
+Positive/general/concern form cues remain capture aids, not domain judgment.
+```
+
+`page_target@2.entry_layout.context_entry_key` identifies the page-local entry
+whose capture-spec fields provide source/session context. It does not contain the
+context values itself.
+
+A routine classroom note remains capture-stage source material until a teacher
+deliberately maps it to legitimate domain work. A selected note may later
+contribute to an existing Event/Support Process or to a newly accepted neutral
+Event plus child evidence. Merely printing/scanning the daily sheet never
+creates that Event.
+
+At Slice 2, `page_target@2` is intentionally catalogued as
+`deferred_v0_3 / modelled=false`. Runtime promotion is a later reconciliation
+step.

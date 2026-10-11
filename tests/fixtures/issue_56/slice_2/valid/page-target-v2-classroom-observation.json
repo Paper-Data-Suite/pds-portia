@@ -1,0 +1,40 @@
+{
+  "schema_version": "2",
+  "record_type": "capture_page_target",
+  "module_id": "portia",
+  "class_id": "class_english12_p3",
+  "work_id": "cbat_classroom_20261011",
+  "page_target_id": "ptgt_classroom_20261011",
+  "page_index": 1,
+  "page_purpose": "classroom_observation_capture",
+  "template_identity": {
+    "template_id": "portia_classroom_observation",
+    "template_version": "1",
+    "layout_version": "layout_1",
+    "capture_spec_version": "capture_1",
+    "layout_fingerprint": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "page_role": "classroom_observation",
+    "page_ordinal": 1
+  },
+  "capture_mode": "mixed_recognition",
+  "entry_layout": {
+    "mode": "multi_entry",
+    "entry_keys": [
+      "session_context",
+      "observation_01",
+      "observation_02"
+    ],
+    "context_entry_key": "session_context"
+  },
+  "status": "active",
+  "created_at": "2026-10-11T10:00:00-04:00",
+  "created_by": {
+    "type": "system_process",
+    "process_id": "issue56_fixture"
+  },
+  "updated_at": "2026-10-11T10:00:00-04:00",
+  "updated_by": {
+    "type": "system_process",
+    "process_id": "issue56_fixture"
+  }
+}

@@ -891,6 +891,10 @@
       "1": {
         "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/capture/page-target.schema.json",
         "path": "schemas/v1/capture/page-target.schema.json"
+      },
+      "2": {
+        "schema_id": "https://paper-data-suite.github.io/pds-portia/schemas/v2/capture/page-target.schema.json",
+        "path": "schemas/v2/capture/page-target.schema.json"
       }
     },
     "page_record": {
