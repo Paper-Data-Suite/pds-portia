@@ -388,3 +388,15 @@ creates that Event.
 At Slice 2, `page_target@2` is intentionally catalogued as
 `deferred_v0_3 / modelled=false`. Runtime promotion is a later reconciliation
 step.
+
+## Slice 4 decision — Capture Batch runtime
+
+`capture_batch@1` is sufficient unchanged and is promoted to:
+
+```text
+current_v0_3 / modelled=true
+```
+
+It remains the non-domain operational work root accepted by ADR 0016. Runtime
+promotion does not add `capture_batch` to `portia_work_ref@1`, whose domain work
+kinds remain exactly `event` and `support_process`.

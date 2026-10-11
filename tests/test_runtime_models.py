@@ -66,7 +66,11 @@ def test_runtime_bundle_contains_only_modelled_contract_map() -> None:
         if isinstance(version, str)
     }
     assert pairs == set(MODEL_REGISTRY)
-    assert "capture_batch" not in contracts
+
+    capture_batch = contracts.get("capture_batch")
+    assert isinstance(capture_batch, dict)
+    assert set(capture_batch) == {"1"}
+
     assert "import_batch" not in contracts
     schemas = bundle["schemas"]
     assert isinstance(schemas, dict)

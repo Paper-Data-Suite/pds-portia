@@ -71,6 +71,7 @@ The primary version transitions relevant to v0.2 are:
 | Response / Communication | v1 | — |
 | Support Process through Fidelity | v1 | — |
 | Follow-Up / Outcome / Reentry / Repair | v1 | — |
+| Capture Batch | v1 | — |
 | Page Target | v2 | v1 |
 
 The complete machine-readable disposition is
@@ -196,18 +197,21 @@ test-only graph validator.
 
 ## v0.3 capture-runtime transition
 
-Page Target is the first v0.3 capture family promoted into the executable
-runtime:
+Capture Batch and Page Target are the first v0.3 capture families promoted
+into the executable runtime:
 
 ```text
+capture_batch@1 → current_v0_3
 page_target@1 → historical_read
 page_target@2 → current_v0_3
 ```
 
+Capture Batch remains operational rather than behavior-domain work:
+`portia_work_ref@1` still targets only Event or Support Process.
+
 The following operational families remain intentionally unmodeled:
 
 ```text
-Capture Batch
 Page Record
 Paper Interpretation
 Capture Proposal

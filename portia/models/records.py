@@ -206,6 +206,15 @@ class ReviewV1(PortiaRecord):
     CONTRACT = "review"
     VERSION = "1"
 
+class CaptureBatchV1(PortiaRecord):
+    """Exact current-v0.3 ``capture_batch@1`` runtime representation."""
+
+    __slots__ = ()
+
+    CONTRACT = "capture_batch"
+    VERSION = "1"
+
+
 class ClassificationV1(PortiaRecord):
     """Exact ``classification@1`` runtime representation."""
 
@@ -648,6 +657,7 @@ _RECORD_TYPES: Final[tuple[type[PortiaRecord], ...]] = (
     DeterminationV1,
     ResponseV1,
     CommunicationV1,
+    CaptureBatchV1,
     SupportProcessV1,
     SupportProcessParticipantV1,
     SupportNeedV1,
