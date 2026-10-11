@@ -109,6 +109,7 @@ files = [
     "scripts/validate_issue54_release_mechanics.py",
     "scripts/validate_issue54_cumulative_qualification.py",
     "scripts/validate_issue54_python_platform_qualification.py",
+    "scripts/validate_issue56_reconciliation_baseline.py",
     "scripts/smoke_test_issue54_core065_wheel.py",
     "scripts/validate_repository.py",
     "scripts/validate_runtime_models.py",
