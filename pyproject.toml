@@ -111,6 +111,8 @@ files = [
     "scripts/validate_issue54_python_platform_qualification.py",
     "scripts/validate_issue56_reconciliation_baseline.py",
     "scripts/validate_issue56_classroom_capture_decision.py",
+    "scripts/validate_issue56_page_target_runtime.py",
+    "scripts/smoke_test_issue56_page_target_runtime_wheel.py",
     "scripts/smoke_test_issue54_core065_wheel.py",
     "scripts/validate_repository.py",
     "scripts/validate_runtime_models.py",

@@ -10,6 +10,7 @@ from typing import Final, Literal, TypeAlias, cast
 
 CoverageDisposition: TypeAlias = Literal[
     "current_v0_2",
+    "current_v0_3",
     "historical_read",
     "supporting_v0_2",
     "deferred_v0_3",
@@ -18,7 +19,7 @@ CoverageDisposition: TypeAlias = Literal[
 ]
 
 MODELLED_DISPOSITIONS: Final[frozenset[str]] = frozenset(
-    {"current_v0_2", "historical_read", "supporting_v0_2"}
+    {"current_v0_2", "current_v0_3", "historical_read", "supporting_v0_2"}
 )
 
 
@@ -51,6 +52,7 @@ def runtime_coverage() -> tuple[RuntimeCoverageEntry, ...]:
     seen: set[tuple[str, str]] = set()
     allowed = {
         "current_v0_2",
+        "current_v0_3",
         "historical_read",
         "supporting_v0_2",
         "deferred_v0_3",

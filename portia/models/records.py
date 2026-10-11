@@ -2,11 +2,15 @@
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 from typing import Final
 
 from portia.models.base import PortiaRecord
 from portia.models.coverage import modelled_contract_versions
-from portia.models.errors import UnsupportedContractError
+from portia.models.errors import (
+    PortiaLocalValidationError,
+    UnsupportedContractError,
+)
 from portia.models.json_values import JsonValue
 
 
@@ -578,6 +582,42 @@ class DeliberateExportV1(PortiaRecord):
     CONTRACT = "deliberate_export"
     VERSION = "1"
 
+class PageTargetV1(PortiaRecord):
+    """Exact historical ``page_target@1`` runtime representation."""
+
+    __slots__ = ()
+
+    CONTRACT = "page_target"
+    VERSION = "1"
+
+
+class PageTargetV2(PortiaRecord):
+    """Exact current-v0.3 ``page_target@2`` runtime representation."""
+
+    __slots__ = ()
+
+    CONTRACT = "page_target"
+    VERSION = "2"
+
+    def __init__(self, data: Mapping[str, object]) -> None:
+        super().__init__(data)
+        layout = data.get("entry_layout")
+        if not isinstance(layout, Mapping):
+            return
+        context_key = layout.get("context_entry_key")
+        if context_key is None:
+            return
+        entry_keys = layout.get("entry_keys")
+        if (
+            not isinstance(context_key, str)
+            or not isinstance(entry_keys, list)
+            or context_key not in entry_keys
+        ):
+            raise PortiaLocalValidationError(
+                "page_target@2 context_entry_key must name one declared entry_key."
+            )
+
+
 _RECORD_TYPES: Final[tuple[type[PortiaRecord], ...]] = (
     EventV1,
     EventV2,
@@ -650,6 +690,8 @@ _RECORD_TYPES: Final[tuple[type[PortiaRecord], ...]] = (
     DerivedCurrentPointerV1,
     ExportSourceInventoryV1,
     DeliberateExportV1,
+    PageTargetV1,
+    PageTargetV2,
 )
 
 MODEL_REGISTRY: Final[dict[tuple[str, str], type[PortiaRecord]]] = {

@@ -1,4 +1,4 @@
-"""Public immutable runtime models for Portia v0.2."""
+"""Public immutable runtime models for Portia."""
 
 from portia.models.base import PortiaRecord
 from portia.models.common import (
@@ -87,6 +87,8 @@ from portia.models.records import (
     OutcomeV1,
     OwnershipCorrectionV1,
     OwnershipCorrectionV2,
+    PageTargetV1,
+    PageTargetV2,
     QuarantineCurrentPointerV1,
     QuarantineRecordV1,
     QuarantineRecordV2,
@@ -190,6 +192,8 @@ __all__ = [
     "FidelityV1",
     "FollowUpV1",
     "OutcomeV1",
+    "PageTargetV1",
+    "PageTargetV2",
     "ReentryV1",
     "RepairV1",
     "LifecycleTransitionV1",

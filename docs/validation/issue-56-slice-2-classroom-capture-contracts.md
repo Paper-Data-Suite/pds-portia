@@ -75,6 +75,17 @@ Expected focused validator terminal result:
 Portia Issue #56 Slice 2 classroom-capture contract decision validation passed
 ```
 
+## Later runtime promotion
+
+Slice 3 intentionally advances runtime support to:
+
+```text
+page_target@1 → historical_read / modelled=true
+page_target@2 → current_v0_3 / modelled=true
+```
+
+The Slice 2 design decision itself is unchanged.
+
 ## Boundary
 
 A passing Slice 2 does not mean `page_target@2` is executable runtime support.

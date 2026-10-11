@@ -149,10 +149,25 @@ def validate(root: Path) -> tuple[str, ...]:
     if page_v2_entry is None:
         findings.append("runtime coverage lacks page_target@2")
     else:
-        if page_v2_entry.get("disposition") != "deferred_v0_3":
-            findings.append("page_target@2 is not deferred_v0_3 in Slice 2")
-        if page_v2_entry.get("modelled") is not False:
-            findings.append("page_target@2 is unexpectedly modelled in Slice 2")
+        if page_v2_entry.get("disposition") != "current_v0_3":
+            findings.append("page_target@2 is not current_v0_3 after runtime promotion")
+        if page_v2_entry.get("modelled") is not True:
+            findings.append("page_target@2 is not modelled after runtime promotion")
+
+    page_v1_entry: dict[str, Any] | None = None
+    if isinstance(raw, list):
+        for item in raw:
+            if (
+                isinstance(item, dict)
+                and item.get("contract") == "page_target"
+                and item.get("version") == "1"
+            ):
+                page_v1_entry = cast(dict[str, Any], item)
+                break
+    if page_v1_entry is None or (
+        page_v1_entry.get("disposition"), page_v1_entry.get("modelled")
+    ) != ("historical_read", True):
+        findings.append("page_target@1 is not the promoted historical runtime read")
 
     capture_versions = (
         contracts.get("capture_batch")

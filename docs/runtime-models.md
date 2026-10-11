@@ -71,12 +71,14 @@ The primary version transitions relevant to v0.2 are:
 | Response / Communication | v1 | — |
 | Support Process through Fidelity | v1 | — |
 | Follow-Up / Outcome / Reentry / Repair | v1 | — |
+| Page Target | v2 | v1 |
 
 The complete machine-readable disposition is
 `portia/runtime-coverage.json`. It distinguishes:
 
 ```text
 current_v0_2
+current_v0_3
 historical_read
 supporting_v0_2
 deferred_v0_3
@@ -192,13 +194,20 @@ Tests additionally round-trip every Issue #22 public record whose exact
 contract/version is modeled by #37. No production module imports the Issue #22
 test-only graph validator.
 
-## Explicit v0.3 deferral
+## v0.3 capture-runtime transition
 
-The following operational families remain intentionally unmodeled in #37:
+Page Target is the first v0.3 capture family promoted into the executable
+runtime:
+
+```text
+page_target@1 → historical_read
+page_target@2 → current_v0_3
+```
+
+The following operational families remain intentionally unmodeled:
 
 ```text
 Capture Batch
-Page Target
 Page Record
 Paper Interpretation
 Capture Proposal
@@ -211,9 +220,8 @@ Import Review
 Import Materialization
 ```
 
-Their accepted schemas remain frozen foundation inputs. They will receive
-production runtime/workflow treatment with Portia v0.3 paper and structured
-import work.
+Their accepted schemas remain frozen inputs until their owning Issue #56 slices
+explicitly promote or supersede them.
 
 ## Issue #38 persistence boundary
 

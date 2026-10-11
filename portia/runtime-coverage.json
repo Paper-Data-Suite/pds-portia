@@ -3,6 +3,7 @@
   "issue": 37,
   "dispositions": [
     "current_v0_2",
+    "current_v0_3",
     "historical_read",
     "supporting_v0_2",
     "deferred_v0_3",
@@ -445,14 +446,14 @@
     {
       "contract": "page_target",
       "version": "1",
-      "disposition": "deferred_v0_3",
-      "modelled": false
+      "disposition": "historical_read",
+      "modelled": true
     },
     {
       "contract": "page_target",
       "version": "2",
-      "disposition": "deferred_v0_3",
-      "modelled": false
+      "disposition": "current_v0_3",
+      "modelled": true
     },
     {
       "contract": "page_record",
