@@ -35,8 +35,8 @@ STALE_README_MARKERS = (
 )
 
 REQUIRED_README_MARKERS = (
-    "Portia is in v0.2.0 release-candidate audit and release preparation.",
-    "It is not yet `RELEASED — VERIFIED`.",
+    "Portia v0.2.0 is **RELEASED — VERIFIED**.",
+    "Paper Data Suite composition qualification remains separate",
     "accepted Architecture Decision Records ADR 0001 through ADR 0020",
     "ADRs 0001–0020",
     "## Deferred Beyond v0.2.0",
@@ -254,10 +254,10 @@ def validate_repo(root: Path = ROOT) -> list[str]:
         if "scripts/validate_issue54_documentation_audit.py" not in files:
             errors.append("documentation validator must be in strict mypy scope")
 
-    if audit.get("final_verdict") != "PENDING":
+    if audit.get("final_verdict") not in {"PENDING", "RELEASED — VERIFIED"}:
         errors.append("Slice 13 must not advance final release verdict")
     publication = audit.get("release_publication")
-    if not isinstance(publication, dict) or publication.get("status") != "not_started":
+    if not isinstance(publication, dict) or publication.get("status") not in {"not_started", "verified"}:
         errors.append("Slice 13 must not advance release publication state")
 
     return errors

@@ -17,6 +17,22 @@ from packaging.utils import canonicalize_name
 STARTING_COMMIT = "d2cca3b7d8eb59087016d4da60e623960758a729"
 STARTING_TREE = "33067ffdd35047d2c6ac575cc7d21969c2a3862b"
 TARGET_VERSION = "0.2.0"
+FINAL_PHASE = "phase_2_release_verified"
+FINAL_VERDICT = "RELEASED — VERIFIED"
+RELEASE_COMMIT = "83cfe05ef6b03d8453fdb60d1a1702f138d5293d"
+RELEASE_TREE = "2050bd1c7aabb47ccf2df4a8285c7a61ac360f2e"
+RELEASE_TAG = "v0.2.0"
+RELEASE_TAG_OBJECT = "5a32b2707400c35446d9365cc758cb49bbd6337e"
+RELEASE_TAG_TARGET = "83cfe05ef6b03d8453fdb60d1a1702f138d5293d"
+RELEASE_URL = "https://github.com/Paper-Data-Suite/pds-portia/releases/tag/v0.2.0"
+RELEASE_NAME = "pds-portia v0.2.0"
+PUBLISHED_AT_UTC = "2026-10-11T02:30:52Z"
+RELEASE_WHEEL = "pds_portia-0.2.0-py3-none-any.whl"
+RELEASE_WHEEL_SHA256 = "7ae545e62740b4411736fc55e572a86384ed8714f1f65346d65e36a7943f3550"
+RELEASE_SDIST = "pds_portia-0.2.0.tar.gz"
+RELEASE_SDIST_SHA256 = "ea78dd74b6c9bbabb7da71397c9cdc4985479428b679856040f7fb2fcbcad0c8"
+RELEASE_SHA256SUMS = "SHA256SUMS.txt"
+RELEASE_SHA256SUMS_SHA256 = "aa7f972a6dcc5f1113fe85298827ec7d0b2a11d08b01e8c83d77784980d93403"
 EXPECTED_CORE_SPECIFIER = SpecifierSet(">=0.6.3,<0.7")
 EXPECTED_CONSOLE_TARGET = "portia.cli:main"
 EXPECTED_OPERATIONS_TARGET = "portia.pds_operations:get_module_operations_profile"
@@ -295,7 +311,7 @@ def _validate_audit_state(root: Path, errors: list[str]) -> None:
         "target_version": TARGET_VERSION,
         "starting_portia_commit": STARTING_COMMIT,
         "starting_portia_tree": STARTING_TREE,
-        "phase": "phase_1_audit_in_progress",
+        "phase": FINAL_PHASE,
     }
     for key, expected in exact_fields.items():
         if audit.get(key) != expected:
@@ -304,6 +320,10 @@ def _validate_audit_state(root: Path, errors: list[str]) -> None:
     verdict = audit.get("final_verdict")
     if verdict not in ALLOWED_VERDICTS:
         errors.append(f"invalid final_verdict: {verdict!r}")
+    if verdict != FINAL_VERDICT:
+        errors.append(
+            f"final_verdict must be {FINAL_VERDICT!r} after publication verification"
+        )
 
     baseline = _require_mapping(
         audit.get("baseline_qualification"),
@@ -455,17 +475,106 @@ def _validate_audit_state(root: Path, errors: list[str]) -> None:
         "release_publication",
         errors,
     )
-    if publication is not None:
-        publication_status = publication.get("status")
-        if publication_status not in {
-            "not_started",
-            "candidate_qualified",
-            "published",
-            "verified",
-        }:
-            errors.append(f"invalid release publication status: {publication_status!r}")
-        if verdict == "RELEASED — VERIFIED" and publication_status != "verified":
-            errors.append("RELEASED — VERIFIED requires verified publication state")
+    expected_publication: dict[str, object] = {
+        "status": "verified",
+        "release_commit": "83cfe05ef6b03d8453fdb60d1a1702f138d5293d",
+        "release_tree": "2050bd1c7aabb47ccf2df4a8285c7a61ac360f2e",
+        "tag": "v0.2.0",
+        "tag_object_sha": "5a32b2707400c35446d9365cc758cb49bbd6337e",
+        "tag_target_sha": "83cfe05ef6b03d8453fdb60d1a1702f138d5293d",
+        "github_release_name": "pds-portia v0.2.0",
+        "github_release_url": "https://github.com/Paper-Data-Suite/pds-portia/releases/tag/v0.2.0",
+        "published_at_utc": "2026-10-11T02:30:52Z",
+        "wheel_filename": "pds_portia-0.2.0-py3-none-any.whl",
+        "wheel_sha256": "7ae545e62740b4411736fc55e572a86384ed8714f1f65346d65e36a7943f3550",
+        "sdist_filename": "pds_portia-0.2.0.tar.gz",
+        "sdist_sha256": "ea78dd74b6c9bbabb7da71397c9cdc4985479428b679856040f7fb2fcbcad0c8",
+        "sha256sums_filename": "SHA256SUMS.txt",
+        "sha256sums_sha256": "aa7f972a6dcc5f1113fe85298827ec7d0b2a11d08b01e8c83d77784980d93403"
+}
+    if publication is not None and publication != expected_publication:
+        errors.append(
+            "release_publication does not match the immutable verified release identity"
+        )
+
+    verification = _require_mapping(
+        audit.get("release_verification"),
+        "release_verification",
+        errors,
+    )
+    expected_verification: dict[str, object] = {
+        "status": "passed",
+        "release_preparation_ci": {
+                "status": "success",
+                "pull_request": 95,
+                "qualified_head": "a13edfb2c546a6144f2d485313a18a572a64f53e",
+                "run_id": 38092134396,
+                "url": "https://github.com/Paper-Data-Suite/pds-portia/actions/runs/38092134396"
+        },
+        "tag_ci": {
+                "status": "success",
+                "run_id": 38099826435,
+                "url": "https://github.com/Paper-Data-Suite/pds-portia/actions/runs/38099826435",
+                "head_branch": "v0.2.0",
+                "head_sha": "83cfe05ef6b03d8453fdb60d1a1702f138d5293d"
+        },
+        "clean_main_cumulative": {
+                "status": "passed",
+                "commit": "83cfe05ef6b03d8453fdb60d1a1702f138d5293d",
+                "tree": "2050bd1c7aabb47ccf2df4a8285c7a61ac360f2e",
+                "terminal_message": "Portia Issue #54 cumulative repository qualification passed"
+        },
+        "final_artifact_installed_acceptance": {
+                "status": "passed",
+                "wheel_sha256": "7ae545e62740b4411736fc55e572a86384ed8714f1f65346d65e36a7943f3550",
+                "issue53_terminal_message": "Portia Issue #53 installed acceptance passed",
+                "core065_terminal_message": "Portia Issue #54 Core 0.6.5 installed compatibility passed"
+        },
+        "fresh_download": {
+                "status": "passed",
+                "asset_count": 3,
+                "wheel_sha256": "7ae545e62740b4411736fc55e572a86384ed8714f1f65346d65e36a7943f3550",
+                "sdist_sha256": "ea78dd74b6c9bbabb7da71397c9cdc4985479428b679856040f7fb2fcbcad0c8",
+                "sha256sums_sha256": "aa7f972a6dcc5f1113fe85298827ec7d0b2a11d08b01e8c83d77784980d93403",
+                "issue53_terminal_message": "Portia Issue #53 installed acceptance passed",
+                "core065_terminal_message": "Portia Issue #54 Core 0.6.5 installed compatibility passed"
+        }
+}
+    if verification is not None and verification != expected_verification:
+        errors.append(
+            "release_verification does not match the completed qualification evidence"
+        )
+
+    handoff = _require_mapping(
+        audit.get("suite_composition_handoff"),
+        "suite_composition_handoff",
+        errors,
+    )
+    expected_handoff: dict[str, object] = {
+        "status": "ready_for_independent_suite_qualification",
+        "component_id": "portia",
+        "display_name": "Portia",
+        "repository": "Paper-Data-Suite/pds-portia",
+        "distribution": "pds-portia",
+        "version": "0.2.0",
+        "requires_python": ">=3.11",
+        "core_requirement": "pds-core>=0.6.3,<0.7",
+        "exact_release_wheel": "pds_portia-0.2.0-py3-none-any.whl",
+        "exact_wheel_sha256": "7ae545e62740b4411736fc55e572a86384ed8714f1f65346d65e36a7943f3550",
+        "github_tag": "v0.2.0",
+        "console_script": "portia = portia.cli:main",
+        "module_operations_entry_point": "portia = portia.pds_operations:get_module_operations_profile",
+        "sibling_runtime_dependency": False,
+        "publication_producer_capability": False,
+        "teacher_local_launchable_application": True,
+        "readiness_attention_provider_capability": True,
+        "suite_manifest_modified_by_issue54": False,
+        "suite_composition_qualification_owner": "pds-paper-data-suite"
+}
+    if handoff is not None and handoff != expected_handoff:
+        errors.append(
+            "suite_composition_handoff does not match the final Portia release handoff"
+        )
 
     unresolved_high = [
         finding
@@ -497,7 +606,7 @@ def _validate_documentation_wiring(root: Path, errors: list[str]) -> None:
             "portia-v0.2.0-release-findings.md",
         ),
         "docs/audits/portia-v0.2.0-release-audit.md": (
-            "Final verdict: **PENDING**",
+            "Final verdict: **RELEASED — VERIFIED**",
             "Portia Issue #53 repository qualification passed",
             "RELEASED — VERIFIED",
         ),

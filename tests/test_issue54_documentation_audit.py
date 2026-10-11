@@ -42,8 +42,13 @@ def test_issue54_documentation_domain_pass_does_not_claim_release() -> None:
         for entry in audit["audit_domains"]
     }
     assert domains["documentation_reconciliation"] == "pass"
-    assert audit["final_verdict"] == "PENDING"
-    assert audit["release_publication"]["status"] == "not_started"
+    assert (
+        audit["final_verdict"],
+        audit["release_publication"]["status"],
+    ) in {
+        ("PENDING", "not_started"),
+        ("RELEASED — VERIFIED", "verified"),
+    }
 
 
 def test_issue54_documentation_finding_is_resolved_minor() -> None:
@@ -70,6 +75,8 @@ def test_issue54_readme_no_longer_claims_implemented_v02_work_is_future() -> Non
     )
     assert "ADRs 0001–0020" in readme
     assert "Portia is licensed under the MIT License." in readme
+    assert "Portia v0.2.0 is **RELEASED — VERIFIED**." in readme
+    assert "Paper Data Suite composition qualification remains separate" in readme
 
 
 def test_issue54_security_heading_is_not_duplicated() -> None:

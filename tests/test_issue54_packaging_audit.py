@@ -58,8 +58,13 @@ def test_issue54_slice12_validator_accepts_packaging_audit() -> None:
 def test_issue54_packaging_domain_pass_does_not_claim_release() -> None:
     audit = _audit()
     assert _domain_status("packaging_public_surface") == "pass"
-    assert audit["final_verdict"] == "PENDING"
-    assert audit["release_publication"]["status"] == "not_started"
+    assert (
+        audit["final_verdict"],
+        audit["release_publication"]["status"],
+    ) in {
+        ("PENDING", "not_started"),
+        ("RELEASED — VERIFIED", "verified"),
+    }
 
 
 def test_issue54_runtime_dependency_and_entry_point_surface_is_exact() -> None:

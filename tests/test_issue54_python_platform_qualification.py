@@ -81,12 +81,10 @@ def test_issue54_release_notes_state_platform_boundary_truthfully() -> None:
     assert "Python minors other than 3.11 are not claimed as release-tested" in notes
 
 
-def test_issue54_slice16_does_not_pretend_release_is_complete() -> None:
+def test_issue54_slice16_state_is_prepublication_or_verified() -> None:
     audit = _audit()
-    assert audit["final_verdict"] == "PENDING"
     publication = audit["release_publication"]
-    assert publication["status"] == "not_started"
-    assert publication["release_commit"] is None
-    assert publication["tag"] is None
-    assert publication["wheel_sha256"] is None
-    assert publication["sdist_sha256"] is None
+    assert (audit["final_verdict"], publication["status"]) in {
+        ("PENDING", "not_started"),
+        ("RELEASED — VERIFIED", "verified"),
+    }
