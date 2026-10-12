@@ -75,6 +75,7 @@ IDENTITY_FIELDS: dict[str, tuple[str, ...]] = {
     "deliberate_export": ("export_id",),
     "page_target": ("page_target_id",),
     "page_record": ("page_record_id",),
+    "paper_interpretation": ("interpretation_id",),
 }
 
 

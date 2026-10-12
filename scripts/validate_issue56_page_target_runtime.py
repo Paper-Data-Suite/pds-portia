@@ -20,7 +20,6 @@ V2_ID = (
     "schemas/v2/capture/page-target.schema.json"
 )
 STILL_DEFERRED = {
-    "paper_interpretation",
     "capture_proposal",
     "capture_review",
     "capture_materialization",
@@ -62,6 +61,13 @@ def validate(root: Path) -> tuple[str, ...]:
         findings.append("runtime coverage vocabulary lacks current_v0_3")
 
     entries = _entries(root)
+    interpretation = entries.get(("paper_interpretation", "1"))
+    if interpretation is None or (
+        interpretation.get("disposition"),
+        interpretation.get("modelled"),
+    ) != ("current_v0_3", True):
+        findings.append("paper_interpretation@1 is not current_v0_3/modelled")
+
     page_record = entries.get(("page_record", "1"))
     if page_record is None or (
         page_record.get("disposition"),
@@ -134,7 +140,7 @@ def validate(root: Path) -> tuple[str, ...]:
     for marker in (
         "| Page Target | v2 | v1 |",
         "current_v0_3",
-        "Capture Batch, Page Target, and Page Record are the first v0.3 capture families",
+        "Capture Batch, Page Target, Page Record, and Paper Interpretation",
     ):
         if marker not in docs:
             findings.append(f"runtime-model documentation missing: {marker}")

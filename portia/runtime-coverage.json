@@ -464,8 +464,8 @@
     {
       "contract": "paper_interpretation",
       "version": "1",
-      "disposition": "deferred_v0_3",
-      "modelled": false
+      "disposition": "current_v0_3",
+      "modelled": true
     },
     {
       "contract": "capture_proposal",

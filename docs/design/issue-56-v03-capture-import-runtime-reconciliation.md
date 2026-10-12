@@ -413,3 +413,22 @@ local parsing does not fabricate those cross-system facts.
 
 Page Record processing state remains non-domain and cannot itself materialize or
 confirm a behavior-domain record.
+
+## Slice 6 decision — Paper Interpretation runtime
+
+`paper_interpretation@1` is sufficient unchanged and is promoted to:
+
+```text
+current_v0_3 / modelled=true
+```
+
+The exact immutable record preserves one interpretation generation, its
+historical layout snapshot, interpreter/mapping profile, page-local entry/field
+keys, candidate literals, normalized candidates, alternatives, uncertainty
+state, and confidence.
+
+Runtime promotion does not change the authority model: machine/manual candidate
+≠ human confirmation; confidence ≠ truth; mapped record kind ≠ creation
+authorization; complete processing ≠ semantic correctness. Same-profile replay
+idempotency, changed-profile generation creation, and lineage resolution remain
+service-layer responsibilities.

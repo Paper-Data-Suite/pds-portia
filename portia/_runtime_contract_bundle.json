@@ -146,6 +146,9 @@
       "1": "https://paper-data-suite.github.io/pds-portia/schemas/v1/capture/page-target.schema.json",
       "2": "https://paper-data-suite.github.io/pds-portia/schemas/v2/capture/page-target.schema.json"
     },
+    "paper_interpretation": {
+      "1": "https://paper-data-suite.github.io/pds-portia/schemas/v1/capture/paper-interpretation.schema.json"
+    },
     "quarantine_current_pointer": {
       "1": "https://paper-data-suite.github.io/pds-portia/schemas/v1/operations/quarantine-current-pointer.schema.json"
     },
@@ -6014,6 +6017,545 @@
         }
       ]
     },
+    "https://paper-data-suite.github.io/pds-portia/schemas/v1/capture/paper-interpretation.schema.json": {
+      "$comment": "Application validation must resolve the exact Capture Batch, Page Target, Page Record, Core-retained source lineage, and historical capture specification; enforce idempotency and generation history; validate entry/field keys against the exact capture specification; preserve uncertainty; and prevent machine candidates, confidence, mapped record kinds, or normalized values from bypassing attributable human review where review is required. Raw scan/PDF bytes remain Core-owned and are never embedded here.",
+      "$defs": {
+        "alternativeCandidate": {
+          "additionalProperties": false,
+          "properties": {
+            "candidate_literal": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+            },
+            "confidence": {
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number"
+            },
+            "normalized_value": {
+              "$ref": "#/$defs/normalizedValue"
+            }
+          },
+          "required": [
+            "candidate_literal"
+          ],
+          "type": "object"
+        },
+        "entryInterpretation": {
+          "additionalProperties": false,
+          "allOf": [
+            {
+              "else": {
+                "not": {
+                  "required": [
+                    "fields"
+                  ]
+                }
+              },
+              "if": {
+                "properties": {
+                  "entry_state": {
+                    "const": "candidate"
+                  }
+                },
+                "required": [
+                  "entry_state"
+                ]
+              },
+              "then": {
+                "required": [
+                  "fields"
+                ]
+              }
+            }
+          ],
+          "properties": {
+            "entry_state": {
+              "description": "Mechanical slot-level interpretation state. blank does not mean false/no; unreadable is distinct from blank; candidate only means field-level staging information is present.",
+              "enum": [
+                "blank",
+                "unreadable",
+                "candidate"
+              ]
+            },
+            "fields": {
+              "$ref": "#/$defs/fieldMap"
+            },
+            "mapped_record_kind": {
+              "$ref": "#/$defs/mappedRecordKind",
+              "description": "Optional exact mapping-profile target family. It does not assert that a canonical record exists, should be created, or is semantically valid."
+            }
+          },
+          "required": [
+            "entry_state"
+          ],
+          "type": "object"
+        },
+        "entryMap": {
+          "additionalProperties": {
+            "$ref": "#/$defs/entryInterpretation"
+          },
+          "description": "Map keyed by stable Page Target entry_key. Object keys provide minimal page-local entry identity without introducing globally opaque entry IDs.",
+          "minProperties": 1,
+          "propertyNames": {
+            "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/lowercase-token.schema.json"
+          },
+          "type": "object"
+        },
+        "fieldInterpretation": {
+          "additionalProperties": false,
+          "allOf": [
+            {
+              "else": {
+                "else": {
+                  "not": {
+                    "anyOf": [
+                      {
+                        "required": [
+                          "candidate_literal"
+                        ]
+                      },
+                      {
+                        "required": [
+                          "normalized_value"
+                        ]
+                      },
+                      {
+                        "required": [
+                          "confidence"
+                        ]
+                      },
+                      {
+                        "required": [
+                          "alternatives"
+                        ]
+                      }
+                    ]
+                  }
+                },
+                "if": {
+                  "properties": {
+                    "recognition_state": {
+                      "const": "ambiguous"
+                    }
+                  },
+                  "required": [
+                    "recognition_state"
+                  ]
+                },
+                "then": {
+                  "not": {
+                    "anyOf": [
+                      {
+                        "required": [
+                          "candidate_literal"
+                        ]
+                      },
+                      {
+                        "required": [
+                          "normalized_value"
+                        ]
+                      },
+                      {
+                        "required": [
+                          "confidence"
+                        ]
+                      }
+                    ]
+                  },
+                  "required": [
+                    "alternatives"
+                  ]
+                }
+              },
+              "if": {
+                "properties": {
+                  "recognition_state": {
+                    "const": "candidate_detected"
+                  }
+                },
+                "required": [
+                  "recognition_state"
+                ]
+              },
+              "then": {
+                "not": {
+                  "required": [
+                    "alternatives"
+                  ]
+                },
+                "required": [
+                  "candidate_literal"
+                ]
+              }
+            }
+          ],
+          "properties": {
+            "alternatives": {
+              "items": {
+                "$ref": "#/$defs/alternativeCandidate"
+              },
+              "maxItems": 16,
+              "minItems": 2,
+              "type": "array",
+              "uniqueItems": true
+            },
+            "candidate_literal": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json",
+              "description": "Literal nonblank transcription/detection candidate as emitted by the interpreter. It is not silently polished, normalized, quoted as human-confirmed wording, or treated as true."
+            },
+            "capture_method": {
+              "enum": [
+                "text_recognition",
+                "handwriting_recognition",
+                "mark_recognition",
+                "manual_transcription"
+              ]
+            },
+            "confidence": {
+              "description": "Interpreter-supplied confidence/score for review prioritization only; not truth probability, credibility, authority, or a review bypass.",
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number"
+            },
+            "normalized_value": {
+              "$ref": "#/$defs/normalizedValue",
+              "description": "Optional deterministic normalized candidate. The literal candidate remains preserved and normalization does not establish correctness or domain meaning."
+            },
+            "recognition_state": {
+              "enum": [
+                "blank",
+                "unmarked",
+                "unreadable",
+                "ambiguous",
+                "candidate_detected"
+              ]
+            },
+            "region_key": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/lowercase-token.schema.json",
+              "description": "Optional smallest capture-spec-local region locator when field_key alone is insufficient."
+            }
+          },
+          "required": [
+            "capture_method",
+            "recognition_state"
+          ],
+          "type": "object"
+        },
+        "fieldMap": {
+          "additionalProperties": {
+            "$ref": "#/$defs/fieldInterpretation"
+          },
+          "description": "Map keyed by stable capture-spec field_key. Keys are page-local layout locators and never person or canonical-record identifiers.",
+          "minProperties": 1,
+          "propertyNames": {
+            "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/lowercase-token.schema.json"
+          },
+          "type": "object"
+        },
+        "interpreterProfile": {
+          "additionalProperties": false,
+          "properties": {
+            "interpreter_id": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/lowercase-token.schema.json",
+              "description": "Stable local interpreter/engine/procedure identifier. It does not identify a human source or establish authority."
+            },
+            "interpreter_version": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+            },
+            "mapping_profile_id": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+            },
+            "mapping_version": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+            }
+          },
+          "required": [
+            "interpreter_id",
+            "interpreter_version",
+            "mapping_profile_id",
+            "mapping_version"
+          ],
+          "type": "object"
+        },
+        "layoutSnapshot": {
+          "additionalProperties": false,
+          "properties": {
+            "capture_spec_version": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+            },
+            "layout_fingerprint": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/sha256-digest.schema.json"
+            },
+            "layout_version": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+            },
+            "page_ordinal": {
+              "minimum": 1,
+              "type": "integer"
+            },
+            "page_role": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/lowercase-token.schema.json"
+            },
+            "template_id": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+            },
+            "template_version": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+            }
+          },
+          "required": [
+            "template_id",
+            "template_version",
+            "layout_version",
+            "capture_spec_version",
+            "layout_fingerprint",
+            "page_role",
+            "page_ordinal"
+          ],
+          "type": "object"
+        },
+        "mappedRecordKind": {
+          "enum": [
+            "event",
+            "event_participant",
+            "event_participant_role",
+            "account",
+            "observation",
+            "review",
+            "classification",
+            "hypothesis",
+            "determination",
+            "response",
+            "communication",
+            "support_process",
+            "support_process_participant",
+            "support_need",
+            "support_goal",
+            "support",
+            "intervention",
+            "implementation",
+            "fidelity",
+            "follow_up",
+            "outcome",
+            "reentry",
+            "repair"
+          ]
+        },
+        "normalizedValue": {
+          "oneOf": [
+            {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "boolean"
+            },
+            {
+              "items": {
+                "oneOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "boolean"
+                  }
+                ]
+              },
+              "maxItems": 32,
+              "minItems": 1,
+              "type": "array",
+              "uniqueItems": true
+            }
+          ]
+        }
+      },
+      "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/capture/paper-interpretation.schema.json",
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "else": {
+            "properties": {
+              "limitation_codes": {
+                "minItems": 1
+              }
+            }
+          },
+          "if": {
+            "properties": {
+              "interpretation_status": {
+                "const": "complete"
+              }
+            },
+            "required": [
+              "interpretation_status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "limitation_codes": {
+                "maxItems": 0
+              }
+            }
+          }
+        }
+      ],
+      "description": "Version-1 immutable operational staging record for one interpretation generation of one Portia Page Record. It preserves exact historical layout identity, interpreter/mapping identity, page-local entry slots, mechanical candidate literals, deterministic normalized candidates, and uncertainty. It is not a human review, accepted evidence, source truth, canonical behavior-domain record, or authorization to materialize one.",
+      "properties": {
+        "class_id": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+        },
+        "created_at": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+        },
+        "created_by": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/attribution/attribution-agent.schema.json"
+        },
+        "entries": {
+          "$ref": "#/$defs/entryMap"
+        },
+        "generation": {
+          "description": "Positive immutable interpretation generation within the Page Record lineage. Generation ordering is operational history only and never establishes semantic correctness.",
+          "minimum": 1,
+          "type": "integer"
+        },
+        "interpretation_id": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-paper-interpretation-id.schema.json"
+        },
+        "interpretation_status": {
+          "description": "Mechanical processing coverage only. complete means the configured historical regions were processed; it does not mean values are correct, human-reviewed, or accepted.",
+          "enum": [
+            "complete",
+            "partial"
+          ]
+        },
+        "interpreted_at": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+        },
+        "interpreted_by": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/attribution/attribution-agent.schema.json",
+          "description": "Agent that produced this staging interpretation. Human local-operator transcription here is still not the later attributable confirmation/review decision."
+        },
+        "interpreter_profile": {
+          "$ref": "#/$defs/interpreterProfile"
+        },
+        "layout_snapshot": {
+          "$ref": "#/$defs/layoutSnapshot"
+        },
+        "limitation_codes": {
+          "description": "Privacy-minimized processing limitations. Codes describe interpretation coverage, not behavior-domain conclusions.",
+          "items": {
+            "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/lowercase-token.schema.json"
+          },
+          "maxItems": 32,
+          "type": "array",
+          "uniqueItems": true
+        },
+        "module_id": {
+          "const": "portia"
+        },
+        "page_record_id": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-page-record-id.schema.json"
+        },
+        "page_target_id": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-page-target-id.schema.json"
+        },
+        "record_type": {
+          "const": "paper_interpretation"
+        },
+        "schema_version": {
+          "const": "1"
+        },
+        "work_id": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-capture-batch-id.schema.json"
+        }
+      },
+      "required": [
+        "schema_version",
+        "record_type",
+        "module_id",
+        "class_id",
+        "work_id",
+        "page_target_id",
+        "page_record_id",
+        "interpretation_id",
+        "generation",
+        "layout_snapshot",
+        "interpreter_profile",
+        "interpretation_status",
+        "limitation_codes",
+        "entries",
+        "interpreted_at",
+        "interpreted_by",
+        "created_at",
+        "created_by"
+      ],
+      "title": "Portia Paper Interpretation",
+      "type": "object",
+      "x-portia-application-invariants": [
+        {
+          "description": "class_id/work_id/page_target_id/page_record_id must resolve to one exact Page Record and its exact Capture Batch/Page Target lineage; interpretation never retargets a returned page.",
+          "id": "paper_interpretation.page_record_exactness"
+        },
+        {
+          "description": "layout_snapshot must exactly match the historical Page Target template/layout/capture-spec identity and fingerprint; current-installed-template substitution is prohibited.",
+          "id": "paper_interpretation.layout_snapshot_exactness"
+        },
+        {
+          "description": "Every entry map key must be declared by the exact Page Target entry_layout; omission/presence semantics must follow the exact historical capture specification rather than scan order or array position.",
+          "id": "paper_interpretation.entry_keys_declared"
+        },
+        {
+          "description": "Every field map key and optional region_key must be valid for the entry in the exact historical capture specification; field/region keys are page-local locators, not person or domain-record identity.",
+          "id": "paper_interpretation.field_keys_declared"
+        },
+        {
+          "description": "Reprocessing the same Page Record with the same interpreter_profile must reuse the same logical interpretation generation rather than create duplicate candidate history or downstream records.",
+          "id": "paper_interpretation.same_profile_replay_idempotent"
+        },
+        {
+          "description": "A changed interpreter version, mapping profile/version, or other contract-significant interpretation profile creates a new preserved generation; it never silently rewrites an earlier generation.",
+          "id": "paper_interpretation.changed_profile_new_generation"
+        },
+        {
+          "description": "Once persisted, candidate literals, normalized values, uncertainty states, layout snapshot, profile identity, and entry/field mappings are immutable; correction or reinterpretation creates a later generation.",
+          "id": "paper_interpretation.immutable_generation"
+        },
+        {
+          "description": "blank, unmarked, unreadable, and ambiguous are distinct source states and must not be converted into false, no, declined, absent, uninvolved, unsuccessful, or another domain value merely to satisfy a downstream schema.",
+          "id": "paper_interpretation.uncertainty_is_not_negative"
+        },
+        {
+          "description": "candidate_detected and ambiguous alternatives are machine/manual staging candidates only; candidate literal or normalized values are not human-confirmed values and may be corrected, rejected, or left unresolved later.",
+          "id": "paper_interpretation.candidate_not_confirmed"
+        },
+        {
+          "description": "Confidence may prioritize review but cannot establish truth, identity, authorship, credibility, participation, judgment, or eligibility and cannot bypass required human review.",
+          "id": "paper_interpretation.confidence_review_priority_only"
+        },
+        {
+          "description": "mapped_record_kind, when present, must come from the exact historical mapping profile/template purpose rather than inference from narrative or detected marks; it describes a possible target family only and does not authorize record creation.",
+          "id": "paper_interpretation.mapped_kind_from_exact_mapping_only"
+        },
+        {
+          "description": "Interpretation must not fuzzy-match people, infer source authorship/firsthand status, Event participation/fault, Classification/Hypothesis/Determination, Response appropriateness, Support recommendation, Fidelity, Outcome, recurrence failure, Reentry/Repair completion, remorse, forgiveness, or comparable human judgment.",
+          "id": "paper_interpretation.no_identity_or_judgment_inference"
+        },
+        {
+          "description": "Persisting a complete or partial interpretation must not create, activate, complete, invalidate, supersede, or otherwise mutate any canonical behavior-domain record.",
+          "id": "paper_interpretation.no_automatic_materialization"
+        },
+        {
+          "description": "Raw scan/PDF/image bytes and temporary scanner paths remain outside Paper Interpretation JSON; exact source history is reached through the Page Record and Core retained-source provenance.",
+          "id": "paper_interpretation.raw_source_not_embedded"
+        }
+      ]
+    },
     "https://paper-data-suite.github.io/pds-portia/schemas/v1/classifications/classification.schema.json": {
       "$comment": "Application validation remains responsible for canonical path and Event ownership, target resolution, selector resolution/current-use eligibility, selector/recorder distinction, Review linkage and completion where required, reviewed-Classification resolution, reviewer-confirmed result agreement, definition support, evidence-reference resolution, duplicate logical evidence, paper/import review history, chronology, lifecycle legality, supersession topology, current-use eligibility, no silent successor following, no automatic Classification/Determination, privacy, and recoverable coordinated writes.",
       "$defs": {
@@ -11782,6 +12324,16 @@
       "minLength": 6,
       "pattern": "^ptgt_[A-Za-z0-9][A-Za-z0-9_-]*$",
       "title": "Portia Page Target Identifier",
+      "type": "string"
+    },
+    "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-paper-interpretation-id.schema.json": {
+      "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-paper-interpretation-id.schema.json",
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "description": "Opaque identifier for one immutable paper-interpretation generation inside one Portia Capture Batch. The pint_ prefix is part of the public identifier contract. The identifier does not encode student identity, source content, page purpose, interpreter, confidence, review disposition, or canonical domain meaning.",
+      "maxLength": 128,
+      "minLength": 6,
+      "pattern": "^pint_[A-Za-z0-9][A-Za-z0-9_-]*$",
+      "title": "Portia Paper Interpretation Identifier",
       "type": "string"
     },
     "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-quarantine-id.schema.json": {
