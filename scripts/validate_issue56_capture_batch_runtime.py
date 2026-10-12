@@ -16,7 +16,6 @@ CAPTURE_BATCH_ID = (
     "schemas/v1/capture/capture-batch.schema.json"
 )
 STILL_DEFERRED = {
-    "capture_proposal",
     "capture_review",
     "capture_materialization",
     "import_batch",
@@ -52,6 +51,13 @@ def _entries(root: Path) -> dict[tuple[str, str], dict[str, Any]]:
 def validate(root: Path) -> tuple[str, ...]:
     findings: list[str] = []
     entries = _entries(root)
+
+    proposal = entries.get(("capture_proposal", "1"))
+    if proposal is None or (
+        proposal.get("disposition"),
+        proposal.get("modelled"),
+    ) != ("current_v0_3", True):
+        findings.append("capture_proposal@1 is not current_v0_3/modelled")
 
     interpretation = entries.get(("paper_interpretation", "1"))
     if interpretation is None or (

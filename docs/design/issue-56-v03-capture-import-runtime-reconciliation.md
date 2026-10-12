@@ -432,3 +432,7 @@ Runtime promotion does not change the authority model: machine/manual candidate
 authorization; complete processing ≠ semantic correctness. Same-profile replay
 idempotency, changed-profile generation creation, and lineage resolution remain
 service-layer responsibilities.
+
+## Slice 7 decision — Capture Proposal runtime
+
+`capture_proposal@1` is sufficient unchanged and is promoted to `current_v0_3 / modelled=true`. Capture Proposal remains immutable, noncanonical, and pre-review: it binds exact Paper Interpretation fields to one exact target contract/context without copying candidate literals or authorizing materialization. `new_work` remains limited to Event or Support Process; exact context resolution, target-path validation, logical-path uniqueness, replay idempotency, review, and materialization remain later service/application responsibilities.

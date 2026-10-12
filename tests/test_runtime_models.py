@@ -79,6 +79,10 @@ def test_runtime_bundle_contains_only_modelled_contract_map() -> None:
     assert isinstance(paper_interpretation, dict)
     assert set(paper_interpretation) == {"1"}
 
+    capture_proposal = contracts.get("capture_proposal")
+    assert isinstance(capture_proposal, dict)
+    assert set(capture_proposal) == {"1"}
+
     assert "import_batch" not in contracts
     schemas = bundle["schemas"]
     assert isinstance(schemas, dict)

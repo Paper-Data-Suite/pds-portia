@@ -75,6 +75,7 @@ The primary version transitions relevant to v0.2 are:
 | Page Target | v2 | v1 |
 | Page Record | v1 | — |
 | Paper Interpretation | v1 | — |
+| Capture Proposal | v1 | — |
 
 The complete machine-readable disposition is
 `portia/runtime-coverage.json`. It distinguishes:
@@ -208,6 +209,7 @@ page_target@1 → historical_read
 page_target@2 → current_v0_3
 page_record@1 → current_v0_3
 paper_interpretation@1 → current_v0_3
+capture_proposal@1 → current_v0_3
 ```
 
 Capture Batch remains operational rather than behavior-domain work:
@@ -221,10 +223,13 @@ values, normalized values, mapped kinds, and confidence do not establish human
 confirmation, identity, judgment, or authorization to materialize a domain
 record.
 
+Capture Proposal remains an immutable noncanonical mapping artifact. It points
+to exact interpretation fields and target contracts but does not copy candidate
+values or authorize canonical creation before review.
+
 The following operational families remain intentionally unmodeled:
 
 ```text
-Capture Proposal
 Capture Review
 Capture Materialization
 Import Batch

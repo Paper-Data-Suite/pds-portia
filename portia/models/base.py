@@ -35,6 +35,7 @@ IDENTITY_FIELDS: dict[str, tuple[str, ...]] = {
     "response": ("response_id",),
     "communication": ("communication_id",),
     "capture_batch": ("work_id",),
+    "capture_proposal": ("proposal_id",),
     "support_process": ("work_id", "support_process_id"),
     "support_process_participant": ("participant_id",),
     "support_need": ("need_id",),

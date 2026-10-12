@@ -20,7 +20,6 @@ V2_ID = (
     "schemas/v2/capture/page-target.schema.json"
 )
 STILL_DEFERRED = {
-    "capture_proposal",
     "capture_review",
     "capture_materialization",
     "import_batch",
@@ -61,6 +60,13 @@ def validate(root: Path) -> tuple[str, ...]:
         findings.append("runtime coverage vocabulary lacks current_v0_3")
 
     entries = _entries(root)
+    proposal = entries.get(("capture_proposal", "1"))
+    if proposal is None or (
+        proposal.get("disposition"),
+        proposal.get("modelled"),
+    ) != ("current_v0_3", True):
+        findings.append("capture_proposal@1 is not current_v0_3/modelled")
+
     interpretation = entries.get(("paper_interpretation", "1"))
     if interpretation is None or (
         interpretation.get("disposition"),
