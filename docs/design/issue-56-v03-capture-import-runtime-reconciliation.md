@@ -436,3 +436,21 @@ service-layer responsibilities.
 ## Slice 7 decision — Capture Proposal runtime
 
 `capture_proposal@1` is sufficient unchanged and is promoted to `current_v0_3 / modelled=true`. Capture Proposal remains immutable, noncanonical, and pre-review: it binds exact Paper Interpretation fields to one exact target contract/context without copying candidate literals or authorizing materialization. `new_work` remains limited to Event or Support Process; exact context resolution, target-path validation, logical-path uniqueness, replay idempotency, review, and materialization remain later service/application responsibilities.
+
+## Slice 8 decision — Capture Review runtime
+
+`capture_review@1` is sufficient unchanged and is promoted to
+`current_v0_3 / modelled=true`.
+
+Capture Review is the first attributable human-confirmation record in the paper
+pipeline, but the authority boundary remains narrow: accepted or
+corrected-and-accepted confirms staging transcription/mapping for the next
+workflow step. It does not establish source truth, credibility, fault,
+institutional authority, domain judgment, or canonical materialization.
+
+The accepted immutable sequence model remains authoritative. Review corrections
+or reversals create later review sequences with exact predecessor identity;
+current decision is derived from preserved history. Review eligibility,
+cross-record lineage, cycle/fork policy, split/defer product actions,
+source recovery/rescan, and materialization remain later service/workflow
+responsibilities. No Capture Review v2 is introduced.

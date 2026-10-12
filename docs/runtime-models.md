@@ -76,6 +76,7 @@ The primary version transitions relevant to v0.2 are:
 | Page Record | v1 | — |
 | Paper Interpretation | v1 | — |
 | Capture Proposal | v1 | — |
+| Capture Review | v1 | — |
 
 The complete machine-readable disposition is
 `portia/runtime-coverage.json`. It distinguishes:
@@ -200,8 +201,9 @@ test-only graph validator.
 
 ## v0.3 capture-runtime transition
 
-Capture Batch, Page Target, Page Record, and Paper Interpretation are the first
-v0.3 capture families promoted into the executable runtime:
+Capture Batch, Page Target, Page Record, and Paper Interpretation remain the
+capture-runtime foundation; Capture Proposal and Capture Review extend that
+pipeline into reviewable mapping and attributable human confirmation:
 
 ```text
 capture_batch@1 → current_v0_3
@@ -210,6 +212,7 @@ page_target@2 → current_v0_3
 page_record@1 → current_v0_3
 paper_interpretation@1 → current_v0_3
 capture_proposal@1 → current_v0_3
+capture_review@1 → current_v0_3
 ```
 
 Capture Batch remains operational rather than behavior-domain work:
@@ -227,10 +230,14 @@ Capture Proposal remains an immutable noncanonical mapping artifact. It points
 to exact interpretation fields and target contracts but does not copy candidate
 values or authorize canonical creation before review.
 
+Capture Review remains immutable attributable human confirmation over one exact
+proposal and interpretation generation. Acceptance confirms staging for the next
+workflow step; it is not source truth, behavior-domain judgment, Quarantine, or
+authorization by itself to mutate canonical records.
+
 The following operational families remain intentionally unmodeled:
 
 ```text
-Capture Review
 Capture Materialization
 Import Batch
 Import Source Record
