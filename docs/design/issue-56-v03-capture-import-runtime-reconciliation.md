@@ -454,3 +454,18 @@ current decision is derived from preserved history. Review eligibility,
 cross-record lineage, cycle/fork policy, split/defer product actions,
 source recovery/rescan, and materialization remain later service/workflow
 responsibilities. No Capture Review v2 is introduced.
+
+## Slice 9 decision — Capture Materialization runtime
+
+`capture_materialization@1` is sufficient unchanged and is promoted to
+`current_v0_3 / modelled=true`.
+
+Capture Materialization remains an immutable operational receipt, not a domain
+record or persistence engine. It intentionally has no standalone `cmat_` identity;
+receipt identity is the exact Operation Journal reference plus exact review lineage.
+
+Materialization continues to reuse existing Operation Journal, Operation Lock,
+preflight, write-set, commit-point, readback, and recovery rules. Retry/restart
+must reconcile the same stable operation intent, and a missing receipt after durable
+canonical acceptance must not replay canonical creation. Runtime promotion does not
+yet implement the materialization service or cross-record recovery checks.

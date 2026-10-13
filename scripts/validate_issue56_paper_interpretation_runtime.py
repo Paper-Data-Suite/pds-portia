@@ -16,7 +16,6 @@ PAPER_INTERPRETATION_ID = (
     "schemas/v1/capture/paper-interpretation.schema.json"
 )
 STILL_DEFERRED = {
-    "capture_materialization",
     "import_batch",
     "import_source_record",
     "import_proposal",
@@ -58,6 +57,7 @@ def validate(root: Path) -> tuple[str, ...]:
         ("paper_interpretation", "1"): ("current_v0_3", True),
         ("capture_proposal", "1"): ("current_v0_3", True),
         ("capture_review", "1"): ("current_v0_3", True),
+        ("capture_materialization", "1"): ("current_v0_3", True),
     }
     for key, expected in expected_runtime.items():
         item = entries.get(key)

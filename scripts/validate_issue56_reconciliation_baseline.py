@@ -17,7 +17,6 @@ _CORE_065_SHA256 = (
 )
 
 _DEFERRED_CAPTURE_IMPORT: tuple[str, ...] = (
-    "capture_materialization",
     "import_batch",
     "import_source_record",
     "import_proposal",
@@ -163,6 +162,15 @@ def validate(root: Path) -> tuple[str, ...]:
     ) != ("current_v0_3", True):
         findings.append(
             "capture_review@1 is not the current v0.3 runtime contract"
+        )
+
+    capture_materialization_runtime = entries.get(("capture_materialization", "1"))
+    if capture_materialization_runtime is None or (
+        capture_materialization_runtime.get("disposition"),
+        capture_materialization_runtime.get("modelled"),
+    ) != ("current_v0_3", True):
+        findings.append(
+            "capture_materialization@1 is not the current v0.3 runtime contract"
         )
 
     paper_interpretation = entries.get(("paper_interpretation", "1"))
