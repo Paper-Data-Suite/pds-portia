@@ -20,7 +20,6 @@ V2_ID = (
     "schemas/v2/capture/page-target.schema.json"
 )
 STILL_DEFERRED = {
-    "import_source_record",
     "import_proposal",
     "import_review",
     "import_materialization",

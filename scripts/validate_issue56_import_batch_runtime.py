@@ -17,7 +17,6 @@ IMPORT_BATCH_ID = (
 )
 
 STILL_DEFERRED = {
-    "import_source_record",
     "import_proposal",
     "import_review",
     "import_materialization",
@@ -60,6 +59,7 @@ def validate(root: Path) -> tuple[str, ...]:
         ("capture_review", "1"): ("current_v0_3", True),
         ("capture_materialization", "1"): ("current_v0_3", True),
         ("import_batch", "1"): ("current_v0_3", True),
+        ("import_source_record", "1"): ("current_v0_3", True),
     }
     for key, expected in expected_runtime.items():
         item = entries.get(key)

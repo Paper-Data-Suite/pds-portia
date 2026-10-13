@@ -487,3 +487,31 @@ reconciling unchanged replay, resolving source profiles, preventing fuzzy person
 identity, and producing downstream source-record/proposal/review/materialization
 state remain later application/service responsibilities. No Import Batch v2 is
 introduced.
+
+## Slice 11 decision — Import Source Record runtime
+
+`import_source_record@1` is sufficient unchanged and is promoted to:
+
+```text
+current_v0_3 / modelled=true
+```
+
+The runtime preserves one immutable source-side observation within one exact
+Import Batch, including the Portia-local `isrc_` identity, stable source-key
+origin/value, content digest, source-record identity digest, bounded normalized
+source fields, provenance time, and attribution.
+
+This does not make a source row a Portia Event or other domain record.
+`source_record_key` remains source/profile identity rather than person, Actor,
+student, work, or canonical-record identity. Row number, array position,
+display text, filename alone, fuzzy matching, and import order remain prohibited
+identity inputs.
+
+The runtime preserves explicit source null separately from an absent field.
+Source values remain assertions, not Portia judgments. Changed source content
+creates preserved later history, and absence from a later Import Batch is not
+deletion, deactivation, invalidation, or supersession.
+
+Runtime promotion does not implement source-profile resolution, digest
+recomputation, logical field-key uniqueness, replay reconciliation, identity
+resolution, proposal generation, review, or materialization services.
