@@ -16,7 +16,6 @@ CAPTURE_BATCH_ID = (
     "schemas/v1/capture/capture-batch.schema.json"
 )
 STILL_DEFERRED = {
-    "import_batch",
     "import_source_record",
     "import_proposal",
     "import_review",
@@ -72,6 +71,13 @@ def validate(root: Path) -> tuple[str, ...]:
         findings.append(
             "capture_materialization@1 is not current_v0_3/modelled"
         )
+
+    import_batch = entries.get(("import_batch", "1"))
+    if import_batch is None or (
+        import_batch.get("disposition"),
+        import_batch.get("modelled"),
+    ) != ("current_v0_3", True):
+        findings.append("import_batch@1 is not current_v0_3/modelled")
 
     interpretation = entries.get(("paper_interpretation", "1"))
     if interpretation is None or (

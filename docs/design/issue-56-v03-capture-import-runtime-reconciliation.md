@@ -469,3 +469,21 @@ preflight, write-set, commit-point, readback, and recovery rules. Retry/restart
 must reconcile the same stable operation intent, and a missing receipt after durable
 canonical acceptance must not replay canonical creation. Runtime promotion does not
 yet implement the materialization service or cross-record recovery checks.
+
+## Slice 10 decision — Import Batch runtime
+
+`import_batch@1` is sufficient unchanged and is promoted to
+`current_v0_3 / modelled=true`.
+
+Import Batch begins a distinct structured-import runtime path. It remains an
+operational attempt root rather than Portia domain work and must not be confused
+with Capture Batch, paper/PDS2 routing state, or the existing derived
+`source_snapshot@1` contract.
+
+The runtime preserves exact source profile, import-specific source snapshot,
+mapping profile, stable import identity digest, optional previous-batch
+comparison, and lifecycle state. Recomputing identity/comparison truth,
+reconciling unchanged replay, resolving source profiles, preventing fuzzy person
+identity, and producing downstream source-record/proposal/review/materialization
+state remain later application/service responsibilities. No Import Batch v2 is
+introduced.

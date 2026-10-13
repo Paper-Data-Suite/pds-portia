@@ -15,7 +15,6 @@ PAGE_RECORD_ID = (
     "schemas/v1/capture/page-record.schema.json"
 )
 STILL_DEFERRED = {
-    "import_batch",
     "import_source_record",
     "import_proposal",
     "import_review",
@@ -58,6 +57,7 @@ def validate(root: Path) -> tuple[str, ...]:
         ("capture_proposal", "1"): ("current_v0_3", True),
         ("capture_review", "1"): ("current_v0_3", True),
         ("capture_materialization", "1"): ("current_v0_3", True),
+        ("import_batch", "1"): ("current_v0_3", True),
     }
     for key, wanted in expected.items():
         item = entries.get(key)

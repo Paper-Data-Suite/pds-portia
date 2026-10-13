@@ -78,6 +78,7 @@ The primary version transitions relevant to v0.2 are:
 | Capture Proposal | v1 | — |
 | Capture Review | v1 | — |
 | Capture Materialization | v1 | — |
+| Import Batch | v1 | — |
 
 The complete machine-readable disposition is
 `portia/runtime-coverage.json`. It distinguishes:
@@ -216,6 +217,7 @@ paper_interpretation@1 → current_v0_3
 capture_proposal@1 → current_v0_3
 capture_review@1 → current_v0_3
 capture_materialization@1 → current_v0_3
+import_batch@1 → current_v0_3
 ```
 
 Capture Batch remains operational rather than behavior-domain work:
@@ -243,10 +245,14 @@ accepted review, exact Operation Journal revision, and exact canonical results.
 It has no standalone materialization identifier and does not create a second
 transaction/recovery mechanism; existing Portia persistence remains authoritative.
 
+Import Batch remains an operational import-attempt root, separate from paper
+capture and from behavior-domain work. Its import-specific source snapshot,
+mapping profile, and identity digest preserve exact replay lineage; they do not
+establish source truth, person identity, domain judgment, or canonical creation.
+
 The following operational families remain intentionally unmodeled:
 
 ```text
-Import Batch
 Import Source Record
 Import Proposal
 Import Review

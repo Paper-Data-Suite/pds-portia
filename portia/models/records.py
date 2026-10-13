@@ -233,6 +233,15 @@ class CaptureMaterializationV1(PortiaRecord):
     VERSION = "1"
 
 
+class ImportBatchV1(PortiaRecord):
+    """Exact current-v0.3 ``import_batch@1`` runtime representation."""
+
+    __slots__ = ()
+
+    CONTRACT = "import_batch"
+    VERSION = "1"
+
+
 class CaptureBatchV1(PortiaRecord):
     """Exact current-v0.3 ``capture_batch@1`` runtime representation."""
 
@@ -706,6 +715,7 @@ _RECORD_TYPES: Final[tuple[type[PortiaRecord], ...]] = (
     CaptureProposalV1,
     CaptureReviewV1,
     CaptureMaterializationV1,
+    ImportBatchV1,
     SupportProcessV1,
     SupportProcessParticipantV1,
     SupportNeedV1,
