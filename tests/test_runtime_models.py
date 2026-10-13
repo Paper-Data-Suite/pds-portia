@@ -34,7 +34,12 @@ def test_runtime_coverage_matches_live_catalog_and_registry() -> None:
         (entry.contract, entry.version) for entry in runtime_coverage() if entry.modelled
     }
     assert modelled == set(MODEL_REGISTRY)
-    assert any(entry.disposition == "deferred_v0_3" for entry in runtime_coverage())
+
+    coverage = _json(REPO_ROOT / "portia" / "runtime-coverage.json")
+    dispositions = coverage.get("dispositions")
+    assert isinstance(dispositions, list)
+    assert "deferred_v0_3" in dispositions
+
     assert any(entry.disposition == "core_owned" for entry in runtime_coverage())
 
 
@@ -106,6 +111,10 @@ def test_runtime_bundle_contains_only_modelled_contract_map() -> None:
     import_review = contracts.get("import_review")
     assert isinstance(import_review, dict)
     assert set(import_review) == {"1"}
+
+    import_materialization = contracts.get("import_materialization")
+    assert isinstance(import_materialization, dict)
+    assert set(import_materialization) == {"1"}
     schemas = bundle["schemas"]
     assert isinstance(schemas, dict)
     assert RUNTIME_VALUE_SCHEMA_IDS <= set(schemas)

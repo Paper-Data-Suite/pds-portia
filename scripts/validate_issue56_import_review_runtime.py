@@ -16,7 +16,7 @@ IMPORT_REVIEW_ID = (
     "schemas/v1/imports/import-review.schema.json"
 )
 
-STILL_DEFERRED = {"import_materialization"}
+STILL_DEFERRED: set[str] = set()
 
 
 def _json(path: Path) -> dict[str, Any]:

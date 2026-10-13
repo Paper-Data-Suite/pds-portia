@@ -16,9 +16,7 @@ IMPORT_BATCH_ID = (
     "schemas/v1/imports/import-batch.schema.json"
 )
 
-STILL_DEFERRED = {
-    "import_materialization",
-}
+STILL_DEFERRED: set[str] = set()
 
 
 def _json(path: Path) -> dict[str, Any]:

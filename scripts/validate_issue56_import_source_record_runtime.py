@@ -15,9 +15,7 @@ IMPORT_SOURCE_RECORD_ID = (
     "https://paper-data-suite.github.io/pds-portia/"
     "schemas/v1/imports/import-source-record.schema.json"
 )
-STILL_DEFERRED = {
-    "import_materialization",
-}
+STILL_DEFERRED: set[str] = set()
 
 
 def _json(path: Path) -> dict[str, Any]:

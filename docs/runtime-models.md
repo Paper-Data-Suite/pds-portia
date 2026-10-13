@@ -82,6 +82,7 @@ The primary version transitions relevant to v0.2 are:
 | Import Source Record | v1 | — |
 | Import Proposal | v1 | — |
 | Import Review | v1 | — |
+| Import Materialization | v1 | — |
 
 The complete machine-readable disposition is
 `portia/runtime-coverage.json`. It distinguishes:
@@ -224,6 +225,7 @@ import_batch@1 → current_v0_3
 import_source_record@1 → current_v0_3
 import_proposal@1 → current_v0_3
 import_review@1 → current_v0_3
+import_materialization@1 → current_v0_3
 ```
 
 Capture Batch remains operational rather than behavior-domain work:
@@ -273,14 +275,14 @@ may advance to the materialization gate; it does not establish source truth,
 domain judgment, or canonical mutation. Current disposition is derived from
 preserved review history rather than a mutable authoritative pointer.
 
-The following operational families remain intentionally unmodeled:
+Import Materialization remains an immutable operational receipt linking exact
+accepted import lineage to an exact completed or reconciled coordinated
+operation and exact canonical results. It has no standalone materialization ID,
+does not authorize domain judgment, and does not create a second transaction,
+lock, recovery, or canonical-write mechanism.
 
-```text
-Import Materialization
-```
-
-Their accepted schemas remain frozen inputs until their owning Issue #56 slices
-explicitly promote or supersede them.
+All accepted Issue #56 paper/import operational contract families are now
+represented in the v0.3 runtime model registry.
 
 ## Issue #38 persistence boundary
 

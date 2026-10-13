@@ -566,3 +566,38 @@ introduced; current staging disposition is derived from preserved history.
 Runtime promotion does not implement reviewer authorization, lineage resolution,
 target-path cross-checks, sequence/fork/cycle validation, domain judgment,
 canonical writes, or materialization services.
+
+## Slice 14 decision — Import Materialization runtime
+
+`import_materialization@1` is sufficient unchanged and is promoted to:
+
+```text
+current_v0_3 / modelled=true
+```
+
+The runtime preserves the immutable post-commit receipt linking one exact
+accepted Import Review and its exact Import Batch / Import Source Record /
+Import Proposal lineage to one exact completed or reconciled coordinated
+Operation Journal revision and the exact canonical results produced or affected.
+
+No standalone import-materialization identifier is introduced. As accepted by
+the public contract, receipt identity remains the exact import lineage plus the
+stable coordinated operation identity/intent. `import_materialization` therefore
+must not appear in `IDENTITY_FIELDS`, and `logical_id` remains `None`.
+
+The existing Operation Journal, Operation Lock, expected-prior-state, preflight,
+commit-point, recovery, and Quarantine boundaries remain authoritative.
+Persisting the receipt does not execute writes. A missing receipt after durable
+canonical acceptance is a recoverable post-commit artifact and must not cause
+canonical creation to replay.
+
+Accepted import review remains a staging gate rather than a domain judgment.
+Produced canonical records use existing import creation provenance; source,
+proposal, review, operation, and receipt timestamps do not substitute for domain
+time. Changed source/mapping/review history and later source absence preserve
+history rather than silently rewriting or deleting canonical data.
+
+Runtime promotion does not implement materialization orchestration, operation
+allocation, lock acquisition, canonical writes, recovery, replay reconciliation,
+Quarantine decisions, or domain-correction workflows. Those remain owned by the
+existing persistence/workflow machinery and later integration work.
