@@ -515,3 +515,28 @@ deletion, deactivation, invalidation, or supersession.
 Runtime promotion does not implement source-profile resolution, digest
 recomputation, logical field-key uniqueness, replay reconciliation, identity
 resolution, proposal generation, review, or materialization services.
+
+## Slice 12 decision — Import Proposal runtime
+
+`import_proposal@1` is sufficient unchanged and is promoted to:
+
+```text
+current_v0_3 / modelled=true
+```
+
+The runtime preserves one immutable mapping-stage proposal derived from one
+exact Import Source Record under its exact Import Batch mapping identity. The
+opaque `iprp_` proposal ID remains distinct from the deterministic
+`proposal_key` and `proposal_identity_digest` used for replay reconciliation.
+
+Source-value bindings reference exact source fields rather than copying source
+values into the proposal. A `transformed_candidate` remains only a deterministic
+mapping candidate. `human_resolution_required` supplies no value and must not
+be treated as null, false, no, or another implied conclusion.
+
+`new_work` remains structurally restricted to Event or Support Process roots.
+Exact existing-work and existing-record contexts remain historical references.
+
+Runtime promotion does not implement lineage resolution, digest recomputation,
+replay reconciliation, fuzzy/person identity resolution, domain judgment,
+human review, canonical writes, or materialization services.

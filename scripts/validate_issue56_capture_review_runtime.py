@@ -16,7 +16,6 @@ CAPTURE_REVIEW_ID = (
     "schemas/v1/capture/capture-review.schema.json"
 )
 STILL_DEFERRED = {
-    "import_proposal",
     "import_review",
     "import_materialization",
 }

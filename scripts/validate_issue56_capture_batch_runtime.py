@@ -16,7 +16,6 @@ CAPTURE_BATCH_ID = (
     "schemas/v1/capture/capture-batch.schema.json"
 )
 STILL_DEFERRED = {
-    "import_proposal",
     "import_review",
     "import_materialization",
 }

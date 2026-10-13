@@ -15,7 +15,6 @@ PAGE_RECORD_ID = (
     "schemas/v1/capture/page-record.schema.json"
 )
 STILL_DEFERRED = {
-    "import_proposal",
     "import_review",
     "import_materialization",
 }
