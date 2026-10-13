@@ -17,7 +17,6 @@ CAPTURE_MATERIALIZATION_ID = (
     "schemas/v1/capture/capture-materialization.schema.json"
 )
 STILL_DEFERRED = {
-    "import_review",
     "import_materialization",
 }
 

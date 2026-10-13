@@ -16,7 +16,6 @@ IMPORT_SOURCE_RECORD_ID = (
     "schemas/v1/imports/import-source-record.schema.json"
 )
 STILL_DEFERRED = {
-    "import_review",
     "import_materialization",
 }
 

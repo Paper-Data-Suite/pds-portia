@@ -17,7 +17,6 @@ IMPORT_BATCH_ID = (
 )
 
 STILL_DEFERRED = {
-    "import_review",
     "import_materialization",
 }
 

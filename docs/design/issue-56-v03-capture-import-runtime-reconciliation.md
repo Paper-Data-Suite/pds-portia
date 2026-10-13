@@ -540,3 +540,29 @@ Exact existing-work and existing-record contexts remain historical references.
 Runtime promotion does not implement lineage resolution, digest recomputation,
 replay reconciliation, fuzzy/person identity resolution, domain judgment,
 human review, canonical writes, or materialization services.
+
+## Slice 13 decision — Import Review runtime
+
+`import_review@1` is sufficient unchanged and is promoted to:
+
+```text
+current_v0_3 / modelled=true
+```
+
+Import Review remains immutable operational staging review, distinct from the
+canonical Portia `review@1` domain family. The substantive reviewer is
+represented-human attribution; persistence attribution remains separate.
+
+`accepted` and `corrected_and_accepted` mean only that the exact mapping is
+accepted for the next workflow gate. They do not establish source truth,
+authority, credibility, fault, causation, consent, domain judgment, or legal /
+process validity. `unresolved` is not negative, false, no, declined, or another
+implied conclusion, and `rejected` rejects only the staging proposal.
+
+Review correction/reversal remains immutable history through `review_sequence`
+and exact predecessor linkage. No mutable current/latest review pointer is
+introduced; current staging disposition is derived from preserved history.
+
+Runtime promotion does not implement reviewer authorization, lineage resolution,
+target-path cross-checks, sequence/fork/cycle validation, domain judgment,
+canonical writes, or materialization services.

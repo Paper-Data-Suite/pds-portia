@@ -506,8 +506,8 @@
     {
       "contract": "import_review",
       "version": "1",
-      "disposition": "deferred_v0_3",
-      "modelled": false
+      "disposition": "current_v0_3",
+      "modelled": true
     },
     {
       "contract": "import_materialization",

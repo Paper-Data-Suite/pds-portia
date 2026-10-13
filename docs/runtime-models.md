@@ -81,6 +81,7 @@ The primary version transitions relevant to v0.2 are:
 | Import Batch | v1 | — |
 | Import Source Record | v1 | — |
 | Import Proposal | v1 | — |
+| Import Review | v1 | — |
 
 The complete machine-readable disposition is
 `portia/runtime-coverage.json`. It distinguishes:
@@ -222,6 +223,7 @@ capture_materialization@1 → current_v0_3
 import_batch@1 → current_v0_3
 import_source_record@1 → current_v0_3
 import_proposal@1 → current_v0_3
+import_review@1 → current_v0_3
 ```
 
 Capture Batch remains operational rather than behavior-domain work:
@@ -265,10 +267,15 @@ than copying them, transformed candidates remain candidates, and unresolved
 fields carry no implied value. Proposal persistence does not establish identity,
 domain judgment, or authorization to materialize canonical data.
 
+Import Review remains immutable attributable human staging review over one exact
+Import Proposal. Accepted or corrected-and-accepted means only that the mapping
+may advance to the materialization gate; it does not establish source truth,
+domain judgment, or canonical mutation. Current disposition is derived from
+preserved review history rather than a mutable authoritative pointer.
+
 The following operational families remain intentionally unmodeled:
 
 ```text
-Import Review
 Import Materialization
 ```
 

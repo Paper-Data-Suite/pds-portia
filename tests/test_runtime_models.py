@@ -102,6 +102,10 @@ def test_runtime_bundle_contains_only_modelled_contract_map() -> None:
     import_proposal = contracts.get("import_proposal")
     assert isinstance(import_proposal, dict)
     assert set(import_proposal) == {"1"}
+
+    import_review = contracts.get("import_review")
+    assert isinstance(import_review, dict)
+    assert set(import_review) == {"1"}
     schemas = bundle["schemas"]
     assert isinstance(schemas, dict)
     assert RUNTIME_VALUE_SCHEMA_IDS <= set(schemas)
