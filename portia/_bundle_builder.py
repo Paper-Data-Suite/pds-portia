@@ -1,5 +1,9 @@
 """Build the compact runtime JSON-Schema bundle for Issue #37.
 
+Historical v0.2 packaging objective:
+Compile the modelled v0.2 schema closure into one deterministic bundle.
+Issue #56 also compiles explicitly modelled current_v0_3 contracts.
+
 This module is intentionally stdlib-only because setuptools imports it while
 building an isolated wheel before Portia's runtime dependencies are installed.
 """

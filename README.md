@@ -12,16 +12,16 @@ The repository currently contains:
 
 * evidence-based research on responsible K–12 behavior documentation and management;
 * accepted design analyses defining Portia’s role, identity model, ownership rules, canonical storage, references, lifecycle, correction, migration, removal, integrity diagnostics, coordinated persistence, recovery, Quarantine, finding administration, derived rebuilding, the Event and Support Process work families, the teacher-local Actor Directory, source-evidence and human-judgment layers, Response/Communication, Support/Intervention/Implementation/Fidelity, Follow-Up/Outcome/Reentry/Repair, paper/import staging, privacy projections, deliberate export, retention hooks, and future retention-orchestration boundaries;
-* accepted Architecture Decision Records ADR 0001 through ADR 0020;
+* accepted Architecture Decision Records ADR 0001 through ADR 0021;
 * independently versioned Draft 2020-12 identifier, reference, target, Actor, Account, Observation, Review, Classification, Hypothesis, Determination, attribution, provenance, lifecycle, correction, disagreement, dependency, migration, ownership-correction, removal, relationship, operational, and derived-projection schemas;
 * retained historical Event-family version-1 schemas, Event version 2, Event Participant and Role version 3, Work Relationship version 2, Actor Directory version-1 contracts, Account and Observation version-1 contracts, Review v1, Classification v1, Hypothesis v1, and Determination v1 contracts, and Actor-aware operational version-2 contracts;
 * validated synthetic examples, focused application-invalid matrices across the foundation issues, and the Issue #22 representative graph corpus with 15 positive and 37 schema-valid graph-invalid scenarios;
 * an installable, strictly typed `pds-portia` package with immutable version-explicit runtime models, exact JSON-native conversion, and in-memory application validation;
 * and automated offline schema-validation, state-machine, compatibility, privacy, example, and documentation-consistency tests.
 
-Portia now contains an installable executable package, immutable runtime models/application validation, the production canonical-storage/recovery layer, the Issue #39 Core-roster / Actor Directory identity service, Issue #40 Event/Participant/Role/Work Relationship services, Issue #41 production Account and Observation workflows, and Issue #42 production Review, Classification, Hypothesis, and Determination workflows. The accepted foundation remains defined by ADRs 0001–0020, the public contract versions listed in `schemas/schema-catalog.json`, the focused validation suites for Issues #11–#21, and the combined representative graph corpus added by Issue #22. Judgment workflows now add guarded digital-entry creation, exact historical reads, current-use qualification, Review progression, lifecycle/correction history, Determination reconsideration/reversal, Quarantine enforcement, and explicit sibling-module evidence authority while preserving the evidence-versus-human-judgment boundary.
+Portia now contains an installable executable package, immutable runtime models/application validation, the production canonical-storage/recovery layer, the Issue #39 Core-roster / Actor Directory identity service, Issue #40 Event/Participant/Role/Work Relationship services, Issue #41 production Account and Observation workflows, and Issue #42 production Review, Classification, Hypothesis, and Determination workflows. The accepted foundation remains defined by ADRs 0001–0021, the public contract versions listed in `schemas/schema-catalog.json`, the focused validation suites for Issues #11–#21, and the combined representative graph corpus added by Issue #22. Judgment workflows now add guarded digital-entry creation, exact historical reads, current-use qualification, Review progression, lifecycle/correction history, Determination reconsideration/reversal, Quarantine enforcement, and explicit sibling-module evidence authority while preserving the evidence-versus-human-judgment boundary.
 
-Historical closeout compatibility is intentionally retained without redefining current authority. Issue #12, Issue #13, and Issue #14 checkpoint tests use the phrases **Architecture Decision Records through ADR 0009** and **Actor Directory version-1 record family** for their then-current milestones. Those phrases describe historical checkpoints only; the current foundation inventory above, ADRs 0001–0020, and the current schema catalog remain authoritative.
+Historical closeout compatibility is intentionally retained without redefining current authority. Issue #12, Issue #13, and Issue #14 checkpoint tests use the phrases **Architecture Decision Records through ADR 0009** and **Actor Directory version-1 record family** for their then-current milestones. Those phrases describe historical checkpoints only; the current foundation inventory above, ADRs 0001–0021, and the current schema catalog remain authoritative.
 
 ### Issue #37 current implementation
 
@@ -34,7 +34,7 @@ stdlib-only runtime code; `jsonschema` remains a development/test oracle.
 `portia.validation` adds deterministic in-memory application findings for graph
 invariants that are knowable without storage or external resolution. The runtime
 coverage and Issue #22 parity matrices explicitly separate v0.2 model coverage,
-historical reads, Core-owned values, v0.3 paper/import deferrals, and invariants
+historical reads, Core-owned values, v0.3 paper/import runtime dispositions, and invariants
 that require later persistence, resolver, projection, or custody services. Public
 operation/integrity/derived-state records needed by Issue #38 are modeled, but
 #37 does not implement filesystem persistence, replay, recovery, or derived-state
@@ -446,6 +446,40 @@ Outcome, Reentry, or Repair judgment semantics.
 Ordinary uncertainty belongs in review/retry state. Integrity Finding is
 diagnostic for broken provenance/linkage/invariants. Quarantine remains
 exceptional isolation rather than an ordinary review queue.
+
+### Issue #56 current implementation
+
+Issue #56 reconciles the accepted Issue #20 / ADR 0016 paper/import contracts
+against the released v0.2.0 runtime for v0.3 implementation. ADR 0021 adds
+`page_target@2` while preserving `page_target@1` as an exact historical read.
+
+The current runtime surface is now explicit:
+
+```text
+Capture Batch@1             current_v0_3
+Page Target@1               historical_read
+Page Target@2               current_v0_3
+Page Record@1               current_v0_3
+Paper Interpretation@1      current_v0_3
+Capture Proposal@1          current_v0_3
+Capture Review@1            current_v0_3
+Capture Materialization@1   current_v0_3
+
+Import Batch@1              current_v0_3
+Import Source Record@1      current_v0_3
+Import Proposal@1           current_v0_3
+Import Review@1             current_v0_3
+Import Materialization@1    current_v0_3
+```
+
+All are modeled; no active `deferred_v0_3` capture/import contract remains.
+Core continues to own generic PDS2 routing and retained-source identity/bytes.
+
+This is a contract/runtime freeze, not production paper/import services.
+Printing, QR rendering, scanning, OCR/handwriting/mark recognition, review UI,
+import parsing, and canonical materialization orchestration remain later #55
+implementation work. See
+`docs/validation/issue-56-final-reconciliation-and-qualification.md`.
 
 ### Issue #21 current implementation
 
@@ -1792,7 +1826,7 @@ Confirmed deferred areas include:
 
 * future privacy-minimized Core intervention publication;
 * future Suite-wide retention/disposition orchestration through a Sunset-like boundary;
-* paper/import operationalization beyond the v0.2.0 digital/local runtime;
+* production paper/import services beyond the reconciled v0.3 contract/runtime surface;
 * cross-year Support successor workflows;
 * and institution-wide identity, authentication, authorization, concurrency, records administration, and tenant governance.
 

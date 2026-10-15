@@ -86,7 +86,7 @@ misrepresented as independently persisted graph records.
 | `derived_index_metadata` | 1 | positive_graph | P22-13 | immutable rebuild-generation metadata and exact source/data fingerprints |
 | `derived_current_pointer` | 1 | positive_graph | P22-13 | explicit derived-generation selection without authority/freshness claim |
 | `capture_batch` | 1 | positive_graph | P22-05 | paper capture operation root |
-| `page_target` | 1 | positive_graph | P22-05 | exact pre-print Core/PDS2 route and layout target |
+| `page_target` | 2 (P22-05 used v1) | positive_graph | P22-05 | v1 pre-print Core/PDS2 route and layout; v2 adds Issue #56 classroom layouts, separately validated rather than exercised in P22-05 |
 | `page_record` | 1 | positive_graph | P22-05 | returned physical-page/source processing record |
 | `paper_interpretation` | 1 | positive_graph | P22-05 | machine candidate, not confirmed domain fact |
 | `capture_proposal` | 1 | positive_graph | P22-05 | noncanonical field-binding proposal |
@@ -99,6 +99,9 @@ misrepresented as independently persisted graph records.
 | `import_materialization` | 1 | positive_graph | P22-06 | replay-safe receipt after canonical Event acceptance |
 | `export_source_inventory` | 1 | positive_graph | P22-12 | exact contributing immutable representations and truthful fingerprints |
 | `deliberate_export` | 1 | positive_graph | P22-12 | privacy decision + authorization + immutable output provenance; generation != disclosure |
+
+
+**Issue #56 version reconciliation:** The live catalog now contains `page_target@1` and `page_target@2`. The historical `P22-05` synthetic graph continues to use **v1**, and its `positive_graph` family disposition must not be read as evidence that it exercised v2. The additive v2 classroom observation, monitoring, and communication layouts are separately validated in `tests/schema_validation/test_issue_56_page_target_v2.py` and the Issue #56 runtime qualification.
 
 ## Existing focused-fixture-only families
 

@@ -376,6 +376,19 @@ _ISSUE54_REQUIRED_SDIST_FILES = {
 REQUIRED_SDIST_FILES.update(_ISSUE54_REQUIRED_SDIST_FILES)
 
 
+_ISSUE56_REQUIRED_SDIST_FILES = {
+    "docs/decisions/0021-reconcile-classroom-observation-paper-capture-with-released-runtime.md",
+    "docs/design/issue-56-v03-capture-import-runtime-reconciliation.md",
+    "docs/validation/issue-56-acceptance-matrix.md",
+    "docs/validation/issue-56-final-reconciliation-and-qualification.md",
+    "docs/validation/issue-56-slice-14-import-materialization-runtime.md",
+    "scripts/validate_issue56_closeout.py",
+    "scripts/smoke_test_issue56_import_chain_runtime_wheel.py",
+    "tests/test_issue56_closeout.py",
+}
+REQUIRED_SDIST_FILES.update(_ISSUE56_REQUIRED_SDIST_FILES)
+
+
 def _unsafe_path(name: str) -> bool:
     path = PurePosixPath(name)
     return path.is_absolute() or any(part in {"", ".", ".."} for part in path.parts)

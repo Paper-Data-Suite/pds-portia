@@ -20,6 +20,22 @@ For Core module-operations integration, also see:
 
 The repository's `README.md` remains the broad project overview. Issue-specific validation records under `docs/validation/` are evidence for their named checkpoints and do not supersede newer accepted architecture.
 
+## v0.3 paper/import contract reconciliation
+
+For the Issue #56 contract/runtime freeze that governs later #55 implementation,
+see:
+
+- `design/issue-56-v03-capture-import-runtime-reconciliation.md` — accumulated
+  Slice 1–15 decisions and final runtime disposition;
+- `decisions/0021-reconcile-classroom-observation-paper-capture-with-released-runtime.md`
+  — Daily Classroom Observation, Page Target v2, session-context, and no-fake-Event
+  decision;
+- `validation/issue-56-acceptance-matrix.md` — zero-pending Issue #56
+  contract/runtime acceptance map;
+- `validation/issue-56-final-reconciliation-and-qualification.md` — final Core
+  reuse, form, authorization, storage, migration/history, synthetic-scenario,
+  deferred-capability, and qualification record.
+
 ## Path safety
 
 For Portia-owned filesystem path policy and the Issue #92 audit, see:

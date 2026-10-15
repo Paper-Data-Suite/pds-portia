@@ -1567,13 +1567,14 @@
     {
       "contract": "page_target",
       "catalog_versions": [
-        "1"
+        "1",
+        "2"
       ],
-      "current_version": "1",
+      "current_version": "2",
       "record_operational_family": true,
       "disposition": "positive_graph",
       "evidence": "P22-05",
-      "rationale": "exact pre-print Core/PDS2 route and layout target"
+      "rationale": "P22-05 covers v1 exact pre-print Core/PDS2 routing and layout; Issue #56 adds v2 classroom capture layouts with separate validation, not retroactive Issue #22 graph evidence"
     },
     {
       "contract": "page_record",

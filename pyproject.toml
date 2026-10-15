@@ -132,6 +132,7 @@ files = [
     "scripts/validate_issue56_import_proposal_runtime.py",
     "scripts/validate_issue56_import_review_runtime.py",
     "scripts/validate_issue56_import_materialization_runtime.py",
+    "scripts/validate_issue56_closeout.py",
     "scripts/smoke_test_issue56_import_chain_runtime_wheel.py",
     "scripts/smoke_test_issue54_core065_wheel.py",
     "scripts/validate_repository.py",

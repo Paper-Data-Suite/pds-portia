@@ -1,6 +1,6 @@
 # Issue #56 — v0.3 Capture / Import Runtime Reconciliation
 
-Status: **Slice 1 baseline characterization**
+Status: **Reconciliation complete — PR qualification pending**
 
 Issue: `#56 — Reconcile accepted paper/import contracts with the released v0.2 runtime`
 
@@ -601,3 +601,42 @@ Runtime promotion does not implement materialization orchestration, operation
 allocation, lock acquisition, canonical writes, recovery, replay reconciliation,
 Quarantine decisions, or domain-correction workflows. Those remain owned by the
 existing persistence/workflow machinery and later integration work.
+
+## Final Issue #56 reconciliation — Slice 15 closeout
+
+The accumulated Slice 1–14 decisions now form one complete executable contract
+answer for the rest of v0.3.
+
+There are no active `deferred_v0_3` capture/import contracts. Page Target v1 is
+an exact historical read, Page Target v2 is current, and all other accepted
+paper/import operational records are current v0.3 runtime models.
+
+The only new public contract required by released-runtime/product reconciliation
+is additive `page_target@2`. All accepted Issue #20 v1 contracts remain
+byte-for-byte unchanged from the Issue #56 starting baseline.
+
+ADR 0021 remains the accepted Classroom Observation decision. Session context is
+returned-page source context, not a canonical ClassroomSession record. For this
+contract freeze, unreviewed structured interpretation of lesson/session context
+may be displayed during source review but must not be used as confirmed
+structured analytics. Any later requirement for structured human-confirmed
+classroom-session analytics requires an explicit versioned confirmation/storage
+contract rather than silent promotion of interpretation output.
+
+Capture Review v1 remains sufficient: accept/revise/reject/defer map to its
+existing immutable dispositions/history; split remains service-level remapping
+into independently reviewable proposals; rescan/source recovery remains a
+workflow action rather than a review disposition.
+
+The final runtime, Core-reuse, form, authorization, storage/ownership,
+migration/history, synthetic-scenario, and deferred-capability matrices are
+recorded in:
+
+```text
+docs/validation/issue-56-final-reconciliation-and-qualification.md
+docs/validation/issue-56-acceptance-matrix.md
+```
+
+Production printing/scanning/OCR/review/import/materialization services remain
+later #55 implementation work. That is capability deferral, not contract/runtime
+ambiguity.
