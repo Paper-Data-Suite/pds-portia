@@ -19,6 +19,7 @@ from portia.views import (
     StudentViewScope,
     StudentWorkView,
     contract_rule,
+    projection_rule,
     student_view_policy_digest,
 )
 
@@ -73,6 +74,39 @@ def test_contract_inventory_explicitly_classifies_every_runtime_contract() -> No
     assert contract_rule("operation_journal", "4").surface == "operational_excluded"
     assert contract_rule("operation_lock", "3").surface == "operational_excluded"
     assert contract_rule("deliberate_export", "1").surface == "export_excluded"
+
+
+# Every Issue #56 paper/import staging version is known but has no ordinary
+# student-view projection; no new version can be silently accepted.
+_ISSUE56_STAGING_CONTRACTS = (
+    ("capture_batch", "1"),
+    ("page_target", "1"),
+    ("page_target", "2"),
+    ("page_record", "1"),
+    ("paper_interpretation", "1"),
+    ("capture_proposal", "1"),
+    ("capture_review", "1"),
+    ("capture_materialization", "1"),
+    ("import_batch", "1"),
+    ("import_source_record", "1"),
+    ("import_proposal", "1"),
+    ("import_review", "1"),
+    ("import_materialization", "1"),
+)
+
+
+def test_issue56_staging_contracts_fail_closed_for_student_views() -> None:
+    assert len(_ISSUE56_STAGING_CONTRACTS) == 13
+    for record_kind, version in _ISSUE56_STAGING_CONTRACTS:
+        assert (record_kind, version) in MODEL_REGISTRY
+        rule = contract_rule(record_kind, version)
+        assert rule.surface == "operational_excluded"
+        assert rule.ordinary_view_candidate is False
+        with pytest.raises(
+            PortiaLocalValidationError,
+            match="unsupported ordinary student-view projection contract",
+        ):
+            projection_rule(record_kind, version)
 
 
 def test_unknown_contract_fails_closed() -> None:

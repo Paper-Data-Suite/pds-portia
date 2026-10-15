@@ -73,7 +73,10 @@ def test_issue54_readme_no_longer_claims_implemented_v02_work_is_future() -> Non
         "implementing the accepted ADR 0009, ADR 0010, and ADR 0011 persistence"
         not in readme
     )
-    assert "ADRs 0001–0020" in readme
+    assert ("ADRs 0001–0020" in readme) or ("ADRs 0001–0021" in readme)
+    if "### Issue #56 current implementation" in readme:
+        assert "ADRs 0001–0021" in readme
+        assert "page_target@2" in readme
     assert "Portia is licensed under the MIT License." in readme
     assert "Portia v0.2.0 is **RELEASED — VERIFIED**." in readme
     assert "Paper Data Suite composition qualification remains separate" in readme
@@ -105,7 +108,10 @@ def test_issue54_release_notes_are_sdist_not_wheel_repository_surface() -> None:
 
 def test_issue54_changelog_has_fresh_unreleased_and_v020_section() -> None:
     changelog = (ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
-    assert changelog.startswith("# Changelog\n\n## Unreleased\n\nNo changes yet.\n\n## 0.2.0\n")
+    readme = (ROOT / "README.md").read_text(encoding="utf-8")
+    validator = _load_validator()
+    assert validator._evolving_documentation_errors(readme, changelog) == []
+    assert "## 0.2.0" in changelog
     assert "Issue #54 release-audit evidence through documentation reconciliation" in changelog
 
 
@@ -114,3 +120,33 @@ def test_issue54_docs_index_has_no_em_dash_mojibake() -> None:
     assert "â€”" not in docs
     assert "../RELEASE_NOTES_v0.2.0.md" in docs
     assert "Slice 1 through Slice 16" in docs
+
+
+def test_issue54_evolving_documentation_rejects_mixed_status() -> None:
+    validator = _load_validator()
+    readme = (ROOT / "README.md").read_text(encoding="utf-8")
+    changelog = (ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
+    assert validator._evolving_documentation_errors(readme, changelog) == []
+
+    # Missing part of the ADR-0021 release-facing inventory cannot pass.
+    damaged = readme.replace("ADRs 0001–0021", "ADRs 0001–0022")
+    assert validator._evolving_documentation_errors(damaged, changelog)
+
+    # The historical v0.2 empty-changelog assertion cannot silently override
+    # the recorded Issue #56 change history.
+    empty = "# Changelog\n\n## Unreleased\n\nNo changes yet.\n\n## 0.2.0\n"
+    assert validator._evolving_documentation_errors(readme, empty)
+
+    # Removing the stated Issue #56 change must remain a detected regression.
+    stripped = changelog.replace(
+        "Issue #56 capture/import contract reconciliation", "undocumented work"
+    )
+    assert validator._evolving_documentation_errors(readme, stripped)
+
+
+def test_issue54_evolving_documentation_still_accepts_exact_v02_snapshot() -> None:
+    validator = _load_validator()
+    readme = " ".join(validator.README_V02_MARKERS)
+    changelog = validator.CHANGELOG_V02_PREFIX + "Historical changes\n"
+    assert validator._evolving_documentation_errors(readme, changelog) == []
+    assert validator._evolving_documentation_errors(readme, "## Unreleased\nNew feature")

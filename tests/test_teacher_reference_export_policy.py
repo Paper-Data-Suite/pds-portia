@@ -90,6 +90,40 @@ def test_legacy_identity_operational_and_export_contracts_are_never_export() -> 
         assert rule.exclusion_reason is not None
 
 
+# Receipt and staging contracts must not leak into teacher-reference export.
+_ISSUE56_STAGING_CONTRACTS = (
+    ("capture_batch", "1"),
+    ("page_target", "1"),
+    ("page_target", "2"),
+    ("page_record", "1"),
+    ("paper_interpretation", "1"),
+    ("capture_proposal", "1"),
+    ("capture_review", "1"),
+    ("capture_materialization", "1"),
+    ("import_batch", "1"),
+    ("import_source_record", "1"),
+    ("import_proposal", "1"),
+    ("import_review", "1"),
+    ("import_materialization", "1"),
+)
+
+
+def test_issue56_staging_contracts_are_never_teacher_reference_exports() -> None:
+    assert len(_ISSUE56_STAGING_CONTRACTS) == 13
+    for record_kind, version in _ISSUE56_STAGING_CONTRACTS:
+        assert (record_kind, version) in MODEL_REGISTRY
+        rule = teacher_reference_contract_rule(record_kind, version)
+        assert rule.surface == "never_export"
+        assert rule.semantic_category == "excluded"
+        assert rule.may_contribute is False
+        assert rule.source_kind is None
+        assert rule.fields == ()
+        assert (
+            rule.exclusion_reason
+            == "operational_or_integrity_state_not_export_content"
+        )
+
+
 def test_unknown_contract_and_unsupported_work_root_fail_closed() -> None:
     with pytest.raises(
         PortiaLocalValidationError,

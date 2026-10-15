@@ -61,9 +61,15 @@ def validate(root: Path) -> tuple[str, ...]:
                 f"extra={sorted(parity_ids - scenario_ids)}"
             )
 
+    coverage_path = root / "portia" / "runtime-coverage.json"
+    coverage = json.loads(coverage_path.read_text(encoding="utf-8"))
+    dispositions = coverage.get("dispositions") if isinstance(coverage, dict) else None
+    if not isinstance(dispositions, list) or "deferred_v0_3" not in dispositions:
+        findings.append(
+            "runtime coverage vocabulary does not declare deferred_v0_3"
+        )
+
     entries = runtime_coverage()
-    if not any(entry.disposition == "deferred_v0_3" for entry in entries):
-        findings.append("runtime coverage does not record the v0.3 paper/import deferral")
     if not any(entry.disposition == "core_owned" for entry in entries):
         findings.append("runtime coverage does not record Core-owned contract boundaries")
     return tuple(sorted(findings))

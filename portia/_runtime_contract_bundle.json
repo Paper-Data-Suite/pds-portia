@@ -36,6 +36,18 @@
     "amendment": {
       "1": "https://paper-data-suite.github.io/pds-portia/schemas/v1/corrections/amendment.schema.json"
     },
+    "capture_batch": {
+      "1": "https://paper-data-suite.github.io/pds-portia/schemas/v1/capture/capture-batch.schema.json"
+    },
+    "capture_materialization": {
+      "1": "https://paper-data-suite.github.io/pds-portia/schemas/v1/capture/capture-materialization.schema.json"
+    },
+    "capture_proposal": {
+      "1": "https://paper-data-suite.github.io/pds-portia/schemas/v1/capture/capture-proposal.schema.json"
+    },
+    "capture_review": {
+      "1": "https://paper-data-suite.github.io/pds-portia/schemas/v1/capture/capture-review.schema.json"
+    },
     "classification": {
       "1": "https://paper-data-suite.github.io/pds-portia/schemas/v1/classifications/classification.schema.json"
     },
@@ -98,6 +110,21 @@
     "implementation": {
       "1": "https://paper-data-suite.github.io/pds-portia/schemas/v1/support-processes/implementation.schema.json"
     },
+    "import_batch": {
+      "1": "https://paper-data-suite.github.io/pds-portia/schemas/v1/imports/import-batch.schema.json"
+    },
+    "import_materialization": {
+      "1": "https://paper-data-suite.github.io/pds-portia/schemas/v1/imports/import-materialization.schema.json"
+    },
+    "import_proposal": {
+      "1": "https://paper-data-suite.github.io/pds-portia/schemas/v1/imports/import-proposal.schema.json"
+    },
+    "import_review": {
+      "1": "https://paper-data-suite.github.io/pds-portia/schemas/v1/imports/import-review.schema.json"
+    },
+    "import_source_record": {
+      "1": "https://paper-data-suite.github.io/pds-portia/schemas/v1/imports/import-source-record.schema.json"
+    },
     "integrity_finding": {
       "1": "https://paper-data-suite.github.io/pds-portia/schemas/v1/projections/integrity-finding.schema.json",
       "2": "https://paper-data-suite.github.io/pds-portia/schemas/v2/projections/integrity-finding.schema.json"
@@ -135,6 +162,16 @@
     "ownership_correction": {
       "1": "https://paper-data-suite.github.io/pds-portia/schemas/v1/corrections/ownership-correction.schema.json",
       "2": "https://paper-data-suite.github.io/pds-portia/schemas/v2/corrections/ownership-correction.schema.json"
+    },
+    "page_record": {
+      "1": "https://paper-data-suite.github.io/pds-portia/schemas/v1/capture/page-record.schema.json"
+    },
+    "page_target": {
+      "1": "https://paper-data-suite.github.io/pds-portia/schemas/v1/capture/page-target.schema.json",
+      "2": "https://paper-data-suite.github.io/pds-portia/schemas/v2/capture/page-target.schema.json"
+    },
+    "paper_interpretation": {
+      "1": "https://paper-data-suite.github.io/pds-portia/schemas/v1/capture/paper-interpretation.schema.json"
     },
     "quarantine_current_pointer": {
       "1": "https://paper-data-suite.github.io/pds-portia/schemas/v1/operations/quarantine-current-pointer.schema.json"
@@ -5413,6 +5450,2139 @@
         }
       ],
       "title": "Portia Represented Human Attribution"
+    },
+    "https://paper-data-suite.github.io/pds-portia/schemas/v1/capture/capture-batch.schema.json": {
+      "$comment": "The Capture Batch work_id is the identity used by Core work references for this operational workflow. Application validation remains responsible for Core class ownership, storage-path agreement, lifecycle transitions, authorization, and ensuring that opening or closing a Capture Batch does not itself create or assert behavior-domain facts.",
+      "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/capture/capture-batch.schema.json",
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "additionalProperties": false,
+      "description": "Version-1 non-domain Portia work root for one paper-assisted capture operation. A Capture Batch exists so Portia can prepare and route blank or partially prefilled paper without fabricating an Event, Account, Observation, Response, Communication, or other behavior-domain record before evidence exists.",
+      "properties": {
+        "class_id": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+        },
+        "created_at": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+        },
+        "created_by": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/attribution/attribution-agent.schema.json"
+        },
+        "label": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json",
+          "description": "Optional human-facing label for locating the operational batch. It is not a behavior-domain assertion."
+        },
+        "module_id": {
+          "const": "portia"
+        },
+        "record_type": {
+          "const": "portia_work"
+        },
+        "schema_version": {
+          "const": "1"
+        },
+        "status": {
+          "enum": [
+            "open",
+            "closed",
+            "cancelled"
+          ]
+        },
+        "updated_at": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+        },
+        "updated_by": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/attribution/attribution-agent.schema.json"
+        },
+        "work_id": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-capture-batch-id.schema.json"
+        },
+        "work_kind": {
+          "const": "capture_batch"
+        }
+      },
+      "required": [
+        "schema_version",
+        "record_type",
+        "work_kind",
+        "module_id",
+        "class_id",
+        "work_id",
+        "status",
+        "created_at",
+        "created_by",
+        "updated_at",
+        "updated_by"
+      ],
+      "title": "Portia Capture Batch",
+      "type": "object",
+      "x-portia-application-invariants": [
+        {
+          "description": "The Capture Batch must resolve at the canonical Portia work path for its exact class_id/work_id, and that class must be a legitimate Core-owned class context.",
+          "id": "capture_batch.canonical_owner_path"
+        },
+        {
+          "description": "Creating, opening, closing, or cancelling a Capture Batch must not create or assert an Event, participant fact, Account, Observation, Response, Communication, Support, Implementation, Fidelity, Outcome, Reentry, Repair, or other behavior-domain fact.",
+          "id": "capture_batch.non_domain_work_root"
+        },
+        {
+          "description": "Application logic must enforce authorized state transitions and must not use Capture Batch state as evidence that printing, return, interpretation, review, or canonical materialization occurred.",
+          "id": "capture_batch.lifecycle_authorization"
+        }
+      ]
+    },
+    "https://paper-data-suite.github.io/pds-portia/schemas/v1/capture/capture-materialization.schema.json": {
+      "$comment": "The existing Operation Journal and Operation Lock contracts remain authoritative for coordinated persistence, crash recovery, expected-prior-state checks, canonical acceptance, and lock ownership. This receipt is written only after the exact operation journal proves canonical acceptance/reconciliation. If canonical writes are already durable but the receipt is missing, recovery must reconcile the existing operation and write the missing receipt without replaying canonical creation. Receipt identity is the exact operation + exact review lineage; there is no separate capture-materialization identifier family.",
+      "$defs": {
+        "canonicalResult": {
+          "additionalProperties": false,
+          "properties": {
+            "result_relation": {
+              "enum": [
+                "produced",
+                "affected"
+              ]
+            },
+            "target": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/targets/exact-portia-work-or-record-target.schema.json"
+            }
+          },
+          "required": [
+            "result_relation",
+            "target"
+          ],
+          "type": "object"
+        },
+        "proposalRef": {
+          "additionalProperties": false,
+          "properties": {
+            "contract_version": {
+              "const": "1"
+            },
+            "proposal_id": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-capture-proposal-id.schema.json"
+            }
+          },
+          "required": [
+            "contract_version",
+            "proposal_id"
+          ],
+          "type": "object"
+        },
+        "reviewRef": {
+          "additionalProperties": false,
+          "properties": {
+            "contract_version": {
+              "const": "1"
+            },
+            "review_id": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-capture-review-id.schema.json"
+            },
+            "review_sequence": {
+              "minimum": 1,
+              "type": "integer"
+            }
+          },
+          "required": [
+            "contract_version",
+            "review_id",
+            "review_sequence"
+          ],
+          "type": "object"
+        }
+      },
+      "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/capture/capture-materialization.schema.json",
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "additionalProperties": false,
+      "description": "Version-1 immutable operational receipt linking one exact accepted Capture Review to one exact completed or reconciled Portia coordinated operation and the exact canonical Portia work/record representations that operation produced or affected. It is not a domain record, not review authority, not a transaction engine, and not a mutable materialization queue.",
+      "properties": {
+        "canonical_results": {
+          "items": {
+            "$ref": "#/$defs/canonicalResult"
+          },
+          "maxItems": 64,
+          "minItems": 1,
+          "type": "array",
+          "uniqueItems": true
+        },
+        "class_id": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+        },
+        "materialized_at": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+        },
+        "module_id": {
+          "const": "portia"
+        },
+        "operation_journal_ref": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/operation-journal-ref.schema.json"
+        },
+        "page_record_id": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-page-record-id.schema.json"
+        },
+        "page_target_id": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-page-target-id.schema.json"
+        },
+        "proposal_ref": {
+          "$ref": "#/$defs/proposalRef"
+        },
+        "record_type": {
+          "const": "capture_materialization"
+        },
+        "recorded_at": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+        },
+        "recorded_by": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/attribution/attribution-agent.schema.json"
+        },
+        "review_ref": {
+          "$ref": "#/$defs/reviewRef"
+        },
+        "schema_version": {
+          "const": "1"
+        },
+        "work_id": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-capture-batch-id.schema.json"
+        }
+      },
+      "required": [
+        "schema_version",
+        "record_type",
+        "module_id",
+        "class_id",
+        "work_id",
+        "page_target_id",
+        "page_record_id",
+        "proposal_ref",
+        "review_ref",
+        "operation_journal_ref",
+        "canonical_results",
+        "materialized_at",
+        "recorded_at",
+        "recorded_by"
+      ],
+      "title": "Portia Capture Materialization",
+      "type": "object",
+      "x-portia-application-invariants": [
+        {
+          "description": "class_id/work_id/page_target_id/page_record_id, proposal_ref, and review_ref must resolve to one exact capture lineage. The receipt must not retarget another physical page, entry, proposal, review sequence, Capture Batch, or class.",
+          "id": "capture_materialization.lineage_exactness"
+        },
+        {
+          "description": "The exact Capture Review must resolve with disposition accepted or corrected_and_accepted, and no later applicable review sequence may have replaced that decision before materialization preflight. Rejected or unresolved review is never materializable.",
+          "id": "capture_materialization.review_must_authorize_next_step"
+        },
+        {
+          "description": "Capture Review confirms staging transcription/mapping only. It must not be substituted for domain-required reviewer, selector, author, decision-maker, provider, fidelity assessor, outcome assessor, reentry participant, repair participant, policy basis, authority, consent, or other human/domain semantics required by the target contract.",
+          "id": "capture_materialization.review_is_not_domain_judgment"
+        },
+        {
+          "description": "The same exact accepted review and materialization intent must resolve to one stable coordinated operation identity/intent. Retry or restart reuses or reconciles that operation; it must not allocate a second logical materialization operation merely because a prior process crashed.",
+          "id": "capture_materialization.operation_reuse"
+        },
+        {
+          "description": "operation_journal_ref must resolve the exact immutable journal revision for the same operation and supported contract. That revision must prove committed/completed canonical acceptance or an equivalent recovery reconciliation and must agree with the exact capture review, proposal, lineage, planned write set, and canonical_results.",
+          "id": "capture_materialization.operation_journal_exactness"
+        },
+        {
+          "description": "Materialization must use Portia's existing deterministic Operation Lock, preflight, expected-prior-state, write-set, commit-point, and recovery rules. Capture staging does not define a second lock or transaction mechanism.",
+          "id": "capture_materialization.lock_and_preflight_reuse"
+        },
+        {
+          "description": "Every canonical_results target must resolve exactly at its named contract version and class/work scope. Logical duplicate result targets are invalid even if encoded with different result_relation values or object forms.",
+          "id": "capture_materialization.results_exactness"
+        },
+        {
+          "description": "result_relation produced means the operation created and canonically accepted the named representation. affected identifies an exact existing representation materially involved under a valid domain operation; it never grants permission for in-place mutation or bypasses successor, correction, lifecycle, migration, ownership-correction, or other domain rules.",
+          "id": "capture_materialization.produced_vs_affected"
+        },
+        {
+          "description": "Every newly produced canonical Portia representation created from this returned page must use creation_source.type paper_capture with stage ingested and route_id/page_record_id matching the exact Page Record/Core route lineage. preallocated is not valid provenance for returned-page materialization.",
+          "id": "capture_materialization.paper_creation_source"
+        },
+        {
+          "description": "Where the canonical target contract supports source_artifact_ref, paper-derived evidence must preserve a paper_capture artifact reference whose route_id, page_record_id, and source_page_number agree with the exact Page Record/Core retained-source page. This locator does not establish truth, credibility, authenticity, authorization, or evidentiary weight.",
+          "id": "capture_materialization.paper_source_artifact"
+        },
+        {
+          "description": "Scan, interpretation, proposal, review, operation, and receipt timestamps must not be substituted for unknown Event, evidence, implementation, follow-up, outcome, reentry, repair, communication, or other domain time.",
+          "id": "capture_materialization.no_scan_time_as_domain_time"
+        },
+        {
+          "description": "Proposal existing_work/existing_record context remains exact and must not silently follow successors, corrections, migrations, consolidations, ownership corrections, current pointers, or newer contract versions during materialization.",
+          "id": "capture_materialization.context_exactness"
+        },
+        {
+          "description": "Before any canonical write, recovery/preflight must reconcile the stable operation intent, exact review lineage, expected target state, durable write fingerprints, and any existing receipt. A retry after partial or completed persistence must resume/reconcile rather than create duplicate Events, child records, Support Processes, or other canonical records.",
+          "id": "capture_materialization.no_duplicate_canonical_records"
+        },
+        {
+          "description": "The receipt may be persisted only after the referenced Operation Journal proves all required canonical-gate steps accepted/reconciled. Receipt absence after durable canonical acceptance is a recoverable missing post-commit artifact, not evidence that canonical writes should be repeated.",
+          "id": "capture_materialization.receipt_after_canonical_acceptance"
+        },
+        {
+          "description": "A later Capture Review correction/reversal does not delete or rewrite this receipt or prior canonical history. Required correction proceeds through the appropriate Portia domain correction/lifecycle/successor mechanisms with preserved provenance.",
+          "id": "capture_materialization.later_review_or_correction_preserves_history"
+        },
+        {
+          "description": "The receipt stores exact references only. It must not embed scan/PDF/image bytes, base64 source payloads, temporary paths, copied OCR text, machine alternatives, or confirmed domain field values.",
+          "id": "capture_materialization.no_raw_source_payload"
+        },
+        {
+          "description": "Ordinary materialization failure/retry uses Operation Journal recovery. Quarantine is reserved for exceptional integrity isolation such as irreconcilable provenance/identity/state contradictions, not routine review or recoverable process interruption.",
+          "id": "capture_materialization.not_quarantine"
+        }
+      ]
+    },
+    "https://paper-data-suite.github.io/pds-portia/schemas/v1/capture/capture-proposal.schema.json": {
+      "$comment": "Application validation resolves the exact Page Record, Paper Interpretation generation, entry, field bindings, target contract, and optional exact existing context. The proposal is a reviewable mapping artifact only. Candidate literals remain authoritative staging content in Paper Interpretation; proposal bindings point to them instead of duplicating source text. Human review is required before any review-gated materialization.",
+      "$defs": {
+        "fieldBinding": {
+          "additionalProperties": false,
+          "properties": {
+            "source_field": {
+              "$ref": "#/$defs/sourceField"
+            },
+            "target_path": {
+              "description": "Target-contract JSON Pointer-like path. Application validation must require a valid exact path under target.record_kind + contract_version.",
+              "maxLength": 512,
+              "minLength": 1,
+              "pattern": "^/",
+              "type": "string"
+            }
+          },
+          "required": [
+            "target_path",
+            "source_field"
+          ],
+          "type": "object"
+        },
+        "interpretationRef": {
+          "additionalProperties": false,
+          "properties": {
+            "contract_version": {
+              "const": "1"
+            },
+            "generation": {
+              "minimum": 1,
+              "type": "integer"
+            },
+            "interpretation_id": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-paper-interpretation-id.schema.json"
+            }
+          },
+          "required": [
+            "contract_version",
+            "interpretation_id",
+            "generation"
+          ],
+          "type": "object"
+        },
+        "mappedRecordKind": {
+          "enum": [
+            "event",
+            "event_participant",
+            "event_participant_role",
+            "account",
+            "observation",
+            "review",
+            "classification",
+            "hypothesis",
+            "determination",
+            "response",
+            "communication",
+            "support_process",
+            "support_process_participant",
+            "support_need",
+            "support_goal",
+            "support",
+            "intervention",
+            "implementation",
+            "fidelity",
+            "follow_up",
+            "outcome",
+            "reentry",
+            "repair"
+          ]
+        },
+        "proposalTarget": {
+          "additionalProperties": false,
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "context": {
+                    "properties": {
+                      "kind": {
+                        "const": "new_work"
+                      }
+                    },
+                    "required": [
+                      "kind"
+                    ]
+                  }
+                },
+                "required": [
+                  "context"
+                ]
+              },
+              "then": {
+                "properties": {
+                  "record_kind": {
+                    "enum": [
+                      "event",
+                      "support_process"
+                    ]
+                  }
+                }
+              }
+            }
+          ],
+          "properties": {
+            "context": {
+              "$ref": "#/$defs/targetContext"
+            },
+            "contract_version": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+            },
+            "record_kind": {
+              "$ref": "#/$defs/mappedRecordKind"
+            }
+          },
+          "required": [
+            "record_kind",
+            "contract_version",
+            "context"
+          ],
+          "type": "object"
+        },
+        "sourceField": {
+          "additionalProperties": false,
+          "properties": {
+            "field_key": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/lowercase-token.schema.json"
+            },
+            "value_source": {
+              "description": "Selects which exact interpretation staging form a later reviewer/materializer must inspect. human_resolution_required does not itself supply a domain value.",
+              "enum": [
+                "candidate_literal",
+                "normalized_value",
+                "human_resolution_required"
+              ]
+            }
+          },
+          "required": [
+            "field_key",
+            "value_source"
+          ],
+          "type": "object"
+        },
+        "targetContext": {
+          "oneOf": [
+            {
+              "additionalProperties": false,
+              "properties": {
+                "kind": {
+                  "const": "new_work"
+                }
+              },
+              "required": [
+                "kind"
+              ],
+              "type": "object"
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "kind": {
+                  "const": "existing_work"
+                },
+                "work_ref": {
+                  "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-portia-work-ref.schema.json"
+                }
+              },
+              "required": [
+                "kind",
+                "work_ref"
+              ],
+              "type": "object"
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "kind": {
+                  "const": "existing_record"
+                },
+                "work_record_ref": {
+                  "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-portia-work-record-ref.schema.json"
+                }
+              },
+              "required": [
+                "kind",
+                "work_record_ref"
+              ],
+              "type": "object"
+            }
+          ]
+        }
+      },
+      "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/capture/capture-proposal.schema.json",
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "additionalProperties": false,
+      "description": "Version-1 immutable noncanonical staging proposal derived from one exact Paper Interpretation entry. It maps exact interpretation fields toward one exact Portia target contract without copying candidate values, asserting truth, making human judgments, or creating/mutating canonical domain records.",
+      "properties": {
+        "class_id": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+        },
+        "created_at": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+        },
+        "created_by": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/attribution/attribution-agent.schema.json"
+        },
+        "entry_key": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/lowercase-token.schema.json"
+        },
+        "field_bindings": {
+          "items": {
+            "$ref": "#/$defs/fieldBinding"
+          },
+          "maxItems": 128,
+          "minItems": 1,
+          "type": "array",
+          "uniqueItems": true
+        },
+        "interpretation_ref": {
+          "$ref": "#/$defs/interpretationRef"
+        },
+        "module_id": {
+          "const": "portia"
+        },
+        "page_record_id": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-page-record-id.schema.json"
+        },
+        "page_target_id": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-page-target-id.schema.json"
+        },
+        "proposal_id": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-capture-proposal-id.schema.json"
+        },
+        "proposed_at": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+        },
+        "proposed_by": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/attribution/attribution-agent.schema.json"
+        },
+        "record_type": {
+          "const": "capture_proposal"
+        },
+        "review_flags": {
+          "description": "Privacy-minimized review-routing flags only. They are not domain findings, severity, credibility, or truth labels.",
+          "items": {
+            "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/lowercase-token.schema.json"
+          },
+          "maxItems": 32,
+          "type": "array",
+          "uniqueItems": true
+        },
+        "schema_version": {
+          "const": "1"
+        },
+        "target": {
+          "$ref": "#/$defs/proposalTarget"
+        },
+        "work_id": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-capture-batch-id.schema.json"
+        }
+      },
+      "required": [
+        "schema_version",
+        "record_type",
+        "module_id",
+        "class_id",
+        "work_id",
+        "page_target_id",
+        "page_record_id",
+        "proposal_id",
+        "interpretation_ref",
+        "entry_key",
+        "target",
+        "field_bindings",
+        "review_flags",
+        "proposed_at",
+        "proposed_by",
+        "created_at",
+        "created_by"
+      ],
+      "title": "Portia Capture Proposal",
+      "type": "object",
+      "x-portia-application-invariants": [
+        {
+          "description": "class_id/work_id/page_target_id/page_record_id and interpretation_ref must resolve to one exact capture lineage; proposal must not retarget a physical page, interpretation generation, or entry.",
+          "id": "capture_proposal.lineage_exactness"
+        },
+        {
+          "description": "entry_key must exist in the exact Paper Interpretation and Page Target historical layout; scan order and array position cannot substitute for entry identity.",
+          "id": "capture_proposal.entry_must_exist"
+        },
+        {
+          "description": "target.record_kind must agree with the exact historical mapping profile and any mapped_record_kind emitted for the interpretation entry; software must not choose a different domain family from narrative meaning or mark content.",
+          "id": "capture_proposal.mapped_kind_agreement"
+        },
+        {
+          "description": "target.contract_version must be a supported exact Portia contract for target.record_kind; null/current/latest substitution is prohibited.",
+          "id": "capture_proposal.target_contract_supported"
+        },
+        {
+          "description": "existing_work/existing_record context must resolve exactly and remain bound to the historical representation named at proposal time; successors are never followed silently.",
+          "id": "capture_proposal.context_exactness"
+        },
+        {
+          "description": "Every field binding target_path must be valid for the exact target contract and each source field must exist in the exact interpretation entry. candidate_literal/normalized_value bindings require a detected candidate; human_resolution_required may reference ambiguous or unreadable source state but never converts blank/unmarked into negative domain facts.",
+          "id": "capture_proposal.binding_source_valid"
+        },
+        {
+          "description": "One proposal must not bind the same logical target path more than once, even when JSON objects differ.",
+          "id": "capture_proposal.target_paths_unique"
+        },
+        {
+          "description": "Proposal JSON stores references to interpretation fields, not copied candidate literals, OCR text, mark alternatives, or raw source bytes; review and materialization resolve the exact immutable interpretation generation.",
+          "id": "capture_proposal.no_candidate_value_duplication"
+        },
+        {
+          "description": "Replaying the same interpretation entry through the same exact mapping to the same target contract must not create duplicate logical proposals or downstream canonical records.",
+          "id": "capture_proposal.same_mapping_replay_idempotent"
+        },
+        {
+          "description": "Once persisted, lineage, target, context, bindings, flags, and provenance are immutable; a changed mapping or corrected staging decision creates a new proposal while preserving prior history.",
+          "id": "capture_proposal.immutable"
+        },
+        {
+          "description": "Proposal generation must not fuzzy-match people, infer authorship/firsthand status, participation/fault, Classification/Hypothesis/Determination, Response/Support choice, Fidelity/Outcome, Reentry/Repair completion, remorse, forgiveness, or comparable human judgment.",
+          "id": "capture_proposal.no_identity_or_judgment_inference"
+        },
+        {
+          "description": "A proposal is never sufficient authority to create, activate, complete, invalidate, supersede, or otherwise mutate a review-gated canonical Portia record.",
+          "id": "capture_proposal.review_required_before_materialization"
+        },
+        {
+          "description": "Ordinary uncertainty or review need belongs in proposal/review staging. Capture Proposal must not be treated as Quarantine or Integrity Finding state merely because confidence is low or review is unresolved.",
+          "id": "capture_proposal.not_quarantine"
+        }
+      ]
+    },
+    "https://paper-data-suite.github.io/pds-portia/schemas/v1/capture/capture-review.schema.json": {
+      "$comment": "A Capture Review is a decision-history record, not a mutable queue row. Later correction of the review creates a new review_sequence linked to predecessor_review_id. The exact proposal and interpretation remain unchanged. Canonical materialization is a later coordinated operation and must preserve exact review provenance rather than mutating this record after the fact.",
+      "$defs": {
+        "fieldReview": {
+          "additionalProperties": false,
+          "allOf": [
+            {
+              "else": {
+                "else": {
+                  "not": {
+                    "anyOf": [
+                      {
+                        "required": [
+                          "confirmed_value"
+                        ]
+                      },
+                      {
+                        "required": [
+                          "alternative_index"
+                        ]
+                      }
+                    ]
+                  }
+                },
+                "if": {
+                  "properties": {
+                    "decision": {
+                      "const": "select_alternative"
+                    }
+                  },
+                  "required": [
+                    "decision"
+                  ]
+                },
+                "then": {
+                  "not": {
+                    "required": [
+                      "confirmed_value"
+                    ]
+                  },
+                  "required": [
+                    "alternative_index"
+                  ]
+                }
+              },
+              "if": {
+                "properties": {
+                  "decision": {
+                    "const": "correct"
+                  }
+                },
+                "required": [
+                  "decision"
+                ]
+              },
+              "then": {
+                "not": {
+                  "required": [
+                    "alternative_index"
+                  ]
+                },
+                "required": [
+                  "confirmed_value"
+                ]
+              }
+            }
+          ],
+          "properties": {
+            "alternative_index": {
+              "maximum": 15,
+              "minimum": 0,
+              "type": "integer"
+            },
+            "confirmed_value": true,
+            "decision": {
+              "enum": [
+                "accept_candidate",
+                "correct",
+                "select_alternative",
+                "mark_unreadable",
+                "leave_unresolved"
+              ]
+            },
+            "target_path": {
+              "maxLength": 512,
+              "minLength": 1,
+              "pattern": "^/",
+              "type": "string"
+            }
+          },
+          "required": [
+            "target_path",
+            "decision"
+          ],
+          "type": "object"
+        },
+        "interpretationRef": {
+          "additionalProperties": false,
+          "properties": {
+            "contract_version": {
+              "const": "1"
+            },
+            "generation": {
+              "minimum": 1,
+              "type": "integer"
+            },
+            "interpretation_id": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-paper-interpretation-id.schema.json"
+            }
+          },
+          "required": [
+            "contract_version",
+            "interpretation_id",
+            "generation"
+          ],
+          "type": "object"
+        },
+        "proposalRef": {
+          "additionalProperties": false,
+          "properties": {
+            "contract_version": {
+              "const": "1"
+            },
+            "proposal_id": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-capture-proposal-id.schema.json"
+            }
+          },
+          "required": [
+            "contract_version",
+            "proposal_id"
+          ],
+          "type": "object"
+        }
+      },
+      "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/capture/capture-review.schema.json",
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "else": {
+            "required": [
+              "predecessor_review_id"
+            ]
+          },
+          "if": {
+            "properties": {
+              "review_sequence": {
+                "const": 1
+              }
+            },
+            "required": [
+              "review_sequence"
+            ]
+          },
+          "then": {
+            "not": {
+              "required": [
+                "predecessor_review_id"
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "disposition": {
+                "const": "accepted"
+              }
+            },
+            "required": [
+              "disposition"
+            ]
+          },
+          "then": {
+            "properties": {
+              "field_reviews": {
+                "maxItems": 0
+              },
+              "reason_codes": {
+                "maxItems": 0
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "disposition": {
+                "const": "corrected_and_accepted"
+              }
+            },
+            "required": [
+              "disposition"
+            ]
+          },
+          "then": {
+            "not": {
+              "properties": {
+                "field_reviews": {
+                  "contains": {
+                    "properties": {
+                      "decision": {
+                        "enum": [
+                          "mark_unreadable",
+                          "leave_unresolved"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "decision"
+                    ]
+                  },
+                  "minContains": 1
+                }
+              },
+              "required": [
+                "field_reviews"
+              ]
+            },
+            "properties": {
+              "field_reviews": {
+                "contains": {
+                  "properties": {
+                    "decision": {
+                      "enum": [
+                        "correct",
+                        "select_alternative"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "decision"
+                  ]
+                },
+                "minContains": 1,
+                "minItems": 1
+              },
+              "reason_codes": {
+                "maxItems": 32
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "disposition": {
+                "const": "rejected"
+              }
+            },
+            "required": [
+              "disposition"
+            ]
+          },
+          "then": {
+            "properties": {
+              "field_reviews": {
+                "maxItems": 0
+              },
+              "reason_codes": {
+                "minItems": 1
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "disposition": {
+                "const": "unresolved"
+              }
+            },
+            "required": [
+              "disposition"
+            ]
+          },
+          "then": {
+            "properties": {
+              "field_reviews": {
+                "contains": {
+                  "properties": {
+                    "decision": {
+                      "enum": [
+                        "mark_unreadable",
+                        "leave_unresolved"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "decision"
+                  ]
+                },
+                "minContains": 1,
+                "minItems": 1
+              }
+            }
+          }
+        }
+      ],
+      "description": "Version-1 immutable attributable human review decision over one exact Capture Proposal and exact Paper Interpretation generation. It records acceptance, corrected acceptance, rejection, or unresolved review while preserving the original machine/manual staging candidate. It is not source truth, canonical domain materialization, Quarantine, or a behavior-domain Review record.",
+      "properties": {
+        "class_id": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+        },
+        "created_at": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+        },
+        "created_by": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/attribution/attribution-agent.schema.json"
+        },
+        "disposition": {
+          "enum": [
+            "accepted",
+            "corrected_and_accepted",
+            "rejected",
+            "unresolved"
+          ]
+        },
+        "entry_key": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/lowercase-token.schema.json"
+        },
+        "field_reviews": {
+          "items": {
+            "$ref": "#/$defs/fieldReview"
+          },
+          "maxItems": 128,
+          "type": "array",
+          "uniqueItems": true
+        },
+        "interpretation_ref": {
+          "$ref": "#/$defs/interpretationRef"
+        },
+        "module_id": {
+          "const": "portia"
+        },
+        "page_record_id": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-page-record-id.schema.json"
+        },
+        "page_target_id": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-page-target-id.schema.json"
+        },
+        "predecessor_review_id": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-capture-review-id.schema.json"
+        },
+        "proposal_ref": {
+          "$ref": "#/$defs/proposalRef"
+        },
+        "reason_codes": {
+          "items": {
+            "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/lowercase-token.schema.json"
+          },
+          "maxItems": 32,
+          "type": "array",
+          "uniqueItems": true
+        },
+        "record_type": {
+          "const": "capture_review"
+        },
+        "review_id": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-capture-review-id.schema.json"
+        },
+        "review_sequence": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "reviewed_at": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+        },
+        "reviewer": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/attribution/represented-human-attribution.schema.json"
+        },
+        "schema_version": {
+          "const": "1"
+        },
+        "work_id": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-capture-batch-id.schema.json"
+        }
+      },
+      "required": [
+        "schema_version",
+        "record_type",
+        "module_id",
+        "class_id",
+        "work_id",
+        "page_target_id",
+        "page_record_id",
+        "review_id",
+        "review_sequence",
+        "proposal_ref",
+        "interpretation_ref",
+        "entry_key",
+        "reviewer",
+        "disposition",
+        "field_reviews",
+        "reason_codes",
+        "reviewed_at",
+        "created_at",
+        "created_by"
+      ],
+      "title": "Portia Capture Review",
+      "type": "object",
+      "x-portia-application-invariants": [
+        {
+          "description": "class_id/work_id/page_target_id/page_record_id, interpretation_ref, entry_key, and proposal_ref must all resolve to the same exact capture lineage and proposal.",
+          "id": "capture_review.lineage_exactness"
+        },
+        {
+          "description": "reviewer must represent an eligible human reviewer under the local workflow. Represented identity does not itself establish authorization, employment, institutional authority, source truth, credibility, or consent; system processes cannot be substantive reviewers.",
+          "id": "capture_review.reviewer_human_and_eligible"
+        },
+        {
+          "description": "proposal_ref selects the exact immutable Capture Proposal representation. Review must not substitute another proposal, mapping generation, target contract version, or successor context.",
+          "id": "capture_review.proposal_exactness"
+        },
+        {
+          "description": "interpretation_ref selects the exact immutable Paper Interpretation generation reviewed. Candidate history must never be replaced by corrected human values.",
+          "id": "capture_review.interpretation_exactness"
+        },
+        {
+          "description": "Every field_review target_path must correspond to one unique field binding in the exact proposal; duplicate logical target paths are invalid.",
+          "id": "capture_review.field_paths_must_bind_proposal"
+        },
+        {
+          "description": "Proposal-level accepted or any field-level candidate acceptance may only confirm an actual exact candidate value referenced by the proposal; confidence thresholds never substitute for human confirmation.",
+          "id": "capture_review.accept_candidate_requires_candidate"
+        },
+        {
+          "description": "select_alternative must point to an existing alternative in the exact ambiguous interpretation field; the selected alternative remains distinguishable from the original machine alternatives.",
+          "id": "capture_review.select_alternative_exactness"
+        },
+        {
+          "description": "corrected human values are additional review history. They never overwrite candidate_literal, normalized_value, alternatives, proposal bindings, or Core retained-source history.",
+          "id": "capture_review.correction_preserves_candidate"
+        },
+        {
+          "description": "mark_unreadable and leave_unresolved do not mean blank, false, no, declined, uninvolved, unsuccessful, or another domain conclusion and must not be coerced to satisfy downstream schemas.",
+          "id": "capture_review.unreadable_and_unresolved_are_not_negative"
+        },
+        {
+          "description": "Human rejection or unresolved review is ordinary staging outcome, not data corruption and not sufficient reason to create Quarantine state.",
+          "id": "capture_review.rejection_not_quarantine"
+        },
+        {
+          "description": "accepted/corrected_and_accepted means the reviewer accepts the represented staging transcription/mapping for the next workflow step. It does not establish source truth, credibility, institutional authority, consent, fault, causation, or legal/process validity.",
+          "id": "capture_review.disposition_not_truth"
+        },
+        {
+          "description": "Review correction/reversal creates a later immutable review_sequence with exact predecessor_review_id. Sequence 1 has no predecessor; self-predecessor, cycles, forks that violate local policy, and silent mutation are invalid.",
+          "id": "capture_review.sequence_history"
+        },
+        {
+          "description": "No mutable current/latest pointer is authoritative. Current review status is rebuilt from preserved review history and exact application rules.",
+          "id": "capture_review.current_decision_is_derived"
+        },
+        {
+          "description": "Persisting an accepted review does not by itself create, activate, complete, invalidate, supersede, or otherwise mutate a canonical Portia record. Materialization is a separate idempotent coordinated operation.",
+          "id": "capture_review.no_automatic_materialization"
+        },
+        {
+          "description": "Review of one page-local entry/proposal must not require all other entries on the physical page to succeed and must not infer that entries share a student, Event, or disposition.",
+          "id": "capture_review.partial_entry_independence"
+        }
+      ]
+    },
+    "https://paper-data-suite.github.io/pds-portia/schemas/v1/capture/page-record.schema.json": {
+      "$comment": "Application validation remains responsible for verifying the referenced Core RouteRegistration, confirming that its target is the named Page Target in the same class/work, resolving the retained source, enforcing deterministic reuse/idempotency for the tuple (route_id, source_scan_id, source_page_number), preserving source_sha256 agreement with Core retention metadata, legal processing-state transitions, retry/reprocessing history, authorization, and ensuring that no processing state automatically materializes a behavior-domain record. Paper Interpretation generations are stored as separate immutable staging records that exact-link this Page Record; mutable latest-generation pointers and proposal/review state are not embedded here.",
+      "$defs": {
+        "retainedSourcePageRef": {
+          "additionalProperties": false,
+          "properties": {
+            "source_page_number": {
+              "description": "Positive one-based physical page number dispatched by Core from the retained source.",
+              "minimum": 1,
+              "type": "integer"
+            },
+            "source_scan_id": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json",
+              "description": "Core retained-source identity for the immutable whole submitted source."
+            },
+            "source_sha256": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/sha256-digest.schema.json",
+              "description": "SHA-256 digest of the immutable whole retained source, copied from and checked against Core retention metadata."
+            }
+          },
+          "required": [
+            "source_scan_id",
+            "source_sha256",
+            "source_page_number"
+          ],
+          "type": "object"
+        }
+      },
+      "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/capture/page-record.schema.json",
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "else": {
+            "not": {
+              "required": [
+                "failure_detail"
+              ]
+            }
+          },
+          "if": {
+            "properties": {
+              "processing_state": {
+                "const": "failed"
+              }
+            },
+            "required": [
+              "processing_state"
+            ]
+          },
+          "then": {
+            "required": [
+              "failure_detail"
+            ]
+          }
+        }
+      ],
+      "description": "Version-1 durable Portia processing record for one physical page dispatched from a retained source through one immutable Core PDS2 route registration. The Page Record bridges Core routing/retention to later Portia interpretation and review while remaining non-domain evidence-processing state rather than a canonical behavior-domain fact.",
+      "properties": {
+        "class_id": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+        },
+        "created_at": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+        },
+        "created_by": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/attribution/attribution-agent.schema.json"
+        },
+        "failure_detail": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json",
+          "description": "Human-readable operational failure detail. Required exactly when processing_state is failed. It must not be treated as a behavior-domain assertion."
+        },
+        "module_id": {
+          "const": "portia"
+        },
+        "page_record_id": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-page-record-id.schema.json"
+        },
+        "page_target_id": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-page-target-id.schema.json"
+        },
+        "processing_state": {
+          "description": "Operational page-processing state only. Interpretation, proposal, human-review, and canonical materialization lifecycles are separate Issue #20 contracts and must not be inferred from this value.",
+          "enum": [
+            "received",
+            "processing",
+            "processed",
+            "failed"
+          ]
+        },
+        "record_type": {
+          "const": "capture_page_record"
+        },
+        "route_id": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json",
+          "description": "Identifier of the immutable Core PDS2 RouteRegistration used to dispatch this physical page. The Core registration remains authoritative for route content and signature semantics."
+        },
+        "schema_version": {
+          "const": "1"
+        },
+        "source_ref": {
+          "$ref": "#/$defs/retainedSourcePageRef"
+        },
+        "updated_at": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+        },
+        "updated_by": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/attribution/attribution-agent.schema.json"
+        },
+        "work_id": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-capture-batch-id.schema.json",
+          "description": "Owning Capture Batch identity."
+        }
+      },
+      "required": [
+        "schema_version",
+        "record_type",
+        "module_id",
+        "class_id",
+        "work_id",
+        "page_target_id",
+        "page_record_id",
+        "route_id",
+        "source_ref",
+        "processing_state",
+        "created_at",
+        "created_by",
+        "updated_at",
+        "updated_by"
+      ],
+      "title": "Portia Page Record",
+      "type": "object",
+      "x-portia-application-invariants": [
+        {
+          "description": "The Capture Batch and Page Target must exist and agree exactly with the Page Record class_id/work_id/page_target_id.",
+          "id": "page_record.capture_owner_target_agreement"
+        },
+        {
+          "description": "The immutable Core RouteRegistration identified by route_id must resolve to this exact Portia Page Target in the same module/class/work context.",
+          "id": "page_record.core_route_exact_target"
+        },
+        {
+          "description": "source_scan_id, source_sha256, and source_page_number must resolve to and agree with Core retained-source metadata; Portia must not rewrite Core source identity or route history.",
+          "id": "page_record.retained_source_exactness"
+        },
+        {
+          "description": "Reprocessing the same route_id/source_scan_id/source_page_number must reuse the same logical Page Record processing lineage rather than create duplicate accepted interpretations or canonical records.",
+          "id": "page_record.idempotent_same_source_same_route"
+        },
+        {
+          "description": "A different retained source returned through the same route remains a distinct physical-source intake and must not silently replace an earlier Page Record.",
+          "id": "page_record.same_route_different_source_distinct"
+        },
+        {
+          "description": "Matching content hashes may support duplicate review but must not automatically collapse or delete distinct Core retained-source histories.",
+          "id": "page_record.same_hash_not_auto_collapsed"
+        },
+        {
+          "description": "Interpretation must use the exact historical Page Target template/layout/capture specification; a later installed template version must not silently reinterpret this Page Record.",
+          "id": "page_record.target_template_historical_exactness"
+        },
+        {
+          "description": "No Page Record processing state may itself create, activate, complete, or otherwise assert a behavior-domain record or human judgment.",
+          "id": "page_record.no_automatic_domain_materialization"
+        }
+      ]
+    },
+    "https://paper-data-suite.github.io/pds-portia/schemas/v1/capture/page-target.schema.json": {
+      "$comment": "Core route registration remains authoritative for route_id, payload/signature state, and immutable route metadata. Page Target semantic fields are Portia-owned and must exist before route registration/QR rendering rather than being reconstructed from Core module_details. Application validation is responsible for Capture Batch existence/class agreement, Core RouteRegistration target agreement, registration-before-render, exact context resolution, purpose/context compatibility, template/layout availability and fingerprint agreement, lifecycle/correction rules, authorization, and preventing Page Targets from being treated as evidence or domain facts.",
+      "$defs": {
+        "entryLayout": {
+          "additionalProperties": false,
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "mode": {
+                    "const": "single_entry"
+                  }
+                },
+                "required": [
+                  "mode"
+                ]
+              },
+              "then": {
+                "properties": {
+                  "entry_keys": {
+                    "maxItems": 1,
+                    "minItems": 1
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "mode": {
+                    "const": "multi_entry"
+                  }
+                },
+                "required": [
+                  "mode"
+                ]
+              },
+              "then": {
+                "properties": {
+                  "entry_keys": {
+                    "minItems": 2
+                  }
+                }
+              }
+            }
+          ],
+          "properties": {
+            "entry_keys": {
+              "description": "Stable template-local entry/slot keys. They identify reviewable page-local locations only; an entry key does not identify a person, Event, or canonical record and does not mean the slot contains returned content.",
+              "items": {
+                "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/lowercase-token.schema.json"
+              },
+              "type": "array",
+              "uniqueItems": true
+            },
+            "mode": {
+              "enum": [
+                "single_entry",
+                "multi_entry"
+              ]
+            }
+          },
+          "required": [
+            "mode",
+            "entry_keys"
+          ],
+          "type": "object"
+        },
+        "templateIdentity": {
+          "additionalProperties": false,
+          "properties": {
+            "capture_spec_version": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+            },
+            "layout_fingerprint": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/sha256-digest.schema.json",
+              "description": "SHA-256 digest/fingerprint of the exact historical interpretation layout/capture specification used for this page."
+            },
+            "layout_version": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+            },
+            "page_ordinal": {
+              "description": "Positive ordinal of this page within the exact template/layout version. It is distinct from scan order and retained-source page number.",
+              "minimum": 1,
+              "type": "integer"
+            },
+            "page_role": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/lowercase-token.schema.json",
+              "description": "Stable template-local semantic page role, such as incident_form or monitoring_sheet; it is not a domain assertion."
+            },
+            "template_id": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+            },
+            "template_version": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+            }
+          },
+          "required": [
+            "template_id",
+            "template_version",
+            "layout_version",
+            "capture_spec_version",
+            "layout_fingerprint",
+            "page_role",
+            "page_ordinal"
+          ],
+          "type": "object"
+        }
+      },
+      "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/capture/page-target.schema.json",
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "else": {
+            "not": {
+              "required": [
+                "purpose_detail"
+              ]
+            }
+          },
+          "if": {
+            "properties": {
+              "page_purpose": {
+                "const": "other"
+              }
+            },
+            "required": [
+              "page_purpose"
+            ]
+          },
+          "then": {
+            "required": [
+              "purpose_detail"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "page_purpose": {
+                "enum": [
+                  "new_event_capture",
+                  "multi_entry_event_capture"
+                ]
+              }
+            },
+            "required": [
+              "page_purpose"
+            ]
+          },
+          "then": {
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "existing_work_context"
+                  ]
+                },
+                {
+                  "required": [
+                    "existing_record_context"
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "page_purpose": {
+                "const": "multi_entry_event_capture"
+              }
+            },
+            "required": [
+              "page_purpose"
+            ]
+          },
+          "then": {
+            "properties": {
+              "entry_layout": {
+                "properties": {
+                  "mode": {
+                    "const": "multi_entry"
+                  }
+                },
+                "required": [
+                  "mode"
+                ]
+              }
+            }
+          }
+        }
+      ],
+      "description": "Version-1 Portia pre-print operational target for one logical page within a Capture Batch. It preserves the exact intended capture purpose, historical template/layout identity, expected interpretation mode, stable page-local entry layout, and optional exact existing Portia context needed to interpret a returned page later. A Core PDS2 RouteRegistration may target this record before printing. The Page Target is not a printed-copy identity, returned-page identity, retained source, machine interpretation, proposal, review decision, or canonical behavior-domain record.",
+      "properties": {
+        "capture_mode": {
+          "description": "Expected mechanical interpretation mode for this historical layout. It controls processing expectations only and never authorizes semantic inference or review bypass.",
+          "enum": [
+            "text_recognition",
+            "handwriting_recognition",
+            "mark_recognition",
+            "mixed_recognition",
+            "manual_transcription"
+          ]
+        },
+        "class_id": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+        },
+        "created_at": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+        },
+        "created_by": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/attribution/attribution-agent.schema.json"
+        },
+        "entry_layout": {
+          "$ref": "#/$defs/entryLayout"
+        },
+        "existing_record_context": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-portia-work-record-ref.schema.json",
+          "description": "Optional exact historical Portia child-record context when the page is specifically tied to a known record representation. Its contained exact work reference remains historical."
+        },
+        "existing_work_context": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-portia-work-ref.schema.json",
+          "description": "Optional exact historical Event or Support Process context known at print time. This is separate from the Capture Batch work_id and must not silently follow later successors or corrections."
+        },
+        "module_id": {
+          "const": "portia"
+        },
+        "page_index": {
+          "description": "Positive logical page position inside the capture rendering workflow. It is not the historical template page ordinal, a retained-source page number, or a printed-copy identity.",
+          "minimum": 1,
+          "type": "integer"
+        },
+        "page_purpose": {
+          "description": "Closed descriptive intent for the page. Purpose never establishes that an Event, implementation, fidelity result, follow-up, reentry, repair, or other domain fact exists or occurred.",
+          "enum": [
+            "new_event_capture",
+            "event_evidence_capture",
+            "support_process_evidence_capture",
+            "follow_up_capture",
+            "implementation_capture",
+            "fidelity_capture",
+            "reentry_capture",
+            "repair_capture",
+            "multi_entry_event_capture",
+            "other"
+          ]
+        },
+        "page_target_id": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-page-target-id.schema.json"
+        },
+        "purpose_detail": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json",
+          "description": "Bounded explanatory detail required exactly when page_purpose is other."
+        },
+        "record_type": {
+          "const": "capture_page_target"
+        },
+        "schema_version": {
+          "const": "1"
+        },
+        "status": {
+          "description": "Operational Page Target state. retired prevents new use but does not erase historical meaning; invalidated marks the representation defective without erasing any Core route or retained-source history.",
+          "enum": [
+            "active",
+            "retired",
+            "invalidated"
+          ]
+        },
+        "template_identity": {
+          "$ref": "#/$defs/templateIdentity"
+        },
+        "updated_at": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+        },
+        "updated_by": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/attribution/attribution-agent.schema.json"
+        },
+        "work_id": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-capture-batch-id.schema.json",
+          "description": "Owning Capture Batch identity and the same work_id carried by Core work references for this capture workflow. Existing Event/Support Process context, when any, is represented separately and exactly."
+        }
+      },
+      "required": [
+        "schema_version",
+        "record_type",
+        "module_id",
+        "class_id",
+        "work_id",
+        "page_target_id",
+        "page_index",
+        "page_purpose",
+        "template_identity",
+        "capture_mode",
+        "entry_layout",
+        "status",
+        "created_at",
+        "created_by",
+        "updated_at",
+        "updated_by"
+      ],
+      "title": "Portia Page Target",
+      "type": "object",
+      "x-portia-application-invariants": [
+        {
+          "description": "The owning Capture Batch must exist and agree exactly with class_id/work_id; page_index uniqueness is enforced within the rendering workflow where required.",
+          "id": "page_target.capture_batch_resolves"
+        },
+        {
+          "description": "Any Core RouteRegistration used for this page must identify module_id portia and the same class_id/work_id, and its target must be record_kind capture_page_target with this exact page_target_id and supported non-null contract version.",
+          "id": "page_target.core_route_exact_target"
+        },
+        {
+          "description": "QR/PDS2 rendering is permitted only after an exact active Core RouteRegistration has been created and verified for this Page Target.",
+          "id": "page_target.registration_before_render"
+        },
+        {
+          "description": "Rendering and later interpretation must use the exact template_id/template_version/layout_version/capture_spec_version/layout_fingerprint/page_role/page_ordinal represented here; current-installed-template substitution is prohibited.",
+          "id": "page_target.template_layout_exactness"
+        },
+        {
+          "description": "After a Core route has been registered or a copy printed, page_purpose, purpose_detail, template_identity, capture_mode, entry_layout, and exact existing context are historical semantics and must not be materially rewritten in place; correction requires preserved history and, where necessary, a new Page Target/route.",
+          "id": "page_target.semantic_immutability_after_registration"
+        },
+        {
+          "description": "Any existing_work_context or existing_record_context must resolve exactly, remain in the legitimate class/work history, and must never silently follow migration, supersession, ownership correction, plan adaptation, or cross-year succession; if both contexts are present, their exact work references must agree.",
+          "id": "page_target.existing_context_exactness"
+        },
+        {
+          "description": "The application must enforce semantic compatibility between page_purpose and any exact existing context; purpose describes intended capture context only and never proves that the corresponding domain fact occurred or is true.",
+          "id": "page_target.purpose_context_compatibility"
+        },
+        {
+          "description": "Creating or printing a Page Target must not pre-create Event, participant, Account, Observation, Review, Classification, Hypothesis, Determination, Response, Communication, Support Process/Participant, Need, Goal, Support, Intervention, Implementation, Fidelity, Follow-Up, Outcome, Reentry, or Repair facts solely to satisfy routing or printing.",
+          "id": "page_target.no_domain_preallocation"
+        },
+        {
+          "description": "QR/PDS2 locator and human fallback text must remain privacy-minimized; sensitive narrative and domain conclusions belong neither in route payloads nor in Portia Page Target identity fields.",
+          "id": "page_target.privacy_minimized_route"
+        }
+      ]
+    },
+    "https://paper-data-suite.github.io/pds-portia/schemas/v1/capture/paper-interpretation.schema.json": {
+      "$comment": "Application validation must resolve the exact Capture Batch, Page Target, Page Record, Core-retained source lineage, and historical capture specification; enforce idempotency and generation history; validate entry/field keys against the exact capture specification; preserve uncertainty; and prevent machine candidates, confidence, mapped record kinds, or normalized values from bypassing attributable human review where review is required. Raw scan/PDF bytes remain Core-owned and are never embedded here.",
+      "$defs": {
+        "alternativeCandidate": {
+          "additionalProperties": false,
+          "properties": {
+            "candidate_literal": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+            },
+            "confidence": {
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number"
+            },
+            "normalized_value": {
+              "$ref": "#/$defs/normalizedValue"
+            }
+          },
+          "required": [
+            "candidate_literal"
+          ],
+          "type": "object"
+        },
+        "entryInterpretation": {
+          "additionalProperties": false,
+          "allOf": [
+            {
+              "else": {
+                "not": {
+                  "required": [
+                    "fields"
+                  ]
+                }
+              },
+              "if": {
+                "properties": {
+                  "entry_state": {
+                    "const": "candidate"
+                  }
+                },
+                "required": [
+                  "entry_state"
+                ]
+              },
+              "then": {
+                "required": [
+                  "fields"
+                ]
+              }
+            }
+          ],
+          "properties": {
+            "entry_state": {
+              "description": "Mechanical slot-level interpretation state. blank does not mean false/no; unreadable is distinct from blank; candidate only means field-level staging information is present.",
+              "enum": [
+                "blank",
+                "unreadable",
+                "candidate"
+              ]
+            },
+            "fields": {
+              "$ref": "#/$defs/fieldMap"
+            },
+            "mapped_record_kind": {
+              "$ref": "#/$defs/mappedRecordKind",
+              "description": "Optional exact mapping-profile target family. It does not assert that a canonical record exists, should be created, or is semantically valid."
+            }
+          },
+          "required": [
+            "entry_state"
+          ],
+          "type": "object"
+        },
+        "entryMap": {
+          "additionalProperties": {
+            "$ref": "#/$defs/entryInterpretation"
+          },
+          "description": "Map keyed by stable Page Target entry_key. Object keys provide minimal page-local entry identity without introducing globally opaque entry IDs.",
+          "minProperties": 1,
+          "propertyNames": {
+            "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/lowercase-token.schema.json"
+          },
+          "type": "object"
+        },
+        "fieldInterpretation": {
+          "additionalProperties": false,
+          "allOf": [
+            {
+              "else": {
+                "else": {
+                  "not": {
+                    "anyOf": [
+                      {
+                        "required": [
+                          "candidate_literal"
+                        ]
+                      },
+                      {
+                        "required": [
+                          "normalized_value"
+                        ]
+                      },
+                      {
+                        "required": [
+                          "confidence"
+                        ]
+                      },
+                      {
+                        "required": [
+                          "alternatives"
+                        ]
+                      }
+                    ]
+                  }
+                },
+                "if": {
+                  "properties": {
+                    "recognition_state": {
+                      "const": "ambiguous"
+                    }
+                  },
+                  "required": [
+                    "recognition_state"
+                  ]
+                },
+                "then": {
+                  "not": {
+                    "anyOf": [
+                      {
+                        "required": [
+                          "candidate_literal"
+                        ]
+                      },
+                      {
+                        "required": [
+                          "normalized_value"
+                        ]
+                      },
+                      {
+                        "required": [
+                          "confidence"
+                        ]
+                      }
+                    ]
+                  },
+                  "required": [
+                    "alternatives"
+                  ]
+                }
+              },
+              "if": {
+                "properties": {
+                  "recognition_state": {
+                    "const": "candidate_detected"
+                  }
+                },
+                "required": [
+                  "recognition_state"
+                ]
+              },
+              "then": {
+                "not": {
+                  "required": [
+                    "alternatives"
+                  ]
+                },
+                "required": [
+                  "candidate_literal"
+                ]
+              }
+            }
+          ],
+          "properties": {
+            "alternatives": {
+              "items": {
+                "$ref": "#/$defs/alternativeCandidate"
+              },
+              "maxItems": 16,
+              "minItems": 2,
+              "type": "array",
+              "uniqueItems": true
+            },
+            "candidate_literal": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json",
+              "description": "Literal nonblank transcription/detection candidate as emitted by the interpreter. It is not silently polished, normalized, quoted as human-confirmed wording, or treated as true."
+            },
+            "capture_method": {
+              "enum": [
+                "text_recognition",
+                "handwriting_recognition",
+                "mark_recognition",
+                "manual_transcription"
+              ]
+            },
+            "confidence": {
+              "description": "Interpreter-supplied confidence/score for review prioritization only; not truth probability, credibility, authority, or a review bypass.",
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number"
+            },
+            "normalized_value": {
+              "$ref": "#/$defs/normalizedValue",
+              "description": "Optional deterministic normalized candidate. The literal candidate remains preserved and normalization does not establish correctness or domain meaning."
+            },
+            "recognition_state": {
+              "enum": [
+                "blank",
+                "unmarked",
+                "unreadable",
+                "ambiguous",
+                "candidate_detected"
+              ]
+            },
+            "region_key": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/lowercase-token.schema.json",
+              "description": "Optional smallest capture-spec-local region locator when field_key alone is insufficient."
+            }
+          },
+          "required": [
+            "capture_method",
+            "recognition_state"
+          ],
+          "type": "object"
+        },
+        "fieldMap": {
+          "additionalProperties": {
+            "$ref": "#/$defs/fieldInterpretation"
+          },
+          "description": "Map keyed by stable capture-spec field_key. Keys are page-local layout locators and never person or canonical-record identifiers.",
+          "minProperties": 1,
+          "propertyNames": {
+            "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/lowercase-token.schema.json"
+          },
+          "type": "object"
+        },
+        "interpreterProfile": {
+          "additionalProperties": false,
+          "properties": {
+            "interpreter_id": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/lowercase-token.schema.json",
+              "description": "Stable local interpreter/engine/procedure identifier. It does not identify a human source or establish authority."
+            },
+            "interpreter_version": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+            },
+            "mapping_profile_id": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+            },
+            "mapping_version": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+            }
+          },
+          "required": [
+            "interpreter_id",
+            "interpreter_version",
+            "mapping_profile_id",
+            "mapping_version"
+          ],
+          "type": "object"
+        },
+        "layoutSnapshot": {
+          "additionalProperties": false,
+          "properties": {
+            "capture_spec_version": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+            },
+            "layout_fingerprint": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/sha256-digest.schema.json"
+            },
+            "layout_version": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+            },
+            "page_ordinal": {
+              "minimum": 1,
+              "type": "integer"
+            },
+            "page_role": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/lowercase-token.schema.json"
+            },
+            "template_id": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+            },
+            "template_version": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+            }
+          },
+          "required": [
+            "template_id",
+            "template_version",
+            "layout_version",
+            "capture_spec_version",
+            "layout_fingerprint",
+            "page_role",
+            "page_ordinal"
+          ],
+          "type": "object"
+        },
+        "mappedRecordKind": {
+          "enum": [
+            "event",
+            "event_participant",
+            "event_participant_role",
+            "account",
+            "observation",
+            "review",
+            "classification",
+            "hypothesis",
+            "determination",
+            "response",
+            "communication",
+            "support_process",
+            "support_process_participant",
+            "support_need",
+            "support_goal",
+            "support",
+            "intervention",
+            "implementation",
+            "fidelity",
+            "follow_up",
+            "outcome",
+            "reentry",
+            "repair"
+          ]
+        },
+        "normalizedValue": {
+          "oneOf": [
+            {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "boolean"
+            },
+            {
+              "items": {
+                "oneOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "boolean"
+                  }
+                ]
+              },
+              "maxItems": 32,
+              "minItems": 1,
+              "type": "array",
+              "uniqueItems": true
+            }
+          ]
+        }
+      },
+      "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/capture/paper-interpretation.schema.json",
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "else": {
+            "properties": {
+              "limitation_codes": {
+                "minItems": 1
+              }
+            }
+          },
+          "if": {
+            "properties": {
+              "interpretation_status": {
+                "const": "complete"
+              }
+            },
+            "required": [
+              "interpretation_status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "limitation_codes": {
+                "maxItems": 0
+              }
+            }
+          }
+        }
+      ],
+      "description": "Version-1 immutable operational staging record for one interpretation generation of one Portia Page Record. It preserves exact historical layout identity, interpreter/mapping identity, page-local entry slots, mechanical candidate literals, deterministic normalized candidates, and uncertainty. It is not a human review, accepted evidence, source truth, canonical behavior-domain record, or authorization to materialize one.",
+      "properties": {
+        "class_id": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+        },
+        "created_at": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+        },
+        "created_by": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/attribution/attribution-agent.schema.json"
+        },
+        "entries": {
+          "$ref": "#/$defs/entryMap"
+        },
+        "generation": {
+          "description": "Positive immutable interpretation generation within the Page Record lineage. Generation ordering is operational history only and never establishes semantic correctness.",
+          "minimum": 1,
+          "type": "integer"
+        },
+        "interpretation_id": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-paper-interpretation-id.schema.json"
+        },
+        "interpretation_status": {
+          "description": "Mechanical processing coverage only. complete means the configured historical regions were processed; it does not mean values are correct, human-reviewed, or accepted.",
+          "enum": [
+            "complete",
+            "partial"
+          ]
+        },
+        "interpreted_at": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+        },
+        "interpreted_by": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/attribution/attribution-agent.schema.json",
+          "description": "Agent that produced this staging interpretation. Human local-operator transcription here is still not the later attributable confirmation/review decision."
+        },
+        "interpreter_profile": {
+          "$ref": "#/$defs/interpreterProfile"
+        },
+        "layout_snapshot": {
+          "$ref": "#/$defs/layoutSnapshot"
+        },
+        "limitation_codes": {
+          "description": "Privacy-minimized processing limitations. Codes describe interpretation coverage, not behavior-domain conclusions.",
+          "items": {
+            "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/lowercase-token.schema.json"
+          },
+          "maxItems": 32,
+          "type": "array",
+          "uniqueItems": true
+        },
+        "module_id": {
+          "const": "portia"
+        },
+        "page_record_id": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-page-record-id.schema.json"
+        },
+        "page_target_id": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-page-target-id.schema.json"
+        },
+        "record_type": {
+          "const": "paper_interpretation"
+        },
+        "schema_version": {
+          "const": "1"
+        },
+        "work_id": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-capture-batch-id.schema.json"
+        }
+      },
+      "required": [
+        "schema_version",
+        "record_type",
+        "module_id",
+        "class_id",
+        "work_id",
+        "page_target_id",
+        "page_record_id",
+        "interpretation_id",
+        "generation",
+        "layout_snapshot",
+        "interpreter_profile",
+        "interpretation_status",
+        "limitation_codes",
+        "entries",
+        "interpreted_at",
+        "interpreted_by",
+        "created_at",
+        "created_by"
+      ],
+      "title": "Portia Paper Interpretation",
+      "type": "object",
+      "x-portia-application-invariants": [
+        {
+          "description": "class_id/work_id/page_target_id/page_record_id must resolve to one exact Page Record and its exact Capture Batch/Page Target lineage; interpretation never retargets a returned page.",
+          "id": "paper_interpretation.page_record_exactness"
+        },
+        {
+          "description": "layout_snapshot must exactly match the historical Page Target template/layout/capture-spec identity and fingerprint; current-installed-template substitution is prohibited.",
+          "id": "paper_interpretation.layout_snapshot_exactness"
+        },
+        {
+          "description": "Every entry map key must be declared by the exact Page Target entry_layout; omission/presence semantics must follow the exact historical capture specification rather than scan order or array position.",
+          "id": "paper_interpretation.entry_keys_declared"
+        },
+        {
+          "description": "Every field map key and optional region_key must be valid for the entry in the exact historical capture specification; field/region keys are page-local locators, not person or domain-record identity.",
+          "id": "paper_interpretation.field_keys_declared"
+        },
+        {
+          "description": "Reprocessing the same Page Record with the same interpreter_profile must reuse the same logical interpretation generation rather than create duplicate candidate history or downstream records.",
+          "id": "paper_interpretation.same_profile_replay_idempotent"
+        },
+        {
+          "description": "A changed interpreter version, mapping profile/version, or other contract-significant interpretation profile creates a new preserved generation; it never silently rewrites an earlier generation.",
+          "id": "paper_interpretation.changed_profile_new_generation"
+        },
+        {
+          "description": "Once persisted, candidate literals, normalized values, uncertainty states, layout snapshot, profile identity, and entry/field mappings are immutable; correction or reinterpretation creates a later generation.",
+          "id": "paper_interpretation.immutable_generation"
+        },
+        {
+          "description": "blank, unmarked, unreadable, and ambiguous are distinct source states and must not be converted into false, no, declined, absent, uninvolved, unsuccessful, or another domain value merely to satisfy a downstream schema.",
+          "id": "paper_interpretation.uncertainty_is_not_negative"
+        },
+        {
+          "description": "candidate_detected and ambiguous alternatives are machine/manual staging candidates only; candidate literal or normalized values are not human-confirmed values and may be corrected, rejected, or left unresolved later.",
+          "id": "paper_interpretation.candidate_not_confirmed"
+        },
+        {
+          "description": "Confidence may prioritize review but cannot establish truth, identity, authorship, credibility, participation, judgment, or eligibility and cannot bypass required human review.",
+          "id": "paper_interpretation.confidence_review_priority_only"
+        },
+        {
+          "description": "mapped_record_kind, when present, must come from the exact historical mapping profile/template purpose rather than inference from narrative or detected marks; it describes a possible target family only and does not authorize record creation.",
+          "id": "paper_interpretation.mapped_kind_from_exact_mapping_only"
+        },
+        {
+          "description": "Interpretation must not fuzzy-match people, infer source authorship/firsthand status, Event participation/fault, Classification/Hypothesis/Determination, Response appropriateness, Support recommendation, Fidelity, Outcome, recurrence failure, Reentry/Repair completion, remorse, forgiveness, or comparable human judgment.",
+          "id": "paper_interpretation.no_identity_or_judgment_inference"
+        },
+        {
+          "description": "Persisting a complete or partial interpretation must not create, activate, complete, invalidate, supersede, or otherwise mutate any canonical behavior-domain record.",
+          "id": "paper_interpretation.no_automatic_materialization"
+        },
+        {
+          "description": "Raw scan/PDF/image bytes and temporary scanner paths remain outside Paper Interpretation JSON; exact source history is reached through the Page Record and Core retained-source provenance.",
+          "id": "paper_interpretation.raw_source_not_embedded"
+        }
+      ]
     },
     "https://paper-data-suite.github.io/pds-portia/schemas/v1/classifications/classification.schema.json": {
       "$comment": "Application validation remains responsible for canonical path and Event ownership, target resolution, selector resolution/current-use eligibility, selector/recorder distinction, Review linkage and completion where required, reviewed-Classification resolution, reviewer-confirmed result agreement, definition support, evidence-reference resolution, duplicate logical evidence, paper/import review history, chronology, lifecycle legality, supersession topology, current-use eligibility, no silent successor following, no automatic Classification/Determination, privacy, and recoverable coordinated writes.",
@@ -10904,6 +13074,36 @@
       "title": "Portia Amendment Identifier",
       "type": "string"
     },
+    "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-capture-batch-id.schema.json": {
+      "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-capture-batch-id.schema.json",
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "description": "Opaque workspace-scoped identifier for one Portia paper-assisted capture work root. The cbat_ prefix is part of the public contract. The identifier does not encode class, form, date, route, page count, processing state, or any behavior-domain fact.",
+      "maxLength": 128,
+      "minLength": 6,
+      "pattern": "^cbat_[A-Za-z0-9][A-Za-z0-9_-]*$",
+      "title": "Portia Capture Batch Identifier",
+      "type": "string"
+    },
+    "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-capture-proposal-id.schema.json": {
+      "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-capture-proposal-id.schema.json",
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "description": "Opaque identifier for one immutable Portia capture proposal. The cprp_ prefix is part of the public identifier contract. The value does not encode class, page, entry, target record family, review state, person identity, date, or domain facts.",
+      "maxLength": 128,
+      "minLength": 6,
+      "pattern": "^cprp_[A-Za-z0-9][A-Za-z0-9_-]*$",
+      "title": "Portia Capture Proposal Identifier",
+      "type": "string"
+    },
+    "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-capture-review-id.schema.json": {
+      "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-capture-review-id.schema.json",
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "description": "Opaque identifier for one immutable attributable human review decision over one exact capture proposal. The crev_ prefix is part of the public identifier contract and is intentionally distinct from the canonical Event-local Review rvw_ family.",
+      "maxLength": 128,
+      "minLength": 6,
+      "pattern": "^crev_[A-Za-z0-9][A-Za-z0-9_-]*$",
+      "title": "Portia Capture Review Identifier",
+      "type": "string"
+    },
     "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-classification-id.schema.json": {
       "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-classification-id.schema.json",
       "$schema": "https://json-schema.org/draft/2020-12/schema",
@@ -11064,6 +13264,46 @@
       "title": "Portia Implementation Identifier",
       "type": "string"
     },
+    "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-import-batch-id.schema.json": {
+      "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-import-batch-id.schema.json",
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "description": "Opaque identifier for one bounded Portia import attempt. The ibat_ prefix is part of the public identifier contract. The value does not encode class, source system, filename, student/person identity, mapping profile, date, status, or domain facts.",
+      "maxLength": 128,
+      "minLength": 6,
+      "pattern": "^ibat_[A-Za-z0-9][A-Za-z0-9_-]*$",
+      "title": "Portia Import Batch Identifier",
+      "type": "string"
+    },
+    "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-import-proposal-id.schema.json": {
+      "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-import-proposal-id.schema.json",
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "description": "Opaque identifier for one durable import-specific proposal. The iprp_ prefix is part of the public identifier contract. The identifier does not encode source system, student, Event, record family, review disposition, mapping outcome, or other sensitive meaning.",
+      "maxLength": 128,
+      "minLength": 6,
+      "pattern": "^iprp_[A-Za-z0-9][A-Za-z0-9_-]*$",
+      "title": "Portia Import Proposal Identifier",
+      "type": "string"
+    },
+    "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-import-review-id.schema.json": {
+      "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-import-review-id.schema.json",
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "description": "Opaque identifier for one immutable import-staging human review. The irev_ prefix distinguishes this operational review from Portia domain Review records (rvw_) and paper Capture Review records (crev_).",
+      "maxLength": 128,
+      "minLength": 6,
+      "pattern": "^irev_[A-Za-z0-9][A-Za-z0-9_-]*$",
+      "title": "Portia Import Review Identifier",
+      "type": "string"
+    },
+    "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-import-source-record-id.schema.json": {
+      "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-import-source-record-id.schema.json",
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "description": "Opaque identifier for one durable Portia Import Source Record observation. The isrc_ prefix is part of the public identifier contract. The value does not encode row number, source record key, person identity, Event identity, source label, mapping result, date, or domain judgment.",
+      "maxLength": 128,
+      "minLength": 6,
+      "pattern": "^isrc_[A-Za-z0-9][A-Za-z0-9_-]*$",
+      "title": "Portia Import Source Record Identifier",
+      "type": "string"
+    },
     "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-intervention-id.schema.json": {
       "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-intervention-id.schema.json",
       "$schema": "https://json-schema.org/draft/2020-12/schema",
@@ -11152,6 +13392,36 @@
       "minLength": 5,
       "pattern": "^owc_[A-Za-z0-9][A-Za-z0-9_-]*$",
       "title": "Portia Ownership Correction Identifier",
+      "type": "string"
+    },
+    "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-page-record-id.schema.json": {
+      "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-page-record-id.schema.json",
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "description": "Opaque workspace-scoped identifier for one durable Portia returned-page processing record. The prec_ prefix is part of the public contract. The identifier does not encode Core route identity, retained-source identity, source page number, processing result, or a canonical behavior-domain record.",
+      "maxLength": 128,
+      "minLength": 6,
+      "pattern": "^prec_[A-Za-z0-9][A-Za-z0-9_-]*$",
+      "title": "Portia Page Record Identifier",
+      "type": "string"
+    },
+    "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-page-target-id.schema.json": {
+      "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-page-target-id.schema.json",
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "description": "Opaque workspace-scoped identifier for one Portia pre-print page target inside a Capture Batch. The ptgt_ prefix is part of the public contract. The identifier does not encode a Core route, printed copy, returned physical page, student, or behavior-domain record.",
+      "maxLength": 128,
+      "minLength": 6,
+      "pattern": "^ptgt_[A-Za-z0-9][A-Za-z0-9_-]*$",
+      "title": "Portia Page Target Identifier",
+      "type": "string"
+    },
+    "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-paper-interpretation-id.schema.json": {
+      "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-paper-interpretation-id.schema.json",
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "description": "Opaque identifier for one immutable paper-interpretation generation inside one Portia Capture Batch. The pint_ prefix is part of the public identifier contract. The identifier does not encode student identity, source content, page purpose, interpreter, confidence, review disposition, or canonical domain meaning.",
+      "maxLength": 128,
+      "minLength": 6,
+      "pattern": "^pint_[A-Za-z0-9][A-Za-z0-9_-]*$",
+      "title": "Portia Paper Interpretation Identifier",
       "type": "string"
     },
     "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-quarantine-id.schema.json": {
@@ -11294,6 +13564,1579 @@
       "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
       "title": "Structurally Safe External Identifier",
       "type": "string"
+    },
+    "https://paper-data-suite.github.io/pds-portia/schemas/v1/imports/import-batch.schema.json": {
+      "$comment": "Import Batch is distinct from Capture Batch and paper/PDS2 intake. The shared derived source_snapshot@1 contract is not reused here because that contract means a deterministic inventory for derived-generation processing, not an imported source snapshot. Application validation recomputes import_identity_digest from the contract-significant source/profile, exact source fingerprint, class scope, and exact mapping profile/version/digest; validates any previous-batch comparison; and preserves every attempt as history. An unchanged replay may be recorded as another attempt, but must not duplicate logical proposals or canonical records.",
+      "$defs": {
+        "mappingProfile": {
+          "additionalProperties": false,
+          "properties": {
+            "mapping_digest": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/sha256-digest.schema.json"
+            },
+            "mapping_profile_id": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+            },
+            "mapping_version": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+            }
+          },
+          "required": [
+            "mapping_profile_id",
+            "mapping_version",
+            "mapping_digest"
+          ],
+          "type": "object"
+        },
+        "previousComparison": {
+          "additionalProperties": false,
+          "properties": {
+            "previous_import_batch_id": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-import-batch-id.schema.json"
+            },
+            "relationship": {
+              "enum": [
+                "replay_same_source_same_mapping",
+                "changed_source_same_mapping",
+                "same_source_changed_mapping",
+                "changed_source_and_mapping"
+              ]
+            }
+          },
+          "required": [
+            "previous_import_batch_id",
+            "relationship"
+          ],
+          "type": "object"
+        },
+        "sourceLocator": {
+          "oneOf": [
+            {
+              "additionalProperties": false,
+              "properties": {
+                "kind": {
+                  "const": "workspace_file"
+                },
+                "path": {
+                  "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/workspace-relative-path.schema.json"
+                }
+              },
+              "required": [
+                "kind",
+                "path"
+              ],
+              "type": "object"
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "external_reference": {
+                  "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+                },
+                "kind": {
+                  "const": "external_snapshot"
+                },
+                "source_label": {
+                  "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+                }
+              },
+              "required": [
+                "kind",
+                "source_label",
+                "external_reference"
+              ],
+              "type": "object"
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "kind": {
+                  "const": "opaque_snapshot"
+                },
+                "snapshot_key": {
+                  "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+                },
+                "source_label": {
+                  "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+                }
+              },
+              "required": [
+                "kind",
+                "source_label",
+                "snapshot_key"
+              ],
+              "type": "object"
+            }
+          ]
+        },
+        "sourceProfile": {
+          "additionalProperties": false,
+          "properties": {
+            "display_label": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json"
+            },
+            "profile_id": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+            },
+            "profile_version": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+            },
+            "source_system_id": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+            }
+          },
+          "required": [
+            "source_system_id",
+            "profile_id",
+            "profile_version"
+          ],
+          "type": "object"
+        },
+        "sourceSnapshot": {
+          "additionalProperties": false,
+          "properties": {
+            "fingerprint": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/content-fingerprint.schema.json"
+            },
+            "locator": {
+              "$ref": "#/$defs/sourceLocator"
+            },
+            "observed_at": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+            }
+          },
+          "required": [
+            "locator",
+            "fingerprint",
+            "observed_at"
+          ],
+          "type": "object"
+        }
+      },
+      "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/imports/import-batch.schema.json",
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "open"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "not": {
+              "required": [
+                "finished_at"
+              ]
+            },
+            "properties": {
+              "failure_codes": {
+                "maxItems": 0
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "completed"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "failure_codes": {
+                "maxItems": 0
+              }
+            },
+            "required": [
+              "finished_at"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "failed"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "failure_codes": {
+                "minItems": 1
+              }
+            },
+            "required": [
+              "finished_at"
+            ]
+          }
+        }
+      ],
+      "description": "Version-1 immutable operational root for one bounded structured-import attempt against one exact source snapshot and one exact mapping configuration. It preserves import lineage and replay classification without asserting that source records are true, that identities match Portia people, or that any Portia behavior-domain record exists.",
+      "properties": {
+        "class_id": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+        },
+        "comparison_to_previous": {
+          "$ref": "#/$defs/previousComparison"
+        },
+        "created_at": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+        },
+        "created_by": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/attribution/attribution-agent.schema.json"
+        },
+        "failure_codes": {
+          "items": {
+            "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/lowercase-token.schema.json"
+          },
+          "maxItems": 32,
+          "type": "array",
+          "uniqueItems": true
+        },
+        "finished_at": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+        },
+        "import_batch_id": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-import-batch-id.schema.json"
+        },
+        "import_identity_digest": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/sha256-digest.schema.json"
+        },
+        "mapping_profile": {
+          "$ref": "#/$defs/mappingProfile"
+        },
+        "module_id": {
+          "const": "portia"
+        },
+        "record_type": {
+          "const": "import_batch"
+        },
+        "schema_version": {
+          "const": "1"
+        },
+        "source_profile": {
+          "$ref": "#/$defs/sourceProfile"
+        },
+        "source_snapshot": {
+          "$ref": "#/$defs/sourceSnapshot"
+        },
+        "started_at": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+        },
+        "status": {
+          "enum": [
+            "open",
+            "completed",
+            "failed"
+          ]
+        }
+      },
+      "required": [
+        "schema_version",
+        "record_type",
+        "module_id",
+        "class_id",
+        "import_batch_id",
+        "source_profile",
+        "source_snapshot",
+        "mapping_profile",
+        "import_identity_digest",
+        "status",
+        "failure_codes",
+        "started_at",
+        "created_at",
+        "created_by"
+      ],
+      "title": "Portia Import Batch",
+      "type": "object",
+      "x-portia-application-invariants": [
+        {
+          "description": "Import Batch is an operational import-attempt root only. Creating or completing it must not create or imply an Event, participant, Account, Observation, Review, Classification, Hypothesis, Determination, Response, Support, Implementation, Fidelity, Outcome, Reentry, Repair, or other domain fact.",
+          "id": "import_batch.operational_not_domain"
+        },
+        {
+          "description": "Import Batch is not a Capture Batch, Page Target, Page Record, PDS2 route, or retained paper source. Paper provenance and import provenance remain distinct even when both workflows eventually propose the same Portia record family.",
+          "id": "import_batch.paper_boundary"
+        },
+        {
+          "description": "source_snapshot must identify the exact imported byte snapshot through one explicit locator plus exact content fingerprint. Filename, modification time, display label, or later contents at the same locator must not substitute for the captured fingerprint.",
+          "id": "import_batch.exact_source_snapshot"
+        },
+        {
+          "description": "The import source_snapshot value has import-specific meaning and must not be represented by or confused with source_snapshot@1, whose established meaning is a deterministic source inventory for derived generation.",
+          "id": "import_batch.source_snapshot_not_derived_snapshot"
+        },
+        {
+          "description": "mapping_profile_id, mapping_version, and mapping_digest identify the exact mapping configuration used for this attempt. current/latest or same-name substitution is prohibited.",
+          "id": "import_batch.mapping_exactness"
+        },
+        {
+          "description": "import_identity_digest must be recomputed from a versioned canonical encoding of class_id, source_profile, exact source_snapshot fingerprint/locator identity, and exact mapping_profile. Attempt timestamps, status, filenames used only as display labels, and import_batch_id are not identity inputs.",
+          "id": "import_batch.identity_digest"
+        },
+        {
+          "description": "If comparison_to_previous is present, previous_import_batch_id must resolve in the same authorized class scope and relationship must agree with exact source fingerprint/profile and mapping profile/version/digest comparisons. Application code must not trust the supplied relationship label without recomputation.",
+          "id": "import_batch.previous_relationship_truth"
+        },
+        {
+          "description": "A same-source same-mapping replay must not create duplicate logical proposals or canonical Portia records. Existing accepted/materialized outcomes are reconciled by stable import identity rather than row position or run order.",
+          "id": "import_batch.unchanged_replay_idempotent"
+        },
+        {
+          "description": "Changed source content and/or changed mapping configuration creates preserved import history. Earlier Import Batches, source records, proposals, reviews, and canonical provenance are not rewritten in place.",
+          "id": "import_batch.changed_source_or_mapping_preserves_history"
+        },
+        {
+          "description": "A source record absent from a later Import Batch is only absent from that snapshot. Absence must not delete, deactivate, invalidate, supersede, or otherwise mutate prior Portia canonical records or import history; correction/removal requires explicit Portia semantics.",
+          "id": "import_batch.missing_later_source_not_deletion"
+        },
+        {
+          "description": "Import processing must not infer person/Actor/student identity from similar names, similar email addresses, row position, nearby labels, array position, or other fuzzy heuristics. Ambiguous identity requires attributable human review.",
+          "id": "import_batch.no_fuzzy_identity"
+        },
+        {
+          "description": "Source-system labels and fields are imported assertions only. They must not automatically become Portia Classification, Hypothesis, Determination, fault, severity, Response appropriateness, Support recommendation, Fidelity, Outcome, recurrence failure, Reentry completion, or Repair meaning.",
+          "id": "import_batch.source_assertions_not_judgments"
+        },
+        {
+          "description": "source snapshot, attempt, processing, and import timestamps are provenance/operation times and must not be substituted for unknown Event, evidence, implementation, communication, follow-up, outcome, reentry, repair, or other domain time.",
+          "id": "import_batch.import_time_not_domain_time"
+        },
+        {
+          "description": "When a reviewed import later materializes a canonical record, creation provenance uses creation_source.type import, not paper_capture. The existing creation_source contract records provenance only and does not establish source authority or truth.",
+          "id": "import_batch.creation_source_boundary"
+        },
+        {
+          "description": "Import Batch stores source locator metadata and fingerprints, not the imported file/API payload, base64 bytes, temporary paths, or a copied table of source records.",
+          "id": "import_batch.no_raw_source_payload"
+        },
+        {
+          "description": "status transitions and timestamps are application-validated. A completed or failed attempt is immutable historical state; retry/replay creates or resumes the appropriate bounded attempt without silently rewriting a completed predecessor.",
+          "id": "import_batch.lifecycle"
+        }
+      ]
+    },
+    "https://paper-data-suite.github.io/pds-portia/schemas/v1/imports/import-materialization.schema.json": {
+      "$comment": "The existing Operation Journal and Operation Lock contracts remain authoritative for coordinated persistence, crash recovery, expected-prior-state checks, canonical acceptance, and lock ownership. This receipt is written only after the exact operation journal proves canonical acceptance/reconciliation. Exact import lineage is retained through batch/source/proposal/review references and identity digests; creation_source@1 remains the canonical record's coarse provenance marker and is not redefined. If canonical writes are already durable but the receipt is missing, recovery reconciles the existing operation and writes the missing receipt without replaying canonical creation. Receipt identity is the exact operation + exact import review/proposal lineage; there is no separate import-materialization identifier family.",
+      "$defs": {
+        "canonicalResult": {
+          "additionalProperties": false,
+          "properties": {
+            "result_relation": {
+              "enum": [
+                "produced",
+                "affected"
+              ]
+            },
+            "target": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/targets/exact-portia-work-or-record-target.schema.json"
+            }
+          },
+          "required": [
+            "result_relation",
+            "target"
+          ],
+          "type": "object"
+        },
+        "importBatchRef": {
+          "additionalProperties": false,
+          "properties": {
+            "contract_version": {
+              "const": "1"
+            },
+            "import_batch_id": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-import-batch-id.schema.json"
+            },
+            "import_identity_digest": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/sha256-digest.schema.json"
+            }
+          },
+          "required": [
+            "contract_version",
+            "import_batch_id",
+            "import_identity_digest"
+          ],
+          "type": "object"
+        },
+        "proposalRef": {
+          "additionalProperties": false,
+          "properties": {
+            "contract_version": {
+              "const": "1"
+            },
+            "proposal_id": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-import-proposal-id.schema.json"
+            },
+            "proposal_identity_digest": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/sha256-digest.schema.json"
+            }
+          },
+          "required": [
+            "contract_version",
+            "proposal_id",
+            "proposal_identity_digest"
+          ],
+          "type": "object"
+        },
+        "reviewRef": {
+          "additionalProperties": false,
+          "properties": {
+            "contract_version": {
+              "const": "1"
+            },
+            "review_id": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-import-review-id.schema.json"
+            },
+            "review_sequence": {
+              "minimum": 1,
+              "type": "integer"
+            }
+          },
+          "required": [
+            "contract_version",
+            "review_id",
+            "review_sequence"
+          ],
+          "type": "object"
+        },
+        "sourceRecordRef": {
+          "additionalProperties": false,
+          "properties": {
+            "contract_version": {
+              "const": "1"
+            },
+            "source_record_id": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-import-source-record-id.schema.json"
+            },
+            "source_record_identity_digest": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/sha256-digest.schema.json"
+            }
+          },
+          "required": [
+            "contract_version",
+            "source_record_id",
+            "source_record_identity_digest"
+          ],
+          "type": "object"
+        }
+      },
+      "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/imports/import-materialization.schema.json",
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "additionalProperties": false,
+      "description": "Version-1 immutable operational receipt linking one exact accepted Import Review and its exact Import Batch / Import Source Record lineage to one exact completed or reconciled Portia coordinated operation and the exact canonical Portia work/record representations that operation produced or affected. It is not a domain record, not review authority, not a source snapshot, not a transaction engine, and not a mutable materialization queue.",
+      "properties": {
+        "canonical_results": {
+          "items": {
+            "$ref": "#/$defs/canonicalResult"
+          },
+          "maxItems": 64,
+          "minItems": 1,
+          "type": "array",
+          "uniqueItems": true
+        },
+        "class_id": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+        },
+        "import_batch_ref": {
+          "$ref": "#/$defs/importBatchRef"
+        },
+        "materialized_at": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+        },
+        "module_id": {
+          "const": "portia"
+        },
+        "operation_journal_ref": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/operation-journal-ref.schema.json"
+        },
+        "proposal_ref": {
+          "$ref": "#/$defs/proposalRef"
+        },
+        "record_type": {
+          "const": "import_materialization"
+        },
+        "recorded_at": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+        },
+        "recorded_by": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/attribution/attribution-agent.schema.json"
+        },
+        "review_ref": {
+          "$ref": "#/$defs/reviewRef"
+        },
+        "schema_version": {
+          "const": "1"
+        },
+        "source_record_ref": {
+          "$ref": "#/$defs/sourceRecordRef"
+        }
+      },
+      "required": [
+        "schema_version",
+        "record_type",
+        "module_id",
+        "class_id",
+        "import_batch_ref",
+        "source_record_ref",
+        "proposal_ref",
+        "review_ref",
+        "operation_journal_ref",
+        "canonical_results",
+        "materialized_at",
+        "recorded_at",
+        "recorded_by"
+      ],
+      "title": "Portia Import Materialization",
+      "type": "object",
+      "x-portia-application-invariants": [
+        {
+          "description": "class_id, import_batch_ref, source_record_ref, proposal_ref, and review_ref must resolve one exact import lineage. The Import Proposal and Review must point to the same exact Import Source Record and Import Batch; current/latest mapping or source substitution is prohibited.",
+          "id": "import_materialization.lineage_exactness"
+        },
+        {
+          "description": "import_batch_ref.import_identity_digest must equal the recomputed identity digest of the exact Import Batch. The batch source/profile snapshot and mapping profile/version/digest are fixed historical inputs and must not be substituted by a later replay.",
+          "id": "import_materialization.batch_identity_exactness"
+        },
+        {
+          "description": "source_record_ref.source_record_identity_digest must equal the exact Import Source Record identity digest. Source row order, filename, display text, array position, or a later source snapshot must not substitute for that source record.",
+          "id": "import_materialization.source_record_identity_exactness"
+        },
+        {
+          "description": "The exact Import Review must resolve with disposition accepted or corrected_and_accepted, and no later applicable review sequence may have replaced that decision before materialization preflight. Rejected or unresolved review is never materializable.",
+          "id": "import_materialization.review_must_authorize_next_step"
+        },
+        {
+          "description": "Import Review confirms source mapping/transcription only. It must not substitute for domain-required reviewer, selector, hypothesis author, decision-maker, provider, fidelity assessor, outcome assessor, reentry participant, repair participant, policy basis, authority, consent, or other human/domain semantics required by the target contract.",
+          "id": "import_materialization.review_is_not_domain_judgment"
+        },
+        {
+          "description": "The same exact accepted import review/proposal and materialization intent must resolve to one stable coordinated operation identity/intent. Retry or restart reuses or reconciles that operation and must not allocate a second logical materialization operation merely because a prior process crashed.",
+          "id": "import_materialization.operation_reuse"
+        },
+        {
+          "description": "operation_journal_ref must resolve the exact immutable journal revision for the same operation and supported contract. That revision must prove committed/completed canonical acceptance or equivalent recovery reconciliation and agree with the exact import lineage, planned write set, and canonical_results.",
+          "id": "import_materialization.operation_journal_exactness"
+        },
+        {
+          "description": "Materialization must use Portia's existing deterministic Operation Lock, preflight, expected-prior-state, write-set, commit-point, and recovery rules. Import staging does not define a second lock or transaction mechanism.",
+          "id": "import_materialization.lock_and_preflight_reuse"
+        },
+        {
+          "description": "Every canonical_results target must resolve exactly at its named contract version and class/work scope. Logical duplicate result targets are invalid even when encoded with different result_relation values or object forms.",
+          "id": "import_materialization.results_exactness"
+        },
+        {
+          "description": "result_relation produced means the operation created and canonically accepted the named representation. affected identifies an exact existing representation materially involved under a valid domain operation; it never grants permission for silent in-place mutation or bypasses successor, correction, lifecycle, migration, ownership-correction, or other domain rules.",
+          "id": "import_materialization.produced_vs_affected"
+        },
+        {
+          "description": "Every newly produced eligible canonical Portia representation created from this import must use creation_source.type import. source_label must identify the exact Import Batch source system/profile under the documented mapping policy. external_reference is optional and, if retained, must be a deliberate source-record locator rather than row order, filename alone, or fuzzy identity. The exact batch/source linkage in this receipt remains the stronger provenance record.",
+          "id": "import_materialization.import_creation_source"
+        },
+        {
+          "description": "Where a canonical target contract supports source_artifact_ref and an import artifact reference is retained, it must align with the exact Import Batch source snapshot and/or exact source-side record locator without copying the source payload. The artifact reference does not establish authority, authenticity, accuracy, credibility, or authorization.",
+          "id": "import_materialization.source_artifact_alignment"
+        },
+        {
+          "description": "Source-system assertions, labels, transformed candidates, and accepted import mappings must not automatically originate Classification, Hypothesis, Determination, fault, severity, Response appropriateness, Support recommendation, Fidelity, Outcome, recurrence failure, Reentry completion, Repair agreement/remorse/forgiveness, or other judgment semantics.",
+          "id": "import_materialization.source_assertions_not_judgments"
+        },
+        {
+          "description": "Source snapshot, observed, import, proposal, review, operation, and receipt timestamps must not be substituted for unknown Event, evidence, implementation, follow-up, outcome, reentry, repair, communication, or other domain time.",
+          "id": "import_materialization.no_import_time_as_domain_time"
+        },
+        {
+          "description": "Proposal existing_work/existing_record context remains exact and must not silently follow successors, corrections, migrations, consolidations, ownership corrections, current pointers, or newer contract versions during materialization.",
+          "id": "import_materialization.context_exactness"
+        },
+        {
+          "description": "Before any canonical write, recovery/preflight must reconcile the stable Import Batch, source-record, proposal, review, operation intent, expected target state, durable write fingerprints, and any existing receipt. Retry after partial or completed persistence must resume/reconcile rather than create duplicate Events, child records, Support Processes, or other canonical records.",
+          "id": "import_materialization.no_duplicate_canonical_records"
+        },
+        {
+          "description": "Same exact source snapshot/source record plus same exact mapping and proposal/review intent must reconcile previously materialized canonical outcomes rather than generate duplicate proposals, operations, or canonical records on a later Import Batch replay.",
+          "id": "import_materialization.unchanged_replay_idempotent"
+        },
+        {
+          "description": "Changed source content or changed mapping creates new import history. Existing materialization receipts and canonical records are never silently rewritten; any required canonical correction uses the appropriate Portia correction/lifecycle/successor mechanisms with preserved provenance.",
+          "id": "import_materialization.changed_source_or_mapping_preserves_history"
+        },
+        {
+          "description": "Absence of the source record from a later Import Batch is not a deletion instruction and must not delete, deactivate, invalidate, supersede, or otherwise mutate this receipt or its canonical results.",
+          "id": "import_materialization.missing_later_source_not_deletion"
+        },
+        {
+          "description": "The receipt may be persisted only after the referenced Operation Journal proves all required canonical-gate steps accepted/reconciled. Receipt absence after durable canonical acceptance is a recoverable missing post-commit artifact, not evidence that canonical writes should be repeated.",
+          "id": "import_materialization.receipt_after_canonical_acceptance"
+        },
+        {
+          "description": "A later Import Review correction/reversal does not delete or rewrite this receipt or prior canonical history. Required correction proceeds through explicit later import history and the appropriate Portia domain correction/lifecycle/successor mechanisms.",
+          "id": "import_materialization.later_review_or_correction_preserves_history"
+        },
+        {
+          "description": "The receipt stores exact references and identity evidence only. It must not embed imported file/API bytes, copied source rows, base64 payloads, temporary paths, transformed candidate values, human-confirmed field values, or canonical payloads.",
+          "id": "import_materialization.no_raw_source_payload"
+        },
+        {
+          "description": "Ordinary materialization failure/retry uses Operation Journal recovery. Quarantine is reserved for exceptional integrity isolation such as irreconcilable provenance, identity, mapping-version, or canonical-state contradictions, not routine review or recoverable process interruption.",
+          "id": "import_materialization.not_quarantine"
+        }
+      ]
+    },
+    "https://paper-data-suite.github.io/pds-portia/schemas/v1/imports/import-proposal.schema.json": {
+      "$comment": "One Import Source Record may yield zero, one, or many Import Proposals. proposal_key is stable only within the exact mapping profile and source record; proposal_identity_digest is application-recomputed from the exact source record identity, exact batch mapping identity, proposal_key, target, and field bindings. Source values are referenced rather than copied when possible. transformed_candidate is allowed only when the exact mapping deterministically produces a value that is not byte/value-identical to the source field. human_resolution_required supplies no value.",
+      "$defs": {
+        "candidateValue": {
+          "anyOf": [
+            {
+              "type": [
+                "string",
+                "number",
+                "boolean",
+                "null"
+              ]
+            },
+            {
+              "items": {
+                "type": [
+                  "string",
+                  "number",
+                  "boolean",
+                  "null"
+                ]
+              },
+              "maxItems": 256,
+              "type": "array"
+            }
+          ]
+        },
+        "fieldBinding": {
+          "additionalProperties": false,
+          "allOf": [
+            {
+              "else": {
+                "not": {
+                  "required": [
+                    "transformed_candidate"
+                  ]
+                }
+              },
+              "if": {
+                "properties": {
+                  "value_source": {
+                    "const": "transformed_candidate"
+                  }
+                },
+                "required": [
+                  "value_source"
+                ]
+              },
+              "then": {
+                "required": [
+                  "transformed_candidate"
+                ]
+              }
+            }
+          ],
+          "properties": {
+            "source_field_key": {
+              "maxLength": 256,
+              "minLength": 1,
+              "pattern": "^(?=.*\\S)[^\\u0000-\\u001F\\u007F]+$",
+              "type": "string"
+            },
+            "target_path": {
+              "maxLength": 512,
+              "minLength": 1,
+              "pattern": "^/",
+              "type": "string"
+            },
+            "transformed_candidate": {
+              "$ref": "#/$defs/candidateValue"
+            },
+            "value_source": {
+              "enum": [
+                "source_value",
+                "transformed_candidate",
+                "human_resolution_required"
+              ]
+            }
+          },
+          "required": [
+            "target_path",
+            "source_field_key",
+            "value_source"
+          ],
+          "type": "object"
+        },
+        "mappedRecordKind": {
+          "enum": [
+            "event",
+            "event_participant",
+            "event_participant_role",
+            "account",
+            "observation",
+            "review",
+            "classification",
+            "hypothesis",
+            "determination",
+            "response",
+            "communication",
+            "support_process",
+            "support_process_participant",
+            "support_need",
+            "support_goal",
+            "support",
+            "intervention",
+            "implementation",
+            "fidelity",
+            "follow_up",
+            "outcome",
+            "reentry",
+            "repair"
+          ]
+        },
+        "proposalTarget": {
+          "additionalProperties": false,
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "context": {
+                    "properties": {
+                      "kind": {
+                        "const": "new_work"
+                      }
+                    },
+                    "required": [
+                      "kind"
+                    ]
+                  }
+                },
+                "required": [
+                  "context"
+                ]
+              },
+              "then": {
+                "properties": {
+                  "record_kind": {
+                    "enum": [
+                      "event",
+                      "support_process"
+                    ]
+                  }
+                }
+              }
+            }
+          ],
+          "properties": {
+            "context": {
+              "$ref": "#/$defs/targetContext"
+            },
+            "contract_version": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+            },
+            "record_kind": {
+              "$ref": "#/$defs/mappedRecordKind"
+            }
+          },
+          "required": [
+            "record_kind",
+            "contract_version",
+            "context"
+          ],
+          "type": "object"
+        },
+        "targetContext": {
+          "oneOf": [
+            {
+              "additionalProperties": false,
+              "properties": {
+                "kind": {
+                  "const": "new_work"
+                }
+              },
+              "required": [
+                "kind"
+              ],
+              "type": "object"
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "kind": {
+                  "const": "existing_work"
+                },
+                "work_ref": {
+                  "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-portia-work-ref.schema.json"
+                }
+              },
+              "required": [
+                "kind",
+                "work_ref"
+              ],
+              "type": "object"
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "kind": {
+                  "const": "existing_record"
+                },
+                "work_record_ref": {
+                  "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-portia-work-record-ref.schema.json"
+                }
+              },
+              "required": [
+                "kind",
+                "work_record_ref"
+              ],
+              "type": "object"
+            }
+          ]
+        }
+      },
+      "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/imports/import-proposal.schema.json",
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "additionalProperties": false,
+      "description": "Version-1 immutable import-staging proposal produced from one exact Import Source Record under its exact Import Batch mapping profile. It maps source-side assertions toward one possible Portia target without creating a canonical record, establishing person identity, or converting source-system labels into Portia judgments.",
+      "properties": {
+        "class_id": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+        },
+        "created_at": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+        },
+        "created_by": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/attribution/attribution-agent.schema.json"
+        },
+        "field_bindings": {
+          "items": {
+            "$ref": "#/$defs/fieldBinding"
+          },
+          "maxItems": 128,
+          "minItems": 1,
+          "type": "array",
+          "uniqueItems": true
+        },
+        "import_batch_id": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-import-batch-id.schema.json"
+        },
+        "module_id": {
+          "const": "portia"
+        },
+        "proposal_id": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-import-proposal-id.schema.json"
+        },
+        "proposal_identity_digest": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/sha256-digest.schema.json"
+        },
+        "proposal_key": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/lowercase-token.schema.json"
+        },
+        "proposed_at": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+        },
+        "proposed_by": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/attribution/attribution-agent.schema.json"
+        },
+        "record_type": {
+          "const": "import_proposal"
+        },
+        "review_flags": {
+          "items": {
+            "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/lowercase-token.schema.json"
+          },
+          "maxItems": 32,
+          "type": "array",
+          "uniqueItems": true
+        },
+        "schema_version": {
+          "const": "1"
+        },
+        "source_record_id": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-import-source-record-id.schema.json"
+        },
+        "target": {
+          "$ref": "#/$defs/proposalTarget"
+        }
+      },
+      "required": [
+        "schema_version",
+        "record_type",
+        "module_id",
+        "class_id",
+        "import_batch_id",
+        "source_record_id",
+        "proposal_id",
+        "proposal_key",
+        "proposal_identity_digest",
+        "target",
+        "field_bindings",
+        "review_flags",
+        "proposed_at",
+        "proposed_by",
+        "created_at",
+        "created_by"
+      ],
+      "title": "Portia Import Proposal",
+      "type": "object",
+      "x-portia-application-invariants": [
+        {
+          "description": "import_batch_id and source_record_id must resolve one exact Import Source Record in the same class and exact Import Batch. Mapping profile/version/digest are inherited only from that exact batch.",
+          "id": "import_proposal.lineage_exactness"
+        },
+        {
+          "description": "A source record may produce zero, one, or many proposals. proposal_key must be deterministic and unique for logical proposals produced by the exact mapping profile; list position, source row order, and local proposal_id are not logical identity inputs.",
+          "id": "import_proposal.zero_to_many_and_stable_key"
+        },
+        {
+          "description": "proposal_identity_digest must be recomputed from a versioned canonical encoding of exact source-record identity, exact batch import/mapping identity, proposal_key, target, and field bindings. Unchanged replay must reconcile the same logical proposal rather than duplicate it.",
+          "id": "import_proposal.identity_digest"
+        },
+        {
+          "description": "source_value bindings reference the exact source field and do not copy its value into the proposal. transformed_candidate is stored only when deterministic mapping actually produces a distinct candidate needed for review.",
+          "id": "import_proposal.source_values_not_duplicated"
+        },
+        {
+          "description": "A transformed_candidate is a mapping candidate only. Normalization, parsing, code translation, or format conversion does not establish truth, authority, identity, judgment, or canonical acceptance.",
+          "id": "import_proposal.transformed_candidate_not_truth"
+        },
+        {
+          "description": "human_resolution_required identifies a target field that cannot be safely resolved automatically. It supplies no implied null/false/no value and must be resolved or left unresolved by attributable review.",
+          "id": "import_proposal.human_resolution_has_no_value"
+        },
+        {
+          "description": "Mapping must not use similar name/email, row position, nearby labels, or fuzzy matching to silently create or merge Actor, roster-student, participant, or other person identity. Ambiguity requires human review.",
+          "id": "import_proposal.no_fuzzy_identity"
+        },
+        {
+          "description": "Source labels must not automatically become Portia Classification, Hypothesis, Determination, fault, severity, Response appropriateness, Support recommendation, Fidelity, Outcome, recurrence failure, Reentry completion, or Repair meaning.",
+          "id": "import_proposal.no_source_label_to_judgment"
+        },
+        {
+          "description": "new_work target context is allowed only for Event or Support Process roots. Child records require exact existing work context or another explicitly valid target relationship during materialization.",
+          "id": "import_proposal.new_work_boundary"
+        },
+        {
+          "description": "existing_work and existing_record contexts are exact historical references and must not silently follow successor, correction, migration, consolidation, or ownership correction.",
+          "id": "import_proposal.exact_existing_context"
+        },
+        {
+          "description": "Persisting an Import Proposal never creates or changes a canonical Portia record. Human review is required wherever the target family, mapping ambiguity, identity resolution, or local policy requires it.",
+          "id": "import_proposal.review_required_before_materialization"
+        },
+        {
+          "description": "A later reviewed canonical record uses creation_source.type import. Import provenance does not establish source-system authority, authenticity, accuracy, or truth.",
+          "id": "import_proposal.import_provenance_only"
+        },
+        {
+          "description": "Import Proposal must not carry route_id, Page Record, Page Target, retained-source, OCR/mark interpretation, or paper_capture provenance.",
+          "id": "import_proposal.no_paper_semantics"
+        },
+        {
+          "description": "A later mapping profile/version may create a different proposal generation/identity, but earlier source records, proposals, reviews, and canonical records remain preserved and are not silently rewritten.",
+          "id": "import_proposal.changed_mapping_preserves_history"
+        }
+      ]
+    },
+    "https://paper-data-suite.github.io/pds-portia/schemas/v1/imports/import-review.schema.json": {
+      "$comment": "review_sequence preserves correction/reversal history without mutable latest state. A reviewer is represented-human attribution; persistence created_by remains separate. accepted means the exact proposal is accepted for a later materialization gate, not that source assertions are true. corrected_and_accepted stores only human corrections; original source values and transformed candidates remain immutable in prior records.",
+      "$defs": {
+        "fieldReview": {
+          "additionalProperties": false,
+          "allOf": [
+            {
+              "else": {
+                "not": {
+                  "required": [
+                    "confirmed_value"
+                  ]
+                }
+              },
+              "if": {
+                "properties": {
+                  "decision": {
+                    "const": "correct"
+                  }
+                },
+                "required": [
+                  "decision"
+                ]
+              },
+              "then": {
+                "required": [
+                  "confirmed_value"
+                ]
+              }
+            }
+          ],
+          "properties": {
+            "confirmed_value": true,
+            "decision": {
+              "enum": [
+                "accept_candidate",
+                "correct",
+                "leave_unresolved"
+              ]
+            },
+            "target_path": {
+              "maxLength": 512,
+              "minLength": 1,
+              "pattern": "^/",
+              "type": "string"
+            }
+          },
+          "required": [
+            "target_path",
+            "decision"
+          ],
+          "type": "object"
+        },
+        "proposalRef": {
+          "additionalProperties": false,
+          "properties": {
+            "contract_version": {
+              "const": "1"
+            },
+            "proposal_id": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-import-proposal-id.schema.json"
+            },
+            "proposal_identity_digest": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/sha256-digest.schema.json"
+            }
+          },
+          "required": [
+            "contract_version",
+            "proposal_id",
+            "proposal_identity_digest"
+          ],
+          "type": "object"
+        },
+        "sourceRecordRef": {
+          "additionalProperties": false,
+          "properties": {
+            "contract_version": {
+              "const": "1"
+            },
+            "source_record_id": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-import-source-record-id.schema.json"
+            }
+          },
+          "required": [
+            "contract_version",
+            "source_record_id"
+          ],
+          "type": "object"
+        }
+      },
+      "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/imports/import-review.schema.json",
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "else": {
+            "required": [
+              "predecessor_review_id"
+            ]
+          },
+          "if": {
+            "properties": {
+              "review_sequence": {
+                "const": 1
+              }
+            },
+            "required": [
+              "review_sequence"
+            ]
+          },
+          "then": {
+            "not": {
+              "required": [
+                "predecessor_review_id"
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "disposition": {
+                "const": "accepted"
+              }
+            },
+            "required": [
+              "disposition"
+            ]
+          },
+          "then": {
+            "properties": {
+              "field_reviews": {
+                "maxItems": 0
+              },
+              "reason_codes": {
+                "maxItems": 0
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "disposition": {
+                "const": "corrected_and_accepted"
+              }
+            },
+            "required": [
+              "disposition"
+            ]
+          },
+          "then": {
+            "not": {
+              "properties": {
+                "field_reviews": {
+                  "contains": {
+                    "properties": {
+                      "decision": {
+                        "const": "leave_unresolved"
+                      }
+                    },
+                    "required": [
+                      "decision"
+                    ]
+                  },
+                  "minContains": 1
+                }
+              },
+              "required": [
+                "field_reviews"
+              ]
+            },
+            "properties": {
+              "field_reviews": {
+                "contains": {
+                  "properties": {
+                    "decision": {
+                      "const": "correct"
+                    }
+                  },
+                  "required": [
+                    "decision"
+                  ]
+                },
+                "minContains": 1,
+                "minItems": 1
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "disposition": {
+                "const": "rejected"
+              }
+            },
+            "required": [
+              "disposition"
+            ]
+          },
+          "then": {
+            "properties": {
+              "field_reviews": {
+                "maxItems": 0
+              },
+              "reason_codes": {
+                "minItems": 1
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "disposition": {
+                "const": "unresolved"
+              }
+            },
+            "required": [
+              "disposition"
+            ]
+          },
+          "then": {
+            "properties": {
+              "field_reviews": {
+                "contains": {
+                  "properties": {
+                    "decision": {
+                      "const": "leave_unresolved"
+                    }
+                  },
+                  "required": [
+                    "decision"
+                  ]
+                },
+                "minContains": 1,
+                "minItems": 1
+              }
+            }
+          }
+        }
+      ],
+      "description": "Version-1 immutable attributable human review of one exact Import Proposal. Review may accept, correct and accept, reject, or leave unresolved the staging proposal while preserving the exact Import Source Record, mapping proposal, and original source/mapped candidates. It is operational staging, not Portia domain Review.",
+      "properties": {
+        "class_id": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+        },
+        "created_at": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+        },
+        "created_by": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/attribution/attribution-agent.schema.json"
+        },
+        "disposition": {
+          "enum": [
+            "accepted",
+            "corrected_and_accepted",
+            "rejected",
+            "unresolved"
+          ]
+        },
+        "field_reviews": {
+          "items": {
+            "$ref": "#/$defs/fieldReview"
+          },
+          "maxItems": 128,
+          "type": "array",
+          "uniqueItems": true
+        },
+        "import_batch_id": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-import-batch-id.schema.json"
+        },
+        "module_id": {
+          "const": "portia"
+        },
+        "predecessor_review_id": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-import-review-id.schema.json"
+        },
+        "proposal_ref": {
+          "$ref": "#/$defs/proposalRef"
+        },
+        "reason_codes": {
+          "items": {
+            "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/lowercase-token.schema.json"
+          },
+          "maxItems": 32,
+          "type": "array",
+          "uniqueItems": true
+        },
+        "record_type": {
+          "const": "import_review"
+        },
+        "review_id": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-import-review-id.schema.json"
+        },
+        "review_sequence": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "reviewed_at": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+        },
+        "reviewer": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/attribution/represented-human-attribution.schema.json"
+        },
+        "schema_version": {
+          "const": "1"
+        },
+        "source_record_ref": {
+          "$ref": "#/$defs/sourceRecordRef"
+        }
+      },
+      "required": [
+        "schema_version",
+        "record_type",
+        "module_id",
+        "class_id",
+        "import_batch_id",
+        "source_record_ref",
+        "review_id",
+        "review_sequence",
+        "proposal_ref",
+        "reviewer",
+        "disposition",
+        "field_reviews",
+        "reason_codes",
+        "reviewed_at",
+        "created_at",
+        "created_by"
+      ],
+      "title": "Portia Import Review",
+      "type": "object",
+      "x-portia-application-invariants": [
+        {
+          "description": "proposal_ref must resolve the exact Import Proposal; source_record_ref and import_batch_id must agree with that proposal and exact Import Source Record. Current/latest mapping substitution is prohibited.",
+          "id": "import_review.lineage_exactness"
+        },
+        {
+          "description": "reviewer identifies the substantive human reviewer. Application authorization must establish eligibility independently; system_process persistence attribution cannot substitute for the human decision-maker.",
+          "id": "import_review.reviewer_human_and_eligible"
+        },
+        {
+          "description": "Every field_review target_path must correspond to one unique field binding in the exact proposal. Duplicate logical target paths are application-invalid.",
+          "id": "import_review.target_path_exactness"
+        },
+        {
+          "description": "accept_candidate is valid only when the exact binding supplies source_value or transformed_candidate. human_resolution_required has no candidate to accept.",
+          "id": "import_review.accept_candidate_requires_candidate"
+        },
+        {
+          "description": "confirmed_value is additive human review history. It never overwrites Import Source Record fields, transformed candidates, mapping identity, or earlier proposal/review history.",
+          "id": "import_review.correction_preserves_source_and_candidate"
+        },
+        {
+          "description": "leave_unresolved does not mean blank, false, no, declined, uninvolved, unsuccessful, unidentified, or another domain conclusion and must not be coerced to satisfy downstream schemas.",
+          "id": "import_review.unresolved_not_negative"
+        },
+        {
+          "description": "Rejecting a proposal rejects that staging proposal only. It does not delete the Import Source Record, source snapshot history, earlier canonical records, or source-system data.",
+          "id": "import_review.rejection_not_deletion"
+        },
+        {
+          "description": "accepted/corrected_and_accepted means the human accepts the staging mapping for the next workflow gate. It does not establish source authority, authenticity, credibility, fault, causation, consent, or legal/process validity.",
+          "id": "import_review.disposition_not_truth"
+        },
+        {
+          "description": "Review may explicitly resolve an ambiguous identity through a human correction, but software must not preselect or auto-accept a person based on fuzzy name/email similarity, row position, or nearby labels.",
+          "id": "import_review.no_fuzzy_identity"
+        },
+        {
+          "description": "Import review of transcription/mapping does not itself originate Classification, Hypothesis, Determination, Fidelity, Outcome, Reentry, Repair, or other judgment semantics. Required domain judgment attribution and rules remain separately applicable.",
+          "id": "import_review.judgment_families_remain_human"
+        },
+        {
+          "description": "Review correction or reversal creates a later immutable review_sequence with exact predecessor_review_id. Sequence 1 has no predecessor; self-predecessor, cycles, silent mutation, and invalid forks are rejected by application validation.",
+          "id": "import_review.sequence_history"
+        },
+        {
+          "description": "No mutable latest/current review pointer is authoritative. Current staging disposition is derived from preserved review history and application rules.",
+          "id": "import_review.current_decision_is_derived"
+        },
+        {
+          "description": "Persisting an accepted Import Review does not itself create, activate, complete, update, invalidate, or supersede a canonical Portia record. Import materialization is a separate idempotent coordinated operation.",
+          "id": "import_review.no_automatic_materialization"
+        },
+        {
+          "description": "When later materialization creates an eligible canonical record from this reviewed import, provenance uses creation_source.type import and an exact import-source linkage; it never uses paper_capture provenance.",
+          "id": "import_review.import_creation_source"
+        }
+      ]
+    },
+    "https://paper-data-suite.github.io/pds-portia/schemas/v1/imports/import-source-record.schema.json": {
+      "$comment": "source_record_key is source/profile identity, not Portia person or domain identity. Application validation resolves the exact Import Batch; requires source_record_key_origin truth; recomputes source_record_digest over the versioned canonical source-field representation; recomputes source_record_identity_digest from the exact batch import identity, key origin/value, and record digest; rejects duplicate logical field keys; and uses those identities to detect replay without relying on row order, display text, array position, or filename. Missing source fields are represented by absence; explicit null is preserved as null. Nested source structures must be normalized by the exact source profile into the bounded scalar/array field form before persistence.",
+      "$defs": {
+        "sourceField": {
+          "additionalProperties": false,
+          "properties": {
+            "field_key": {
+              "maxLength": 256,
+              "minLength": 1,
+              "pattern": "^(?=.*\\S)[^\\u0000-\\u001F\\u007F]+$",
+              "type": "string"
+            },
+            "value": {
+              "$ref": "#/$defs/sourceValue"
+            }
+          },
+          "required": [
+            "field_key",
+            "value"
+          ],
+          "type": "object"
+        },
+        "sourceValue": {
+          "anyOf": [
+            {
+              "type": [
+                "string",
+                "number",
+                "boolean",
+                "null"
+              ]
+            },
+            {
+              "items": {
+                "type": [
+                  "string",
+                  "number",
+                  "boolean",
+                  "null"
+                ]
+              },
+              "maxItems": 256,
+              "type": "array"
+            }
+          ]
+        }
+      },
+      "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v1/imports/import-source-record.schema.json",
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "additionalProperties": false,
+      "description": "Version-1 immutable representation of one source-side record observed within one exact Import Batch. It preserves stable source-key lineage and a bounded source-field snapshot for mapping/review while remaining explicitly noncanonical: one source record may produce zero, one, or many proposals and is never itself a Portia Event or other behavior-domain record.",
+      "properties": {
+        "class_id": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+        },
+        "created_at": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+        },
+        "created_by": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/attribution/attribution-agent.schema.json"
+        },
+        "import_batch_id": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-import-batch-id.schema.json"
+        },
+        "module_id": {
+          "const": "portia"
+        },
+        "observed_at": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+        },
+        "record_type": {
+          "const": "import_source_record"
+        },
+        "schema_version": {
+          "const": "1"
+        },
+        "source_fields": {
+          "items": {
+            "$ref": "#/$defs/sourceField"
+          },
+          "maxItems": 256,
+          "type": "array",
+          "uniqueItems": true
+        },
+        "source_record_digest": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/sha256-digest.schema.json"
+        },
+        "source_record_id": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-import-source-record-id.schema.json"
+        },
+        "source_record_identity_digest": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/sha256-digest.schema.json"
+        },
+        "source_record_key": {
+          "maxLength": 512,
+          "minLength": 1,
+          "pattern": "^(?=.*\\S)[^\\u0000-\\u001F\\u007F]+$",
+          "type": "string"
+        },
+        "source_record_key_origin": {
+          "enum": [
+            "source_provided",
+            "profile_defined_exact"
+          ]
+        }
+      },
+      "required": [
+        "schema_version",
+        "record_type",
+        "module_id",
+        "class_id",
+        "import_batch_id",
+        "source_record_id",
+        "source_record_key_origin",
+        "source_record_key",
+        "source_record_digest",
+        "source_record_identity_digest",
+        "source_fields",
+        "observed_at",
+        "created_at",
+        "created_by"
+      ],
+      "title": "Portia Import Source Record",
+      "type": "object",
+      "x-portia-application-invariants": [
+        {
+          "description": "import_batch_id must resolve one exact authorized Import Batch in the same class_id, and source-profile/source-snapshot/mapping meaning is inherited only from that exact batch, never from a newer run or current mapping.",
+          "id": "import_source_record.batch_exactness"
+        },
+        {
+          "description": "An Import Source Record represents one source-side unit only. It is not an Event, participant, Account, Observation, Review, Classification, Support, Implementation, Outcome, or other canonical Portia record, even if one source row resembles such a record.",
+          "id": "import_source_record.source_side_not_domain"
+        },
+        {
+          "description": "One Import Source Record may legitimately produce zero, one, or many later import proposals. Source-record persistence itself creates no proposal and no canonical record.",
+          "id": "import_source_record.zero_to_many_proposals"
+        },
+        {
+          "description": "source_record_key must be a stable source-provided key when available. profile_defined_exact is allowed only when the exact source profile defines a deterministic key from designated stable source fields; row number, array position, display text, nearby labels, filename alone, fuzzy person matching, or import order are prohibited key inputs.",
+          "id": "import_source_record.stable_key_policy"
+        },
+        {
+          "description": "source_record_digest must be recomputed from the versioned canonical encoding of source_record_key_origin, source_record_key, and normalized source_fields. observed_at, local IDs, run order, and later mapping results are not content-digest inputs.",
+          "id": "import_source_record.content_digest"
+        },
+        {
+          "description": "source_record_identity_digest must be recomputed from the exact Import Batch import_identity_digest plus source_record_key_origin, source_record_key, and source_record_digest. Same exact input/mapping replay therefore has stable logical identity evidence; changed source content or mapping remains distinguishable history.",
+          "id": "import_source_record.identity_digest"
+        },
+        {
+          "description": "field_key values within source_fields must be logically unique even if two field objects differ in value. Array order has no source-field semantic meaning unless the exact source profile explicitly defines array-valued field order.",
+          "id": "import_source_record.field_keys_unique"
+        },
+        {
+          "description": "A field absent from source_fields means not present in the normalized source record. A present field whose value is null preserves an explicit source null. Neither condition may be coerced into false, no, declined, uninvolved, or another Portia domain value.",
+          "id": "import_source_record.missing_vs_null"
+        },
+        {
+          "description": "Values in source_fields remain source-system assertions. Labels such as offense, severity, consequence, success, compliant, restored, or similar wording do not automatically become Portia Classification, Determination, Response, Fidelity, Outcome, Reentry, Repair, or other judgment.",
+          "id": "import_source_record.source_assertion_only"
+        },
+        {
+          "description": "Names, emails, source labels, positions, or other fields must not silently create or merge Actor/roster identity. Exact identifier mappings may be applied only under the mapping profile and authorization rules; ambiguity requires human review.",
+          "id": "import_source_record.no_identity_manufacture"
+        },
+        {
+          "description": "Repeated observation of the same logical source input under the same mapping must not duplicate downstream logical proposals or canonical records. Later stages reconcile source_record_identity_digest and preserved proposal/review/materialization history.",
+          "id": "import_source_record.replay_no_duplicate_downstream"
+        },
+        {
+          "description": "The same source_record_key with changed source_record_digest is new preserved source history. It must not silently rewrite a previously accepted proposal or canonical Portia record.",
+          "id": "import_source_record.changed_content_preserves_history"
+        },
+        {
+          "description": "If this source_record_key is not observed in a later Import Batch, this record and all downstream history remain preserved. Later absence is not an instruction to delete, deactivate, invalidate, or supersede anything.",
+          "id": "import_source_record.later_absence_not_deletion"
+        },
+        {
+          "description": "observed_at and Import Batch timestamps are import provenance times, not Event/evidence/implementation/outcome or other domain time unless a reviewed source field independently maps to an allowed domain-time field.",
+          "id": "import_source_record.import_time_not_domain_time"
+        },
+        {
+          "description": "source_fields contain only bounded scalar values or bounded arrays of scalars. Raw files, base64 payloads, temporary paths, arbitrary nested source objects, and copied paper scans are not persisted in this contract.",
+          "id": "import_source_record.no_binary_or_nested_payload"
+        },
+        {
+          "description": "Once persisted, batch lineage, source key, digests, normalized source fields, and attribution are immutable. Corrections or changed extraction create preserved later import history rather than in-place mutation.",
+          "id": "import_source_record.immutable"
+        }
+      ]
     },
     "https://paper-data-suite.github.io/pds-portia/schemas/v1/lifecycle/lifecycle-history-correction.schema.json": {
       "$defs": {
@@ -28939,6 +32782,397 @@
         "portia.account.v1_v2_history_compatibility",
         "portia.account.support_process_v1_local_relation_prohibited",
         "portia.account.no_fake_event_requirement"
+      ]
+    },
+    "https://paper-data-suite.github.io/pds-portia/schemas/v2/capture/page-target.schema.json": {
+      "$comment": "Version 2 does not store returned lesson/session values. context_entry_key identifies one declared page-local entry whose fields are source context in the exact historical capture spec. Core remains authoritative for routing; application validation enforces entry-key membership, exact target/version agreement, context/purpose compatibility, privacy, and no domain preallocation.",
+      "$defs": {
+        "entryLayout": {
+          "additionalProperties": false,
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "mode": {
+                    "const": "single_entry"
+                  }
+                },
+                "required": [
+                  "mode"
+                ]
+              },
+              "then": {
+                "properties": {
+                  "entry_keys": {
+                    "maxItems": 1,
+                    "minItems": 1
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "mode": {
+                    "const": "multi_entry"
+                  }
+                },
+                "required": [
+                  "mode"
+                ]
+              },
+              "then": {
+                "properties": {
+                  "entry_keys": {
+                    "minItems": 2
+                  }
+                }
+              }
+            }
+          ],
+          "properties": {
+            "context_entry_key": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/lowercase-token.schema.json",
+              "description": "Optional page-local entry key identifying source/session context shared by the physical page. It is not person identity, Event identity, or a canonical domain record. Application validation requires the key to occur in entry_keys."
+            },
+            "entry_keys": {
+              "description": "Stable template-local entry/slot keys. They identify reviewable page-local locations only; an entry key does not identify a person, Event, or canonical record and does not mean the slot contains returned content.",
+              "items": {
+                "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/lowercase-token.schema.json"
+              },
+              "type": "array",
+              "uniqueItems": true
+            },
+            "mode": {
+              "enum": [
+                "single_entry",
+                "multi_entry"
+              ]
+            }
+          },
+          "required": [
+            "mode",
+            "entry_keys"
+          ],
+          "type": "object"
+        },
+        "templateIdentity": {
+          "additionalProperties": false,
+          "properties": {
+            "capture_spec_version": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+            },
+            "layout_fingerprint": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/sha256-digest.schema.json",
+              "description": "SHA-256 digest/fingerprint of the exact historical interpretation layout/capture specification used for this page."
+            },
+            "layout_version": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+            },
+            "page_ordinal": {
+              "description": "Positive ordinal of this page within the exact template/layout version. It is distinct from scan order and retained-source page number.",
+              "minimum": 1,
+              "type": "integer"
+            },
+            "page_role": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/lowercase-token.schema.json",
+              "description": "Stable template-local semantic page role, such as incident_form or monitoring_sheet; it is not a domain assertion."
+            },
+            "template_id": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+            },
+            "template_version": {
+              "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+            }
+          },
+          "required": [
+            "template_id",
+            "template_version",
+            "layout_version",
+            "capture_spec_version",
+            "layout_fingerprint",
+            "page_role",
+            "page_ordinal"
+          ],
+          "type": "object"
+        }
+      },
+      "$id": "https://paper-data-suite.github.io/pds-portia/schemas/v2/capture/page-target.schema.json",
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "else": {
+            "not": {
+              "required": [
+                "purpose_detail"
+              ]
+            }
+          },
+          "if": {
+            "properties": {
+              "page_purpose": {
+                "const": "other"
+              }
+            },
+            "required": [
+              "page_purpose"
+            ]
+          },
+          "then": {
+            "required": [
+              "purpose_detail"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "page_purpose": {
+                "enum": [
+                  "new_event_capture",
+                  "multi_entry_event_capture",
+                  "classroom_observation_capture"
+                ]
+              }
+            },
+            "required": [
+              "page_purpose"
+            ]
+          },
+          "then": {
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "existing_work_context"
+                  ]
+                },
+                {
+                  "required": [
+                    "existing_record_context"
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "page_purpose": {
+                "const": "multi_entry_event_capture"
+              }
+            },
+            "required": [
+              "page_purpose"
+            ]
+          },
+          "then": {
+            "properties": {
+              "entry_layout": {
+                "properties": {
+                  "mode": {
+                    "const": "multi_entry"
+                  }
+                },
+                "required": [
+                  "mode"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "page_purpose": {
+                "const": "classroom_observation_capture"
+              }
+            },
+            "required": [
+              "page_purpose"
+            ]
+          },
+          "then": {
+            "properties": {
+              "entry_layout": {
+                "properties": {
+                  "mode": {
+                    "const": "multi_entry"
+                  }
+                },
+                "required": [
+                  "mode",
+                  "context_entry_key"
+                ]
+              }
+            }
+          }
+        }
+      ],
+      "description": "Version-2 Portia pre-print operational target for one logical page within a Capture Batch. It preserves v1 routing/layout semantics and adds first-class classroom-observation, focused-monitoring, and communication capture purposes plus an optional page-local source-context entry locator. Page Target remains non-domain infrastructure.",
+      "properties": {
+        "capture_mode": {
+          "description": "Expected mechanical interpretation mode for this historical layout. It controls processing expectations only and never authorizes semantic inference or review bypass.",
+          "enum": [
+            "text_recognition",
+            "handwriting_recognition",
+            "mark_recognition",
+            "mixed_recognition",
+            "manual_transcription"
+          ]
+        },
+        "class_id": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/structurally-safe-external-id.schema.json"
+        },
+        "created_at": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+        },
+        "created_by": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/attribution/attribution-agent.schema.json"
+        },
+        "entry_layout": {
+          "$ref": "#/$defs/entryLayout"
+        },
+        "existing_record_context": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-portia-work-record-ref.schema.json",
+          "description": "Optional exact historical Portia child-record context when the page is specifically tied to a known record representation. Its contained exact work reference remains historical."
+        },
+        "existing_work_context": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/references/exact-portia-work-ref.schema.json",
+          "description": "Optional exact historical Event or Support Process context known at print time. This is separate from the Capture Batch work_id and must not silently follow later successors or corrections."
+        },
+        "module_id": {
+          "const": "portia"
+        },
+        "page_index": {
+          "description": "Positive logical page position inside the capture rendering workflow. It is not the historical template page ordinal, a retained-source page number, or a printed-copy identity.",
+          "minimum": 1,
+          "type": "integer"
+        },
+        "page_purpose": {
+          "description": "Closed descriptive intent for the page. Purpose never establishes that the corresponding Event, Observation, Communication, Implementation, Fidelity, Follow-Up, Reentry, Repair, or other domain fact exists or occurred.",
+          "enum": [
+            "new_event_capture",
+            "event_evidence_capture",
+            "support_process_evidence_capture",
+            "classroom_observation_capture",
+            "focused_monitoring_capture",
+            "communication_capture",
+            "follow_up_capture",
+            "implementation_capture",
+            "fidelity_capture",
+            "reentry_capture",
+            "repair_capture",
+            "multi_entry_event_capture",
+            "other"
+          ]
+        },
+        "page_target_id": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-page-target-id.schema.json"
+        },
+        "purpose_detail": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/non-empty-text.schema.json",
+          "description": "Bounded explanatory detail required exactly when page_purpose is other."
+        },
+        "record_type": {
+          "const": "capture_page_target"
+        },
+        "schema_version": {
+          "const": "2"
+        },
+        "status": {
+          "description": "Operational Page Target state. retired prevents new use but does not erase historical meaning; invalidated marks the representation defective without erasing any Core route or retained-source history.",
+          "enum": [
+            "active",
+            "retired",
+            "invalidated"
+          ]
+        },
+        "template_identity": {
+          "$ref": "#/$defs/templateIdentity"
+        },
+        "updated_at": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/common/explicit-offset-timestamp.schema.json"
+        },
+        "updated_by": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/attribution/attribution-agent.schema.json"
+        },
+        "work_id": {
+          "$ref": "https://paper-data-suite.github.io/pds-portia/schemas/v1/identifiers/portia-capture-batch-id.schema.json",
+          "description": "Owning Capture Batch identity and the same work_id carried by Core work references for this capture workflow. Existing Event/Support Process context, when any, is represented separately and exactly."
+        }
+      },
+      "required": [
+        "schema_version",
+        "record_type",
+        "module_id",
+        "class_id",
+        "work_id",
+        "page_target_id",
+        "page_index",
+        "page_purpose",
+        "template_identity",
+        "capture_mode",
+        "entry_layout",
+        "status",
+        "created_at",
+        "created_by",
+        "updated_at",
+        "updated_by"
+      ],
+      "title": "Portia Page Target v2",
+      "type": "object",
+      "x-portia-application-invariants": [
+        {
+          "description": "The owning Capture Batch must exist and agree exactly with class_id/work_id; page_index uniqueness is enforced within the rendering workflow where required.",
+          "id": "page_target.capture_batch_resolves"
+        },
+        {
+          "description": "Any Core RouteRegistration used for this page must identify module_id portia and the same class_id/work_id, and its target must be record_kind capture_page_target with this exact page_target_id and supported non-null contract version.",
+          "id": "page_target.core_route_exact_target"
+        },
+        {
+          "description": "QR/PDS2 rendering is permitted only after an exact active Core RouteRegistration has been created and verified for this Page Target.",
+          "id": "page_target.registration_before_render"
+        },
+        {
+          "description": "Rendering and later interpretation must use the exact template_id/template_version/layout_version/capture_spec_version/layout_fingerprint/page_role/page_ordinal represented here; current-installed-template substitution is prohibited.",
+          "id": "page_target.template_layout_exactness"
+        },
+        {
+          "description": "After a Core route has been registered or a copy printed, page_purpose, purpose_detail, template_identity, capture_mode, entry_layout, and exact existing context are historical semantics and must not be materially rewritten in place; correction requires preserved history and, where necessary, a new Page Target/route.",
+          "id": "page_target.semantic_immutability_after_registration"
+        },
+        {
+          "description": "Any existing_work_context or existing_record_context must resolve exactly, remain in the legitimate class/work history, and must never silently follow migration, supersession, ownership correction, plan adaptation, or cross-year succession; if both contexts are present, their exact work references must agree.",
+          "id": "page_target.existing_context_exactness"
+        },
+        {
+          "description": "The application must enforce semantic compatibility between page_purpose and any exact existing context; purpose describes intended capture context only and never proves that the corresponding domain fact occurred or is true.",
+          "id": "page_target.purpose_context_compatibility"
+        },
+        {
+          "description": "Creating or printing a Page Target must not pre-create Event, participant, Account, Observation, Review, Classification, Hypothesis, Determination, Response, Communication, Support Process/Participant, Need, Goal, Support, Intervention, Implementation, Fidelity, Follow-Up, Outcome, Reentry, or Repair facts solely to satisfy routing or printing.",
+          "id": "page_target.no_domain_preallocation"
+        },
+        {
+          "description": "QR/PDS2 locator and human fallback text must remain privacy-minimized; sensitive narrative and domain conclusions belong neither in route payloads nor in Portia Page Target identity fields.",
+          "id": "page_target.privacy_minimized_route"
+        },
+        {
+          "description": "When context_entry_key is present it must name one exact entry_key declared by the same entry_layout. The context entry is page-local source context only and must not be treated as person identity, Event identity, or a canonical domain record.",
+          "id": "page_target.v2_context_entry_key_declared"
+        },
+        {
+          "description": "classroom_observation_capture uses a multi-entry layout with a declared context entry and no prebound existing work. Returned lesson/session values belong to retained source/interpretation history, not Capture Batch or Page Target domain truth.",
+          "id": "page_target.v2_classroom_observation_source_context"
+        },
+        {
+          "description": "Template/capture cues such as positive, general, or concern are capture/review aids only. They must not become Classification, severity, risk, misconduct, culpability, Outcome, or a student trait automatically.",
+          "id": "page_target.v2_capture_cues_not_domain_judgment"
+        }
       ]
     },
     "https://paper-data-suite.github.io/pds-portia/schemas/v2/corrections/ownership-correction.schema.json": {

@@ -71,12 +71,25 @@ The primary version transitions relevant to v0.2 are:
 | Response / Communication | v1 | — |
 | Support Process through Fidelity | v1 | — |
 | Follow-Up / Outcome / Reentry / Repair | v1 | — |
+| Capture Batch | v1 | — |
+| Page Target | v2 | v1 |
+| Page Record | v1 | — |
+| Paper Interpretation | v1 | — |
+| Capture Proposal | v1 | — |
+| Capture Review | v1 | — |
+| Capture Materialization | v1 | — |
+| Import Batch | v1 | — |
+| Import Source Record | v1 | — |
+| Import Proposal | v1 | — |
+| Import Review | v1 | — |
+| Import Materialization | v1 | — |
 
 The complete machine-readable disposition is
 `portia/runtime-coverage.json`. It distinguishes:
 
 ```text
 current_v0_2
+current_v0_3
 historical_read
 supporting_v0_2
 deferred_v0_3
@@ -192,28 +205,84 @@ Tests additionally round-trip every Issue #22 public record whose exact
 contract/version is modeled by #37. No production module imports the Issue #22
 test-only graph validator.
 
-## Explicit v0.3 deferral
+## v0.3 capture-runtime transition
 
-The following operational families remain intentionally unmodeled in #37:
+Capture Batch, Page Target, Page Record, and Paper Interpretation remain the
+capture-runtime foundation; Capture Proposal, Capture Review, and Capture
+Materialization extend that pipeline through attributable human confirmation
+and exact operational receipt:
 
 ```text
-Capture Batch
-Page Target
-Page Record
-Paper Interpretation
-Capture Proposal
-Capture Review
-Capture Materialization
-Import Batch
-Import Source Record
-Import Proposal
-Import Review
-Import Materialization
+capture_batch@1 → current_v0_3
+page_target@1 → historical_read
+page_target@2 → current_v0_3
+page_record@1 → current_v0_3
+paper_interpretation@1 → current_v0_3
+capture_proposal@1 → current_v0_3
+capture_review@1 → current_v0_3
+capture_materialization@1 → current_v0_3
+import_batch@1 → current_v0_3
+import_source_record@1 → current_v0_3
+import_proposal@1 → current_v0_3
+import_review@1 → current_v0_3
+import_materialization@1 → current_v0_3
 ```
 
-Their accepted schemas remain frozen foundation inputs. They will receive
-production runtime/workflow treatment with Portia v0.3 paper and structured
-import work.
+Capture Batch remains operational rather than behavior-domain work:
+`portia_work_ref@1` still targets only Event or Support Process.
+
+Page Record remains non-domain retained-source processing state. Local runtime
+validation does not claim that Core route or retained-source identities exist.
+
+Paper Interpretation remains immutable machine/manual staging data. Candidate
+values, normalized values, mapped kinds, and confidence do not establish human
+confirmation, identity, judgment, or authorization to materialize a domain
+record.
+
+Capture Proposal remains an immutable noncanonical mapping artifact. It points
+to exact interpretation fields and target contracts but does not copy candidate
+values or authorize canonical creation before review.
+
+Capture Review remains immutable attributable human confirmation over one exact
+proposal and interpretation generation. Acceptance confirms staging for the next
+workflow step; it is not source truth, behavior-domain judgment, Quarantine, or
+authorization by itself to mutate canonical records.
+
+Capture Materialization remains an immutable operational receipt over one exact
+accepted review, exact Operation Journal revision, and exact canonical results.
+It has no standalone materialization identifier and does not create a second
+transaction/recovery mechanism; existing Portia persistence remains authoritative.
+
+Import Batch remains an operational import-attempt root, separate from paper
+capture and from behavior-domain work. Its import-specific source snapshot,
+mapping profile, and identity digest preserve exact replay lineage; they do not
+establish source truth, person identity, domain judgment, or canonical creation.
+
+Import Source Record remains immutable noncanonical source-side history within
+one exact Import Batch. Its stable source key and digests support replay
+reconciliation without treating row order, labels, person-like fields, or later
+absence as Portia identity, judgment, deletion, or canonical truth.
+
+Import Proposal remains immutable noncanonical mapping-stage history over one
+exact Import Source Record. Source-value bindings reference source fields rather
+than copying them, transformed candidates remain candidates, and unresolved
+fields carry no implied value. Proposal persistence does not establish identity,
+domain judgment, or authorization to materialize canonical data.
+
+Import Review remains immutable attributable human staging review over one exact
+Import Proposal. Accepted or corrected-and-accepted means only that the mapping
+may advance to the materialization gate; it does not establish source truth,
+domain judgment, or canonical mutation. Current disposition is derived from
+preserved review history rather than a mutable authoritative pointer.
+
+Import Materialization remains an immutable operational receipt linking exact
+accepted import lineage to an exact completed or reconciled coordinated
+operation and exact canonical results. It has no standalone materialization ID,
+does not authorize domain judgment, and does not create a second transaction,
+lock, recovery, or canonical-write mechanism.
+
+All accepted Issue #56 paper/import operational contract families are now
+represented in the v0.3 runtime model registry.
 
 ## Issue #38 persistence boundary
 

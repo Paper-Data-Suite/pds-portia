@@ -34,7 +34,12 @@ def test_runtime_coverage_matches_live_catalog_and_registry() -> None:
         (entry.contract, entry.version) for entry in runtime_coverage() if entry.modelled
     }
     assert modelled == set(MODEL_REGISTRY)
-    assert any(entry.disposition == "deferred_v0_3" for entry in runtime_coverage())
+
+    coverage = _json(REPO_ROOT / "portia" / "runtime-coverage.json")
+    dispositions = coverage.get("dispositions")
+    assert isinstance(dispositions, list)
+    assert "deferred_v0_3" in dispositions
+
     assert any(entry.disposition == "core_owned" for entry in runtime_coverage())
 
 
@@ -66,8 +71,50 @@ def test_runtime_bundle_contains_only_modelled_contract_map() -> None:
         if isinstance(version, str)
     }
     assert pairs == set(MODEL_REGISTRY)
-    assert "capture_batch" not in contracts
-    assert "import_batch" not in contracts
+
+    capture_batch = contracts.get("capture_batch")
+    assert isinstance(capture_batch, dict)
+    assert set(capture_batch) == {"1"}
+
+    page_record = contracts.get("page_record")
+    assert isinstance(page_record, dict)
+    assert set(page_record) == {"1"}
+
+    paper_interpretation = contracts.get("paper_interpretation")
+    assert isinstance(paper_interpretation, dict)
+    assert set(paper_interpretation) == {"1"}
+
+    capture_proposal = contracts.get("capture_proposal")
+    assert isinstance(capture_proposal, dict)
+    assert set(capture_proposal) == {"1"}
+
+    capture_review = contracts.get("capture_review")
+    assert isinstance(capture_review, dict)
+    assert set(capture_review) == {"1"}
+
+    capture_materialization = contracts.get("capture_materialization")
+    assert isinstance(capture_materialization, dict)
+    assert set(capture_materialization) == {"1"}
+
+    import_batch = contracts.get("import_batch")
+    assert isinstance(import_batch, dict)
+    assert set(import_batch) == {"1"}
+
+    import_source_record = contracts.get("import_source_record")
+    assert isinstance(import_source_record, dict)
+    assert set(import_source_record) == {"1"}
+
+    import_proposal = contracts.get("import_proposal")
+    assert isinstance(import_proposal, dict)
+    assert set(import_proposal) == {"1"}
+
+    import_review = contracts.get("import_review")
+    assert isinstance(import_review, dict)
+    assert set(import_review) == {"1"}
+
+    import_materialization = contracts.get("import_materialization")
+    assert isinstance(import_materialization, dict)
+    assert set(import_materialization) == {"1"}
     schemas = bundle["schemas"]
     assert isinstance(schemas, dict)
     assert RUNTIME_VALUE_SCHEMA_IDS <= set(schemas)

@@ -1,5 +1,9 @@
 """Build the compact runtime JSON-Schema bundle for Issue #37.
 
+Historical v0.2 packaging objective:
+Compile the modelled v0.2 schema closure into one deterministic bundle.
+Issue #56 also compiles explicitly modelled current_v0_3 contracts.
+
 This module is intentionally stdlib-only because setuptools imports it while
 building an isolated wheel before Portia's runtime dependencies are installed.
 """
@@ -13,7 +17,7 @@ from typing import Any
 from urllib.parse import urldefrag
 
 PORTIA_SCHEMA_PREFIX = "https://paper-data-suite.github.io/pds-portia/"
-MODELLED_DISPOSITIONS = {"current_v0_2", "historical_read", "supporting_v0_2"}
+MODELLED_DISPOSITIONS = {"current_v0_2", "current_v0_3", "historical_read", "supporting_v0_2"}
 RUNTIME_VALUE_SCHEMA_IDS = frozenset(
     {
         PORTIA_SCHEMA_PREFIX + "schemas/v1/attribution/attribution-agent.schema.json",
@@ -144,7 +148,7 @@ def _catalog_entry(
 
 
 def build_runtime_bundle(repository_root: Path) -> dict[str, Any]:
-    """Compile the modelled v0.2 schema closure into one deterministic bundle."""
+    """Compile the explicitly modelled schema closure into one deterministic bundle."""
     repository_root = repository_root.resolve()
     catalog = _load_object(repository_root / "schemas" / "schema-catalog.json")
     coverage = _load_object(repository_root / "portia" / "runtime-coverage.json")

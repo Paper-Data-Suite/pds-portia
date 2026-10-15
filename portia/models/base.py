@@ -34,6 +34,13 @@ IDENTITY_FIELDS: dict[str, tuple[str, ...]] = {
     "determination": ("determination_id",),
     "response": ("response_id",),
     "communication": ("communication_id",),
+    "capture_batch": ("work_id",),
+    "capture_proposal": ("proposal_id",),
+    "capture_review": ("review_id",),
+    "import_batch": ("import_batch_id",),
+    "import_source_record": ("source_record_id",),
+    "import_proposal": ("proposal_id",),
+    "import_review": ("review_id",),
     "support_process": ("work_id", "support_process_id"),
     "support_process_participant": ("participant_id",),
     "support_need": ("need_id",),
@@ -72,6 +79,9 @@ IDENTITY_FIELDS: dict[str, tuple[str, ...]] = {
     "derived_index_metadata": ("generation_id", "index_id"),
     "derived_current_pointer": ("generation_id", "pointer_id"),
     "deliberate_export": ("export_id",),
+    "page_target": ("page_target_id",),
+    "page_record": ("page_record_id",),
+    "paper_interpretation": ("interpretation_id",),
 }
 
 

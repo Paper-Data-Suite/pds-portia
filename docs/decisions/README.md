@@ -37,3 +37,13 @@ architectural decision. ADR 0018 was added later by Issue #47 to correct the
 published Operation Journal boundary for verified canonical absence.
 ADR 0019 was added later by Issue #47 to reconcile the frozen Event-only
 ownership certificate with accepted Event/Support Process child corrections.
+
+## Post-foundations implementation ADRs
+
+These decisions were accepted after the Issue #23 foundations audit and
+therefore do not carry an Issue #23 audit disposition.
+
+- `0020` — Extend coordinated operations for deliberate export custody.
+- `0021` — Reconcile Classroom Observation paper capture with the released
+  runtime; preserve `Observation@2` ownership and publish additive
+  `page_target@2`.

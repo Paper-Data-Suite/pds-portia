@@ -37,12 +37,9 @@ STALE_README_MARKERS = (
 REQUIRED_README_MARKERS = (
     "Portia v0.2.0 is **RELEASED — VERIFIED**.",
     "Paper Data Suite composition qualification remains separate",
-    "accepted Architecture Decision Records ADR 0001 through ADR 0020",
-    "ADRs 0001–0020",
     "## Deferred Beyond v0.2.0",
     "future privacy-minimized Core intervention publication",
     "future Suite-wide retention/disposition orchestration",
-    "paper/import operationalization beyond the v0.2.0 digital/local runtime",
     "Portia is licensed under the MIT License.",
 )
 
@@ -55,7 +52,6 @@ REQUIRED_DOC_INDEX_MARKERS = (
 
 REQUIRED_CHANGELOG_MARKERS = (
     "## Unreleased",
-    "No changes yet.",
     "## 0.2.0",
     "Issue #54 release-audit evidence through documentation reconciliation",
 )
@@ -141,6 +137,52 @@ def _require_markers(
             errors.append(f"{relative}: missing documentation marker {marker!r}")
 
 
+
+# Issue #54 verified the v0.2.0 release documentation; Issue #56 legitimately
+# advances the live README and Unreleased CHANGELOG without rewriting that
+# historical release record. Accept either COMPLETE state, never a hybrid.
+README_V02_MARKERS = (
+    "accepted Architecture Decision Records ADR 0001 through ADR 0020",
+    "ADRs 0001–0020",
+    "paper/import operationalization beyond the v0.2.0 digital/local runtime",
+)
+README_ISSUE56_MARKERS = (
+    "accepted Architecture Decision Records ADR 0001 through ADR 0021",
+    "ADRs 0001–0021",
+    "production paper/import services beyond the reconciled v0.3 contract/runtime surface",
+    "### Issue #56 current implementation",
+)
+CHANGELOG_V02_PREFIX = "# Changelog\n\n## Unreleased\n\nNo changes yet.\n\n## 0.2.0\n"
+CHANGELOG_ISSUE56_PREFIX = "# Changelog\n\n## Unreleased\n\n### Added\n"
+CHANGELOG_ISSUE56_MARKERS = (
+    "Issue #56 capture/import contract reconciliation",
+    "page_target@2",
+    "### Changed",
+    "### Boundaries",
+)
+
+
+def _evolving_documentation_errors(readme: str, changelog: str) -> list[str]:
+    errors: list[str] = []
+    released = all(value in readme for value in README_V02_MARKERS)
+    reconciled = all(value in readme for value in README_ISSUE56_MARKERS)
+    if released and not reconciled:
+        if not changelog.startswith(CHANGELOG_V02_PREFIX):
+            errors.append("v0.2 README requires the original empty Unreleased changelog")
+    elif reconciled and not released:
+        if not changelog.startswith(CHANGELOG_ISSUE56_PREFIX):
+            errors.append("Issue #56 README requires a populated Unreleased changelog")
+        unreleased = changelog.split("## 0.2.0", 1)[0]
+        for marker in CHANGELOG_ISSUE56_MARKERS:
+            if marker not in unreleased:
+                errors.append(f"Issue #56 Unreleased changelog missing {marker!r}")
+        if "No changes yet." in unreleased:
+            errors.append("Issue #56 Unreleased changelog falsely says no changes")
+    else:
+        errors.append("README ADR/deferral markers are incomplete or mixed between v0.2 and Issue #56")
+    return errors
+
+
 def validate_repo(root: Path = ROOT) -> list[str]:
     errors: list[str] = []
     try:
@@ -186,6 +228,13 @@ def validate_repo(root: Path = ROOT) -> list[str]:
     _require_markers(root, "README.md", REQUIRED_README_MARKERS, errors)
     _require_markers(root, "docs/README.md", REQUIRED_DOC_INDEX_MARKERS, errors)
     _require_markers(root, "CHANGELOG.md", REQUIRED_CHANGELOG_MARKERS, errors)
+    try:
+        readme_current = _read(root, "README.md")
+        changelog_current = _read(root, "CHANGELOG.md")
+    except (OSError, UnicodeError) as exc:
+        errors.append(f"cannot validate evolving documentation: {exc}")
+    else:
+        errors.extend(_evolving_documentation_errors(readme_current, changelog_current))
     _require_markers(root, "SECURITY.md", REQUIRED_SECURITY_MARKERS, errors)
     _require_markers(
         root,

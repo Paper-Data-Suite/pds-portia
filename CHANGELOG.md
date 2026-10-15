@@ -2,7 +2,37 @@
 
 ## Unreleased
 
-No changes yet.
+### Added
+
+- Issue #56 capture/import contract reconciliation against released Portia
+  v0.2.0 and authenticated Core 0.6.5.
+- Additive `page_target@2` plus accepted ADR 0021 for Daily Classroom
+  Observation, focused monitoring, communication capture, returned-page session
+  context, and the no-fake-Event ownership rule.
+- Immutable runtime support for the full paper/import staging chains through
+  materialization receipts, reaching 84 modeled contract versions.
+- Final Issue #56 acceptance/reconciliation records, mechanical closeout
+  validator, and installed five-stage import-chain smoke.
+
+### Changed
+
+- `page_target@1` is retained as exact `historical_read`; `page_target@2` is the
+  current v0.3 Page Target contract.
+- All accepted Issue #56 paper/import operational record families now have
+  explicit current/historical runtime dispositions; no active
+  `deferred_v0_3` capture/import contract remains.
+- Authoritative repository qualification now runs the Issue #56 closeout
+  validator and the installed import-chain smoke against Core 0.6.5.
+
+### Boundaries
+
+- Issue #56 freezes contracts/runtime only. Production printing, scanning, OCR,
+  review UI, import parsing, and canonical materialization orchestration remain
+  later #55 work.
+- Capture/import staging does not create behavior-domain facts, fuzzy-match
+  student identity, substitute for domain judgment, or introduce a second
+  persistence/recovery engine.
+
 
 ## 0.2.0
 

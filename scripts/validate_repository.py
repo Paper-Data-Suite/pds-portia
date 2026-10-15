@@ -289,6 +289,7 @@ def qualify(
     _run([sys.executable, "scripts/validate_issue54_release_mechanics.py"], root)
     _run([sys.executable, "scripts/validate_issue54_cumulative_qualification.py"], root)
     _run([sys.executable, "scripts/validate_issue54_python_platform_qualification.py"], root)
+    _run([sys.executable, "scripts/validate_issue56_closeout.py"], root)
     _run([sys.executable, "-m", "pytest"], root)
     _run([sys.executable, "-m", "ruff", "check", "."], root)
     _run([sys.executable, "-m", "mypy"], root)
@@ -467,6 +468,15 @@ def qualify(
         ],
         root,
     )
+    _run(
+        [
+            sys.executable,
+            "scripts/smoke_test_issue56_import_chain_runtime_wheel.py",
+            str(wheels[0]),
+            str(core_wheel.resolve()),
+        ],
+        root,
+    )
     if (root / ".git").exists():
         _run(["git", "diff", "--check"], root)
 
@@ -494,6 +504,7 @@ def main() -> int:
         print(f"Repository qualification failed: {exc}", file=sys.stderr)
         return 1
     print("Portia Issue #54 cumulative repository qualification passed")
+    print("Portia Issue #56 repository qualification passed")
     return 0
 
 
