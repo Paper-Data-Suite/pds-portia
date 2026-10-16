@@ -159,7 +159,7 @@ class CapturePreparationResult:
 
     @property
     def ready_for_rendering(self) -> bool:
-        return bool(self.pages) and all(
+        return self.batch.status == "open" and bool(self.pages) and all(
             page.status == "verified" for page in self.pages
         )
 
