@@ -16,6 +16,7 @@ from pds_core.routes import safe_module_work_descendant
 
 from portia.capture.batches import FileCaptureBatchService
 from portia.capture.contracts import CaptureAuthorization, CapturePreparationError
+from portia.capture.purposes import resolve_existing_capture_context
 from portia.models import PageTargetV1, PageTargetV2
 from portia.models.errors import PortiaModelError
 from portia.models.identifiers import validate_external_id
@@ -26,6 +27,7 @@ from portia.storage.errors import (
 )
 from portia.storage.fingerprint import canonical_json_bytes
 from portia.storage.io import exclusive_create, read_bytes
+from portia.storage.repository import PortiaRepository
 
 _PAGE_ID = re.compile(r"ptgt_[A-Za-z0-9][A-Za-z0-9_-]*\Z")
 _RECORD_KIND = "capture_page_target"
@@ -219,6 +221,14 @@ class FilePageTargetService:
                 raise PortiaConflictError(
                     "new Page Target requires an open Capture Batch"
                 )
+            # Validate exact existing context under the shared batch lock,
+            # before publishing new Page Target bytes. Historical exact
+            # retries above remain unchanged and do not rebind work.
+            resolve_existing_capture_context(
+                target,
+                repository=PortiaRepository(self.root),
+                path_guard=self.batches._safe,
+            )
             requested_index = target.field("page_index")
             if any(page.field("page_index") == requested_index for page in existing):
                 raise PortiaConflictError("Page Target page index already allocated")

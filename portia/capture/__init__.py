@@ -13,6 +13,11 @@ from portia.capture.contracts import (
     route_binding_findings,
 )
 from portia.capture.page_targets import FilePageTargetService
+from portia.capture.purposes import (
+    VerifiedExistingCaptureContext,
+    resolve_existing_capture_context,
+    validate_page_purpose,
+)
 
 __all__ = [
     "FileCaptureBatchService",
@@ -26,4 +31,7 @@ __all__ = [
     "PagePreparationResult",
     "PageTargetService",
     "route_binding_findings",
+    "VerifiedExistingCaptureContext",
+    "resolve_existing_capture_context",
+    "validate_page_purpose",
 ]
