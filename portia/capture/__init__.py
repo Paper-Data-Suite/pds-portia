@@ -19,6 +19,7 @@ from portia.capture.purposes import (
     resolve_existing_capture_context,
     validate_page_purpose,
 )
+from portia.capture.recovery import audit_capture_route_inventory
 from portia.capture.routes import FilePageRouteService
 
 __all__ = [
@@ -35,6 +36,7 @@ __all__ = [
     "PagePreparationResult",
     "PageTargetService",
     "route_binding_findings",
+    "audit_capture_route_inventory",
     "VerifiedExistingCaptureContext",
     "resolve_existing_capture_context",
     "validate_page_purpose",

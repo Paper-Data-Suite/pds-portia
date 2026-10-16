@@ -235,12 +235,20 @@ class FilePageRouteService:
                     human_fallback=_HUMAN_FALLBACK,
                     module_details=details,
                 )
+                # Core owns registration persistence. Its implementation may
+                # create the parent directory, so recheck after the prior
+                # guarded path calculation; never persist a link-alias route.
+                self.batches._safe(destination.parent)
+                self.batches._safe(destination)
                 try:
                     write_route_registration(self.root, registration)
                 except RouteRegistrationWriteError:
                     # A partial Core write is durable evidence; do not erase
                     # or claim verification. Recovery inspects exact state.
                     return self._result(target, "retryable", "route_write_incomplete")
+                # Recheck observed path components before Core's reloader.
+                # No viewer/temporary alias ever becomes a persisted identity.
+                self.batches._safe(destination)
                 # Must reload both persisted target and Core route (never trust
                 # only the fresh in-memory registration constructor).
                 return self._inspect_exact(target)

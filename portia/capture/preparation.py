@@ -24,12 +24,14 @@ from portia.capture.purposes import (
     resolve_existing_capture_context,
     validate_page_purpose,
 )
+from portia.capture.recovery import audit_capture_route_inventory
 from portia.capture.routes import FilePageRouteService
 from portia.models import PageTargetV1, PageTargetV2
 from portia.storage.errors import (
     PortiaConflictError,
     PortiaCorruptionError,
     PortiaNotFoundError,
+    PortiaPathError,
     PortiaRecoveryRequiredError,
     PortiaStorageError,
 )
@@ -50,8 +52,9 @@ class FileCapturePreparationService:
     deliberately no pretend multi-file transaction: an interrupted page stops
     further writes, and an exact retry continues from durable evidence.
 
-    ``recover`` is read-only at this slice; explicit recovery and conflict
-    resolution are the responsibility of Issue #57 Slice 7.
+    ``recover`` resumes only unambiguously missing Core route registrations
+    for already-durable targets. Contradictory or unsafe state is never fixed
+    by selecting a route or silently clearing filesystem evidence.
     """
 
     def __init__(
@@ -158,9 +161,11 @@ class FileCapturePreparationService:
             index_owner = by_index.get(cast(int, target.field("page_index")))
             if index_owner is not None and index_owner.logical_id != target.logical_id:
                 raise PortiaConflictError("existing Page Target index conflicts")
-        # A known malformed route namespace is not allowed to receive fresh
-        # Page Targets before the teacher sees the contradiction.
-        self.routes._registrations(class_id, work_id)
+        # Audit *all* registrations, including unknown/orphan route targets.
+        # A malformed but parseable route must not be silently overlooked.
+        audit_capture_route_inventory(
+            existing, self.routes._registrations(class_id, work_id)
+        )
 
     def prepare(
         self,
@@ -193,6 +198,8 @@ class FileCapturePreparationService:
                 page_result = _incomplete(target, "conflict", "durable_state_conflict")
             except PortiaNotFoundError:
                 page_result = _incomplete(target, "retryable", "readback_missing")
+            except PortiaPathError:
+                page_result = _incomplete(target, "conflict", "unsafe_path")
             except PortiaStorageError:
                 page_result = _incomplete(target, "retryable", "storage_unavailable")
             # Invalid request and access-denied failures propagate, not relabelled
@@ -242,5 +249,91 @@ class FileCapturePreparationService:
         *,
         authorization: CaptureAuthorization,
     ) -> CapturePreparationResult:
-        """Read-only recovery assessment; Slice 7 owns explicit mutation."""
-        return self.inspect(class_id, work_id, authorization=authorization)
+        """Resume unambiguous page-without-route state, never repair corruption.
+
+        Only a persisted, active Page Target v2 in an open Capture Batch may
+        acquire a missing Core route. Exact registration readback happens in the
+        Core-backed route service. An interrupted lock, dangling registration,
+        divergent template, historical-only target, or terminal batch stops
+        recovery without deleting or modifying any existing evidence.
+
+        This is not an implicit retry: callers explicitly invoke ``recover``.
+        Recovery cannot reconstruct Page Targets that never became durable;
+        ``prepare`` with the original request is required for that operation.
+        """
+        for operation in (
+            "capture_preparation.recover",
+            "capture_batch.load",
+            "page_target.list",
+            "page_route.inspect",
+            "page_route.register",
+        ):
+            self.batches._authorize(class_id, operation, authorization)
+        batch = self.batches.load(class_id, work_id, authorization=authorization)
+        pages = self.pages.list_targets(class_id, work_id, authorization=authorization)
+        registrations = self.routes._registrations(class_id, work_id)
+        audit_capture_route_inventory(pages, registrations)
+        if any(isinstance(page, PageTargetV1) for page in pages):
+            raise CapturePreparationError(
+                "historical page_target@1 requires historical-only inspection"
+            )
+        current = tuple(cast(PageTargetV2, page) for page in pages)
+        preflight: list[PagePreparationResult] = []
+        for page in current:
+            page_id = page.logical_id
+            if page_id is None:
+                raise PortiaCorruptionError("persisted Page Target missing identity")
+            preflight.append(self.routes.inspect(
+                class_id, work_id, page_id, authorization=authorization
+            ))
+        if not preflight:
+            return CapturePreparationResult(batch, ())
+        # Failure anywhere in the full inventory blocks all new route writes.
+        if any(state.status in {"conflict", "rejected"} for state in preflight):
+            return CapturePreparationResult(batch, tuple(preflight))
+        if batch.status != "open":
+            return CapturePreparationResult(batch, tuple(preflight))
+        if any(
+            state.status == "retryable"
+            and state.diagnostics != ("route_not_registered",)
+            for state in preflight
+        ):
+            return CapturePreparationResult(batch, tuple(preflight))
+
+        results: list[PagePreparationResult] = []
+        stopped = False
+        for state in preflight:
+            if stopped:
+                results.append(
+                    _incomplete(state.target, "retryable", "not_attempted")
+                )
+                continue
+            if state.status == "verified":
+                results.append(state)
+                continue
+            try:
+                resumed = self.routes.register_or_load(
+                    state.target, authorization=authorization
+                )
+            except PortiaRecoveryRequiredError:
+                resumed = _incomplete(
+                    state.target, "conflict", "requires_manual_lock_review"
+                )
+            except PortiaPathError:
+                resumed = _incomplete(state.target, "conflict", "unsafe_path")
+            except (PortiaConflictError, PortiaCorruptionError):
+                resumed = _incomplete(
+                    state.target, "conflict", "durable_state_conflict"
+                )
+            except PortiaNotFoundError:
+                resumed = _incomplete(
+                    state.target, "retryable", "readback_missing"
+                )
+            except PortiaStorageError:
+                resumed = _incomplete(
+                    state.target, "retryable", "storage_unavailable"
+                )
+            results.append(resumed)
+            stopped = resumed.status != "verified"
+        latest = self.batches.load(class_id, work_id, authorization=authorization)
+        return CapturePreparationResult(latest, tuple(results))

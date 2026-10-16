@@ -233,18 +233,22 @@ def test_preflight_checks_existing_page_indices_before_new_page_writes(
     assert files(tmp_path) == existing_files
 
 
-def test_inspect_and_recover_are_read_only(tmp_path: Path) -> None:
+def test_inspect_read_only_and_explicit_recover_resumes_route(tmp_path: Path) -> None:
     service, auth = setup(tmp_path)
     service.batches.create_or_load(batch(), authorization=auth)
     service.pages.create_or_load(page(1), authorization=auth)
     before = files(tmp_path)
     state = service.inspect(CLASS, WORK, authorization=auth)
-    recovery_assessment = service.recover(CLASS, WORK, authorization=auth)
-    assert len(state.pages) == len(recovery_assessment.pages) == 1
+    assert len(state.pages) == 1
     assert state.pages[0].status == "retryable"
     assert state.pages[0].diagnostics == ("route_not_registered",)
     assert state.pages[0].payload is None
     assert files(tmp_path) == before
+    # Slice 7 explicitly resumes only a durable Page Target lacking a route.
+    resumed = service.recover(CLASS, WORK, authorization=auth)
+    assert resumed.ready_for_rendering
+    assert resumed.pages[0].registration is not None
+    assert service.inspect(CLASS, WORK, authorization=auth).ready_for_rendering
 
 
 def test_closed_batch_is_not_ready_for_new_printing(tmp_path: Path) -> None:
