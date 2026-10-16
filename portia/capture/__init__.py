@@ -18,10 +18,12 @@ from portia.capture.purposes import (
     resolve_existing_capture_context,
     validate_page_purpose,
 )
+from portia.capture.routes import FilePageRouteService
 
 __all__ = [
     "FileCaptureBatchService",
     "FilePageTargetService",
+    "FilePageRouteService",
     "CaptureAuthorization",
     "CaptureBatchService",
     "CapturePreparationError",
