@@ -389,6 +389,37 @@ _ISSUE56_REQUIRED_SDIST_FILES = {
 REQUIRED_SDIST_FILES.update(_ISSUE56_REQUIRED_SDIST_FILES)
 
 
+_ISSUE57_CAPTURE_RUNTIME_FILES = {
+    "portia/capture/__init__.py",
+    "portia/capture/contracts.py",
+    "portia/capture/batches.py",
+    "portia/capture/page_targets.py",
+    "portia/capture/purposes.py",
+    "portia/capture/routes.py",
+    "portia/capture/preparation.py",
+    "portia/capture/recovery.py",
+}
+REQUIRED_RUNTIME_FILES.update(_ISSUE57_CAPTURE_RUNTIME_FILES)
+REQUIRED_SDIST_FILES.update(
+    _ISSUE57_CAPTURE_RUNTIME_FILES
+    | {
+        "scripts/validate_issue57_closeout.py",
+        "scripts/smoke_test_issue57_core066_wheel.py",
+        "tests/test_issue57_closeout.py",
+        "tests/test_issue57_slice1_contracts.py",
+        "tests/test_issue57_slice2_batches.py",
+        "tests/test_issue57_slice3_page_targets.py",
+        "tests/test_issue57_slice4_purposes.py",
+        "tests/test_issue57_slice5_routes.py",
+        "tests/test_issue57_slice6_preparation.py",
+        "tests/test_issue57_slice7_recovery.py",
+        "tests/test_issue57_slice8_core066.py",
+        "docs/validation/issue-57-acceptance-matrix.md",
+        "docs/validation/issue-57-final-qualification.md",
+    }
+)
+
+
 def _unsafe_path(name: str) -> bool:
     path = PurePosixPath(name)
     return path.is_absolute() or any(part in {"", ".", ".."} for part in path.parts)
