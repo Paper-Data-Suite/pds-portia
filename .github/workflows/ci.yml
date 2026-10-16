@@ -112,6 +112,7 @@ jobs:
           python scripts/verify_core_wheel.py "$wheel"
           if ($LASTEXITCODE -ne 0) { throw "Core 0.6.6 authentication failed." }
           "PDS_CORE_WHEEL=$wheel" | Out-File $env:GITHUB_ENV -Encoding utf8 -Append
+          "PDS_CORE_066_WHEEL=$wheel" | Out-File $env:GITHUB_ENV -Encoding utf8 -Append
 
       - name: Install official Core and Portia development dependencies
         shell: pwsh

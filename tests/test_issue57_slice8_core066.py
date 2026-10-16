@@ -17,9 +17,9 @@ SHA_066 = "d6d21e426092b0329bcfd69b6fbee44c345edc46794a914d847d5ea73a2b7301"
 
 
 def _core_wheel() -> Path:
-    provided = os.environ.get("PDS_CORE_WHEEL", "")
+    provided = os.environ.get("PDS_CORE_066_WHEEL", "")
     if not provided:
-        pytest.skip("PDS_CORE_WHEEL not supplied; installed wheel gate supplies it")
+        pytest.skip("PDS_CORE_066_WHEEL not supplied; Core 0.6.6 gate supplies it")
     return Path(provided)
 
 
