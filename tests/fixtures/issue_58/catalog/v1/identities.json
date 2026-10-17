@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "canonical_format": "portia_capture_layout_v1",
+  "known_answers": [
+    {
+      "resource": "classroom_observation_main_v1.json",
+      "template_identity": {
+        "template_id": "portia_classroom_observation",
+        "template_version": "1",
+        "layout_version": "layout_1",
+        "capture_spec_version": "capture_1",
+        "layout_fingerprint": "33483a2543ee50c636415a53dbca611c38b361a1d649f1e5f4533cc00aaa1518",
+        "page_role": "classroom_observation",
+        "page_ordinal": 1
+      },
+      "entry_keys": [
+        "session_context",
+        "observation_01",
+        "observation_02"
+      ],
+      "field_count": 13,
+      "canonical_byte_length": 4863
+    },
+    {
+      "resource": "classroom_observation_continuation_v1.json",
+      "template_identity": {
+        "template_id": "portia_classroom_observation",
+        "template_version": "1",
+        "layout_version": "layout_1",
+        "capture_spec_version": "capture_1",
+        "layout_fingerprint": "25fe7682a2ffab06309975194405be8020bd45935357702028f8e810b2908ee9",
+        "page_role": "observation_continuation",
+        "page_ordinal": 2
+      },
+      "entry_keys": [
+        "session_context",
+        "observation_01",
+        "observation_02",
+        "observation_03"
+      ],
+      "field_count": 14,
+      "canonical_byte_length": 5333
+    }
+  ]
+}

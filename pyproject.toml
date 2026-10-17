@@ -52,7 +52,12 @@ include = ["portia", "portia.*"]
 namespaces = false
 
 [tool.setuptools.package-data]
-portia = ["py.typed", "runtime-coverage.json", "_runtime_contract_bundle.json"]
+portia = [
+    "py.typed",
+    "runtime-coverage.json",
+    "_runtime_contract_bundle.json",
+    "capture/form_specs/*.json",
+]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
