@@ -16,7 +16,7 @@ MARKERS: dict[str, tuple[str, ...]] = {
         'portia = "portia.cli:main"',
         '[project.entry-points."paper_data_suite.module_operations"]',
         'portia = "portia.pds_operations:get_module_operations_profile"',
-        'portia = ["py.typed", "runtime-coverage.json", "_runtime_contract_bundle.json"]',
+        "[tool.setuptools.package-data]",
     ),
     "MANIFEST.in": (
         "recursive-include docs *.md *.json",
@@ -36,9 +36,7 @@ MARKERS: dict[str, tuple[str, ...]] = {
         "Portia teacher-local behavior-support package.",
         '__all__ = ["__version__"]',
     ),
-    "portia/_version.py": (
-        '__version__: Final[str] = "0.2.0"',
-    ),
+    "portia/_version.py": ('__version__: Final[str] = "0.2.0"',),
     "portia/_bundle_builder.py": (
         "Compile the modelled v0.2 schema closure into one deterministic bundle.",
         '"bundle_contract": "pds-portia.runtime-contract-bundle"',
@@ -84,7 +82,7 @@ MARKERS: dict[str, tuple[str, ...]] = {
         'env["PIP_NO_INDEX"] = "1"',
     ),
     "tests/test_package_baseline.py": (
-        'assert project["dependencies"] == ["pds-core>=0.6.3,<0.7"]',
+        'assert project["dependencies"] == [',
         'assert data["project"]["scripts"] == {"portia": "portia.cli:main"}',
         '"paper_data_suite.module_operations": {',
         'assert (ROOT / "portia" / "py.typed").is_file()',
@@ -171,12 +169,35 @@ def validate_repo(root: Path = ROOT) -> list[str]:
 
     try:
         with (root / "pyproject.toml").open("rb") as handle:
-            project = tomllib.load(handle)["project"]
-    except (OSError, KeyError, tomllib.TOMLDecodeError) as exc:
+            metadata = tomllib.load(handle)
+        project = metadata["project"]
+        package_data = metadata["tool"]["setuptools"]["package-data"]["portia"]
+    except (OSError, KeyError, TypeError, tomllib.TOMLDecodeError) as exc:
         errors.append(f"cannot load pyproject package metadata: {exc}")
     else:
-        if project.get("dependencies") != ["pds-core>=0.6.3,<0.7"]:
-            errors.append("runtime dependencies must remain Core-only")
+        required_package_data = {
+            "py.typed",
+            "runtime-coverage.json",
+            "_runtime_contract_bundle.json",
+            "capture/form_specs/*.json",
+        }
+        if (
+            not isinstance(package_data, list)
+            or any(not isinstance(item, str) for item in package_data)
+            or not required_package_data.issubset(set(package_data))
+        ):
+            errors.append("missing required legacy/capture runtime package data")
+        # The audited published v0.2.0 contract above remains Core-only.
+        # Current unreleased v0.3 PDF capture adds three explicit dependencies.
+        if project.get("dependencies") != [
+            "pds-core>=0.6.3,<0.7",
+            "reportlab>=4.2,<5",
+            "qrcode>=7.4,<9",
+            "pypdf>=5,<7",
+        ]:
+            errors.append(
+                "development runtime dependencies do not match v0.3 capture requirements"
+            )
         if project.get("scripts") != {"portia": "portia.cli:main"}:
             errors.append("console-script surface drifted")
         if project.get("entry-points") != {
@@ -246,7 +267,10 @@ def validate_repo(root: Path = ROOT) -> list[str]:
     if audit.get("final_verdict") not in {"PENDING", "RELEASED — VERIFIED"}:
         errors.append("Slice 12 must not advance the final release verdict")
     publication = audit.get("release_publication")
-    if not isinstance(publication, dict) or publication.get("status") not in {"not_started", "verified"}:
+    if not isinstance(publication, dict) or publication.get("status") not in {
+        "not_started",
+        "verified",
+    }:
         errors.append("Slice 12 must not advance release publication state")
 
     return errors
