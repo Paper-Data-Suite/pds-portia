@@ -8,6 +8,24 @@ Portia is intended to help teachers document behavior-related events, preserve m
 
 Portia v0.2.0 is **RELEASED — VERIFIED**. The exact published GitHub Release bytes completed Issue #54 fresh-download and installed acceptance. Paper Data Suite composition qualification remains separate and is owned by `pds-paper-data-suite`.
 
+### Issue #57 preparation services (development branch)
+
+The v0.3 paper-capture preparation services are under development on
+`57-capture-batch-page-target-services`. They support class-authorized
+Capture Batch creation, exact v2 Page Target persistence (with historical v1
+reads), public Core PDS2 registration, immutable-route verification, multi-page
+preparation, and bounded explicit recovery. These services **do not render PDFs
+or create canonical Events, Observations, Support Processes or other behavior
+domain facts merely because a form was prepared**.
+
+A teacher-facing form wizard is planned under parent Issue #55, using the flow
+**Choose class → Choose form → Choose pages/context → Prepare → Render**.
+The stable typed entry point for later work is
+`portia.capture.FileCapturePreparationService`. Core v0.6.6 compatibility is
+qualified separately from frozen v0.6.5/0.6.4/0.6.3 historical checks;
+release v0.2.0 remains the published stable Portia release.
+See `docs/validation/issue-57-final-qualification.md`.
+
 The repository currently contains:
 
 * evidence-based research on responsible K–12 behavior documentation and management;

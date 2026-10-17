@@ -85,3 +85,74 @@ jobs:
             --core-wheel "$env:PDS_CORE_WHEEL" `
             --prior-core-wheel "$env:PDS_PRIOR_CORE_WHEEL" `
             --historical-core-wheel "$env:PDS_HISTORICAL_CORE_WHEEL"
+
+  issue57-core066:
+    name: "Issue #57 Core 0.6.6 installed (${{ matrix.os }}, Python 3.11)"
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Download and authenticate official Core 0.6.6 wheel
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          $wheel = Join-Path $env:RUNNER_TEMP "pds_core-0.6.6-py3-none-any.whl"
+          Invoke-WebRequest `
+            -Uri "https://github.com/Paper-Data-Suite/pds-core/releases/download/v0.6.6/pds_core-0.6.6-py3-none-any.whl" `
+            -OutFile $wheel -ErrorAction Stop
+          python scripts/verify_core_wheel.py "$wheel"
+          if ($LASTEXITCODE -ne 0) { throw "Core 0.6.6 authentication failed." }
+          "PDS_CORE_WHEEL=$wheel" | Out-File $env:GITHUB_ENV -Encoding utf8 -Append
+          "PDS_CORE_066_WHEEL=$wheel" | Out-File $env:GITHUB_ENV -Encoding utf8 -Append
+
+      - name: Install official Core and Portia development dependencies
+        shell: pwsh
+        run: |
+          python -m pip install "$env:PDS_CORE_WHEEL"
+          if ($LASTEXITCODE -ne 0) { throw "Core 0.6.6 install failed." }
+          python -m pip install -e ".[dev]"
+          if ($LASTEXITCODE -ne 0) { throw "Portia dev install failed." }
+          python scripts/verify_core_wheel.py --installed 0.6.6
+          if ($LASTEXITCODE -ne 0) { throw "Installed Core is not 0.6.6." }
+
+      - name: Run Issue 57 focused capture tests
+        shell: pwsh
+        run: |
+          python -m pytest -q `
+            tests/test_issue57_slice1_contracts.py `
+            tests/test_issue57_slice2_batches.py `
+            tests/test_issue57_slice3_page_targets.py `
+            tests/test_issue57_slice4_purposes.py `
+            tests/test_issue57_slice5_routes.py `
+            tests/test_issue57_slice6_preparation.py `
+            tests/test_issue57_slice7_recovery.py `
+            tests/test_issue57_slice8_core066.py
+          if ($LASTEXITCODE -ne 0) { throw "Issue 57 focused tests failed." }
+
+      - name: Build and test installed Portia wheel against official Core
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          $wheels = Join-Path $env:RUNNER_TEMP "portia-wheel"
+          New-Item -ItemType Directory -Force -Path $wheels | Out-Null
+          python -m build --wheel --outdir "$wheels"
+          if ($LASTEXITCODE -ne 0) { throw "Portia wheel build failed." }
+          $wheel = Join-Path $wheels "pds_portia-0.2.0-py3-none-any.whl"
+          if (-not (Test-Path -LiteralPath $wheel -PathType Leaf)) {
+            throw "Expected Portia development wheel not produced."
+          }
+          python scripts/smoke_test_issue57_core066_wheel.py `
+            "$wheel" "$env:PDS_CORE_WHEEL" `
+            --fixtures tests/fixtures
+          if ($LASTEXITCODE -ne 0) {
+            throw "Issue 57 Core 0.6.6 installed-wheel acceptance failed."
+          }
