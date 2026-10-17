@@ -24,6 +24,19 @@ from portia.capture.form_catalog import (
     list_supported_capture_forms,
     resolve_capture_page_spec,
 )
+from portia.capture.observation_layout import (
+    DRAW_PLAN_VERSION,
+    MAX_CONTINUATION_PAGES,
+    DailyObservationPacketDrawing,
+    EntryDrawing,
+    FieldDrawing,
+    MarkOption,
+    ObservationLayoutError,
+    ObservationPageDrawing,
+    TextRun,
+    WritingRule,
+    plan_daily_classroom_observation,
+)
 from portia.capture.page_targets import FilePageTargetService
 from portia.capture.preparation import FileCapturePreparationService
 from portia.capture.purposes import (
@@ -49,6 +62,17 @@ __all__ = [
     "capture_pages_for_form",
     "installed_capture_page_specs",
     "resolve_capture_page_spec",
+    "DRAW_PLAN_VERSION",
+    "MAX_CONTINUATION_PAGES",
+    "ObservationLayoutError",
+    "ObservationPageDrawing",
+    "DailyObservationPacketDrawing",
+    "EntryDrawing",
+    "FieldDrawing",
+    "MarkOption",
+    "TextRun",
+    "WritingRule",
+    "plan_daily_classroom_observation",
     "CaptureAuthorization",
     "CaptureBatchService",
     "CapturePreparationError",
