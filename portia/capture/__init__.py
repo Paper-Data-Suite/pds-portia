@@ -67,8 +67,20 @@ from portia.capture.purposes import (
 )
 from portia.capture.recovery import audit_capture_route_inventory
 from portia.capture.routes import FilePageRouteService
+from portia.capture.teacher_flow import (
+    TeacherCaptureFlowError,
+    TeacherCapturePlan,
+    TeacherCaptureRequest,
+    TeacherCaptureResult,
+    TeacherCaptureService,
+)
 
 __all__ = [
+    "TeacherCaptureFlowError",
+    "TeacherCapturePlan",
+    "TeacherCaptureRequest",
+    "TeacherCaptureResult",
+    "TeacherCaptureService",
     "FileCaptureBatchService",
     "FilePageTargetService",
     "FilePageRouteService",
