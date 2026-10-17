@@ -12,6 +12,14 @@ from portia.capture.contracts import (
     PageTargetService,
     route_binding_findings,
 )
+from portia.capture.core_form_layout import (
+    CORE_FORM_DRAW_PLAN_VERSION,
+    CoreEntryDrawing,
+    CoreFieldDrawing,
+    CoreFormDrawing,
+    CoreFormLayoutError,
+    plan_core_capture_form,
+)
 from portia.capture.form_catalog import (
     CaptureCatalogError,
     CaptureEntry,
@@ -62,6 +70,12 @@ __all__ = [
     "capture_pages_for_form",
     "installed_capture_page_specs",
     "resolve_capture_page_spec",
+    "CORE_FORM_DRAW_PLAN_VERSION",
+    "CoreFormLayoutError",
+    "CoreFormDrawing",
+    "CoreEntryDrawing",
+    "CoreFieldDrawing",
+    "plan_core_capture_form",
     "DRAW_PLAN_VERSION",
     "MAX_CONTINUATION_PAGES",
     "ObservationLayoutError",

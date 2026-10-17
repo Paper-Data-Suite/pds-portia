@@ -47,14 +47,14 @@ def known_answers() -> list[dict[str, object]]:
 
 def target_for(spec_index: int) -> PageTargetV2:
     source = json.loads(BASE_TARGET.read_text(encoding="utf-8"))
-    spec = installed_capture_page_specs()[spec_index]
+    spec = capture_pages_for_form("daily_classroom_observation")[spec_index]
     source["template_identity"] = spec.template_identity()
     source["entry_layout"] = spec.entry_layout()
     return PageTargetV2(source)
 
 
 def test_two_durable_page_specs_have_distinct_exact_identities() -> None:
-    specs = installed_capture_page_specs()
+    specs = capture_pages_for_form("daily_classroom_observation")
     assert len(specs) == 2
     assert [spec.page_role for spec in specs] == [
         "classroom_observation", "observation_continuation"
@@ -67,7 +67,7 @@ def test_two_durable_page_specs_have_distinct_exact_identities() -> None:
 
 
 def test_fingerprints_match_independently_calculated_frozen_known_answers() -> None:
-    specs = installed_capture_page_specs()
+    specs = capture_pages_for_form("daily_classroom_observation")
     answers = known_answers()
     assert len(specs) == len(answers)
     for spec, answer in zip(specs, answers, strict=True):
@@ -89,7 +89,7 @@ def test_fingerprints_match_independently_calculated_frozen_known_answers() -> N
 
 
 def test_exact_identity_resolves_and_unknown_history_fails_closed() -> None:
-    for spec in installed_capture_page_specs():
+    for spec in capture_pages_for_form("daily_classroom_observation"):
         assert resolve_capture_page_spec(spec.template_identity()) is spec
         for key, changed in (
             ("template_id", "unknown_template"),
@@ -110,20 +110,18 @@ def test_exact_identity_resolves_and_unknown_history_fails_closed() -> None:
 
 
 def test_only_designed_form_is_supported() -> None:
-    assert list_supported_capture_forms() == (
-        ("daily_classroom_observation", "Daily Classroom Observation"),
-    )
+    names = dict(list_supported_capture_forms())
+    assert names["daily_classroom_observation"] == "Daily Classroom Observation"
+    assert len(names) == 9
     assert len(capture_pages_for_form("daily_classroom_observation")) == 2
-    for missing in (
-        "focused_monitoring", "communication_log", "event_information",
-        "implementation", "follow_up", "fidelity", "reentry", "repair", "other"
-    ):
+    for missing in ("implementation", "fidelity", "reentry", "repair", "other"):
+
         with pytest.raises(UnsupportedCaptureFormError):
             capture_pages_for_form(missing)
 
 
 def test_context_has_no_domain_mapping_and_slots_remain_independent() -> None:
-    for spec in installed_capture_page_specs():
+    for spec in capture_pages_for_form("daily_classroom_observation"):
         assert spec.entries[0].entry_key == "session_context"
         assert spec.entries[0].source_role == "session_context"
         assert spec.entries[0].permitted_mapped_record_kinds == ()
@@ -147,7 +145,7 @@ def test_context_has_no_domain_mapping_and_slots_remain_independent() -> None:
 
 
 def test_tone_cues_are_source_marks_and_not_behavior_findings() -> None:
-    for spec in installed_capture_page_specs():
+    for spec in capture_pages_for_form("daily_classroom_observation"):
         for entry in spec.entries[1:]:
             cues = [field for field in entry.fields if field.field_key == "tone"]
             assert len(cues) == 1
@@ -157,7 +155,7 @@ def test_tone_cues_are_source_marks_and_not_behavior_findings() -> None:
 
 
 def test_all_regions_are_in_letter_page_and_clear_of_reserved_qr() -> None:
-    for spec in installed_capture_page_specs():
+    for spec in capture_pages_for_form("daily_classroom_observation"):
         assert spec.qr_rectangle.width == spec.qr_rectangle.height == 108
         assert spec.qr_quiet_zone_modules == 4
         boxes = [f.rectangle for entry in spec.entries for f in entry.fields]
@@ -213,7 +211,7 @@ def test_meaningful_change_requires_new_fingerprint() -> None:
 
 
 def test_stale_or_wrong_page_target_cannot_match_catalog() -> None:
-    for i, spec in enumerate(installed_capture_page_specs()):
+    for i, spec in enumerate(capture_pages_for_form("daily_classroom_observation")):
         target = target_for(i)
         spec.assert_page_target_exact(target)
         other = installed_capture_page_specs()[1 - i]

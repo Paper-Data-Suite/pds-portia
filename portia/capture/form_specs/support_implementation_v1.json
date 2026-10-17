@@ -1,0 +1,170 @@
+{
+  "spec_format": "portia_capture_layout_v1",
+  "schema_version": 1,
+  "form_id": "support_implementation",
+  "label": "Support / Intervention Implementation",
+  "template_id": "portia_support_implementation",
+  "template_version": "1",
+  "layout_version": "layout_1",
+  "capture_spec_version": "capture_1",
+  "page_role": "implementation_sheet",
+  "page_ordinal": 1,
+  "page_purpose": "implementation_capture",
+  "capture_mode": "mixed_recognition",
+  "page_width": 612,
+  "page_height": 792,
+  "page_margin_points": 36,
+  "geometry_coordinate_system": "top_left_pdf_points",
+  "qr_rectangle": {
+    "x": 468,
+    "y": 40,
+    "width": 108,
+    "height": 108
+  },
+  "qr_quiet_zone_modules": 4,
+  "header_rectangle": {
+    "x": 36,
+    "y": 36,
+    "width": 420,
+    "height": 104
+  },
+  "footer_rectangle": {
+    "x": 36,
+    "y": 744,
+    "width": 540,
+    "height": 12
+  },
+  "title": "Support / Intervention Implementation",
+  "instructions": "Distinguish a planned step from what was attempted or delivered; neither is presumed.",
+  "context_entry_key": "implementation_context",
+  "entries": [
+    {
+      "entry_key": "implementation_context",
+      "source_role": "implementation_context",
+      "permitted_mapped_record_kinds": [],
+      "fields": [
+        {
+          "field_key": "date",
+          "region_key": "implementation_context_date",
+          "label": "Date / time of attempt as known",
+          "field_type": "text",
+          "capture_method": "handwriting_recognition",
+          "rectangle": {
+            "x": 36,
+            "y": 158,
+            "width": 540,
+            "height": 31
+          },
+          "required": false,
+          "max_characters": 400,
+          "choices": []
+        },
+        {
+          "field_key": "support_reference",
+          "region_key": "implementation_context_support_reference",
+          "label": "Support or intervention reference (optional)",
+          "field_type": "text",
+          "capture_method": "handwriting_recognition",
+          "rectangle": {
+            "x": 36,
+            "y": 199,
+            "width": 540,
+            "height": 45
+          },
+          "required": false,
+          "max_characters": 400,
+          "choices": []
+        }
+      ]
+    },
+    {
+      "entry_key": "implementation_01",
+      "source_role": "implementation",
+      "permitted_mapped_record_kinds": [
+        "implementation"
+      ],
+      "fields": [
+        {
+          "field_key": "planned_step",
+          "region_key": "implementation_01_planned_step",
+          "label": "Planned or scheduled step (not proof)",
+          "field_type": "text",
+          "capture_method": "handwriting_recognition",
+          "rectangle": {
+            "x": 36,
+            "y": 271,
+            "width": 540,
+            "height": 91
+          },
+          "required": false,
+          "max_characters": 400,
+          "choices": []
+        },
+        {
+          "field_key": "actual_step",
+          "region_key": "implementation_01_actual_step",
+          "label": "What was actually attempted / delivered",
+          "field_type": "text",
+          "capture_method": "handwriting_recognition",
+          "rectangle": {
+            "x": 36,
+            "y": 370,
+            "width": 540,
+            "height": 109
+          },
+          "required": false,
+          "max_characters": 400,
+          "choices": []
+        },
+        {
+          "field_key": "duration",
+          "region_key": "implementation_01_duration",
+          "label": "Observed duration (if known)",
+          "field_type": "text",
+          "capture_method": "handwriting_recognition",
+          "rectangle": {
+            "x": 36,
+            "y": 487,
+            "width": 540,
+            "height": 36
+          },
+          "required": false,
+          "max_characters": 400,
+          "choices": []
+        },
+        {
+          "field_key": "response",
+          "region_key": "implementation_01_response",
+          "label": "Observed response (without effectiveness claim)",
+          "field_type": "text",
+          "capture_method": "handwriting_recognition",
+          "rectangle": {
+            "x": 36,
+            "y": 531,
+            "width": 540,
+            "height": 101
+          },
+          "required": false,
+          "max_characters": 400,
+          "choices": []
+        },
+        {
+          "field_key": "limitations",
+          "region_key": "implementation_01_limitations",
+          "label": "Notes, deviations, missing information",
+          "field_type": "text",
+          "capture_method": "handwriting_recognition",
+          "rectangle": {
+            "x": 36,
+            "y": 640,
+            "width": 540,
+            "height": 64
+          },
+          "required": false,
+          "max_characters": 400,
+          "choices": []
+        }
+      ]
+    }
+  ]
+}

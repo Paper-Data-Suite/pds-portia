@@ -25,6 +25,14 @@ _CAPTURE_BOTTOM = 742
 _RESOURCE_FILES = (
     "classroom_observation_main_v1.json",
     "classroom_observation_continuation_v1.json",
+    "focused_monitoring_v1.json",
+    "communication_log_v1.json",
+    "event_information_v1.json",
+    "multi_event_information_v1.json",
+    "event_evidence_v1.json",
+    "support_implementation_v1.json",
+    "support_process_evidence_v1.json",
+    "follow_up_v1.json",
 )
 _IDENTITY_KEYS = frozenset(
     {
@@ -38,7 +46,75 @@ _IDENTITY_KEYS = frozenset(
     }
 )
 _TEXT_METHODS = frozenset({"handwriting_recognition", "manual_transcription"})
-_SUPPORTED_MAPPINGS = frozenset({"observation", "event"})
+# The role is a source/candidate mapping constraint, not materialization authority.
+# Context entries must never acquire mapped_record_kind in #60.
+_ROLE_MAPPINGS: Mapping[str, tuple[str, ...]] = {
+    "session_context": (),
+    "observation": ("observation", "event"),
+    "monitoring_context": (),
+    "monitoring": ("observation",),
+    "communication_context": (),
+    "communication": ("communication",),
+    "event_context": (),
+    "event_information": ("event",),
+    "event_evidence": ("account", "observation"),
+    "implementation_context": (),
+    "implementation": ("implementation",),
+    "support_context": (),
+    "support_evidence": ("observation",),
+    "follow_up_context": (),
+    "follow_up": ("follow_up",),
+}
+# Exact frozen role/order/purpose inventory; no 'other' and no substitutions.
+# The context entry is always non-domain; the additional roles can be
+# independently reviewable slots on the same returned physical page.
+_FORM_PROFILES: Mapping[
+    tuple[str, str, int], tuple[str, tuple[str, ...]]
+] = {
+    ("daily_classroom_observation", "classroom_observation", 1): (
+        "classroom_observation_capture",
+        ("session_context", "observation", "observation"),
+    ),
+    ("daily_classroom_observation", "observation_continuation", 2): (
+        "classroom_observation_capture",
+        ("session_context", "observation", "observation", "observation"),
+    ),
+    ("focused_monitoring", "monitoring_sheet", 1): (
+        "focused_monitoring_capture", ("monitoring_context", "monitoring")
+    ),
+    ("communication_log", "communication_sheet", 1): (
+        "communication_capture", ("communication_context", "communication")
+    ),
+    ("event_information", "event_information_sheet", 1): (
+        "new_event_capture", ("event_context", "event_information")
+    ),
+    ("multi_event_information", "multi_event_sheet", 1): (
+        "multi_entry_event_capture",
+        ("event_context", "event_information", "event_information"),
+    ),
+    ("event_evidence", "event_evidence_sheet", 1): (
+        "event_evidence_capture", ("event_context", "event_evidence")
+    ),
+    ("support_implementation", "implementation_sheet", 1): (
+        "implementation_capture",
+        ("implementation_context", "implementation"),
+    ),
+    ("support_process_evidence", "support_evidence_sheet", 1): (
+        "support_process_evidence_capture",
+        ("support_context", "support_evidence"),
+    ),
+    ("follow_up", "follow_up_sheet", 1): (
+        "follow_up_capture", ("follow_up_context", "follow_up")
+    ),
+}
+_CONTEXT_REQUIRED_KIND: Mapping[str, str] = {
+    "event_evidence_capture": "event",
+    "support_process_evidence_capture": "support_process",
+}
+_NO_CONTEXT = frozenset({
+    "classroom_observation_capture", "new_event_capture",
+    "multi_entry_event_capture",
+})
 
 
 class CaptureCatalogError(ValueError):
@@ -87,7 +163,7 @@ class CaptureField:
 @dataclass(frozen=True, slots=True)
 class CaptureEntry:
     entry_key: str
-    source_role: Literal["session_context", "observation"]
+    source_role: str
     permitted_mapped_record_kinds: tuple[str, ...]
     fields: tuple[CaptureField, ...]
 
@@ -163,8 +239,35 @@ class CapturePageSpec:
             raise CaptureCatalogError("historical capture mode mismatch")
         if data.get("entry_layout") != self.entry_layout():
             raise CaptureCatalogError("historical entry layout mismatch")
-        if "existing_work_context" in data or "existing_record_context" in data:
-            raise CaptureCatalogError("observation sheet cannot prebind domain work")
+        work = data.get("existing_work_context")
+        record = data.get("existing_record_context")
+        if self.page_purpose in _NO_CONTEXT and (work is not None or record is not None):
+            raise CaptureCatalogError("this form cannot prebind domain work")
+        required_kind = _CONTEXT_REQUIRED_KIND.get(self.page_purpose)
+        if required_kind and work is None and record is None:
+            raise CaptureCatalogError("this form requires exact existing context")
+        # This is a pure crosswalk, not verification of authoritative storage.
+        # #57's resolver independently loads the exact historical representation.
+        contexts: list[Mapping[str, object]] = []
+        if work is not None:
+            if not isinstance(work, dict):
+                raise CaptureCatalogError("malformed existing work context")
+            contexts.append(work)
+        if record is not None:
+            if not isinstance(record, dict):
+                raise CaptureCatalogError("malformed existing record context")
+            work_ref = record.get("work_ref")
+            if not isinstance(work_ref, dict):
+                raise CaptureCatalogError("malformed existing record context")
+            contexts.append(work_ref)
+        for ctx in contexts:
+            kind = ctx.get("work_kind")
+            if kind not in ("event", "support_process"):
+                raise CaptureCatalogError("unknown existing work context kind")
+            if required_kind and kind != required_kind:
+                raise CaptureCatalogError("wrong existing work context kind")
+        if len(contexts) == 2 and contexts[0] != contexts[1]:
+            raise CaptureCatalogError("contradictory existing context references")
 
 
 def _object(value: object, expected: frozenset[str], name: str) -> dict[str, object]:
@@ -301,20 +404,14 @@ def _parse_entry(value: object) -> CaptureEntry:
     )
     entry_key = _token(raw["entry_key"], "entry.entry_key")
     role = raw["source_role"]
-    if role not in ("session_context", "observation"):
+    if not isinstance(role, str) or role not in _ROLE_MAPPINGS:
         raise CaptureCatalogError("unsupported entry source role")
     mapped = raw["permitted_mapped_record_kinds"]
     if not isinstance(mapped, list):
         raise CaptureCatalogError("entry mappings must be an array")
     kinds = tuple(_token(value, "entry.mapping") for value in mapped)
-    if len(kinds) != len(set(kinds)) or not set(kinds) <= _SUPPORTED_MAPPINGS:
-        raise CaptureCatalogError("unsupported/duplicate candidate mapping")
-    if role == "session_context" and kinds:
-        raise CaptureCatalogError("session context must omit domain mappings")
-    if role == "observation" and kinds != ("observation", "event"):
-        raise CaptureCatalogError(
-            "observation requires exact reviewable mapping choices"
-        )
+    if len(kinds) != len(set(kinds)) or kinds != _ROLE_MAPPINGS[role]:
+        raise CaptureCatalogError("role needs exact permitted candidate mappings")
     fields_raw = raw["fields"]
     if not isinstance(fields_raw, list) or not fields_raw or len(fields_raw) > 12:
         raise CaptureCatalogError("entry must have bounded field definitions")
@@ -407,8 +504,8 @@ def parse_capture_page_spec(content: bytes) -> CapturePageSpec:
         or _intersects(header_box, footer_box)
     ):
         raise CaptureCatalogError("nonstandard reserved QR/header/footer geometry")
-    if data["page_purpose"] != "classroom_observation_capture":
-        raise CaptureCatalogError("this catalog version has no other form geometry")
+    if not isinstance(data["page_purpose"], str):
+        raise CaptureCatalogError("page purpose is not a string")
     if data["capture_mode"] != "mixed_recognition":
         raise CaptureCatalogError("unsupported form recognition mode")
     raw_entries = data["entries"]
@@ -419,11 +516,8 @@ def parse_capture_page_spec(content: bytes) -> CapturePageSpec:
     if len(entry_keys) != len(set(entry_keys)):
         raise CaptureCatalogError("duplicate page-local entry_key")
     context_key = _token(data["context_entry_key"], "context_entry_key")
-    contexts = [entry for entry in entries if entry.source_role == "session_context"]
-    if len(contexts) != 1 or contexts[0].entry_key != context_key:
-        raise CaptureCatalogError("exactly one declared context entry is required")
-    if not any(entry.source_role == "observation" for entry in entries):
-        raise CaptureCatalogError("at least one observation source slot is required")
+    if entries[0].entry_key != context_key:
+        raise CaptureCatalogError("the context entry must be first and declared")
     used: list[CaptureRectangle] = []
     region_keys: set[str] = set()
     for entry in entries:
@@ -438,15 +532,23 @@ def parse_capture_page_spec(content: bytes) -> CapturePageSpec:
     ordinal = _integer(data["page_ordinal"], "page_ordinal", 1, 32)
     template_id = _token(data["template_id"], "template_id")
     form_id = _token(data["form_id"], "form_id")
-    if (
-        form_id != "daily_classroom_observation"
-        or template_id != "portia_classroom_observation"
+    profile = _FORM_PROFILES.get((form_id, role, ordinal))
+    if profile is None:
+        raise CaptureCatalogError("form/page role is not in the frozen catalog")
+    expected_purpose, expected_roles = profile
+    if data["page_purpose"] != expected_purpose:
+        raise CaptureCatalogError("form role has wrong approved page purpose")
+    if template_id != (
+        "portia_classroom_observation" if form_id == "daily_classroom_observation"
+        else f"portia_{form_id}"
     ):
-        raise CaptureCatalogError("form/template is not in catalog v1")
-    if (role, ordinal) not in {
-        ("classroom_observation", 1), ("observation_continuation", 2)
-    }:
-        raise CaptureCatalogError("unsupported historical page role/ordinal")
+        raise CaptureCatalogError("template ID disagrees with catalog form")
+    if tuple(entry.source_role for entry in entries) != expected_roles:
+        raise CaptureCatalogError("entry roles/order disagree with catalog form")
+    if len([entry for entry in entries if entry.entry_key == context_key]) != 1:
+        raise CaptureCatalogError("invalid form context entry")
+    if data["template_version"] != "1" or data["layout_version"] != "layout_1" or data["capture_spec_version"] != "capture_1":
+        raise CaptureCatalogError("historical form versions must not be redefined")
     # Deliberately hash all versioned printable semantics, including labels,
     # ordering, source mapping and geometry, but never a route/clock/output.
     canonical = (
@@ -464,7 +566,7 @@ def parse_capture_page_spec(content: bytes) -> CapturePageSpec:
         ),
         page_role=role,
         page_ordinal=ordinal,
-        page_purpose="classroom_observation_capture",
+        page_purpose=expected_purpose,
         capture_mode="mixed_recognition",
         title=_text(data["title"], "title"),
         instructions=_text(data["instructions"], "instructions", max_length=200),
@@ -490,21 +592,34 @@ def installed_capture_page_specs() -> tuple[CapturePageSpec, ...]:
     identities = [tuple(spec.template_identity().items()) for spec in result]
     if len(identities) != len(set(identities)):
         raise CaptureCatalogError("duplicate historical template identity")
-    if len({spec.page_role for spec in result}) != len(result):
-        raise CaptureCatalogError("duplicate catalog page role")
+    keys = [(spec.form_id, spec.page_role) for spec in result]
+    if len(set(keys)) != len(keys):
+        raise CaptureCatalogError("duplicate form role")
+    if len(result) != len(_FORM_PROFILES):
+        raise CaptureCatalogError("catalog resource/profile inventory mismatch")
+    for spec in result:
+        if spec.canonical_bytes.count(b"\n") == 0:
+            raise CaptureCatalogError("historical spec encoding invalid")
     return result
 
 
 def list_supported_capture_forms() -> tuple[tuple[str, str], ...]:
     """Teacher-safe form identifier and label, not a generic 'other' fallback."""
     specs = installed_capture_page_specs()
-    return ((specs[0].form_id, specs[0].label),)
+    return tuple(
+        (spec.form_id, spec.label)
+        for spec in specs if spec.page_ordinal == 1
+    )
 
 
 def capture_pages_for_form(form_id: str) -> tuple[CapturePageSpec, ...]:
-    if form_id != "daily_classroom_observation":
+    matches = tuple(
+        spec for spec in installed_capture_page_specs()
+        if spec.form_id == form_id
+    )
+    if not matches:
         raise UnsupportedCaptureFormError(f"unsupported catalog form: {form_id}")
-    return installed_capture_page_specs()
+    return matches
 
 
 def resolve_capture_page_spec(identity: Mapping[str, object]) -> CapturePageSpec:

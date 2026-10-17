@@ -11,7 +11,7 @@ import pytest
 
 from portia.capture.form_catalog import (
     CaptureRectangle,
-    installed_capture_page_specs,
+    capture_pages_for_form,
     resolve_capture_page_spec,
 )
 from portia.capture.observation_layout import (
@@ -217,11 +217,11 @@ def test_explicit_layout_tampering_rejected() -> None:
 
 
 def test_frozen_specs_remain_unchanged_and_no_rendering_dependency() -> None:
-    assert len(installed_capture_page_specs()) == 2
+    assert len(capture_pages_for_form("daily_classroom_observation")) == 2
     one = plan_daily_classroom_observation(continuation_pages=2)
     two = plan_daily_classroom_observation(continuation_pages=2)
     assert one == two
-    assert tuple(spec.template_identity() for spec in installed_capture_page_specs()) == (
+    assert tuple(spec.template_identity() for spec in capture_pages_for_form("daily_classroom_observation")) == (
         one.pages[0].spec.template_identity(), one.pages[1].spec.template_identity()
     )
     assert not hasattr(one, "pdf")

@@ -1,0 +1,186 @@
+{
+  "spec_format": "portia_capture_layout_v1",
+  "schema_version": 1,
+  "form_id": "follow_up",
+  "label": "Follow-Up",
+  "template_id": "portia_follow_up",
+  "template_version": "1",
+  "layout_version": "layout_1",
+  "capture_spec_version": "capture_1",
+  "page_role": "follow_up_sheet",
+  "page_ordinal": 1,
+  "page_purpose": "follow_up_capture",
+  "capture_mode": "mixed_recognition",
+  "page_width": 612,
+  "page_height": 792,
+  "page_margin_points": 36,
+  "geometry_coordinate_system": "top_left_pdf_points",
+  "qr_rectangle": {
+    "x": 468,
+    "y": 40,
+    "width": 108,
+    "height": 108
+  },
+  "qr_quiet_zone_modules": 4,
+  "header_rectangle": {
+    "x": 36,
+    "y": 36,
+    "width": 420,
+    "height": 104
+  },
+  "footer_rectangle": {
+    "x": 36,
+    "y": 744,
+    "width": 540,
+    "height": 12
+  },
+  "title": "Follow-Up",
+  "instructions": "Distinguish proposed follow-up from activity actually attempted or completed.",
+  "context_entry_key": "follow_up_context",
+  "entries": [
+    {
+      "entry_key": "follow_up_context",
+      "source_role": "follow_up_context",
+      "permitted_mapped_record_kinds": [],
+      "fields": [
+        {
+          "field_key": "reference_date",
+          "region_key": "follow_up_context_reference_date",
+          "label": "Prior context date (if known)",
+          "field_type": "text",
+          "capture_method": "handwriting_recognition",
+          "rectangle": {
+            "x": 36,
+            "y": 158,
+            "width": 260,
+            "height": 31
+          },
+          "required": false,
+          "max_characters": 400,
+          "choices": []
+        },
+        {
+          "field_key": "activity_date",
+          "region_key": "follow_up_context_activity_date",
+          "label": "Follow-up date/time as known",
+          "field_type": "text",
+          "capture_method": "handwriting_recognition",
+          "rectangle": {
+            "x": 312,
+            "y": 158,
+            "width": 264,
+            "height": 31
+          },
+          "required": false,
+          "max_characters": 400,
+          "choices": []
+        },
+        {
+          "field_key": "context_reference",
+          "region_key": "follow_up_context_context_reference",
+          "label": "Relevant work or source reference (optional)",
+          "field_type": "text",
+          "capture_method": "handwriting_recognition",
+          "rectangle": {
+            "x": 36,
+            "y": 199,
+            "width": 540,
+            "height": 45
+          },
+          "required": false,
+          "max_characters": 400,
+          "choices": []
+        }
+      ]
+    },
+    {
+      "entry_key": "follow_up_01",
+      "source_role": "follow_up",
+      "permitted_mapped_record_kinds": [
+        "follow_up"
+      ],
+      "fields": [
+        {
+          "field_key": "proposed_activity",
+          "region_key": "follow_up_01_proposed_activity",
+          "label": "Proposed follow-up (not yet completed)",
+          "field_type": "text",
+          "capture_method": "handwriting_recognition",
+          "rectangle": {
+            "x": 36,
+            "y": 272,
+            "width": 540,
+            "height": 89
+          },
+          "required": false,
+          "max_characters": 400,
+          "choices": []
+        },
+        {
+          "field_key": "activity_attempted",
+          "region_key": "follow_up_01_activity_attempted",
+          "label": "Actual attempted / completed activity",
+          "field_type": "text",
+          "capture_method": "handwriting_recognition",
+          "rectangle": {
+            "x": 36,
+            "y": 369,
+            "width": 540,
+            "height": 104
+          },
+          "required": false,
+          "max_characters": 400,
+          "choices": []
+        },
+        {
+          "field_key": "observed_information",
+          "region_key": "follow_up_01_observed_information",
+          "label": "Observable information obtained, if any",
+          "field_type": "text",
+          "capture_method": "handwriting_recognition",
+          "rectangle": {
+            "x": 36,
+            "y": 481,
+            "width": 540,
+            "height": 94
+          },
+          "required": false,
+          "max_characters": 400,
+          "choices": []
+        },
+        {
+          "field_key": "unresolved_items",
+          "region_key": "follow_up_01_unresolved_items",
+          "label": "Unresolved items",
+          "field_type": "text",
+          "capture_method": "handwriting_recognition",
+          "rectangle": {
+            "x": 36,
+            "y": 583,
+            "width": 540,
+            "height": 55
+          },
+          "required": false,
+          "max_characters": 400,
+          "choices": []
+        },
+        {
+          "field_key": "next_steps",
+          "region_key": "follow_up_01_next_steps",
+          "label": "Next steps, if needed",
+          "field_type": "text",
+          "capture_method": "handwriting_recognition",
+          "rectangle": {
+            "x": 36,
+            "y": 646,
+            "width": 540,
+            "height": 58
+          },
+          "required": false,
+          "max_characters": 400,
+          "choices": []
+        }
+      ]
+    }
+  ]
+}

@@ -235,8 +235,15 @@ def _field_drawing(
 
 def _entry_drawing(spec: CapturePageSpec, entry_index: int) -> EntryDrawing:
     entry = spec.entries[entry_index]
+    source_role: Literal["session_context", "observation"]
+    if entry.source_role == "session_context":
+        source_role = "session_context"
+    elif entry.source_role == "observation":
+        source_role = "observation"
+    else:
+        raise ObservationLayoutError("not a Daily Observation source role")
     fields = tuple(
-        _field_drawing(entry.entry_key, entry.source_role, field)
+        _field_drawing(entry.entry_key, source_role, field)
         for field in entry.fields
     )
     heading = None
@@ -246,7 +253,7 @@ def _entry_drawing(spec: CapturePageSpec, entry_index: int) -> EntryDrawing:
         heading = TextRun(
             f"Observation {ordinal}", 36, first_y - 6, 8.5, "bold", 200
         )
-    return EntryDrawing(entry.entry_key, entry.source_role, heading, fields)
+    return EntryDrawing(entry.entry_key, source_role, heading, fields)
 
 
 def _validate_page_drawing(page: ObservationPageDrawing) -> None:

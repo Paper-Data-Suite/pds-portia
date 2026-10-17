@@ -1,0 +1,138 @@
+{
+  "spec_format": "portia_capture_layout_v1",
+  "schema_version": 1,
+  "form_id": "support_process_evidence",
+  "label": "Support Process Evidence (Existing)",
+  "template_id": "portia_support_process_evidence",
+  "template_version": "1",
+  "layout_version": "layout_1",
+  "capture_spec_version": "capture_1",
+  "page_role": "support_evidence_sheet",
+  "page_ordinal": 1,
+  "page_purpose": "support_process_evidence_capture",
+  "capture_mode": "mixed_recognition",
+  "page_width": 612,
+  "page_height": 792,
+  "page_margin_points": 36,
+  "geometry_coordinate_system": "top_left_pdf_points",
+  "qr_rectangle": {
+    "x": 468,
+    "y": 40,
+    "width": 108,
+    "height": 108
+  },
+  "qr_quiet_zone_modules": 4,
+  "header_rectangle": {
+    "x": 36,
+    "y": 36,
+    "width": 420,
+    "height": 104
+  },
+  "footer_rectangle": {
+    "x": 36,
+    "y": 744,
+    "width": 540,
+    "height": 12
+  },
+  "title": "Support Process Evidence (Existing)",
+  "instructions": "Record observable information for the exact existing Support Process, not an outcome judgment.",
+  "context_entry_key": "support_context",
+  "entries": [
+    {
+      "entry_key": "support_context",
+      "source_role": "support_context",
+      "permitted_mapped_record_kinds": [],
+      "fields": [
+        {
+          "field_key": "date",
+          "region_key": "support_context_date",
+          "label": "Observation date/time as known",
+          "field_type": "text",
+          "capture_method": "handwriting_recognition",
+          "rectangle": {
+            "x": 36,
+            "y": 158,
+            "width": 540,
+            "height": 31
+          },
+          "required": false,
+          "max_characters": 400,
+          "choices": []
+        },
+        {
+          "field_key": "source",
+          "region_key": "support_context_source",
+          "label": "Source or observer as reported",
+          "field_type": "text",
+          "capture_method": "handwriting_recognition",
+          "rectangle": {
+            "x": 36,
+            "y": 199,
+            "width": 540,
+            "height": 50
+          },
+          "required": false,
+          "max_characters": 400,
+          "choices": []
+        }
+      ]
+    },
+    {
+      "entry_key": "support_evidence_01",
+      "source_role": "support_evidence",
+      "permitted_mapped_record_kinds": [
+        "observation"
+      ],
+      "fields": [
+        {
+          "field_key": "observed_step",
+          "region_key": "support_evidence_01_observed_step",
+          "label": "Observed relevant action or condition",
+          "field_type": "text",
+          "capture_method": "handwriting_recognition",
+          "rectangle": {
+            "x": 36,
+            "y": 277,
+            "width": 540,
+            "height": 145
+          },
+          "required": false,
+          "max_characters": 400,
+          "choices": []
+        },
+        {
+          "field_key": "observed_response",
+          "region_key": "support_evidence_01_observed_response",
+          "label": "Observed response, if any",
+          "field_type": "text",
+          "capture_method": "handwriting_recognition",
+          "rectangle": {
+            "x": 36,
+            "y": 430,
+            "width": 540,
+            "height": 126
+          },
+          "required": false,
+          "max_characters": 400,
+          "choices": []
+        },
+        {
+          "field_key": "source_limitations",
+          "region_key": "support_evidence_01_source_limitations",
+          "label": "Uncertainty / limitations / other notes",
+          "field_type": "text",
+          "capture_method": "handwriting_recognition",
+          "rectangle": {
+            "x": 36,
+            "y": 564,
+            "width": 540,
+            "height": 140
+          },
+          "required": false,
+          "max_characters": 400,
+          "choices": []
+        }
+      ]
+    }
+  ]
+}

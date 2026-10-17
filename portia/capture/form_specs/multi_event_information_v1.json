@@ -1,0 +1,227 @@
+{
+  "spec_format": "portia_capture_layout_v1",
+  "schema_version": 1,
+  "form_id": "multi_event_information",
+  "label": "Event Information (Multiple)",
+  "template_id": "portia_multi_event_information",
+  "template_version": "1",
+  "layout_version": "layout_1",
+  "capture_spec_version": "capture_1",
+  "page_role": "multi_event_sheet",
+  "page_ordinal": 1,
+  "page_purpose": "multi_entry_event_capture",
+  "capture_mode": "mixed_recognition",
+  "page_width": 612,
+  "page_height": 792,
+  "page_margin_points": 36,
+  "geometry_coordinate_system": "top_left_pdf_points",
+  "qr_rectangle": {
+    "x": 468,
+    "y": 40,
+    "width": 108,
+    "height": 108
+  },
+  "qr_quiet_zone_modules": 4,
+  "header_rectangle": {
+    "x": 36,
+    "y": 36,
+    "width": 420,
+    "height": 104
+  },
+  "footer_rectangle": {
+    "x": 36,
+    "y": 744,
+    "width": 540,
+    "height": 12
+  },
+  "title": "Event Information (Multiple)",
+  "instructions": "Record each distinct occurrence in its own space. Do not infer shared responsibility.",
+  "context_entry_key": "event_context",
+  "entries": [
+    {
+      "entry_key": "event_context",
+      "source_role": "event_context",
+      "permitted_mapped_record_kinds": [],
+      "fields": [
+        {
+          "field_key": "session_date",
+          "region_key": "event_context_session_date",
+          "label": "Page/session date (if known)",
+          "field_type": "text",
+          "capture_method": "handwriting_recognition",
+          "rectangle": {
+            "x": 36,
+            "y": 158,
+            "width": 260,
+            "height": 31
+          },
+          "required": false,
+          "max_characters": 400,
+          "choices": []
+        },
+        {
+          "field_key": "general_location",
+          "region_key": "event_context_general_location",
+          "label": "General location or context",
+          "field_type": "text",
+          "capture_method": "handwriting_recognition",
+          "rectangle": {
+            "x": 312,
+            "y": 158,
+            "width": 264,
+            "height": 31
+          },
+          "required": false,
+          "max_characters": 400,
+          "choices": []
+        }
+      ]
+    },
+    {
+      "entry_key": "event_01",
+      "source_role": "event_information",
+      "permitted_mapped_record_kinds": [
+        "event"
+      ],
+      "fields": [
+        {
+          "field_key": "time_as_known",
+          "region_key": "event_01_time_as_known",
+          "label": "Time (if known)",
+          "field_type": "text",
+          "capture_method": "handwriting_recognition",
+          "rectangle": {
+            "x": 36,
+            "y": 214,
+            "width": 182,
+            "height": 31
+          },
+          "required": false,
+          "max_characters": 400,
+          "choices": []
+        },
+        {
+          "field_key": "persons_reported",
+          "region_key": "event_01_persons_reported",
+          "label": "Who / source",
+          "field_type": "text",
+          "capture_method": "handwriting_recognition",
+          "rectangle": {
+            "x": 228,
+            "y": 214,
+            "width": 348,
+            "height": 31
+          },
+          "required": false,
+          "max_characters": 400,
+          "choices": []
+        },
+        {
+          "field_key": "what_happened",
+          "region_key": "event_01_what_happened",
+          "label": "Distinct occurrence: observed or reported",
+          "field_type": "text",
+          "capture_method": "handwriting_recognition",
+          "rectangle": {
+            "x": 36,
+            "y": 254,
+            "width": 540,
+            "height": 109
+          },
+          "required": false,
+          "max_characters": 400,
+          "choices": []
+        },
+        {
+          "field_key": "uncertainty",
+          "region_key": "event_01_uncertainty",
+          "label": "Unknowns / separate account",
+          "field_type": "text",
+          "capture_method": "handwriting_recognition",
+          "rectangle": {
+            "x": 36,
+            "y": 371,
+            "width": 540,
+            "height": 61
+          },
+          "required": false,
+          "max_characters": 400,
+          "choices": []
+        }
+      ]
+    },
+    {
+      "entry_key": "event_02",
+      "source_role": "event_information",
+      "permitted_mapped_record_kinds": [
+        "event"
+      ],
+      "fields": [
+        {
+          "field_key": "time_as_known",
+          "region_key": "event_02_time_as_known",
+          "label": "Time (if known)",
+          "field_type": "text",
+          "capture_method": "handwriting_recognition",
+          "rectangle": {
+            "x": 36,
+            "y": 460,
+            "width": 182,
+            "height": 31
+          },
+          "required": false,
+          "max_characters": 400,
+          "choices": []
+        },
+        {
+          "field_key": "persons_reported",
+          "region_key": "event_02_persons_reported",
+          "label": "Who / source",
+          "field_type": "text",
+          "capture_method": "handwriting_recognition",
+          "rectangle": {
+            "x": 228,
+            "y": 460,
+            "width": 348,
+            "height": 31
+          },
+          "required": false,
+          "max_characters": 400,
+          "choices": []
+        },
+        {
+          "field_key": "what_happened",
+          "region_key": "event_02_what_happened",
+          "label": "Distinct occurrence: observed or reported",
+          "field_type": "text",
+          "capture_method": "handwriting_recognition",
+          "rectangle": {
+            "x": 36,
+            "y": 500,
+            "width": 540,
+            "height": 109
+          },
+          "required": false,
+          "max_characters": 400,
+          "choices": []
+        },
+        {
+          "field_key": "uncertainty",
+          "region_key": "event_02_uncertainty",
+          "label": "Unknowns / separate account",
+          "field_type": "text",
+          "capture_method": "handwriting_recognition",
+          "rectangle": {
+            "x": 36,
+            "y": 617,
+            "width": 540,
+            "height": 61
+          },
+          "required": false,
+          "max_characters": 400,
+          "choices": []
+        }
+      ]
+    }
+  ]
+}
