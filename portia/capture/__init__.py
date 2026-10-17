@@ -32,6 +32,12 @@ from portia.capture.form_catalog import (
     list_supported_capture_forms,
     resolve_capture_page_spec,
 )
+from portia.capture.managed_pdf import (
+    ARTIFACT_RECEIPT_VERSION,
+    FileCapturePdfArtifactService,
+    ManagedCapturePdf,
+    ManagedCapturePdfError,
+)
 from portia.capture.observation_layout import (
     DRAW_PLAN_VERSION,
     MAX_CONTINUATION_PAGES,
@@ -67,6 +73,10 @@ __all__ = [
     "FilePageTargetService",
     "FilePageRouteService",
     "FileCapturePreparationService",
+    "ARTIFACT_RECEIPT_VERSION",
+    "ManagedCapturePdfError",
+    "ManagedCapturePdf",
+    "FileCapturePdfArtifactService",
     "PDF_RENDER_VERSION",
     "CapturePdfRenderError",
     "RenderedCapturePage",

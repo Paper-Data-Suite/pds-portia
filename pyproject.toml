@@ -15,7 +15,8 @@ authors = [
 dependencies = [
     "pds-core>=0.6.3,<0.7",
     "reportlab>=4.2,<5",
-    "qrcode>=7.4,<9"
+    "qrcode>=7.4,<9",
+    "pypdf>=5,<7"
 ]
 classifiers = [
     "Development Status :: 2 - Pre-Alpha",
