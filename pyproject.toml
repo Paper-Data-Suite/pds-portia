@@ -13,7 +13,9 @@ authors = [
     { name = "Stephen Severino" }
 ]
 dependencies = [
-    "pds-core>=0.6.3,<0.7"
+    "pds-core>=0.6.3,<0.7",
+    "reportlab>=4.2,<5",
+    "qrcode>=7.4,<9"
 ]
 classifiers = [
     "Development Status :: 2 - Pre-Alpha",
@@ -151,3 +153,7 @@ files = [
 [[tool.mypy.overrides]]
 module = ["pds_core", "pds_core.*"]
 follow_untyped_imports = true
+
+[[tool.mypy.overrides]]
+module = ["reportlab", "reportlab.*", "qrcode", "qrcode.*"]
+ignore_missing_imports = true

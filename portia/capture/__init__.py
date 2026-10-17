@@ -46,6 +46,13 @@ from portia.capture.observation_layout import (
     plan_daily_classroom_observation,
 )
 from portia.capture.page_targets import FilePageTargetService
+from portia.capture.pdf_rendering import (
+    PDF_RENDER_VERSION,
+    CapturePdfRenderError,
+    RenderedCapturePage,
+    RenderedCapturePdf,
+    render_verified_capture_batch_pdf,
+)
 from portia.capture.preparation import FileCapturePreparationService
 from portia.capture.purposes import (
     VerifiedExistingCaptureContext,
@@ -60,6 +67,11 @@ __all__ = [
     "FilePageTargetService",
     "FilePageRouteService",
     "FileCapturePreparationService",
+    "PDF_RENDER_VERSION",
+    "CapturePdfRenderError",
+    "RenderedCapturePage",
+    "RenderedCapturePdf",
+    "render_verified_capture_batch_pdf",
     "CaptureCatalogError",
     "UnsupportedCaptureFormError",
     "CapturePageSpec",
