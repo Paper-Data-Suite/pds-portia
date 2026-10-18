@@ -14,6 +14,14 @@ from portia.intake.contracts import (
     SourceSafetyLimits,
     assess_source_signature,
 )
+from portia.intake.dispatch import (
+    FilePageRouteDispatchService,
+    PageRouteOutcome,
+    PageRouteStatus,
+    PageRouteVerificationError,
+    SourceRouteOutcomes,
+    VerifiedPageRoute,
+)
 from portia.intake.recognition import (
     FilePageQrDiscoveryService,
     PageQrDiscovery,
@@ -38,6 +46,12 @@ __all__ = [
     "PageQrStatus",
     "QrDiscoveryError",
     "SourceQrDiscovery",
+    "FilePageRouteDispatchService",
+    "PageRouteOutcome",
+    "PageRouteStatus",
+    "PageRouteVerificationError",
+    "SourceRouteOutcomes",
+    "VerifiedPageRoute",
     "DEFAULT_SOURCE_LIMITS",
     "HARD_MAX_PAGE_PIXELS",
     "HARD_MAX_PAGES",
