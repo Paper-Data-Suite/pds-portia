@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from portia.intake.recovery import RetainedRecoveryError
 from portia.intake.retention import IntakeSourceError
 from portia.intake.teacher import (
     TeacherPageResult,
@@ -172,8 +173,11 @@ def launch_returned_paper_menu(
         gateway = service or TeacherReturnedPaperService(
             root, authorization=LocalWorkspaceCaptureAuthority(root)
         )
-        options = ["new"]
-        labels = ["Choose one returned PDF/image or scanner-inbox file"]
+        options = ["new", "recover"]
+        labels = [
+            "Choose one returned PDF/image or scanner-inbox file",
+            "Resume a previously Core-retained scan (after restart)",
+        ]
         if state.last_retained_paper is not None:
             options.append("retry")
             labels.append("Retry the last Core-retained source (no duplicate scan)")
@@ -189,6 +193,24 @@ def launch_returned_paper_menu(
         if choice == "retry":
             assert state.last_retained_paper is not None
             result = gateway.resume_retained(state.last_retained_paper)
+        elif choice == "recover":
+            prior = gateway.recent_retained()
+            if not prior:
+                _show(
+                    "Returned Paper - Recovery",
+                    (
+                        "There are no compatible prior Core-retained scans.",
+                        "You can select a new returned file instead.",
+                    ),
+                )
+                return
+            chosen = select_one(
+                "Returned Paper - Resume Prior Scan",
+                prior,
+                tuple(item.label for item in prior),
+                help_text="Recheck exact Core bytes before processing. No second intake event.",
+            )
+            result = gateway.resume_recovered(chosen)
         else:
             path = _choose_file()
             preflight = gateway.inspect(path)
@@ -211,6 +233,15 @@ def launch_returned_paper_menu(
         _review(result)
     except CancelMenuAction:
         return
+    except RetainedRecoveryError:
+        _show(
+            "Returned Paper - Recovery Needs Attention",
+            (
+                "The retained scan did not pass Core provenance or content checks.",
+                "No Core original was removed or rewritten.",
+                "Review the retained scan or choose a new source file.",
+            ),
+        )
     except IntakeSourceError as exc:
         _show(
             "Returned Paper - File Needs Attention",

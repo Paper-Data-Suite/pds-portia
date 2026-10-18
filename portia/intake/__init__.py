@@ -35,6 +35,11 @@ from portia.intake.recognition import (
     QrDiscoveryError,
     SourceQrDiscovery,
 )
+from portia.intake.recovery import (
+    FileCoreRetainedSourceRecoveryService,
+    RetainedRecoveryError,
+    RetainedSourceCandidate,
+)
 from portia.intake.retention import (
     FileRetainFirstIntakeService,
     IntakeSourceError,
@@ -50,6 +55,9 @@ from portia.intake.teacher import (
 )
 
 __all__ = [
+    "FileCoreRetainedSourceRecoveryService",
+    "RetainedRecoveryError",
+    "RetainedSourceCandidate",
     "TeacherReturnedPaperService",
     "TeacherPageResult",
     "TeacherPageState",

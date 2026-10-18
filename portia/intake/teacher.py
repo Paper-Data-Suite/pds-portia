@@ -16,6 +16,10 @@ from portia.intake.contracts import RetainedPageIdentity
 from portia.intake.dispatch import FilePageRouteDispatchService
 from portia.intake.page_records import FilePageRecordService
 from portia.intake.recognition import FilePageQrDiscoveryService
+from portia.intake.recovery import (
+    FileCoreRetainedSourceRecoveryService,
+    RetainedSourceCandidate,
+)
 from portia.intake.retention import (
     FileRetainFirstIntakeService,
     RetainedIntakeSource,
@@ -118,6 +122,17 @@ class TeacherReturnedPaperService:
         self.discovery = FilePageQrDiscoveryService(self.root)
         self.dispatch = FilePageRouteDispatchService(self.root)
         self.records = FilePageRecordService(self.root)
+        self.recovery = FileCoreRetainedSourceRecoveryService(self.root)
+
+    def recent_retained(self) -> tuple[RetainedSourceCandidate, ...]:
+        """Find prior Core scan identities without re-retaining their bytes."""
+        return self.recovery.recent()
+
+    def resume_recovered(
+        self, candidate: RetainedSourceCandidate
+    ) -> TeacherSourceResult:
+        """Verify and resume one exact retained source after process restart."""
+        return self.resume_retained(self.recovery.load(candidate))
 
     def inspect(self, file: str | Path) -> SourcePreflight:
         """Read-only source validation, suitable before explicit confirmation."""
