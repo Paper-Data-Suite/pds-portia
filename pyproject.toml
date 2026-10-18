@@ -36,6 +36,11 @@ Documentation = "https://github.com/Paper-Data-Suite/pds-portia/tree/main/docs"
 Repository = "https://github.com/Paper-Data-Suite/pds-portia"
 
 [project.optional-dependencies]
+scan = [
+    "PyMuPDF>=1.26,<2",
+    "opencv-python-headless>=4.10,<6",
+    "numpy>=2,<3",
+]
 dev = [
     "build>=1.2",
     "jsonschema>=4.23,<5",

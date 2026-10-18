@@ -1,4 +1,4 @@
-"""Portia scan-intake contracts and Core-owned retain-first source service."""
+"""Core-retained scan intake, bounded source preflight and per-page QR discovery."""
 
 from portia.intake.contracts import (
     DEFAULT_SOURCE_LIMITS,
@@ -14,6 +14,13 @@ from portia.intake.contracts import (
     SourceSafetyLimits,
     assess_source_signature,
 )
+from portia.intake.recognition import (
+    FilePageQrDiscoveryService,
+    PageQrDiscovery,
+    PageQrStatus,
+    QrDiscoveryError,
+    SourceQrDiscovery,
+)
 from portia.intake.retention import (
     FileRetainFirstIntakeService,
     IntakeSourceError,
@@ -26,6 +33,11 @@ __all__ = [
     "IntakeSourceError",
     "RetainedIntakeSource",
     "SourcePreflight",
+    "FilePageQrDiscoveryService",
+    "PageQrDiscovery",
+    "PageQrStatus",
+    "QrDiscoveryError",
+    "SourceQrDiscovery",
     "DEFAULT_SOURCE_LIMITS",
     "HARD_MAX_PAGE_PIXELS",
     "HARD_MAX_PAGES",
