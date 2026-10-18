@@ -72,7 +72,12 @@ def test_issue54_architecture_owned_foundation_obligations_remain_reconciled() -
 def test_issue54_runtime_dependency_surface_is_core_only() -> None:
     with (ROOT / "pyproject.toml").open("rb") as handle:
         project = tomllib.load(handle)["project"]
-    assert project["dependencies"] == ["pds-core>=0.6.3,<0.7"]
+    assert project["dependencies"] == [
+        "pds-core>=0.6.3,<0.7",
+        "reportlab>=4.2,<5",
+        "qrcode>=7.4,<9",
+        "pypdf>=5,<7",
+    ]
 
 
 def test_issue54_runtime_has_no_sibling_module_imports() -> None:
@@ -99,19 +104,24 @@ def test_issue54_future_publication_producer_remains_unclaimed() -> None:
 
 def test_issue54_derived_store_remains_explicitly_nonauthoritative() -> None:
     source = (ROOT / "portia" / "storage" / "derived.py").read_text(encoding="utf-8")
-    assert "Install and load derived state without treating it as canonical authority." in source
+    assert (
+        "Install and load derived state without treating it as canonical authority."
+        in source
+    )
 
 
 def test_issue54_executable_runtime_evidence_survives_from_issue53() -> None:
-    source = (
-        ROOT / "tests" / "test_issue53_end_to_end_acceptance.py"
-    ).read_text(encoding="utf-8")
+    source = (ROOT / "tests" / "test_issue53_end_to_end_acceptance.py").read_text(
+        encoding="utf-8"
+    )
     assert 'expected_pds = {"pds-core", "pds-portia"}' in source
     assert '"portia.pds_operations:get_module_operations_profile"' in source
     assert '"provider_zero_write": after_invocation == baseline' in source
 
 
-def test_issue54_slice6_opens_no_architecture_finding_when_no_defect_was_found() -> None:
+def test_issue54_slice6_opens_no_architecture_finding_when_no_defect_was_found() -> (
+    None
+):
     audit = _audit()
     architecture_findings = [
         finding

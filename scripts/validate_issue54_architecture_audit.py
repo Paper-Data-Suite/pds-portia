@@ -187,8 +187,13 @@ def validate_repo(root: Path = ROOT) -> list[str]:
     except (OSError, tomllib.TOMLDecodeError, ValueError) as exc:
         errors.append(f"cannot read project contract: {exc}")
     else:
-        if project.get("dependencies") != ["pds-core>=0.6.3,<0.7"]:
-            errors.append("runtime dependency surface must remain Core-only")
+        if project.get("dependencies") != [
+            "pds-core>=0.6.3,<0.7",
+            "reportlab>=4.2,<5",
+            "qrcode>=7.4,<9",
+            "pypdf>=5,<7",
+        ]:
+            errors.append("unexpected development runtime dependency surface")
         if project.get("scripts") != {"portia": "portia.cli:main"}:
             errors.append("console-script surface drifted")
         entry_points = project.get("entry-points")

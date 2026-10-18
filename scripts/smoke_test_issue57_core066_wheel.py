@@ -14,7 +14,7 @@ EXPECTED_PORTIA_VERSION = "0.2.0"
 
 # Execute with -I from a directory outside the repository, using only the two
 # installed wheels. The fixture paths are input DATA, not import locations.
-_INSTALLED_SMOKE = r'''
+_INSTALLED_SMOKE = r"""
 import hashlib
 import json
 import os
@@ -203,7 +203,7 @@ print(json.dumps({
     "viewer_alias_isolation": True, "canonical_bytes_preserved": True,
     "no_fabricated_domain_work": True,
 }, sort_keys=True))
-'''
+"""
 
 
 def _run(command: list[str], *, cwd: Path, env: dict[str, str]) -> str:
@@ -241,22 +241,56 @@ def smoke(portia_wheel: Path, core_wheel: Path, fixtures: Path) -> None:
         external = root / "external-cwd"
         external.mkdir()
         venv.EnvBuilder(with_pip=True).create(environment)
-        python = environment / ("Scripts/python.exe" if os.name == "nt" else "bin/python")
+        python = environment / (
+            "Scripts/python.exe" if os.name == "nt" else "bin/python"
+        )
         env = os.environ.copy()
         env.pop("PYTHONPATH", None)
         env["PYTHONNOUSERSITE"] = "1"
         env["PYTHONDONTWRITEBYTECODE"] = "1"
+        # Only external capture libraries are resolved online. Core and Portia
+        # still come exclusively from the authenticated, exact supplied wheels.
+        env.pop("PIP_NO_INDEX", None)
+        _run(
+            [
+                str(python),
+                "-m",
+                "pip",
+                "install",
+                "reportlab>=4.2,<5",
+                "qrcode>=7.4,<9",
+                "pypdf>=5,<7",
+            ],
+            cwd=external,
+            env=env,
+        )
         env["PIP_NO_INDEX"] = "1"
         _run(
-            [str(python), "-m", "pip", "install", "--no-deps", "--no-index",
-             str(core_wheel.resolve()), str(portia_wheel.resolve())],
-            cwd=external, env=env,
+            [
+                str(python),
+                "-m",
+                "pip",
+                "install",
+                "--no-deps",
+                "--no-index",
+                str(core_wheel.resolve()),
+                str(portia_wheel.resolve()),
+            ],
+            cwd=external,
+            env=env,
         )
         _run([str(python), "-m", "pip", "check"], cwd=external, env=env)
         output = _run(
-            [str(python), "-I", "-c", _INSTALLED_SMOKE,
-             str(fixtures.resolve()), str(environment.resolve())],
-            cwd=external, env=env,
+            [
+                str(python),
+                "-I",
+                "-c",
+                _INSTALLED_SMOKE,
+                str(fixtures.resolve()),
+                str(environment.resolve()),
+            ],
+            cwd=external,
+            env=env,
         )
         print(output.strip())
 
@@ -270,7 +304,10 @@ def main() -> int:
     try:
         smoke(args.portia_wheel, args.core_wheel, args.fixtures)
     except (OSError, RuntimeError, subprocess.SubprocessError) as exc:
-        print(f"Issue #57 Core 0.6.6 installed qualification FAILED: {exc}", file=sys.stderr)
+        print(
+            f"Issue #57 Core 0.6.6 installed qualification FAILED: {exc}",
+            file=sys.stderr,
+        )
         return 1
     print("Issue #57 Core 0.6.6 installed qualification passed")
     return 0

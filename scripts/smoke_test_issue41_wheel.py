@@ -12,7 +12,9 @@ import venv
 from pathlib import Path
 
 
-def _run(command: list[str], *, cwd: Path, env: dict[str, str]) -> subprocess.CompletedProcess[str]:
+def _run(
+    command: list[str], *, cwd: Path, env: dict[str, str]
+) -> subprocess.CompletedProcess[str]:
     return subprocess.run(
         command,
         cwd=cwd,
@@ -32,7 +34,7 @@ def smoke(portia_wheel: Path, core_wheel: Path) -> None:
     if "0.6.3" not in core_wheel.name:
         raise RuntimeError("Issue #41 installed-wheel smoke requires Core 0.6.3")
 
-    code = r'''
+    code = r"""
 import json
 from pathlib import Path
 
@@ -185,7 +187,7 @@ print(json.dumps({
     "account_version": account_current.record.contract_version,
     "observation_version": observation_current.record.contract_version,
 }))
-'''
+"""
 
     with tempfile.TemporaryDirectory(prefix="portia-issue41-wheel-smoke-") as temporary:
         root = Path(temporary)
@@ -204,9 +206,31 @@ print(json.dumps({
             env=env,
         )
         _run(
-            [str(python), "-m", "pip", "install", "--no-deps", str(portia_wheel.resolve())],
+            [
+                str(python),
+                "-m",
+                "pip",
+                "install",
+                "--no-deps",
+                str(portia_wheel.resolve()),
+            ],
             cwd=work,
             env=env,
+        )
+        capture_dependency_env = env.copy()
+        capture_dependency_env.pop("PIP_NO_INDEX", None)
+        _run(
+            [
+                str(python),
+                "-m",
+                "pip",
+                "install",
+                "reportlab>=4.2,<5",
+                "qrcode>=7.4,<9",
+                "pypdf>=5,<7",
+            ],
+            cwd=work,
+            env=capture_dependency_env,
         )
         _run([str(python), "-m", "pip", "check"], cwd=work, env=env)
         package = _run(
@@ -220,7 +244,9 @@ print(json.dumps({
         )
         installed = Path(json.loads(package.stdout)["path"]).resolve()
         if repository.resolve() in installed.parents:
-            raise RuntimeError(f"smoke import resolved into source checkout: {installed}")
+            raise RuntimeError(
+                f"smoke import resolved into source checkout: {installed}"
+            )
         for relative in (
             "workflows/accounts.py",
             "workflows/observations.py",
@@ -228,7 +254,9 @@ print(json.dumps({
             "workflows/evidence_artifacts.py",
         ):
             if not (installed / relative).is_file():
-                raise RuntimeError(f"installed Portia wheel is missing Issue #41 file: {relative}")
+                raise RuntimeError(
+                    f"installed Portia wheel is missing Issue #41 file: {relative}"
+                )
 
         result = _run([str(python), "-c", code], cwd=work, env=env)
         payload = json.loads(result.stdout)
@@ -239,7 +267,9 @@ print(json.dumps({
             "observation_version": "2",
         }
         if payload != expected:
-            raise RuntimeError(f"unexpected Issue #41 evidence smoke result: {payload!r}")
+            raise RuntimeError(
+                f"unexpected Issue #41 evidence smoke result: {payload!r}"
+            )
 
 
 def main() -> int:

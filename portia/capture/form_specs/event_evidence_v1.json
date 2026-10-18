@@ -1,0 +1,171 @@
+{
+  "spec_format": "portia_capture_layout_v1",
+  "schema_version": 1,
+  "form_id": "event_evidence",
+  "label": "Event Information / Evidence (Existing)",
+  "template_id": "portia_event_evidence",
+  "template_version": "1",
+  "layout_version": "layout_1",
+  "capture_spec_version": "capture_1",
+  "page_role": "event_evidence_sheet",
+  "page_ordinal": 1,
+  "page_purpose": "event_evidence_capture",
+  "capture_mode": "mixed_recognition",
+  "page_width": 612,
+  "page_height": 792,
+  "page_margin_points": 36,
+  "geometry_coordinate_system": "top_left_pdf_points",
+  "qr_rectangle": {
+    "x": 468,
+    "y": 40,
+    "width": 108,
+    "height": 108
+  },
+  "qr_quiet_zone_modules": 4,
+  "header_rectangle": {
+    "x": 36,
+    "y": 36,
+    "width": 420,
+    "height": 104
+  },
+  "footer_rectangle": {
+    "x": 36,
+    "y": 744,
+    "width": 540,
+    "height": 12
+  },
+  "title": "Event Information / Evidence (Existing)",
+  "instructions": "Add attributable source information to an existing Event; distinguish accounts from observations.",
+  "context_entry_key": "event_context",
+  "entries": [
+    {
+      "entry_key": "event_context",
+      "source_role": "event_context",
+      "permitted_mapped_record_kinds": [],
+      "fields": [
+        {
+          "field_key": "source_date",
+          "region_key": "event_context_source_date",
+          "label": "Evidence / account date, if known",
+          "field_type": "text",
+          "capture_method": "handwriting_recognition",
+          "rectangle": {
+            "x": 36,
+            "y": 158,
+            "width": 260,
+            "height": 31
+          },
+          "required": false,
+          "max_characters": 400,
+          "choices": []
+        },
+        {
+          "field_key": "source_time",
+          "region_key": "event_context_source_time",
+          "label": "Time, if known",
+          "field_type": "text",
+          "capture_method": "handwriting_recognition",
+          "rectangle": {
+            "x": 312,
+            "y": 158,
+            "width": 264,
+            "height": 31
+          },
+          "required": false,
+          "max_characters": 400,
+          "choices": []
+        },
+        {
+          "field_key": "source_kind",
+          "region_key": "event_context_source_kind",
+          "label": "Source and relationship to Event, as reported",
+          "field_type": "text",
+          "capture_method": "handwriting_recognition",
+          "rectangle": {
+            "x": 36,
+            "y": 199,
+            "width": 540,
+            "height": 52
+          },
+          "required": false,
+          "max_characters": 400,
+          "choices": []
+        }
+      ]
+    },
+    {
+      "entry_key": "event_evidence_01",
+      "source_role": "event_evidence",
+      "permitted_mapped_record_kinds": [
+        "account",
+        "observation"
+      ],
+      "fields": [
+        {
+          "field_key": "observation_or_account",
+          "region_key": "event_evidence_01_observation_or_account",
+          "label": "Description or account (not a finding)",
+          "field_type": "text",
+          "capture_method": "handwriting_recognition",
+          "rectangle": {
+            "x": 36,
+            "y": 278,
+            "width": 540,
+            "height": 188
+          },
+          "required": false,
+          "max_characters": 400,
+          "choices": []
+        },
+        {
+          "field_key": "speaker_attribution",
+          "region_key": "event_evidence_01_speaker_attribution",
+          "label": "Speaker / observer as reported",
+          "field_type": "text",
+          "capture_method": "handwriting_recognition",
+          "rectangle": {
+            "x": 36,
+            "y": 474,
+            "width": 540,
+            "height": 60
+          },
+          "required": false,
+          "max_characters": 400,
+          "choices": []
+        },
+        {
+          "field_key": "firsthand_status",
+          "region_key": "event_evidence_01_firsthand_status",
+          "label": "Firsthand or secondhand, if known",
+          "field_type": "text",
+          "capture_method": "handwriting_recognition",
+          "rectangle": {
+            "x": 36,
+            "y": 542,
+            "width": 540,
+            "height": 42
+          },
+          "required": false,
+          "max_characters": 400,
+          "choices": []
+        },
+        {
+          "field_key": "uncertainty",
+          "region_key": "event_evidence_01_uncertainty",
+          "label": "Disagreement, unknowns, and source limitations",
+          "field_type": "text",
+          "capture_method": "handwriting_recognition",
+          "rectangle": {
+            "x": 36,
+            "y": 592,
+            "width": 540,
+            "height": 112
+          },
+          "required": false,
+          "max_characters": 400,
+          "choices": []
+        }
+      ]
+    }
+  ]
+}

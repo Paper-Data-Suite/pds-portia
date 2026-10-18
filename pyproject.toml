@@ -13,7 +13,10 @@ authors = [
     { name = "Stephen Severino" }
 ]
 dependencies = [
-    "pds-core>=0.6.3,<0.7"
+    "pds-core>=0.6.3,<0.7",
+    "reportlab>=4.2,<5",
+    "qrcode>=7.4,<9",
+    "pypdf>=5,<7"
 ]
 classifiers = [
     "Development Status :: 2 - Pre-Alpha",
@@ -52,7 +55,12 @@ include = ["portia", "portia.*"]
 namespaces = false
 
 [tool.setuptools.package-data]
-portia = ["py.typed", "runtime-coverage.json", "_runtime_contract_bundle.json"]
+portia = [
+    "py.typed",
+    "runtime-coverage.json",
+    "_runtime_contract_bundle.json",
+    "capture/form_specs/*.json",
+]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
@@ -146,3 +154,7 @@ files = [
 [[tool.mypy.overrides]]
 module = ["pds_core", "pds_core.*"]
 follow_untyped_imports = true
+
+[[tool.mypy.overrides]]
+module = ["reportlab", "reportlab.*", "qrcode", "qrcode.*"]
+ignore_missing_imports = true

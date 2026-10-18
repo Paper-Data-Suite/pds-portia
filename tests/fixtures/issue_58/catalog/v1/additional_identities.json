@@ -1,0 +1,151 @@
+{
+  "schema_version": 1,
+  "canonical_format": "portia_capture_layout_v1",
+  "known_answers": [
+    {
+      "resource": "focused_monitoring_v1.json",
+      "template_identity": {
+        "template_id": "portia_focused_monitoring",
+        "template_version": "1",
+        "layout_version": "layout_1",
+        "capture_spec_version": "capture_1",
+        "page_role": "monitoring_sheet",
+        "page_ordinal": 1,
+        "layout_fingerprint": "7d893f7c22fa24ddfc5bd2fe8d9fe5466fd7477e53e0d384f5ca5acf89c761c0"
+      },
+      "entry_keys": [
+        "monitoring_context",
+        "monitoring_01"
+      ],
+      "field_count": 7,
+      "canonical_byte_length": 3173
+    },
+    {
+      "resource": "communication_log_v1.json",
+      "template_identity": {
+        "template_id": "portia_communication_log",
+        "template_version": "1",
+        "layout_version": "layout_1",
+        "capture_spec_version": "capture_1",
+        "page_role": "communication_sheet",
+        "page_ordinal": 1,
+        "layout_fingerprint": "eed9385003348d772fc0d6f68fb7388f7fd7cfbed72fe02a219e8825c4ab03fa"
+      },
+      "entry_keys": [
+        "communication_context",
+        "communication_01"
+      ],
+      "field_count": 8,
+      "canonical_byte_length": 3403
+    },
+    {
+      "resource": "event_information_v1.json",
+      "template_identity": {
+        "template_id": "portia_event_information",
+        "template_version": "1",
+        "layout_version": "layout_1",
+        "capture_spec_version": "capture_1",
+        "page_role": "event_information_sheet",
+        "page_ordinal": 1,
+        "layout_fingerprint": "83e3280c6dc0849fd972d87f9ad7a24c317b1dfb4d2adaaa5e07186b33f1b181"
+      },
+      "entry_keys": [
+        "event_context",
+        "event_01"
+      ],
+      "field_count": 6,
+      "canonical_byte_length": 2772
+    },
+    {
+      "resource": "multi_event_information_v1.json",
+      "template_identity": {
+        "template_id": "portia_multi_event_information",
+        "template_version": "1",
+        "layout_version": "layout_1",
+        "capture_spec_version": "capture_1",
+        "page_role": "multi_event_sheet",
+        "page_ordinal": 1,
+        "layout_fingerprint": "d1c901051fa8a01562e399c39301ecfb9016088807cfc675e7ea2cb3b54b1ddd"
+      },
+      "entry_keys": [
+        "event_context",
+        "event_01",
+        "event_02"
+      ],
+      "field_count": 10,
+      "canonical_byte_length": 3958
+    },
+    {
+      "resource": "event_evidence_v1.json",
+      "template_identity": {
+        "template_id": "portia_event_evidence",
+        "template_version": "1",
+        "layout_version": "layout_1",
+        "capture_spec_version": "capture_1",
+        "page_role": "event_evidence_sheet",
+        "page_ordinal": 1,
+        "layout_fingerprint": "31e709dca47b265aebc06bb15b63bfd825eeecb42910cb2dbd7dd7ec02c7973f"
+      },
+      "entry_keys": [
+        "event_context",
+        "event_evidence_01"
+      ],
+      "field_count": 7,
+      "canonical_byte_length": 3191
+    },
+    {
+      "resource": "support_implementation_v1.json",
+      "template_identity": {
+        "template_id": "portia_support_implementation",
+        "template_version": "1",
+        "layout_version": "layout_1",
+        "capture_spec_version": "capture_1",
+        "page_role": "implementation_sheet",
+        "page_ordinal": 1,
+        "layout_fingerprint": "a7a4440c89dcd6cbd34e0957fcbaf3bc3c38e3d33545309022acc03d93adcc3b"
+      },
+      "entry_keys": [
+        "implementation_context",
+        "implementation_01"
+      ],
+      "field_count": 7,
+      "canonical_byte_length": 3197
+    },
+    {
+      "resource": "support_process_evidence_v1.json",
+      "template_identity": {
+        "template_id": "portia_support_process_evidence",
+        "template_version": "1",
+        "layout_version": "layout_1",
+        "capture_spec_version": "capture_1",
+        "page_role": "support_evidence_sheet",
+        "page_ordinal": 1,
+        "layout_fingerprint": "cde777344d5691d8e060e3f2f901309f4ec764b971edee423a2a6f1ed38c8cbe"
+      },
+      "entry_keys": [
+        "support_context",
+        "support_evidence_01"
+      ],
+      "field_count": 5,
+      "canonical_byte_length": 2604
+    },
+    {
+      "resource": "follow_up_v1.json",
+      "template_identity": {
+        "template_id": "portia_follow_up",
+        "template_version": "1",
+        "layout_version": "layout_1",
+        "capture_spec_version": "capture_1",
+        "page_role": "follow_up_sheet",
+        "page_ordinal": 1,
+        "layout_fingerprint": "a077e8f71b70f71ff193e20e4ae3e9f8a7b408623a674af98c0ab1d7989a7362"
+      },
+      "entry_keys": [
+        "follow_up_context",
+        "follow_up_01"
+      ],
+      "field_count": 8,
+      "canonical_byte_length": 3357
+    }
+  ]
+}

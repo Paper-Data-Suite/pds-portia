@@ -119,19 +119,31 @@ def _metadata_findings(content: bytes) -> list[str]:
         if "extra" not in marker_text:
             runtime.append(requirement)
 
-    if len(runtime) != 1:
+    # The archived v0.2.0 release was Core-only; unreleased #58 PDF capture
+    # intentionally adds exactly three ordinary, bounded runtime dependencies.
+    expected = {
+        "pds-core": "<0.7,>=0.6.3",
+        "reportlab": "<5,>=4.2",
+        "qrcode": "<9,>=7.4",
+        "pypdf": "<7,>=5",
+    }
+    runtime_names = {canonicalize_name(item.name) for item in runtime}
+    if len(runtime) != len(expected) or set(runtime_names) != set(expected):
         findings.append(
-            "runtime dependency closure must contain exactly one requirement: "
-            f"{[str(item) for item in runtime]}"
+            f"unexpected runtime dependency closure: {[str(item) for item in runtime]}"
         )
-    else:
-        requirement = runtime[0]
-        if canonicalize_name(requirement.name) != "pds-core":
-            findings.append(f"unexpected runtime dependency: {requirement}")
-        if str(requirement.specifier) != "<0.7,>=0.6.3":
-            findings.append(f"unexpected Core specifier: {requirement.specifier}")
-        if requirement.url is not None or requirement.extras:
-            findings.append("Core runtime dependency must be ordinary and unconditional")
+    for requirement in runtime:
+        name = canonicalize_name(requirement.name)
+        if name in expected and str(requirement.specifier) != expected[name]:
+            findings.append(f"unexpected runtime dependency specifier: {requirement}")
+        if (
+            requirement.url is not None
+            or requirement.extras
+            or requirement.marker is not None
+        ):
+            findings.append(
+                f"runtime dependency must be ordinary and unconditional: {requirement}"
+            )
 
     runtime_names = {canonicalize_name(item.name) for item in runtime}
     if runtime_names & SIBLING_RUNTIME_NAMES:
@@ -210,7 +222,9 @@ def _wheel_findings(path: Path) -> list[str]:
             "portia/runtime-coverage.json",
         ):
             if required not in names:
-                findings.append(f"required runtime package resource is missing: {required}")
+                findings.append(
+                    f"required runtime package resource is missing: {required}"
+                )
 
         metadata_name = _single_member(names, ".dist-info/METADATA")
         if metadata_name is None:
@@ -255,14 +269,15 @@ def _sdist_audit_findings(raw: object) -> list[str]:
         current = core.get("current")
         if not isinstance(current, dict) or current.get("version") != "0.6.5":
             findings.append("sdist current Core qualification authority is not 0.6.5")
-        elif current.get("sha256") != "9ace75f17b23b7f0ed6a709d531af5120db43d0325b4148d26f2d6ba1d4b3c18":
+        elif (
+            current.get("sha256")
+            != "9ace75f17b23b7f0ed6a709d531af5120db43d0325b4148d26f2d6ba1d4b3c18"
+        ):
             findings.append("sdist Core 0.6.5 authority has unexpected SHA-256")
     verdict = audit.get("final_verdict")
     publication = audit.get("release_publication")
     publication_status = (
-        publication.get("status")
-        if isinstance(publication, dict)
-        else None
+        publication.get("status") if isinstance(publication, dict) else None
     )
     release_state = (verdict, publication_status)
     if release_state not in {
@@ -281,8 +296,7 @@ def _sdist_audit_findings(raw: object) -> list[str]:
             "release_tree": "2050bd1c7aabb47ccf2df4a8285c7a61ac360f2e",
             "tag": "v0.2.0",
             "github_release_url": (
-                "https://github.com/Paper-Data-Suite/pds-portia/"
-                "releases/tag/v0.2.0"
+                "https://github.com/Paper-Data-Suite/pds-portia/releases/tag/v0.2.0"
             ),
             "wheel_filename": "pds_portia-0.2.0-py3-none-any.whl",
             "wheel_sha256": (
@@ -429,7 +443,9 @@ def main() -> int:
     print("Portia Issue #54 release/package validation passed")
     print(f"candidate wheel SHA-256 (NOT FINAL): {_sha256(wheel)}")
     print(f"candidate sdist SHA-256 (NOT FINAL): {_sha256(sdist)}")
-    print("Candidate hashes are diagnostic only; Phase 2 must rebuild from exact qualified main.")
+    print(
+        "Candidate hashes are diagnostic only; Phase 2 must rebuild from exact qualified main."
+    )
     return 0
 
 

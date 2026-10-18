@@ -5847,6 +5847,7 @@ def _assert_no_fixture_bypass() -> dict[str, object]:
         "fixture_bypass_excluded": True,
     }
 
+
 _LAUNCHER_METADATA_PROBE = r"""
 import json
 from importlib import metadata
@@ -5882,6 +5883,7 @@ if distribution.casefold().replace("_", "-") != "pds-portia":
 print(json.dumps(entry, sort_keys=True))
 """
 
+
 class Issue53AcceptanceError(RuntimeError):
     """Raised when the representative installed acceptance boundary fails."""
 
@@ -5896,8 +5898,11 @@ def _command_stage(command: Sequence[str]) -> str:
                 and isinstance(value, str)
                 and value == embedded
             ):
-                return name.removeprefix("_").removesuffix("_PROBE").lower().replace(
-                    "_", " "
+                return (
+                    name.removeprefix("_")
+                    .removesuffix("_PROBE")
+                    .lower()
+                    .replace("_", " ")
                 )
 
     if len(command) >= 4 and tuple(command[1:3]) == ("-m", "pip"):
@@ -6113,7 +6118,6 @@ def _assert_launcher_reachable(
         )
 
 
-
 def _installed_launcher_boundary(
     python: Path,
     *,
@@ -6234,6 +6238,7 @@ def _installed_launcher_boundary(
         "interactive_story_not_required": True,
     }
 
+
 def _foundation_probe(
     python: Path,
     *,
@@ -6345,6 +6350,7 @@ def _core_setup_probe(
             )
     return payload
 
+
 def _actor_setup_probe(
     python: Path,
     *,
@@ -6396,6 +6402,7 @@ def _actor_setup_probe(
                 f"Issue #53 installed Actor setup mismatch for {key}"
             )
     return payload
+
 
 def _event_evidence_probe(
     python: Path,
@@ -6451,6 +6458,7 @@ def _event_evidence_probe(
                 f"Issue #53 installed Event evidence mismatch for {key}"
             )
     return payload
+
 
 def _judgment_correction_probe(
     python: Path,
@@ -6508,6 +6516,7 @@ def _judgment_correction_probe(
                 f"Issue #53 installed judgment/correction mismatch for {key}"
             )
     return payload
+
 
 def _response_communication_probe(
     python: Path,
@@ -6567,6 +6576,7 @@ def _response_communication_probe(
             )
     return payload
 
+
 def _support_process_probe(
     python: Path,
     *,
@@ -6625,6 +6635,7 @@ def _support_process_probe(
                 f"Issue #53 installed Support Process mismatch for {key}"
             )
     return payload
+
 
 def _support_planning_probe(
     python: Path,
@@ -6687,6 +6698,7 @@ def _support_planning_probe(
             )
     return payload
 
+
 def _implementation_fidelity_probe(
     python: Path,
     *,
@@ -6747,6 +6759,7 @@ def _implementation_fidelity_probe(
                 f"Issue #53 installed Implementation/Fidelity mismatch for {key}"
             )
     return payload
+
 
 def _follow_up_attention_probe(
     python: Path,
@@ -6811,6 +6824,7 @@ def _follow_up_attention_probe(
                 f"Issue #53 installed Follow-Up/attention mismatch for {key}"
             )
     return payload
+
 
 def _core_provider_probe(
     python: Path,
@@ -6883,6 +6897,7 @@ def _core_provider_probe(
         )
     return payload
 
+
 def _stale_conflict_probe(
     python: Path,
     *,
@@ -6936,6 +6951,7 @@ def _stale_conflict_probe(
                 f"Issue #53 installed stale-conflict mismatch for {key}"
             )
     return payload
+
 
 def _recovery_probe(
     python: Path,
@@ -7008,6 +7024,7 @@ def _recovery_probe(
             )
     return payload
 
+
 def _durable_reload_probe(
     python: Path,
     *,
@@ -7074,6 +7091,7 @@ def _durable_reload_probe(
                 f"Issue #53 fresh-process reload mismatch for {key}"
             )
     return payload
+
 
 def _student_view_privacy_probe(
     python: Path,
@@ -7321,6 +7339,7 @@ def _deep_path_integration_probe(
             )
     return payload
 
+
 def smoke(portia_wheel: Path, core_wheel: Path) -> dict[str, object]:
     repository = Path(__file__).resolve().parents[1]
     no_fixture_bypass = _assert_no_fixture_bypass()
@@ -7369,6 +7388,21 @@ def smoke(portia_wheel: Path, core_wheel: Path) -> dict[str, object]:
             ],
             cwd=work,
             env=env,
+        )
+        capture_dependency_env = env.copy()
+        capture_dependency_env.pop("PIP_NO_INDEX", None)
+        _run(
+            [
+                str(python),
+                "-m",
+                "pip",
+                "install",
+                "reportlab>=4.2,<5",
+                "qrcode>=7.4,<9",
+                "pypdf>=5,<7",
+            ],
+            cwd=work,
+            env=capture_dependency_env,
         )
         _run([str(python), "-m", "pip", "check"], cwd=work, env=env)
         launcher_boundary = _installed_launcher_boundary(
@@ -7520,9 +7554,7 @@ def smoke(portia_wheel: Path, core_wheel: Path) -> dict[str, object]:
         print("PASS deep path integration")
 
         return {
-            "fixture_bypass_excluded": no_fixture_bypass[
-                "fixture_bypass_excluded"
-            ],
+            "fixture_bypass_excluded": no_fixture_bypass["fixture_bypass_excluded"],
             "fixture_bypass_probe_count": no_fixture_bypass["probe_count"],
             "fixture_bypass_parsed_input_count": no_fixture_bypass[
                 "parsed_input_count"
@@ -7546,12 +7578,8 @@ def smoke(portia_wheel: Path, core_wheel: Path) -> dict[str, object]:
             "active_school_year": core_setup["active_school_year"],
             "class_count": core_setup["class_count"],
             "roster_count": core_setup["roster_count"],
-            "collision_reference_distinct": core_setup[
-                "collision_reference_distinct"
-            ],
-            "resolver_reference_distinct": core_setup[
-                "resolver_reference_distinct"
-            ],
+            "collision_reference_distinct": core_setup["collision_reference_distinct"],
+            "resolver_reference_distinct": core_setup["resolver_reference_distinct"],
             "actor_count": actor_setup["actor_count"],
             "cross_class_actor_reuse": actor_setup["cross_class_actor_reuse"],
             "cross_class_relationships_distinct": actor_setup[
@@ -7568,74 +7596,44 @@ def smoke(portia_wheel: Path, core_wheel: Path) -> dict[str, object]:
             "event_owner_class": event_evidence["event_owner_class"],
             "participant_count": event_evidence["participant_count"],
             "role_count": event_evidence["role_count"],
-            "foreign_participant_exact": event_evidence[
-                "foreign_participant_exact"
-            ],
+            "foreign_participant_exact": event_evidence["foreign_participant_exact"],
             "account_current": event_evidence["account_current"],
             "observation_current": event_evidence["observation_current"],
-            "automatic_judgment_count": event_evidence[
-                "automatic_judgment_count"
-            ],
+            "automatic_judgment_count": event_evidence["automatic_judgment_count"],
             "neutrality_preserved": event_evidence["neutrality_preserved"],
             "review_current": judgment_correction["review_current"],
             "determination_current": judgment_correction["determination_current"],
-            "determination_outcome": judgment_correction[
-                "determination_outcome"
-            ],
+            "determination_outcome": judgment_correction["determination_outcome"],
             "predecessor_status": judgment_correction["predecessor_status"],
             "successor_status": judgment_correction["successor_status"],
             "technical_history_preserved": judgment_correction[
                 "technical_history_preserved"
             ],
-            "review_history_pinned": judgment_correction[
-                "review_history_pinned"
-            ],
+            "review_history_pinned": judgment_correction["review_history_pinned"],
             "determination_history_pinned": judgment_correction[
                 "determination_history_pinned"
             ],
             "response_current": response_communication["response_current"],
-            "response_review_pinned": response_communication[
-                "response_review_pinned"
-            ],
+            "response_review_pinned": response_communication["response_review_pinned"],
             "response_determination_pinned": response_communication[
                 "response_determination_pinned"
             ],
-            "communication_current": response_communication[
-                "communication_current"
-            ],
+            "communication_current": response_communication["communication_current"],
             "recipient_participation": response_communication[
                 "recipient_participation"
             ],
-            "delivery_not_inferred": response_communication[
-                "delivery_not_inferred"
-            ],
-            "agreement_not_inferred": response_communication[
-                "agreement_not_inferred"
-            ],
-            "outcome_not_inferred": response_communication[
-                "outcome_not_inferred"
-            ],
-            "support_process_current": support_process[
-                "support_process_current"
-            ],
+            "delivery_not_inferred": response_communication["delivery_not_inferred"],
+            "agreement_not_inferred": response_communication["agreement_not_inferred"],
+            "outcome_not_inferred": response_communication["outcome_not_inferred"],
+            "support_process_current": support_process["support_process_current"],
             "support_process_workflow_state": support_process[
                 "support_process_workflow_state"
             ],
-            "response_handoff_exact": support_process[
-                "response_handoff_exact"
-            ],
-            "support_participant_count": support_process[
-                "support_participant_count"
-            ],
-            "supported_student_exact": support_process[
-                "supported_student_exact"
-            ],
-            "counselor_actor_exact": support_process[
-                "counselor_actor_exact"
-            ],
-            "planning_not_inferred": support_process[
-                "planning_not_inferred"
-            ],
+            "response_handoff_exact": support_process["response_handoff_exact"],
+            "support_participant_count": support_process["support_participant_count"],
+            "supported_student_exact": support_process["supported_student_exact"],
+            "counselor_actor_exact": support_process["counselor_actor_exact"],
+            "planning_not_inferred": support_process["planning_not_inferred"],
             "need_current": support_planning["need_current"],
             "goal_current": support_planning["goal_current"],
             "support_current": support_planning["support_current"],
@@ -7643,45 +7641,29 @@ def smoke(portia_wheel: Path, core_wheel: Path) -> dict[str, object]:
             "support_process_active_workflow": support_planning[
                 "support_process_workflow_state"
             ],
-            "support_provider_exact": support_planning[
-                "support_provider_exact"
-            ],
-            "downstream_not_inferred": support_planning[
-                "downstream_not_inferred"
-            ],
-            "implementation_count": implementation_fidelity[
-                "implementation_count"
-            ],
+            "support_provider_exact": support_planning["support_provider_exact"],
+            "downstream_not_inferred": support_planning["downstream_not_inferred"],
+            "implementation_count": implementation_fidelity["implementation_count"],
             "implementation_identities_distinct": implementation_fidelity[
                 "implementation_identities_distinct"
             ],
             "fidelity_current": implementation_fidelity["fidelity_current"],
             "fidelity_result": implementation_fidelity["fidelity_result"],
-            "fidelity_scope_exact": implementation_fidelity[
-                "fidelity_scope_exact"
-            ],
-            "support_plan_unchanged": implementation_fidelity[
-                "support_plan_unchanged"
-            ],
+            "fidelity_scope_exact": implementation_fidelity["fidelity_scope_exact"],
+            "support_plan_unchanged": implementation_fidelity["support_plan_unchanged"],
             "effectiveness_not_inferred": implementation_fidelity[
                 "effectiveness_not_inferred"
             ],
             "fidelity_outcome_not_inferred": implementation_fidelity[
                 "outcome_not_inferred"
             ],
-            "follow_up_workflow_state": follow_up_attention[
-                "follow_up_workflow_state"
-            ],
+            "follow_up_workflow_state": follow_up_attention["follow_up_workflow_state"],
             "follow_up_identity_preserved": follow_up_attention[
                 "follow_up_identity_preserved"
             ],
             "follow_up_disposition": follow_up_attention["disposition"],
-            "attention_before_code": follow_up_attention[
-                "attention_before_code"
-            ],
-            "attention_after_count": follow_up_attention[
-                "attention_after_count"
-            ],
+            "attention_before_code": follow_up_attention["attention_before_code"],
+            "attention_after_count": follow_up_attention["attention_after_count"],
             "attention_queries_zero_write": follow_up_attention[
                 "attention_queries_zero_write"
             ],
@@ -7691,14 +7673,10 @@ def smoke(portia_wheel: Path, core_wheel: Path) -> dict[str, object]:
             "process_completion_not_inferred": follow_up_attention[
                 "process_completion_not_inferred"
             ],
-            "provider_metadata_target_exact": core_provider[
-                "metadata_target_exact"
-            ],
+            "provider_metadata_target_exact": core_provider["metadata_target_exact"],
             "provider_diagnostic_code": core_provider["diagnostic_code"],
             "provider_readiness_ready": core_provider["readiness_ready"],
-            "provider_attention_evaluation": core_provider[
-                "attention_evaluation"
-            ],
+            "provider_attention_evaluation": core_provider["attention_evaluation"],
             "provider_attention_summary_count": core_provider[
                 "attention_summary_count"
             ],
@@ -7706,15 +7684,9 @@ def smoke(portia_wheel: Path, core_wheel: Path) -> dict[str, object]:
             "shared_projection_privacy_bounded": core_provider[
                 "shared_projection_privacy_bounded"
             ],
-            "foreign_class_not_exposed": core_provider[
-                "foreign_class_not_exposed"
-            ],
-            "workspace_path_not_exposed": core_provider[
-                "workspace_path_not_exposed"
-            ],
-            "stale_conflict_raised": stale_conflict[
-                "stale_conflict_raised"
-            ],
+            "foreign_class_not_exposed": core_provider["foreign_class_not_exposed"],
+            "workspace_path_not_exposed": core_provider["workspace_path_not_exposed"],
+            "stale_conflict_raised": stale_conflict["stale_conflict_raised"],
             "conflict_canonical_bytes_preserved": stale_conflict[
                 "canonical_bytes_preserved"
             ],
@@ -7724,9 +7696,7 @@ def smoke(portia_wheel: Path, core_wheel: Path) -> dict[str, object]:
             "conflict_operation_artifacts_preserved": stale_conflict[
                 "operation_artifacts_preserved"
             ],
-            "support_plan_state_after_conflict": stale_conflict[
-                "support_plan_state"
-            ],
+            "support_plan_state_after_conflict": stale_conflict["support_plan_state"],
             "ordinary_conflict_not_recovery": stale_conflict[
                 "ordinary_conflict_not_recovery"
             ],
@@ -7734,48 +7704,30 @@ def smoke(portia_wheel: Path, core_wheel: Path) -> dict[str, object]:
             "partial_accepted_steps": recovery["partial_accepted_steps"],
             "recovery_partial_state": recovery["partial_state"],
             "recovery_partial_disposition": recovery["partial_disposition"],
-            "accepted_history_preserved": recovery[
-                "accepted_history_preserved"
-            ],
-            "accepted_successor_preserved": recovery[
-                "accepted_successor_preserved"
-            ],
+            "accepted_history_preserved": recovery["accepted_history_preserved"],
+            "accepted_successor_preserved": recovery["accepted_successor_preserved"],
             "accepted_successor_not_republished": recovery[
                 "accepted_successor_not_republished"
             ],
-            "recovered_predecessor_superseded": recovery[
-                "predecessor_superseded"
-            ],
+            "recovered_predecessor_superseded": recovery["predecessor_superseded"],
             "recovered_successor_current": recovery["successor_current"],
             "recovery_terminal_state": recovery["terminal_state"],
-            "recovery_terminal_disposition": recovery[
-                "terminal_disposition"
-            ],
+            "recovery_terminal_disposition": recovery["terminal_disposition"],
             "recovery_locks_released": recovery["locks_released"],
             "recovery_staging_cleaned": recovery["staging_cleaned"],
             "recovery_idempotent": recovery["recovery_idempotent"],
-            "integrity_pre_findings_count": recovery[
-                "integrity_pre_findings_count"
-            ],
+            "integrity_pre_findings_count": recovery["integrity_pre_findings_count"],
             "integrity_stale_projection_rejected": recovery[
                 "integrity_stale_projection_rejected"
             ],
-            "integrity_post_findings_count": recovery[
-                "integrity_post_findings_count"
-            ],
-            "integrity_generation_advanced": recovery[
-                "integrity_generation_advanced"
-            ],
+            "integrity_post_findings_count": recovery["integrity_post_findings_count"],
+            "integrity_generation_advanced": recovery["integrity_generation_advanced"],
             "integrity_operation_completion_allowed": recovery[
                 "integrity_operation_completion_allowed"
             ],
-            "integrity_privacy_bounded": recovery[
-                "integrity_privacy_bounded"
-            ],
+            "integrity_privacy_bounded": recovery["integrity_privacy_bounded"],
             "fresh_process_reload": durable_reload["fresh_process_reload"],
-            "reload_core_rosters_readable": durable_reload[
-                "core_rosters_readable"
-            ],
+            "reload_core_rosters_readable": durable_reload["core_rosters_readable"],
             "reload_actor_relationships_class_qualified": durable_reload[
                 "actor_relationships_class_qualified"
             ],
@@ -7787,18 +7739,10 @@ def smoke(portia_wheel: Path, core_wheel: Path) -> dict[str, object]:
             "reload_support_successor_current": durable_reload[
                 "support_successor_current"
             ],
-            "reload_follow_up_completed": durable_reload[
-                "follow_up_completed"
-            ],
-            "reload_follow_up_disposition": durable_reload[
-                "follow_up_disposition"
-            ],
-            "reload_operation_terminal": durable_reload[
-                "operation_terminal"
-            ],
-            "reload_recovery_staging_gone": durable_reload[
-                "recovery_staging_gone"
-            ],
+            "reload_follow_up_completed": durable_reload["follow_up_completed"],
+            "reload_follow_up_disposition": durable_reload["follow_up_disposition"],
+            "reload_operation_terminal": durable_reload["operation_terminal"],
+            "reload_recovery_staging_gone": durable_reload["recovery_staging_gone"],
             "reload_technical_history_readable": (
                 durable_reload["account_history_readable"]
                 and durable_reload["support_history_readable"]
@@ -7815,12 +7759,8 @@ def smoke(portia_wheel: Path, core_wheel: Path) -> dict[str, object]:
             "student_view_unrelated_participants_absent": student_view_privacy[
                 "unrelated_participants_absent"
             ],
-            "student_view_read_only": student_view_privacy[
-                "student_view_read_only"
-            ],
-            "student_view_accepted_policy": student_view_privacy[
-                "accepted_policy"
-            ],
+            "student_view_read_only": student_view_privacy["student_view_read_only"],
+            "student_view_accepted_policy": student_view_privacy["accepted_policy"],
             "teacher_reference_projection_purpose": teacher_reference_export[
                 "projection_purpose"
             ],
@@ -7890,9 +7830,7 @@ def smoke(portia_wheel: Path, core_wheel: Path) -> dict[str, object]:
             "read_only_whole_phase_zero_write": read_only_surfaces[
                 "whole_read_only_phase_zero_write"
             ],
-            "deep_path_one_workspace": deep_path_integration[
-                "one_deep_workspace"
-            ],
+            "deep_path_one_workspace": deep_path_integration["one_deep_workspace"],
             "deep_path_guarded_replacement_history": deep_path_integration[
                 "guarded_replacement_history"
             ],

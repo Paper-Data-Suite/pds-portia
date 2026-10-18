@@ -1,0 +1,315 @@
+{
+  "spec_format": "portia_capture_layout_v1",
+  "schema_version": 1,
+  "form_id": "daily_classroom_observation",
+  "label": "Daily Classroom Observation",
+  "template_id": "portia_classroom_observation",
+  "template_version": "1",
+  "layout_version": "layout_1",
+  "capture_spec_version": "capture_1",
+  "page_purpose": "classroom_observation_capture",
+  "capture_mode": "mixed_recognition",
+  "page_width": 612,
+  "page_height": 792,
+  "page_margin_points": 36,
+  "geometry_coordinate_system": "top_left_pdf_points",
+  "qr_rectangle": {
+    "x": 468,
+    "y": 40,
+    "width": 108,
+    "height": 108
+  },
+  "qr_quiet_zone_modules": 4,
+  "header_rectangle": {
+    "x": 36,
+    "y": 36,
+    "width": 420,
+    "height": 104
+  },
+  "footer_rectangle": {
+    "x": 36,
+    "y": 744,
+    "width": 540,
+    "height": 12
+  },
+  "page_role": "observation_continuation",
+  "page_ordinal": 2,
+  "title": "Classroom Observation - Continued",
+  "instructions": "Add separately reviewable observations. Re-enter session reference if known.",
+  "context_entry_key": "session_context",
+  "entries": [
+    {
+      "entry_key": "session_context",
+      "source_role": "session_context",
+      "permitted_mapped_record_kinds": [],
+      "fields": [
+        {
+          "field_key": "session_date",
+          "region_key": "context_date",
+          "label": "Class/session date (as known)",
+          "field_type": "text",
+          "capture_method": "handwriting_recognition",
+          "rectangle": {
+            "x": 36,
+            "y": 158,
+            "width": 172,
+            "height": 26
+          },
+          "required": false,
+          "max_characters": 40,
+          "choices": []
+        },
+        {
+          "field_key": "session_reference",
+          "region_key": "context_reference",
+          "label": "Session / class reference (optional)",
+          "field_type": "text",
+          "capture_method": "handwriting_recognition",
+          "rectangle": {
+            "x": 216,
+            "y": 158,
+            "width": 360,
+            "height": 26
+          },
+          "required": false,
+          "max_characters": 100,
+          "choices": []
+        }
+      ]
+    },
+    {
+      "entry_key": "observation_01",
+      "source_role": "observation",
+      "permitted_mapped_record_kinds": [
+        "observation",
+        "event"
+      ],
+      "fields": [
+        {
+          "field_key": "tone",
+          "region_key": "observation_01_tone",
+          "label": "Note type (source cue only)",
+          "field_type": "choice",
+          "capture_method": "mark_recognition",
+          "rectangle": {
+            "x": 36,
+            "y": 204,
+            "width": 184,
+            "height": 25
+          },
+          "required": false,
+          "max_characters": null,
+          "choices": [
+            "positive",
+            "general",
+            "concern"
+          ]
+        },
+        {
+          "field_key": "subject_reference",
+          "region_key": "observation_01_subject",
+          "label": "Student or class reference (if known)",
+          "field_type": "text",
+          "capture_method": "handwriting_recognition",
+          "rectangle": {
+            "x": 228,
+            "y": 204,
+            "width": 224,
+            "height": 25
+          },
+          "required": false,
+          "max_characters": 120,
+          "choices": []
+        },
+        {
+          "field_key": "observed_time",
+          "region_key": "observation_01_time",
+          "label": "Observed time (if known)",
+          "field_type": "text",
+          "capture_method": "handwriting_recognition",
+          "rectangle": {
+            "x": 460,
+            "y": 204,
+            "width": 116,
+            "height": 25
+          },
+          "required": false,
+          "max_characters": 64,
+          "choices": []
+        },
+        {
+          "field_key": "description",
+          "region_key": "observation_01_description",
+          "label": "What was observed? (descriptive notes)",
+          "field_type": "text",
+          "capture_method": "handwriting_recognition",
+          "rectangle": {
+            "x": 36,
+            "y": 236,
+            "width": 540,
+            "height": 118
+          },
+          "required": false,
+          "max_characters": 1200,
+          "choices": []
+        }
+      ]
+    },
+    {
+      "entry_key": "observation_02",
+      "source_role": "observation",
+      "permitted_mapped_record_kinds": [
+        "observation",
+        "event"
+      ],
+      "fields": [
+        {
+          "field_key": "tone",
+          "region_key": "observation_02_tone",
+          "label": "Note type (source cue only)",
+          "field_type": "choice",
+          "capture_method": "mark_recognition",
+          "rectangle": {
+            "x": 36,
+            "y": 372,
+            "width": 184,
+            "height": 25
+          },
+          "required": false,
+          "max_characters": null,
+          "choices": [
+            "positive",
+            "general",
+            "concern"
+          ]
+        },
+        {
+          "field_key": "subject_reference",
+          "region_key": "observation_02_subject",
+          "label": "Student or class reference (if known)",
+          "field_type": "text",
+          "capture_method": "handwriting_recognition",
+          "rectangle": {
+            "x": 228,
+            "y": 372,
+            "width": 224,
+            "height": 25
+          },
+          "required": false,
+          "max_characters": 120,
+          "choices": []
+        },
+        {
+          "field_key": "observed_time",
+          "region_key": "observation_02_time",
+          "label": "Observed time (if known)",
+          "field_type": "text",
+          "capture_method": "handwriting_recognition",
+          "rectangle": {
+            "x": 460,
+            "y": 372,
+            "width": 116,
+            "height": 25
+          },
+          "required": false,
+          "max_characters": 64,
+          "choices": []
+        },
+        {
+          "field_key": "description",
+          "region_key": "observation_02_description",
+          "label": "What was observed? (descriptive notes)",
+          "field_type": "text",
+          "capture_method": "handwriting_recognition",
+          "rectangle": {
+            "x": 36,
+            "y": 404,
+            "width": 540,
+            "height": 118
+          },
+          "required": false,
+          "max_characters": 1200,
+          "choices": []
+        }
+      ]
+    },
+    {
+      "entry_key": "observation_03",
+      "source_role": "observation",
+      "permitted_mapped_record_kinds": [
+        "observation",
+        "event"
+      ],
+      "fields": [
+        {
+          "field_key": "tone",
+          "region_key": "observation_03_tone",
+          "label": "Note type (source cue only)",
+          "field_type": "choice",
+          "capture_method": "mark_recognition",
+          "rectangle": {
+            "x": 36,
+            "y": 540,
+            "width": 184,
+            "height": 25
+          },
+          "required": false,
+          "max_characters": null,
+          "choices": [
+            "positive",
+            "general",
+            "concern"
+          ]
+        },
+        {
+          "field_key": "subject_reference",
+          "region_key": "observation_03_subject",
+          "label": "Student or class reference (if known)",
+          "field_type": "text",
+          "capture_method": "handwriting_recognition",
+          "rectangle": {
+            "x": 228,
+            "y": 540,
+            "width": 224,
+            "height": 25
+          },
+          "required": false,
+          "max_characters": 120,
+          "choices": []
+        },
+        {
+          "field_key": "observed_time",
+          "region_key": "observation_03_time",
+          "label": "Observed time (if known)",
+          "field_type": "text",
+          "capture_method": "handwriting_recognition",
+          "rectangle": {
+            "x": 460,
+            "y": 540,
+            "width": 116,
+            "height": 25
+          },
+          "required": false,
+          "max_characters": 64,
+          "choices": []
+        },
+        {
+          "field_key": "description",
+          "region_key": "observation_03_description",
+          "label": "What was observed? (descriptive notes)",
+          "field_type": "text",
+          "capture_method": "handwriting_recognition",
+          "rectangle": {
+            "x": 36,
+            "y": 572,
+            "width": 540,
+            "height": 118
+          },
+          "required": false,
+          "max_characters": 1200,
+          "choices": []
+        }
+      ]
+    }
+  ]
+}

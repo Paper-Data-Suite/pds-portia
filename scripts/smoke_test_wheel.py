@@ -1285,6 +1285,21 @@ def smoke(portia_wheel: Path, core_wheel: Path) -> None:
             cwd=work,
             env=env,
         )
+        capture_dependency_env = env.copy()
+        capture_dependency_env.pop("PIP_NO_INDEX", None)
+        _run(
+            [
+                str(python),
+                "-m",
+                "pip",
+                "install",
+                "reportlab>=4.2,<5",
+                "qrcode>=7.4,<9",
+                "pypdf>=5,<7",
+            ],
+            cwd=work,
+            env=capture_dependency_env,
+        )
         _run([str(python), "-m", "pip", "check"], cwd=work, env=env)
 
         package_result = _run(
@@ -1390,7 +1405,9 @@ def smoke(portia_wheel: Path, core_wheel: Path) -> None:
             if label not in menu.stdout:
                 raise RuntimeError(f"menu output is missing {label!r}")
         if "[planned]" in menu.stdout:
-            raise RuntimeError("menu output still exposes the bootstrap planned scaffold")
+            raise RuntimeError(
+                "menu output still exposes the bootstrap planned scaffold"
+            )
         _run([str(python), "-m", "portia", "--version"], cwd=work, env=env)
         after = sorted(path.relative_to(work).as_posix() for path in work.rglob("*"))
         if after != before:

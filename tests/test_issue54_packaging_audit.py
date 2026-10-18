@@ -69,7 +69,12 @@ def test_issue54_packaging_domain_pass_does_not_claim_release() -> None:
 
 def test_issue54_runtime_dependency_and_entry_point_surface_is_exact() -> None:
     project = _project()
-    assert project["dependencies"] == ["pds-core>=0.6.3,<0.7"]
+    assert project["dependencies"] == [
+        "pds-core>=0.6.3,<0.7",
+        "reportlab>=4.2,<5",
+        "qrcode>=7.4,<9",
+        "pypdf>=5,<7",
+    ]
     assert project["scripts"] == {"portia": "portia.cli:main"}
     assert project["entry-points"] == {
         "paper_data_suite.module_operations": {
@@ -83,9 +88,14 @@ def test_issue54_root_package_public_surface_is_minimal() -> None:
     assert portia.__version__ == "0.2.0"
 
 
-def test_issue54_wheel_boundary_excludes_repository_content_and_raw_schema_tree() -> None:
+def test_issue54_wheel_boundary_excludes_repository_content_and_raw_schema_tree() -> (
+    None
+):
     source = (ROOT / "scripts" / "check_package.py").read_text(encoding="utf-8")
-    assert 'if name.startswith(("docs/", "schemas/", "scripts/", "tests/", ".github/")):' in source
+    assert (
+        'if name.startswith(("docs/", "schemas/", "scripts/", "tests/", ".github/")):'
+        in source
+    )
     assert "repository schema tree leaked into runtime wheel" in source
     assert "compiled runtime contract bundle is missing" in source
 
@@ -101,21 +111,25 @@ def test_issue54_sdist_retains_auditable_repository_material() -> None:
         assert marker in manifest
 
 
-def test_issue54_runtime_schema_delivery_is_compiled_bundle_not_repository_tree() -> None:
+def test_issue54_runtime_schema_delivery_is_compiled_bundle_not_repository_tree() -> (
+    None
+):
     setup_source = (ROOT / "setup.py").read_text(encoding="utf-8")
-    runtime_source = (
-        ROOT / "portia" / "models" / "schema_runtime.py"
-    ).read_text(encoding="utf-8")
-    assert '_runtime_contract_bundle.json' in setup_source
+    runtime_source = (ROOT / "portia" / "models" / "schema_runtime.py").read_text(
+        encoding="utf-8"
+    )
+    assert "_runtime_contract_bundle.json" in setup_source
     assert 'resources.files("portia")' in runtime_source
     assert 'joinpath("_runtime_contract_bundle.json")' in runtime_source
 
 
-def test_issue54_package_checkers_reject_unintended_plugin_and_sibling_surfaces() -> None:
+def test_issue54_package_checkers_reject_unintended_plugin_and_sibling_surfaces() -> (
+    None
+):
     generic = (ROOT / "scripts" / "check_package.py").read_text(encoding="utf-8")
-    dedicated = (
-        ROOT / "scripts" / "check_issue53_package.py"
-    ).read_text(encoding="utf-8")
+    dedicated = (ROOT / "scripts" / "check_issue53_package.py").read_text(
+        encoding="utf-8"
+    )
     assert "unexpected sibling runtime dependency" in generic
     assert "unexpected sibling runtime dependency" in dedicated
     assert "paper_data_suite.publication_producers" in generic
@@ -125,9 +139,9 @@ def test_issue54_package_checkers_reject_unintended_plugin_and_sibling_surfaces(
 
 
 def test_issue54_isolated_installed_acceptance_requires_only_core_and_portia() -> None:
-    source = (
-        ROOT / "scripts" / "smoke_test_issue53_end_to_end_wheel.py"
-    ).read_text(encoding="utf-8")
+    source = (ROOT / "scripts" / "smoke_test_issue53_end_to_end_wheel.py").read_text(
+        encoding="utf-8"
+    )
     assert 'expected_pds = {"pds-core", "pds-portia"}' in source
     assert "import resolved outside the temporary venv" in source
     assert "import resolved into the source checkout" in source

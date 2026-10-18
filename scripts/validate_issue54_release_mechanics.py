@@ -49,10 +49,15 @@ def validate_repo(root: Path = ROOT) -> list[str]:
         statuses = _domain_statuses(audit)
         if statuses.get(DOMAIN) != "pass":
             errors.append(f"{DOMAIN} must be recorded as pass")
-        if statuses.get("cumulative_repository_qualification") not in {"pending", "pass"}:
+        if statuses.get("cumulative_repository_qualification") not in {
+            "pending",
+            "pass",
+        }:
             errors.append("cumulative qualification has an invalid later-stage status")
         if statuses.get("python_platform_qualification") not in {"pending", "pass"}:
-            errors.append("Python/platform qualification has an invalid later-stage status")
+            errors.append(
+                "Python/platform qualification has an invalid later-stage status"
+            )
 
         earlier = (
             "ethical_neutrality_epistemic_distinctions",
@@ -114,7 +119,9 @@ def validate_repo(root: Path = ROOT) -> list[str]:
                     "sha256sums_sha256",
                 ):
                     if publication.get(field) is not None:
-                        errors.append(f"Slice 14 must not freeze publication field {field}")
+                        errors.append(
+                            f"Slice 14 must not freeze publication field {field}"
+                        )
         if audit.get("final_verdict") not in {"PENDING", "RELEASED — VERIFIED"}:
             errors.append("Slice 14 must retain PENDING final verdict")
 
@@ -129,8 +136,13 @@ def validate_repo(root: Path = ROOT) -> list[str]:
                 errors.append("distribution must remain pds-portia")
             if project.get("requires-python") != ">=3.11":
                 errors.append("Requires-Python must remain >=3.11")
-            if project.get("dependencies") != ["pds-core>=0.6.3,<0.7"]:
-                errors.append("runtime dependency must remain Core-only")
+            if project.get("dependencies") != [
+                "pds-core>=0.6.3,<0.7",
+                "reportlab>=4.2,<5",
+                "qrcode>=7.4,<9",
+                "pypdf>=5,<7",
+            ]:
+                errors.append("unexpected development runtime dependency surface")
             if project.get("scripts") != {"portia": "portia.cli:main"}:
                 errors.append("console entry point drifted")
             if project.get("entry-points") != {

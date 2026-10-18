@@ -6,6 +6,7 @@ from dataclasses import dataclass
 
 from portia.menu.advanced import launch_advanced_menu
 from portia.menu.attention import launch_attention_needed_menu
+from portia.menu.capture_forms import launch_capture_forms_menu
 from portia.menu.context import MenuSessionContext
 from portia.menu.correction import launch_correct_retract_menu
 from portia.menu.event import launch_record_event_menu
@@ -81,7 +82,12 @@ ADVANCED_TASK = MenuTask(
     "Advanced Portia tools",
     "Reach exact record-family administration, integrity, recovery, and expert tools.",
 )
-ALL_TASKS: tuple[MenuTask, ...] = (*PRIMARY_TASKS, ADVANCED_TASK)
+CAPTURE_TASK = MenuTask(
+    "10",
+    "Create Paper Capture Forms",
+    "Generate and preview individually routable blank Portia forms.",
+)
+ALL_TASKS: tuple[MenuTask, ...] = (*PRIMARY_TASKS, ADVANCED_TASK, CAPTURE_TASK)
 
 
 def render_main_menu() -> str:
@@ -108,7 +114,6 @@ def _main_help() -> None:
     print("Viewing or navigating the menu does not create canonical Portia records.")
     print()
     pause_for_user()
-
 
 
 def _main_menu_once(state: MenuSessionContext) -> None:
@@ -150,6 +155,9 @@ def _main_menu_once(state: MenuSessionContext) -> None:
         return
     if choice == "9":
         launch_advanced_menu(state)
+        return
+    if choice == "10":
+        launch_capture_forms_menu(state)
         return
     print(
         navigation_hint_with_help(

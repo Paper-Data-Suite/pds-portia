@@ -56,16 +56,18 @@ _FORBIDDEN_AUTHORITATIVE_RESOLUTION_TOKENS = {
     "find_best_match",
     "fuzzy_match",
 }
-_FORBIDDEN_ACTOR_RECORD_DICTIONARY_TOKENS = (
-    "record.to_dict(",
-)
+_FORBIDDEN_ACTOR_RECORD_DICTIONARY_TOKENS = ("record.to_dict(",)
 
 
 def _metadata_findings(root: Path) -> list[str]:
     with (root / "pyproject.toml").open("rb") as handle:
         data = tomllib.load(handle)
     dependencies = data["project"]["dependencies"]
-    if dependencies != ["pds-core>=0.6.3,<0.7"]:
+    if (
+        not isinstance(dependencies, list)
+        or dependencies.count("pds-core>=0.6.3,<0.7") != 1
+        or any(not isinstance(item, str) for item in dependencies)
+    ):
         return [
             "Issue #39 requires the exact active Core floor pds-core>=0.6.3,<0.7; "
             f"found {dependencies!r}"
@@ -113,7 +115,9 @@ def _source_findings(root: Path) -> list[str]:
     roster_text = (identity_root / "roster.py").read_text(encoding="utf-8")
     for required in ("load_class_roster", "student_lookup", "Roster", "StudentRecord"):
         if required not in roster_text:
-            findings.append(f"roster resolver does not use required public Core surface: {required}")
+            findings.append(
+                f"roster resolver does not use required public Core surface: {required}"
+            )
     return findings
 
 
@@ -123,7 +127,9 @@ def _api_findings() -> list[str]:
         if not hasattr(CoreRosterResolver, method):
             findings.append(f"CoreRosterResolver is missing {method}")
     missing_actor = sorted(
-        method for method in _REQUIRED_ACTOR_METHODS if not hasattr(ActorDirectoryService, method)
+        method
+        for method in _REQUIRED_ACTOR_METHODS
+        if not hasattr(ActorDirectoryService, method)
     )
     if missing_actor:
         findings.append(f"ActorDirectoryService is missing methods: {missing_actor}")
@@ -147,10 +153,18 @@ def _parity_findings() -> list[str]:
             f"missing={sorted(_EXPECTED_PARITY - actual)}, extra={sorted(actual - _EXPECTED_PARITY)}"
         )
     for scenario_id in ("G22-005", "G22-006", "G22-007"):
-        if parity.get(scenario_id) is None or parity[scenario_id].disposition != "covered_by_39":
+        if (
+            parity.get(scenario_id) is None
+            or parity[scenario_id].disposition != "covered_by_39"
+        ):
             findings.append(f"{scenario_id} must be production-covered by Issue #39")
-    if parity.get("G22-009") is None or parity["G22-009"].disposition != "bounded_shared_boundary":
-        findings.append("G22-009 must preserve the bounded resolver-owned/shared boundary")
+    if (
+        parity.get("G22-009") is None
+        or parity["G22-009"].disposition != "bounded_shared_boundary"
+    ):
+        findings.append(
+            "G22-009 must preserve the bounded resolver-owned/shared boundary"
+        )
     return findings
 
 
@@ -179,11 +193,15 @@ def _documentation_findings(root: Path) -> list[str]:
         findings.append("README does not describe the Issue #39 current implementation")
     stale = "Live Core-backed identity resolution and teacher-facing workflows remain assigned"
     if stale in readme:
-        findings.append("README still claims live Core-backed identity resolution is deferred")
+        findings.append(
+            "README still claims live Core-backed identity resolution is deferred"
+        )
 
     runtime_models = (root / "docs" / "runtime-models.md").read_text(encoding="utf-8")
     if "Issue #39 provides that production bridge" not in runtime_models:
-        findings.append("runtime-model documentation does not describe the Issue #39 bridge")
+        findings.append(
+            "runtime-model documentation does not describe the Issue #39 bridge"
+        )
     return findings
 
 
