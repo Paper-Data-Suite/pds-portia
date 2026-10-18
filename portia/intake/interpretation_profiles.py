@@ -27,7 +27,7 @@ _MAPPING_PROFILE_ID = "portia_capture_roles"
 _MAPPING_VERSION = "1"
 
 FieldAvailability = Literal["unavailable"]
-ManualAvailability = Literal["not_yet_implemented"]
+ManualAvailability = Literal["not_yet_implemented", "local_operator_v1"]
 MappingDisposition = Literal[
     "context_only", "requires_target_choice", "mapping_not_yet_implemented"
 ]
@@ -89,13 +89,26 @@ LOCAL_MARKS_V1 = InterpretationProfile(
 )
 
 
+# Explicitly selected operator-authored staging. Separate from local marks.
+LOCAL_ASSISTED_MARKS_V1 = InterpretationProfile(
+    interpreter_id="portia_local_assisted_marks",
+    interpreter_version="1",
+    mapping_profile_id=_MAPPING_PROFILE_ID,
+    mapping_version=_MAPPING_VERSION,
+    text_provider="none",
+    mark_provider="local_checkbox_v1",
+    manual_provider="local_operator_v1",
+    external_network_allowed=False,
+)
+
+
 def resolve_interpretation_profile(
     identity: Mapping[str, object],
 ) -> InterpretationProfile:
     """Only exact, pinned profiles. No floating versions or fallback."""
     if not isinstance(identity, Mapping):
         raise InterpretationProfileError("unsupported_interpreter_or_mapping_profile")
-    for profile in (LOCAL_CANDIDATES_V1, LOCAL_MARKS_V1):
+    for profile in (LOCAL_CANDIDATES_V1, LOCAL_MARKS_V1, LOCAL_ASSISTED_MARKS_V1):
         if dict(identity) == profile.wire_identity():
             return profile
     raise InterpretationProfileError("unsupported_interpreter_or_mapping_profile")
