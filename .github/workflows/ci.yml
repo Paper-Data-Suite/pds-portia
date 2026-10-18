@@ -169,3 +169,10 @@ jobs:
           if ($LASTEXITCODE -ne 0) {
             throw "Issue 57 Core 0.6.6 installed-wheel acceptance failed."
           }
+
+      - name: Qualify Issue 59 isolated scan-extra wheel on Core 0.6.6
+        shell: pwsh
+        run: |
+          $issue59Wheel = Join-Path (Join-Path $env:RUNNER_TEMP "portia-wheel") "pds_portia-0.2.0-py3-none-any.whl"
+          python scripts/smoke_test_issue59_scan_wheel.py "$issue59Wheel" "$env:PDS_CORE_WHEEL"
+          if ($LASTEXITCODE -ne 0) { throw "Issue 59 installed scan wheel failed." }
