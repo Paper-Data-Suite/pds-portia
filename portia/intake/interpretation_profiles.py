@@ -50,7 +50,7 @@ class InterpretationProfile:
     mapping_profile_id: str
     mapping_version: str
     text_provider: Literal["none"]
-    mark_provider: Literal["none"]
+    mark_provider: Literal["none", "local_checkbox_v1"]
     manual_provider: ManualAvailability
     external_network_allowed: Literal[False]
 
@@ -76,16 +76,29 @@ LOCAL_CANDIDATES_V1 = InterpretationProfile(
 )
 
 
+# Separate immutable identity: never silently add marks to older v1 profile.
+LOCAL_MARKS_V1 = InterpretationProfile(
+    interpreter_id="portia_local_marks",
+    interpreter_version="1",
+    mapping_profile_id=_MAPPING_PROFILE_ID,
+    mapping_version=_MAPPING_VERSION,
+    text_provider="none",
+    mark_provider="local_checkbox_v1",
+    manual_provider="not_yet_implemented",
+    external_network_allowed=False,
+)
+
+
 def resolve_interpretation_profile(
     identity: Mapping[str, object],
 ) -> InterpretationProfile:
-    """Require the entire pinned identity, never fallback to a new profile."""
-    if (
-        not isinstance(identity, Mapping)
-        or dict(identity) != LOCAL_CANDIDATES_V1.wire_identity()
-    ):
+    """Only exact, pinned profiles. No floating versions or fallback."""
+    if not isinstance(identity, Mapping):
         raise InterpretationProfileError("unsupported_interpreter_or_mapping_profile")
-    return LOCAL_CANDIDATES_V1
+    for profile in (LOCAL_CANDIDATES_V1, LOCAL_MARKS_V1):
+        if dict(identity) == profile.wire_identity():
+            return profile
+    raise InterpretationProfileError("unsupported_interpreter_or_mapping_profile")
 
 
 @dataclass(frozen=True, slots=True)
