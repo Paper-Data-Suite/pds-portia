@@ -1,4 +1,4 @@
-"""Core-retained scan intake, bounded source preflight and per-page QR discovery."""
+"""Core-retained paper intake, routed page verification and receipts."""
 
 from portia.intake.contracts import (
     DEFAULT_SOURCE_LIMITS,
@@ -21,6 +21,12 @@ from portia.intake.dispatch import (
     PageRouteVerificationError,
     SourceRouteOutcomes,
     VerifiedPageRoute,
+)
+from portia.intake.page_records import (
+    FilePageRecordService,
+    PageReceiptOutcome,
+    PageReceiptStatus,
+    SourceReceiptOutcomes,
 )
 from portia.intake.recognition import (
     FilePageQrDiscoveryService,
@@ -46,6 +52,10 @@ __all__ = [
     "PageQrStatus",
     "QrDiscoveryError",
     "SourceQrDiscovery",
+    "FilePageRecordService",
+    "PageReceiptOutcome",
+    "PageReceiptStatus",
+    "SourceReceiptOutcomes",
     "FilePageRouteDispatchService",
     "PageRouteOutcome",
     "PageRouteStatus",
