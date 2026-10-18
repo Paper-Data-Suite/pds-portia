@@ -36,6 +36,11 @@ Documentation = "https://github.com/Paper-Data-Suite/pds-portia/tree/main/docs"
 Repository = "https://github.com/Paper-Data-Suite/pds-portia"
 
 [project.optional-dependencies]
+scan = [
+    "PyMuPDF>=1.26,<2",
+    "opencv-python-headless>=4.10,<6",
+    "numpy>=2,<3",
+]
 dev = [
     "build>=1.2",
     "jsonschema>=4.23,<5",
@@ -142,6 +147,8 @@ files = [
     "scripts/validate_issue56_import_materialization_runtime.py",
     "scripts/validate_issue56_closeout.py",
     "scripts/validate_issue57_closeout.py",
+    "scripts/validate_issue59_closeout.py",
+    "scripts/smoke_test_issue59_scan_wheel.py",
     "scripts/smoke_test_issue56_import_chain_runtime_wheel.py",
     "scripts/smoke_test_issue54_core065_wheel.py",
     "scripts/validate_repository.py",

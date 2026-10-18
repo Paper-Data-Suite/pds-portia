@@ -420,6 +420,54 @@ REQUIRED_SDIST_FILES.update(
 )
 
 
+# Issue #59: frozen v0.2.0 manifest plus additive returned-paper intake files.
+_ISSUE59_INTAKE_RUNTIME_FILES = {
+    "portia/intake/__init__.py",
+    "portia/intake/contracts.py",
+    "portia/intake/retention.py",
+    "portia/intake/recognition.py",
+    "portia/intake/dispatch.py",
+    "portia/intake/page_records.py",
+    "portia/intake/teacher.py",
+    "portia/intake/recovery.py",
+    "portia/menu/returned_paper.py",
+}
+REQUIRED_RUNTIME_FILES.update(_ISSUE59_INTAKE_RUNTIME_FILES)
+REQUIRED_SDIST_FILES.update(
+    _ISSUE59_INTAKE_RUNTIME_FILES
+    | {
+        "scripts/validate_issue59_closeout.py",
+        "scripts/smoke_test_issue59_scan_wheel.py",
+        "tests/test_issue59_slice8_closeout.py",
+        "docs/validation/issue-59-slice-8-final-matrix.md",
+        *(
+            f"docs/validation/issue-59-slice-{n}-{name}.md"
+            for n, name in (
+                (1, "intake-contract-boundaries"),
+                (2, "retain-first-source"),
+                (3, "page-qr-discovery"),
+                (4, "core-dispatch"),
+                (5, "page-record-receipts"),
+                (6, "teacher-intake-workflow"),
+                (7, "restart-recovery"),
+            )
+        ),
+        *(
+            f"tests/test_issue59_slice{n}_{name}.py"
+            for n, name in (
+                (1, "intake_contracts"),
+                (2, "retention"),
+                (3, "page_qr_discovery"),
+                (4, "route_dispatch"),
+                (5, "page_records"),
+                (6, "teacher_workflow"),
+                (7, "restart_recovery"),
+            )
+        ),
+    }
+)
+
+
 def _unsafe_path(name: str) -> bool:
     path = PurePosixPath(name)
     return path.is_absolute() or any(part in {"", ".", ".."} for part in path.parts)

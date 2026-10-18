@@ -291,6 +291,7 @@ def qualify(
     _run([sys.executable, "scripts/validate_issue54_python_platform_qualification.py"], root)
     _run([sys.executable, "scripts/validate_issue56_closeout.py"], root)
     _run([sys.executable, "-m", "scripts.validate_issue57_closeout"], root)
+    _run([sys.executable, "-m", "scripts.validate_issue59_closeout"], root)
     _run([sys.executable, "-m", "pytest"], root)
     _run([sys.executable, "-m", "ruff", "check", "."], root)
     _run([sys.executable, "-m", "mypy"], root)
@@ -475,6 +476,15 @@ def qualify(
             "scripts/smoke_test_issue56_import_chain_runtime_wheel.py",
             str(wheels[0]),
             str(core_wheel.resolve()),
+        ],
+        root,
+    )
+    _run(
+        [
+            sys.executable,
+            "scripts/smoke_test_issue59_scan_wheel.py",
+            str(wheels[0]),
+            str(historical_core_wheel.resolve()),
         ],
         root,
     )

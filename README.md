@@ -8,7 +8,30 @@ Portia is intended to help teachers document behavior-related events, preserve m
 
 Portia v0.2.0 is **RELEASED — VERIFIED**. The exact published GitHub Release bytes completed Issue #54 fresh-download and installed acceptance. Paper Data Suite composition qualification remains separate and is owned by `pds-paper-data-suite`.
 
-### Issue #57 preparation services (development branch)
+### Issue #59 returned-paper intake (v0.3 development)
+
+The **Scan / Import Returned Paper** teacher-menu task accepts one
+multi-page PDF, JPEG or PNG without splitting pages or assigning route
+IDs manually. Portia retains exact original bytes through Core, detects
+each page independently, validates authorized PDS2 routes and the
+historical Page Target, and writes replay-safe operational Page Records.
+Unresolved pages stay in Core custody and can be resumed after a restart.
+A Page Record is **not** a behavior-domain finding or student assertion.
+
+For the scan intake feature, install the explicit optional scan providers:
+
+```powershell
+python -m pip install "pds-portia[scan]"
+```
+
+In a developer checkout, use `python -m pip install -e ".[dev,scan]"`.
+The released Portia v0.2.0 dependency baseline remains unchanged; the
+v0.3 release is controlled by parent #55. TIFF and text recognition
+are not part of #59. See
+`docs/validation/issue-59-slice-8-final-matrix.md` for qualification
+and physical-pilot limitations.
+
+### Issue #57 preparation services (historical development checkpoint)
 
 The v0.3 paper-capture preparation services are under development on
 `57-capture-batch-page-target-services`. They support class-authorized
