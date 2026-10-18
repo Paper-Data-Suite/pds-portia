@@ -35,7 +35,7 @@ def _run(
 
 def smoke(portia_wheel: Path, core_wheel: Path) -> None:
     repository = Path(__file__).resolve().parents[1]
-    code = r'''
+    code = r"""
 import json
 from datetime import datetime, timezone
 from importlib import metadata
@@ -459,7 +459,7 @@ with TemporaryDirectory(prefix="portia-issue51-installed-") as temp:
             sort_keys=True,
         )
     )
-'''
+"""
 
     with tempfile.TemporaryDirectory(prefix="portia-issue51-wheel-smoke-") as temp:
         root = Path(temp)
@@ -489,6 +489,21 @@ with TemporaryDirectory(prefix="portia-issue51-installed-") as temp:
             ],
             cwd=work,
             env=env,
+        )
+        capture_dependency_env = env.copy()
+        capture_dependency_env.pop("PIP_NO_INDEX", None)
+        _run(
+            [
+                str(python),
+                "-m",
+                "pip",
+                "install",
+                "reportlab>=4.2,<5",
+                "qrcode>=7.4,<9",
+                "pypdf>=5,<7",
+            ],
+            cwd=work,
+            env=capture_dependency_env,
         )
         _run([str(python), "-m", "pip", "check"], cwd=work, env=env)
 
@@ -534,9 +549,7 @@ with TemporaryDirectory(prefix="portia-issue51-installed-") as temp:
             env=env,
         ).stdout.strip()
         if core_version != "0.6.3":
-            raise RuntimeError(
-                f"installed Core version is not 0.6.3: {core_version}"
-            )
+            raise RuntimeError(f"installed Core version is not 0.6.3: {core_version}")
 
         result = _run([str(python), "-c", code], cwd=work, env=env)
         lines = [line for line in result.stdout.splitlines() if line.strip()]
@@ -554,7 +567,12 @@ def main() -> int:
     args = parser.parse_args()
     try:
         smoke(args.portia_wheel, args.core_wheel)
-    except (OSError, RuntimeError, subprocess.CalledProcessError, AssertionError) as exc:
+    except (
+        OSError,
+        RuntimeError,
+        subprocess.CalledProcessError,
+        AssertionError,
+    ) as exc:
         print(f"ERROR: {exc}")
         if isinstance(exc, subprocess.CalledProcessError):
             if exc.stdout:

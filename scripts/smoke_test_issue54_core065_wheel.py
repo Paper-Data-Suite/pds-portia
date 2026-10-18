@@ -79,7 +79,7 @@ def smoke(portia_wheel: Path, core_wheel: Path) -> None:
     if portia_wheel.name != "pds_portia-0.2.0-py3-none-any.whl":
         raise RuntimeError("Issue #54 requires the exact Portia 0.2.0 wheel filename")
 
-    code = r'''
+    code = r"""
 import json
 import os
 from datetime import datetime, timezone
@@ -231,7 +231,7 @@ print(
         sort_keys=True,
     )
 )
-'''
+"""
 
     with tempfile.TemporaryDirectory(prefix="portia-issue54-core065-wheel-") as temp:
         root = Path(temp)
@@ -271,6 +271,21 @@ print(
             ],
             cwd=work,
             env=env,
+        )
+        capture_dependency_env = env.copy()
+        capture_dependency_env.pop("PIP_NO_INDEX", None)
+        _run(
+            [
+                str(python),
+                "-m",
+                "pip",
+                "install",
+                "reportlab>=4.2,<5",
+                "qrcode>=7.4,<9",
+                "pypdf>=5,<7",
+            ],
+            cwd=work,
+            env=capture_dependency_env,
         )
         _run([str(python), "-m", "pip", "check"], cwd=work, env=env)
 
@@ -326,7 +341,12 @@ def main() -> int:
     args = parser.parse_args()
     try:
         smoke(args.portia_wheel, args.core_wheel)
-    except (OSError, RuntimeError, subprocess.CalledProcessError, AssertionError) as exc:
+    except (
+        OSError,
+        RuntimeError,
+        subprocess.CalledProcessError,
+        AssertionError,
+    ) as exc:
         print(f"ERROR: {exc}")
         if isinstance(exc, subprocess.CalledProcessError):
             if exc.stdout:

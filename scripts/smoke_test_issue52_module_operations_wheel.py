@@ -69,7 +69,7 @@ def smoke(portia_wheel: Path, core_wheel: Path) -> None:
     repository = Path(__file__).resolve().parents[1]
     _authenticate_core(repository, core_wheel)
 
-    code = r'''
+    code = r"""
 import json
 import os
 from dataclasses import asdict
@@ -333,7 +333,7 @@ print(
         sort_keys=True,
     )
 )
-'''
+"""
 
     with tempfile.TemporaryDirectory(prefix="portia-issue52-wheel-smoke-") as temp:
         root = Path(temp)
@@ -363,6 +363,21 @@ print(
             ],
             cwd=work,
             env=env,
+        )
+        capture_dependency_env = env.copy()
+        capture_dependency_env.pop("PIP_NO_INDEX", None)
+        _run(
+            [
+                str(python),
+                "-m",
+                "pip",
+                "install",
+                "reportlab>=4.2,<5",
+                "qrcode>=7.4,<9",
+                "pypdf>=5,<7",
+            ],
+            cwd=work,
+            env=capture_dependency_env,
         )
         _run([str(python), "-m", "pip", "check"], cwd=work, env=env)
 
@@ -408,7 +423,9 @@ print(
         console = _console_path(python)
         status = _run([str(console), "status"], cwd=work, env=env)
         if "Core requirement: pds-core>=0.6.3,<0.7" not in status.stdout:
-            raise RuntimeError("installed portia status lost the Core compatibility floor")
+            raise RuntimeError(
+                "installed portia status lost the Core compatibility floor"
+            )
         if "Installed Core: 0.6.4" not in status.stdout:
             raise RuntimeError("installed portia status did not report Core 0.6.4")
 
@@ -428,7 +445,12 @@ def main() -> int:
     args = parser.parse_args()
     try:
         smoke(args.portia_wheel, args.core_wheel)
-    except (OSError, RuntimeError, subprocess.CalledProcessError, AssertionError) as exc:
+    except (
+        OSError,
+        RuntimeError,
+        subprocess.CalledProcessError,
+        AssertionError,
+    ) as exc:
         print(f"ERROR: {exc}")
         if isinstance(exc, subprocess.CalledProcessError):
             if exc.stdout:

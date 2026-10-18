@@ -377,6 +377,21 @@ print(json.dumps({
             cwd=work,
             env=env,
         )
+        capture_dependency_env = env.copy()
+        capture_dependency_env.pop("PIP_NO_INDEX", None)
+        _run(
+            [
+                str(python),
+                "-m",
+                "pip",
+                "install",
+                "reportlab>=4.2,<5",
+                "qrcode>=7.4,<9",
+                "pypdf>=5,<7",
+            ],
+            cwd=work,
+            env=capture_dependency_env,
+        )
         _run([str(python), "-m", "pip", "check"], cwd=work, env=env)
 
         package = _run(
@@ -390,7 +405,9 @@ print(json.dumps({
         )
         installed = Path(json.loads(package.stdout)["path"]).resolve()
         if repository.resolve() in installed.parents:
-            raise RuntimeError(f"smoke import resolved into source checkout: {installed}")
+            raise RuntimeError(
+                f"smoke import resolved into source checkout: {installed}"
+            )
 
         required_installed = (
             "workflows/support_processes.py",

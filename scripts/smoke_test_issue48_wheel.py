@@ -361,14 +361,28 @@ print(
             cwd=work,
             env=env,
         )
+        capture_dependency_env = env.copy()
+        capture_dependency_env.pop("PIP_NO_INDEX", None)
+        _run(
+            [
+                str(python),
+                "-m",
+                "pip",
+                "install",
+                "reportlab>=4.2,<5",
+                "qrcode>=7.4,<9",
+                "pypdf>=5,<7",
+            ],
+            cwd=work,
+            env=capture_dependency_env,
+        )
         _run([str(python), "-m", "pip", "check"], cwd=work, env=env)
 
         package = _run(
             [
                 str(python),
                 "-c",
-                "import json,portia; "
-                "print(json.dumps({'path': portia.__path__[0]}))",
+                "import json,portia; print(json.dumps({'path': portia.__path__[0]}))",
             ],
             cwd=work,
             env=env,
@@ -376,8 +390,7 @@ print(
         installed = Path(json.loads(package.stdout)["path"]).resolve()
         if repository.resolve() in installed.parents:
             raise RuntimeError(
-                "smoke import resolved into source checkout: "
-                f"{installed}"
+                f"smoke import resolved into source checkout: {installed}"
             )
 
         required_installed = (
@@ -413,10 +426,7 @@ print(
             "unrelated_hidden": True,
         }
         if payload != expected:
-            raise RuntimeError(
-                "unexpected Issue #48 student-view result: "
-                f"{payload!r}"
-            )
+            raise RuntimeError(f"unexpected Issue #48 student-view result: {payload!r}")
 
 
 def main() -> int:

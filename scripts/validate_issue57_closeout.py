@@ -47,15 +47,18 @@ SDIST_FILES = frozenset(
         "docs/validation/issue-57-acceptance-matrix.md",
         "docs/validation/issue-57-final-qualification.md",
     }
-    | {f"tests/test_issue57_slice{n}_{name}.py" for n, name in (
-        (1, "contracts"),
-        (2, "batches"),
-        (3, "page_targets"),
-        (4, "purposes"),
-        (5, "routes"),
-        (6, "preparation"),
-        (7, "recovery"),
-    )}
+    | {
+        f"tests/test_issue57_slice{n}_{name}.py"
+        for n, name in (
+            (1, "contracts"),
+            (2, "batches"),
+            (3, "page_targets"),
+            (4, "purposes"),
+            (5, "routes"),
+            (6, "preparation"),
+            (7, "recovery"),
+        )
+    }
 )
 
 
@@ -68,13 +71,20 @@ def validate(root: Path = ROOT) -> tuple[str, ...]:
             findings.append(f"required Issue #57 source missing: {path}")
     missing_runtime = RUNTIME_FILES - REQUIRED_RUNTIME_FILES
     if missing_runtime:
-        findings.append(f"capture services missing from wheel inventory: {sorted(missing_runtime)}")
+        findings.append(
+            f"capture services missing from wheel inventory: {sorted(missing_runtime)}"
+        )
     missing_sdist = (RUNTIME_FILES | SDIST_FILES) - REQUIRED_SDIST_FILES
     if missing_sdist:
-        findings.append(f"Issue #57 sources missing from sdist inventory: {sorted(missing_sdist)}")
+        findings.append(
+            f"Issue #57 sources missing from sdist inventory: {sorted(missing_sdist)}"
+        )
 
     service_methods: tuple[tuple[type[object], tuple[str, ...]], ...] = (
-        (FileCaptureBatchService, ("create_or_load", "load", "list_batches", "transition")),
+        (
+            FileCaptureBatchService,
+            ("create_or_load", "load", "list_batches", "transition"),
+        ),
         (FilePageTargetService, ("create_or_load", "load", "list_targets")),
         (FilePageRouteService, ("register_or_load", "inspect")),
         (FileCapturePreparationService, ("prepare", "inspect", "recover")),
@@ -82,9 +92,15 @@ def validate(root: Path = ROOT) -> tuple[str, ...]:
     for cls, methods in service_methods:
         for method in methods:
             if not callable(getattr(cls, method, None)):
-                findings.append(f"missing capture service method: {cls.__name__}.{method}")
+                findings.append(
+                    f"missing capture service method: {cls.__name__}.{method}"
+                )
 
-    for model, version in ((CaptureBatchV1, "1"), (PageTargetV1, "1"), (PageTargetV2, "2")):
+    for model, version in (
+        (CaptureBatchV1, "1"),
+        (PageTargetV1, "1"),
+        (PageTargetV2, "2"),
+    ):
         if model.VERSION != version:
             findings.append(f"unexpected frozen {model.CONTRACT} model version")
 
@@ -93,7 +109,12 @@ def validate(root: Path = ROOT) -> tuple[str, ...]:
             pyproject = tomllib.load(stream)
         project = pyproject["project"]
         requirements = project["dependencies"]
-        if requirements != ["pds-core>=0.6.3,<0.7"]:
+        if requirements != [
+            "pds-core>=0.6.3,<0.7",
+            "reportlab>=4.2,<5",
+            "qrcode>=7.4,<9",
+            "pypdf>=5,<7",
+        ]:
             findings.append("Portia Core runtime compatibility range changed")
         if project.get("requires-python") != ">=3.11":
             findings.append("Portia Python support changed")
@@ -128,9 +149,15 @@ def validate(root: Path = ROOT) -> tuple[str, ...]:
         old = '"scripts/validate_issue56_closeout.py"'
         current = '"scripts.validate_issue57_closeout"'
         tests = '[sys.executable, "-m", "pytest"]'
-        if not (0 <= repository_validator.find(old) < repository_validator.find(current)
-                < repository_validator.find(tests)):
-            findings.append("Issue #57 closeout audit must follow Issue #56 and precede pytest")
+        if not (
+            0
+            <= repository_validator.find(old)
+            < repository_validator.find(current)
+            < repository_validator.find(tests)
+        ):
+            findings.append(
+                "Issue #57 closeout audit must follow Issue #56 and precede pytest"
+            )
 
     try:
         tests_source = (root / "tests/test_issue57_slice8_core066.py").read_text(
@@ -146,7 +173,9 @@ def validate(root: Path = ROOT) -> tuple[str, ...]:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--core-wheel", type=Path, help="optionally authenticate exact Core 0.6.6 wheel")
+    parser.add_argument(
+        "--core-wheel", type=Path, help="optionally authenticate exact Core 0.6.6 wheel"
+    )
     args = parser.parse_args()
     failures = list(validate())
     if args.core_wheel is not None:

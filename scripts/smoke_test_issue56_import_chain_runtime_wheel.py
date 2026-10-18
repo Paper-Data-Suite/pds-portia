@@ -110,7 +110,7 @@ def smoke(portia_wheel: Path, core_wheel: Path) -> None:
     if "Verified official pds-core 0.6.5 wheel" not in verified.stdout:
         raise RuntimeError("Core authentication did not complete")
 
-    code = r'''
+    code = r"""
 from portia.models import (
     ImportBatchV1,
     ImportMaterializationV1,
@@ -314,7 +314,7 @@ for contract in (
     assert coverage[(contract, "1")] == ("current_v0_3", True)
 
 print("installed Issue #56 import runtime chain OK")
-'''
+"""
 
     with tempfile.TemporaryDirectory(prefix="portia-issue56-import-chain-") as temp:
         temp_root = Path(temp)
@@ -345,6 +345,21 @@ print("installed Issue #56 import runtime chain OK")
                 env=env,
             )
 
+        capture_dependency_env = env.copy()
+        capture_dependency_env.pop("PIP_NO_INDEX", None)
+        _run(
+            [
+                str(python),
+                "-m",
+                "pip",
+                "install",
+                "reportlab>=4.2,<5",
+                "qrcode>=7.4,<9",
+                "pypdf>=5,<7",
+            ],
+            cwd=work,
+            env=capture_dependency_env,
+        )
         _run([str(python), "-m", "pip", "check"], cwd=work, env=env)
         result = _run([str(python), "-c", code], cwd=work, env=env)
         if "installed Issue #56 import runtime chain OK" not in result.stdout:
@@ -375,9 +390,7 @@ def main() -> int:
                 print(exc.stderr)
         return 1
 
-    print(
-        "Portia Issue #56 completed import runtime installed-wheel acceptance passed"
-    )
+    print("Portia Issue #56 completed import runtime installed-wheel acceptance passed")
     return 0
 
 

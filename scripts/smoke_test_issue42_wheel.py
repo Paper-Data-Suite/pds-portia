@@ -37,7 +37,7 @@ def smoke(portia_wheel: Path, core_wheel: Path) -> None:
     if "0.6.3" not in core_wheel.name:
         raise RuntimeError("Issue #42 installed-wheel smoke requires Core 0.6.3")
 
-    code = r'''
+    code = r"""
 import json
 from pathlib import Path
 
@@ -270,7 +270,7 @@ print(json.dumps({
         "kind": determination.field("outcome")["kind"],
     },
 }))
-'''
+"""
 
     with tempfile.TemporaryDirectory(prefix="portia-issue42-wheel-smoke-") as temporary:
         root = Path(temporary)
@@ -300,22 +300,36 @@ print(json.dumps({
             cwd=work,
             env=env,
         )
+        capture_dependency_env = env.copy()
+        capture_dependency_env.pop("PIP_NO_INDEX", None)
+        _run(
+            [
+                str(python),
+                "-m",
+                "pip",
+                "install",
+                "reportlab>=4.2,<5",
+                "qrcode>=7.4,<9",
+                "pypdf>=5,<7",
+            ],
+            cwd=work,
+            env=capture_dependency_env,
+        )
         _run([str(python), "-m", "pip", "check"], cwd=work, env=env)
         package = _run(
             [
                 str(python),
                 "-c",
-                (
-                    "import json,portia; "
-                    "print(json.dumps({'path': portia.__path__[0]}))"
-                ),
+                ("import json,portia; print(json.dumps({'path': portia.__path__[0]}))"),
             ],
             cwd=work,
             env=env,
         )
         installed = Path(json.loads(package.stdout)["path"]).resolve()
         if repository.resolve() in installed.parents:
-            raise RuntimeError(f"smoke import resolved into source checkout: {installed}")
+            raise RuntimeError(
+                f"smoke import resolved into source checkout: {installed}"
+            )
         for relative in (
             "workflows/reviews.py",
             "workflows/classifications.py",

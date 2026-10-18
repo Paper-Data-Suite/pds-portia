@@ -1,4 +1,3 @@
-\
 """Smoke Issue #49 native attention from an installed Portia wheel."""
 
 from __future__ import annotations
@@ -1034,14 +1033,28 @@ print(json.dumps(payload, sort_keys=True))
             cwd=work,
             env=env,
         )
+        capture_dependency_env = env.copy()
+        capture_dependency_env.pop("PIP_NO_INDEX", None)
+        _run(
+            [
+                str(python),
+                "-m",
+                "pip",
+                "install",
+                "reportlab>=4.2,<5",
+                "qrcode>=7.4,<9",
+                "pypdf>=5,<7",
+            ],
+            cwd=work,
+            env=capture_dependency_env,
+        )
         _run([str(python), "-m", "pip", "check"], cwd=work, env=env)
 
         package = _run(
             [
                 str(python),
                 "-c",
-                "import json,portia; "
-                "print(json.dumps({'path': portia.__path__[0]}))",
+                "import json,portia; print(json.dumps({'path': portia.__path__[0]}))",
             ],
             cwd=work,
             env=env,
@@ -1049,8 +1062,7 @@ print(json.dumps(payload, sort_keys=True))
         installed = Path(json.loads(package.stdout)["path"]).resolve()
         if repository.resolve() in installed.parents:
             raise RuntimeError(
-                "smoke import resolved into source checkout: "
-                f"{installed}"
+                f"smoke import resolved into source checkout: {installed}"
             )
 
         for relative in (
@@ -1076,9 +1088,7 @@ print(json.dumps(payload, sort_keys=True))
             "fup_smoke_overdue": "overdue",
         }
         if payload["schedule"] != expected_schedule:
-            raise RuntimeError(
-                f"unexpected Follow-Up schedule result: {payload!r}"
-            )
+            raise RuntimeError(f"unexpected Follow-Up schedule result: {payload!r}")
         alpha_codes = set(payload["alpha_codes"])
         if not {
             "portia_follow_up_due",
@@ -1086,9 +1096,7 @@ print(json.dumps(payload, sort_keys=True))
             "portia_review_incomplete",
             "portia_integrity_conflict",
         }.issubset(alpha_codes):
-            raise RuntimeError(
-                f"installed alpha attention is incomplete: {payload!r}"
-            )
+            raise RuntimeError(f"installed alpha attention is incomplete: {payload!r}")
         if "portia_integrity_review_required" in alpha_codes:
             raise RuntimeError(
                 f"effective presentation suppression was ignored: {payload!r}"
@@ -1097,9 +1105,7 @@ print(json.dumps(payload, sort_keys=True))
             "portia_support_process_review_due",
             "portia_support_process_dependency_attention",
         }.issubset(set(payload["support_codes"])):
-            raise RuntimeError(
-                f"Support Process attention is incomplete: {payload!r}"
-            )
+            raise RuntimeError(f"Support Process attention is incomplete: {payload!r}")
         if "portia_derived_state_stale" not in payload["beta_codes"]:
             raise RuntimeError(f"stale derived state was not surfaced: {payload!r}")
         if "portia_quarantine_active" not in payload["gamma_codes"]:
