@@ -4,12 +4,15 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Literal
+from typing import TYPE_CHECKING, Literal
 
 from pds_core.identifiers import validate_identifier
 from pds_core.workspace import resolve_workspace_root
 
 from portia.models.identifiers import validate_portia_id
+
+if TYPE_CHECKING:
+    from portia.intake.retention import RetainedIntakeSource
 
 WorkKind = Literal["event", "support_process"]
 
@@ -23,6 +26,7 @@ class MenuSessionContext:
     selected_work_kind: WorkKind | None = None
     selected_work_id: str | None = None
     local_operator_label: str | None = None
+    last_retained_paper: RetainedIntakeSource | None = None
 
     def resolve_workspace(self, explicit_root: str | Path | None = None) -> Path:
         """Resolve Core workspace authority and invalidate stale target context."""
@@ -30,6 +34,7 @@ class MenuSessionContext:
         resolved = resolve_workspace_root(explicit_root)
         if self.workspace_root is not None and self.workspace_root != resolved:
             self.clear_target_context()
+            self.last_retained_paper = None
         self.workspace_root = resolved
         return resolved
 

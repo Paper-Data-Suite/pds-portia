@@ -21,6 +21,7 @@ from portia.menu.navigation import (
     parse_menu_navigation,
 )
 from portia.menu.response_communication import launch_response_communication_menu
+from portia.menu.returned_paper import launch_returned_paper_menu
 from portia.menu.support import launch_manage_support_menu
 from portia.menu.timeline import launch_view_timeline_menu
 from portia.menu.ui import (
@@ -87,7 +88,17 @@ CAPTURE_TASK = MenuTask(
     "Create Paper Capture Forms",
     "Generate and preview individually routable blank Portia forms.",
 )
-ALL_TASKS: tuple[MenuTask, ...] = (*PRIMARY_TASKS, ADVANCED_TASK, CAPTURE_TASK)
+RETURNED_PAPER_TASK = MenuTask(
+    "11",
+    "Scan / Import Returned Paper",
+    "Retain one returned PDF or image and review every scanned page.",
+)
+ALL_TASKS: tuple[MenuTask, ...] = (
+    *PRIMARY_TASKS,
+    ADVANCED_TASK,
+    CAPTURE_TASK,
+    RETURNED_PAPER_TASK,
+)
 
 
 def render_main_menu() -> str:
@@ -158,6 +169,9 @@ def _main_menu_once(state: MenuSessionContext) -> None:
         return
     if choice == "10":
         launch_capture_forms_menu(state)
+        return
+    if choice == "11":
+        launch_returned_paper_menu(state)
         return
     print(
         navigation_hint_with_help(

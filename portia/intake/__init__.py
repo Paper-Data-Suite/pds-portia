@@ -41,8 +41,20 @@ from portia.intake.retention import (
     RetainedIntakeSource,
     SourcePreflight,
 )
+from portia.intake.teacher import (
+    TeacherPageResult,
+    TeacherPageState,
+    TeacherReturnedPaperService,
+    TeacherSourceResult,
+    TeacherSourceState,
+)
 
 __all__ = [
+    "TeacherReturnedPaperService",
+    "TeacherPageResult",
+    "TeacherPageState",
+    "TeacherSourceResult",
+    "TeacherSourceState",
     "FileRetainFirstIntakeService",
     "IntakeSourceError",
     "RetainedIntakeSource",
