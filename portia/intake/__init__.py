@@ -1,4 +1,4 @@
-"""Read-only Portia paper intake contracts; no source custody or routing yet."""
+"""Portia scan-intake contracts and Core-owned retain-first source service."""
 
 from portia.intake.contracts import (
     DEFAULT_SOURCE_LIMITS,
@@ -14,8 +14,18 @@ from portia.intake.contracts import (
     SourceSafetyLimits,
     assess_source_signature,
 )
+from portia.intake.retention import (
+    FileRetainFirstIntakeService,
+    IntakeSourceError,
+    RetainedIntakeSource,
+    SourcePreflight,
+)
 
 __all__ = [
+    "FileRetainFirstIntakeService",
+    "IntakeSourceError",
+    "RetainedIntakeSource",
+    "SourcePreflight",
     "DEFAULT_SOURCE_LIMITS",
     "HARD_MAX_PAGE_PIXELS",
     "HARD_MAX_PAGES",
