@@ -112,7 +112,11 @@ def _check_fields(
         not isinstance(result, LocalPageCandidates)
         or result.profile is not profile
         or result.layout_fingerprint != spec.layout_fingerprint
-        or result.registration_method != "measured_sheet_boundary_and_exact_qr_v1"
+        or result.registration_method
+        not in {
+            "measured_sheet_boundary_and_exact_qr_v1",
+            "measured_fullframe_qr_and_field_frames_v1",
+        }
         or len(result.entries) != len(spec.entries)
     ):
         raise InterpretationGenerationError("candidate_lineage_or_profile_conflict")

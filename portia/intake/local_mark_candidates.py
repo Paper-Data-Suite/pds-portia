@@ -22,6 +22,7 @@ from portia.capture.form_catalog import (
 )
 from portia.intake.interpretation_profiles import LOCAL_MARKS_V1, InterpretationProfile
 from portia.intake.measured_regions import (
+    QUALIFIED_REGISTRATION_METHODS,
     FieldRegionPixels,
     FileMeasuredRegionService,
     MeasuredPageRegions,
@@ -242,7 +243,7 @@ def interpret_registered_fields(
         raise LocalRecognitionError("historical_spec_not_installed")
     if regions.layout_fingerprint != spec.layout_fingerprint:
         raise LocalRecognitionError("layout_fingerprint_conflict")
-    if regions.registration.method != "measured_sheet_boundary_and_exact_qr_v1":
+    if regions.registration.method not in QUALIFIED_REGISTRATION_METHODS:
         raise LocalRecognitionError("unqualified_registration_provider")
     declared = {
         (entry.entry_key, field.field_key, field.region_key): field

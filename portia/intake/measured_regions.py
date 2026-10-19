@@ -43,6 +43,14 @@ _MAX_REGISTRATION_IMAGE_PIXELS = 16_000_000
 _MIN_BORDER_AREA_FRACTION = 0.20
 _MAX_QR_RESIDUAL_PIXELS = 12.0
 
+# Both methods are independently measured and explicitly qualified.
+QUALIFIED_REGISTRATION_METHODS = frozenset(
+    {
+        "measured_sheet_boundary_and_exact_qr_v1",
+        "measured_fullframe_qr_and_field_frames_v1",
+    }
+)
+
 
 @dataclass(frozen=True, slots=True)
 class PageRegistration:
@@ -385,7 +393,26 @@ def measure_and_extract(
     if not isinstance(expected_pds2, str) or not expected_pds2.startswith("PDS2"):
         raise HistoricalPageError("invalid_expected_pds2")
     cv2, np, qr = _backends()
-    registration, H = _registration(raster, exact, expected_pds2, cv2, np, qr)
+    try:
+        registration, H = _registration(raster, exact, expected_pds2, cv2, np, qr)
+    except HistoricalPageError as border_error:
+        # A missing external paper border is the ONLY condition that
+        # enables the independently corroborated full-frame scanner
+        # method. Never bypass a bad QR, disagreement, clipped border,
+        # distorted geometry or another hard legacy failure.
+        if str(border_error) != "page_border_unmeasured":
+            raise
+        from portia.intake.full_frame_registration import qualify_full_frame
+
+        try:
+            evidence = qualify_full_frame(raster, exact, expected_pds2)
+        except HistoricalPageError as full_frame_error:
+            # Retain the established diagnostic for an all-white
+            # source that lacks even a decoded QR.
+            if str(full_frame_error) == "registration_qr_unreadable":
+                raise border_error from full_frame_error
+            raise
+        registration, H = evidence.registration, evidence.transform
     gray = np.frombuffer(raster.pixels, dtype=np.uint8).reshape(
         raster.height, raster.width
     )

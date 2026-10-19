@@ -87,7 +87,11 @@ def _validate_unmodified_mark_baseline(
         or not isinstance(spec, CapturePageSpec)
         or baseline.profile is not LOCAL_MARKS_V1
         or baseline.layout_fingerprint != spec.layout_fingerprint
-        or baseline.registration_method != "measured_sheet_boundary_and_exact_qr_v1"
+        or baseline.registration_method
+        not in {
+            "measured_sheet_boundary_and_exact_qr_v1",
+            "measured_fullframe_qr_and_field_frames_v1",
+        }
         or len(baseline.entries) != len(spec.entries)
     ):
         raise ManualStagingError("manual_baseline_not_qualified")
