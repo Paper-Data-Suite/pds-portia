@@ -47,6 +47,7 @@ class TeacherPageResult:
     page_target_index: int | None = None
     template_page_ordinal: int | None = None
     receipt_id: str | None = None
+    work_id: str | None = None
 
     def __post_init__(self) -> None:
         if not isinstance(self.identity, RetainedPageIdentity):
@@ -184,6 +185,7 @@ class TeacherReturnedPaperService:
                     status=status,
                     reason=receipt.reason,
                     class_id=owner.locator.class_id if owner else None,
+                    work_id=owner.locator.work_id if owner else None,
                     form_name=(
                         str(identity["template_id"])
                         if isinstance(identity.get("template_id"), str)
