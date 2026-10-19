@@ -15,9 +15,11 @@ from portia.intake.teacher import (
     TeacherReturnedPaperService,
     TeacherSourceResult,
 )
+from portia.intake.teacher_staging import FileTeacherPaperStagingService
 from portia.menu.capture_forms import LocalWorkspaceCaptureAuthority
 from portia.menu.context import MenuSessionContext
 from portia.menu.prompts import CancelMenuAction, confirm_write, prompt_text, select_one
+from portia.menu.returned_paper_staging import offer_stage
 from portia.menu.ui import clear_screen, pause_for_user, print_menu_header
 from portia.storage.errors import PortiaStorageError
 
@@ -166,6 +168,7 @@ def launch_returned_paper_menu(
     state: MenuSessionContext,
     *,
     service: TeacherReturnedPaperService | None = None,
+    staging_service: FileTeacherPaperStagingService | None = None,
 ) -> None:
     """Process or retry one file; no manual PDF splitting or route assignment."""
     try:
@@ -231,6 +234,38 @@ def launch_returned_paper_menu(
             result = gateway.process_file(path)
         state.last_retained_paper = result.source
         _review(result)
+        # The original receipt UI runs unchanged. Only genuine teacher
+        # gateways or explicitly injected staging tests offer a write.
+        if result.accepted and (
+            isinstance(gateway, TeacherReturnedPaperService)
+            or staging_service is not None
+        ):
+            authority = (
+                gateway.authorization
+                if isinstance(gateway, TeacherReturnedPaperService)
+                else LocalWorkspaceCaptureAuthority(root)
+            )
+            try:
+                offer_stage(
+                    result, root, authorization=authority, service=staging_service
+                )
+            except (
+                OSError,
+                TypeError,
+                ValueError,
+                RuntimeError,
+                PortiaStorageError,
+            ) as exc:
+                # Retained bytes and earlier successful writes survive.
+                _show(
+                    "Returned Paper - Staging Needs Attention",
+                    (
+                        "Candidate staging was interrupted or unavailable.",
+                        "Some interpretations or proposals may already be saved.",
+                        "Resume the same Core-retained scan; do not reset or re-retain it.",
+                        f"Diagnostic type: {type(exc).__name__}",
+                    ),
+                )
     except CancelMenuAction:
         return
     except RetainedRecoveryError:
